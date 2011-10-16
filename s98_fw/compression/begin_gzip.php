@@ -1,0 +1,1 @@
+<?php if( !stristr( $_SERVER['REQUEST_URI'], '/help/' ) ) ob_start("ob_gzhandler"); ?>

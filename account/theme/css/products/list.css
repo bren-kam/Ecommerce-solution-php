@@ -1,0 +1,57 @@
+/********/
+/* List */
+/********/
+#dNarrowSearchContainer { margin-right: 30px }
+#dNarrowSearch { padding: 13px 14px 31px; border: 1px solid #AFAFAF; background:#E9E9E9; width: 100%; position:relative }
+#dNarrowSearch h2 { font-size: 24px; font-weight: bold; padding-bott: 7px; }
+#dNarrowSearch h2, #dNarrowSearch td, #dNarrowSearch label { color: #606060 }
+#iNYSArrow { position:absolute; top: 100%; left: 94px }
+
+#tListRequests_info { clear:left; float:right; position:relative }
+#tListProducts_length { position:absolute; top: -33px; right: -23px; }
+#dProductList { padding: 0; position:relative; float:left; width:100% }
+.product { min-height: inherit; }
+.product, .product_heading, .product-placeholder {
+	background-color: #FFFFFF; margin: 10px 15px 0 0; padding:5px 0 48px; display: block; float:left; width:190px; text-align:center; cursor:move; border: 1px solid #e2e2e2; position: relative;
+}
+#dProductList.ui-sortable-disabled .product, #dProductList.ui-sortable-disabled .product_heading, #dProductList.ui-sortable-disabled .product-placeholder { cursor: default }
+
+.product-placeholder { height: 218px; margin: 10px 15px 0 0; padding:0; border-style: dashed; }
+
+.product h4 { font-weight: bold; margin-top: 0px; margin-left: 5px; display: inline-block;}
+.product p { padding-bottom: 0; }
+.product a { margin-left: 0; }
+.product .product-actions { display: inline-block; position: absolute; left: 25px; color: #9E9E9E; }
+.product a.tb { font-weight: normal; margin: 0; }
+
+/** Bottom 5 **/
+.product .product-actions, #dSelectedCategory {
+	bottom: 5px;
+}
+
+/* Rounded Corners */
+.product, .product_heading , .product-placeholder, #dSelectedCategory {
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-khtml-border-radius: 10px;
+	border-radius: 10px;
+}
+
+/** Edit Product dialog **/
+#dEditProduct .price{ width:50px; }
+
+.coupon, .coupon-placeholder { padding: 5px 0 3px; margin: 5px 0; border: 1px solid; height: 17px; width:100%; }
+.coupon .coupon-name { margin-left: 5px; }
+.coupon img { margin-right: 5px; }
+
+.delete-product-option { color: #CC2222 !important; font-weight: bold; font-family:"Courier New", Courier, monospace; float:right; font-size: 1.2em; }
+
+.screen{ overflow-y: auto; }
+
+#dProductOptionsList .row { float:left; clear:left; width:100%; padding-bottom: 7px }
+#dProductOptionsList .cell { float:left; padding: 2px 5px }
+#dProductOptionsList .left { width: 220px }
+#dProductOptionsList .right { widows: 530px }
+
+#dEditProduct .cb { position:relative; top: 2px }
+#bottom { padding-top:8px; padding-right:0px; clear: both; }

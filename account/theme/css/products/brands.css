@@ -1,0 +1,18 @@
+/**********/
+/* Brands */
+/**********/
+.brand h4 { font-weight: bold; margin: 5px 0 5px 5px; }
+.brand p { padding-bottom: 0; }
+
+/* Rounded Corners */
+.brand, .brand-placeholder {
+	background-color: #FFFFFF; margin: 10px 15px 0 0; padding:5px 0 48px; display: block; float:left; height: 130px; width:190px; text-align:center; cursor:move; border: 1px solid #e2e2e2; position: relative;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.brand-placeholder { height: 183px; margin: 10px 15px 0 0; padding:0; border-style: dashed; }
+.remove { position: absolute; bottom:5px; left: 75px; }
+
+.brand-url { overflow: hidden }

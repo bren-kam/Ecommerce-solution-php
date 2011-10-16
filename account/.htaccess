@@ -1,0 +1,5 @@
+# Cross-subdomain Sessions
+php_value auto_prepend_file /home/imaginer/public_html/s98_fw2/compression/begin_gzip.php
+php_value auto_append_file /home/imaginer/public_html/s98_fw2/compression/end_gzip.php
+php_value suhosin.post.max_vars 10000
+php_value suhosin.request.max_vars 10000

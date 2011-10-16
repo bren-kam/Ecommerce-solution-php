@@ -1,0 +1,22 @@
+/*************/
+/* Dashboard */
+/*************/
+#nav-icons img{width:130px; height:112px; margin-bottom: 10px; background: url(/images/icons/dashboard.gif) 0 0 no-repeat}
+
+#websites img { background-position: 0 0; }
+#websites:hover img { background-position: 0 -128px }
+
+#products img { background-position: -125px 0; }
+#products:hover img { background-position: -125px -128px }
+
+#users img { background-position: -254px 0; }
+#users:hover img { background-position: -254px -128px }
+
+#checklists img { background-position: -383px 0; }
+#checklists:hover img { background-position: -383px -128px }
+
+#requests img { background-position: -513px 0; }
+#requests:hover img { background-position: -513px -128px }
+
+#craigslist img { background-position: -772px 0; }
+#craigslist:hover img { background-position: -772px -128px }

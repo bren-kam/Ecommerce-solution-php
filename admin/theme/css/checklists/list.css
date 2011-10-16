@@ -1,0 +1,40 @@
+/**************/
+/* Checklists */
+/**************/
+.dataTables_wrapper .top { position: absolute; right:0; top: -45px; }
+.dataTables_filter { position: absolute; right:390px; top:7px; width: 300px; }
+#tListChecklists {empty-cells:show; word-wrap:break-word; background:#fff; clear:left}
+#tListChecklists th, #tListChecklists td { font-weight: bold; vertical-align:middle; padding-bottom: 7px; padding-left: 5px; }
+#tListChecklists tr {margin:1px 0px;}
+#tListChecklists th { border: 1px solid #606060; background-color: #606060; border-right-width: 7px; color:#fafafa; line-height:26px; text-align:left !important; padding-bottom: 0; cursor:pointer }
+#tListChecklists td { color:#333333; padding-bottom: 0; height: 40px; vertical-align: top; padding-top: 5px; padding-left: 10px; }
+#tListChecklists tr.odd{ background:#E3E3E3; }
+#tListChecklists span { position: relative; top: 5px; }
+
+#tListChecklists th.header {
+    background-color: #606060;
+	cursor: pointer;
+	text-align: center;
+}
+
+#tListChecklists th.headerSortUp {
+    background: #FFA500 url(/images/icons/arrow-up.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+#tListChecklists th.headerSortDown {
+    background: #FFA500 url(/images/icons/arrow-down.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+/***** Data Tables *****/
+.dataTables_length { position: relative; right: 170px; top: 8px; }
+.dataTables_length select { 
+	padding: 7px 5px 7px 17px; width: 148px; height: 35px; border: 1px solid #c8d2d6; font-size: 12px; font-weight: bold; color: #808b9d; position:relative; left: 120px; bottom: 18px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.dataTables_length option {
+	padding: 7px 17px;
+}

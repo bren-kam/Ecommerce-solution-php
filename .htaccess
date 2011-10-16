@@ -1,0 +1,26 @@
+Options +FollowSymLinks -Indexes
+RewriteEngine on
+RewriteBase /
+
+RewriteCond %{HTTP_HOST} ^199.47.222.21
+RewriteRule (.*) http://www.imagineretailer.com/$1 [R=301,L]
+
+RewriteCond %{HTTP_HOST} ^imagineretailer.com [NC] 
+RewriteRule ^(.*)$ http://www.imagineretailer.com/$1 [L,R=301]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+
+# 1 YEAR
+<FilesMatch '\.(ico|pdf|flv)$'>
+Header set Cache-Control 'max-age=29030400, public'
+</FilesMatch>
+# 30 DAYS
+<FilesMatch '\.(jpg|jpeg|png|gif|swf|xml|txt|css|js)$'>
+Header set Cache-Control 'max-age=4320000, public'
+</FilesMatch>
+# 1 MIN
+<FilesMatch '\.(html|htm)$'>
+Header set Cache-Control 'max-age=60, private, proxy-revalidate'
+</FilesMatch>

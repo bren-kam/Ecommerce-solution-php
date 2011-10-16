@@ -1,0 +1,40 @@
+/***************/
+/* View Ticket */
+/***************/
+h2 { font-size: 23px; font-weight: bold; padding-bottom:7px }
+td { padding: 6px 10px 6px 0; width: 275px; font-size: 14px !important; color: #5f5f66 }
+td label, td strong { font-size: 14px !important; font-weight: bold; width: 105px; display: block; float:left; color:#5f5f66 }
+td.move label, td.move strong{ position:relative; top: 4px; }
+td input, td select { float:left }
+td input.tb { width: 147px }
+blockquote { line-height: 17px; font-size: 14px; }
+
+/*** Comments ***/
+.comment { margin: 10px 10px 20px 0; clear:left; position:relative; color: #5f5f66 }
+.comment p { font-size: 12px; color: #464A4C }
+.comment br { clear: both }
+.comment .name { font-weight: bold; background-color: #F1F1F1; border: 1px solid #b6b6ba; padding: 5px; height: 38px; font-size: 15px; line-height: 36px; margin-bottom: 14px; color: #5f5f66 }
+.private { position: relative; top: 2px }
+.comment .date { font-size: 12px; font-weight: normal; margin-left: 5px; }
+.divider { clear: both; height: 1px; background-color: #E3E3E3; margin: 0 10px }
+.delete-comment { position: absolute; top: 18px; right: 6px; display: none }
+.comment:hover .delete-comment { display: inline }
+.comment .message { font-size: 14px; color: #5f5f66; margin-left: 7px; }
+
+#taTicketComments { width: 100%; height: 16px; border: 1px #ddd solid; padding: 2px; font-size: 14px; font-family: Arial, Helvetica, sans-serif; color: #777 }
+#aAddComment { float:right; display: none; margin: 3px 10px 0 }
+#dPrivate { float:right; display: none; margin: 12px 10px 0; }
+#dPrivate input { position: relative; top: 2px }
+#dTATicketCommentsWrapper { margin: 0 14px 0 0 }
+#dTicketCommentsDivider { margin-top: 10px }
+#fUploadAttachment { float:left; display: none }
+#fUploadAttachmentUploader { width: 115px; height: 35px }
+
+/** Attachments */
+.attachment { position: relative; width: 350px }
+.remove-attachment { position: absolute; right: 0; top: 2px; }
+
+.attachments { margin-top: 14px }
+.attachments a { font-size: 11px; padding-left: 21px; background: url(/images/icons/tickets/download.gif) 0 5px no-repeat; display: block; line-height: 26px; }
+
+#ui-datepicker-div { display: none }

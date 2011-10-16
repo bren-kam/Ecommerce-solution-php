@@ -1,0 +1,346 @@
+<?php
+/**
+ * Sends Tickets to the system
+ *
+ * @package Real Statistics
+ * @since 1.0
+ */
+
+class Tickets extends Base_Class {
+	/**
+	 * Construct initializes data
+	 */
+	public function __construct() {
+		// Need to load the parent constructor
+		if( !parent::__construct() )
+			return false;
+	}
+	
+	/**
+	 * Create Ticket
+	 *
+	 * @param string $summary
+	 * @param string $message
+	 * @return int
+	 */
+	public function create( $summary, $message ) {
+		global $user, $u;
+		
+		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => 493, 'website_id' => 0, 'summary' => stripslashes( $summary ), 'message' => nl2br( htmlentities( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => date_time::date('Y-m-d H:i:s') ), 'iiisssssss' ); 
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to create ticket.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Get the assigned to user
+		$assigned_to_user = $u->get_user( 493 );
+		
+		// Send an email
+		return fn::mail( $assigned_to_user['email'], 'New ' . stripslashes( $user['website']['title'] ) . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\nSummary: $summary\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $this->db->insert_id );
+	}
+	
+	/**
+	 * Create an empty Ticket
+	 *
+	 * @return int
+	 */
+	public function create_empty() {
+		global $user, $u;
+		
+		$result = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'is' ); 
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return $this->db->insert_id;
+	}
+	
+	/**
+	 * Update Ticket
+	 *
+	 * @param int $ticket_id
+	 * @param string $summary
+	 * @param string $message
+	 * @param array $images
+	 * @return bool
+	 */
+	public function update( $ticket_id, $summary, $message, $images ) {
+		global $user, $u;
+		
+		// Type Juggling
+		$ticket_id = (int) $ticket_id;
+		
+		// User is "Technical", "technical@greysuitretail.com"
+		$result = $this->db->update( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => 493, 'website_id' => 0, 'summary' => stripslashes( $summary ), 'message' => htmlentities( nl2br( $message ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'status' => 0 ), array( 'ticket_id' => $ticket_id ), 'iiissssssi', 'i' ); 
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update ticket.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Add images
+		$values = '';
+		
+		foreach( $images as $i ) {
+			if( !empty( $values ) )
+				$values .= ',';
+			
+			$values .= "( $ticket_id, " . (int) $i . ')';
+		}
+		
+		if( !empty( $values ) ) {
+			// Add image links
+			$this->db->query( "INSERT INTO `ticket_links` ( `ticket_id`, `ticket_upload_id` ) VALUES $values" );
+			
+			// Handle any error
+			if( $this->db->errno() ) {
+				$this->err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+		
+		// Get the assigned to user
+		$assigned_to_user = $u->get_user( 493 );
+		
+		// Send an email
+		return fn::mail( $assigned_to_user['email'], 'New ' . stripslashes( $user['website']['title'] ) . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $this->db->insert_id );
+	}
+	
+	/**
+	 * Update ticket priority
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $ticket_id
+	 * @param int $status
+	 * @return bool
+	 */
+	public function update_priority( $ticket_id, $priority ) {
+		global $user;
+		
+		$this->db->update( 'tickets', array( 'priority' => $priority ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update ticket priority.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Update ticket status
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $ticket_id
+	 * @param int $status
+	 * @return bool
+	 */
+	public function update_status( $ticket_id, $status ) {
+		global $user;
+		
+		$this->db->update( 'tickets', array( 'status' => $status ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update ticket status.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Update ticket assigned_to
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $ticket_id
+	 * @param int $assigned_to_user_id
+	 * @return bool
+	 */
+	public function update_assigned_to( $ticket_id, $assigned_to_user_id ) {
+		global $user;
+		
+		$this->db->update( 'tickets', array( 'assigned_to_user_id' => $assigned_to_user_id ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update ticket assigned_to_user_id.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return (int) $assigned_to_user_id;
+	}
+
+	/**
+	 * Update date due
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $ticket_id
+	 * @param string $date_due
+	 * @return bool
+	 */
+	public function update_date_due( $ticket_id, $date_due ) {
+		global $user;
+		
+		$this->db->update( 'tickets', array( 'date_due' => $date_due ), array( 'ticket_id' => $ticket_id ), 's', 'i' );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update ticket date_due.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Returns ticket
+	 *
+	 * @param int $ticket_id
+	 * @return array
+	 */
+	public function get( $ticket_id ) {
+		// Get linked users
+		$ticket = $this->db->get_row( "SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = " . (int) $ticket_id, ARRAY_A );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get ticket.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Get attachments if there are any
+		$attachments = $this->db->get_col( 'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_id` = ' . (int) $ticket_id );
+		
+		foreach( $attachments as $link ) {
+			$ticket['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', format::file_name( $link ) ) ) );
+		}
+		
+		// If there was an error
+		if( $this->db->errno() ) {
+			$this->err( "Failed to get ticket attachments.", __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $ticket;
+	}
+	
+	/**
+	 * Returns tickets for listing
+	 *
+	 * @param string $limit
+	 * @param string $where
+	 * @param string $order_by
+	 * @return array
+	 */
+	public function list_tickets( $limit, $where, $order_by ) {
+		// Get linked users
+		$tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`ticket_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by, d.`ticket_comment_id` DESC LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
+			return false;
+		}
+			
+		return $tickets;
+	}
+	
+	/**
+	 * Returns the number of tickets for listing
+	 *
+	 * @param string $where
+	 * @return int
+	 */
+	public function count( $where ) {
+		// Get linked tickets
+		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to count tickets.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return $count;
+	}
+	
+	/**
+	 * Email overdue tickets
+	 *
+	 * @return bool
+	 */
+	public function email_overdue_tickets() {
+		$overdue_tickets = $this->db->get_results( "SELECT a.`email`, b.`ticket_id`, b.`summary`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `tickets` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( a.`company_id` = c.`company_id` ) WHERE b.`status` = 0 AND b.`date_due` <> '0000-00-00 00:00:00' AND b.`date_due` < DATE( NOW() )", ARRAY_A );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get emails to email for overdue tickets.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Email each over the overdue persons
+		if( is_array( $overdue_tickets ) )
+		foreach( $overdue_tickets as $ot ) {
+			fn::mail( $ot['email'], html_entity_decode( $ot['name'] ) . ' Overdue Ticket: #' . $ot['ticket_id'] . ' - ' . $ot['summary'], "Summary:\n" . $ot['summary'] . "\n\nClick here to view the ticket:\nhttp://admin." . $ot['domain'] . "/tickets/ticket/?tid=" . $ot['ticket_id'] );
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Clean Uploads (remove all the ones that aren't needed)
+	 *
+	 * @return bool
+	 */
+	public function clean_uploads() {
+		$f = new Files;
+		
+		// Get attachments if there are any
+		$attachments = $this->db->get_col( 'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) LEFT JOIN `tickets` AS c ON ( b.`ticket_id` = c.`ticket_id` ) WHERE c.`status` = -1 AND c.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+	
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get attachments.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Remove them all
+		$f->remove_uploads( $attachments );
+		
+		// Delete ticket uploads, ticket links and tickets themselves (this is awesome!)
+		$this->db->query( 'DELETE a.*, b.*, c.* FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) LEFT JOIN `tickets` AS c ON ( b.`ticket_id` = c.`ticket_id` ) WHERE c.`status` = -1 AND c.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )');
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to delete ticket upload.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Report an error
+	 *
+	 * Make the parent error function a little less complicated
+	 *
+	 * @param string $message the error message
+	 * @param int $line (optional) the line number
+	 * @param string $method (optional) the class method that is being called
+	 */
+	private function err( $message, $line = 0, $method = '' ) {
+		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
+	}
+}

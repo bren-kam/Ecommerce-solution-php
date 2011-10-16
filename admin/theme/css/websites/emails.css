@@ -1,0 +1,35 @@
+/************/
+/* Websites */
+/************/
+
+/* Forms */
+.email-info { border:1px solid #666; width:200px; }
+.edit-email-window td { padding:5px; }
+/* Table Sorter */
+#tListWebsites {empty-cells:show; word-wrap:break-word; background:#ffffff; clear:left}
+#tListWebsites th, #tListWebsites td { font-weight: bold; vertical-align:middle; padding-bottom: 7px; padding-left: 5px; }
+#tListWebsites tr {margin:1px 0px;}
+#tListWebsites th { border: 1px solid #606060; background-color: #606060; border-right-width: 7px; color:#fafafa; line-height:26px; text-align:left !important; padding-bottom: 0; cursor:pointer}
+#tListWebsites td { color:#333333; padding-bottom: 0; height: 40px; vertical-align: top; padding-top: 5px; padding-left: 10px; }
+#tListWebsites tr.odd{ background:#E3E3E3; }
+#tListWebsites span { position: relative; top: 5px; }
+
+#tListWebsites th.header {
+    background-color: #606060;
+	cursor: pointer;
+	text-align: center;
+} 
+
+#tListWebsites th.headerSortUp { 
+    background: #FFA500 url(/images/icons/arrow-up.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+#tListWebsites th.headerSortDown { 
+    background: #FFA500 url(/images/icons/arrow-down.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+#tListWebsites_wrapper { position: relative; bottom: 25px; }
+.ui-autocomplete { width:245px }
+.ui-menu-item a { width: 235px; display: block; padding: 2px 5px; }

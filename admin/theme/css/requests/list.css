@@ -1,0 +1,28 @@
+/**************/
+/* Requests */
+/**************/
+.dataTables_wrapper .top { position: absolute; right:0; top: -45px; }
+.dataTables_filter { position: absolute; right:260px; top:7px; width: 300px; }
+#tListRequests {empty-cells:show; word-wrap:break-word; background:#fff; clear:left}
+#tListRequests th, #tListRequests td { font-weight: bold; vertical-align:middle; padding-bottom: 7px; padding-left: 5px; }
+#tListRequests tr {margin:1px 0px;}
+#tListRequests th { border: 1px solid #606060; background-color: #606060; border-right-width: 7px; color:#fafafa; line-height:26px; text-align:left !important; padding-bottom: 0; cursor:pointer }
+#tListRequests td { color:#333333; padding-bottom: 0; height: 40px; vertical-align: top; padding-top: 5px; padding-left: 10px; }
+#tListRequests tr.odd{ background:#E3E3E3; }
+#tListRequests span { position: relative; top: 5px; }
+
+#tListRequests th.header {
+    background-color: #606060;
+	cursor: pointer;
+	text-align: center;
+}
+
+#tListRequests th.headerSortUp {
+    background: #FFA500 url(/images/icons/arrow-up.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+#tListRequests th.headerSortDown {
+    background: #FFA500 url(/images/icons/arrow-down.gif) center right no-repeat;
+	border-color: #FFA500;
+}

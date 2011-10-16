@@ -1,0 +1,21 @@
+/*******************************/
+/* Label - ImagineRetailer.com */
+/*******************************/
+a { color: #f89b01; }
+a:hover, #nav-icons a:hover, #footer a:hover, #sidebar a.sub:hover { color: #F79D04 }
+#nav, .box h2 { background-color: #F79D04 }
+#sidebar h2 { background-color: #F79D04 }
+
+#description { color: #F89B01 }
+
+.button { 
+	background-color: #ffb005;
+	border: 1px solid #F79D04;
+	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+}
+
+#ticket { background-color: #f79d04 }
+#ticket:hover { background-color:#616268 }
