@@ -1,1 +1,0 @@
-<?php ob_flush(); ?>

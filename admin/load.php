@@ -19,37 +19,34 @@ define( 'ADMIN', true );
 /** Let other parts of the system know this is not the apps section */
 define( 'APPS', false );
 
-
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', '/home/develop4/public_html/' );
+define( 'ABS_PATH', str_replace( '/admin', '/', $_SERVER['DOCUMENT_ROOT'] ) );
 
 /** Define OPERATING_PATH as the main directory to get things from */
-define( 'OPERATING_PATH', '/home/develop4/public_html/admin/' );
+define( 'OPERATING_PATH', ABS_PATH . 'admin/' );
 
 /** Define INC_PATH as the includes directory */
-define( 'INC_PATH', '/home/develop4/public_html/includes/' );
+define( 'INC_PATH', ABS_PATH . 'includes/' );
 
 /** Define THEME_PATH as the place with all the pages */
-define( 'THEME_PATH', '/home/develop4/public_html/admin/theme/' );
+define( 'THEME_PATH', ABS_PATH . 'admin/theme/' );
 
 // Show us the errors
-if ( !DEBUG ) {
-	if ( defined('E_RECOVERABLE_ERROR') ) {
-		error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
-	} else {
-		error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING );
-	}
+if ( defined('E_RECOVERABLE_ERROR') ) {
+    error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
+} else {
+    error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING );
 }
 
 
 /** Include Studio98 library */
-require_once( ABS_PATH . 's98lib/init.php' );
+require_once ABS_PATH . 's98lib/init.php';
 
 /** Load global functions */
-require_once( INC_PATH . 'functions.php' );
+require_once INC_PATH . 'functions.php';
 
 /** Load classes */
-require_once( INC_PATH . 'classes.php' );
+require_once INC_PATH . 'classes.php';
 
 /** Error Handler */
 $e = new Error_Handler();
@@ -84,8 +81,7 @@ if ( !isset( $s98_cache ) )
 $cache = &$s98_cache; // Setting up a point to all cache functions
 
 /** Including the label information */
-require_once( INC_PATH . 'labels/' . DOMAIN . '.php' );
+require_once INC_PATH . 'labels/' . DOMAIN . '.php';
 
 /** Routing */
-require_once( ABS_PATH . 'routing.php' );
-
+require_once ABS_PATH . 'routing.php';
