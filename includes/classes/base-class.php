@@ -11,7 +11,7 @@ class Base_Class {
 	 * Construct initializes data
 	 */
 	public function __construct() { 
-		$this->db = new SQL( 'develop4_admin', '1lFhqIx0n}pT', 'develop4_system', 'localhost' );
+		$this->db = new SQL( 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system', 'localhost' );
 		$this->b = fn::browser();
 
 		return true;

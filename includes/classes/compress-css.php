@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * CSS Compressor
  *
