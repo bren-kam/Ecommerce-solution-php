@@ -20,7 +20,7 @@ class Categories extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 		
 		$this->load_categories();
@@ -39,7 +39,7 @@ class Categories extends Base_Class {
 		$this->db->insert( 'categories', array( 'parent_category_id' => $parent_category_id, 'name' => $name, 'slug' => format::slug( $slug ), 'sequence' => 1000 ), 'issi' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create category.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -50,7 +50,7 @@ class Categories extends Base_Class {
 		
 		//Add Attributes
 		$attributes_array = explode( '|', $attributes );
-		if( is_array( $attributes_array ) ) {
+		if ( is_array( $attributes_array ) ) {
 			$a = new Attributes;
 			$a->add_relations( $attributes_array, (int) $category_id );
 		}
@@ -72,14 +72,14 @@ class Categories extends Base_Class {
 		$this->db->update( 'categories', array( 'parent_category_id' => $parent_category_id, 'name' => $name, 'slug' => format::slug( $slug ) ), array( 'category_id' => $category_id ), 'iss', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update category.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		//Add Attributes
 		$attributes_array = explode( '|', $attributes );
-		if( is_array( $attributes_array ) ) {
+		if ( is_array( $attributes_array ) ) {
 			$category_id = (int) $category_id;
 			
 			$a = new Attributes;
@@ -106,11 +106,11 @@ class Categories extends Base_Class {
 		$statement->bind_param( 'ss', $sequence, $category_id );
 		
 		// Loop through the statement and update anything as it needs to be updated
-		foreach( $categories as $category_id ) {
+		foreach ( $categories as $category_id ) {
 			$statement->execute();
 			
 			// Handle any error
-			if( $statement->errno ) {
+			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
 				$this->err( "Failed to update category's existing sequence.", __LINE__, __METHOD__ );
 				return false;
@@ -137,13 +137,13 @@ class Categories extends Base_Class {
 		$statement->bind_param( 'ss', $sequence, $category_id );
 		
 		// Loop through the statement and update anything as it needs to be updated
-		foreach( $categories as $c ) {
+		foreach ( $categories as $c ) {
 			$category_id = $c['category_id'];
 			
 			$statement->execute();
 			
 			// Handle any error
-			if( $statement->errno ) {
+			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
 				$this->err( "Failed to update category's existing sequence.", __LINE__, __METHOD__ );
 				return false;
@@ -163,12 +163,12 @@ class Categories extends Base_Class {
 		$categories = $this->db->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to load categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		foreach( $categories as $c ) {
+		foreach ( $categories as $c ) {
 			// Assign the categories list in a way for infinite nesting
 			$this->categories[$c['parent_category_id']][] = $c;
 	
@@ -189,8 +189,8 @@ class Categories extends Base_Class {
 	public function get_child_categories( $category_id = 0 ) {
 		$categories = array();
 		
-		foreach( $this->categories_list as $i => $c ) {
-			if( $category_id == $c['parent_category_id'] ) 
+		foreach ( $this->categories_list as $i => $c ) {
+			if ( $category_id == $c['parent_category_id'] ) 
 				$categories[] = $c;
 		}
 		
@@ -204,7 +204,7 @@ class Categories extends Base_Class {
 	 * @return array
 	 */
 	public function get_category( $category_id ) {
-		return $this->categories_list[$category_id];
+		return ( isset( $this->categories_list[$category_id] ) ) ? $this->categories_list[$category_id] : NULL;
 	}
 	
 	/**
@@ -243,7 +243,14 @@ class Categories extends Base_Class {
 		$str_categories = '';
 		$categories = $this->db->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` WHERE `parent_category_id` = $parent_category", ARRAY_A );
 		
-		foreach( $categories as $c ) {
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get categories list.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		if ( is_array( $categories ) )
+		foreach ( $categories as $c ) {
 			// Don't want to get that category
 			if ( $c['category_id'] == $skip_id )
 				continue;
@@ -268,15 +275,15 @@ class Categories extends Base_Class {
 		$category = $this->categories_list[$category_id];
 		 
 		// If they went too far, return what we have
-		if( empty( $category ) )
+		if ( empty( $category ) )
 		 	return $parent_category_ids;
 		
 		// Find out if there is a parent
-		if( 0 != $category['parent_category_id'] ) {
+		if ( 0 != $category['parent_category_id'] ) {
 				$parent_category_ids[] = $category['parent_category_id'];
 			
 			// If the parent has a parent, call this function again
-			if( 0 != $this->categories_list[$category['parent_category_id']]['parent_category_id'] )
+			if ( 0 != $this->categories_list[$category['parent_category_id']]['parent_category_id'] )
 				$parent_category_ids = $this->get_parent_category_ids( $category['parent_category_id'], $parent_category_ids );
 		}
 		
@@ -292,13 +299,13 @@ class Categories extends Base_Class {
 	public function delete( $category_id ) {
 		$category_id = (int) $category_id;
 		
-		if( 0 == $category_id )
+		if ( 0 == $category_id )
 			return false;
 		
 		$this->db->query( "DELETE FROM `categories` WHERE `category_id` = $category_id OR `parent_category_id` = $category_id" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete categories.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -315,11 +322,11 @@ class Categories extends Base_Class {
 	 */
 	public function get_sub_category_ids( $category_id, $sub_category_ids = array() ) {
 		// Check to see if it has any sub categories
-		if( array_key_exists( $category_id, $this->categories ) )
-		foreach( $this->categories[$category_id] as $cat ) {
+		if ( array_key_exists( $category_id, $this->categories ) )
+		foreach ( $this->categories[$category_id] as $cat ) {
 			$sub_category_ids[] = $cat['category_id'];
 			
-			if( array_key_exists( $cat['category_id'], $this->categories ) )
+			if ( array_key_exists( $cat['category_id'], $this->categories ) )
 				$sub_category_ids = $this->get_sub_category_ids( $cat['category_id'], $sub_category_ids );
 		}
 		

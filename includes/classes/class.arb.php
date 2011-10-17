@@ -434,7 +434,7 @@ class auth_arb
 		$this->setDefaults();
 
 		// if we get an argument, make it the name of the subscription
-		if(func_num_args()>0)
+		if (func_num_args()>0)
 		{
 			$name_value=func_get_arg(0);
 			$this->name = $this->dom->createElement('name', substr($name_value,0,20));
@@ -450,7 +450,7 @@ class auth_arb
 	public function setAmount()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args() != 1)
+		if (func_num_args() != 1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -458,7 +458,7 @@ class auth_arb
 
 		// Add it to the DOM
 		$amount_value = func_get_arg(0);
-		if(!is_numeric($amount_value) || strlen($amount_value)>15)
+		if (!is_numeric($amount_value) || strlen($amount_value)>15)
 			$this->error[]="Invalid date type for argument 1 in function '".__FUNCTION__."()'";
 		else
 			$this->amount = $this->dom->createElement('amount', $amount_value);
@@ -473,7 +473,7 @@ class auth_arb
 	public function setTotalOccurrences()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args() != 1)
+		if (func_num_args() != 1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -481,7 +481,7 @@ class auth_arb
 
 		// Add it
 		$occurrences_value = func_get_arg(0);
-		if(!is_numeric($occurrences_value) || strlen($occurrences_value)>4)
+		if (!is_numeric($occurrences_value) || strlen($occurrences_value)>4)
 			$this->error[]="Invalid date type for argument 1 in function '".__FUNCTION__."()'";
 		else
 		{
@@ -500,7 +500,7 @@ class auth_arb
 	public function setTrial()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args() != 2)
+		if (func_num_args() != 2)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -509,7 +509,7 @@ class auth_arb
 		// Add it to the DOM
 		$occurrences_value = func_get_arg(0);
 		$amount_value = func_get_arg(1);
-		if(strlen($occurrences_value)>2 || strlen($amount_value)>15)
+		if (strlen($occurrences_value)>2 || strlen($amount_value)>15)
 			$this->error[]="Invalid argument length in function '".__FUNCTION__."()'";
 		else
 		{
@@ -526,7 +526,7 @@ class auth_arb
 	public function setReferenceID()
 	{
 		// Make sure we got an ID
-		if(func_num_args()!=1)
+		if (func_num_args()!=1)
 		{
 			$this->error[]="Invalid arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -545,7 +545,7 @@ class auth_arb
 	public function setStartDate()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args() != 1)
+		if (func_num_args() != 1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -553,7 +553,7 @@ class auth_arb
 
 		// Add it
 		$date_value = func_get_arg(0);
-		if(date('Ymd',strtotime($date_value)) < date('Ymd'))
+		if (date('Ymd',strtotime($date_value)) < date('Ymd'))
 			$this->error[]="Start date can not occur in the past in function '".__FUNCTION__."()'";
 		else
 			$this->startDate = date('Y-m-d',strtotime($date_value));
@@ -569,19 +569,19 @@ class auth_arb
 	{
 
 		// Ensure we have 2 arguments to work with
-		if(func_num_args() < 2)
+		if (func_num_args() < 2)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 
 		// Figure out which argument is which
-		if(is_numeric(func_get_arg(0)))
+		if (is_numeric(func_get_arg(0)))
 		{
 			$length_value = func_get_arg(0);
 			$unit_value = strtolower(func_get_arg(1));
 		}
-		else if(is_numeric(func_get_arg(1)))
+		else if (is_numeric(func_get_arg(1)))
 		{
 			$length_value = func_get_arg(1);
 			$unit_value = strtolower(func_get_arg(0));
@@ -593,19 +593,19 @@ class auth_arb
 		}
 
 		// Make sure we have the right unit
-		if($unit_value!='days' && $unit_value!='months')
+		if ($unit_value!='days' && $unit_value!='months')
 		{
 			$this->error[]="Invalid interval unit in fuction '".__FUNCTION__."()'";
 			return;
 		}
 
 		// Make sure the number of days is within range
-		if($unit_value=='days' && ($length_value > 365 || $length_value < 7))
+		if ($unit_value=='days' && ($length_value > 365 || $length_value < 7))
 		{
 			$this->error[]="Invalid interval length in fuction '".__FUNCTION__."()'. For daily recurrence, value must fall between 7 and 365";
 			return;
 		}
-		elseif($unit_value=='months' && ($length_value > 12 || $length_value < 1))
+		elseif ($unit_value=='months' && ($length_value > 12 || $length_value < 1))
 		{
 			$this->error[]="Invalid interval length in fuction '".__FUNCTION__."()'. For monthly recurrence, value must fall between 1 and 12";
 			return;
@@ -620,18 +620,18 @@ class auth_arb
 	public function setPaymentDetails()
 	{
 		// Ensure we have arguments to work with
-		if(func_num_args() == 2 || func_num_args() == 4)
+		if (func_num_args() == 2 || func_num_args() == 4)
 		{
-			if(func_num_args() == 2)
+			if (func_num_args() == 2)
 			{
 				$arg1=func_get_arg(0);
 				$arg2=func_get_arg(1);
-				if(strlen($arg1)>=13 && strlen($arg1)<=16 && is_numeric($arg1))
+				if (strlen($arg1)>=13 && strlen($arg1)<=16 && is_numeric($arg1))
 				{
 					$cc=$arg1;
 					$exp=strtotime($arg2);
 				}
-				else if(strlen($arg2)>=13 && strlen($arg2)<=16 && is_numeric($arg2))
+				else if (strlen($arg2)>=13 && strlen($arg2)<=16 && is_numeric($arg2))
 				{
 					$cc=$arg2;
 					$exp=strtotime($arg1);
@@ -641,7 +641,7 @@ class auth_arb
 					$this->error[]="Credit Card number invalid in function '".__FUNCTION__."()'";
 					return;
 				}
-				if(!$exp)
+				if (!$exp)
 				{
 					$this->error[]="Expiration Date invalid in function '".__FUNCTION__."()'";
 					return;
@@ -655,9 +655,9 @@ class auth_arb
 				$routingNumber=func_get_arg(1);
 				$accountNumber=func_get_arg(2);
 				$nameOnAccount=func_get_arg(3);
-				if($accountType=='checking' || $accountType=='businesschecking' || $accountType=='savings')
+				if ($accountType=='checking' || $accountType=='businesschecking' || $accountType=='savings')
 				{
-					if($accountType=='businesschecking')
+					if ($accountType=='businesschecking')
 					{
 						$accountType='businessChecking';
 						$echeckType='CCD';
@@ -673,11 +673,11 @@ class auth_arb
 				{
 					$this->error[]="Invalid account type in function '".__FUNCTION__."()'";
 				}
-				if(strlen($routingNumber)==9 && is_numeric($routingNumber))
+				if (strlen($routingNumber)==9 && is_numeric($routingNumber))
 					$this->routingNumber = $this->dom->createElement('routingNumber',$routingNumber);
 				else
 					$this->error[]="Invalid routing number in function '".__FUNCTION__."()'";
-				if(strlen($accountNumber)>=5 && strlen($accountNumber) <=17 && is_numeric($accountNumber))
+				if (strlen($accountNumber)>=5 && strlen($accountNumber) <=17 && is_numeric($accountNumber))
 					$this->accountNumber = $this->dom->createElement('accountNumber',$accountNumber);
 				else
 					$this->error[]="Invalid account number in function '".__FUNCTION__."()'";
@@ -700,16 +700,16 @@ class auth_arb
 	public function setOrderDetails()
 	{
 		// Ensure we have some arguments to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		
 		$arg1=func_get_arg(0);
-		if(func_num_args()==2)
+		if (func_num_args()==2)
 			$arg2=func_get_arg(1);
-		if(is_numeric($arg1))
+		if (is_numeric($arg1))
 		{
 			$invoiceNumber=$arg1;
 			$description=$arg2;
@@ -719,9 +719,9 @@ class auth_arb
 			$invoiceNumber=$arg2;
 			$description=$arg1;
 		}
-		if($invoiceNumber)
+		if ($invoiceNumber)
 			$this->invoiceNumber = $this->dom->createElement('invoiceNumber',substr($invoiceNumber,0,20));
-		if($description)
+		if ($description)
 			$this->description = $this->dom->createElement('description',substr($this->xmlEncode($description),0,255));
 		return;
 	}
@@ -733,7 +733,7 @@ class auth_arb
 	public function setCustomerId()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -750,7 +750,7 @@ class auth_arb
 	public function setCustomerEmail()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -767,7 +767,7 @@ class auth_arb
 	public function setCustomerPhone()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -784,7 +784,7 @@ class auth_arb
 	public function setCustomerFax()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -801,7 +801,7 @@ class auth_arb
 	public function setBillingName()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()!=2)
+				if (func_num_args()!=2)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -820,7 +820,7 @@ class auth_arb
 	public function setBillingFirstName()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -837,7 +837,7 @@ class auth_arb
 	public function setBillingLastName()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -854,7 +854,7 @@ class auth_arb
 	public function setBillingCompany()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -871,14 +871,14 @@ class auth_arb
 	public function setBillingAddress()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
 		$this->billingAddress = $this->dom->createElement('address',substr($value,0,60));
-		if(func_num_args()==4)
+		if (func_num_args()==4)
 		{
 			$city=func_get_arg(1);
 			$state=func_get_arg(2);
@@ -897,7 +897,7 @@ class auth_arb
 	public function setBillingCity()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -914,13 +914,13 @@ class auth_arb
 	public function setBillingState()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
-		if(strlen($value)>2)
+		if (strlen($value)>2)
 			$value=$this->convertState($value);
 		$this->billingState = $this->dom->createElement('state',substr($value,0,2));
 		return;
@@ -933,13 +933,13 @@ class auth_arb
 	public function setBillingZip()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
-		if(!is_numeric($value) || !(strlen($value)==5 || strlen($value)==10))
+		if (!is_numeric($value) || !(strlen($value)==5 || strlen($value)==10))
 			$this->error[]="Invalid value for zip in function '".__FUNCTION__."()'";
 		else
 			$this->billingZip = $this->dom->createElement('zip',substr($value,0,20));
@@ -953,7 +953,7 @@ class auth_arb
 	public function setBillingCountry()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -970,7 +970,7 @@ class auth_arb
 	public function setShippingName()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()!=2)
+				if (func_num_args()!=2)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -989,7 +989,7 @@ class auth_arb
 	public function setShippingFirstName()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -1006,7 +1006,7 @@ class auth_arb
 	public function setShippingLastName()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -1023,7 +1023,7 @@ class auth_arb
 	public function setShippingCompany()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -1040,14 +1040,14 @@ class auth_arb
 	public function setShippingAddress()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
 		$this->shippingAddress = $this->dom->createElement('address',substr($value,0,60));
-		if(func_num_args()==4)
+		if (func_num_args()==4)
 		{
 			$city=func_get_arg(1);
 			$state=func_get_arg(2);
@@ -1066,7 +1066,7 @@ class auth_arb
 	public function setShippingCity()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -1083,13 +1083,13 @@ class auth_arb
 	public function setShippingState()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
-		if(strlen($value)>2)
+		if (strlen($value)>2)
 			$value=$this->convertState($value);
 		$this->shippingState = $this->dom->createElement('state',substr($value,0,2));
 		return;
@@ -1102,13 +1102,13 @@ class auth_arb
 	public function setShippingZip()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
 		}
 		$value=func_get_arg(0);
-		if(!is_numeric($value) || !(strlen($value)==5 || strlen($value)==10))
+		if (!is_numeric($value) || !(strlen($value)==5 || strlen($value)==10))
 			$this->error[]="Invalid value for zip in function '".__FUNCTION__."()'";
 		else
 			$this->shippingZip = $this->dom->createElement('zip',substr($value,0,20));
@@ -1122,7 +1122,7 @@ class auth_arb
 	public function setShippingCountry()
 	{
 		// Ensure we have an argument to work with
-				if(func_num_args()<1)
+				if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -1139,7 +1139,7 @@ class auth_arb
 	public function setSubscriptionId()
 	{
 		// Ensure we have an argument to work with
-		if(func_num_args()<1)
+		if (func_num_args()<1)
 		{
 			$this->error[]="Invalid number of arguments in fuction '".__FUNCTION__."()'";
 			return;
@@ -1152,7 +1152,7 @@ class auth_arb
 	
 	public function UpdateSubscriptionRequest()
 	{
-		if(count($this->error)>0)
+		if (count($this->error)>0)
 		{
 			$this->error[]="Can not proceed in fuction '".__FUNCTION__."()' with errors present";
 			return;
@@ -1166,11 +1166,11 @@ class auth_arb
 		$this->ARBUpdateSubscriptionRequest->appendChild($this->merchantAuthentication);
 
 		// If we have a reference ID, add it
-		if($this->refId)
+		if ($this->refId)
 				$this->ARBUpdateSubscriptionRequest->appendChild($this->refId);
 		
 		// And, most required
-		if(!$this->subscriptionId)
+		if (!$this->subscriptionId)
 			$this->error[]="A subscription ID is required to in fuction '".__FUNCTION__."()'";
 		else
 			$this->ARBUpdateSubscriptionRequest->appendChild($this->subscriptionId);
@@ -1178,24 +1178,24 @@ class auth_arb
 		// Create and add the subscription info
 		$this->subscription = $this->dom->createElement('subscription');
 		$this->ARBUpdateSubscriptionRequest->appendChild($this->subscription);	
-		if($this->totalOccurrencesChanged)
+		if ($this->totalOccurrencesChanged)
 		{
 			$this->paymentSchedule=$this->dom->createElement('paymentSchedule');
 			$this->subscription->appendChild($this->paymentSchedule);
 			$this->paymentSchedule->appendChild($this->dom->createElement('totalOccurrences',$this->totalOccurrences));
 		}
-		if($this->cardNumber || $this->accountNumber)
+		if ($this->cardNumber || $this->accountNumber)
 		{
 			$this->payment=$this->dom->createElement('payment');
 			$this->subscription->appendChild($this->payment);
-			if($this->cardNumber)
+			if ($this->cardNumber)
 			{
 				$this->creditCard = $this->dom->createElement('creditCard');
 				$this->payment->appendChild($this->creditCard);
 				$this->creditCard->appendChild($this->cardNumber);
 				$this->creditCard->appendChild($this->expirationDate);
 			}
-			else if($this->accountNumber)
+			else if ($this->accountNumber)
 			{
 				$this->bankAccount = $this->dom->createElement('bankAccount');
 				$this->payment->appendChild($this->bankAccount);
@@ -1206,75 +1206,75 @@ class auth_arb
 				$this->bankAccount->appendChild($this->echeckType);
 			}
 		}
-		if($this->invoiceNumber || $this->description)
+		if ($this->invoiceNumber || $this->description)
 		{
 			$this->order = $this->dom->createElement('order');
 			$this->subscription->appendChild($this->order);
-			if($this->invoiceNumber)
+			if ($this->invoiceNumber)
 				$this->order->appendChild($this->invoiceNumber);
-			if($this->description)
+			if ($this->description)
 				$this->order->appendChild($this->description);
 		}
-		if($this->id || $this->email || $this->phoneNumber || $this->faxNumber)
+		if ($this->id || $this->email || $this->phoneNumber || $this->faxNumber)
 		{
 			$this->customer = $this->dom->createElement('customer');
 			$this->subscription->appendChild($this->customer);
-			if($this->id)
+			if ($this->id)
 				$this->customer->appendChild($this->id);
-			if($this->email)
+			if ($this->email)
 				$this->customer->appendChild($this->email);
-			if($this->phoneNumber)
+			if ($this->phoneNumber)
 				$this->customer->appendChild($this->phoneNumber);
-			if($this->faxNumber)
+			if ($this->faxNumber)
 				$this->customer->appendChild($this->faxNumber);
 		}
 		// Set Billing Info
-		if($this->billingFirstName || $this->billingLastName || $this->billingCity || $this->billingState || $this->billingZip || $this->billingCountry)
+		if ($this->billingFirstName || $this->billingLastName || $this->billingCity || $this->billingState || $this->billingZip || $this->billingCountry)
 		{
 		$this->billTo = $this->dom->createElement('billTo');
 		$this->subscription->appendChild($this->billTo);
-		if($this->billingFirstName)
+		if ($this->billingFirstName)
 			$this->billTo->appendChild($this->billingFirstName);
-		if($this->billingLastName)
+		if ($this->billingLastName)
 			$this->billTo->appendChild($this->billingLastName);
-		if($this->billingCompany)
+		if ($this->billingCompany)
 			$this->billTo->appendChild($this->billingCompany);
-		if($this->billingAddress)
+		if ($this->billingAddress)
 			$this->billTo->appendChild($this->billingAddress);
-		if($this->billingCity)
+		if ($this->billingCity)
 			$this->billTo->appendChild($this->billingCity);
-		if($this->billingState)
+		if ($this->billingState)
 			$this->billTo->appendChild($this->billingState);
-		if($this->billingZip)
+		if ($this->billingZip)
 			$this->billTo->appendChild($this->billingZip);
-		if($this->billingCountry)
+		if ($this->billingCountry)
 			$this->billTo->appendChild($this->billingCountry);
 		}
 		
 		// Set Shipping Info
-		if($this->shippingFirstName || $this->shippingLastName || $this->shippingCity || $this->shippingState || $this->shippingZip || $this->shippingCountry)
+		if ($this->shippingFirstName || $this->shippingLastName || $this->shippingCity || $this->shippingState || $this->shippingZip || $this->shippingCountry)
 		{
 			$this->shipTo = $this->dom->createElement('shipTo');
 			$this->subscription->appendChild($this->shipTo);
-			if($this->shippingFirstName)
+			if ($this->shippingFirstName)
 				$this->shipTo->appendChild($this->shippingFirstName);
-			if($this->shippingLastName)
+			if ($this->shippingLastName)
 				$this->shipTo->appendChild($this->shippingLastName);
-			if($this->shippingCompany)
+			if ($this->shippingCompany)
 				$this->shipTo->appendChild($this->shippingCompany);
-			if($this->shippingAddress)
+			if ($this->shippingAddress)
 				$this->shipTo->appendChild($this->shippingAddress);
-			if($this->shippingCity)
+			if ($this->shippingCity)
 				$this->shipTo->appendChild($this->shippingCity);
-			if($this->shippingState)
+			if ($this->shippingState)
 				$this->shipTo->appendChild($this->shippingState);
-			if($this->shippingZip)
+			if ($this->shippingZip)
 				$this->shipTo->appendChild($this->shippingZip);
-			if($this->shippingCountry)
+			if ($this->shippingCountry)
 				$this->shipTo->appendChild($this->shippingCountry);
 		}
 		
-		if(count($this->error)==0)
+		if (count($this->error)==0)
 			$this->submit();
 		return;
 		
@@ -1282,7 +1282,7 @@ class auth_arb
 	
 	public function CancelSubscriptionRequest()
 	{
-		if(count($this->error)>0)
+		if (count($this->error)>0)
 		{
 			$this->error[]="Can not proceed in fuction '".__FUNCTION__."()' with errors present";
 			return;
@@ -1296,23 +1296,23 @@ class auth_arb
 		$this->ARBCancelSubscriptionRequest->appendChild($this->merchantAuthentication);
 
 		// If we have a reference ID, add it
-		if($this->refId)
+		if ($this->refId)
 				$this->ARBCancelSubscriptionRequest->appendChild($this->refId);
 		
 		// And, last but most required
-		if(!$this->subscriptionId)
+		if (!$this->subscriptionId)
 			$this->error[]="A subscription ID is required to in fuction '".__FUNCTION__."()'";
 		else
 			$this->ARBCancelSubscriptionRequest->appendChild($this->subscriptionId);
 		
-		if(count($this->error)==0)
+		if (count($this->error)==0)
 			$this->submit();
 		return;
 	}
 
 	public function CreateSubscriptionRequest()
 	{
-		if(count($this->error)>0)
+		if (count($this->error)>0)
 		{
 			$this->error[]="Can not proceed in fuction '".__FUNCTION__."()' with errors present";
 			return;
@@ -1326,13 +1326,13 @@ class auth_arb
 		$this->ARBCreateSubscriptionRequest->appendChild($this->merchantAuthentication);
 
 		// If we have a reference ID, add it
-		if($this->refId)
+		if ($this->refId)
 			$this->ARBCreateSubscriptionRequest->appendChild($this->refId);
 
 		// Create and add the subscription info
 		$this->subscription = $this->dom->createElement('subscription');
 		$this->ARBCreateSubscriptionRequest->appendChild($this->subscription);
-		if($this->name)
+		if ($this->name)
 			$this->subscription->appendChild($this->name);
 		$this->paymentSchedule=$this->dom->createElement('paymentSchedule');
 		$this->subscription->appendChild($this->paymentSchedule);
@@ -1342,25 +1342,25 @@ class auth_arb
 		$this->interval->appendChild($this->dom->createElement('unit',$this->unit));
 		$this->paymentSchedule->appendChild($this->dom->createElement('startDate',$this->startDate));
 		$this->paymentSchedule->appendChild($this->dom->createElement('totalOccurrences',$this->totalOccurrences));
-		if(!$this->amount)
+		if (!$this->amount)
 			$this->error[]="An amount is required to in fuction '".__FUNCTION__."()'";
 		else
 			$this->subscription->appendChild($this->amount);
-		if($this->trialOccurrences)
+		if ($this->trialOccurrences)
 		{
 			$this->paymentSchedule->appendChild($this->trialOccurrences);
 			$this->subscription->appendChild($this->trialAmount);
 		}
 		$this->payment=$this->dom->createElement('payment');
 		$this->subscription->appendChild($this->payment);
-		if($this->cardNumber)
+		if ($this->cardNumber)
 		{
 			$this->creditCard = $this->dom->createElement('creditCard');
 			$this->payment->appendChild($this->creditCard);
 			$this->creditCard->appendChild($this->cardNumber);
 			$this->creditCard->appendChild($this->expirationDate);
 		}
-		else if($this->accountNumber)
+		else if ($this->accountNumber)
 		{
 			$this->bankAccount = $this->dom->createElement('bankAccount');
 			$this->payment->appendChild($this->bankAccount);
@@ -1374,75 +1374,75 @@ class auth_arb
 		{
 			$this->error[]="A payment method is required in fuction '".__FUNCTION__."()'";
 		}
-		if($this->invoiceNumber || $this->description)
+		if ($this->invoiceNumber || $this->description)
 		{
 			$this->order = $this->dom->createElement('order');
 			$this->subscription->appendChild($this->order);
-			if($this->invoiceNumber)
+			if ($this->invoiceNumber)
 				$this->order->appendChild($this->invoiceNumber);
-			if($this->description)
+			if ($this->description)
 				$this->order->appendChild($this->description);
 		}
-		if($this->id || $this->email || $this->phoneNumber || $this->faxNumber)
+		if ($this->id || $this->email || $this->phoneNumber || $this->faxNumber)
 		{
 			$this->customer = $this->dom->createElement('customer');
 			$this->subscription->appendChild($this->customer);
-			if($this->id)
+			if ($this->id)
 				$this->customer->appendChild($this->id);
-			if($this->email)
+			if ($this->email)
 				$this->customer->appendChild($this->email);
-			if($this->phoneNumber)
+			if ($this->phoneNumber)
 				$this->customer->appendChild($this->phoneNumber);
-			if($this->faxNumber)
+			if ($this->faxNumber)
 				$this->customer->appendChild($this->faxNumber);
 		}
 		
 		// Set Billing Info
 		$this->billTo = $this->dom->createElement('billTo');
 		$this->subscription->appendChild($this->billTo);
-		if(!$this->billingFirstName || !$this->billingLastName)
+		if (!$this->billingFirstName || !$this->billingLastName)
 			$this->error[]="A name is required in fuction '".__FUNCTION__."()'";
 		else
 		{
 			$this->billTo->appendChild($this->billingFirstName);
 			$this->billTo->appendChild($this->billingLastName);
 		}
-		if($this->billingCompany)
+		if ($this->billingCompany)
 			$this->billTo->appendChild($this->billingCompany);
-		if($this->billingAddress)
+		if ($this->billingAddress)
 			$this->billTo->appendChild($this->billingAddress);
-		if($this->billingCity)
+		if ($this->billingCity)
 			$this->billTo->appendChild($this->billingCity);
-		if($this->billingState)
+		if ($this->billingState)
 			$this->billTo->appendChild($this->billingState);
-		if($this->billingZip)
+		if ($this->billingZip)
 			$this->billTo->appendChild($this->billingZip);
-		if($this->billingCountry)
+		if ($this->billingCountry)
 			$this->billTo->appendChild($this->billingCountry);
 
 		// Set Shipping Info
-		if($this->shippingFirstName || $this->shippingLastName || $this->shippingCity || $this->shippingState || $this->shippingZip || $this->shippingCountry)
+		if ($this->shippingFirstName || $this->shippingLastName || $this->shippingCity || $this->shippingState || $this->shippingZip || $this->shippingCountry)
 		{
 			$this->shipTo = $this->dom->createElement('shipTo');
 			$this->subscription->appendChild($this->shipTo);
-			if($this->shippingFirstName)
+			if ($this->shippingFirstName)
 				$this->shipTo->appendChild($this->shippingFirstName);
-			if($this->shippingLastName)
+			if ($this->shippingLastName)
 				$this->shipTo->appendChild($this->shippingLastName);
-			if($this->shippingCompany)
+			if ($this->shippingCompany)
 				$this->shipTo->appendChild($this->shippingCompany);
-			if($this->shippingAddress)
+			if ($this->shippingAddress)
 				$this->shipTo->appendChild($this->shippingAddress);
-			if($this->shippingCity)
+			if ($this->shippingCity)
 				$this->shipTo->appendChild($this->shippingCity);
-			if($this->shippingState)
+			if ($this->shippingState)
 				$this->shipTo->appendChild($this->shippingState);
-			if($this->shippingZip)
+			if ($this->shippingZip)
 				$this->shipTo->appendChild($this->shippingZip);
-			if($this->shippingCountry)
+			if ($this->shippingCountry)
 				$this->shipTo->appendChild($this->shippingCountry);
 		}
-		if(count($this->error)==0)
+		if (count($this->error)==0)
 			$this->submit();
 		return;
 	}
@@ -1468,7 +1468,7 @@ class auth_arb
 	*/
 	private function submit()
 	{
-		if($this->DEBUG)
+		if ($this->DEBUG)
 			print $this->dom->saveXML();
 		else
 		{
@@ -1496,7 +1496,7 @@ class auth_arb
 		$rdom = new DomDocument();
 		$rdom->loadXML($this->response);
 		$parent=$rdom->firstChild;
-		switch($parent->nodeName)
+		switch ($parent->nodeName)
 		{
 			case 'ARBCreateSubscriptionResponse':
 				$xml = @simplexml_load_string( $this->response );
@@ -1506,12 +1506,12 @@ class auth_arb
 				$this->results['text']				= $xml->messages->message->text;
 				$this->results['subscriptionId'] 	= $xml->subscriptionId;
 				
-				if(strtolower($this->results['result'])=='ok')
+				if (strtolower($this->results['result'])=='ok')
 					$this->success=true;
 				else
 				{
 					$this->error[$this->results['code']] = $this->results['text'];
-					//foreach($this->results as $key=>$val) unset($this->results[$key]);
+					//foreach ($this->results as $key=>$val) unset($this->results[$key]);
 				}
 			break;
 			
@@ -1521,19 +1521,19 @@ class auth_arb
 				$refId = $parent->firstChild;
 				$messages = $refId->nextSibling;
 				$subscriptionId = $messages->nextSibling;
-				if($refId)
+				if ($refId)
 					$this->results['refId']=$refId->nodeValue;
 				$this->results['result']=$messages->firstChild->nodeValue;
 				$this->results['code']=$messages->firstChild->nextSibling->firstChild->nodeValue;
 				$this->results['text']=$messages->firstChild->nextSibling->firstChild->nextSibling->nodeValue;
-				if($subscriptionId)
+				if ($subscriptionId)
 					$this->results['subscriptionId']=$subscriptionId->nodeValue;
-				if(strtolower($this->results['result'])=='ok')
+				if (strtolower($this->results['result'])=='ok')
 					$this->success=true;
 				else
 				{
 					$this->error[$this->results['code']] = $this->results['text'];
-					foreach($this->results as $key=>$val) unset($this->results[$key]);
+					foreach ($this->results as $key=>$val) unset($this->results[$key]);
 				}
 				break;
 			case 'ErrorResponse':

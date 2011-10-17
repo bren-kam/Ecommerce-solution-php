@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
@@ -24,11 +24,11 @@ $v->add_validation( 'sEmailList', 'val!=0', _('You must select an email list.') 
 // Add Javascript
 add_footer( $v->js_validation() );
 
-if( nonce::verify( $_POST['_nonce'], 'share-and-save' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'share-and-save' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) )
+	if ( empty( $errs ) )
 		$success = $sm->update_share_and_save( $_POST['sEmailList'], $_POST['sMaximumEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $_POST['tMinimum'], $_POST['tMaximum'], stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
 }
 
@@ -37,7 +37,7 @@ $share_and_save = $sm->get_share_and_save();
 $email_lists = $e->get_email_lists();
 $website_files = $wf->get_all();
 
-if( !$share_and_save ) {
+if ( !$share_and_save ) {
 	$share_and_save = array(
 		'key' => $sm->create_share_and_save()
 		, 'email_list_id' => ''
@@ -62,7 +62,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $share_and_save['fb_page_id'] ) { ?>
+		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $share_and_save['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Share and Save application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=118945651530886" title="<?php echo _('Online Platform - Share and Save'); ?>" target="_blank"><?php echo _('Share and Save'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -107,14 +107,13 @@ get_header();
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/share-and-save/step6.jpg" class="image-border" width="497" height="186" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
 		<?php } else { ?>
-			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $share_and_save['fb_page_id']; ?>?sk=app_118945651530886" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<form name="fShareAndSave" action="/social-media/facebook/share-and-save/" method="post">
-				<?php if( $success ) { ?>
+				<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your email share and save page has been successfully updated!'); ?></p>
 				<?php 
 				}
 				
-				if( isset( $errs ) )
+				if ( isset( $errs ) )
 					echo "<p class='error'>$errs</p>";
 				?>
 				
@@ -137,7 +136,7 @@ get_header();
 					<select name="sEmailList" id="sEmailList">
 						<option value="">-- <?php echo _('Select Email List'); ?> --</option>
 						<?php 
-						foreach( $email_lists as $el ) {
+						foreach ( $email_lists as $el ) {
 							$selected = ( $el['email_list_id'] == $share_and_save['email_list_id'] ) ? ' selected="selected"' : '';
 							?>
 						<option value="<?php echo $el['email_list_id']; ?>"<?php echo $selected; ?>><?php echo $el['name']; ?></option>
@@ -156,7 +155,7 @@ get_header();
 					<select name="sMaximumEmailList" id="sMaximumEmailList">
 						<option value="">-- <?php echo _('Select Email List'); ?> --</option>
 						<?php 
-						foreach( $email_lists as $el ) {
+						foreach ( $email_lists as $el ) {
 							$selected = ( $el['email_list_id'] == $share_and_save['maximum_email_list_id'] ) ? ' selected="selected"' : '';
 							?>
 						<option value="<?php echo $el['email_list_id']; ?>"<?php echo $selected; ?>><?php echo $el['name']; ?></option>
@@ -193,12 +192,12 @@ get_header();
 			<div id="dUploadFile" class="hidden">
 				<ul id="ulUploadFile">
 					<?php
-					if( is_array( $website_files ) ) {
+					if ( is_array( $website_files ) ) {
 						// Set variables
 						$ajax_delete_file_nonce = nonce::create('delete-file');
 						$confirm = _('Are you sure you want to delete this file?');
 						
-						foreach( $website_files as $wf ) {
+						foreach ( $website_files as $wf ) {
 							$file_name = format::file_name( $wf['file_path'] );
 							echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 						}

@@ -16,8 +16,8 @@ $names = $pg->get_names( $_GET['wpgid'] );
 ?>
 <ul>
 <?php
-if( is_array( $names ) )
-foreach( $names as $n ) {
+if ( is_array( $names ) )
+foreach ( $names as $n ) {
 ?>
 <li><?php echo $n; ?></li>
 <?php } ?>

@@ -78,7 +78,7 @@ class LevenbergMarquardt {
 
 		$oos2 = array();
 
-		for($i = 0; $i < $npts; ++$i) {
+		for ($i = 0; $i < $npts; ++$i) {
 			$oos2[$i] = 1./($s[$i]*$s[$i]);
 		}
 		$iter = 0;
@@ -88,9 +88,9 @@ class LevenbergMarquardt {
 			++$iter;
 
 			// hessian approximation
-			for( $r = 0; $r < $nparm; ++$r) {
-				for( $c = 0; $c < $nparm; ++$c) {
-					for( $i = 0; $i < $npts; ++$i) {
+			for ( $r = 0; $r < $nparm; ++$r) {
+				for ( $c = 0; $c < $nparm; ++$c) {
+					for ( $i = 0; $i < $npts; ++$i) {
 						if ($i == 0) $H[$r][$c] = 0.;
 						$xi = $x[$i];
 						$H[$r][$c] += ($oos2[$i] * $f->grad($xi, $a, $r) * $f->grad($xi, $a, $c));
@@ -99,12 +99,12 @@ class LevenbergMarquardt {
 			} //r
 
 			// boost diagonal towards gradient descent
-			for( $r = 0; $r < $nparm; ++$r)
+			for ( $r = 0; $r < $nparm; ++$r)
 				$H[$r][$r] *= (1. + $lambda);
 
 			// gradient
-			for( $r = 0; $r < $nparm; ++$r) {
-				for( $i = 0; $i < $npts; ++$i) {
+			for ( $r = 0; $r < $nparm; ++$r) {
+				for ( $i = 0; $i < $npts; ++$i) {
 					if ($i == 0) $g[$r] = 0.;
 					$xi = $x[$i];
 					$g[$r] += ($oos2[$i] * ($y[$i]-$f->val($xi,$a)) * $f->grad($xi, $a, $r));
@@ -113,9 +113,9 @@ class LevenbergMarquardt {
 
 			// scale (for consistency with NR, not necessary)
 			if ($false) {
-				for( $r = 0; $r < $nparm; ++$r) {
+				for ( $r = 0; $r < $nparm; ++$r) {
 					$g[$r] = -0.5 * $g[$r];
-					for( $c = 0; $c < $nparm; ++$c) {
+					for ( $c = 0; $c < $nparm; ++$c) {
 						$H[$r][$c] *= 0.5;
 					}
 				}
@@ -173,7 +173,7 @@ class LevenbergMarquardt {
 //				lambda *= 0.1;
 //				e0 = e1;
 //				// simply assigning a = na will not get results copied back to caller
-//				for( int i = 0; i < nparm; i++ ) {
+//				for ( int i = 0; i < nparm; i++ ) {
 //					if (vary[i]) a[i] = na[i];
 //				}
 //			}

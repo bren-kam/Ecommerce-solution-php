@@ -1,7 +1,7 @@
 <?php
 /**
  * @page: 404 Error
- * @package Imagine Retailer
+ * @package Real Statistics
  */
 
 $title = _('Error: 404 - Page Not Found') . ' | ' . TITLE;

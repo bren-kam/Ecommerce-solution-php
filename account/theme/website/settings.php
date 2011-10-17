@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Class
@@ -31,16 +31,16 @@ $v->add_validation( 'banner-speed', 'num', _('The "Banners - Speed" field may on
 add_footer( $v->js_validation() );
 
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'update-settings' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-settings' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$new_settings = array();
 		
-		foreach( $settings as $k ) {
+		foreach ( $settings as $k ) {
 			// Don't need to update this one
-			if( 'banner-loading-color' == $k )
+			if ( 'banner-loading-color' == $k )
 				continue;
 			
 			$new_settings[$k] = $_POST[$k];
@@ -55,11 +55,11 @@ if( nonce::verify( $_POST['_nonce'], 'update-settings' ) ) {
 $settings_array = $w->get_settings( $settings );
 
 // Determine default settings
-foreach( $settings_array as $k => &$val ) {
-	if( !empty( $val ) )
+foreach ( $settings_array as $k => &$val ) {
+	if ( !empty( $val ) )
 		continue;
 		
-	switch( $k ) {
+	switch ( $k ) {
 		case 'banner-background-color':
 			$val = 'FFFFFF';
 		break;
@@ -85,7 +85,7 @@ foreach( $settings_array as $k => &$val ) {
 }
 
 // Set default settings
-if( is_array( $default_settings ) )
+if ( isset( $default_settings ) && is_array( $default_settings ) )
 	$w->update_settings( $default_settings );
 	
 $settings = $settings_array;
@@ -100,14 +100,14 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'settings' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( isset( $success ) && $success ) { ?>
 		<div class="success">
 			<p><?php echo _('Your settings have been updated successfully!'); ?></p>
 		</div>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fSettings" action="/website/settings/" method="post">

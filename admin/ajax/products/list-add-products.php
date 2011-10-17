@@ -14,9 +14,9 @@ $dt->order_by( 'a.`name`', 'b.`name`', 'a.`sku`', 'a.`status`' );
 $dt->add_where( ' AND ( a.`website_id` = 0 || a.`website_id` = ' . (int) $user['website']['website_id'] . ')' );
 $dt->add_where( " AND a.`publish_visibility` = 'public' AND a.`publish_date` <> '0000-00-00 00:00:00'" );
 
-switch( $_GET['sType'] ) {
+switch ( $_GET['sType'] ) {
 	case 'sku':
-		if( _('Enter SKU...') == $_GET['s'] ) {
+		if ( _('Enter SKU...') == $_GET['s'] ) {
 			$skip = true;
 		} else {
 			$dt->add_where( " AND a.`sku` LIKE '" . $dt->db->escape( $_GET['s'] ) . "%'" );
@@ -24,7 +24,7 @@ switch( $_GET['sType'] ) {
 	break;
 	
 	case 'product':
-		if( _('Enter Product Name...') == $_GET['s'] ) {
+		if ( _('Enter Product Name...') == $_GET['s'] ) {
 			$skip = true;
 		} else {
 			$dt->add_where( " AND a.`name` LIKE '" . $dt->db->escape( $_GET['s'] ) . "%'" );
@@ -32,7 +32,7 @@ switch( $_GET['sType'] ) {
 	break;
 	
 	case 'brand':
-		if( _('Enter Brand...') == $_GET['s'] ) {
+		if ( _('Enter Brand...') == $_GET['s'] ) {
 			$skip = true;
 		} else {
 			$dt->add_where( " AND b.`name` LIKE '" . $dt->db->escape( $_GET['s'] ) . "%'" );
@@ -46,7 +46,7 @@ switch( $_GET['sType'] ) {
 
 
 // Do a category search
-if( !empty( $_GET['c'] ) ) {
+if ( !empty( $_GET['c'] ) ) {
 	$skip = false;
 	
 	$c = new Categories;
@@ -58,7 +58,7 @@ if( !empty( $_GET['c'] ) ) {
 }
 
 // If it was invalid, don't display anything
-if( $skip ) {
+if ( $skip ) {
 	// Send response
 	echo $dt->get_response( $data );
 	exit;
@@ -74,8 +74,8 @@ $get_product_nonce = nonce::create( 'get-product' );
 $add_product_nonce = nonce::create( 'add-product' );
 
 // Create output
-if( is_array( $products ) )
-foreach( $products as $product ) {
+if ( is_array( $products ) )
+foreach ( $products as $product ) {
 	$dialog = '<a href="/dialogs/products/get-product/?_nonce=' . $get_product_nonce . '&amp;pid=' . $product['product_id'] . '#dProductDialog' . $product['product_id'] . '" title="' . _('View Product') . '" rel="dialog">';
 	$actions = '<a href="javascript:;" class="add-product" id="aAddProduct' . $product['product_id'] . '" name="' . $product['name'] . '" title="' . _('Add Product') . '">' . _('Add Product') . '</a>';
 	

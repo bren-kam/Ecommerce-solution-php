@@ -16,13 +16,16 @@ $sc = new Shopping_Cart;
 $w = new Websites;
 
 // Determine website shipping method id
-$website_shipping_method_id = (int) $_GET['wsmid'];
+$website_shipping_method_id = ( isset( $_GET['wsmid'] ) ) ? $_GET['wsmid'] : '';
 
 $settings = $w->get_settings( 'shipping-ups' );
 $settings = unserialize( $settings['shipping-ups'] );
 
+// Define it for everything else
+$success = false;
+
 // Modify the settings
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-ups-shipping-method' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-ups-shipping-method' ) ) {
 	if ( $website_shipping_method_id ) {
 		$success = $sc->update_shipping_method( $website_shipping_method_id, $_POST['sService'], 'N/A', 'N/A', $_POST['extra'] );
 	} else {
@@ -56,7 +59,7 @@ get_header();
 		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
-        <?php if( empty( $settings ) || in_array( '', $settings ) ) { ?>
+        <?php if ( empty( $settings ) || in_array( '', $settings ) ) { ?>
         <p class="error">You must set up your UPS Account before adding UPS shipping methods.</p>
         <p><a href="/shopping-cart/shipping/settings/">Click here</a> to set up your UPS account information.</p>
         <?php } else { ?>
@@ -81,7 +84,7 @@ get_header();
 								, '65' => _('UPS Saver')
 							);
 							
-							foreach( $services as $sv => $s ) {
+							foreach ( $services as $sv => $s ) {
 								$selected = ( $shipping_method['name'] == $sv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $sv; ?>"<?php echo $selected; ?>><?php echo $s; ?></option>
@@ -101,7 +104,7 @@ get_header();
 								, '07' => _('On Call Air')
 								);
 							
-							foreach( $pickup_types as $ptv => $pt ) {
+							foreach ( $pickup_types as $ptv => $pt ) {
 								$selected = ( $shipping_method['extra']['pickup_type'] == $ptv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $ptv; ?>"<?php echo $selected; ?>><?php echo $pt; ?></option>
@@ -128,7 +131,7 @@ get_header();
 								, '2c' => 'Large Express Box'
 							);
 							
-							foreach( $packaging_types as $ptv => $pt ) {
+							foreach ( $packaging_types as $ptv => $pt ) {
 								$selected = ( $shipping_method['extra']['packaging_type'] == $ptv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $ptv; ?>"<?php echo $selected; ?>><?php echo $pt; ?></option>

@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 css( 'data-tables/TableTools.css', 'data-tables/ui.css', 'product-options/list' );
 javascript( 'jquery', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'product-options/list' );
@@ -25,9 +25,9 @@ get_header();
 	<?php get_sidebar( 'product-options/' ); ?>
 	<div id="subcontent">
 		<?php nonce::field( 'delete-product-option', '_ajax_delete_product_option' ); ?>
-        <?php if( $_GET['add'] ) { ?>
+        <?php if ( isset( $_GET['add'] ) ) { ?>
         <div class="success">Your product option has been successfully added</div><br/>
-        <?php } elseif( $_GET['edit'] ) { ?>
+        <?php } elseif ( isset( $_GET['edit'] ) ) { ?>
         <div class="success">Your product option has been successfully edited</div><br/>
         <?php } ?>
         <div id="dUsersContainer">

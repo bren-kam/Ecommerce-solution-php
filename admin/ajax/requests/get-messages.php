@@ -5,8 +5,8 @@
  * @subpackage Graphs
  */
  
-if( nonce::verify( $_POST['_nonce'], 'get-messages' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'get-messages' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to get request messages.') ) );
 		exit;
 	}

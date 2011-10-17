@@ -11,7 +11,7 @@ class Coupons extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -33,14 +33,14 @@ class Coupons extends Base_Class {
 		global $user;
 		
 		// Checkboxes may be NULL
-		if( NULL == $store_wide )
+		if ( NULL == $store_wide )
 			$store_wide = 0;
 		
-		if( NULL == $buy_one_get_one_free )
+		if ( NULL == $buy_one_get_one_free )
 			$buy_one_get_one_free = 0;
 		
 		// Create Coupon
-		$this->db->insert( 'website_coupons', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'code' => $code, 'type' => $type, 'amount' => $amount, 'minimum_purchase_amount' => $minimum_purchase_amount, 'store_wide' => $store_wide, 'buy_one_get_one_free' => $buy_one_get_one_free, 'item_limit' => $item_limit, 'date_start' => $date_start, 'date_end' => $date_end, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'isssddiiisss' );
+		$this->db->insert( 'website_coupons', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'code' => $code, 'type' => $type, 'amount' => $amount, 'minimum_purchase_amount' => $minimum_purchase_amount, 'store_wide' => $store_wide, 'buy_one_get_one_free' => $buy_one_get_one_free, 'item_limit' => $item_limit, 'date_start' => $date_start, 'date_end' => $date_end, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssddiiisss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -75,10 +75,10 @@ class Coupons extends Base_Class {
 		global $user;
 		
 		// Checkboxes may be NULL
-		if( NULL == $store_wide )
+		if ( NULL == $store_wide )
 			$store_wide = 0;
 		
-		if( NULL == $buy_one_get_one_free )
+		if ( NULL == $buy_one_get_one_free )
 			$buy_one_get_one_free = 0;
 		
 		// Create Coupon
@@ -105,7 +105,7 @@ class Coupons extends Base_Class {
 	 */
 	public function set_free_shipping_methods( $website_coupon_id, $free_shipping_methods ) {
 		// If they didn't choose anything, don't add them
-		if( !is_array( $free_shipping_methods ) )
+		if ( !is_array( $free_shipping_methods ) )
 			return true;
 		
 		global $user;
@@ -128,8 +128,8 @@ class Coupons extends Base_Class {
 		// Create values
 		$values = '';
 		
-		foreach( $free_shipping_methods as $website_shipping_method_id ) {
-			if( !empty( $values ) )
+		foreach ( $free_shipping_methods as $website_shipping_method_id ) {
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			$values .= "( $website_coupon_id, " . (int) $website_shipping_method_id . ', 1 )';
@@ -203,7 +203,7 @@ class Coupons extends Base_Class {
 		$free_shipping_methods = $this->db->get_col( "SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = $website_coupon_id AND `active` = 1 ORDER BY `website_coupon_id` ASC" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get free shipping methods', __LINE__, __METHOD__ );
 			return false;
 		}

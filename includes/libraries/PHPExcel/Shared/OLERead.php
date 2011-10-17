@@ -68,7 +68,7 @@ class PHPExcel_Shared_OLERead {
 	public function read($sFileName)
 	{
 		// Check if file exists and is readable
-		if(!is_readable($sFileName)) {
+		if (!is_readable($sFileName)) {
 			throw new Exception("Could not open " . $sFileName . " for reading! File does not exist, or it is not readable.");
 		}
 

@@ -8,21 +8,21 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
 $sm = new Social_Media;
 	$wf = new Website_Files;
 
-if( nonce::verify( $_POST['_nonce'], 'facebook-site' ) )
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'facebook-site' ) )
 	$success = $sm->update_facebook_site( stripslashes( $_POST['taContent'] ) );
 
 // Get variables 
 $facebook_site = $sm->get_facebook_site();
 $website_files = $wf->get_all();
 	
-if( !$facebook_site ) {
+if ( !$facebook_site ) {
 	$facebook_site['key'] = $sm->create_facebook_site();
 	$facebook_site['content'] = '';
 }
@@ -40,7 +40,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $facebook_site['fb_page_id'] ) { ?>
+		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $facebook_site['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Facebook Site application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=114243368669744" title="<?php echo _('Online Platform - Facebook Site'); ?>" target="_blank"><?php echo _('Facebook Site'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -84,9 +84,11 @@ get_header();
 			<br />
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/facebook-site/step6.jpg" class="image-border" width="502" height="188" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
-		<?php } else { ?>
-			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $facebook_site['fb_page_id']; ?>?sk=app_114243368669744" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
-			<?php if( $success ) { ?>
+		<?php 
+		
+		} else { 
+			if ( $success ) { 
+			?>
 			<p class="success"><?php echo _('Your facebook site has been successfully updated!'); ?></p>
 			<?php } ?>
 			
@@ -104,12 +106,12 @@ get_header();
 			<div id="dUploadFile" class="hidden">
 				<ul id="ulUploadFile">
 					<?php
-					if( is_array( $website_files ) ) {
+					if ( is_array( $website_files ) ) {
 						// Set variables
 						$ajax_delete_file_nonce = nonce::create('delete-file');
 						$confirm = _('Are you sure you want to delete this file?');
 						
-						foreach( $website_files as $wf ) {
+						foreach ( $website_files as $wf ) {
 							$file_name = format::file_name( $wf['file_path'] );
 							echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 						}

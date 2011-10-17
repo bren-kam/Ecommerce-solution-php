@@ -104,6 +104,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 				width: 760,
 				height: $('#dDialogHeight').val(),
 				title : 'Edit Product'
+
 			});
 			
 			// Product Options

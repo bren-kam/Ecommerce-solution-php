@@ -11,7 +11,7 @@ class Companies extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -24,7 +24,7 @@ class Companies extends Base_Class {
 		$companies = $this->db->get_results( 'SELECT `company_id`, `name` FROM `companies`', ARRAY_A );
 		
 		// Handle errors
-		if( mysql_errno() ) {
+		if ( mysql_errno() ) {
 			$this->err( 'Failed to get companies', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -45,7 +45,7 @@ class Companies extends Base_Class {
 		$results = $this->db->prepare( "SELECT `company_id` AS object_id, `name` AS company FROM `companies` WHERE `name` LIKE ? ORDER BY `name`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}

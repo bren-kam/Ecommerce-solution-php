@@ -9,8 +9,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $_SESSION['status'] = '0';
 

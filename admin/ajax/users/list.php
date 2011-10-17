@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'a.`contact_name`';
@@ -75,9 +75,9 @@ $user_count = $u->count_users( $where );
 
 $aaData = array();
 
-if( is_array( $users ) )
-foreach( $users as $us ) {
-	switch( $us['role'] ) {
+if ( is_array( $users ) )
+foreach ( $users as $us ) {
+	switch ( $us['role'] ) {
 		case 1: 
 			$role = 'Basic User';
 		break;
@@ -103,7 +103,7 @@ foreach( $users as $us ) {
 		break;
 	}
 	
-	// $aaData[] = array( '<a href="/users/edit/?uid=' . $us['user_id'] . '" title="' . $us['contact_name'] . '">' . $us['contact_name'] . '</a>', '<a href="mailto:' . $us['email'] . '" title="' . _('Email') . ' ' . $us['contact_name'] . '">' . $us['email'] . '</a>', $us['domain'], $role, date_time::date( 'm-d-Y', $us['date_created'] ) );
+	// $aaData[] = array( '<a href="/users/edit/?uid=' . $us['user_id'] . '" title="' . $us['contact_name'] . '">' . $us['contact_name'] . '</a>', '<a href="mailto:' . $us['email'] . '" title="' . _('Email') . ' ' . $us['contact_name'] . '">' . $us['email'] . '</a>', $us['domain'], $role, dt::date( 'm-d-Y', $us['date_created'] ) );
 	$aaData[] = array( 
 		'<a href="/users/edit/?uid=' . $us['user_id'] . '" title="' . $us['contact_name'] . '">' . $us['contact_name'] . ' (' . _('Edit') . ')' . '</a>', 
 		'<a href="mailto:' . $us['email'] . '" title="' . _('Email') . ' ' . $us['contact_name'] . '">' . $us['email'] . '</a>', 

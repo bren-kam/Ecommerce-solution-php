@@ -22,8 +22,8 @@ $confirm = _('Are you sure you want to delete this Authorized user? This cannot 
 $delete_authorized_user_nonce = nonce::create( 'delete-authorized-user' );
 
 // Create output
-if( is_array( $authorized_users ) )
-foreach( $authorized_users as $u ) {
+if ( is_array( $authorized_users ) )
+foreach ( $authorized_users as $u ) {
 	$data[] = array( $u['email'] . '<br />
 					<div class="actions">
 						<a href="/settings/add-edit-authorized-user/?uid=' . $u['user_id'] . '" title="' . _('Edit Authorized User') . '">' . _('Edit') . '</a> |

@@ -26,7 +26,7 @@ jQuery(function($) {
 	// Update settion status
 	$('.status').change( function() {
 		$.post( '/ajax/feedback/change-status/', { '_nonce' : $('#_ajax_change_status').val(), 's' : $(this).val() }, function( response ) {
-			if( response['result'] )
+			if ( response['result'] )
 				dt.fnDraw();
 		}, 'json' );
 	});

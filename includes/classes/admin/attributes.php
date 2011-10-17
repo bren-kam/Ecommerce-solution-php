@@ -11,7 +11,7 @@ class Attributes extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -27,7 +27,7 @@ class Attributes extends Base_Class {
 		$this->db->insert( 'attributes', array( 'title' => $title, 'name' => $name ), 'ss' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -38,9 +38,9 @@ class Attributes extends Base_Class {
 		$sequence = 0;
 		$values = '';
 		
-		if( is_array( $attribute_items ) )
-		foreach( $attribute_items as $ai ) {
-			if( !empty( $values ) )
+		if ( is_array( $attribute_items ) )
+		foreach ( $attribute_items as $ai ) {
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			$values .= "( $attribute_id, '" . $this->db->escape( $ai ) . "', $sequence )";
@@ -50,7 +50,7 @@ class Attributes extends Base_Class {
 		$this->db->query( "INSERT INTO `attribute_items` ( `attribute_id`, `attribute_item_name`, `sequence` ) VALUES $values" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -68,7 +68,7 @@ class Attributes extends Base_Class {
 		$attribute_items = $this->db->get_results( 'SELECT a.`attribute_item_id`, a.`attribute_id`, a.`attribute_item_name`, c.`title` FROM `attribute_items` AS a LEFT JOIN `attribute_item_relations` AS b ON (a.`attribute_item_id` = b.`attribute_item_id`) INNER JOIN `attributes` AS c ON (a.`attribute_id` = c.`attribute_id`) WHERE b.`product_id` = ' . (int) $product_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attribute items by product.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -87,13 +87,13 @@ class Attributes extends Base_Class {
 		// $attribute_item_array = explode( '|', substr( $attribute_items, 0, -1 ) );
 		$attribute_item_array = explode( '|', $attribute_items  );
 		
-		if( !is_array( $attribute_item_array ) )
+		if ( !is_array( $attribute_item_array ) )
 			return true;
 		
 		$values = '';
 		
-		foreach( $attribute_item_array as $attribute_item_id ) {
-			if( !empty( $values ) )
+		foreach ( $attribute_item_array as $attribute_item_id ) {
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			$values .= sprintf( "( %d, $product_id )", $attribute_item_id );
@@ -103,7 +103,7 @@ class Attributes extends Base_Class {
 		$this->db->query( "INSERT INTO `attribute_item_relations` (`attribute_item_id`, `product_id`) VALUES $values" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add attribute item relations.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -123,7 +123,7 @@ class Attributes extends Base_Class {
 		$attribute = $this->db->get_row( "SELECT * FROM `attributes` WHERE `attribute_id` = $attribute_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -131,7 +131,7 @@ class Attributes extends Base_Class {
 		$attribute_items = $this->db->get_results( "SELECT `attribute_item_id`, `attribute_item_name` FROM `attribute_items` WHERE `attribute_id` = $attribute_id ORDER BY `sequence`", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -152,26 +152,26 @@ class Attributes extends Base_Class {
 		$this->db->update( 'attributes', array( 'title' => $title, 'name' => $name ), array( 'attribute_id' => $attribute_id ), 'ss', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$sequence = 0;
 		
-		if( is_array( $attribute_items ) )
-		foreach( $attribute_items as $ai ) {
+		if ( is_array( $attribute_items ) )
+		foreach ( $attribute_items as $ai ) {
 			// Get attribute info
 			list( $ai_name, $ai_id ) = explode( '|', $ai );
 			
-			if( !empty( $ai_id ) ) {
+			if ( !empty( $ai_id ) ) {
 				// Comprise a list of the IDs not to delete
 				$ai_id_list[] = $ai_id;
 				
 				$this->db->update( 'attribute_items', array( 'attribute_item_name' => $ai_name, 'sequence' => $sequence ), array( 'attribute_item_id' => $ai_id ), 'si', 'i' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to update attribute item.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -179,7 +179,7 @@ class Attributes extends Base_Class {
 				$this->db->insert( 'attribute_items', array( 'attribute_id' => $attribute_id, 'attribute_item_name' => $ai_name, 'sequence' => $sequence ), 'isi' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert attribute item.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -194,7 +194,7 @@ class Attributes extends Base_Class {
 		$this->db->query( 'DELETE FROM `attribute_items` WHERE `attribute_id` = ' . (int) $attribute_id . ' AND `attribute_item_id` NOT IN (' . implode( ',', $ai_id_list ) . ")" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -211,7 +211,7 @@ class Attributes extends Base_Class {
 		$attributes = $this->db->get_results( 'SELECT * FROM `attributes` ORDER BY `title`', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -231,7 +231,7 @@ class Attributes extends Base_Class {
 		$this->db->query( "DELETE FROM `attributes` WHERE `attribute_id` = $attribute_id" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -249,7 +249,7 @@ class Attributes extends Base_Class {
 		$this->db->query( 'DELETE FROM `attribute_item_relations` WHERE `product_id` = ' . (int) $product_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete attribute item relations.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -267,7 +267,7 @@ class Attributes extends Base_Class {
 		$this->db->query( "DELETE FROM `attribute_items` WHERE `attribute_id` = $attribute_id" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -287,7 +287,7 @@ class Attributes extends Base_Class {
 		$this->db->query( 'DELETE FROM `attribute_relations` WHERE `category_id` = ' . (int) $category_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete attribute relations.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -305,13 +305,13 @@ class Attributes extends Base_Class {
 	 * @returns bool
 	 */
 	public function add_relations( $attribute_ids, $category_id ) {
-		if( !is_array( $attribute_ids ) )
+		if ( !is_array( $attribute_ids ) )
 			return false;
 		
 		$sql = '';
 		
-		foreach( $attribute_ids as $attribute_id ) {
-			if( !empty( $sql ) )
+		foreach ( $attribute_ids as $attribute_id ) {
+			if ( !empty( $sql ) )
 				$sql .= ',';
 			
 			$sql = '(' . (int) $attribute_id . ', ' . $category_id . ')';
@@ -321,7 +321,7 @@ class Attributes extends Base_Class {
 		
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add attribute relations.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -339,7 +339,7 @@ class Attributes extends Base_Class {
 		$category_attributes = $this->db->get_col( 'SELECT a.`attribute_id` FROM `attributes` AS a LEFT JOIN `attribute_relations` AS b ON ( a.`attribute_id` = b.`attribute_id` ) WHERE b.`category_id` = ' . (int) $category_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get category attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -356,14 +356,14 @@ class Attributes extends Base_Class {
 		$attribute_items = $this->db->get_results( "SELECT a.`attribute_item_id`, a.`attribute_item_name`, b.`title` FROM `attribute_items` AS a LEFT JOIN `attributes` AS b ON (a.`attribute_id` = b.`attribute_id`)", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$new_attribute_items = array();
 		
-		foreach( $attribute_items as $ai ) {
+		foreach ( $attribute_items as $ai ) {
 			$new_attribute_items[$ai['title']][] = $ai;
 		}
 		
@@ -380,14 +380,14 @@ class Attributes extends Base_Class {
 		$attribute_items = $this->db->get_results( 'SELECT a.`attribute_item_id`, a.`attribute_item_name`, b.`title` FROM `attribute_items` AS a LEFT JOIN `attributes` AS b ON ( a.`attribute_id` = b.`attribute_id` ) LEFT JOIN `attribute_relations` AS c ON ( c.`attribute_id` = b.`attribute_id` ) WHERE c.`category_id` IN(' . preg_replace( '/[^0-9,]/', '', $categories ) . ')', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attribute items by categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$new_attribute_items = array();
 		
-		foreach( $attribute_items as $ai ) {
+		foreach ( $attribute_items as $ai ) {
 			$new_attribute_items[$ai['title']][] = $ai;
 		}
 		
@@ -407,7 +407,7 @@ class Attributes extends Base_Class {
 		$attributes = $this->db->get_results( "SELECT `attribute_id`, `title` FROM `attributes` WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -426,7 +426,7 @@ class Attributes extends Base_Class {
 		$attribute_count = $this->db->get_var( "SELECT COUNT( `attribute_id` ) FROM `attributes` WHERE 1 $where" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count attributes.', __LINE__, __METHOD__ );
 			return false;
 		}

@@ -11,7 +11,7 @@ class Brands extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -25,7 +25,7 @@ class Brands extends Base_Class {
 		$brand = $this->db->get_row( 'SELECT * FROM `brands` WHERE `brand_id` = ' . (int) $brand_id, ARRAY_A );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get brand.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -42,7 +42,7 @@ class Brands extends Base_Class {
 		$brands = $this->db->get_results( 'SELECT * FROM `brands` ORDER BY `name` ASC', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -68,18 +68,18 @@ class Brands extends Base_Class {
 		$brand = $this->db->get_row( "SELECT a.* FROM `brands` AS a LEFT JOIN `website_top_brands` AS b ON ( a.`brand_id` = b.`brand_id` AND b.`website_id` IS NULL ) WHERE a.`brand_id` = $brand_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		if( !$brand )
+		if ( !$brand )
 			return false;
 		
 		$this->db->insert( 'website_top_brands', array( 'website_id' => $website_id, 'brand_id' => $brand_id, 'sequence' => $sequence ), 'iii' );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add website top brand.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -92,7 +92,7 @@ class Brands extends Base_Class {
 	 *
 	 * @return array
 	 */
-	public function get_top_brands( $website_id ) {
+	public function get_top_brands() {
 		global $user;
 		
 		// Type Juggling
@@ -101,7 +101,7 @@ class Brands extends Base_Class {
 		$brands = $this->db->get_results( "SELECT a.* FROM `brands` AS a LEFT JOIN `website_top_brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE b.`website_id` = $website_id ORDER BY b.`sequence` ASC", ARRAY_A );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get top brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -125,11 +125,11 @@ class Brands extends Base_Class {
 		$statement = $this->db->prepare( "UPDATE `website_top_brands` SET `sequence` = ? WHERE `brand_id` = ? AND `website_id` = $website_id" );
 		$statement->bind_param( 'ii', $count, $brand_id );
 		
-		foreach( $sequence as $count => $brand_id ) {
+		foreach ( $sequence as $count => $brand_id ) {
 			$statement->execute();
 			
 			// Handle any error
-			if( $statement->errno ) {
+			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
 				$this->err( 'Failed to update brand sequence', __LINE__, __METHOD__ );
 				return false;
@@ -149,7 +149,7 @@ class Brands extends Base_Class {
 		$suggestions = $this->db->get_results( "SELECT `brand_id` AS value, `name` FROM `brands` WHERE `name` LIKE '" . $this->db->escape( $query ) . "%' ORDER BY `name` LIMIT 10", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -169,7 +169,7 @@ class Brands extends Base_Class {
 		$suggestions = $this->db->get_results( "SELECT a.`brand_id` AS value, a.`name` FROM `brands` AS a LEFT JOIN `products` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`name` LIKE '" . $this->db->escape( $query ) . "%' AND b.`website_id` = " . (int) $user['website']['website_id'] . " ORDER BY `name` LIMIT 10", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -192,7 +192,7 @@ class Brands extends Base_Class {
 		$suggestions = $this->db->get_results( "SELECT DISTINCT a.`name` FROM `brands` AS a LEFT JOIN `products` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS c ON ( b.`product_id` = c.`product_id` ) WHERE a.`name` LIKE '" . $this->db->escape( $query ) . "%' AND c.`website_id` = " . (int) $user['website']['website_id'] . " ORDER BY a.`name` LIMIT 10", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted brands on owned products.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -216,7 +216,7 @@ class Brands extends Base_Class {
 		$this->db->query( "DELETE FROM `website_top_brands` WHERE `brand_id` = $brand_id AND `website_id` = $website_id" );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to remove website top brand.', __LINE__, __METHOD__ );
 			return false;
 		}

@@ -941,7 +941,7 @@ class PHPExcel_Writer_Excel2007_Worksheet extends PHPExcel_Writer_Excel2007_Writ
 	
 						// Write cells
 						if (isset($cellsByRow[$currentRow])) {
-							foreach($cellsByRow[$currentRow] as $cell) {
+							foreach ($cellsByRow[$currentRow] as $cell) {
 								// Write cell
 								$this->_writeCell($objWriter, $pSheet, $cell, $pStringTable, $aFlippedStringTable);
 							}

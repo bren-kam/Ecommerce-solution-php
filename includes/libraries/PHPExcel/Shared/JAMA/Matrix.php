@@ -72,7 +72,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				//Square matrix - n x n
 				case 'integer':
 						$this->m = $args[0];
@@ -118,8 +118,8 @@ class Matrix {
 							$this->n = 0;
 						}
 						if (($this->m * $this->n) == count($args[0])) {
-							for($i = 0; $i < $this->m; ++$i) {
-								for($j = 0; $j < $this->n; ++$j) {
+							for ($i = 0; $i < $this->m; ++$i) {
+								for ($j = 0; $j < $this->n; ++$j) {
 									$this->A[$i][$j] = $args[0][$i + $j * $this->m];
 								}
 							}
@@ -188,8 +188,8 @@ class Matrix {
 	 */
 	public function getColumnPackedCopy() {
 		$P = array();
-		for($i = 0; $i < $this->m; ++$i) {
-			for($j = 0; $j < $this->n; ++$j) {
+		for ($i = 0; $i < $this->m; ++$i) {
+			for ($j = 0; $j < $this->n; ++$j) {
 				array_push($P, $this->A[$j][$i]);
 			}
 		}
@@ -205,8 +205,8 @@ class Matrix {
 	 */
 	public function getRowPackedCopy() {
 		$P = array();
-		for($i = 0; $i < $this->m; ++$i) {
-			for($j = 0; $j < $this->n; ++$j) {
+		for ($i = 0; $i < $this->m; ++$i) {
+			for ($j = 0; $j < $this->n; ++$j) {
 				array_push($P, $this->A[$i][$j]);
 			}
 		}
@@ -262,15 +262,15 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				//A($i0...; $j0...)
 				case 'integer,integer':
 						list($i0, $j0) = $args;
 						if ($i0 >= 0) { $m = $this->m - $i0; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if ($j0 >= 0) { $n = $this->n - $j0; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						$R = new Matrix($m, $n);
-						for($i = $i0; $i < $this->m; ++$i) {
-							for($j = $j0; $j < $this->n; ++$j) {
+						for ($i = $i0; $i < $this->m; ++$i) {
+							for ($j = $j0; $j < $this->n; ++$j) {
 								$R->set($i, $j, $this->A[$i][$j]);
 							}
 						}
@@ -282,8 +282,8 @@ class Matrix {
 						if (($iF > $i0) && ($this->m >= $iF) && ($i0 >= 0)) { $m = $iF - $i0; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (($jF > $j0) && ($this->n >= $jF) && ($j0 >= 0)) { $n = $jF - $j0; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						$R = new Matrix($m+1, $n+1);
-						for($i = $i0; $i <= $iF; ++$i) {
-							for($j = $j0; $j <= $jF; ++$j) {
+						for ($i = $i0; $i <= $iF; ++$i) {
+							for ($j = $j0; $j <= $jF; ++$j) {
 								$R->set($i - $i0, $j - $j0, $this->A[$i][$j]);
 							}
 						}
@@ -295,8 +295,8 @@ class Matrix {
 						if (count($RL) > 0) { $m = count($RL); } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (count($CL) > 0) { $n = count($CL); } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						$R = new Matrix($m, $n);
-						for($i = 0; $i < $m; ++$i) {
-							for($j = 0; $j < $n; ++$j) {
+						for ($i = 0; $i < $m; ++$i) {
+							for ($j = 0; $j < $n; ++$j) {
 								$R->set($i - $i0, $j - $j0, $this->A[$RL[$i]][$CL[$j]]);
 							}
 						}
@@ -308,8 +308,8 @@ class Matrix {
 						if (count($RL) > 0) { $m = count($RL); } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (count($CL) > 0) { $n = count($CL); } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						$R = new Matrix($m, $n);
-						for($i = 0; $i < $m; ++$i) {
-							for($j = 0; $j < $n; ++$j) {
+						for ($i = 0; $i < $m; ++$i) {
+							for ($j = 0; $j < $n; ++$j) {
 								$R->set($i, $j, $this->A[$RL[$i]][$CL[$j]]);
 							}
 						}
@@ -321,8 +321,8 @@ class Matrix {
 						if (($iF > $i0) && ($this->m >= $iF) && ($i0 >= 0)) { $m = $iF - $i0; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (count($CL) > 0) { $n = count($CL); } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						$R = new Matrix($m, $n);
-						for($i = $i0; $i < $iF; ++$i) {
-							for($j = 0; $j < $n; ++$j) {
+						for ($i = $i0; $i < $iF; ++$i) {
+							for ($j = 0; $j < $n; ++$j) {
 								$R->set($i - $i0, $j, $this->A[$RL[$i]][$j]);
 							}
 						}
@@ -334,8 +334,8 @@ class Matrix {
 						if (count($RL) > 0) { $m = count($RL); } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (($jF >= $j0) && ($this->n >= $jF) && ($j0 >= 0)) { $n = $jF - $j0; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						$R = new Matrix($m, $n+1);
-						for($i = 0; $i < $m; ++$i) {
-							for($j = $j0; $j <= $jF; ++$j) {
+						for ($i = 0; $i < $m; ++$i) {
+							for ($j = $j0; $j <= $jF; ++$j) {
 								$R->set($i, $j - $j0, $this->A[$RL[$i]][$j]);
 							}
 						}
@@ -366,13 +366,13 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'integer,integer,object':
 						if ($args[2] instanceof Matrix) { $M = $args[2]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						if (($args[0] + $M->m) <= $this->m) { $i0 = $args[0]; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (($args[1] + $M->n) <= $this->n) { $j0 = $args[1]; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
-						for($i = $i0; $i < $i0 + $M->m; ++$i) {
-							for($j = $j0; $j < $j0 + $M->n; ++$j) {
+						for ($i = $i0; $i < $i0 + $M->m; ++$i) {
+							for ($j = $j0; $j < $j0 + $M->n; ++$j) {
 								$this->A[$i][$j] = $M->get($i - $i0, $j - $j0);
 							}
 						}
@@ -381,8 +381,8 @@ class Matrix {
 						$M = new Matrix($args[2]);
 						if (($args[0] + $M->m) <= $this->m) { $i0 = $args[0]; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
 						if (($args[1] + $M->n) <= $this->n) { $j0 = $args[1]; } else { throw new Exception(JAMAError(ArgumentBoundsException)); }
-						for($i = $i0; $i < $i0 + $M->m; ++$i) {
-							for($j = $j0; $j < $j0 + $M->n; ++$j) {
+						for ($i = $i0; $i < $i0 + $M->m; ++$i) {
+							for ($j = $j0; $j < $j0 + $M->n; ++$j) {
 								$this->A[$i][$j] = $M->get($i - $i0, $j - $j0);
 							}
 						}
@@ -469,7 +469,7 @@ class Matrix {
 	 */
 	public function diagonal($m = null, $n = null, $c = 1) {
 		$R = new Matrix($m, $n);
-		for($i = 0; $i < $m; ++$i) {
+		for ($i = 0; $i < $m; ++$i) {
 			$R->set($i, $i, $c);
 		}
 		return $R;
@@ -505,8 +505,8 @@ class Matrix {
 	public function random($m = null, $n = null, $a = RAND_MIN, $b = RAND_MAX) {
 		if (is_int($m) && is_int($n) && is_numeric($a) && is_numeric($b)) {
 			$R = new Matrix($m, $n);
-			for($i = 0; $i < $m; ++$i) {
-				for($j = 0; $j < $n; ++$j) {
+			for ($i = 0; $i < $m; ++$i) {
+				for ($j = 0; $j < $n; ++$j) {
 					$R->set($i, $j, mt_rand($a, $b));
 				}
 			}
@@ -578,8 +578,8 @@ class Matrix {
 	 */
 	public function transpose() {
 		$R = new Matrix($this->n, $this->m);
-		for($i = 0; $i < $this->m; ++$i) {
-			for($j = 0; $j < $this->n; ++$j) {
+		for ($i = 0; $i < $this->m; ++$i) {
+			for ($j = 0; $j < $this->n; ++$j) {
 				$R->set($j, $i, $this->A[$i][$j]);
 			}
 		}
@@ -595,9 +595,9 @@ class Matrix {
 	 */
 	public function norm1() {
 		$r = 0;
-		for($j = 0; $j < $this->n; ++$j) {
+		for ($j = 0; $j < $this->n; ++$j) {
 			$s = 0;
-			for($i = 0; $i < $this->m; ++$i) {
+			for ($i = 0; $i < $this->m; ++$i) {
 				$s += abs($this->A[$i][$j]);
 			}
 			$r = ($r > $s) ? $r : $s;
@@ -624,9 +624,9 @@ class Matrix {
 	 */
 	public function normInf() {
 		$r = 0;
-		for($i = 0; $i < $this->m; ++$i) {
+		for ($i = 0; $i < $this->m; ++$i) {
 			$s = 0;
-			for($j = 0; $j < $this->n; ++$j) {
+			for ($j = 0; $j < $this->n; ++$j) {
 				$s += abs($this->A[$i][$j]);
 			}
 			$r = ($r > $s) ? $r : $s;
@@ -683,7 +683,7 @@ class Matrix {
 	public function trace() {
 		$s = 0;
 		$n = min($this->m, $this->n);
-		for($i = 0; $i < $n; ++$i) {
+		for ($i = 0; $i < $n; ++$i) {
 			$s += $this->A[$i][$i];
 		}
 		return $s;
@@ -712,7 +712,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -724,8 +724,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$M->set($i, $j, $M->get($i, $j) + $this->A[$i][$j]);
 				}
 			}
@@ -748,7 +748,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -760,8 +760,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$validValues = True;
 					$value = $M->get($i, $j);
 					if ((is_string($this->A[$i][$j])) && (!is_numeric($this->A[$i][$j]))) {
@@ -798,7 +798,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -810,8 +810,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$M->set($i, $j, $M->get($i, $j) - $this->A[$i][$j]);
 				}
 			}
@@ -834,7 +834,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -846,8 +846,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$validValues = True;
 					$value = $M->get($i, $j);
 					if ((is_string($this->A[$i][$j])) && (!is_numeric($this->A[$i][$j]))) {
@@ -885,7 +885,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -897,8 +897,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$M->set($i, $j, $M->get($i, $j) * $this->A[$i][$j]);
 				}
 			}
@@ -922,7 +922,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -934,8 +934,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$validValues = True;
 					$value = $M->get($i, $j);
 					if ((is_string($this->A[$i][$j])) && (!is_numeric($this->A[$i][$j]))) {
@@ -973,7 +973,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -985,8 +985,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$validValues = True;
 					$value = $M->get($i, $j);
 					if ((is_string($this->A[$i][$j])) && (!is_numeric($this->A[$i][$j]))) {
@@ -1029,7 +1029,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -1041,8 +1041,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$this->A[$i][$j] = $this->A[$i][$j] / $M->get($i, $j);
 				}
 			}
@@ -1066,7 +1066,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -1078,8 +1078,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$M->set($i, $j, $M->get($i, $j) / $this->A[$i][$j]);
 				}
 			}
@@ -1103,7 +1103,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -1115,8 +1115,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$this->A[$i][$j] = $M->get($i, $j) / $this->A[$i][$j];
 				}
 			}
@@ -1139,19 +1139,19 @@ class Matrix {
 			$args  = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $B = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						if ($this->n == $B->m) {
 							$C = new Matrix($this->m, $B->n);
-							for($j = 0; $j < $B->n; ++$j) {
+							for ($j = 0; $j < $B->n; ++$j) {
 								for ($k = 0; $k < $this->n; ++$k) {
 									$Bcolj[$k] = $B->A[$k][$j];
 								}
-								for($i = 0; $i < $this->m; ++$i) {
+								for ($i = 0; $i < $this->m; ++$i) {
 									$Arowi = $this->A[$i];
 									$s = 0;
-									for($k = 0; $k < $this->n; ++$k) {
+									for ($k = 0; $k < $this->n; ++$k) {
 										$s += $Arowi[$k] * $Bcolj[$k];
 									}
 									$C->A[$i][$j] = $s;
@@ -1166,10 +1166,10 @@ class Matrix {
 						$B = new Matrix($args[0]);
 						if ($this->n == $B->m) {
 							$C = new Matrix($this->m, $B->n);
-							for($i = 0; $i < $C->m; ++$i) {
-								for($j = 0; $j < $C->n; ++$j) {
+							for ($i = 0; $i < $C->m; ++$i) {
+								for ($j = 0; $j < $C->n; ++$j) {
 									$s = "0";
-									for($k = 0; $k < $C->n; ++$k) {
+									for ($k = 0; $k < $C->n; ++$k) {
 										$s += $this->A[$i][$k] * $B->A[$k][$j];
 									}
 									$C->A[$i][$j] = $s;
@@ -1183,8 +1183,8 @@ class Matrix {
 						break;
 				case 'integer':
 						$C = new Matrix($this->A);
-						for($i = 0; $i < $C->m; ++$i) {
-							for($j = 0; $j < $C->n; ++$j) {
+						for ($i = 0; $i < $C->m; ++$i) {
+							for ($j = 0; $j < $C->n; ++$j) {
 								$C->A[$i][$j] *= $args[0];
 							}
 						}
@@ -1192,8 +1192,8 @@ class Matrix {
 						break;
 				case 'double':
 						$C = new Matrix($this->m, $this->n);
-						for($i = 0; $i < $C->m; ++$i) {
-							for($j = 0; $j < $C->n; ++$j) {
+						for ($i = 0; $i < $C->m; ++$i) {
+							for ($j = 0; $j < $C->n; ++$j) {
 								$C->A[$i][$j] = $args[0] * $this->A[$i][$j];
 							}
 						}
@@ -1201,8 +1201,8 @@ class Matrix {
 						break;
 				case 'float':
 						$C = new Matrix($this->A);
-						for($i = 0; $i < $C->m; ++$i) {
-							for($j = 0; $j < $C->n; ++$j) {
+						for ($i = 0; $i < $C->m; ++$i) {
+							for ($j = 0; $j < $C->n; ++$j) {
 								$C->A[$i][$j] *= $args[0];
 							}
 						}
@@ -1230,7 +1230,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 						break;
@@ -1242,8 +1242,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 					$validValues = True;
 					$value = $M->get($i, $j);
 					if ((is_string($this->A[$i][$j])) && (!is_numeric($this->A[$i][$j]))) {
@@ -1280,7 +1280,7 @@ class Matrix {
 			$args = func_get_args();
 			$match = implode(",", array_map('gettype', $args));
 
-			switch($match) {
+			switch ($match) {
 				case 'object':
 						if ($args[0] instanceof Matrix) { $M = $args[0]; } else { throw new Exception(JAMAError(ArgumentTypeException)); }
 				case 'array':
@@ -1291,8 +1291,8 @@ class Matrix {
 						break;
 			}
 			$this->checkMatrixDimensions($M);
-			for($i = 0; $i < $this->m; ++$i) {
-				for($j = 0; $j < $this->n; ++$j) {
+			for ($i = 0; $i < $this->m; ++$i) {
+				for ($j = 0; $j < $this->n; ++$j) {
 //					$this->A[$i][$j] = '"'.trim($this->A[$i][$j],'"').trim($M->get($i, $j),'"').'"';
 					$this->A[$i][$j] = trim($this->A[$i][$j],'"').trim($M->get($i, $j),'"');
 				}
@@ -1425,9 +1425,9 @@ class Matrix {
 	 */
 	public function toHTML($width=2) {
 		print('<table style="background-color:#eee;">');
-		for($i = 0; $i < $this->m; ++$i) {
+		for ($i = 0; $i < $this->m; ++$i) {
 			print('<tr>');
-			for($j = 0; $j < $this->n; ++$j) {
+			for ($j = 0; $j < $this->n; ++$j) {
 				print('<td style="background-color:#fff;border:1px solid #000;padding:2px;text-align:center;vertical-align:middle;">' . $this->A[$i][$j] . '</td>');
 			}
 			print('</tr>');

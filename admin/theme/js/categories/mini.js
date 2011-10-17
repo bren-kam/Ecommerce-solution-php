@@ -17,7 +17,7 @@ function postLoad( $ ) {
 		dataType : 'json',
 		success : function( response ){
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -34,7 +34,7 @@ function postLoad( $ ) {
 		var newSlug = '/' + $(this).val().slug() + '/';
 		
 		// We don't want any empty slashes, so do a check
-		if( '//' == newSlug )
+		if ( '//' == newSlug )
 			newSlug = '';
 		
 		$('#tSlug').val( newSlug );
@@ -44,7 +44,7 @@ function postLoad( $ ) {
 		var newSlug = '/' + $(this).val().slug() + '/'; 
 
 		// We don't want any empty slashes, so do a check
-		if( '//' == newSlug )
+		if ( '//' == newSlug )
 			newSlug = '';
 		
 		$(this).val( newSlug );
@@ -54,7 +54,7 @@ function postLoad( $ ) {
 	$('#aAddAttribute').click( function() {
 		var attribute = $('#sAttributes option:selected'), attributeTitle = attribute.text(), attributeID = attribute.val();
 		
-		if( '' == attributeID ) 
+		if ( '' == attributeID ) 
 			return;
 			
 		// Create new div

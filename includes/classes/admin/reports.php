@@ -12,7 +12,7 @@ class Reports extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 			
@@ -28,7 +28,7 @@ class Reports extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
 		
 		// What other sites we might need to omit
@@ -41,7 +41,7 @@ class Reports extends Base_Class {
 		$websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get all websites.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -66,7 +66,7 @@ class Reports extends Base_Class {
 		$results = $this->db->prepare( "SELECT DISTINCT( a.`$field` ) FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`$field` LIKE ? $where AND a.`website_id` NOT IN ( 96, 114, 115, 116 ) ORDER BY a.`$field`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}

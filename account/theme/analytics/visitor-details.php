@@ -8,13 +8,13 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $analytics_visitor_id = (int) $_GET['avid'];
 
 // Redirect them to the home page of analytics
-if( !$analytics_visitor_id )
+if ( !$analytics_visitor_id )
 	url::redirect('/analytics/');
 
 $a = new Analytics;
@@ -41,7 +41,7 @@ get_header();
 			</tr>
 			<tr>
 				<td><label><?php echo _('Date Created'); ?>:</label></td>
-				<td><?php echo date_time::date( 'F jS, Y', $visitor['date_created'] ); ?></td>
+				<td><?php echo dt::date( 'F jS, Y', $visitor['date_created'] ); ?></td>
 			</tr>
 		</table>
 		<br /><br />
@@ -57,17 +57,17 @@ get_header();
 			<tbody>
 			<?php 
 			$page_count = count( $visitor['pages'] );
-			for( $i = 0; $i < $page_count; $i++ ) {
-				$page_date = date_time::date( 'F jS, Y', $visitor['pages'][$i]['date_visited'] );
+			for ( $i = 0; $i < $page_count; $i++ ) {
+				$page_date = dt::date( 'F jS, Y', $visitor['pages'][$i]['date_visited'] );
 				
-				if( $i == $page_count - 1 )
+				if ( $i == $page_count - 1 )
 					$get_time_on_page = false;
 				
-				$get_time_on_page = ( $page_date == date_time::date( 'F jS, Y', $visitor['pages'][$i+1]['date_visited'] ) ) ? true : false;
+				$get_time_on_page = ( $page_date == dt::date( 'F jS, Y', $visitor['pages'][$i+1]['date_visited'] ) ) ? true : false;
 			?>
 			<tr>
 				<td><?php echo $visitor['pages'][$i]['page']; ?></td>
-				<td><?php echo ( $get_time_on_page ) ? date_time::sec_to_time( $visitor['pages'][$i+1]['date_visited'] - $visitor['pages'][$i]['date_visited'] ) : 'N/A'; ?></td>
+				<td><?php echo ( $get_time_on_page ) ? dt::sec_to_time( $visitor['pages'][$i+1]['date_visited'] - $visitor['pages'][$i]['date_visited'] ) : 'N/A'; ?></td>
 				<td><?php echo ( $visitor['pages'][$i]['subscribed'] ) ? 'Yes' : 'No'; ?></td>
 				<td><?php echo $page_date; ?></td>
 			</tr>

@@ -11,7 +11,7 @@ class Tags extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -28,29 +28,29 @@ class Tags extends Base_Class {
 		$object_id = (int) $object_id;
 		
 		// Needs to be an array
-		if( !is_array( $tags ) )
+		if ( !is_array( $tags ) )
 			return false;
 		
 		$values = '';
 		
 		// Add each tag
-		foreach( $tags as $tag ) {
+		foreach ( $tags as $tag ) {
 			$tag = trim( $tag );
 			
-			if( empty( $tag ) )
+			if ( empty( $tag ) )
 				continue;
 			
-			if( !empty( $values ) )
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			$values .= "( $object_id, '" . $this->db->escape( $type ) . "', '" . $this->db->escape( $tag ) . "' )";
 		}
 		
-		if( !empty( $values ) )
+		if ( !empty( $values ) )
 			$this->db->query( "INSERT INTO `tags` ( `object_id`, `type`, `value` ) VALUES $values" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add tags.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -70,7 +70,7 @@ class Tags extends Base_Class {
 		$tags = $this->db->get_col( "SELECT `value` FROM `tags` WHERE `type` = '" . $this->db->escape( $type ) . "' AND `object_id` = " . (int) $object_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get tags.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -90,7 +90,7 @@ class Tags extends Base_Class {
 		$this->db->prepare( 'DELETE FROM `tags` WHERE `type` = ? AND `object_id` = ?', 'si', $type, $object_id )->query('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete tags.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -108,7 +108,7 @@ class Tags extends Base_Class {
 		$suggestions = $this->db->prepare( "SELECT DISTINCT( `value` ) FROM `tags` WHERE `type` = 'product' AND `value` LIKE ? ORDER BY `value` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get tag autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}

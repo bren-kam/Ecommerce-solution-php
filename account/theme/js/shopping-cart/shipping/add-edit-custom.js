@@ -17,7 +17,7 @@ jQuery( postLoad );
 function postLoad( $ ) {
 	$( '#aAddNewZip' ).click( function() {
 		var zip = $( '#tAddNewZip' ).val();
-		if( ( zip.length < 5 ) || ( zip == 'New Zip...' ) ) {
+		if ( ( zip.length < 5 ) || ( zip == 'New Zip...' ) ) {
 			alert( "Please enter a valid zip code." );
 			return false;
 		} else {

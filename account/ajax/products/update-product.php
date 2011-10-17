@@ -11,7 +11,7 @@ $ajax->ok( $user, _('You must be signed in to update a product.') );
 // Instantiate class
 $p = new Products;
 
-if( $user['website']['shopping_cart'] ) {
+if ( $user['website']['shopping_cart'] ) {
 	$new_product_values = array( 
 		'alternate_price' => $_POST['tAlternatePrice'],
 		'price' => $_POST['tPrice'],
@@ -41,16 +41,16 @@ if( $user['website']['shopping_cart'] ) {
 	
 	// Set the product options
 	$product_options = false;
-	if( isset( $_POST['product_options'] ) )
-	foreach( $_POST['product_options'] as $po_id => $value ) {
-		if( isset( $_POST['tPrice' . $po_id] ) ) {
+	if ( isset( $_POST['product_options'] ) )
+	switch ( $_POST['product_options'] as $po_id => $value ) {
+		if ( isset( $_POST['tPrice' . $po_id] ) ) {
 			$product_options[$po_id] = $_POST['tPrice' . $po_id];
 		} else {
 			$product_options[$po_id]['required'] = ( isset( $_POST['cbRequired' . $po_id] ) ) ? 1 : 0;
 		}
 	
-		if( isset( $_POST['product_list_items'][$po_id] ) )
-		foreach( $_POST['product_list_items'][$po_id] as $li_id => $value ) {
+		if ( isset( $_POST['product_list_items'][$po_id] ) )
+		switch ( $_POST['product_list_items'][$po_id] as $li_id => $value ) {
 			$product_options[$po_id]['list_items'][intval($li_id)] = $_POST['tPrices'][$po_id][$li_id];
 		}
 	}

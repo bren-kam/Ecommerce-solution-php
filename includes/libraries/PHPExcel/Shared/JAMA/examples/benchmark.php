@@ -165,7 +165,7 @@ class Benchmark {
 
 $benchmark = new Benchmark();
 
-switch($_REQUEST['decomposition']) {
+switch ($_REQUEST['decomposition']) {
 	case 'cholesky':
 		$m = array();
 		for ($i = 2; $i <= 8; $i *= 2) {
@@ -176,7 +176,7 @@ switch($_REQUEST['decomposition']) {
 			echo "<br />";
 		}
 		echo '<pre>';
-		foreach($m as $x => $y) {
+		foreach ($m as $x => $y) {
 			echo "$x\t" . 1000*$y . "\n";
 		}
 		echo '</pre>';
@@ -191,7 +191,7 @@ switch($_REQUEST['decomposition']) {
 			echo "<br />";
 		}
 		echo '<pre>';
-		foreach($m as $x => $y) {
+		foreach ($m as $x => $y) {
 			echo "$x\t" . 1000*$y . "\n";
 		}
 		echo '</pre>';
@@ -206,7 +206,7 @@ switch($_REQUEST['decomposition']) {
 			echo "<br />";
 		}
 		echo '<pre>';
-		foreach($m as $x => $y) {
+		foreach ($m as $x => $y) {
 			echo "$x\t" . 1000*$y . "\n";
 		}
 		echo '</pre>';
@@ -221,14 +221,14 @@ switch($_REQUEST['decomposition']) {
 			echo "<br />";
 		}
 		echo '<pre>';
-		foreach($m as $x => $y) {
+		foreach ($m as $x => $y) {
 			echo "$x\t" . 1000*$y . "\n";
 		}
 		echo '</pre>';
 		break;
 	case 'svd':
 		$m = array();
-		for($i = 2; $i <= 8; $i *= 2) {
+		for ($i = 2; $i <= 8; $i *= 2) {
 			$t = 32 / $i;
 			echo "<b>Singular value decomposition: $t random {$i}x{$i} matrices</b><br />";
 			$s = $benchmark->displayStats($benchmark->runSVD($i, $t));
@@ -236,7 +236,7 @@ switch($_REQUEST['decomposition']) {
 			echo "<br />";
 		}
 		echo '<pre>';
-		foreach($m as $x => $y) {
+		foreach ($m as $x => $y) {
 			echo "$x\t" . 1000*$y . "\n";
 		}
 		echo '</pre>';

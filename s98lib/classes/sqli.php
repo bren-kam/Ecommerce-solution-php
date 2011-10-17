@@ -141,7 +141,7 @@ class SQL extends Base_Class {
 	public function escape( $data ) {
 		// If it's an array, then we need to loop through each item
 		if ( is_array( $data ) ) {
-			foreach( (array) $data as $k => $v ) {
+			switch ( (array) $data as $k => $v ) {
 				// If it is another array, call recursively, or else escape it
 				$data[$k] = ( is_array( $v ) ) ? $this->escape( $v ) : $this->m->real_escape_string( $v );
 			}
@@ -182,10 +182,10 @@ class SQL extends Base_Class {
 			// Allows for binding on the spot
 			
 			// Properly format the last_query
-			foreach( $values as $index => $v ) {
+			switch ( $values as $index => $v ) {
 				$pos = strpos( $this->last_query, '?' );
 
-				switch( $format[$index] ) {
+				switch ( $format[$index] ) {
 					case 's':
 						$this->last_query = substr_replace( $this->last_query, "'" . $this->escape( $v ) . "'", $pos, 1 ); 
 					break;
@@ -383,7 +383,7 @@ class SQL extends Base_Class {
 			// Get all the rows
 			$num_rows = 0;
 			if ( $prepared ) {
-				foreach( $this->col_info as $field ) {
+				switch ( $this->col_info as $field ) {
 					$result[$field->name] = '';
 					$results[$field->name] = &$result[$field->name];
 				}
@@ -479,11 +479,11 @@ class SQL extends Base_Class {
 			return false;
 		
 		$bits = $wheres = array();
-		foreach( (array) array_keys( $data ) as $field ) {
+		switch ( (array) array_keys( $data ) as $field ) {
 			$bits[] = "`$field` = ?";
 		}
 
-		foreach( (array) array_keys( $where ) as $field ) {
+		switch ( (array) array_keys( $where ) as $field ) {
 			$wheres[] = "`$field` = ?";
 		}
 
@@ -641,7 +641,7 @@ class SQL extends Base_Class {
 		$caller = array();
 		
 		$bt = array_reverse( $bt );
-		foreach( (array) $bt as $call ) {
+		switch ( (array) $bt as $call ) {
 			if ( @$call['class'] == __CLASS__ )
 				continue;
 			
@@ -699,7 +699,7 @@ class SQL extends Base_Class {
 			'dir' => dirname(__FILE__),
 			'class' => __CLASS__,
 			'method' => $method,
-			'date_created' => date_time::now()
+			'date_created' => dt::now()
 		);
 		
 		// If it fails to insert, send an email with the information

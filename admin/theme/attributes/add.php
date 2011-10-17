@@ -8,16 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
-if( nonce::verify( $_POST['_nonce'], 'add-attribute' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-attribute' ) ) {
 	$a = new Attributes;
 	
 	// Parse attribute items
-	if( is_array( $_POST['hListItems'] ) ) {
-		foreach( $_POST['hListItems'] as $name ) {
-			if( !empty( $name ) )
+	if ( is_array( $_POST['hListItems'] ) ) {
+		foreach ( $_POST['hListItems'] as $name ) {
+			if ( !empty( $name ) )
 				$attribute_list[] = $name;
 		}
 	}
@@ -26,7 +26,7 @@ if( nonce::verify( $_POST['_nonce'], 'add-attribute' ) ) {
 	$attribute_id = $a->create( $_POST['tAttributeTitle'], $_POST['tAttributeName'], $attribute_list );
 	
 	// If successfull, send to attributes
-	if( $attribute_id )
+	if ( $attribute_id )
 		url::redirect( '/attributes/' );
 }
 

@@ -27,7 +27,7 @@ $pe->setActiveSheetIndex(0)
 
 // Start showing each of the items
 $row = 3;
-foreach( $items as $section_title => $section_items ) {
+foreach ( $items as $section_title => $section_items ) {
 	// Make the title of each section bold
 	$pe->getActiveSheet()
 		->setCellValue( 'A' . $row, $section_title )
@@ -35,7 +35,7 @@ foreach( $items as $section_title => $section_items ) {
 	
 	$row++;
 	
-	foreach( $section_items as $si ) {
+	foreach ( $section_items as $si ) {
 		// Add all the checklist items
 		$pe->getActiveSheet()
 			->setCellValue( 'A' . $row, $si['name'] . ' (' . $si['assigned_to'] . ')' )
@@ -45,8 +45,8 @@ foreach( $items as $section_title => $section_items ) {
 		$messages = new PHPExcel_RichText( $pe->getActiveSheet()->getCell('C' . $row) );
 		
 		// Add all the messages for each checklist item
-		if( isset( $si['messages'] ) && count( $si['messages'] ) > 0 )
-		foreach( $si['messages'] as $m ) {
+		if ( isset( $si['messages'] ) && count( $si['messages'] ) > 0 )
+		switch ( $si['messages'] as $m ) {
 			$contact_name = $messages->createTextRun( $m['contact_name'] );
 			$contact_name->getFont()->setBold( true );
 			

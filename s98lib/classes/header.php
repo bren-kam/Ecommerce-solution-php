@@ -26,9 +26,9 @@ class header extends Base_Class {
 	 * @param string|array $header The header(s) you want to send
 	 * @returns bool
 	 */
-	public function send( $header ) {
-		if( is_array( $header ) ) {
-			foreach( $header as $k => $v ) {
+	public static function send( $header ) {
+		if ( is_array( $header ) ) {
+			foreach ( $header as $k => $v ) {
 				header( "$k: $v" );
 			}
 		} else {
@@ -44,10 +44,10 @@ class header extends Base_Class {
 	 * @param string $type The type of content
 	 * @returns bool
 	 */
-	public function type( $type ) {
+	public static function type( $type ) {
 		$content_type = self::$content_types[$type];
 		
-		if( !empty( $content_type ) )
+		if ( !empty( $content_type ) )
 			header( 'Content-type: ' . $content_type );
 	}
 	
@@ -56,7 +56,7 @@ class header extends Base_Class {
 	 *
 	 * @since 1.0
 	 */
-	public function no_cache() {
+	public static function no_cache() {
 		self::send( array(
 			'Expires' => 'Wed, 11 Jan 1984 05:00:00 GMT',
 			'Last-Modified' => gmdate( 'D, d M Y H:i:s' ) . ' GMT',
@@ -70,7 +70,7 @@ class header extends Base_Class {
 	 *
 	 * @since 1.0
 	 */
-	public function css() {
+	public static function css() {
 		self::send( array( 
 			'Content-Type' => 'text/css; charset=utf-8',
 			'Vary' => 'Accept-Encoding',
@@ -83,7 +83,7 @@ class header extends Base_Class {
 	 *
 	 * @since 1.0
 	 */
-	public function javascript() {
+	public static function javascript() {
 		self::send( array( 
 			'Content-Type' => 'text/javascript; charset=utf-8',
 			'Vary' => 'Accept-Encoding',
@@ -99,7 +99,7 @@ class header extends Base_Class {
 	 * @param int $code The HTTP Status code
 	 * @returns bool
 	 */
-	public function http_status( $code ) {
+	public static function http_status( $code ) {
 		$http = array (
 		   100 => 'HTTP/1.1 100 Continue',
 		   101 => 'HTTP/1.1 101 Switching Protocols',

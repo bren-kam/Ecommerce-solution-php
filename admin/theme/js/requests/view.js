@@ -21,7 +21,7 @@ function postLoad( $ ) {
 		// Get the name of whatever is being toggled
 		var name = $(this).text().replace( /View (?:Original|Requested)(.+)/, '$1' );
 		
-		if( 'Original' == data[1] ) {
+		if ( 'Original' == data[1] ) {
 			// Change the class on the td
 			$(this).parents('tr:first').find('td.changed:first').removeClass( 'changed' ).addClass( 'original' );
 			
@@ -70,7 +70,7 @@ function postLoad( $ ) {
 			dataType: 'json',
 			success: function( response ) {
 				// Handle any errors
-				if( !response['result'] ) {
+				if ( !response['result'] ) {
 					alert( response['error'] );
 					return;
 				}
@@ -91,7 +91,7 @@ function postLoad( $ ) {
 		} ,
 		success : function( response ){
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -108,7 +108,7 @@ function postLoad( $ ) {
 		dataType : 'json' ,
 		success : function( response ){
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -132,7 +132,7 @@ function loadMessages( requestID ){
 	
 	$.post( '/ajax/requests/get-messages/', { '_nonce' : $('#_ajax_get_messages').val(), 'rid' : requestID }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}
@@ -140,7 +140,7 @@ function loadMessages( requestID ){
 		
 		var html = '';
 			
-		for( i = 0; i < response['messages'].length; i++ ){
+		for ( i = 0; i < response['messages'].length; i++ ){
 			var m = response['messages'][i];
 			
 			html += '<div class="dMessage"><div class="title"><strong>' + m['contact_name'] + '</strong><br />' + m['date_created'] + '<br />' + m['time'] + '</div><div class="msg">' + m['message'] + '</div></div>';

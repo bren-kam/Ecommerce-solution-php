@@ -51,7 +51,7 @@ $upload_url = 'http://' . ( ( isset( $user['website']['subdomain'] ) && ( $user[
 $upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
 // Directory needs to exist
-if( !is_dir( $upload_dir ) )
+if ( !is_dir( $upload_dir ) )
 	mkdir( $upload_dir, 0777, true );
 
 // Resize the image
@@ -61,13 +61,13 @@ $ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, $
 $ajax->ok( $ftp->add( ( $upload_dir . $image_name ), 'images/' ), _('An error occurred while trying to upload your image to the website. Please refresh the page and try again') );
 
 // Update the request attachment, or creates one if it doesn't exist
-if( $wa->get_by_name( $_POST['wpid'], $key ) ) {
+if ( $wa->get_by_name( $_POST['wpid'], $key ) ) {
 	$wa->update( $_POST['wpid'], $key, '/custom/uploads/images/' . $image_name );
 } else {
 	$wa->create( $_POST['wpid'], $key, '/custom/uploads/images/' . $image_name );
 }
 
-switch( $page['slug'] ) {
+switch ( $page['slug'] ) {
 	case 'about-us':
 		jQuery('#dAboutUsContent')->html('<img src="' . $upload_url . '" style="padding-bottom:10px" alt="' . _('About Us') . '" /><br />');
 	break;

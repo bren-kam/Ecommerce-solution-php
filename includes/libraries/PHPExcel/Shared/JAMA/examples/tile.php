@@ -30,7 +30,7 @@ function tile(&$X, $rowWise, $colWise){
   $m = $X->getRowDimension();
   $n = $X->getColumnDimension();
 
-  if( $rowWise<1 || $colWise<1 ){
+  if ( $rowWise<1 || $colWise<1 ){
     die("tile : Array index is out-of-bound.");
   }
 
@@ -39,17 +39,17 @@ function tile(&$X, $rowWise, $colWise){
 
   $result = array();
 
-  for($i=0 ; $i<$newRowDim; ++$i) {
+  for ($i=0 ; $i<$newRowDim; ++$i) {
 
     $holder = array();
 
-    for($j=0 ; $j<$newColDim ; ++$j) {
+    for ($j=0 ; $j<$newColDim ; ++$j) {
 
       $holder[$j] = $xArray[$countRow][$countColumn++];
 
       // reset the column-index to zero to avoid reference to out-of-bound index in xArray[][]
 
-      if($countColumn == $n) { $countColumn = 0; }
+      if ($countColumn == $n) { $countColumn = 0; }
 
     } // end for
 
@@ -57,7 +57,7 @@ function tile(&$X, $rowWise, $colWise){
 
     // reset the row-index to zero to avoid reference to out-of-bound index in xArray[][]
 
-    if($countRow == $m) { $countRow = 0; }
+    if ($countRow == $m) { $countRow = 0; }
 
     $result[$i] = $holder;
 

@@ -37,7 +37,7 @@ function aEditNoteClick() {
 	var noteID = $(this).parents('.dNote:first').attr('id').replace( 'dNote', '' ), dNote = $('#dNote' + noteID + ' .note:first'), dNoteHTML = dNote.html();
 	
 	// If it's already being edited, skip
-	if( dNote.hasClass( 'editing' ) ) 
+	if ( dNote.hasClass( 'editing' ) ) 
 		return false;
 	
 	dNote.html( '<br /><a href="#" class="update-note" title="Update">Update</a> | <a href="#" class="cancel-edit" title="Cancel">Cancel</a>' ).prepend( '<textarea id="taEditNote' + noteID + '" rows="3" cols="42">' + dNoteHTML + '</textarea><div class="hidden cancel-text">' + dNoteHTML +'</div>' ).addClass( 'editing' );
@@ -55,7 +55,7 @@ function aUpdateNoteClick() {
 	// AJAX update call
 	$.post( '/ajax/websites/update-note/', { '_nonce': $('#_update_note_nonce').val(), 'nid' : noteID, 't' : $( '#taEditNote' + noteID ).val() }, function( response ){
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}
@@ -72,7 +72,7 @@ function aUpdateNoteClick() {
  */
 function aDeleteNoteClick() {
 	// Make sure they want to delete it
-	if( !confirm( 'Are you sure you want to delete this note?' ) ) 
+	if ( !confirm( 'Are you sure you want to delete this note?' ) ) 
 		return false;
 	
 	// Define variables
@@ -81,7 +81,7 @@ function aDeleteNoteClick() {
 	// Delete note
 	$.post( '/ajax/websites/delete-note/', { '_nonce': $('#_delete_note_nonce').val(), 'nid' : noteID }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}

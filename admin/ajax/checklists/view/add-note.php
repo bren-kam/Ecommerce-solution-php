@@ -5,8 +5,8 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_ajax_add_note'], 'add-note' ) ) {
-	if( !$user ) {
+if ( nonce::verify( $_POST['_ajax_add_note'], 'add-note' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to add a note.') ) );
 		exit;
 	}

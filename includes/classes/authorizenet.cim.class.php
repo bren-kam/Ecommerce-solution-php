@@ -806,7 +806,7 @@ class AuthNetCim {
 			if (count($this->LineItems) > 0)
 			{
 				$xmlcode = '';
-				foreach($this->LineItems as $items)
+				foreach ($this->LineItems as $items)
 				{
 					$xmlcode .= "<lineItems>\n";
 					foreach ($items as $key=>$value)

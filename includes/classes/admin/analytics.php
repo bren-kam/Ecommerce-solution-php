@@ -12,7 +12,7 @@ class Analytics extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -28,15 +28,15 @@ class Analytics extends Base_Class {
 		$rows = $this->db->get_results( "SELECT `page`, REPLACE( `date`, '-', '' ) AS date FROM `analytics_data` WHERE `ga_profile_id` = $ga_profile_id AND `date` >= '2010-06-13' AND `date` <= '2010-07-13'", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get analytics data.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$pages = $dates = array();
 		
-		if( is_array( $rows ) )
-		foreach( $rows as $r ) {
+		if ( is_array( $rows ) )
+		foreach ( $rows as $r ) {
 			$pages[] = $r['page'];
 			$dates[] = $r['date'];
 		}
@@ -67,12 +67,12 @@ class Analytics extends Base_Class {
 		//`analytics_data` ( `ga_profile_id`, `page`, `source`, `medium`, `keyword`, `bounces`, `entrances`, `exits`, `new_visits`, `page_views`, `time_on_page`, `visits`, `date` ) VALUES ( %d, '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s' )", 
 		//$ga_profile_id, format::sql_string( $page ), format::sql_string( $source ), format::sql_string( $medium ), mysql_real_escape_string( format::sql_string( $keyword ) ), $bounces, $entrances, $exits, $new_visits, $page_views, $time_on_page, $visits, $date ) );
 		
-		// $this->db->insert( 'products', array( 'user_id_created' => $user_id, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'is' );
+		// $this->db->insert( 'products', array( 'user_id_created' => $user_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'is' );
 		
 		$this->db->insert( 'analytics_data', array( 'ga_profile_id' => $ga_profile_id, 'page' => $page, 'source' => $source, 'medium' => $medium, 'keyword' => $keyword, 'bounces' => $bounces, 'entrances' => $entrances, 'exits' => $exits, 'new_visits' => $new_visits, 'page_views' => $page_views, 'time_on_page' => $time_on_page, 'visits' => $visits, 'date' => $date ), 'issssiiiiiiis' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add analytics data.', __LINE__, __METHOD__ );
 			return false;
 		}

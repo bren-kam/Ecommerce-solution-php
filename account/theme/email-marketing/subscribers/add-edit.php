@@ -14,7 +14,7 @@ if ( !$user )
 $e = new Email_Marketing;
 
 // Get the email id if there is one
-$email_id = (int) $_GET['eid'];
+$email_id = ( isset( $_GET['eid'] ) ) ? $_GET['eid'] : false;
 
 $v = new Validator();
 $v->form_name = 'fAddEditEmail';
@@ -26,8 +26,11 @@ $v->add_validation( 'tPhone', 'phone' , 'The "Phone" field may only contain a va
 // Add validation
 add_footer( $v->js_validation() );
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-email' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-email' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -65,8 +68,17 @@ if ( nonce::verify( $_POST['_nonce'], 'add-edit-email' ) ) {
 $email_lists = $e->get_email_lists();
 
 // Get the email if necessary
-if ( $email_id )
+if ( $email_id ) {
 	$email = $e->get_email( $email_id );
+} else {
+	// Initialize variable
+	$email = array(
+		'name' => ''
+		, 'email' => ''
+		, 'phone' => ''
+		, 'email_lists' => ''
+	);
+}
 
 $selected = "email_marketing";
 $sub_title = ( $email_id ) ? _('Edit Email') : _('Add Email');
@@ -100,15 +112,15 @@ get_header();
 				<tr><td colspan="2" class="title"><strong><?php echo _('Basic Information'); ?></strong></td></tr>
 				<tr>
 					<td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && !empty( $_POST['tName'] ) || empty( $email['name'] ) ) ? $_POST['tName'] : $email['name']; ?>" /></td>
+					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $email['name']; ?>" /></td>
 				</tr>
 				<tr>
 					<td><label for="tEmail"><?php echo _('Email'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tEmail" id="tEmail" maxlength="200" value="<?php echo ( !$success && !empty( $_POST['tEmail'] ) || empty( $email['email'] ) ) ? $_POST['tEmail'] : $email['email']; ?>" /></td>
+					<td><input type="text" class="tb" name="tEmail" id="tEmail" maxlength="200" value="<?php echo ( !$success && isset( $_POST['tEmail'] ) ) ? $_POST['tEmail'] : $email['email']; ?>" /></td>
 				</tr>
 				<tr>
 					<td><label for="tPhone"><?php echo _('Phone'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tPhone" id="tPhone" maxlength="20" value="<?php echo ( !$success && !empty( $_POST['tPhone'] ) || empty( $email['phone'] ) ) ? $_POST['tPhone'] : $email['phone']; ?>" /></td>
+					<td><input type="text" class="tb" name="tPhone" id="tPhone" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tPhone'] ) ) ? $_POST['tPhone'] : $email['phone']; ?>" /></td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr><td colspan="2" class="title"><strong><?php echo _('Email List Subscriptions'); ?></strong></td></tr>
@@ -116,9 +128,12 @@ get_header();
 					<td>
 					<p>
 						<?php 
-						$selected_email_lists = ( !$success && !empty( $_POST['cbEmailLists'] ) || empty( $email['email_lists'] ) ) ? $_POST['cbEmaiLists'] : $email['email_lists'];
+						$selected_email_lists = ( !$success && isset( $_POST['cbEmailLists'] ) ) ? $_POST['cbEmaiLists'] : $email['email_lists'];
 						
-						foreach( $email_lists as $el ) {
+						if ( !is_array( $selected_email_lists ) )
+							$selected_email_lists = array();
+						
+						foreach ( $email_lists as $el ) {
 							$checked = ( in_array( $el['email_list_id'], $selected_email_lists ) ) ? ' checked="checked"' : '';
 						?>
 						<input type="checkbox" class="cb" name="cbEmailLists[]" id="cbEmailList<?php echo $el['email_list_id']; ?>" value="<?php echo $el['email_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbEmailList<?php echo $el['email_list_id']; ?>"><?php echo $el['name']; ?></label>

@@ -1739,7 +1739,7 @@ class MCAPI {
         } else {
             $sock = fsockopen($host, 80, $errno, $errstr, 30);
         }
-        if(!$sock) {
+        if (!$sock) {
             $this->errorMessage = "Could not connect (ERR $errno: $errstr)";
             $this->errorCode = "-99";
             ob_end_clean();
@@ -1764,15 +1764,15 @@ class MCAPI {
 
         list($throw, $response) = explode("\r\n\r\n", $response, 2);
         
-        if(ini_get("magic_quotes_runtime")) $response = stripslashes($response);
+        if (ini_get("magic_quotes_runtime")) $response = stripslashes($response);
         
         $serial = unserialize($response);
-        if($response && $serial === false) {
+        if ($response && $serial === false) {
         	$response = array("error" => "Bad Response.  Got This: " . $response, "code" => "-99");
         } else {
         	$response = $serial;
         }
-        if(is_array($response) && isset($response["error"])) {
+        if (is_array($response) && isset($response["error"])) {
             $this->errorMessage = $response["error"];
             $this->errorCode = $response["code"];
             return false;
@@ -1787,15 +1787,15 @@ class MCAPI {
     function httpBuildQuery($params, $key=null) {
         $ret = array();
         
-        foreach((array) $params as $name => $val) {
+        foreach ((array) $params as $name => $val) {
             $name = urlencode($name);
-            if($key !== null) {
+            if ($key !== null) {
                 $name = $key . "[" . $name . "]";
             }
             
-            if(is_array($val) || is_object($val)) {
+            if (is_array($val) || is_object($val)) {
                 $ret[] = $this->httpBuildQuery($val, $name);
-            } elseif($val !== null) {
+            } elseif ($val !== null) {
                 $ret[] = $name . "=" . urlencode($val);
             }
         }

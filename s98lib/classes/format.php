@@ -36,7 +36,7 @@ class format extends Base_Class {
 	 * @param array|string $value The array or string to be encoded.
 	 * @return array|string $value The encoded array (or string from the callback).
 	 */
-	public function urlencode_deep( $value ) {
+	public static function urlencode_deep( $value ) {
 		return is_array($value) ? array_map( array('self', 'urlencode_deep'), $value) : urlencode($value);
 	}
 	
@@ -48,7 +48,7 @@ class format extends Base_Class {
 	 * @param string $end_char (optional) end character or entity
 	 * @return string
 	 */
-	public function limit_words( $str, $limit = 100, $end_char = NULL ) {
+	public static function limit_words( $str, $limit = 100, $end_char = NULL ) {
 		$limit = (int) $limit;
 		$end_char = ( NULL === $end_char ) ? '&#8230;' : $end_char;
 
@@ -74,7 +74,7 @@ class format extends Base_Class {
 	 * @param boolean $preserve_words (optional) enable or disable the preservation of words while limiting
 	 * @return string
 	 */
-	public function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = FALSE ) {
+	public static function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = FALSE ) {
 		$end_char = ( NULL === $end_char ) ? '&#8230;' : $end_char;
 
 		$limit = (int) $limit;
@@ -122,7 +122,7 @@ class format extends Base_Class {
 	 * @param string $file_name the file name you want to strip of an extension
 	 * @return string
 	 */
-	public function strip_extension( $file_name ) {
+	public static function strip_extension( $file_name ) {
 		return str_replace( '.' . self::file_extension( $file_name ), '', $file_name );
 	}
 	
@@ -136,7 +136,7 @@ class format extends Base_Class {
 	 * @param object $DOMDocument (optional) the dom document object
 	 * @return string the XML
 	 */
-	public function xml_encode( $mixed, $domElement = NULL, $DOMDocument = NULL ){
+	public static function xml_encode( $mixed, $domElement = NULL, $DOMDocument = NULL ){
 		if ( is_null( $DOMDocument ) ) {
 			$DOMDocument = new DOMDocument;
 			$DOMDocument->formatOutput = true;
@@ -145,7 +145,7 @@ class format extends Base_Class {
 			echo $DOMDocument->saveXML();
 		} else {
 			if ( is_array( $mixed ) ) {
-				foreach( $mixed as $index => $mixedElement ) {
+				foreach ( $mixed as $index => $mixedElement ) {
 					if ( is_int( $index ) ) {
 						if ( 0 == $index ) {
 							$node = $domElement;
@@ -180,8 +180,8 @@ class format extends Base_Class {
 	 * @param string $string
 	 * @return string
 	 */
-	public function string_to_entity( $string ) {
-		foreach( str_split( $string ) as $char ) {
+	public static function string_to_entity( $string ) {
+		foreach ( str_split( $string ) as $char ) {
 			$new_string .= '&#' . ord( $char ) . ';';
 		}
 		
@@ -194,7 +194,7 @@ class format extends Base_Class {
 	 * @param string $string the text to escape
 	 * @return string
 	 */
-	public function escape_string_for_regex( $string ) {
+	public static function escape_string_for_regex( $string ) {
 			$patterns = array('/\//', '/\^/', '/\./', '/\$/', '/\|/', '/\(/', '/\)/', '/\[/', '/\]/', '/\*/', '/\+/', '/\?/', '/\{/', '/\}/', '/\,/');
 			$replace = array('\/', '\^', '\.', '\$', '\|', '\(', '\)', '\[', '\]', '\*', '\+', '\?', '\{', '\}', '\,');
 		   
@@ -213,7 +213,7 @@ class format extends Base_Class {
 	 * @param int|bool $br Optional. If set, this will convert all remaining line-breaks after paragraphing. Default true.
 	 * @return string Text which has been converted into correct paragraph tags.
 	 */
-	public function autop( $pee, $br = true ) {
+	public static function autop( $pee, $br = true ) {
 		if ( trim( $pee ) === '' )
 			return '';
 		
@@ -271,7 +271,7 @@ class format extends Base_Class {
 	 * @param string $string
 	 * @return string
 	 */
-	public function unautop( $string ) {
+	public static function unautop( $string ) {
 		$string  = str_replace('<br />', '', $string );
 		$string  = str_replace('<p>', "\n", $string );
 		return str_replace('</p>', '', $string );
@@ -284,7 +284,7 @@ class format extends Base_Class {
 	 * @param string $tags the tags to remove
 	 * @param bool $strip_content (optional|false) whether to remove the content in the tags or not
 	 */
-	public function strip_only( $str, $tags, $strip_content = false ) {
+	public static function strip_only( $str, $tags, $strip_content = false ) {
 		$content = '';
 		
 		// If tags are not an array
@@ -298,7 +298,7 @@ class format extends Base_Class {
 		}
 		
 		// Go through the tags
-		foreach( $tags as $tag ) {
+		foreach ( $tags as $tag ) {
 			// Find out if we're removing the nner content
 			if ( $strip_content )
 				 $content = '(.+</' . $tag . '[^>]*>|)';
@@ -321,7 +321,7 @@ class format extends Base_Class {
 	 * @param bool $new_window (optional|false) whether the link should open a new tab/window
 	 * @return string
 	 */
-	public function links_to_anchors( $string, $title_attribute = true, $new_window = false ) {
+	public static function links_to_anchors( $string, $title_attribute = true, $new_window = false ) {
 		$title = ( $title_attribute ) ? ' title="\\1"' : '';
 		$target = ( $new_window ) ? ' target="_blank"' : '';
 		
@@ -334,7 +334,7 @@ class format extends Base_Class {
 	 * @param string $string the string you want to turn into a slug
 	 * @return string
 	 */
-	public function slug( $string ) {
+	public static function slug( $string ) {
 		return strtolower( preg_replace( array( '/[^-a-zA-Z0-9\s]/', '/[\s]/' ), array( '', '-' ), $string ) );
 	}
 }

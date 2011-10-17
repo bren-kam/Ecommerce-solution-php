@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate classes
@@ -19,7 +19,7 @@ $page = $w->get_page_by_slug( 'home' );
 $settings = $w->get_settings( 'banner-width', 'banner-height' );
 
 // Set dimensions if they are empty
-foreach( $settings as $k => &$v ) {
+foreach ( $settings as $k => &$v ) {
 	if ( !empty( $v ) )
 		continue;
 	
@@ -31,7 +31,7 @@ foreach( $settings as $k => &$v ) {
 $dimensions = $settings['banner-width'] . 'x' . $settings['banner-height'];
 
 // Update any new settings
-if( is_array( $new_settings ) )
+if ( isset( $new_settings ) && is_array( $new_settings ) )
 	$w->update_settings( $new_settings );
 
 $attachments = $wa->get_by_page( $page['website_page_id'] );
@@ -65,8 +65,8 @@ get_header();
 			$confirm_disable = _('Are you sure you want to deactivate this banner?');
 			$confirm_remove = _('Are you sure you want to remove this banner?');
 			
-			foreach( $attachments as $a ) {
-				if( '0' == $a['status'] ) {
+			foreach ( $attachments as $a ) {
+				if ( '0' == $a['status'] ) {
 					$disabled = ' disabled';
 					$confirm = '';
 				} else {

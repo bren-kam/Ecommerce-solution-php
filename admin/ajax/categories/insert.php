@@ -50,7 +50,7 @@ list( $css, $ie8 ) = get_css();
 				<div id="dAttributeList"></div>
 				<select id="sAttributes" name="sAttributes" class="dd">
 					<option value="">-- <?php echo _('Select an Attribute'); ?> --</option>
-					<?php foreach( $attributes as $a ) { ?>
+					<?php foreach ( $attributes as $a ) { ?>
 					<option value="<?php echo $a['attribute_id']; ?>"><?php echo $a['title']; ?></option>
 					<?php } ?>
 				</select><br />
@@ -74,7 +74,7 @@ list( $css, $ie8 ) = get_css();
    <!-- End: Content -->
 <?php 
 $javascript = get_js();
-if( 'eNpLtDKwqq4FXDAGTwH-' != $javascript ) { // That string means it's empty ?>
+if ( 'eNpLtDKwqq4FXDAGTwH-' != $javascript ) { // That string means it's empty ?>
 <script type="text/javascript" src="/js/?files=<?php echo $javascript; ?>"></script>
 <?php 
 }

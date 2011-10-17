@@ -11,7 +11,7 @@ class Sweepstakes extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -24,7 +24,7 @@ class Sweepstakes extends Base_Class {
 	 */
 	public function get_tab( $fb_page_id, $liked ) {
 		// Type Juggling
-		$fb_page_id = (int) $fb_page_id;
+		$fb_user_id = (int) $fb_page_id;
 		
 		// Determine the field
 		$fields = ( $liked ) ? "`after` AS content, `contest_rules_url`, IF ( NOW() > `start_date` AND NOW() < `end_date`, 1, 0 ) AS valid, `share_title`, `share_image_url`, `share_text`" : '`before` AS content';
@@ -33,7 +33,7 @@ class Sweepstakes extends Base_Class {
 		$tab = $this->db->get_row( "SELECT {$fields} FROM `sm_sweepstakes` WHERE `fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get tab.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -57,7 +57,7 @@ class Sweepstakes extends Base_Class {
 		$this->db->update( 'sm_sweepstakes', array( 'fb_page_id' => $fb_page_id ), array( 'key' => $key ), 's', 's' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -79,7 +79,7 @@ class Sweepstakes extends Base_Class {
 		$website = $this->db->get_row( "SELECT a.`title`, b.`key` FROM `websites` AS a LEFT JOIN `sm_sweepstakes` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -108,7 +108,7 @@ class Sweepstakes extends Base_Class {
 		}
 		
 		// If there was no email, then grab the other fields
-		if( !$email_data ) {
+		if ( !$email_data ) {
 			// @Fix the above query should be able to grab the fields even if email_id is null
 			
 		 	// We need to get the email_id
@@ -122,7 +122,7 @@ class Sweepstakes extends Base_Class {
 		}
 		
 		// Make sure theyv'e set an email list id
-		if( 0 == $email_data['email_list_id'] )
+		if ( 0 == $email_data['email_list_id'] )
 			return;
 		
 		// Handle any error
@@ -134,7 +134,7 @@ class Sweepstakes extends Base_Class {
 		// Type juggling and defining variable email list id
 		$email_list_id = (int) $email_data['email_list_id'];
 		
-		if( $email_data['email_id'] ) {
+		if ( $email_data['email_id'] ) {
 			// Type juggling for insertion later
 			$email_id = (int) $email_data['email_id'];
 			
@@ -146,7 +146,7 @@ class Sweepstakes extends Base_Class {
 				return false;
 			}
 		} else {
-			$this->db->insert( 'emails', array( 'website_id' => $email_data['website_id'], 'name' => $name, 'email' => $email, 'date_created' => date_time::date( 'Y-m-d H:i:s' ) ), 'isss' );
+			$this->db->insert( 'emails', array( 'website_id' => $email_data['website_id'], 'name' => $name, 'email' => $email, 'date_created' => dt::date( 'Y-m-d H:i:s' ) ), 'isss' );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {

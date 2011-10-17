@@ -8,12 +8,12 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $au = new Authorized_Users;
 
-$authorized_user_id = (int) $_GET['uid'];
+$authorized_user_id = ( isset( $_GET['uid'] ) ) ? $_GET['uid'] : false;
 
 $v = new Validator();
 $v->form_name = 'fAddEditAuthorizedUser';
@@ -24,13 +24,16 @@ $v->add_validation( 'tEmail' , 'email' , 'The email address must be a valid emai
 // Add validation
 add_footer( $v->js_validation() );
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-authorized-user' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-authorized-user' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) ) {
-		if( $authorized_user_id ) {
+	if ( empty( $errs ) ) {
+		if ( $authorized_user_id ) {
 			// Update user
 			$success = $au->update( $authorized_user_id, $_POST['cbPages'], $_POST['cbProducts'], $_POST['cbAnalytics'], $_POST['cbBlog'], $_POST['cbEmailMarketing'], $_POST['cbShoppingCart'] );
 		} else {
@@ -50,8 +53,19 @@ if ( nonce::verify( $_POST['_nonce'], 'add-edit-authorized-user' ) ) {
 }
 
 // Get the authorized user if necessary
-if( $authorized_user_id )
+if ( $authorized_user_id ) {
 	$authorized_user = $au->get( $authorized_user_id );
+} else {
+	$authorized_user = array(
+		'email' => ''
+		, 'pages' => ''
+		, 'products' => ''
+		, 'analytics' => ''
+		, 'blog' => ''
+		, 'email_marketing' => ''
+		, 'shopping_cart' => ''
+	);
+}
 
 $sub_title = ( $authorized_user_id ) ? _('Edit Authorized User') : _('Add Authorized User');
 $title =  "$sub_title | " . TITLE;
@@ -64,7 +78,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'settings/' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $authorized_user_id ) ? _('Your authorized user has been updated successfully!') : _('Your authorized user has been added successfully!'); ?></p>
 		</div>
@@ -72,23 +86,23 @@ get_header();
 		}
 		
 		// Allow them to edit the entry they just created
-		if( $success && !$authorized_user_id )
+		if ( $success && !$authorized_user_id )
 			$authorized_user_id = $success;
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fAddEditAuthorizedUser" action="/settings/add-edit-authorized-user/<?php if( $authorized_user_id ) echo "?uid=$authorized_user_id"; ?>" method="post">
+		<form name="fAddEditAuthorizedUser" action="/settings/add-edit-authorized-user/<?php if ( $authorized_user_id ) echo "?uid=$authorized_user_id"; ?>" method="post">
 			<p><input type="text" class="tb" name="tEmail" tmpval="<?php echo _('Enter email...'); ?>" value="<?php echo $authorized_user['email']; ?>" size="35" /></p>
 			<br />
 			<p><strong><?php echo _('Section permissions:'); ?></strong></p>
 			<p>
-				<input type="checkbox" class="cb" name="cbPages" id="cbPages" value="1"<?php if( '1' == $authorized_user['pages'] ) echo ' checked="checked"'; ?> /> <label for="cbPages"><?php echo _('Pages'); ?></label><br />
-				<input type="checkbox" class="cb" name="cbProducts" id="cbProducts" value="1"<?php if( '1' == $authorized_user['products'] ) echo ' checked="checked"'; ?> /> <label for="cbProducts"><?php echo _('Products'); ?></label><br />
-				<input type="checkbox" class="cb" name="cbAnalytics" id="cbAnalytics" value="1"<?php if( '1' == $authorized_user['analytics'] ) echo ' checked="checked"'; ?> /> <label for="cbAnalytics"<?php echo _('>Analytics'); ?></label><br />
-				<input type="checkbox" class="cb" name="cbBlog" id="cbBlog" value="1"<?php if( '1' == $authorized_user['blog'] ) echo ' checked="checked"'; ?> /> <label for="cbBlog"><?php echo _('Blog'); ?></label><br />
-				<input type="checkbox" class="cb" name="cbEmailMarketing" id="cbEmailMarketing" value="1"<?php if( '1' == $authorized_user['email_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label><br />
-				<input type="checkbox" class="cb" name="cbShoppingCart" id="cbShoppingCart" value="1"<?php if( '1' == $authorized_user['shopping_cart'] ) echo ' checked="checked"'; ?> /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label>
+				<input type="checkbox" class="cb" name="cbPages" id="cbPages" value="1"<?php if ( '1' == $authorized_user['pages'] ) echo ' checked="checked"'; ?> /> <label for="cbPages"><?php echo _('Pages'); ?></label><br />
+				<input type="checkbox" class="cb" name="cbProducts" id="cbProducts" value="1"<?php if ( '1' == $authorized_user['products'] ) echo ' checked="checked"'; ?> /> <label for="cbProducts"><?php echo _('Products'); ?></label><br />
+				<input type="checkbox" class="cb" name="cbAnalytics" id="cbAnalytics" value="1"<?php if ( '1' == $authorized_user['analytics'] ) echo ' checked="checked"'; ?> /> <label for="cbAnalytics"<?php echo _('>Analytics'); ?></label><br />
+				<input type="checkbox" class="cb" name="cbBlog" id="cbBlog" value="1"<?php if ( '1' == $authorized_user['blog'] ) echo ' checked="checked"'; ?> /> <label for="cbBlog"><?php echo _('Blog'); ?></label><br />
+				<input type="checkbox" class="cb" name="cbEmailMarketing" id="cbEmailMarketing" value="1"<?php if ( '1' == $authorized_user['email_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label><br />
+				<input type="checkbox" class="cb" name="cbShoppingCart" id="cbShoppingCart" value="1"<?php if ( '1' == $authorized_user['shopping_cart'] ) echo ' checked="checked"'; ?> /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label>
 			</p>
 			<?php nonce::field( 'add-edit-authorized-user' ); ?>
 			<br />

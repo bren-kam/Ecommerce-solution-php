@@ -11,7 +11,7 @@ class Brands extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -39,14 +39,14 @@ class Brands extends Base_Class {
 		$this->db->insert( 'brands', array( 'name' => $name, 'slug' => $slug, 'link' => $link, 'image' => $image_link ), 'ssss' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$brand_id = $this->db->insert_id;
 		
-		if( !empty( $image['name'] ) ) {
+		if ( !empty( $image['name'] ) ) {
 			$f = new Files();
 			$f->upload_image( $image, $image_slug, 120, 120, 'brands', '', true, false );
 		}
@@ -54,16 +54,16 @@ class Brands extends Base_Class {
 		// Add product options if there are any
 		$product_options = explode( '|', $product_options );
 		
-		if( is_array( $product_options ) ) {
+		if ( is_array( $product_options ) ) {
 			$values = '';
 			
-			foreach( $product_options as $po ) {
+			foreach ( $product_options as $po ) {
 				// Make sure we don't have a blank
-				if( empty( $po ) )
+				if ( empty( $po ) )
 					continue;
 				
 				// Add commas between each value
-				if( !empty( $values ) )
+				if ( !empty( $values ) )
 					$values .= ',';
 				
 				// Typecast
@@ -73,11 +73,11 @@ class Brands extends Base_Class {
 				$values .= "( $po, $brand_id )";
 			}
 			
-			if( !empty( $values ) ) {
+			if ( !empty( $values ) ) {
 				$this->db->query( "INSERT INTO `product_option_relations` ( `product_option_id`, `brand_id` ) VALUES $values" );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert product option relations.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -106,7 +106,7 @@ class Brands extends Base_Class {
 		$old_brand = $this->get( $brand_id );
 		
 		// If they don't enter in a new image, then use the old one
-		if( !empty( $image['name'] ) ) {
+		if ( !empty( $image['name'] ) ) {
 			// Get rid of the slashes and another other characters in the slug
 			$image_slug = format::slug( $name );
 	
@@ -124,19 +124,19 @@ class Brands extends Base_Class {
 		$this->db->update( 'brands', array( 'name' => $name, 'slug' => $slug, 'link' => $link, 'image' => $image_link ), array( 'brand_id' => $brand_id ), 'ssss', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		if( !empty( $image['name'] ) ) {
+		if ( !empty( $image['name'] ) ) {
 			$f = new Files();
 			
 			// Delete old image
 			$old_url_info = parse_url( $old_brand['image'] );
 			$old_image_path = substr( $old_url_info['path'], 1 );
 			
-			if( !empty( $old_image_path ) )
+			if ( !empty( $old_image_path ) )
 				$f->delete_image( $old_image_path, 'brands' );
 			
 			return $f->upload_image( $image, $image_slug, 120, 120, 'brands', '', true, true );
@@ -146,26 +146,26 @@ class Brands extends Base_Class {
 		$this->db->query( "DELETE FROM `product_option_relations` WHERE `brand_id` = $brand_id" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete product option relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 				
 		// Add product options if there are any		
-		if( "" != $product_options ) {
+		if ( "" != $product_options ) {
 			$product_options = explode( '|', $product_options );
 		}
 		
-		if( is_array( $product_options ) ) {
+		if ( is_array( $product_options ) ) {
 			$values = '';
 			
-			foreach( $product_options as $po ) {
+			foreach ( $product_options as $po ) {
 				// Make sure we don't have a blank
-				if( empty( $po ) )
+				if ( empty( $po ) )
 					continue;
 				
 				// Add commas between each value
-				if( !empty( $values ) )
+				if ( !empty( $values ) )
 					$values .= ',';
 				
 				// Typecast
@@ -178,7 +178,7 @@ class Brands extends Base_Class {
 			$this->db->query( "INSERT INTO `product_option_relations` ( `product_option_id`, `brand_id` ) VALUES $values" );
 			
 			// Handle any error
-			if( $this->db->errno() ) {
+			if ( $this->db->errno() ) {
 				$this->err( 'Failed to insert product option relations.', __LINE__, __METHOD__ );
 				return false;
 			}
@@ -196,7 +196,7 @@ class Brands extends Base_Class {
 		$brands = $this->db->get_results( 'SELECT * FROM `brands` ORDER BY `name` ASC', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -217,7 +217,7 @@ class Brands extends Base_Class {
 		$brands = $this->db->get_results( "SELECT `brand_id`, `name`, `link` FROM `brands` WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -236,7 +236,7 @@ class Brands extends Base_Class {
 		$brand_count = $this->db->get_var( "SELECT COUNT( `brand_id` ) FROM `brands` WHERE 1 $where" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count brands.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -259,16 +259,16 @@ class Brands extends Base_Class {
 		$brand = $this->db->get_row( 'SELECT * FROM `brands` WHERE `brand_id` = ' . $brand_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		if( $get_product_options ) {
+		if ( $get_product_options ) {
 			$brand['product_options'] = $this->db->get_col( "SELECT `product_option_id` FROM `product_option_relations` WHERE `brand_id` = $brand_id" );
 		
 			// Handle any error
-			if( $this->db->errno() ) {
+			if ( $this->db->errno() ) {
 				$this->err( 'Failed to get product options.', __LINE__, __METHOD__ );
 				return false;
 			}
@@ -290,7 +290,7 @@ class Brands extends Base_Class {
 		$results = $this->db->prepare( "SELECT `brand_id` AS object_id, `name` AS brand FROM `brands` WHERE `name` LIKE ? ORDER BY `name`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -314,22 +314,22 @@ class Brands extends Base_Class {
 		$this->db->query( "DELETE FROM `brands` WHERE `brand_id` = $brand_id LIMIT 1" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// Delete product options by brand
-		if( !$po->delete_by_brand( $brand_id ) )
+		if ( !$po->delete_by_brand( $brand_id ) )
 			return false;
 		
-		if( !empty( $brand['image'] ) ) {
+		if ( !empty( $brand['image'] ) ) {
 			$f = new Files();
 			
 			$url_info = parse_url( $brand['image'] );
 			$image_path = substr( $url_info['path'], 1 );
 			
-			if( !empty( $image_path ) )
+			if ( !empty( $image_path ) )
 				$f->delete_image( $image_path, 'brands' );
 		}
 		

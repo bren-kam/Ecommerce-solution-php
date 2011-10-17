@@ -5,8 +5,8 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_nonce'], 'delete-product-option' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'delete-product-option' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to delete a product option') ) );
 		exit;
 	}

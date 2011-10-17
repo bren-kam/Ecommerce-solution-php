@@ -20,9 +20,12 @@ $dt->search( array( 'a.`name`' => false ) );
 $visitors = $a->list_visitors( $dt->get_variables() );
 $dt->set_row_count( $a->count_visitors( $dt->get_where() ) );
 
+// Initialize Variable
+$data = array();
+
 // Create output
-if( is_array( $visitors ) )
-foreach( $visitors as $v ) {
+if ( is_array( $visitors ) )
+foreach ( $visitors as $v ) {
 	$name = ( 'Anonymous' == $v['name'] ) ? 'Anonymous ' . $v['analytics_visitor_id'] : $v['name'];
 	$data[] = array('<a href="/analytics/visitor-details/?avid=' . $v['analytics_visitor_id'] . '" title="' . $name . '">' . $name . '</a>',
 					number_format( $v['page_visits'] ),

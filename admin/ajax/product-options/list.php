@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = '`option_title`';
@@ -64,8 +64,8 @@ $product_option_count = $po->count_product_options( $where );
 
 $aaData = array();
 
-if( is_array( $product_options ) )
-foreach( $product_options as $po ) {
+if ( is_array( $product_options ) )
+foreach ( $product_options as $po ) {
 	$aaData[] = array( '<span>' . $po['option_title'] . '</span><br /><div><a href="/product-options/add-edit/?poid=' . $po['product_option_id'] . '" title="' . _('Edit Product Option') . '">' . _('Edit') . '</a> | <a href="javascript:;" id="aDeleteProductOption' . $po['product_option_id'] . '" title="' . _('Delete Product Option') . '" class="delete-product-option">' . _('Delete') . '</a></div>', $po['option_name'], $po['option_type'] );
 }
 

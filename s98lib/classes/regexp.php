@@ -19,7 +19,7 @@ class regexp extends Base_Class {
 	 * @param string $key
 	 * @return string
 	 */
-	public function pattern( $key ) {
+	public static function pattern( $key ) {
 		$patterns = array(
 			'alnum' 		=> '/[^A-Za-z0-9\ ]/',
 			'alnumhyphen' 	=> '/[^A-Za-z0-9\-_]/',
@@ -47,7 +47,7 @@ class regexp extends Base_Class {
 	 * @param string $key the regular expression key
 	 * @return bool
 	 */
-	public function match( $string, $key ) {
+	public static function match( $string, $key ) {
 		return ( 0 == preg_match( self::pattern( $key ), $string ) ) ? false : true;
 	}
 	
@@ -59,7 +59,7 @@ class regexp extends Base_Class {
 	 * @param string $replacement what you want to replace it with
 	 * @return bool
 	 */
-	public function replace( $string, $key, $replacement ) {
+	public static function replace( $string, $key, $replacement ) {
 		return preg_replace( self::pattern( $key ), $replacement, $string );
 	}
 }

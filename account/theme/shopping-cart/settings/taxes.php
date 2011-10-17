@@ -8,13 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
 $w = new Websites;
 
-if ( nonce::verify( $_POST['_nonce'], 'taxes' )  )
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'taxes' )  )
 	$success = $w->update_settings( array( 'taxes' => serialize( array( 'states' => $_POST['states'], 'zip_codes' => $_POST['zip_codes'] ) ) ) );
 
 // Define variables
@@ -34,15 +37,15 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'shopping-cart/', 'settings' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) echo '<p class="success">' . _('Tax settings successfully edited') . '</p>'; ?>
-		<form name="fTaxes" id="fTaxes" action="/shopping-cart/settings/taxes/" method="post">
+		<?php if ( $success ) echo '<p class="success">' . _('Tax settings successfully edited') . '</p>'; ?>
+		<form name="fTaxes" id="fTaxes" action="/shopping-cart/taxes/" method="post">
 			<table id="tWebsiteTaxes" width="700">
 				<tr>
 					<th width="40%"><strong><?php echo _('State'); ?></strong></th>
 					<th><strong><?php echo _('Cost'); ?></strong></th>
 					<th width="40%"><strong><?php echo _('Actions'); ?></strong></th>
 				</tr>
-				<?php foreach( $taxes['states'] as $abbr => $tax ) { ?>
+				<?php foreach ( $taxes['states'] as $abbr => $tax ) { ?>
 				<tr id="trTax<?php echo $abbr; ?>">
 					<td><a href="/dialogs/edit-tax-zip-codes/?state=<?php echo $abbr; ?>#dEditTaxZipCodes" title="<?php echo _('Edit Tax Zip Codes'); ?>" rel="dialog" ajax="1" cache="0"><span><?php echo $states[$abbr]; ?></span></a></td>
 					<td><input type="text" class="tb" name="states[<?php echo $abbr; ?>]" id="tState<?php echo $abbr; ?>" value="<?php echo $tax; ?>" maxlength="5" /></td>
@@ -54,7 +57,7 @@ get_header();
 						<select name="sState" id="sState">
 							<option value="">-- <?php echo _('Select a State'); ?> --</option>
 							<?php 
-							foreach( $states as $key => $state ) {
+							foreach ( $states as $key => $state ) {
 							?>
 							<option class="<?php if ( array_key_exists( $key, $taxes['states'] ) ) echo ' hidden'; ?>" value="<?php echo $key; ?>"><?php echo $state; ?></option>
 							<?php } ?>
@@ -67,8 +70,8 @@ get_header();
 			<br />
 			<input type="submit" class="button" value="<?php echo _('Save Changes'); ?>" />
 			<?php 
-			foreach( $taxes['zip_codes'] as $state => $zip_codes ) {
-				foreach( $zip_codes as $zip => $cost ) {
+			foreach ( $taxes['zip_codes'] as $state => $zip_codes ) {
+				foreach ( $zip_codes as $zip => $cost ) {
 					?>
 					<input type="hidden" class="zip-<?php echo $state; ?>" name="zip_codes[<?php echo $state; ?>][<?php echo $zip; ?>]" value="<?php echo $cost; ?>" />
 					<?php

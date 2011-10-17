@@ -12,7 +12,7 @@ class Checklists extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -28,14 +28,14 @@ class Checklists extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND c.`company_id` = ' . $user['company_id'] : $where . ' AND c.`company_id` = ' . $user['company_id'];
 		
 		// Get the checklists
-		$checklists = $this->db->get_results( "SELECT a.`checklist_id`, a.`date_created`, b.`title`, DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS days_left, d.`contact_name` AS online_specialist FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) LEFT JOIN `users` AS d ON ( b.`os_user_id` = d.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$checklists = $this->db->get_results( "SELECT a.`checklist_id`, a.`type`, a.`date_created`, b.`title`, DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list checklists.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -53,14 +53,14 @@ class Checklists extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND c.`company_id` = ' . $user['company_id'] : $where . ' AND c.`company_id` = ' . $user['company_id'];
 		
 		// Get the checklist count
-		$checklist_count = $this->db->get_var( "SELECT COUNT( a.`checklist_id` ) FROM `checklists` AS a LEFT JOIN `websites` AS b ON a.`website_id` = b.`website_id` INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) LEFT JOIN `users` AS d ON ( b.`os_user_id` = d.`user_id` ) WHERE 1 $where" );
+		$checklist_count = $this->db->get_var( "SELECT COUNT( a.`checklist_id` ) FROM `checklists` AS a LEFT JOIN `websites` AS b ON a.`website_id` = b.`website_id` INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) WHERE 1 $where" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count checklists.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -79,7 +79,7 @@ class Checklists extends Base_Class {
 		$website_ids = $this->db->get_results( 'SELECT a.`checklist_id`, a.`website_id` FROM `checklists` AS a LEFT JOIN `checklist_website_items` AS b ON ( a.`checklist_id` = b.`checklist_id` ) WHERE b.`checked` = 0 GROUP BY `website_id`', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get incomplete checklists.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -99,7 +99,7 @@ class Checklists extends Base_Class {
 		$checklist = $this->db->get_row( "SELECT a.`checklist_id`, a.`website_id`, a.`type`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`title`, DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY), NOW() ) AS 'days_left' FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`checklist_id` = $checklist_id ORDER BY days_left ASC", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get checklist.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -117,12 +117,12 @@ class Checklists extends Base_Class {
 		$sections = $this->db->get_results( 'SELECT `checklist_item_id`, `section` FROM `checklist_items` GROUP BY `section` ORDER BY `sequence` ASC', ARRAY_A);
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get sections.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		foreach( $sections as $s ) {
+		foreach ( $sections as $s ) {
 			$arr[$s['section']] = $this->db->prepare( 'SELECT a.`checklist_item_id`, a.`name`, a.`assigned_to`, a.`sequence`, b.`checked`, b.`checklist_website_item_id`, c.`rcount` AS notes_count FROM `checklist_items` AS a INNER JOIN `checklist_website_items` AS b ON( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN ( SELECT COUNT(*) AS rcount, `checklist_website_item_id` FROM `checklist_website_item_notes` GROUP BY `checklist_website_item_id` ) AS c ON( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) WHERE b.`checklist_id` = ? AND a.`section` = ? ORDER BY a.`sequence` ASC', 'is', $checklist_id, $s['section'] )->get_results( '', ARRAY_A );
 		}
 		
@@ -139,10 +139,10 @@ class Checklists extends Base_Class {
 	public function add_note( $checklist_website_item_id, $note ) {
 		global $user;
 		
-		$this->db->insert( 'checklist_website_item_notes', array( 'checklist_website_item_id' => $checklist_website_item_id, 'user_id' => $user['user_id'], 'note' => $note, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'iiss' );
+		$this->db->insert( 'checklist_website_item_notes', array( 'checklist_website_item_id' => $checklist_website_item_id, 'user_id' => $user['user_id'], 'note' => $note, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add checklist item.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -161,7 +161,7 @@ class Checklists extends Base_Class {
 		$this->db->update( 'checklist_website_item_notes', array( 'note' => $note ), array( 'checklist_website_item_note_id' => $checklist_website_item_note_id ), 's', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website item note.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -193,7 +193,7 @@ class Checklists extends Base_Class {
 		$notes = $this->db->get_results( "SELECT a.`checklist_website_item_note_id`, a.`note`, b.`contact_name`, a.`date_created` FROM `checklist_website_item_notes` AS a INNER JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`checklist_website_item_id` = $item_id ORDER BY `date_created` DESC", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get notes.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -211,7 +211,7 @@ class Checklists extends Base_Class {
 		$this->db->query( 'DELETE FROM `checklist_website_item_notes` WHERE `checklist_website_item_note_id` = ' . (int) $checklist_website_item_note_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete checklist note.', __LINE__, __METHOD__ );
 			return false;
 		}

@@ -55,7 +55,7 @@ get_header();
 		nonce::field( 'update-website-product-sequence', '_ajax_update_website_product_sequence' );
 		nonce::field( 'get-product-dialog-info', '_ajax_get_product_dialog_info' );
 		
-		if( '1' == $_GET['m'] ) {
+		if ( isset( $_GET['m'] ) && '1' == $_GET['m'] ) {
 		?>
 		<p class="success"><?php echo _('Your product(s) have been successfully added!'); ?></p>
 		<?php } ?>
@@ -106,7 +106,7 @@ get_header();
 <div id="dEditProduct" class="hidden">
 	<form name="fEditProduct" id="fEditProduct" action="/ajax/products/update-product/" method="post" ajax="1">
 	<br />
-	<?php if( $user['website']['shopping_cart'] ) { ?>
+	<?php if ( $user['website']['shopping_cart'] ) { ?>
 	<p>
 		<a href="javascript:;" class="button screen-selector selected" id="aPricingProductInformation" title="<?php echo _('Pricing/Product Information'); ?>"><?php echo _('Pricing/Product Information'); ?></a> 
 		<a href="javascript:;" class="button screen-selector" id="aProductOptions" title="<?php echo _('Product Options'); ?>"><?php echo _('Product Options'); ?></a> 
@@ -235,7 +235,10 @@ get_header();
 				<div id="dCouponList"></div>
 				<select id="sCoupons">
 					<option value="">-- <?php echo _('Select a Coupon'); ?> --</option>
-					<?php foreach( $coupons as $c ) { ?>
+					<?php 
+					if ( is_array( $coupons ) )
+					foreach ( $coupons as $c ) {
+					?>
 					<option value="<?php echo $c['website_coupon_id']; ?>"><?php echo $c['name']; ?></option>
 					<?php } ?>
 				</select>

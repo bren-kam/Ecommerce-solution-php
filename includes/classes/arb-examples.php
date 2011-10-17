@@ -102,7 +102,7 @@ require('class.arb.php');
 	$arb->CreateSubscriptionRequest();
 
 // Test and print results
-if($arb->success)
+if ($arb->success)
 	print_r($arb->results);
 else
 	print_r($arb->error);
@@ -204,7 +204,7 @@ else
 	$arb->UpdateSubscriptionRequest();
 
 // Test and print results
-if($arb->success)
+if ($arb->success)
 	print_r($arb->results);
 else
 	print_r($arb->error);
@@ -236,7 +236,7 @@ else
 	$arb->CancelSubscriptionRequest();
 
 // Test and print results
-if($arb->success)
+if ($arb->success)
 	print_r($arb->results);
 else
 	print_r($arb->error);

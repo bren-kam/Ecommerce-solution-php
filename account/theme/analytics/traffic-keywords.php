@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
@@ -25,8 +25,12 @@ $records = $a->get_metric_by_date( 'visits' );
 $total = $a->get_totals();
 $keywords = $a->get_keywords( '', '', 0 );
 
+// Initialize Variable
+$visits_plotting_array = array();
+
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+if ( is_array( $records ) )
+foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
@@ -117,7 +121,10 @@ get_header();
 						</tr>
 					</thead>
 					<tbody>
-					<?php foreach ( $keywords as $k ) { ?>
+					<?php 
+					if ( is_array( $keywords ) )
+					foreach ( $keywords as $k ) {
+					?>
 					<tr>
 						<td><a href="/analytics/keyword/?k=<?php echo urlencode( $k['keyword'] ); ?>" title="<?php echo $k['keyword']; ?>"><?php echo $k['keyword']; ?></a></td>
 						<td class="text-right"><?php echo number_format( $k['visits'] ); ?></td>

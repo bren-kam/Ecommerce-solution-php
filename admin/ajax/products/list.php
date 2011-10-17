@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch( $_GET['iSortCol_' . $i] ) {
+		switch ( $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'a.`name`';
@@ -67,8 +67,8 @@ $p = new Products;
 /* Filtering  */
 $where = ( isset( $_SESSION['products']['visibility'] ) ) ? " AND `publish_visibility` = '" . $p->db->escape( $_SESSION['products']['visibility'] ) . "'" : " AND `publish_visibility` <> 'deleted'";
 
-if( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['products']['user'] ) ) {
-	switch( $_SESSION['products']['product-status'] ) {
+if ( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['products']['user'] ) ) {
+	switch ( $_SESSION['products']['product-status'] ) {
 		case 'created':
 			$where .= ' AND `user_id_created` = ' . (int) $_SESSION['products']['user'];
 		break;
@@ -79,9 +79,9 @@ if( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['produc
 	}
 }
 
-if( isset( $_SESSION['products']['search'] ) ) {
-	if( isset( $_SESSION['products']['type'] ) ) {
-		switch( $_SESSION['products']['type'] ) {
+if ( isset( $_SESSION['products']['search'] ) ) {
+	if ( isset( $_SESSION['products']['type'] ) ) {
+		switch ( $_SESSION['products']['type'] ) {
 			case 'products':
 				$type = 'a.`name`';
 			break;
@@ -108,8 +108,8 @@ $product_count = $p->count_products( $where );
 
 $aaData = array();
 
-if( is_array( $products ) )
-foreach( $products as $product ) {
+if ( is_array( $products ) )
+foreach ( $products as $product ) {
 	$aaData[] = array( '<span>' . $product['name']  . '</span><br />
 		<div>
 			<a href="/products/add-edit/?pid=' . $product['product_id'] . '" title=\'' . _('Edit') . ' "' . $product['name'] . '"\' class="edit-product">' . _('Edit') . '</a> |

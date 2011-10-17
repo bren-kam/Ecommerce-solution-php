@@ -12,7 +12,7 @@ $p = new Products;
 
 $product = $p->sku_exists( $_POST['sku'] );
 
-if( $product ) {
+if ( $product ) {
 	// Needs to be not be owned
 	$ajax->ok( '0' == $product['owned'], _('A product with same SKU already exists in record and it is already added in your website.') );
 	

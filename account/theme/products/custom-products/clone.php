@@ -15,7 +15,7 @@ if ( $user['role'] <= 5 ) {
 
 $product_id = (int) $_GET['pid'];
 
-if( empty( $product_id ) )
+if ( empty( $product_id ) )
 	url::redirect( '/products/custom-products/' );
 
 $p = new Products;

@@ -15,7 +15,7 @@ $quantity = ( $_POST['c'] ) ? $_POST['q'] : 0;
 
 $settings = $w->get_settings( array( 'free-shipping-quantity' ) );
 
-if( !isset( $settings['free-shipping-quantity'] ) ) {
+if ( !isset( $settings['free-shipping-quantity'] ) ) {
 	$success = $w->create_setting( 'free-shipping-quantity', $quantity );
 } else {
 	$success = $w->update_settings( array( 'free-shipping-quantity' => $quantity ) );

@@ -22,8 +22,8 @@ $confirm = _('Are you sure you want to delete this coupon? This cannot be undone
 $delete_coupon_nonce = nonce::create( 'delete-coupon' );
 								
 // Create output
-if( is_array( $coupons ) )
-foreach( $coupons as $coupon ) {
+if ( is_array( $coupons ) )
+foreach ( $coupons as $coupon ) {
 	$actions = '<a href="/products/coupons/add-edit/?wcid=' . $coupon['website_coupon_id'] . '" title="' . _('Edit Coupon') . '">' . _('Edit') . '</a>';
 	$actions .= ' | <a href="/ajax/products/coupons/delete/?wcid=' . $coupon['website_coupon_id'] . '&amp;_nonce=' . $delete_coupon_nonce . '" title="' . _('Delete Coupon') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 	
@@ -32,7 +32,7 @@ foreach( $coupons as $coupon ) {
 		number_format( $coupon['amount'], 2 ),
 		$coupon['type'],
 		$coupon['item_limit'],
-		date_time::date( 'F jS, Y', $coupon['date_created'] )
+		dt::date( 'F jS, Y', $coupon['date_created'] )
 	);
 }
 		

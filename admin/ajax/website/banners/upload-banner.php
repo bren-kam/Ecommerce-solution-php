@@ -32,7 +32,7 @@ $upload_url = 'http://account2.' . DOMAIN . '/media/uploads/site_uploads/' . $_P
 $upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
 // Directory needs to exist
-if( !is_dir( $upload_dir ) )
+if ( !is_dir( $upload_dir ) )
 	mkdir( $upload_dir, 0777, true );
 
 // Resize the image

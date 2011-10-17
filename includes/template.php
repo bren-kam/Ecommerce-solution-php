@@ -32,12 +32,12 @@ function get_print_header() {
  * @param string %seleced (optional|)
  */
 function get_sidebar( $prefix = '', $selected = '') {
-	if( !empty( $selected ) )
+	if ( !empty( $selected ) )
 		$$selected = true;
 	
 	$file_path = theme_inc( $prefix . 'sidebar' );
 	
-	if( $file_path )
+	if ( $file_path )
 		require( $file_path );
 }
 
@@ -121,7 +121,7 @@ function add_head( $string ) {
 function footer( $echo = true ) {
 	global $t;
 	
-	if( $echo ) 
+	if ( $echo ) 
 		echo $t->footer;
 	
 	return $t->footer;
@@ -168,7 +168,7 @@ function add_before_javascript( $string ) {
  * @return string|int
  */
 function theme( $key, $echo = true ) {
-	switch( $key ) {
+	switch ( $key ) {
 		case 'path':
 			$data = THEME_PATH;
 			break;
@@ -181,7 +181,7 @@ function theme( $key, $echo = true ) {
 			break;
 	}
 	
-	if( $echo )
+	if ( $echo )
 		echo $data;
 	
 	return $data;
@@ -204,8 +204,8 @@ function javascript() {
 	
 	$files = func_get_args();
 		
-	foreach( $files as $f ) {
-		if( !in_array( $f, $t->javascript ) )
+	foreach ( $files as $f ) {
+		if ( !in_array( $f, $t->javascript ) )
 			$t->javascript[] = $f;
 	}
 }
@@ -222,8 +222,8 @@ function css() {
 	
 	$files = func_get_args();
 		
-	foreach( $files as $f ) {
-		if( !in_array( $f, $t->css ) )
+	foreach ( $files as $f ) {
+		if ( !in_array( $f, $t->css ) )
 			$t->css[] = $f;
 	}
 }
@@ -239,8 +239,8 @@ function css_ie8() {
 	
 	$files = func_get_args();
 		
-	foreach( $files as $f ) {
-		if( !in_array( $f, $t->css_ie8 ) )
+	foreach ( $files as $f ) {
+		if ( !in_array( $f, $t->css_ie8 ) )
 			$t->css_ie8[] = 'ie8/' . $f;
 	}
 }
@@ -257,7 +257,7 @@ function sidebar( $key ) {
 	
 	$sidebar = $cache->get( 'sidebar' );
 	
-	if( empty( $sidebar ) ) {
+	if ( empty( $sidebar ) ) {
 		global $w;
 		
 		$sidebar_page = $w->get_page( 'sidebar' );
@@ -273,6 +273,6 @@ function sidebar( $key ) {
  * Redirects to the login page with referer credentials
  */
 function login() {
-	$_SESSION['referer'] = $_SERVER['REDIRECT_URL'];
+	$_SESSION['referer'] = ( isset( $_SERVER['REDIRECT_URL'] ) ) ? $_SERVER['REDIRECT_URL'] : '';
 	url::redirect( '/login/' );
 }

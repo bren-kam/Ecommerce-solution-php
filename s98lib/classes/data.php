@@ -27,7 +27,7 @@ class data extends Base_Class {
 	 * @param string $select_value if value matches key in state array, will select that option
 	 * @return nothing|array
 	 */
-	public function states( $display = true, $select_value = '' ) {
+	public static function states( $display = true, $select_value = '' ) {
 		$states = array(
 			'AK' => 'Alaska'
 			, 'AL' => 'Alabama'
@@ -83,7 +83,10 @@ class data extends Base_Class {
 		);
 		
 		if ( $display ) {
-			foreach( $states as $st => $state ) {
+			// Initialize variable
+			$state_options = '';
+			
+			foreach ( $states as $st => $state ) {
 				$selected = ( $select_value == $st ) ? ' selected="selected"' : '';
 				$state_options .= "<option value='$st'$selected>$state</option>\n";
 			}
@@ -103,7 +106,7 @@ class data extends Base_Class {
 	 * @param string $select_value if value matches key in state array, will select that option
 	 * @return nothing|array
 	 */
-	public function countries( $display = true, $select_value = '' ) {
+	public static function countries( $display = true, $select_value = '' ) {
 		$countries = array(
 			'AF' => 'Afghanistan'
 			, 'AL' => 'Albania'
@@ -347,7 +350,10 @@ class data extends Base_Class {
 		);
 		
 		if ( $display ) {
-			foreach( $countries as $c => $country ) {
+			// Initialize variable
+			$country_options = '';
+			
+			foreach ( $countries as $c => $country ) {
 				$selected = ( $select_value == $c ) ? ' selected="selected"' : '';
 				$country_options .= "<option value='$c'$selected>$country</option>\n";
 			}
@@ -368,7 +374,7 @@ class data extends Base_Class {
 	 * @param string $gateway_list which list to grab the credit cards from
 	 * @return nothing|array
 	 */
-	public function credit_cards( $display = true, $select_value = '', $gateway_list = 'AIM' ) {
+	public static function credit_cards( $display = true, $select_value = '', $gateway_list = 'AIM' ) {
 		// Authorize.net AIM gateway_list
 		$cc['AIM'] = array(
 			'Visa' => 'Visa'
@@ -378,7 +384,7 @@ class data extends Base_Class {
 		);
 		
 		if ( $display ) {
-			foreach( $cc[$gateway_list] as $k => $v ) {
+			foreach ( $cc[$gateway_list] as $k => $v ) {
 				$selected = ( $select_value == $k ) ? ' selected="selected"' : '';
 				$cc_options .= "<option value='$k'$selected>$v</option>\n";
 			}
@@ -400,7 +406,7 @@ class data extends Base_Class {
 	 * @param string $value_format the format of the months ( 'num', 'abbr', 'full' )
 	 * @return nothing|array
 	 */
-	public function days( $display = true, $select_value = '', $key_format = 'abbr', $value_format = 'full' ) {
+	public static function days( $display = true, $select_value = '', $key_format = 'abbr', $value_format = 'full' ) {
 		$days['num'] = array( '1', '2', '3', '4', '5', '6', '7' );
 		$days['abbr'] = array( 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' );
 		$days['full'] = array( 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' );
@@ -408,7 +414,7 @@ class data extends Base_Class {
 		$a_days = array_combine( $days[$key_format], $days[$value_format] );
 		
 		if ( $display ) {
-			foreach( $a_days as $k => $v ) {
+			foreach ( $a_days as $k => $v ) {
 				$selected = ( $select_value == $k ) ? ' selected="selected"' : '';
 				$days_options .= "<option value='$k'$selected>$v</option>\n";
 			}
@@ -430,7 +436,7 @@ class data extends Base_Class {
 	 * @param string $value_format the format of the months ( 'num', 'abbr', 'full' )
 	 * @return nothing|array
 	 */
-	public function months( $display = true, $select_value = '', $key_format = 'abbr', $value_format = 'full' ) {
+	public static function months( $display = true, $select_value = '', $key_format = 'abbr', $value_format = 'full' ) {
 		$months['num'] = array( '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12' );
 		$months['abbr'] = array( 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' );
 		$months['full'] = array( 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' );
@@ -438,7 +444,7 @@ class data extends Base_Class {
 		$a_months = array_combine( $months[$key_format], $months[$value_format] );
 		
 		if ( $display ) {
-			foreach( $a_months as $k => $v ) {
+			foreach ( $a_months as $k => $v ) {
 				$selected = ( $select_value == $k ) ? ' selected="selected"' : '';
 				$months_options .= "<option value='$k'$selected>$v</option>\n";
 			}
@@ -459,7 +465,7 @@ class data extends Base_Class {
 	 * @param int $amount the amount of years from the present
 	 * @return nothing|array
 	 */
-	public function years( $display = true, $select_value = '', $amount = 10 ) {
+	public static function years( $display = true, $select_value = '', $amount = 10 ) {
 		global $s98_cache;
 		$year = $s98_cache->get( 'year' );
 		
@@ -472,7 +478,7 @@ class data extends Base_Class {
 		$ending_year = $year + $amount;
 		
 		if ( $display ) {
-			for( $i = $year; $i <= $ending_year; $i++ ) {
+			for ( $i = $year; $i <= $ending_year; $i++ ) {
 				$selected = ( $select_value == $i ) ? ' selected="selected"' : '';
 				$year_options .= "<option value='$i'$selected>$i</option>\n";
 			}
@@ -492,7 +498,7 @@ class data extends Base_Class {
 	 * @param string $select_value (optional)
 	 * @return array
 	 */
-	public function timezones( $echo = true, $select_value = '' ) {
+	public static function timezones( $echo = true, $select_value = '' ) {
 		$timezones = array(
 			'-12.0'		=> '(GMT -12:00) Eniwetok, Kwajalein'
 			, '-11.0'	=> '(GMT -11:00) Midway Island, Samoa'
@@ -528,7 +534,10 @@ class data extends Base_Class {
 		);
 		
 		if ( $echo ) {
-			foreach( $timezones as $tz => $timezone ) {
+			// Initialize variable
+			$timezone_options = '';
+			
+			foreach ( $timezones as $tz => $timezone ) {
 				$selected = ( $select_value == $tz ) ? ' selected="selected"' : '';
 				$timezone_options .= "<option value='$tz'$selected>$timezone</option>\n";
 			}

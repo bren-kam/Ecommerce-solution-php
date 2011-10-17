@@ -42,7 +42,7 @@ function postLoad( $ ) {
 		var itemName = $('#tListItemValue').val();
 		
 		// If they entered nothing, do nothing
-		if( '' == itemName || 'Item Name' == itemName )
+		if ( '' == itemName || 'Item Name' == itemName )
 			return;
 		
 		// Append new div
@@ -88,14 +88,14 @@ function postLoad( $ ) {
 		var parent = $(this).parents('div.list-item:first'), listItemField = parent.find('.edit-list-item-value'), listItem = listItemField.val();
 		
 		// Make sure it's not an empty profile_name
-		if( '' == listItem ) {
+		if ( '' == listItem ) {
 			alert( 'Please enter a list item name' );
 			listItemField.focus();
 			return;
 		}
 		
 		// Make sure it's within 15 characters
-		if( listItem.length > 100 ) {
+		if ( listItem.length > 100 ) {
 			alert( 'The attribute name may only have up to 100 characters' );
 			listItemField.focus();
 			return;
@@ -112,7 +112,7 @@ function postLoad( $ ) {
 	
 	// Delete Drop Down List Items
 	$('.delete-list-item').live( 'click', function() {
-		if( !confirm( 'Are you sure you want to delete this list item? You will not be able to access any analytics using this item.' ) )
+		if ( !confirm( 'Are you sure you want to delete this list item? You will not be able to access any analytics using this item.' ) )
 			return false;
 			
 		$(this).parents('.list-item-container:first').remove();
@@ -164,7 +164,7 @@ function optionBreadcrumbSelect( objectID, breadcrumbText ) {
 	pOptionBreadcrumb.html( pOptionBreadcrumb.html().replace( breadcrumbPattern, '$1' ) ).append( '<span id="sOptionCurrentPage">' + breadcrumbText + '</span>' );
 	
 	// Hide it if you're on the home page
-	if( -1 == $('#pOptionBreadCrumb').html().search( /<a/ ) )
+	if ( -1 == $('#pOptionBreadCrumb').html().search( /<a/ ) )
 		$('#pOptionBreadCrumb span').fadeOut('fast');
 };
 

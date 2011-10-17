@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
@@ -25,8 +25,12 @@ $traffic_sources = $a->get_traffic_sources_totals();
 // Pie Chart
 $pie_chart = $a->pie_chart( $traffic_sources );
 
+// Initialize
+$visits_plotting_array = array();
+
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+if ( is_array( $records ) )
+foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
@@ -88,9 +92,9 @@ get_header();
 					<tr>
 						<td width="50%">
 							<div id="dSmallContainer">
-								<p><a href="#direct" class="sparkline" title="<?php echo _('Direct Traffic Sparkline'); ?>"><img src="<?php echo $sparklines['direct']; ?>" class="sparkline" width="150" height="36" alt="<?php echo _('Direct Traffic Sparkline'); ?>" /></a> <span class="data"><?php echo number_format( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%</span> <span class="label"><?php echo _('Direct Traffic'); ?></span></p>
-								<p><a href="#referring" class="sparkline" title="<?php echo _('Referring Sites Sparkline'); ?>"><img src="<?php echo $sparklines['referring']; ?>" class="sparkline" width="150" height="36" alt="<?php echo _('Referring Sites Sparkline'); ?>" /></a> <span class="data"><?php echo number_format( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%</span> <span class="label"><?php echo _('Referring Sites'); ?></span></p>
-								<p><a href="#search_engines" class="sparkline" title="<?php echo _('Search Engines Sparkline'); ?>"><img src="<?php echo $sparklines['search_engines']; ?>" class="sparkline" width="150" height="36" alt="<?php echo _('Search Engines Sparkline'); ?>" /></a> <span class="data"><?php echo number_format( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%</span> <span class="label"><?php echo _('Search Engines'); ?></span></p>
+								<p><a href="#direct" class="sparkline" title="<?php echo _('Direct Traffic Sparkline'); ?>"><img src="<?php echo $sparklines['direct']; ?>" class="sparkline" width="150" height="36" alt="<?php echo _('Direct Traffic Sparkline'); ?>" /></a> <span class="data"><?php echo ( 0 == $traffic_sources['total'] ) ? '0' : number_format( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%</span> <span class="label"><?php echo _('Direct Traffic'); ?></span></p>
+								<p><a href="#referring" class="sparkline" title="<?php echo _('Referring Sites Sparkline'); ?>"><img src="<?php echo $sparklines['referring']; ?>" class="sparkline" width="150" height="36" alt="<?php echo _('Referring Sites Sparkline'); ?>" /></a> <span class="data"><?php echo ( 0 == $traffic_sources['total'] ) ? '0' : number_format( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%</span> <span class="label"><?php echo _('Referring Sites'); ?></span></p>
+								<p><a href="#search_engines" class="sparkline" title="<?php echo _('Search Engines Sparkline'); ?>"><img src="<?php echo $sparklines['search_engines']; ?>" class="sparkline" width="150" height="36" alt="<?php echo _('Search Engines Sparkline'); ?>" /></a> <span class="data"><?php echo ( 0 == $traffic_sources['total'] ) ? '0' : number_format( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%</span> <span class="label"><?php echo _('Search Engines'); ?></span></p>
 							</div>
 						</td>
 						<td style="padding-top: 20px">
@@ -98,15 +102,15 @@ get_header();
 							<div id="dTrafficSourcesData">
 								<p class="blue-marker">
 									<span class="label"><?php echo _('Direct Traffic'); ?></span><br />
-									<span class="data"><?php echo number_format( $traffic_sources['direct'] ); ?> (<?php echo round( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+									<span class="data"><?php echo number_format( $traffic_sources['direct'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 								</p>
 								<p class="green-marker">
 									<span class="label"><?php echo _('Referring Sites'); ?></span><br />
-									<span class="data"><?php echo number_format( $traffic_sources['referring'] ); ?> (<?php echo round( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+									<span class="data"><?php echo number_format( $traffic_sources['referring'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 								</p>
 								<p class="orange-marker">
 									<span class="label"><?php echo _('Search Engines'); ?></span><br />
-									<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+									<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 								</p>
 								<?php if ( $traffic_sources['other'] > 0 ) { ?>
 								<p class="yellow-marker">
@@ -129,10 +133,13 @@ get_header();
 					<table cellpadding="0" cellspacing="0" width="100%" class="form">
 						<tr>
 							<th width="60%"><strong><?php echo _('Sources'); ?></strong></th>
-							<th width="20%" class="text-right" column="formatted-num"><strong><?php echo _('Visits'); ?></strong></th>
-							<th width="20%" class="text-right" column="formatted-num"><strong><?php echo _('% New Visits'); ?></strong></th>
+							<th width="20%" class="text-right"><strong><?php echo _('Visits'); ?></strong></th>
+							<th width="20%" class="text-right"><strong><?php echo _('% New Visits'); ?></strong></th>
 						</tr>
-						<?php foreach( $top_traffic_sources as $tts ) { ?>
+						<?php 
+						if ( is_array( $top_traffic_sources ) )
+						foreach ( $top_traffic_sources as $tts ) { 
+						?>
 						<tr>
 							<td><a href="/analytics/source/?s=<?php echo urlencode( $tts['source'] ); ?>" title="<?php echo $tts['source'], ' / ', $tts['medium']; ?>"><?php echo $tts['source']; ?></a></td>
 							<td class="text-right"><?php echo number_format( $tts['visits'] ); ?></td>
@@ -155,7 +162,10 @@ get_header();
 							<th width="20%" class="text-right" column="formatted-num"><strong><?php echo _('Visits'); ?></strong></th>
 							<th width="20%" class="text-right" column="formatted-num"><strong><?php echo _('% New Visits'); ?></strong></th>
 						</tr>
-						<?php foreach( $top_keywords as $tk ) { ?>
+						<?php 
+						if ( is_array( $top_keywords ) )
+						foreach ( $top_keywords as $tk ) {
+						?>
 						<tr>
 							<td><a href="/analytics/keyword/?k=<?php echo urlencode( $tk['keyword'] ); ?>" title="<?php echo $tk['keyword']; ?>"><?php echo $tk['keyword']; ?></a></td>
 							<td class="text-right"><?php echo number_format( $tk['visits'] ); ?></td>

@@ -13,7 +13,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch( $_GET['iSortCol_' . $i] ) {
+		switch ( $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'days_left';
@@ -44,7 +44,7 @@ $c = new Checklists;
 /* Filtering  */
 $where = ' AND a.`checklist_id` NOT IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )';
 
-if( !empty( $_GET['sSearch'] ) )
+if ( !empty( $_GET['sSearch'] ) )
 	$where .= " AND b.`title` LIKE '" . $c->db->escape( $_GET['sSearch'] ) . "%'";
 
 // Get websites
@@ -53,10 +53,10 @@ $checklists_count = $c->count_checklists( $where );
 
 $aaData = array();
 
-if( is_array( $checklists ) )
-foreach( $checklists as $cl ) {
+if ( is_array( $checklists ) )
+foreach ( $checklists as $cl ) {
 	// Determined which color should be used for days left
-	switch( $cl['days_left'] ) {
+	switch ( $cl['days_left'] ) {
 		case ( $cl['days_left'] < 10 ):
 			$color = 'red';
 		break;
@@ -70,7 +70,7 @@ foreach( $checklists as $cl ) {
 		break;
 	}
 		
-	$aaData[] = array( '<span class="' . $color . '">' . $cl['days_left'] . '</span>',  $cl['title'] . '<br /><a href="/checklists/view/' . $cl['checklist_id'] . '/" title="View Checklist">View</a>', $cl['type'], $cl['date_created'] );
+	$aaData[] = array( '<span class="' . $color . '">' . $cl['days_left'] . '</span>',  $cl['title'] . '<br /><a href="/checklists/view/?cid=' . $cl['checklist_id'] . '" title="View Checklist">View</a>', $cl['type'], $cl['date_created'] );
 }
 
 echo json_encode( array( 

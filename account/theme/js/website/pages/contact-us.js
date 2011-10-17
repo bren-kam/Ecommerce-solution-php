@@ -6,7 +6,7 @@ jQuery(function(){
 	
 	// Add Address functionality
 	$('#aAddLocation').click( function() {
-		if( !validateAddress( $('#tPhone'), $('#tFax'), $('#tEmail'), $('#tWebsite'), $('#tZip') ) )
+		if ( !validateAddress( $('#tPhone'), $('#tFax'), $('#tEmail'), $('#tWebsite'), $('#tZip') ) )
 			return false;
 		
 		// Add on to the list
@@ -44,7 +44,7 @@ jQuery(function(){
 	
 	// Save Address functionality
 	$('#aSaveAddress').live( 'click', function() {
-		if( !validateAddress( $('#tEditPhone'), $('#tEditFax'), $('#tEditEmail'), $('#tEditWebsite'), $('#tEditZip') ) )
+		if ( !validateAddress( $('#tEditPhone'), $('#tEditFax'), $('#tEditEmail'), $('#tEditWebsite'), $('#tEditZip') ) )
 				return false;
 		
 		var contact = $('#dContact' + $('#hContactID').val() );
@@ -72,7 +72,7 @@ jQuery(function(){
 	
 	// Delete Address functionality
 	$('.delete-address').live( 'click', function() {
-		if( confirm( 'Are you sure you want to delete this location?' ) ) {
+		if ( confirm( 'Are you sure you want to delete this location?' ) ) {
 			// Remove self
 			$(this).parents('.contact:first').remove();
 			
@@ -95,38 +95,38 @@ jQuery(function(){
 function validateAddress( phone, fax, email, website, zip ) {
 	var phoneVal = phone.val();
 	
-	// if( phoneVal.search(/[^0-9\- ()]/) >= 0 || ( phoneVal.length < 10 && phoneVal.length > 0 ) ) {
+	// if ( phoneVal.search(/[^0-9\- ()]/) >= 0 || ( phoneVal.length < 10 && phoneVal.length > 0 ) ) {
 	// Redid the regex to accept Honduras( and, possibly, other international phone#s )
-	if( phoneVal.search(/[^0-9\- ()]/) >= 0 || ( phoneVal.length < 9 && phoneVal.length > 0 ) || ( phoneVal.length > 21 ) ) {
+	if ( phoneVal.search(/[^0-9\- ()]/) >= 0 || ( phoneVal.length < 9 && phoneVal.length > 0 ) || ( phoneVal.length > 21 ) ) {
 		alert( 'The "Phone" field must contain a valid phone number' );
 		phone.focus();
 		return false;
 	}
 	
 	var faxVal = fax.val();
-	// if( faxVal.search(/[^0-9\- ()]/) >= 0 || ( faxVal.length < 10 && faxVal.length > 0 ) ) {
-	if( faxVal.search(/[^0-9\- ()]/) >= 0 || ( faxVal.length < 9 && faxVal.length > 0 ) || ( faxVal.length > 21 ) ) {
+	// if ( faxVal.search(/[^0-9\- ()]/) >= 0 || ( faxVal.length < 10 && faxVal.length > 0 ) ) {
+	if ( faxVal.search(/[^0-9\- ()]/) >= 0 || ( faxVal.length < 9 && faxVal.length > 0 ) || ( faxVal.length > 21 ) ) {
 		alert( 'The "Fax" field must contain a valid fax number' );
 		fax.focus();
 		return false;
 	}
 	
 	var emailVal = email.val();
-	if( emailVal.length > 0 && null == emailVal.match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/) ) {
+	if ( emailVal.length > 0 && null == emailVal.match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/) ) {
 		alert( 'The "Email" field must contain a valid email address' );
 		email.focus();
 		return false;
 	}
 	
 	var websiteVal = website.val();
-	if( websiteVal.length > 0 && null == websiteVal.match(/(([\w]+:)?\/\/)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,4}(:[\d]+)?(\/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?/) ) {
+	if ( websiteVal.length > 0 && null == websiteVal.match(/(([\w]+:)?\/\/)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,4}(:[\d]+)?(\/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?/) ) {
 		alert( 'The "Website" field must contain a valid link' );
 		website.focus();
 		return false;
 	}
 	
 	var zipVal = zip.val();
-	if( zipVal.search(/[^-0-9]/) >= 0 || ( zipVal.length < 5 && zipVal.length > 0 ) ) {
+	if ( zipVal.search(/[^-0-9]/) >= 0 || ( zipVal.length < 5 && zipVal.length > 0 ) ) {
 		//alert( 'The "Zip" field must contain a valid zip code' );
 		a = confirm( 'The ZIP you entered is not a standard US Zip code.  Is this intentional?' );
 		if (a == false){
@@ -144,7 +144,7 @@ function validateAddress( phone, fax, email, website, zip ) {
 function generateID() {
 	var newID = 10 + Math.floor(Math.random()*1001);
 	
-	if( '' == $('#dContact' + newID).text() )
+	if ( '' == $('#dContact' + newID).text() )
 		return newID;
 }
 

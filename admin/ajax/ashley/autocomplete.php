@@ -4,7 +4,7 @@
  * @package Imagine Retailer
  */
 
-if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 	$p = new Products;
 	
 	$suggestions = $p->autocomplete_new_ashley( $_POST['term'] );

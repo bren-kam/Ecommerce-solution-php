@@ -6,7 +6,7 @@
  */
 
 // Don't display anything
-if( !nonce::verify( $_POST['_nonce'], 'get-products' ) )
+if ( !nonce::verify( $_POST['_nonce'], 'get-products' ) )
 	exit;
 
 // Instantiate Classes
@@ -21,24 +21,24 @@ $where = '';
 $settings = $w->get_settings( 'limited-products' );
 
 // Category ID
-if( $category_id )
+if ( $category_id )
 	$where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $wc->get_all_child_categories( $category_id ) ) ) ) . ')';
 
 // Search type
-if( !empty( $_POST['v'] ) ) {
-	switch( $_POST['s'] ) {
+if ( !empty( $_POST['v'] ) ) {
+	switch ( $_POST['s'] ) {
 		case 'sku':
-			if( _('Enter SKU...') != $_POST['v'] )
+			if ( _('Enter SKU...') != $_POST['v'] )
 				$where .= " AND a.`sku` LIKE '" . $p->db->escape( $_POST['v'] ) . "%'";
 		break;
 
 		case 'product':
-			if( _('Enter Product Name...') != $_POST['v'] ) 
+			if ( _('Enter Product Name...') != $_POST['v'] ) 
 				$where .= " AND a.`name` LIKE '" . $p->db->escape( $_POST['v'] ) . "%'";
 		break;
 		
 		case 'brand':
-			if( _('Enter Brand...') != $_POST['v'] ) 
+			if ( _('Enter Brand...') != $_POST['v'] ) 
 				$where .= " AND d.`name` LIKE '" . $p->db->escape( $_POST['v'] ) . "%'";
 		break;
 	}
@@ -66,15 +66,15 @@ $product_count = $p->get_website_products_count( $where );
     </div>
 </div>
 <?php
-if( is_array( $products ) ) {
+if ( is_array( $products ) ) {
 	$remove_product_nonce = nonce::create('remove-product');
 	$confirm_remove_product = _('Are you sure you want to remove this product? It cannot be undone.');
 	$set_category_image_nonce = nonce::create('set-category-image');
 	
-foreach( $products as $product ) {
+foreach ( $products as $product ) {
 	$image_url = 'http://' . str_replace( ' ', '', $product['industry'] ) . '.retailcatalog.us/products/' . $product['product_id'] . '/';
 	
-	if( !empty(	$product['swatch'] ) ) 
+	if ( !empty(	$product['swatch'] ) ) 
 		$image_url .= $product['swatch'] . '/';
 	
 	$image_url .= $product['image'];

@@ -16,7 +16,7 @@ function postLoad( $ ) {
 	// Load initial categories
 	$.post( '/ajax/categories/get/', { '_nonce' : $('#_ajax_get_categories').val(), 'cid': 0 }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}
@@ -25,7 +25,7 @@ function postLoad( $ ) {
 		var categories = response['categories'], html = '';
 		
 		// Get html
-		for( var i = 0; i < categories.length; i++) {
+		for ( var i = 0; i < categories.length; i++) {
 			var c = categories[i];
 			html += categoryRow( c['category_id'], c['name'], 'Parent Category', c['image'], c['slug'], c['page_title'] );
 		}
@@ -47,7 +47,7 @@ function postLoad( $ ) {
 			
 			$.post( '/ajax/categories/update-sequence/', { '_nonce' : $('#_ajax_update_category_sequence').val(), 'pcid': parentCategoryID, 'sequence' : categoriesList }, function( response ) {
 				// Handle any errors
-				if( !response['result'] ) {
+				if ( !response['result'] ) {
 					alert( response['error'] );
 					return;
 				}
@@ -66,10 +66,10 @@ function postLoad( $ ) {
 	$('.category-actions a').live( 'click', function() {
 		var categoryID = $(this).parent().parent().attr('id').replace( /cat_?/, '' );
 		
-		if( 'Edit Category' == $(this).attr( 'title' ) ) {
+		if ( 'Edit Category' == $(this).attr( 'title' ) ) {
 			loadEditCategory( categoryID );
-		} else if( 'Delete Category' == $(this).attr( 'title') ) {
-			if( confirm( 'Are you sure you want to delete this category?' ) ) {
+		} else if ( 'Delete Category' == $(this).attr( 'title') ) {
+			if ( confirm( 'Are you sure you want to delete this category?' ) ) {
 				var categoryID = $(this).parent().parent().attr( 'id' ).replace( /cat_?/, '' );
 				deleteCategory( categoryID );
 			}
@@ -126,7 +126,7 @@ function categoryRow( categoryID, name, parentName, image, slug ) {
  */
 function loadCategories( categoryID, categoryName ) {
 	// Show the edit category as long as it's not the Main Categories
-	if( 0 == categoryID ) {
+	if ( 0 == categoryID ) {
 		$('#smEditDeleteCategory').fadeOut();
 	} else {
 		$('#smEditDeleteCategory').fadeIn();
@@ -143,7 +143,7 @@ function loadCategories( categoryID, categoryName ) {
 	});
 	
 	var aURL = $('#aURL' + categoryID);
-	if( aURL.length ) {
+	if ( aURL.length ) {
 		$('#pCurrentURL a').attr( 'href' , aURL.attr('href') ).html( aURL.html() );
 	} else {
 		$('#pCurrentURL a').attr( 'href' , 'javascript:;' ).html('');
@@ -156,7 +156,7 @@ function loadCategories( categoryID, categoryName ) {
 	// Do AJAX Call to get new categories
 	$.post( '/ajax/categories/get/', { '_nonce' : $('#_ajax_get_categories').val(), 'cid': categoryID }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}
@@ -164,7 +164,7 @@ function loadCategories( categoryID, categoryName ) {
 		// Load Parent Category
 		var parentCategory = response['parent_category'], parentName = '';
 		
-		if( null == parentCategory ) {
+		if ( null == parentCategory ) {
 			$('#iCurrentCategory').attr( 'src', '/media/images/categories/categories-big.gif' );
 			parentName = 'Parent Category';
 		} else {
@@ -174,7 +174,7 @@ function loadCategories( categoryID, categoryName ) {
 		
 		// Get the Root Slug Value
 		var breadCrumb = response['breadcrumb'], rootSlug = '';
-		for(i = 0; i < breadCrumb.length - 1 ; i++) {
+		for (i = 0; i < breadCrumb.length - 1 ; i++) {
 			rootSlug = breadCrumb[i]['slug'] + '/' + rootSlug;
 		}
 
@@ -182,31 +182,31 @@ function loadCategories( categoryID, categoryName ) {
 		var categories = response['categories'], dCategoryBreadCrumb = $('#dCategoryBreadCrumb'), html = '';
 		
 		// Get html
-		for( var i = 0; i < categories.length; i++) {
+		for ( var i = 0; i < categories.length; i++) {
 			var c = categories[i];
 			html += categoryRow( c['category_id'], c['name'], parentName, c['image'], rootSlug + '/' + c['slug'] );
 		}
 		
 		$("#dCategoriesList").html( html ).fadeIn();
 		
-		if( 0 == i )
+		if ( 0 == i )
 			$('#pNoSubCategories').show();
 		
 		dCategoryBreadCrumb.empty();
 		
-		for( i = 0; i < breadCrumb.length; i++ ) {
+		for ( i = 0; i < breadCrumb.length; i++ ) {
 			if ( 0 != i ) {
 				dCategoryBreadCrumb.prepend( '<a href="javascript:;" id="' + breadCrumb[i]['category_id'] + '">' + breadCrumb[i]['category_name'] + '</a>' );
 			} else {
 				dCategoryBreadCrumb.prepend( '<span>' + breadCrumb[i]['category_name'] + '</span>' );
 			}
 			
-			if( i != breadCrumb.length - 1 ) {
+			if ( i != breadCrumb.length - 1 ) {
 				dCategoryBreadCrumb.prepend( '<span> &raquo; </span>' );
 			}
 		}
 		
-		if( null != parentCategory ) {
+		if ( null != parentCategory ) {
 			var rootURL = $("#hRootURL").val();
 			$('#hCurrentCategory span').text( parentCategory['name'] );
 			$('#hCurrentCategoryID').val ( parentCategory['category_id'] );
@@ -263,7 +263,7 @@ function loadEditCategory( categoryID ) {
 function deleteCategory( categoryID ) {
 	$.post( '/ajax/categories/delete/', { '_nonce' : $('#_ajax_delete_category').val(), 'cid': categoryID }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}

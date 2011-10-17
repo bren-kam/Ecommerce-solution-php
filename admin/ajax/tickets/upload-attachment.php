@@ -3,7 +3,7 @@
  * @page Upload Attachment
  * @package Imagine Retailer
  */
-if( empty( $_FILES ) || !nonce::verify( $_POST['_nonce'], 'upload-attachment' ) ) 
+if ( empty( $_FILES ) || !nonce::verify( $_POST['_nonce'], 'upload-attachment' ) ) 
 	return;
 	
 global $user;

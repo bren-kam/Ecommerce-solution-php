@@ -26,10 +26,10 @@ $standard_pages = array( 'home', 'financing', 'current-offer', 'contact-us', 'ab
 $can_delete = $user['role'] >= 7;
 		
 // Create output
-if( is_array( $pages ) )
-foreach( $pages as $p ) {
+if ( is_array( $pages ) )
+foreach ( $pages as $p ) {
 	// We don't want to show all the pages
-	if( in_array( $p['slug'], $dont_show ) )
+	if ( in_array( $p['slug'], $dont_show ) )
 		continue;
 	
 	$actions = ( $can_delete && !in_array( $p['slug'], $standard_pages ) ) ? ' | <a href="/ajax/website/delete-page/?wpid=' . $p['website_page_id'] . '&amp;_nonce=' . $delete_page_nonce . '" title="' . _('Delete Page') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' : '';
@@ -40,7 +40,7 @@ foreach( $pages as $p ) {
 						<a href="/website/edit/?wpid=' . $p['website_page_id'] . '" title="' . _('Edit Page') . '">' . _('Edit') . '</a>' . $actions .
 					'</div>',
 					( $p['status'] ) ? _('Visible') : _('Not Visible'),
-					date_time::date( 'F jS, Y', $p['date_updated'] )
+					dt::date( 'F jS, Y', $p['date_updated'] )
 	);
 }
 
