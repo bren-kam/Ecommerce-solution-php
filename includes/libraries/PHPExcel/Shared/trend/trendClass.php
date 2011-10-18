@@ -87,13 +87,13 @@ class trendClass
 			case self::TREND_BEST_FIT_NO_POLY	:
 				//	If the request is to determine the best fit regression, then we test each trend line in turn
 				//	Start by generating an instance of each available trend method
-				foreach(self::$_trendTypes as $trendMethod) {
+				foreach (self::$_trendTypes as $trendMethod) {
 					$className = 'PHPExcel_'.$trendMethod.'BestFit';
 					$bestFit[$trendMethod] = new $className($yValues,$xValues,$const);
 					$bestFitValue[$trendMethod] = $bestFit[$trendMethod]->getGoodnessOfFit();
 				}
 				if ($trendType != self::TREND_BEST_FIT_NO_POLY) {
-					foreach(self::$_trendTypePolyOrders as $trendMethod) {
+					foreach (self::$_trendTypePolyOrders as $trendMethod) {
 						$order = substr($trendMethod,-1);
 						$bestFit[$trendMethod] = new PHPExcel_Polynomial_Best_Fit($order,$yValues,$xValues,$const);
 						if ($bestFit[$trendMethod]->getError()) {

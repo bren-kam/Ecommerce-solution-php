@@ -224,7 +224,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 
 	private static function identifyFixedStyleValue($styleList,&$styleAttributeValue) {
 		$styleAttributeValue = strtolower($styleAttributeValue);
-		foreach($styleList as $style) {
+		foreach ($styleList as $style) {
 			if ($styleAttributeValue == strtolower($style)) {
 				$styleAttributeValue = $style;
 				return true;
@@ -258,12 +258,12 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 
 			$docProps = $objPHPExcel->getProperties();
 			$officeProperty = $xml->children($namespacesMeta['office']);
-			foreach($officeProperty as $officePropertyData) {
+			foreach ($officeProperty as $officePropertyData) {
 				$officePropertyDC = array();
 				if (isset($namespacesMeta['dc'])) {
 					$officePropertyDC = $officePropertyData->children($namespacesMeta['dc']);
 				}
-				foreach($officePropertyDC as $propertyName => $propertyValue) {
+				foreach ($officePropertyDC as $propertyName => $propertyValue) {
 //					echo $propertyName.' = '.$propertyValue.'<hr />';
 
 					switch ($propertyName) {
@@ -289,7 +289,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 				if (isset($namespacesMeta['dc'])) {
 					$officePropertyMeta = $officePropertyData->children($namespacesMeta['meta']);
 				}
-				foreach($officePropertyMeta as $propertyName => $propertyValue) {
+				foreach ($officePropertyMeta as $propertyName => $propertyValue) {
 					$propertyValueAttributes = $propertyValue->attributes($namespacesMeta['meta']);
 
 //					echo $propertyName.' = '.$propertyValue.'<br />';
@@ -315,10 +315,10 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 //			echo '</pre><hr />';
 
 			$workbook = $xml->children($namespacesContent['office']);
-			foreach($workbook->body->spreadsheet as $workbookData) {
+			foreach ($workbook->body->spreadsheet as $workbookData) {
 				$workbookData = $workbookData->children($namespacesContent['table']);
 				$worksheetID = 0;
-				foreach($workbookData->table as $worksheetDataSet) {
+				foreach ($workbookData->table as $worksheetDataSet) {
 					$worksheetData = $worksheetDataSet->children($namespacesContent['table']);
 //					print_r($worksheetData);
 //					echo '<br />';
@@ -340,12 +340,12 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 					}
 
 					$rowID = 1;
-					foreach($worksheetData as $key => $rowData) {
+					foreach ($worksheetData as $key => $rowData) {
 //						echo '<b>'.$key.'</b><br />';
 						switch ($key) {
 							case 'table-row' :
 								$columnID = 'A';
-								foreach($rowData as $key => $cellData) {
+								foreach ($rowData as $key => $cellData) {
 //									echo '<b>'.$columnID.$rowID.'</b><br />';
 									$cellDataText = $cellData->children($namespacesContent['text']);
 									$cellDataOfficeAttributes = $cellData->attributes($namespacesContent['office']);
@@ -416,7 +416,7 @@ class PHPExcel_Reader_OOCalc implements PHPExcel_Reader_IReader
 //										echo 'Formula: '.$cellDataFormula.'<br />';
 										$cellDataFormula = substr($cellDataFormula,strpos($cellDataFormula,':=')+1);
 										$temp = explode('"',$cellDataFormula);
-										foreach($temp as $key => &$value) {
+										foreach ($temp as $key => &$value) {
 											//	Only replace in alternate array entries (i.e. non-quoted blocks)
 											if (($key % 2) == 0) {
 												$value = preg_replace('/\[\.(.*):\.(.*)\]/Ui','$1:$2',$value);

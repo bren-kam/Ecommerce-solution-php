@@ -22,7 +22,7 @@ $delete_user_nonce = nonce::create( 'delete-user' );
 $confirm_delete = _('Are you sure you want to delete this user? This cannot be undone.');
 
 // Format Data
-foreach( $users as $usr ) {
+foreach ( $users as $usr ) {
 	$data[] = array(
 		$usr['email'] . '<br />
 		<div class="actions">' . 
@@ -31,7 +31,7 @@ foreach( $users as $usr ) {
 		</div>',
 		 $usr['billing_first_name'],
 		$usr['status'],
-		date_time::date( 'F j, Y', $usr['date_registered'] )
+		dt::date( 'F j, Y', $usr['date_registered'] )
 	);
 }
 

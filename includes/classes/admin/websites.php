@@ -12,7 +12,7 @@ class Websites extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -35,10 +35,10 @@ class Websites extends Base_Class {
 			'subdomain' => $subdomain, 
 			'title' => $title, 
 			'type' => $type,
-			'date_created' => date_time::now() ), 'iisssss');
+			'date_created' => dt::now() ), 'iisssss');
 		
 		// Handle errors
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err(  'Failed to create website.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -47,10 +47,10 @@ class Websites extends Base_Class {
 		$website_id = $this->db->insert_id;
 		
 		// Create checklist
-		$this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => date_time::now() ), 'iss' );
+		$this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => dt::now() ), 'iss' );
 		
 		// Handle errors
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create checklist.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -61,8 +61,8 @@ class Websites extends Base_Class {
 		// Create checklist items
 		$SQL = '';
 		
-		for( $i = 1; $i <= 36; $i++ ) {
-			if( !empty( $SQL ) )
+		for ( $i = 1; $i <= 36; $i++ ) {
+			if ( !empty( $SQL ) )
 				$SQL .= ',';
 			
 			$SQL .= sprintf( "( %d, %d )", $checklist_id, $i );
@@ -72,7 +72,7 @@ class Websites extends Base_Class {
 		$this->db->query( "INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) VALUES " . $SQL );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create checklist items', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -92,7 +92,7 @@ class Websites extends Base_Class {
 		$this->db->update( 'websites', $fields, array( 'website_id' => $website_id ), $fields_safety, 'i' );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -112,7 +112,7 @@ class Websites extends Base_Class {
 		$this->db->update( 'websites', array( 'logo' => $logo, 'phone' => $phone ), array( 'website_id' => $website_id ), 'ss', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website header', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -130,7 +130,7 @@ class Websites extends Base_Class {
 		$website = $this->db->get_row( 'SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = ' . (int) $website_id, ARRAY_A );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -148,7 +148,7 @@ class Websites extends Base_Class {
 		$websites = $this->db->get_results( 'SELECT * FROM `websites` WHERE `user_id` = ' . (int) $user_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get user websites.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -168,7 +168,7 @@ class Websites extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
 		
 		// What other sites we might need to omit
@@ -176,20 +176,20 @@ class Websites extends Base_Class {
 		
 		// Form the where
 		$where = ( empty( $where ) ) ? "WHERE a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" : "WHERE 1 $where AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )";
-		
+				
 		// Get the websites
 		// $websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		// Original version ^, version below omits counting because it's difficult to get a 100% accurate count
-		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, d.`contact_name` AS online_specialist, e.`name` AS company FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) LEFT JOIN `companies` AS e ON ( b.`company_id` = e.`company_id` ) $where AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
-		foreach( $websites as &$website ){
+		foreach ( $websites as &$website ){
 			$website_id = $website['website_id'];
 			$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`product_id` ) AS count FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND b.`publish_visibility` <> 'deleted' AND a.`website_id` = $website_id" );
 			$website['used_products'] = $count;
 		}
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$user_info = '[ ' . implode( ",", $user ) . ' ]';
 			$this->err( ( 'Failed to get all websites for user: ' . $user_info ), __LINE__, __METHOD__ );
 			return false;
@@ -208,7 +208,7 @@ class Websites extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
 		
 		// What other sites we might need to omit
@@ -222,7 +222,7 @@ class Websites extends Base_Class {
 		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id`", ARRAY_A ) );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$user_info = '[ ' . implode( ",", $user ) . ' ]';
 			$this->err( 'Failed to count websites.  User info: ' . $user_info, __LINE__, __METHOD__ );
 			return false;
@@ -248,7 +248,7 @@ class Websites extends Base_Class {
 		$results = $this->db->prepare( "SELECT DISTINCT( a.`$field` ) FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`$field` LIKE ? $where AND a.`website_id` NOT IN ( 96, 114, 115, 116 ) ORDER BY a.`$field`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -267,7 +267,7 @@ class Websites extends Base_Class {
 		$results = $this->db->prepare( "SELECT a.`user_id` AS object_id, a.`contact_name` AS online_specialist FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`os_user_id` ) WHERE a.`contact_name` LIKE ? GROUP BY a.`user_id` ORDER BY a.`contact_name`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete online specialists entries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -285,7 +285,7 @@ class Websites extends Base_Class {
 		$ftp_data = $this->db->get_row( 'SELECT `ftp_host`, `ftp_username`, `ftp_password` FROM `websites` WHERE `website_id` = ' . (int) $website_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get FTP data.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -303,7 +303,7 @@ class Websites extends Base_Class {
 		$website_id = (int) $website_id;	
 		$ga_profile_id = $this->db->get_var( "SELECT `ga_profile_id` FROM `websites` WHERE `website_id` = $website_id LIMIT 1" );
 		
-		if( !$ga_profile_id ) return false;
+		if ( !$ga_profile_id ) return false;
 		
 		return $ga_profile_id;
 	}
@@ -318,7 +318,7 @@ class Websites extends Base_Class {
 		$industry_ids = $this->db->get_col( 'SELECT `industry_id` FROM `website_industries` WHERE `website_id` = ' . (int) $website_id );
 				
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -335,15 +335,15 @@ class Websites extends Base_Class {
 	 */
 	public function add_industries( $industry_ids, $website_id ) {
 		// No nead in going on
-		if( !is_array( $industry_ids ) || 0 >= count( $industry_ids ) )
+		if ( !is_array( $industry_ids ) || 0 >= count( $industry_ids ) )
 			return;
 		
 		// Create empty $SQL variable to be added to
 		$SQL = '';
 		
 		// Create $SQL statement
-		foreach( $industry_ids as $i_id ) {
-			if( !empty( $SQL ) )
+		foreach ( $industry_ids as $i_id ) {
+			if ( !empty( $SQL ) )
 				$SQL .= ',';
 			
 			$SQL .= sprintf( "( %d, %d )", $website_id, $i_id );
@@ -353,7 +353,7 @@ class Websites extends Base_Class {
 		$this->db->query( 'INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES' . $SQL );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -371,7 +371,7 @@ class Websites extends Base_Class {
 		$this->db->query( 'DELETE FROM `website_industries` WHERE `website_id` = ' . (int) $website_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete website industries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -388,10 +388,10 @@ class Websites extends Base_Class {
 	 * @return int
 	 */
 	public function create_note( $website_id, $user_id, $message ) {
-		$this->db->insert( 'website_notes', array( 'website_id' => $website_id, 'user_id' => $user_id, 'message' => $message, 'date_created' => date_time::now() ), 'iiss' );
+		$this->db->insert( 'website_notes', array( 'website_id' => $website_id, 'user_id' => $user_id, 'message' => $message, 'date_created' => dt::now() ), 'iiss' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete create website note.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -412,7 +412,7 @@ class Websites extends Base_Class {
 		$this->db->update( 'website_notes', array( 'message' => $message ), array( 'website_note_id' => $website_note_id ), 's', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website note.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -430,7 +430,7 @@ class Websites extends Base_Class {
 		$this->db->query( 'DELETE FROM `website_notes` WHERE `website_note_id` = ' . (int) $website_note_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete website note.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -451,7 +451,7 @@ class Websites extends Base_Class {
 		$notes = $this->db->get_results( "SELECT a.`website_note_id`, a.`user_id`, a.`message`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`email`, b.`contact_name`, b.`store_name`, c.`title` FROM `website_notes` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) WHERE a.`website_id` = $website_id ORDER BY date_created DESC", ARRAY_A );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website notes.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -479,18 +479,18 @@ class Websites extends Base_Class {
 		$subdomain = ( !empty( $web['subdomain'] ) ) ? $web['subdomain'] . '/' : '';
 		$subdomain2 = ( !empty( $web['subdomain'] ) ) ? '/' . $web['subdomain'] : '';
 		
-		if( '0' == $web['version'] ) {
+		if ( '0' == $web['version'] ) {
 			$ftp_data = $this->get_ftp_data( $website_id );
 			
-			if( $ftp_data ) {
-				if( mysql_errno() )
+			if ( $ftp_data ) {
+				if ( mysql_errno() )
 					return false;
 				
 				// Create website industry
 				$this->db->insert( 'website_industries', array( 'website_id' => $website_id, 'industry_id' => $industry_id ), 'ii' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert website industry.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -503,10 +503,10 @@ class Websites extends Base_Class {
 				$ftp = new FTP( $website_id, "/public_html/" . $subdomain );
 				$ftp->cwd = "/public_html/" . $subdomain;
 				
-				if ( !$ftp->add( '/home/imaginer/public_html/admin/media/data/htaccess.txt', '', '.htaccess' ) )
+				if ( !$ftp->add( '/home/develop4/public_html/admin/media/data/htaccess.txt', '', '.htaccess' ) )
 					return false;
 
-				if ( !$ftp->add( '/home/imaginer/public_html/admin/media/data/config.php', '' ) )
+				if ( !$ftp->add( '/home/develop4/public_html/admin/media/data/config.php', '' ) )
 					return false;
 				
 				
@@ -578,7 +578,7 @@ class Websites extends Base_Class {
 				$this->db->query( Pre_Data::pages_sql( $website_id ) );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert website pages.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -586,7 +586,7 @@ class Websites extends Base_Class {
 				$website_page_id = $this->db->get_var( "SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $website_id AND `slug` = 'sidebar'" );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to get website page id.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -595,7 +595,7 @@ class Websites extends Base_Class {
 				$this->db->query( Pre_Data::attachments_sql( $website_page_id ) );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert website sidebar attachments.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -604,16 +604,16 @@ class Websites extends Base_Class {
 				$this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( $website_id, 'page_room-planner-slug', 'plan-your-room' ), ( $website_id, 'page_room-planner-title', 'Plan Your Room' )" );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert website settings.', __LINE__, __METHOD__ );
 					return false;
 				}
 				
 				// Create default email list
-				$email_list_result = $this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => date_time::date('Y-m-d H:i:s') ), 'iss' );
+				$email_list_result = $this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert default email list.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -621,19 +621,19 @@ class Websites extends Base_Class {
 				$email_list_id = $this->db->insert_id;
 				
 				// Create default email autoresponder
-				$this->db->insert( 'email_autoresponders', array( 'website_id' => $website_id, 'email_list_id' => $email_list_id, 'name' => 'Default', 'subject' => $web['title'] . ' - Current Offer', 'message' => '<p>Thank you for signing up for the latest tips, trends and special offers. Here is the current offer from our store.<p><br /><br />', 'current_offer' => 1, 'default' => 1, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'iisssiis' );
+				$this->db->insert( 'email_autoresponders', array( 'website_id' => $website_id, 'email_list_id' => $email_list_id, 'name' => 'Default', 'subject' => $web['title'] . ' - Current Offer', 'message' => '<p>Thank you for signing up for the latest tips, trends and special offers. Here is the current offer from our store.<p><br /><br />', 'current_offer' => 1, 'default' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisssiis' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert email autoresponder.', __LINE__, __METHOD__ );
 					return false;
 				}
 				
 				// Create default email template
-				$this->db->insert( 'email_templates', array( 'name' => 'Default', 'template' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>[subject]</title><style type="text/css">body { width: 800px; font-family:Arial, Helvetica, sans-serif; font-size:13px; margin: 15px auto; }p { line-height: 21px; padding-bottom: 7px; }h2{ padding:0; margin:0; }td{ font-size: 13px; padding-right: 10px; }li { padding-top: 7px; }</style></head><body>[message]</body></html>', 'type' => 'default', 'date_created' => date_time::date('Y-m-d H:i:s') ), 'ssss' );
+				$this->db->insert( 'email_templates', array( 'name' => 'Default', 'template' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>[subject]</title><style type="text/css">body { width: 800px; font-family:Arial, Helvetica, sans-serif; font-size:13px; margin: 15px auto; }p { line-height: 21px; padding-bottom: 7px; }h2{ padding:0; margin:0; }td{ font-size: 13px; padding-right: 10px; }li { padding-top: 7px; }</style></head><body>[message]</body></html>', 'type' => 'default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'ssss' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert email template result.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -644,7 +644,7 @@ class Websites extends Base_Class {
 				$this->db->insert( 'email_template_associations', array( 'email_template_id' => $email_template_id, 'object_id' => $website_id, 'type' => 'website' ), 'iis' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert email template association.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -653,7 +653,7 @@ class Websites extends Base_Class {
 				$this->db->insert( 'email_settings', array( 'website_id' => $website_id, 'key' => 'timezone', 'value' => '-5.0' ), 'iss' );
 				
 				// Handle any error
-				if( $this->db->errno() ) {
+				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert email setting.', __LINE__, __METHOD__ );
 					return false;
 				}
@@ -678,7 +678,7 @@ class Websites extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// Has to be Kerry or Casey
-		if( !in_array( $user['user_id'], array( 1, 565 ) ) )
+		if ( !in_array( $user['user_id'], array( 1, 565 ) ) )
 			return false;
 		
 		// Delete from email section
@@ -734,7 +734,7 @@ class Websites extends Base_Class {
 		$this->db->update( 'websites', array( 'version' => $system_version ), array( 'website_id' => $website_id ), 's', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website version.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -751,28 +751,28 @@ class Websites extends Base_Class {
 	public function report( $criteria = '' ) {
 		global $user;
 		
-		if( empty( $criteria ) && empty( $_SESSION['reports']['where'] ) )
+		if ( empty( $criteria ) && empty( $_SESSION['reports']['where'] ) )
 			return false;
 		
 		// Create the where
 		$where = '';
 		
-		if( empty( $criteria ) ) {
+		if ( empty( $criteria ) ) {
 			$where = $_SESSION['reports']['where'];
 		} else {
-			if( is_array( $criteria ) )
-			foreach( $criteria as $type => $type_array ) {
-				if( !is_array( $type_array ) )
+			if ( is_array( $criteria ) )
+			foreach ( $criteria as $type => $type_array ) {
+				if ( !is_array( $type_array ) )
 					continue;
 				
-				switch( $type ) {
+				switch ( $type ) {
 					case 'brand':
 						$where .= ' AND ( e.`brand_id` IN( ';
 						
 						$brand_where = '';
 						
-						foreach( $type_array as $object_id => $value ) {
-							if( !empty( $brand_where ) )
+						foreach ( $type_array as $object_id => $value ) {
+							if ( !empty( $brand_where ) )
 								$brand_where .= ',';
 							
 							$brand_where .= (int) $object_id;
@@ -784,8 +784,8 @@ class Websites extends Base_Class {
 					case 'checkboxes':
 						$where .= ' AND ( 1';
 						
-						foreach( $type_array as $service => $value ) {
-							switch( $service ) {
+						foreach ( $type_array as $service => $value ) {
+							switch ( $service ) {
 								case 'additional-email-addresses':
 									$where .= ' AND a.`additional-email-addresses` = 1';
 								break;
@@ -828,8 +828,8 @@ class Websites extends Base_Class {
 						
 						$company_where = '';
 						
-						foreach( $type_array as $object_id => $value ) {
-							if( !empty( $company_where ) )
+						foreach ( $type_array as $object_id => $value ) {
+							if ( !empty( $company_where ) )
 								$company_where .= ',';
 							
 							$company_where .= (int) $object_id;
@@ -843,8 +843,8 @@ class Websites extends Base_Class {
 						
 						$online_specialist_where = '';
 						
-						foreach( $type_array as $object_id => $value ) {
-							if( !empty( $online_specialist_where ) )
+						foreach ( $type_array as $object_id => $value ) {
+							if ( !empty( $online_specialist_where ) )
 								$online_specialist_where .= ',';
 							
 							$online_specialist_where .= (int) $object_id;
@@ -855,15 +855,15 @@ class Websites extends Base_Class {
 				}
 			}
 			
-			if( $user['role'] < 8 ) $where .= " AND b.`company_id` = " . $user['company_id'] . " ";
+			if ( $user['role'] < 8 ) $where .= " AND b.`company_id` = " . $user['company_id'] . " ";
 			$_SESSION['reports']['where'] = $where;
 		}
 		
 		// Title, Company, #of products, Date Signed Up
-		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT(  SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website report.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -893,39 +893,28 @@ class Websites extends Base_Class {
 		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> '' AND `live` = $live", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get websites for upgrading.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags' . ' | tail -n 1 | tr -d "/"' ) );
 		
-		// Get phpseclib
-		library('phpseclib/Net/SSH2');
-		
-		$ssh = new Net_SSH2( '199.204.138.145' );
-		
-		if( !$ssh->login( 'root', 'GcK5oy29IiPi' ) )
-			return false;
-		
-		$i = 1;
-		foreach( $websites as $w ) {
-			//if( in_array( $w['website_id'], $omit_websites ) || version_compare( $w['version'], $system_version, '>=' ) )
-				//continue;
+		foreach ( $websites as $w ) {
+			if ( in_array( $w['website_id'], $omit_websites ) || version_compare( $w['version'], $system_version, '>=' ) )
+				continue;
 			
 			$ftp['host'] = security::decrypt( base64_decode( $w['ftp_host'] ), ENCRYPTION_KEY );
 			$ftp['username'] = security::decrypt( base64_decode( $w['ftp_username'] ), ENCRYPTION_KEY );
-			//$ftp['password'] = security::decrypt( base64_decode( $w['ftp_password'] ), ENCRYPTION_KEY );
+			$ftp['password'] = security::decrypt( base64_decode( $w['ftp_password'] ), ENCRYPTION_KEY );
 			
+			$connection = ssh2_connect( $ftp['host'], 22 );
+			if ( !@ssh2_auth_password( $connection, $ftp['username'], $ftp['password'] ) )
+				continue;
 			
-			$response = $ssh->exec( 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . ' /home/' . $ftp['username'] . '/public_html' );
-			
-			if ( stristr( $response, 'Permission denied' ) )
-				echo "$i) ", $ftp['host'], ':<br />', nl2br( $response ), '<br /><hr />';
+			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . ' public_html' );
 			
 			$this->update_website_version( $system_version, $w['website_id'] );
-			
-			$i++;
 		}
 		
 		return true;
@@ -939,12 +928,12 @@ class Websites extends Base_Class {
 	 * @return bool
 	 */
 	public function delete_settings( $website_id, $keys ) {
-		foreach( $keys as $key ) {
+		foreach ( $keys as $key ) {
 			$this->db->prepare( "DELETE FROM `website_settings` WHERE `website_id` = $website_id AND `key` = ?", 's', $key )->query('');
 		}
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete website settings.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -975,7 +964,7 @@ class Websites extends Base_Class {
 		$this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website settings.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -991,25 +980,35 @@ class Websites extends Base_Class {
 	 * @return array $results
 	 */
 	public function get_settings( $website_id, $keys ) {
-		$keys = implode( "','", $keys );
-		$keys = "'" . $keys . "'";
+		if ( !is_array( $keys ) )
+			return;
 		
-		$settings = $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $website_id AND `key` IN ( $keys )", ARRAY_A );
+		$values = '';
 		
-		if( empty( $settings ) ) return;
-		
-		$values = array();
-		foreach( $settings as $setting ) {
-			$values[ $setting['key'] ] = $setting['value'];
+		foreach ( $keys as $k ) {
+			if ( !empty( $values ) )
+				$values .= ',';
+			
+			$values .= "'" . $this->db->escape( $k ) . "'";
 		}
 		
+		$settings = $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $website_id AND `key` IN ( $values )", ARRAY_A );
+		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website settings.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $values;
+		// Assign the key
+		$settings = ar::assign_key( $settings, 'key' );
+		
+		foreach ( $keys as $key ) {
+			if ( !isset( $settings[$key] ) )
+				$settings[$key] = '';
+		}
+		
+		return $settings;
 	}
 	
 	/**
@@ -1022,7 +1021,7 @@ class Websites extends Base_Class {
 		$this->db->prepare( 'DELETE FROM `website_image_dimensions` WHERE `image_url` = ?', 's', $url )->query('');
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete image dimensions.', __LINE__, __METHOD__ );
 			return false;
 		}

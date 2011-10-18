@@ -5,8 +5,8 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_nonce'], 'search' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'search' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in get a report.') ) );
 		exit;
 	}

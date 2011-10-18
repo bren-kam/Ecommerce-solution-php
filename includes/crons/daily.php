@@ -2,7 +2,7 @@
 $mysqli =  mysqli_connect( 'localhost', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' ); 
 
 // Update automatic statistics
-require( '/home/imaginer/public_html/includes/libraries/statistics-api.php' );
+require( '/home/develop4/public_html/includes/libraries/statistics-api.php' );
 $stat = new Stat_API( '941cb213d6bbf2dd73c1214fad6321e6' );
 
 // Get the total paid users

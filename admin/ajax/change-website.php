@@ -12,7 +12,7 @@ $ajax->ok( $user, _('You must be signed in change a website.') );
 $website_id = (int) $_GET['wid'];
 
 // Set the website
-if( array_key_exists( $website_id, $user['websites'] ) ) {
+if ( array_key_exists( $website_id, $user['websites'] ) ) {
 	// Set the website
 	$user['website'] = $user['websites'][$website_id];
 	

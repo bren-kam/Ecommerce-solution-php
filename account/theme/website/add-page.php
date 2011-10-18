@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Validation
@@ -23,12 +23,15 @@ add_footer( $v->js_validation() );
 
 $w = new Websites;
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'add-page' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-page' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) )
+	if ( empty( $errs ) )
 		$success = $w->create_page( $_POST['tSlug'], $_POST['tTitle'] );
 }
 
@@ -44,14 +47,14 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'add_page' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo _('Your page has been successfully added!'); ?></p>
 		</div>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fAddPage" action="/website/add-page/" method="post">

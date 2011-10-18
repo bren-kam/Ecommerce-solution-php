@@ -27,7 +27,7 @@ $pe->setActiveSheetIndex(0)
 
 // Start showing each of the items
 $row = 3;
-foreach( $websites as $w ) {
+foreach ( $websites as $w ) {
 	// Make the title of each section bold
 	$pe->getActiveSheet()
 		->setCellValue( 'A' . $row, $w['title'] )

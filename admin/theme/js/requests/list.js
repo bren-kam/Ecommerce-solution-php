@@ -45,12 +45,12 @@ function postLoad( $ ) {
 	$('.delete-request').live( 'click', function() {
 		var requestID = $(this).attr('id').replace( 'aDelete', '' );
 		
-		if( !confirm( "Are you sure you want to delete this request? This action cannot be undone." ) ) 
+		if ( !confirm( "Are you sure you want to delete this request? This action cannot be undone." ) ) 
 			return;
 		
 		$.post( '/ajax/requests/delete/', { '_nonce': $('#_ajax_delete_request').val(), 'rid': requestID }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -67,7 +67,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );

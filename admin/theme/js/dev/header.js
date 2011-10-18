@@ -3,7 +3,7 @@ jQuery(function(){
 	$('#aTicket').click( function() {
 		var a = $(this);
 		
-		if( a.hasClass('loaded') ) {
+		if ( a.hasClass('loaded') ) {
 			new Boxy( $('#dTicketPopup'), {
 				title : a.attr('title')
 			});
@@ -25,12 +25,12 @@ jQuery(function(){
 				beforeSubmit	: function() {
 					var tTicketSummary = $('#tTicketSummary'), summary = tTicketSummary.val(), taTicket = $('#taTicket'), message = taTicket.val();
 					
-					if( !summary.length || summary == tTicketSummary.attr('tmpval') ) {
+					if ( !summary.length || summary == tTicketSummary.attr('tmpval') ) {
 						alert( tTicketSummary.attr('error') );
 						return false;
 					}
 					
-					if( !message.length || message == taTicket.attr('tmpval') ) {
+					if ( !message.length || message == taTicket.attr('tmpval') ) {
 						alert( taTicket.attr('error') );
 						return false;
 					}

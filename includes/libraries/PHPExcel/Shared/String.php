@@ -149,7 +149,7 @@ class PHPExcel_Shared_String
 	 * @return 	string
 	 */
 	public static function ControlCharacterOOXML2PHP($value = '') {
-		if(empty(self::$_controlCharacters)) {
+		if (empty(self::$_controlCharacters)) {
 			self::_buildControlCharacters();
 		}
 
@@ -171,7 +171,7 @@ class PHPExcel_Shared_String
 	 * @return 	string
 	 */
 	public static function ControlCharacterPHP2OOXML($value = '') {
-		if(empty(self::$_controlCharacters)) {
+		if (empty(self::$_controlCharacters)) {
 			self::_buildControlCharacters();
 		}
 

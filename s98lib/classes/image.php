@@ -21,7 +21,7 @@ class image extends Base_Class {
 	 * @param int $height_contraint
 	 * @return array( $width, $height )
 	 */
-	public function proportions( $width, $height, $width_constraint, $height_constraint ) {
+	public static function proportions( $width, $height, $width_constraint, $height_constraint ) {
 		if ( $width <= $width_constraint && $height <= $height_constraint )
 			return array( $width, $height );
 		
@@ -59,7 +59,7 @@ class image extends Base_Class {
 	 * @param bool $keep_proportions (optional|true) whether to keep the proportions of the image
 	 * @param bool $fill_constraints (optional|true) whether to fill the constraints
 	 */
-	public function resize( $image_to_resize, $save_folder, $name = '', $width_constraint = 100, $height_constraint = 100, $quality = 90, $keep_proportions = true, $fill_constraints = true ) {
+	public static function resize( $image_to_resize, $save_folder, $name = '', $width_constraint = 100, $height_constraint = 100, $quality = 90, $keep_proportions = true, $fill_constraints = true ) {
 		if ( !file_exists( $image_to_resize ) )
 			return false;
 		

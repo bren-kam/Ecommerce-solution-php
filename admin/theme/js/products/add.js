@@ -16,7 +16,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			var cacheType = $('#sAutoComplete').val();
 			
 			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in cache[cacheType] ) {
+			if ( request['term'] in cache[cacheType] ) {
 				response( $.map( cache[cacheType][request['term']], function( item ) {
 					return {
 						'label' : item['name'],
@@ -107,13 +107,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		// Check if the product already exists
 		$.post( '/ajax/products/sku-exists/', { _nonce: $('#_ajax_sku_exists').val(), sku : tRequestSKUValue }, function( response ) {
 			// Handle any error
-			if( !response['success'] ) {
+			if ( !response['success'] ) {
 				alert( response['error'] );
 				return;
 			}
 			
-			if( response['product'] ) {
-				if( confirm( response['confirm'] ) ) {
+			if ( response['product'] ) {
+				if ( confirm( response['confirm'] ) ) {
 					addProductToList( response['product']['product_id'], response['product']['name'] );
 					$('#tRequestSKU, #tCollection').val('');
 				}
@@ -157,7 +157,7 @@ function addProductToList( productID, productName ) {
 	var currentProductCount = parseInt( $('#sProductCount').text().replace( /[^0-9]/, '' ) ), allowedProducts = parseInt( $('#sAllowedProducts').text().replace( /[^0-9]/, '' ) );
 	
 	// Check if they ran out of products
-	if( currentProductCount >= allowedProducts ) {
+	if ( currentProductCount >= allowedProducts ) {
 		alert( $('#pAdditionalProducts').text() );
 		return;
 	}
@@ -197,7 +197,7 @@ function changeCount( number ) {
 	
 	$('#sProductCount').text( number_format( newProductCount ) );
 	
-	if( newProductCount >= allowedProducts ) {
+	if ( newProductCount >= allowedProducts ) {
 		$('#pAdditionalProducts').show();
 	} else {
 		$('#pAdditionalProducts').hide();
@@ -210,7 +210,7 @@ function changeCount( number ) {
 function updateProductList() {
 	var addProductCount = $('#fAddProducts input.hidden-product').length;
 	
-	if( addProductCount > 0 ) {
+	if ( addProductCount > 0 ) {
 		$('#pNewCount').find('span:first').text( addProductCount ).end().show();
 		$('#bAddProducts').show();
 		$('#pNoProducts').hide();

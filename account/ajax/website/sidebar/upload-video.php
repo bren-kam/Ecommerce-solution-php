@@ -31,7 +31,7 @@ $upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] ;
 $local_file_path = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . "/$name";
 
 // Directory needs to exist
-if( !is_dir( $upload_dir ) )
+if ( !is_dir( $upload_dir ) )
 	mkdir( $upload_dir, 0777, true );
 
 // Move it to a local file

@@ -18,7 +18,7 @@ Source Listing:
   ?>
 </ul>
 <?php
-if( isset($_REQUEST['view']) ) {
+if ( isset($_REQUEST['view']) ) {
 	$hash = $_REQUEST['view'];
 	$n = array_search($hash, array_map(sha1, $files));
 	$fileName = $files[$n];

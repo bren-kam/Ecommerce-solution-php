@@ -23,9 +23,9 @@ $delete_email_message_nonce = nonce::create( 'delete-email-message' );
 $statuses = array( 'Draft', 'Scheduled', 'Sent' );
 
 // Create output
-if( is_array( $messages ) )
-foreach( $messages as $m ) {
-	if( $m['status'] < 2 ) {
+if ( is_array( $messages ) )
+foreach ( $messages as $m ) {
+	if ( $m['status'] < 2 ) {
 		$actions = '<a href="/email-marketing/emails/send/?emid=' . $m['email_message_id'] . '" title="' . _('Edit Message') . '">' . _('Edit') . '</a> | ';
 		$actions .= '<a href="/ajax/email-marketing/emails/delete/?emid=' . $m['email_message_id'] . '&amp;_nonce=' . $delete_email_message_nonce . '" title="' . _('Delete Email Message') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 	} else {
@@ -35,7 +35,7 @@ foreach( $messages as $m ) {
 	$data[] = array( 
 		format::limit_chars( $m['subject'], 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
 		$statuses[$m['status']],
-		date_time::date( 'F jS, Y g:i a', $m['date_sent'] )
+		dt::date( 'F jS, Y g:i a', $m['date_sent'] )
 	);
 }
 

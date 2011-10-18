@@ -12,8 +12,8 @@ $b = new Brands;
 
 $ac_suggestions = $b->autocomplete( $_POST['term'] );
 
-if( is_array( $ac_suggestions ) )
-foreach( $ac_suggestions as $acs ) {
+if ( is_array( $ac_suggestions ) )
+foreach ( $ac_suggestions as $acs ) {
 	$suggestions[] = array( 'name' => html_entity_decode( $acs['name'], ENT_QUOTES, 'UTF-8' ), 'value' => $acs['value'] );
 }
 

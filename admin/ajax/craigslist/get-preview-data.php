@@ -5,7 +5,7 @@
  * @subpackage Admin
  */
 
-if( nonce::verify( $_POST['_nonce'], 'preview-craigslist' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'preview-craigslist' ) ) {
 	$c = new Craigslist;
 		
 	$results = $c->get_preview_data( $_POST['cid'], $_POST['pid'] );

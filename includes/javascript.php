@@ -24,16 +24,16 @@ header::send( array(
 // header_remove('Pragma'); Requires PHP 5.3
 $js_paths = array( INC_PATH, THEME_PATH );
 
-foreach( $files as $js_file ) {
-	if( '/' == $js_file[0] )
+foreach ( $files as $js_file ) {
+	if ( '/' == $js_file[0] )
 		$js_file = substr( $js_file, 1 );
 	
 	$js_file = ( 0 == preg_match( '/\.js$/', $js_file ) ) ? $js_file . '.js' : $js_file;
 
-	foreach( $js_paths as $jsp ) {
+	foreach ( $js_paths as $jsp ) {
 		$jsf = $jsp . 'js/' . $js_file;
 		
-		if( is_file( $jsf ) ) {
+		if ( is_file( $jsf ) ) {
 			$js_files[] = $jsf;
 			break;
 		}
@@ -44,9 +44,12 @@ foreach( $files as $js_file ) {
 $compressed_js_file_path = INC_PATH . 'cache/js/' . md5( implode( '|', $js_files ) ) . '.js';
 
 // If a cache does not exist, create it, otherwise, read it
-if( !file_exists( $compressed_js_file_path ) ) {
-	foreach( $js_files as $js_file ) {
-		if( in_array( str_replace( '/home/imaginer/public_html/includes/js/', '', $js_file ), array( 'jquery.ui.js' ) ) ) {
+if ( !file_exists( $compressed_js_file_path ) ) {
+	// Declare variables
+	$js = $compressed_js = '';
+	
+	foreach ( $js_files as $js_file ) {
+		if ( in_array( str_replace( '/home/develop4/public_html/includes/js/', '', $js_file ), array( 'jquery.ui.js' ) ) ) {
 			// Already compressed
 			$compressed_js .= file_get_contents( $js_file );
 		} else {
@@ -60,7 +63,7 @@ if( !file_exists( $compressed_js_file_path ) ) {
 	//$js = $js . $compressed_js;
 	
 	// Write to file
-	if( LIVE && $fh = @fopen( $compressed_js_file_path, 'w' ) ) {
+	if ( LIVE && $fh = @fopen( $compressed_js_file_path, 'w' ) ) {
 		fwrite( $fh, $js );
 		fclose( $fh );
 	}

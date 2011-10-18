@@ -1,11 +1,11 @@
 <?php
 /**
  * @page Login
- * @package Imagine Retailer
+ * @package Real Statistics
  */
 
 // If they are already logged in, redirect them
-if( $user )
+if ( isset( $user ) && $user )
 	url::redirect('/');
 
 $v = new Validator();
@@ -16,12 +16,12 @@ $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid
 
 $v->add_validation( 'tPassword', 'req', _('The "Password" field is required') );
 
-if( nonce::verify( $_POST['_nonce'], 'login' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'login' ) ) {
 	$errs = $v->validate();
 	
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		global $u;
-		if( $u->login( $_POST['tEmail'], $_POST['tPassword'], ( ( 'yes' == $_POST['cbRememberMe'] ) ? true : false ) ) ) {
+		if ( $u->login( $_POST['tEmail'], $_POST['tPassword'], ( ( 'yes' == $_POST['cbRememberMe'] ) ? true : false ) ) ) {
 			url::redirect( '/' );
 		} else {
 			$errs = _('Your email and password do not match. Please try again.');
@@ -38,12 +38,12 @@ get_header();
 	<br clear="all" />
 	<br />
 	
-	<?php if( !empty( $errs ) ) echo "<p class='red'>$errs</p><br />"; ?>
+	<?php if ( !empty( $errs ) ) echo "<p class='red'>$errs</p><br />"; ?>
 	<form action="" method="post" name="fLogin">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><label for="tEmail"><?php echo _('Email:'); ?></label></td>
-			<td><input type="text" class="tb" name="tEmail" id="tEmail" value="<?php echo $_POST['tEmail']; ?>" maxlength="200" /></td>
+			<td><input type="text" class="tb" name="tEmail" id="tEmail" value="<?php if ( isset( $_POST['tEmail'] ) ) echo $_POST['tEmail']; ?>" maxlength="200" /></td>
 		</tr>
 		<tr>
 			<td><label for="tPassword"><?php echo _('Password:'); ?></label></td>

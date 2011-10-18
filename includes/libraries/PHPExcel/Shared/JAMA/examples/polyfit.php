@@ -28,7 +28,7 @@ function polyfit($X, $Y, $n) {
 }
 
 function printpoly( $C = null ) {
-	for($i = $C->m - 1; $i >= 0; --$i) {
+	for ($i = $C->m - 1; $i >= 0; --$i) {
 		$r = $C->get($i, 0);
 		if ( abs($r) <= pow(10, -9) )
 			$r = 0;

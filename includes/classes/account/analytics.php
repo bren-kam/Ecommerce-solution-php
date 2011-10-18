@@ -37,16 +37,27 @@ class Analytics extends Base_Class {
 	private $fb_page_id;
 
 	/**
+	 * Any extra where data
+	 * @fix this should be public -- The following pages modify this data that is directly going into the database:
+	 * 		analytics/keyword.php
+	 *		analytics/page.php
+	 *		analytics/source.php
+	 *		analytics/traffic-keywords.php
+	 * @var string
+	 */
+	public $extra_where = '';
+
+	/**
 	 * Construct initializes data
 	 */
 	public function __construct( $ga_profile_id = false ) {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 		
 		$this->ga_profile_id = (int) $ga_profile_id;
-		$this->date_start = date_time::date( 'Y-m-d', time() - 2678400 ); // 30 days ago
-		$this->date_end = date_time::date( 'Y-m-d', time() - 86400 ); // Yesterday
+		$this->date_start = dt::date( 'Y-m-d', time() - 2678400 ); // 30 days ago
+		$this->date_end = dt::date( 'Y-m-d', time() - 86400 ); // Yesterday
 	}
 	
 	/***** DASHBOARD *****/
@@ -61,7 +72,7 @@ class Analytics extends Base_Class {
 	 */
 	public function get_metric_by_date( $metric, $date_start = '', $date_end = '' ) {
 		// Make sure they have google analytics
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		// Get dates
@@ -73,7 +84,7 @@ class Analytics extends Base_Class {
 		$metric = $this->db->prepare( "SELECT $sql_select, ( UNIX_TIMESTAMP( `date` ) - 21600 ) * 1000 AS date FROM `analytics_data` WHERE `date` >= ? AND `date` <= ? AND `ga_profile_id` = ? " . $this->extra_where . " GROUP BY `date`", 'ssi', $date_start, $date_end, $this->ga_profile_id )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get metric by date.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -90,7 +101,7 @@ class Analytics extends Base_Class {
 	 */
 	public function get_totals( $date_start = '', $date_end = '' ) {
 		// Make sure that we have a google analytics profile to work with
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		// Get dates
@@ -99,7 +110,7 @@ class Analytics extends Base_Class {
 		$totals = $this->db->get_row( "SELECT ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate, SUM( `page_views` ) AS page_views, SUM( `visits` ) AS visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, SEC_TO_TIME( SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) ) AS time_on_page, ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 ) AS exit_rate, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site FROM `analytics_data` WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . $this->extra_where, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get totals.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -116,7 +127,7 @@ class Analytics extends Base_Class {
 	 */
 	public function get_traffic_sources_totals( $date_start = '', $date_end = '' ) {
 		// Make sure that we have a google analytics profile to work with
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		// Get dates
@@ -125,7 +136,7 @@ class Analytics extends Base_Class {
 		$traffic_sources_totals = $this->db->get_row( "SELECT SUM(`visits`) AS total, SUM( IF( 'organic' = `medium`, `visits`, 0 ) ) AS search_engines, SUM( IF( 'referral' = `medium`, `visits`, 0 ) ) AS referring, SUM( IF( '(direct)' = `source`, `visits`, 0 ) ) AS 'direct', SUM( IF( 'organic' <> `medium` AND 'referral' <> `medium` AND '(direct)' <> `source`, `visits`, 0 ) ) AS other FROM `analytics_data` WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get traffic sources totals.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -144,7 +155,7 @@ class Analytics extends Base_Class {
 	 */
 	public function get_content_overview( $date_start = '', $date_end = '', $limit = 5 ) {
 		// Make sure that we have a google analytics profile to work with
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		// Limit
@@ -156,7 +167,7 @@ class Analytics extends Base_Class {
 		$content_overview = $this->db->get_results( "SELECT `page`, SUM( `page_views` ) AS page_views, SEC_TO_TIME( SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) ) AS time_on_page, ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate, ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 ) AS exit_rate FROM `analytics_data`  WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . " GROUP BY `page` ORDER BY `page_views` DESC $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get content overview.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -226,7 +237,7 @@ class Analytics extends Base_Class {
 	 */
 	public function get_traffic_sources( $date_start = '', $date_end = '', $limit = 5 ) {
 		// Make sure that we have a google analytics profile to work with
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		// Limit
@@ -238,7 +249,7 @@ class Analytics extends Base_Class {
 		$traffic_sources = $this->db->get_results( "SELECT `source`, `medium`, SUM( `visits` ) AS visits, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate FROM `analytics_data`  WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . " GROUP BY `source` ORDER BY `visits` DESC $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get traffic sources.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -256,7 +267,7 @@ class Analytics extends Base_Class {
 	 */
 	public function get_keywords( $date_start = '', $date_end = '', $limit = 5 ) {
 		// Make sure that we have a google analytics profile to work with
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		// Limit
@@ -268,7 +279,7 @@ class Analytics extends Base_Class {
 		$keywords = $this->db->get_results( "SELECT `keyword`, SUM( `visits` ) AS visits, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate FROM `analytics_data`  WHERE `keyword` <> '(not set)' AND `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . " GROUP BY `keyword` ORDER BY `visits` DESC $limit", ARRAY_A );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get keywords.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -291,7 +302,7 @@ class Analytics extends Base_Class {
 		$visitors = $this->db->get_results(  "SELECT a.`analytics_visitor_id`, a.`name`, COUNT( b.`analytics_visitor_page_id` ) AS page_visits, IF( '' <> a.`email`, 1, 0 ) AS subscribed, DATE( b.`date_visited` ) AS date_visited FROM `analytics_visitors` AS a INNER JOIN `analytics_visitor_pages` AS b ON ( a.`analytics_visitor_id` = b.`analytics_visitor_id` AND DATE( a.`date_created` ) = DATE( b.`date_visited` ) ) WHERE 1 $where GROUP BY a.`analytics_visitor_id`, DATE( b.`date_visited` ) $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list visitors.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -309,7 +320,7 @@ class Analytics extends Base_Class {
 		$count = $this->db->get_results( "SELECT a.`analytics_visitor_id` FROM `analytics_visitors` AS a INNER JOIN `analytics_visitor_pages` AS b ON ( a.`analytics_visitor_id` = b.`analytics_visitor_id` AND DATE( a.`date_created` ) = DATE( b.`date_visited` ) ) WHERE 1 $where GROUP BY a.`analytics_visitor_id`, DATE( b.`date_visited` )", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count visitors.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -333,7 +344,7 @@ class Analytics extends Base_Class {
 		$visitor = $this->db->get_row( "SELECT `analytics_visitor_id`, `name`, `email`, UNIX_TIMESTAMP( `date_created` ) AS date_created FROM `analytics_visitors` WHERE `analytics_visitor_id` = $analytics_visitor_id AND `website_id` = " . $user['website']['website_id'], ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get visitor.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -344,7 +355,7 @@ class Analytics extends Base_Class {
 		$visitor['pages'] = $this->db->get_results( "SELECT `page`, `subscribed`, UNIX_TIMESTAMP( `date_visited` ) AS date_visited FROM `analytics_visitor_pages` WHERE `analytics_visitor_id` = $analytics_visitor_id GROUP BY `page`", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get visitor details.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -364,7 +375,7 @@ class Analytics extends Base_Class {
 	 */
 	public function sparkline( $metric, $date_start = '', $date_end = '' ) {
 		// Make sure that we have a google analytics profile to work with
-		if( empty( $this->ga_profile_id ) )
+		if ( empty( $this->ga_profile_id ) )
 			return false;
 		
 		return $this->create_sparkline( $this->get_metric_by_date( $metric, $date_start, $date_end ) );
@@ -380,7 +391,7 @@ class Analytics extends Base_Class {
 	 */
 	public function create_sparkline( $sparkline_array, $width = 150, $height = 36 ) {
 		// Make sure there are values
-		if( !is_array( $sparkline_array ) )
+		if ( !is_array( $sparkline_array ) )
 			return false;
 		
 		// Pad the array
@@ -396,7 +407,7 @@ class Analytics extends Base_Class {
 		$factor = 4095 / $sparkline_max;
 		
 		// Show the values
-		foreach( $sparkline_array as $sa ) {
+		foreach ( $sparkline_array as $sa ) {
 			$sparkline[] = round( $sa * $factor );
 		}
 		
@@ -417,29 +428,29 @@ class Analytics extends Base_Class {
 		$emails_without_statistics = $this->db->get_col( "SELECT `mc_campaign_id` FROM `email_messages` WHERE `website_id` = " . $user['website']['website_id'] . " AND `status` = 2 AND `mc_campaign_id` NOT IN ( SELECT a.`mc_campaign_id` FROM `analytics_emails` AS a LEFT JOIN `email_messages` AS b ON ( a.`mc_campaign_id` = b.`mc_campaign_id` ) WHERE b.`website_id` = " . $user['website']['website_id'] . " AND `status` = 2 )" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get emails without statistics.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// If there are any statistics to get
-		if( is_array( $emails_without_statistics ) && count( $emails_without_statistics ) > 0 ) {
+		if ( is_array( $emails_without_statistics ) && count( $emails_without_statistics ) > 0 ) {
 			$mc = $this->mailchimp_instance();
 			
 			$values = '';
 			
 			// Loop through each one
-			foreach( $emails_without_statistics as $mc_campaign_id ) {
+			foreach ( $emails_without_statistics as $mc_campaign_id ) {
 				// Get the statistics
 				$s = $mc->campaignStats( $mc_campaign_id );
 				
 				// Handle errors
-				if( $mc->errorCode ) {
+				if ( $mc->errorCode ) {
 					$this->err( "MailChimp: Unable to get Campaign Statistics\n\nCampaign ID: " . $e['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 					return false;
 				} 
 				
-				if( !empty( $values ) )
+				if ( !empty( $values ) )
 					$values .= ",";
 				
 				$values .= sprintf( "('%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, '%s', %d, %d, '%s', %d, %d )", $e['mc_campaign_id'], $s['syntax_errors'], $s['hard_bounces'], $s['soft_bounces'], $s['unsubscribes'], $s['abuse_reports'], $s['forwards'], $s['forwards_opens'], $s['opens'], $s['unique_opens'], $s['last_open'], $s['clicks'], $s['unique_clicks'], $s['last_click'], $s['users_who_clicked'], $s['emails_sent'] );
@@ -449,14 +460,14 @@ class Analytics extends Base_Class {
 			$this->db->query( "INSERT INTO `analytics_emails` ( `mc_campaign_id`, `syntax_errors`, `hard_bounces`, `soft_bounces`, `unsubscribes`, `abuse_reports`, `forwards`, `forwards_opens`, `opens`, `unique_opens`, `last_open`, `clicks`, `unique_clicks`, `last_click`, `users_who_clicked`, `emails_sent` ) VALUES $values" );
 			
 			// Handle SQL errors
-			if( $this->db->errno() )
+			if ( $this->db->errno() )
 				$this->err( 'Failed to add Analytics Email Statistics',  __LINE__, __METHOD__ );
 		}
 		
 		$emails = $this->db->get_results( 'SELECT b.`email_message_id`, a.`mc_campaign_id`, b.`subject`, a.`opens`, a.`clicks`, a.`emails_sent`, UNIX_TIMESTAMP( b.`date_sent` ) AS date_sent, UNIX_TIMESTAMP( a.`last_updated` ) AS last_updated FROM `analytics_emails` AS a INNER JOIN `email_messages` AS b ON ( a.`mc_campaign_id` = b.`mc_campaign_id` ) WHERE b.`status` = 2 AND b.`website_id` = ' . $user['website']['website_id'], ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get emails.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -478,7 +489,7 @@ class Analytics extends Base_Class {
 		$s = $mc->campaignStats( $mc_campaign_id );
 		
 		// Handle errors
-		if( $mc->errorCode ) {
+		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to get Campaign Statistics\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
@@ -491,7 +502,7 @@ class Analytics extends Base_Class {
 		$email = $this->db->get_row( 'SELECT a.*, b.`mc_campaign_id`, b.`subject`, UNIX_TIMESTAMP( b.`date_sent` ) AS date_sent, UNIX_TIMESTAMP( a.`last_updated` ) AS last_updated FROM `analytics_emails` AS a INNER JOIN `email_messages` AS b ON ( a.`mc_campaign_id` = b.`mc_campaign_id` ) WHERE a.`mc_campaign_id` = "' . $this->db->escape( $mc_campaign_id ) . '" AND b.`website_id` = ' .  $user['website']['website_id'], ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get email.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -499,7 +510,7 @@ class Analytics extends Base_Class {
 		$email['advice'] = $mc->campaignAdvice( $mc_campaign_id );
 		
 		// Handle errors
-		if( $mc->errorCode ) {
+		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to get Campaign Advice\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
@@ -508,7 +519,7 @@ class Analytics extends Base_Class {
 		$email['click_overlay'] = $mc->campaignClickStats( $mc_campaign_id );
 		
 		// Handle errors
-		if( $mc->errorCode ) {
+		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to get Campaign Click Stats\n\nCampaign ID: $mc_campaign_id \nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
@@ -532,7 +543,7 @@ class Analytics extends Base_Class {
 							$s['syntax_errors'], $s['hard_bounces'], $s['soft_bounces'], $s['unsubscribes'], $s['abuse_reports'], $s['forwards'], $s['forwards_opens'], $s['opens'], $s['unique_opens'], (int) $s['last_open'], $s['clicks'], $s['unique_clicks'], (int) $s['last_click'], $s['users_who_clicked'], $s['emails_sent'] )->query('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update analytics.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -556,7 +567,7 @@ class Analytics extends Base_Class {
 		$facebook_data = $this->db->get_row( "SELECT `fb_page_id`, `token` FROM `sm_analytics` WHERE `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update analytics.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -587,8 +598,8 @@ class Analytics extends Base_Class {
 		//page_like_adds
 		
 		foreach ( $data as $metrics ) {
-			foreach( $metrics as $m ) {
-				//if( $m['name'] == 'page_stream_views_unique' )
+			foreach ( $metrics as $m ) {
+				//if ( $m['name'] == 'page_stream_views_unique' )
 					//print_r( $m );
 				//echo "&nbsp;&nbsp;&nbsp;&nbsp;" . $m['name'] . "\n<br />";
 			}
@@ -718,7 +729,7 @@ class Analytics extends Base_Class {
 		$email_message_id = $this->db->prepare( 'SELECT `email_message_id` FROM `email_messages` WHERE `mc_campaign_id` = ? AND `website_id` = ?', 'si', $mc_campaign_id, $user['website']['website_id'] )->get_var('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get email message id.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -728,7 +739,7 @@ class Analytics extends Base_Class {
 		$message = $mc->campaignContent( $mc_campaign_id );
 		
 		// Handle errors
-		if( $mc->errorCode ) {
+		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to get Campaign Content\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
@@ -743,7 +754,7 @@ class Analytics extends Base_Class {
 	 */
 	private function mailchimp_instance() {
 		// If it's set, use it
-		if( isset( $this->mc ) )
+		if ( isset( $this->mc ) )
 			return $this->mc;
 		
 		// Include the library and instantiate it
@@ -762,7 +773,7 @@ class Analytics extends Base_Class {
 	 */
 	private function metric_sql_calculation( $metric, $as = true ) {
 		// Determine what it's supposed to be
-		switch( $metric ) {
+		switch ( $metric ) {
 			case 'bounce_rate':
 				$sql_select = "ROUND( SUM( `bounces` ) / SUM(`entrances`) * 100, 2 )";
 				break;
@@ -804,7 +815,7 @@ class Analytics extends Base_Class {
 				break;
 		}
 		
-		if( $as )
+		if ( $as )
 			$sql_select .= ' AS ' . $metric;
 		
 		return $sql_select;
@@ -819,21 +830,21 @@ class Analytics extends Base_Class {
 	 * @return array
 	 */
 	private function pad_dates( $array, $start_interval, $end_interval ) {
-		if( !is_array( $array ) )
+		if ( !is_array( $array ) )
 			return false;
 		
 		// Create an empty array with all the keys necessary
 		$date_padding = array_fill_keys( range( $start_interval, $end_interval, 86400000 ), 0 );
 		
 		// Merge the arrays
-		foreach( $date_padding as $k => $v ) {
-			if( array_key_exists( $k, $array ) ) {
+		foreach ( $date_padding as $k => $v ) {
+			if ( array_key_exists( $k, $array ) ) {
 				$padded_array[$k] = $array[$k];
 				continue;
-			} elseif( array_key_exists( $k - 3600000, $array ) ) {
+			} elseif ( array_key_exists( $k - 3600000, $array ) ) {
 				$padded_array[$k] = $array[$k - 3600000];
 				continue;
-			} elseif( array_key_exists( $k + 3600000, $array ) ) {
+			} elseif ( array_key_exists( $k + 3600000, $array ) ) {
 				$padded_array[$k] = $array[$k + 3600000];
 				continue;
 			}
@@ -852,10 +863,10 @@ class Analytics extends Base_Class {
 	 * @return array
 	 */
 	public function dates( $date_start = '', $date_end = '' ) {
-		if( !empty( $date_start ) )
+		if ( !empty( $date_start ) )
 			$this->date_start = $date_start;
 		
-		if( !empty( $date_end ) )
+		if ( !empty( $date_end ) )
 			$this->date_end = $date_end;
 		
 		return array( $this->date_start, $this->date_end );

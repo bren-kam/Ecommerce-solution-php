@@ -21,7 +21,7 @@ function postLoad( $ ) {
 			$('#bSendMessage').attr( 'disabled', 'disabled' );
 		},
 		success : function( result ){
-			if( result ) {
+			if ( result ) {
 				load_messages();
 				$('#taMessage').val('');
 			} else {
@@ -68,7 +68,7 @@ function postLoad( $ ) {
 		},
 		success : function( response ){
 			// Handle any error
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( 'There was an error while trying to add your note. Please refresh the page and try again.' );
 				return;
 			}
@@ -90,12 +90,12 @@ function postLoad( $ ) {
 		
 		$.post( '/ajax/checklists/view/update-item/', { '_nonce': $('#_ajax_update_item').val(), 'iid' : itemID, 's' : state }, function( response ) {
 			// Handle any error
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( 'There was an error while trying to update your note. Please refresh the page and try again.' );
 				return;
 			}
 			
-			if( "1" == state ) {
+			if ( "1" == state ) {
 				$('#dItem' + itemID ).addClass( 'done' );
 			} else {
 				$('#dItem' + itemID ).removeClass( 'done' );
@@ -107,12 +107,12 @@ function postLoad( $ ) {
 	$('.delete-note').live( 'click', function(){
 		var noteID = $(this).parents('div.dNote:first').attr('id').replace( 'dNote', '' );
 		
-		if( !confirm( 'Are you sure you want to delete the note? ') )
+		if ( !confirm( 'Are you sure you want to delete the note? ') )
 			return;
 		
 		$.post( '/ajax/checklists/view/delete-note/', { '_nonce': $('#_ajax_delete_note').val(), 'nid' : noteID }, function( response ){
 			// Handle any error
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( 'There was an error while trying to delete your note. Please refresh the page and try again.' );
 				return;
 			}
@@ -142,7 +142,7 @@ function postLoad( $ ) {
 		
 		$.post( '/ajax/checklists/view/update-note/', { '_nonce': $('#_ajax_update_note').val(), 'nid' : noteID, 'n' : $( '#taEditNote' + noteID ).val() }, function( response ){
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -169,14 +169,14 @@ function loadNotes( itemID ) {
 	
 	$.post( '/ajax/checklists/view/get-notes/', { '_nonce': $('#_ajax_get_notes').val(), 'iid': itemID }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}
 		
 		var dNotesList = $('#dNotesList'), newNotes = '';
 		
- 		for( i = 0; i < response['notes'].length; i++ ) {
+ 		for ( i = 0; i < response['notes'].length; i++ ) {
 			var n = response['notes'][i];
 			newNotes += '<div id="dNote' + n['checklist_website_item_note_id'] + '" class="dNote"><div class="title"><strong>' + n['contact_name'] + '</strong><br />' + n['date_created'] + '<br />' + '<a href="#" class="edit-note" title="Edit">Edit</a> | <a href="#" class="delete-note" title="Delete">Delete</a> </div><div class="note">' + n['note'] + '</div></div>';
 		}

@@ -778,7 +778,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		// Return
-		if(is_null($returnValue)) {
+		if (is_null($returnValue)) {
 			return 0;
 		}
 		return $returnValue;
@@ -819,7 +819,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		// Return
-		if(is_null($returnValue)) {
+		if (is_null($returnValue)) {
 			return 0;
 		}
 		return $returnValue;
@@ -897,7 +897,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		// Return
-		if(is_null($returnValue)) {
+		if (is_null($returnValue)) {
 			return 0;
 		}
 		return $returnValue;
@@ -938,7 +938,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		// Return
-		if(is_null($returnValue)) {
+		if (is_null($returnValue)) {
 			return 0;
 		}
 		return $returnValue;
@@ -1398,9 +1398,9 @@ class PHPExcel_Calculation_Functions {
 	//
 	private static function _modeCalc($data) {
 		$frequencyArray = array();
-		foreach($data as $datum) {
+		foreach ($data as $datum) {
 			$found = False;
-			foreach($frequencyArray as $key => $value) {
+			foreach ($frequencyArray as $key => $value) {
 				if ((string) $value['value'] == (string) $datum) {
 					++$frequencyArray[$key]['frequency'];
 					$found = True;
@@ -1413,7 +1413,7 @@ class PHPExcel_Calculation_Functions {
 			}
 		}
 
-		foreach($frequencyArray as $key => $value) {
+		foreach ($frequencyArray as $key => $value) {
 			$frequencyList[$key] = $value['frequency'];
 			$valueList[$key] = $value['value'];
 		}
@@ -2087,7 +2087,7 @@ class PHPExcel_Calculation_Functions {
 		$valueSet = self::flattenArray($valueSet);
 		$order	= (is_null($order))	? 0 :	(integer) self::flattenSingleValue($order);
 
-		foreach($valueSet as $key => $valueEntry) {
+		foreach ($valueSet as $key => $valueEntry) {
 			if (!is_numeric($valueEntry)) {
 				unset($valueSet[$key]);
 			}
@@ -2122,7 +2122,7 @@ class PHPExcel_Calculation_Functions {
 		$value		= self::flattenSingleValue($value);
 		$significance	= (is_null($significance))	? 3 :	(integer) self::flattenSingleValue($significance);
 
-		foreach($valueSet as $key => $valueEntry) {
+		foreach ($valueSet as $key => $valueEntry) {
 			if (!is_numeric($valueEntry)) {
 				unset($valueSet[$key]);
 			}
@@ -2159,13 +2159,13 @@ class PHPExcel_Calculation_Functions {
 
 		$array1 = self::flattenArray($array1);
 		$array2 = self::flattenArray($array2);
-		foreach($array1 as $key => $value) {
+		foreach ($array1 as $key => $value) {
 			if ((is_bool($value)) || (is_string($value)) || (is_null($value))) {
 				unset($array1[$key]);
 				unset($array2[$key]);
 			}
 		}
-		foreach($array2 as $key => $value) {
+		foreach ($array2 as $key => $value) {
 			if ((is_bool($value)) || (is_string($value)) || (is_null($value))) {
 				unset($array1[$key]);
 				unset($array2[$key]);
@@ -2419,7 +2419,7 @@ class PHPExcel_Calculation_Functions {
 		$yValueCount = count($yValues);
 		$xValueCount = count($xValues);
 
-		foreach($yValues as $value) {
+		foreach ($yValues as $value) {
 			if ($value <= 0.0) {
 				return self::$_errorCodes['num'];
 			}
@@ -2511,7 +2511,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		$returnArray = array();
-		foreach($newValues as $xValue) {
+		foreach ($newValues as $xValue) {
 			$returnArray[0][] = $bestFitLinear->getValueOfYForX($xValue);
 		}
 
@@ -2542,7 +2542,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		$returnArray = array();
-		foreach($newValues as $xValue) {
+		foreach ($newValues as $xValue) {
 			$returnArray[0][] = $bestFitExponential->getValueOfYForX($xValue);
 		}
 
@@ -2600,7 +2600,7 @@ class PHPExcel_Calculation_Functions {
 		$subtotal = array_shift($aArgs);
 
 		if ((is_numeric($subtotal)) && (!is_string($subtotal))) {
-			switch($subtotal) {
+			switch ($subtotal) {
 				case 1	:
 					return self::AVERAGE($aArgs);
 					break;
@@ -3057,7 +3057,7 @@ class PHPExcel_Calculation_Functions {
 		if ((is_numeric($x)) && (is_numeric($n)) && (is_numeric($m))) {
 			// Calculate
 			$i = 0;
-			foreach($aArgs as $arg) {
+			foreach ($aArgs as $arg) {
 				// Is it a numeric value?
 				if ((is_numeric($arg)) && (!is_string($arg))) {
 					$returnValue += $arg * pow($x,$n + ($m * $i++));
@@ -3135,7 +3135,7 @@ class PHPExcel_Calculation_Functions {
 
 		$returnValue = 1;
 		$allPoweredFactors = array();
-		foreach($aArgs as $value) {
+		foreach ($aArgs as $value) {
 			if (!is_numeric($value)) {
 				return self::$_errorCodes['value'];
 			}
@@ -3147,10 +3147,10 @@ class PHPExcel_Calculation_Functions {
 			$myFactors = self::_factors(floor($value));
 			$myCountedFactors = array_count_values($myFactors);
 			$myPoweredFactors = array();
-			foreach($myCountedFactors as $myCountedFactor => $myCountedPower) {
+			foreach ($myCountedFactors as $myCountedFactor => $myCountedPower) {
 				$myPoweredFactors[$myCountedFactor] = pow($myCountedFactor,$myCountedPower);
 			}
-			foreach($myPoweredFactors as $myPoweredValue => $myPoweredFactor) {
+			foreach ($myPoweredFactors as $myPoweredValue => $myPoweredFactor) {
 				if (array_key_exists($myPoweredValue,$allPoweredFactors)) {
 					if ($allPoweredFactors[$myPoweredValue] < $myPoweredFactor) {
 						$allPoweredFactors[$myPoweredValue] = $myPoweredFactor;
@@ -3160,7 +3160,7 @@ class PHPExcel_Calculation_Functions {
 				}
 			}
 		}
-		foreach($allPoweredFactors as $allPoweredFactor) {
+		foreach ($allPoweredFactors as $allPoweredFactor) {
 			$returnValue *= (integer) $allPoweredFactor;
 		}
 		return $returnValue;
@@ -3180,7 +3180,7 @@ class PHPExcel_Calculation_Functions {
 
 		$returnValue = 1;
 		$allPoweredFactors = array();
-		foreach($aArgs as $value) {
+		foreach ($aArgs as $value) {
 			if ($value == 0) {
 				break;
 			}
@@ -3197,9 +3197,9 @@ class PHPExcel_Calculation_Functions {
 		if ($mergedArrayValues == 0) {
 			return $returnValue;
 		} elseif ($mergedArrayValues > 1) {
-			foreach($mergedArray as $mergedKey => $mergedValue) {
-				foreach($allValuesFactors as $highestPowerTest) {
-					foreach($highestPowerTest as $testKey => $testValue) {
+			foreach ($mergedArray as $mergedKey => $mergedValue) {
+				foreach ($allValuesFactors as $highestPowerTest) {
+					foreach ($highestPowerTest as $testKey => $testValue) {
 						if (($testKey == $mergedKey) && ($testValue < $mergedValue)) {
 							$mergedArray[$mergedKey] = $testValue;
 							$mergedValue = $testValue;
@@ -3209,7 +3209,7 @@ class PHPExcel_Calculation_Functions {
 			}
 
 			$returnValue = 1;
-			foreach($mergedArray as $key => $value) {
+			foreach ($mergedArray as $key => $value) {
 				$returnValue *= pow($key,$value);
 			}
 			return $returnValue;
@@ -3217,8 +3217,8 @@ class PHPExcel_Calculation_Functions {
 			$keys = array_keys($mergedArray);
 			$key = $keys[0];
 			$value = $mergedArray[$key];
-			foreach($allValuesFactors as $testValue) {
-				foreach($testValue as $mergedKey => $mergedValue) {
+			foreach ($allValuesFactors as $testValue) {
+				foreach ($testValue as $mergedKey => $mergedValue) {
 					if (($mergedKey == $key) && ($mergedValue < $value)) {
 						$value = $mergedValue;
 					}
@@ -5236,7 +5236,7 @@ class PHPExcel_Calculation_Functions {
 		$instance	= floor(self::flattenSingleValue($instance));
 
 		if ($instance == 0) {
-			if(function_exists('mb_str_replace')) {
+			if (function_exists('mb_str_replace')) {
 				return mb_str_replace($fromText,$toText,$text);
 			} else {
 				return str_replace($fromText,$toText,$text);
@@ -5374,7 +5374,7 @@ class PHPExcel_Calculation_Functions {
 		$value	= self::flattenSingleValue($value);
 
 		$i = 1;
-		foreach(self::$_errorCodes as $errorCode) {
+		foreach (self::$_errorCodes as $errorCode) {
 			if ($value == $errorCode) {
 				return $i;
 			}
@@ -5679,7 +5679,7 @@ class PHPExcel_Calculation_Functions {
 
 		$yearFound = false;
 		$t1 = explode('-',$dateValue);
-		foreach($t1 as &$t) {
+		foreach ($t1 as &$t) {
 			if ((is_numeric($t)) && (($t > 31) && ($t < 100))) {
 				if ($yearFound) {
 					return self::$_errorCodes['value'];
@@ -6043,7 +6043,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		if ((is_numeric($method)) && (!is_string($method))) {
-			switch($method) {
+			switch ($method) {
 				case 0	:
 					return self::DAYS360($startDate,$endDate) / 360;
 					break;
@@ -7169,7 +7169,7 @@ class PHPExcel_Calculation_Functions {
 		if ($parsedComplex['real'] == 0.0) {
 			if ($parsedComplex['imaginary'] == 0.0) {
 				return 0.0;
-			} elseif($parsedComplex['imaginary'] < 0.0) {
+			} elseif ($parsedComplex['imaginary'] < 0.0) {
 				return M_PI / -2;
 			} else {
 				return M_PI / 2;
@@ -8219,7 +8219,7 @@ class PHPExcel_Calculation_Functions {
 	 */
 	public static function getConversionGroups() {
 		$conversionGroups = array();
-		foreach(self::$_conversionUnits as $conversionUnit) {
+		foreach (self::$_conversionUnits as $conversionUnit) {
 			$conversionGroups[] = $conversionUnit['Group'];
 		}
 		return array_merge(array_unique($conversionGroups));
@@ -8233,7 +8233,7 @@ class PHPExcel_Calculation_Functions {
 	 */
 	public static function getConversionGroupUnits($group = NULL) {
 		$conversionGroups = array();
-		foreach(self::$_conversionUnits as $conversionUnit => $conversionGroup) {
+		foreach (self::$_conversionUnits as $conversionUnit => $conversionGroup) {
 			if ((is_null($group)) || ($conversionGroup['Group'] == $group)) {
 				$conversionGroups[$conversionGroup['Group']][] = $conversionUnit;
 			}
@@ -8249,7 +8249,7 @@ class PHPExcel_Calculation_Functions {
 	 */
 	public static function getConversionGroupUnitDetails($group = NULL) {
 		$conversionGroups = array();
-		foreach(self::$_conversionUnits as $conversionUnit => $conversionGroup) {
+		foreach (self::$_conversionUnits as $conversionUnit => $conversionGroup) {
 			if ((is_null($group)) || ($conversionGroup['Group'] == $group)) {
 				$conversionGroups[$conversionGroup['Group']][] = array(	'unit'			=> $conversionUnit,
 																		'description'	=> $conversionGroup['Unit Name']
@@ -8499,7 +8499,7 @@ class PHPExcel_Calculation_Functions {
 				return self::$_errorCodes['num'];
 			}
 
-			switch($ord) {
+			switch ($ord) {
 				case 0 :	return self::_Besselk0($x);
 							break;
 				case 1 :	return self::_Besselk1($x);
@@ -8577,7 +8577,7 @@ class PHPExcel_Calculation_Functions {
 				return self::$_errorCodes['num'];
 			}
 
-			switch($ord) {
+			switch ($ord) {
 				case 0 :	return self::_Bessely0($x);
 							break;
 				case 1 :	return self::_Bessely1($x);
@@ -9026,7 +9026,7 @@ class PHPExcel_Calculation_Functions {
 		$principal	= self::flattenSingleValue($principal);
 		$schedule	= self::flattenArray($schedule);
 
-		foreach($schedule as $n) {
+		foreach ($schedule as $n) {
 			$principal *= 1 + $n;
 		}
 
@@ -9298,11 +9298,11 @@ class PHPExcel_Calculation_Functions {
 
 		// Calculate
 		$principlePayment = ($principleRemaining * 1.0) / ($numberPeriods * 1.0);
-		for($i=0; $i <= $period; ++$i) {
+		for ($i=0; $i <= $period; ++$i) {
 			$returnValue = $interestRate * $principleRemaining * -1;
 			$principleRemaining -= $principlePayment;
 			// principle needs to be 0 after the last payment, don't let floating point screw it up
-			if($i == $numberPeriods) {
+			if ($i == $numberPeriods) {
 				$returnValue = 0;
 			}
 		}
@@ -9416,7 +9416,7 @@ class PHPExcel_Calculation_Functions {
 		$fr = 1.0 + $finance_rate;
 
 		$npv_pos = $npv_neg = 0.0;
-		foreach($values as $i => $v) {
+		foreach ($values as $i => $v) {
 			if ($v >= 0) {
 				$npv_pos += $v / pow($rr, $i);
 			} else {
@@ -10404,7 +10404,7 @@ class PHPExcel_Calculation_Functions {
 		if (is_null($cellAddress) || trim($cellAddress) === '') { return 0; }
 
 		if (is_array($cellAddress)) {
-			foreach($cellAddress as $columnKey => $value) {
+			foreach ($cellAddress as $columnKey => $value) {
 				$columnKey = preg_replace('/[^a-z]/i','',$columnKey);
 				return (integer) PHPExcel_Cell::columnIndexFromString($columnKey);
 			}
@@ -10470,8 +10470,8 @@ class PHPExcel_Calculation_Functions {
 		if (is_null($cellAddress) || trim($cellAddress) === '') { return 0; }
 
 		if (is_array($cellAddress)) {
-			foreach($cellAddress as $columnKey => $rowValue) {
-				foreach($rowValue as $rowKey => $cellValue) {
+			foreach ($cellAddress as $columnKey => $rowValue) {
+				foreach ($rowValue as $rowKey => $cellValue) {
 					return (integer) preg_replace('/[^0-9]/i','',$rowKey);
 				}
 			}
@@ -10648,7 +10648,7 @@ class PHPExcel_Calculation_Functions {
 		$chosenEntry = self::flattenArray(array_shift($chooseArgs));
 		$entryCount = count($chooseArgs) - 1;
 
-		if(is_array($chosenEntry)) {
+		if (is_array($chosenEntry)) {
 			$chosenEntry = array_shift($chosenEntry);
 		}
 		if ((is_numeric($chosenEntry)) && (!is_bool($chosenEntry))) {
@@ -10735,7 +10735,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		// if match_type is 1 or -1, the list has to be ordered
-		if($match_type==1 || $match_type==-1){
+		if ($match_type==1 || $match_type==-1){
 			// **
 			// iniitialization
 			// store the last value
@@ -10744,7 +10744,7 @@ class PHPExcel_Calculation_Functions {
 			// loop on the cells
 			for ($i=0;$i<sizeof($lookup_array);++$i){
 				// check ascending order
-				if(($match_type==1 && $lookup_array[$i]<$iLastValue)
+				if (($match_type==1 && $lookup_array[$i]<$iLastValue)
 					// OR check descending order
 					|| ($match_type==-1 && $lookup_array[$i]>$iLastValue)){
 					// error: list is not ordered correctly
@@ -10816,7 +10816,7 @@ class PHPExcel_Calculation_Functions {
 			}
 			$rowNum = $rowKeys[--$rowNum];
 			$returnArray = array();
-			foreach($arrayValues as $arrayColumn) {
+			foreach ($arrayValues as $arrayColumn) {
 				if (is_array($arrayColumn)) {
 					if (isset($arrayColumn[$rowNum])) {
 						$returnArray[] = $arrayColumn[$rowNum];
@@ -10882,9 +10882,9 @@ class PHPExcel_Calculation_Functions {
 		if (!is_array($matrixData)) { $matrixData = array(array($matrixData)); }
 
 		$column = 0;
-		foreach($matrixData as $matrixRow) {
+		foreach ($matrixData as $matrixRow) {
 			$row = 0;
-			foreach($matrixRow as $matrixCell) {
+			foreach ($matrixRow as $matrixCell) {
 				$returnMatrix[$row][$column] = $matrixCell;
 				++$row;
 			}
@@ -10907,9 +10907,9 @@ class PHPExcel_Calculation_Functions {
 		if (!is_array($matrixData2)) { $matrixData2 = array(array($matrixData2)); }
 
 		$rowA = 0;
-		foreach($matrixData1 as $matrixRow) {
+		foreach ($matrixData1 as $matrixRow) {
 			$columnA = 0;
-			foreach($matrixRow as $matrixCell) {
+			foreach ($matrixRow as $matrixCell) {
 				if ((is_string($matrixCell)) || ($matrixCell === null)) {
 					return self::$_errorCodes['value'];
 				}
@@ -10921,9 +10921,9 @@ class PHPExcel_Calculation_Functions {
 		try {
 			$matrixA = new Matrix($matrixAData);
 			$rowB = 0;
-			foreach($matrixData2 as $matrixRow) {
+			foreach ($matrixData2 as $matrixRow) {
 				$columnB = 0;
-				foreach($matrixRow as $matrixCell) {
+				foreach ($matrixRow as $matrixCell) {
 					if ((is_string($matrixCell)) || ($matrixCell === null)) {
 						return self::$_errorCodes['value'];
 					}
@@ -10956,9 +10956,9 @@ class PHPExcel_Calculation_Functions {
 		if (!is_array($matrixValues)) { $matrixValues = array(array($matrixValues)); }
 
 		$row = $maxColumn = 0;
-		foreach($matrixValues as $matrixRow) {
+		foreach ($matrixValues as $matrixRow) {
 			$column = 0;
-			foreach($matrixRow as $matrixCell) {
+			foreach ($matrixRow as $matrixCell) {
 				if ((is_string($matrixCell)) || ($matrixCell === null)) {
 					return self::$_errorCodes['value'];
 				}
@@ -10990,9 +10990,9 @@ class PHPExcel_Calculation_Functions {
 		if (!is_array($matrixValues)) { $matrixValues = array(array($matrixValues)); }
 
 		$row = $maxColumn = 0;
-		foreach($matrixValues as $matrixRow) {
+		foreach ($matrixValues as $matrixRow) {
 			$column = 0;
-			foreach($matrixRow as $matrixCell) {
+			foreach ($matrixRow as $matrixCell) {
 				if ((is_string($matrixCell)) || ($matrixCell === null)) {
 					return self::$_errorCodes['value'];
 				}
@@ -11025,7 +11025,7 @@ class PHPExcel_Calculation_Functions {
 		$wrkArray = self::flattenArray(array_shift($arrayList));
 		$wrkCellCount = count($wrkArray);
 
-		foreach($arrayList as $matrixData) {
+		foreach ($arrayList as $matrixData) {
 			$array2 = self::flattenArray($matrixData);
 			$count = count($array2);
 			if ($wrkCellCount != $count) {
@@ -11174,7 +11174,7 @@ class PHPExcel_Calculation_Functions {
 		}
 
 		$rowNumber = $rowValue = False;
-		foreach($lookup_array as $rowKey => $rowData) {
+		foreach ($lookup_array as $rowKey => $rowData) {
 			if (strtolower($rowData[$firstColumn]) > strtolower($lookup_value)) {
 				break;
 			}
@@ -11234,7 +11234,7 @@ class PHPExcel_Calculation_Functions {
 			$lookup_vector = array_shift($lookup_vector);
 		}
 		if ($lookupColumns != 2) {
-			foreach($lookup_vector as &$value) {
+			foreach ($lookup_vector as &$value) {
 				if (is_array($value)) {
 					$key1 = $key2 = array_shift(array_keys($value));
 					$key2++;
@@ -11456,16 +11456,16 @@ if (!function_exists('money_format')) {
 if ((!function_exists('mb_str_replace')) &&
 	(function_exists('mb_substr')) && (function_exists('mb_strlen')) && (function_exists('mb_strpos'))) {
 	function mb_str_replace($search, $replace, $subject) {
-		if(is_array($subject)) {
+		if (is_array($subject)) {
 			$ret = array();
-			foreach($subject as $key => $val) {
+			foreach ($subject as $key => $val) {
 				$ret[$key] = mb_str_replace($search, $replace, $val);
 			}
 			return $ret;
 		}
 
-		foreach((array) $search as $key => $s) {
-			if($s == '') {
+		foreach ((array) $search as $key => $s) {
+			if ($s == '') {
 				continue;
 			}
 			$r = !is_array($replace) ? $replace : (array_key_exists($key, $replace) ? $replace[$key] : '');

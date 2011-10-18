@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
@@ -62,7 +62,7 @@ get_header();
 		$confirm_disable = _('Are you sure you want to deactivate this sidebar element? This will remove it from the sidebar on your website.');
 		$confirm_remove = _('Are you sure you want to remove this sidebar element?');
 		
-		foreach( $attachments as $a ) {
+		foreach ( $attachments as $a ) {
 			$continue = false;
 			$remove = true;
 			
@@ -78,7 +78,7 @@ get_header();
 			
 			$enable_disable_link = '<a href="/ajax/website/sidebar/update-status/?_nonce=' . $update_status_nonce . '&amp;waid=' . $a['website_attachment_id'] . '&amp;s=' . $status . '" id="aEnableDisable' . $a['website_attachment_id'] . '" class="enable-disable' . $disabled . '" title="' . _('Enable/Disable') . '" ajax="1"' . $confirm . '><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
 			
-			switch( $a['key'] ) {
+			switch ( $a['key'] ) {
 				case 'current-ad-image':
 					// Phrase this out
 					$continue = true;
@@ -91,7 +91,7 @@ get_header();
 					
 					$buttons = '<input type="file" id="fUploadCurrentAdImage" /> <input type="file" id="fUploadCurrentAdPDF" />';
 					
-					if( empty( $attachments_by_key['current-ad-pdf']['value'] ) )
+					if ( empty( $attachments_by_key['current-ad-pdf']['value'] ) )
 					$buttons .=  '
 					<div style="float:left">
 						<div id="dCurrentAdPDFContent">
@@ -140,7 +140,7 @@ get_header();
 				break;
 				
 				case 'room-planner':
-					if( !empty( $disabled ) || empty( $a['value'] ) ) {
+					if ( !empty( $disabled ) || empty( $a['value'] ) ) {
 						$continue = true;
 						continue;
 					}
@@ -257,7 +257,7 @@ get_header();
 				break;
 			}
 			
-			if( $continue )
+			if ( $continue )
 				continue;
 			?>
 			<div class="contact-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a['website_attachment_id']; ?>">
@@ -266,16 +266,16 @@ get_header();
 				<?php 
 				echo $enable_disable_link;
 				
-				if( !empty( $content_id ) ) { ?>
+				if ( !empty( $content_id ) ) { ?>
 				<div id="<?php echo $content_id; ?>" class="center-content">
 					<?php echo ( empty( $a['value'] ) ) ? $placeholder : $value; ?>
 				</div>
 				<?php } ?>
 				<br />
 				
-				<?php if( !empty( $buttons ) ) { ?>
+				<?php if ( !empty( $buttons ) ) { ?>
 				<div align="center" class="buttons">
-					<?php if( !empty( $a['value'] ) && $remove ) { ?>
+					<?php if ( !empty( $a['value'] ) && $remove ) { ?>
 						<a href="/ajax/website/sidebar/remove-attachment/?_nonce=<?php echo $remove_attachment_nonce; ?>&amp;waid=<?php echo $a['website_attachment_id']; ?>&amp;t=<?php echo $content_id; ?>" id="aRemove<?php echo $a['website_attachment_id']; ?>" title="<?php echo _('Remove'); ?>" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a>
 						<br /><br />
 					<?php 
@@ -293,12 +293,12 @@ get_header();
 	<div id="dUploadFile" class="hidden">
 		<ul id="ulUploadFile">
 			<?php
-			if( is_array( $website_files ) ) {
+			if ( is_array( $website_files ) ) {
 				// Set variables
 				$ajax_delete_file_nonce = nonce::create('delete-file');
 				$confirm = _('Are you sure you want to delete this file?');
 				
-				foreach( $website_files as $wf ) {
+				foreach ( $website_files as $wf ) {
 					$file_name = format::file_name( $wf['file_path'] );
 					echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 				}

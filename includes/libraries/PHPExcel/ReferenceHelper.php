@@ -383,7 +383,7 @@ class PHPExcel_ReferenceHelper
 		$newCellTokens = $cellTokens = array();
 		$adjustCount = 0;
 		//	Build the translation table of cell tokens
-		foreach($tokenisedFormula as $token) {
+		foreach ($tokenisedFormula as $token) {
 			$token = $token['value'];
 			if (preg_match('/^'.PHPExcel_Calculation::CALCULATION_REGEXP_CELLREF.'$/i', $token, $matches)) {
 				list($column,$row) = PHPExcel_Cell::coordinateFromString($token);
@@ -409,7 +409,7 @@ class PHPExcel_ReferenceHelper
 
 		//	Update cell references in the formula
 		$formulaBlocks = explode('"',$pFormula);
-		foreach($formulaBlocks as $i => &$formulaBlock) {
+		foreach ($formulaBlocks as $i => &$formulaBlock) {
 			//	Only count/replace in alternate array entries
 			if (($i % 2) == 0) {
 				$formulaBlock = preg_replace($cellTokens,$newCellTokens,$formulaBlock);

@@ -4,7 +4,7 @@
  * @package Real Statistics
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-feedback-status' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-feedback-status' ) ) {
 	$f = new Feedback;
 	
 	$result = $f->update_status( $_POST['fid'], $_POST['s'] );

@@ -11,7 +11,7 @@ class Craigslist extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -27,7 +27,7 @@ class Craigslist extends Base_Class {
 		$craigslist = $this->db->get_row( 'SELECT a.`craigslist_template_id`, a.`title`, a.`description`, a.`category_id`, b.`name` AS `category_name` FROM `craigslist_templates` AS a LEFT JOIN `categories` AS b ON (a.`category_id` = b.`category_id`) WHERE a.`craigslist_template_id` = ' . (int) $craigslist_template_id, ARRAY_A );
 	
 		// Handle any error
-		if( mysql_errno() ) {
+		if ( mysql_errno() ) {
 			$this->err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -45,11 +45,11 @@ class Craigslist extends Base_Class {
 	 */
 	public function create( $category_id, $title, $description ) { 
 		$this->db->insert( 'craigslist_templates',
-						  array( 'category_id' => $category_id, 'title' => $title, 'description' => $description, 'publish_visibility' => 'visible', 'date_created' => date_time::date('Y-m-d H:i:s') ),
+						  array( 'category_id' => $category_id, 'title' => $title, 'description' => $description, 'publish_visibility' => 'visible', 'date_created' => dt::date('Y-m-d H:i:s') ),
 						  'issss' );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create craigslist ad template.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -74,7 +74,7 @@ class Craigslist extends Base_Class {
 						  'isss', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -99,7 +99,7 @@ class Craigslist extends Base_Class {
 														$where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get craigslist templates.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -117,7 +117,7 @@ class Craigslist extends Base_Class {
 		$this->db->update( 'craigslist_templates', array( 'publish_visibility' => 'deleted' ), array( 'craigslist_template_id' => $craigslist_template_id), 's', 'i' );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -132,7 +132,7 @@ class Craigslist extends Base_Class {
 	 * @return array
 	 */
 	public function count_craigslist( $where ) {		
-		if( isset( $where ) && $where ) {
+		if ( isset( $where ) && $where ) {
 			$where .= " AND a.`publish_visibility` = 'visible' ";
 		} else {
 			$where = " WHERE a.`publish_visibility` = 'visible' ";
@@ -142,7 +142,7 @@ class Craigslist extends Base_Class {
 		$craigslist_count = count( $this->db->get_results( "SELECT COUNT( a.`craigslist_template_id` ) FROM `craigslist_templates` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) {$where} GROUP BY a.`craigslist_template_id`", ARRAY_A ) );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -164,7 +164,7 @@ class Craigslist extends Base_Class {
 		$results = $this->db->get_results( $sql, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -222,7 +222,7 @@ class Craigslist extends Base_Class {
 		$results['attributes'] = $attributes;
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get preview data.', __LINE__, __METHOD__ );
 			return false;
 		}

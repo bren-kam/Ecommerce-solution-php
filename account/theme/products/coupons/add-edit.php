@@ -17,7 +17,7 @@ $s = new Shopping_Cart;
 $v = new Validator;
 
 // Get the coupon id if there is one
-$website_coupon_id = (int) $_GET['wcid'];
+$website_coupon_id = ( isset( $_GET['wcid'] ) ) ? $_GET['wcid'] : '';
 
 $v->form_name = 'fAddEditCoupon';
 $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
@@ -27,8 +27,11 @@ $v->add_validation( 'tItemLimit', 'int', _('The "Item Limit" field may only cont
 // Add validation
 add_footer( $v->js_validation() );
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-coupon' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-coupon' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -85,17 +88,17 @@ get_header();
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tName" id="tName" value="<?php echo ( !$success && $website_coupon_id && empty( $_POST['tName'] ) ) ? $coupon['name'] : $_POST['tName']; ?>" maxlength="50" /></td>
+					<td><input type="text" class="tb" name="tName" id="tName" value="<?php echo ( !$success && $website_coupon_id && ( !isset( $_POST['tName'] ) || empty( $_POST['tName'] ) ) ) ? $coupon['name'] : $_POST['tName']; ?>" maxlength="50" /></td>
 				</tr>
 				<tr>
 					<td><label for="tCode"><?php echo _('Code'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tCode" id="tCode" value="<?php echo ( !$success && $website_coupon_id && empty( $_POST['tCode'] ) ) ? $coupon['code'] : $_POST['tCode']; ?>" maxlength="20" /></td>
+					<td><input type="text" class="tb" name="tCode" id="tCode" value="<?php echo ( !$success && $website_coupon_id && ( !isset( $_POST['tCode'] ) || empty( $_POST['tCode'] ) ) ) ? $coupon['code'] : $_POST['tCode']; ?>" maxlength="20" /></td>
 				</tr>
 				<tr>
 					<td><label for="rType">Type:</label></td>
 					<td>
 						<?php 
-						$coupon_type = ( !$success && $website_coupon_id && empty( $_POST['rType'] ) ) ? $coupon['type'] : $_POST['rType'];
+						$coupon_type = ( !$success && $website_coupon_id && ( !isset( $_POST['rType'] ) || empty( $_POST['rType'] ) ) ) ? $coupon['type'] : $_POST['rType'];
 						
 						if ( 'Flat Rate' == $coupon_type ) {
 							$flat_rate = true;
@@ -113,27 +116,37 @@ get_header();
 				</tr>
 				<tr>
 					<td><label for="tAmount"><?php echo _('Amount Discounted'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tAmount" id="tAmount" value="<?php echo ( !$success && $website_coupon_id && empty( $_POST['tAmount'] ) ) ? $coupon['amount'] : $_POST['tAmount']; ?>" maxlength="20" /></td>
+					<td><input type="text" class="tb" name="tAmount" id="tAmount" value="<?php echo ( !$success && $website_coupon_id && ( !isset( $_POST['tAmount'] ) || empty( $_POST['tAmount'] ) ) ) ? $coupon['amount'] : $_POST['tAmount']; ?>" maxlength="20" /></td>
 				</tr>
 				<tr>
 					<td><label for="tMinimumPurchaseAmount"><?php echo _('Minimum Purchase'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tMinimumPurchaseAmount" id="tMinimumPurchaseAmount" value="<?php echo ( !$success && $website_coupon_id && empty( $_POST['tMinimumPurchaseAmount'] ) ) ? $coupon['minimum_purchase_amount'] : $_POST['tMinimumPurchaseAmount']; ?>" maxlength="20" /></td>
+					<td><input type="text" class="tb" name="tMinimumPurchaseAmount" id="tMinimumPurchaseAmount" value="<?php echo ( !$success && $website_coupon_id && ( !isset( $_POST['tMinimumPurchaseAmount'] ) || empty( $_POST['tMinimumPurchaseAmount'] ) ) ) ? $coupon['minimum_purchase_amount'] : $_POST['tMinimumPurchaseAmount']; ?>" maxlength="20" /></td>
 				</tr>
 				<tr>
 					<td><label for="cbStoreWide"><?php echo _('Store-Wide'); ?>:</label></td>
-					<td><input type="checkbox" name="cbStoreWide" id="cbStoreWide" class="cb" value="1"<?php if ( $success && $_POST['cbStoreWide'] || !$success && $coupon['store_wide'] ) echo ' checked="checked"'; ?> /> <?php echo _('Store-Wide Coupon?'); ?></td>
+					<td><input type="checkbox" name="cbStoreWide" id="cbStoreWide" class="cb" value="1"<?php if ( $success && $_POST['cbStoreWide'] || !$success && isset( $coupon['store_wide'] ) && $coupon['store_wide'] ) echo ' checked="checked"'; ?> /> <?php echo _('Store-Wide Coupon?'); ?></td>
 				</tr>
 				<tr>
 					<td><label for="cbBuyOneGetOneFree"><?php echo _('Buy One Get One Free'); ?>:</label></td>
-					<td><input type="checkbox" name="cbBuyOneGetOneFree" id="cbBuyOneGetOneFree" class="cb" value="1"<?php if ( $success && $_POST['cbBuyOneGetOneFree'] || !$success && $coupon['buy_one_get_one_free'] ) echo ' checked="checked"'; ?> /> <?php echo _('Buy One Get One Free'); ?></td>
+					<td><input type="checkbox" name="cbBuyOneGetOneFree" id="cbBuyOneGetOneFree" class="cb" value="1"<?php if ( $success && $_POST['cbBuyOneGetOneFree'] || !$success && isset( $coupon['buy_one_get_one_free'] ) && $coupon['buy_one_get_one_free'] ) echo ' checked="checked"'; ?> /> <?php echo _('Buy One Get One Free'); ?></td>
 				</tr>
 				<tr>
 					<td><label for="cbFreeShippingOptions"><?php echo _('Free Shipping Methods'); ?>:</label></td>
 					<td>
 						<?php
-						$check_shipping_methods = ( !$success && $website_coupon_id ) ? $free_shipping_methods : $_POST['cbFreeShippingMethods'];
+						if ( !$success && $website_coupon_id ) {
+							$check_shipping_methods = $free_shipping_methods;
+						} elseif ( isset( $_POST['cbFreeShippingMethods'] ) ) {
+							$check_shipping_methods = $_POST['cbFreeShippingMethods'];
+						} else {
+							$check_shipping_methods = '';
+						}
 						
-						foreach( $shipping_methods as $method ) {
+						// Make sure it's the right type
+						if ( !is_array( $check_shipping_methods ) )
+							$check_shipping_methods = array();
+						
+						foreach ( $shipping_methods as $method ) {
 							$checked = ( in_array( $method['website_shipping_method_id'], $check_shipping_methods ) ) ? ' checked="checked"' : '';
 							
 							echo '<p><input type="checkbox" class="cb" name="cbFreeShippingMethods[]" id="cbFreeShippingMethod' . $method['website_shipping_method_id'] . '" value="' . $method['website_shipping_method_id'] . '"' . $checked . '> <label for="cbFreeShippingMethod' . $method['website_shipping_method_id'] . '">' . $method['name'] . '</label></p>';
@@ -143,7 +156,7 @@ get_header();
 				</tr>
 				<tr>
 					<td><label for="tItemLimit"><?php echo _('Item Limit'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tItemLimit" id="tItemLimit" maxlength="10" value="<?php echo ( !$success && $website_coupon_id && empty( $_POST['tItemLimit'] ) ) ? $coupon['item_limit'] : $_POST['tItemLimit']; ?>" /></td>
+					<td><input type="text" class="tb" name="tItemLimit" id="tItemLimit" maxlength="10" value="<?php echo ( !$success && $website_coupon_id && ( !isset( $_POST['tItemLimit'] ) || empty( $_POST['tItemLimit'] ) ) ) ? $coupon['item_limit'] : $_POST['tItemLimit']; ?>" /></td>
 				</tr>
 				<tr>
 					<td>
@@ -151,8 +164,8 @@ get_header();
 						<small>(<?php echo _('optional'); ?>)</small>
 					</td>
 					<td>
-						<input type="text" name="tStartDate" id="tStartDate" class="tb date" maxlength="10" value="<?php echo ( ( !$success && $website_coupon_id && empty( $_POST['tStartDate'] ) ) && '0000-00-00' != $coupon['date_start'] ) ? $coupon['date_start'] : $_POST['tStartDate']; ?>" style="width:75px" />
-						<input type="text" name="tEndDate" id="tEndDate" class="tb date" maxlength="10" value="<?php echo ( ( !$success && $website_coupon_id && empty( $_POST['tEndDate'] ) ) && '0000-00-00' != $coupon['date_end'] ) ? $coupon['date_end'] : $_POST['tEndDate']; ?>" style="width:75px" />
+						<input type="text" name="tStartDate" id="tStartDate" class="tb date" maxlength="10" value="<?php echo ( ( !$success && $website_coupon_id && ( !isset( $_POST['tStartDate'] ) || empty( $_POST['tStartDate'] ) ) ) && '0000-00-00' != $coupon['date_start'] ) ? $coupon['date_start'] : $_POST['tStartDate']; ?>" style="width:75px" />
+						<input type="text" name="tEndDate" id="tEndDate" class="tb date" maxlength="10" value="<?php echo ( ( !$success && $website_coupon_id && ( !isset( $_POST['tEndDate'] ) || empty( $_POST['tEndDate'] ) ) ) && '0000-00-00' != $coupon['date_end'] ) ? $coupon['date_end'] : $_POST['tEndDate']; ?>" style="width:75px" />
 					</td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>

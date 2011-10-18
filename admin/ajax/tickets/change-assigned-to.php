@@ -4,9 +4,9 @@
  * @package Imagine Retailer
  */
  
-if( nonce::verify( $_POST['_nonce'], 'change-assigned-to' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-assigned-to' ) ) {
 	// Change the session value
-	if( empty( $_POST['auid'] ) ) {
+	if ( empty( $_POST['auid'] ) ) {
 		unset( $_SESSION['tickets']['assigned-to'] );
 	} else {
 		$_SESSION['tickets']['assigned-to'] = (int) $_POST['auid'];

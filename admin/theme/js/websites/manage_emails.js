@@ -80,9 +80,9 @@ function postLoad( $ ) {
 		
 	$('#bSubmitEmailChanges').click( function() {
 		var id = $("#hEmailId").val();
-		if( $("#iAddress").val() != $( '#hAddress' + id ).val() ) alert( "Changed Address!" );
-		if( $("#iPassword").val() != $( '#hPw' + id ).val() ) alert( "Changed Password!" );
-		if( $("#iQuota").val() != $( '#hQuota' + id ).val() ) alert( "Changed Quota!" );
+		if ( $("#iAddress").val() != $( '#hAddress' + id ).val() ) alert( "Changed Address!" );
+		if ( $("#iPassword").val() != $( '#hPw' + id ).val() ) alert( "Changed Password!" );
+		if ( $("#iQuota").val() != $( '#hQuota' + id ).val() ) alert( "Changed Quota!" );
 		$("#hEmailId").val( '' );
 	});
 }
@@ -94,7 +94,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );
@@ -129,9 +129,9 @@ function trSearchClick() {
  */
 function ajaxSearchClick( response ) {
 	// Make sure there was no error
-	if( !response['result'] ) {
+	if ( !response['result'] ) {
 		alert( response['error'] );
-		if( response['redirect'] ) window.location = '/login/';
+		if ( response['redirect'] ) window.location = '/login/';
 		return false;
 	}
 	
@@ -171,7 +171,7 @@ function trStateChange() {
  */
 function ajaxStateChange( response ) {
 	// Make sure there was no error
-	if( !response['result'] ) {
+	if ( !response['result'] ) {
 		alert( response['error'] );
 		return false;
 	}
@@ -194,7 +194,7 @@ function autocompleteSuccess( request, response ) {
 	var cacheType = $('#sAutoComplete').val();
 	
 	// Find out if they are already cached so we don't have to do another ajax called
-	if( request['term'] in cache[cacheType] ) {
+	if ( request['term'] in cache[cacheType] ) {
 		response( $.map( cache[cacheType][request['term']], function( item ) {
 			return {
 				'label' : item[cacheType],

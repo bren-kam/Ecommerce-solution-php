@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = '`title`';
@@ -56,8 +56,8 @@ $attribute_count = $a->count_attributes( $where );
 
 $aaData = array();
 
-if( is_array( $attributes ) )
-foreach( $attributes as $at ) {
+if ( is_array( $attributes ) )
+foreach ( $attributes as $at ) {
 	$aaData[] = array( '<span>' . $at['title'] . '</span><br /><div><a href="/attributes/edit/?aid=' . $at['attribute_id'] . '" title="' . _('Edit Attribute') . '">' . _('Edit') . '</a> | <a href="javascript:;" id="aDeleteAttribute' . $at['attribute_id'] . '" title="' . _('Delete Attribute') . '" class="delete-attribute">' . _('Delete') . '</a></div>' );
 }
 

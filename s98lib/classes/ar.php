@@ -27,11 +27,11 @@ class ar extends Base_Class {
 	 * @param bool $remove (optional) defaults to false -- whether to remove the value as well from the inner array
 	 * @return array
 	 */
-	public function assign_key( $array, $key, $remove = false ) {
+	public static function assign_key( $array, $key, $remove = false ) {
 		if ( !is_array( $array ) )
 			return $array;
 		
-		foreach( $array as $a ) {
+		foreach ( $array as $a ) {
 			// Get the value
 			$value = $a[$key];
 			
@@ -58,11 +58,11 @@ class ar extends Base_Class {
 	 * @param bool $strict (optional) whether you want to do strict comparison or not
 	 * @return array( $before, $after )|bool
 	 */
-	public function compare( $array_1, $array_2, $strict = true ) {
+	public static function compare( $array_1, $array_2, $strict = true ) {
 		$diff = false;
 		
 		// Left-to-right
-		foreach( $array_1 as $key => $value ) {
+		foreach ( $array_1 as $key => $value ) {
 			if ( !array_key_exists( $key, $array_2 ) ) {
 				$diff[0][$key] = $value;
 			} elseif ( is_array( $value ) ) {
@@ -83,7 +83,7 @@ class ar extends Base_Class {
 	 	}
 		
 		// Right-to-left
-		foreach( $array_2 as $key => $value ) {
+		foreach ( $array_2 as $key => $value ) {
 			if ( !array_key_exists( $key, $array_1 ) )
 				 $diff[1][$key] = $value;
 		}
@@ -100,10 +100,10 @@ class ar extends Base_Class {
 	 * @param array $array
 	 * @return array
 	 */
-	public function references( $array ) {
+	public static function references( $array ) {
         $references = array();
 		
-        foreach( $array as $k => $v ) {
+        foreach ( $array as $k => $v ) {
             $references[$k] = &$array[$k];
 		}
 		
@@ -116,11 +116,11 @@ class ar extends Base_Class {
 	 * @param array $array
 	 * @return string
 	 */
-	public function extended_encoding( $array ) {
+	public static function extended_encoding( $array ) {
 		$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
 	 	
 		$encoding = '';
-		foreach( $array as $value ) {
+		foreach ( $array as $value ) {
 			$first = floor( $value / 64 );
 			$second = $value % 64;
 			$encoding .= $characters[$first] . $characters[$second];
@@ -136,7 +136,7 @@ class ar extends Base_Class {
 	 * @param string $array_key (which field is the date field)
 	 * @return array
 	 */
-	public function sort_by_date( $array, $array_key ) {
+	public static function sort_by_date( $array, $array_key ) {
 		// Determine what key of the array has the date
 		self::$key = $array_key;
 		
@@ -153,7 +153,7 @@ class ar extends Base_Class {
 	 * @param string $b
 	 * @return int
 	 */
-	public function compare_date( $a, $b ) {
+	public static function compare_date( $a, $b ) {
 		$a_t = strtotime( $a[self::$key] );
 		$b_t = strtotime( $b[self::$key] );
 		

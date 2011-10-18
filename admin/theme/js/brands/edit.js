@@ -17,7 +17,7 @@ function postLoad( $ ) {
 	$('#tName').keyup( function() {
 		var slug = $('#tSlug');
 		
-		if( !slug.data('changed') )
+		if ( !slug.data('changed') )
 			slug.val( $(this).val().slug() );
 	});
 	
@@ -30,7 +30,7 @@ function postLoad( $ ) {
 	$('#aAddProductOption').click( function() {
 		var productOption = $('#sProductOptions option:selected'), productOptionTitle = productOption.text(), productOptionID = productOption.val();
 		
-		if( '' == productOptionID )
+		if ( '' == productOptionID )
 			return;
 			
 		// Append new div

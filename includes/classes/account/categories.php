@@ -29,7 +29,7 @@ class Categories extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 		
 		// Load categories
@@ -43,12 +43,12 @@ class Categories extends Base_Class {
 		$categories = $this->db->get_results( 'SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, `sequence` ASC, `name` ASC', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		foreach( $categories as $c ) {
+		foreach ( $categories as $c ) {
 			// Assign the categories list in a way for infinite nesting
 			$parent_categories[$c['parent_category_id']][] = $c;
 	
@@ -75,11 +75,11 @@ class Categories extends Base_Class {
 	public function get_list( $category_id = 0, $parent_category = 0, $spacing = 0 ) {
 		$str_categories = '';
 		
-		foreach( $this->categories[$parent_category] as $c ) {
+		foreach ( $this->categories[$parent_category] as $c ) {
 			$selected = ( $category_id == $c['category_id'] ) ? ' selected="selected"' : '';
 			$str_categories .= '<option value="' . $c['category_id'] . '"' . $selected . '>' . str_repeat( '&nbsp;', $spacing ) . $c['name'] . '</option>';
 			
-			if( is_array( $this->categories[$c['category_id']] ) )
+			if ( isset( $this->categories[$c['category_id']] ) && is_array( $this->categories[$c['category_id']] ) )
 				$str_categories .= $this->get_list( $category_id, $c['category_id'], $spacing + 5 );
 			
 		}
@@ -101,7 +101,7 @@ class Categories extends Base_Class {
 		$category = $this->get_category( $category_id );
 		
 		// If there is no category, return
-		if( !$category )
+		if ( !$category )
 			return false;
 		
 		global $user;
@@ -109,7 +109,10 @@ class Categories extends Base_Class {
 		// Get the parent cateogires
 		$parent_categories = $this->get_parent_categories( $category_id );
 		
-		foreach( $parent_categories as $pc ) {
+		// Initialize category URL
+		$category_url = '';
+		
+		foreach ( $parent_categories as $pc ) {
 			$category_url = $pc['slug'] . '/' . $category_url;
 		}
 		
@@ -124,7 +127,7 @@ class Categories extends Base_Class {
 	 * @return array
 	 */
 	public function get_category( $category_id ) {
-		if( 0 == $category_id )
+		if ( 0 == $category_id )
 		 	return false;
 		
 		return $this->categories_list[$category_id];
@@ -138,18 +141,18 @@ class Categories extends Base_Class {
 	 * @return array
 	 */
 	public function get_parent_categories( $category_id, $parent_categories = array() ) {
-		if( !$category_id )
+		if ( !$category_id )
 			return false;
 		
 		// Get the categories
 		$category = $this->categories_list[$category_id];
 		
 		// If they went too far, return what we have
-		if( empty( $category ) )
+		if ( empty( $category ) )
 		 	return $parent_categories;
 		
 		// Find out if their is a parent
-		if( 0 != $category['parent_category_id'] ) {
+		if ( 0 != $category['parent_category_id'] ) {
 			$parent_categories[] = $this->categories_list[$category['parent_category_id']];
 		
 			// If the parent has a parent, call this function again
@@ -170,15 +173,15 @@ class Categories extends Base_Class {
 		$category = $this->categories_list[$category_id];
 		 
 		// If they went too far, return what we have
-		if( empty( $category ) )
+		if ( empty( $category ) )
 		 	return $parent_category_ids;
 		
 		// Find out if there is a parent
-		if( 0 != $category['parent_category_id'] ) {
+		if ( 0 != $category['parent_category_id'] ) {
 				$parent_category_ids[] = $category['parent_category_id'];
 			
 			// If the parent has a parent, call this function again
-			if( 0 != $this->categories_list[$category['parent_category_id']]['parent_category_id'] )
+			if ( 0 != $this->categories_list[$category['parent_category_id']]['parent_category_id'] )
 				$parent_category_ids = $this->get_parent_category_ids( $category['parent_category_id'], $parent_category_ids );
 		}
 		
@@ -194,11 +197,11 @@ class Categories extends Base_Class {
 	 */
 	public function get_sub_category_ids( $category_id, $sub_category_ids = array() ) {
 		// Check to see if it has any sub categories
-		if( array_key_exists( $category_id, $this->categories ) )
-		foreach( $this->categories[$category_id] as $cat ) {
+		if ( array_key_exists( $category_id, $this->categories ) )
+		foreach ( $this->categories[$category_id] as $cat ) {
 			$sub_category_ids[] = $cat['category_id'];
 			
-			if( array_key_exists( $cat['category_id'], $this->categories ) )
+			if ( array_key_exists( $cat['category_id'], $this->categories ) )
 				$sub_category_ids = $this->get_sub_category_ids( $cat['category_id'], $sub_category_ids );
 		}
 		

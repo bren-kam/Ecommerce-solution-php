@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['email_marketing'] )
+if ( !$user['website']['email_marketing'] )
 	url::redirect('/email-marketing/subscribers/');
 
 // Instantiate Classes
@@ -22,7 +22,7 @@ $e = new Email_Marketing;
 $emails = $e->dashboard_messages( $user['website']['website_id'] );
 $subscribers = $e->dashboard_subscribers( $user['website']['website_id'] );
 
-if( is_array( $emails ) ) {
+if ( is_array( $emails ) ) {
 	$a = new Analytics;
 	
 	// Get the analytics data
@@ -57,7 +57,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'dashboard' ); ?>
 	<div id="subcontent">
-		<?php if( $emails[0] ) { ?>
+		<?php if ( $emails[0] ) { ?>
 		<p><strong><?php echo _('Latest email:'); ?></strong> <?php echo $emails[0]['subject']; ?></p>
 		<?php } else { ?>
 		<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
@@ -70,8 +70,8 @@ get_header();
 				<p class="info-box-title"><?php echo _('Emails Sent'); ?></p>
 				<div class="info-box-content">
 				<?php 
-				if( is_array( $emails ) ) {
-					foreach( $emails as $em ) {
+				if ( is_array( $emails ) ) {
+					foreach ( $emails as $em ) {
 					?>
 						<p><a href="/analytics/email/?mcid=<?php echo $em['mc_campaign_id']; ?>" title="<?php echo $em['subject']; ?>"><?php echo $em['subject']; ?></a></p>
 					<?php } ?>
@@ -87,8 +87,8 @@ get_header();
 				<p class="info-box-title"><?php echo _('Latest Subscribers'); ?></p>
 				<div class="info-box-content">
 					<?php 
-					if( is_array( $subscribers ) ) { 
-						foreach( $subscribers as $s ) {
+					if ( is_array( $subscribers ) ) { 
+						foreach ( $subscribers as $s ) {
 						?>
 						<p><?php echo $s['email']; ?></p>
 						<?php } ?>

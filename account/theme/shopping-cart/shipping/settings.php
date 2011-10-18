@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
@@ -20,7 +20,10 @@ $v->add_validation( 'shipper-zip', 'zip', _('The "Shipping Zip" field must conta
 
 add_footer( $v->js_validation() );
 
-if ( nonce::verify( $_POST['_nonce'], 'shipping-settings' ) ) {
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'shipping-settings' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -51,12 +54,12 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'shopping-cart/', 'shipping' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<p class="success"><?php echo _('Shipping settings successfully saved!'); ?></p>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
         <form name="fShippingSettings" id="fShippingSettings" action="/shopping-cart/shipping/settings/" method="post">
@@ -133,7 +136,7 @@ get_header();
 							, '07' => _('On Call Air')
 						);
 						
-						foreach( $pickup_types as $pt => $pt_name ) {
+						foreach ( $pickup_types as $pt => $pt_name ) {
 							$selected = ( $ups['pickup_type'] == $pt ) ? ' selected="selected"' : '';
 							?>
 							<option value="<?php echo $pt; ?>"<?php echo $selected; ?>><?php echo $pt_name; ?></option>
@@ -188,7 +191,7 @@ get_header();
 							, 'FEDEX_25KG_BOX' => _('FedEx 25Kg Box')
 						);
 						
-						foreach( $packaging_types as $pt => $pt_name ) {
+						foreach ( $packaging_types as $pt => $pt_name ) {
 							$selected = ( $fedex['packaging_type'] == $pt ) ? ' selected="selected"' : '';
 							?>
 							<option value="<?php echo $pt; ?>"<?php echo $selected; ?>><?php echo $pt_name; ?></option>

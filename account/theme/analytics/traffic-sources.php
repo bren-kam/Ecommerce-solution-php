@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
@@ -23,8 +23,12 @@ $records = $a->get_metric_by_date( 'visits' );
 $total = array_merge( $a->get_traffic_sources_totals(), $a->get_totals() );
 $traffic_sources = $a->get_traffic_sources( '', '', 0 );
 
+// Initialize Variable
+$visits_plotting_array = array();
+
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+if ( is_array( $records ) )
+foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
@@ -115,10 +119,13 @@ get_header();
 						</tr>
 					</thead>
 					<tbody>
-					<?php foreach( $traffic_sources as $ts ) { ?>
+					<?php 
+					if ( is_array( $traffic_sources ) )
+					foreach ( $traffic_sources as $ts ) {
+					?>
 					<tr>
 						<td><a href="/analytics/source/?s=<?php echo urlencode( $ts['source'] ); ?>" title="<?php echo $ts['source'], ' / ', $ts['medium']; ?>"><?php echo $ts['source'], ' / ', $ts['medium']; ?></a></td>
-						<td class="text-right"><?php echo number_format( $ts['visits'], 2 ); ?></td>
+						<td class="text-right"><?php echo $ts['visits']; ?></td>
 						<td class="text-right"><?php echo number_format( $ts['pages_by_visits'], 2 ); ?></td>
 						<td class="text-right"><?php echo $ts['time_on_site']; ?></td>
 						<td class="text-right"><?php echo $ts['new_visits']; ?>%</td>

@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $_SESSION['tickets']['status'] = '0';
 $_SESSION['tickets']['assigned-to'] = '0';
@@ -21,6 +21,7 @@ $admin_users = $u->get_users( " AND `role` > 5 AND `status` = 1 AND '' <> `conta
 
 $selected = 'tickets';
 $title = _('Tickets') . ' | ' . TITLE;
+
 get_header();
 ?>
 
@@ -39,7 +40,7 @@ get_header();
 	<select id="sAssignedTo">
 		<option value="0"><?php echo _('All'); ?></option>
 		<option value="-1"><?php echo _('Peers'); ?></option>
-		<?php foreach( $admin_users as $au ) { ?>
+		<?php foreach ( $admin_users as $au ) { ?>
 		<option value="<?php echo $au['user_id']; ?>"><?php echo $au['contact_name']; ?></option>
 		<?php } ?>
 	</select>

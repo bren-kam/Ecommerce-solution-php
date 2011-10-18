@@ -35,7 +35,7 @@ function postLoad( $ ) {
 			$('td:eq(3)', nRow).addClass('priority');
 			
 			// Add the waiting class if its waiting
-			if( '1' == data[1] ) 
+			if ( '1' == data[1] ) 
 				$(nRow).addClass( 'waiting' );
 			
 			// Get rid of the number
@@ -54,7 +54,7 @@ function postLoad( $ ) {
 	// Update settion status
 	$('#sStatuses').change( function() {
 		$.post( '/ajax/tickets/change-status/', { '_nonce' : $('#_ajax_change_status').val(), 's' : $(this).val() }, function( response ) {
-			if( response['result'] )
+			if ( response['result'] )
 				dt.fnDraw();
 		}, 'json' );
 	});
@@ -62,7 +62,7 @@ function postLoad( $ ) {
 	// Update settion assigned to
 	$('#sAssignedTo').change( function() {
 		$.post( '/ajax/tickets/change-assigned-to/', { '_nonce' : $('#_ajax_change_assigned_to').val(), 'auid' : $(this).val() }, function( response ) {
-			if( response['result'] )
+			if ( response['result'] )
 				dt.fnDraw();
 		}, 'json' );
 	});
@@ -75,7 +75,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );

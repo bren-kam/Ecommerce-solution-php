@@ -10,7 +10,7 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 	<h2><?php echo _('Sidebar'); ?></h2>
 	<?php if ( !$high_impact ) { ?>
 		<a href="/products/" title="<?php echo _('Products'); ?>" class="top"><?php echo _('Products'); ?></a>
-		<?php if ( $products ) { ?>
+		<?php if ( isset( $products ) ) { ?>
 			<a href="/products/" title="<?php echo _('View Products'); ?>" class="sub"><?php echo _('View'); ?></a>
 			<?php if ( $user['role'] >= 6 || '1' != $settings['limited-products'] ) { ?>
 				<a href="/products/add/" title="<?php echo _('Add Product'); ?>" class="sub"><?php echo _('Add'); ?></a>
@@ -27,7 +27,7 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 	?>
 	
 	<a href="/products/custom-products/" title="<?php echo _('Custom Products'); ?>" class="top"><?php echo _('Custom Products'); ?></a>
-	<?php if ( $custom_products ) { ?>
+	<?php if ( isset( $custom_products ) ) { ?>
 		<a href="/products/custom-products/" title="<?php echo _('View'); ?>" class="sub"><?php echo _('View'); ?></a>
 		<a href="/products/custom-products/add-edit/" title="<?php echo _('Add'); ?>" class="sub"><?php echo _('Add'); ?></a>
 	<?php } ?>
@@ -36,7 +36,7 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 	
 	<?php if ( $user['website']['shopping_cart'] ) { ?>
 		<a href="/products/coupons/" title="<?php echo _('Coupons'); ?>" class="top"><?php echo _('Coupons'); ?></a>
-		<?php if ( $coupons ) { ?>
+		<?php if ( isset( $coupons ) ) { ?>
 			<a href="/products/coupons/" title="<?php echo _('View Coupons'); ?>" class="sub"><?php echo _('View'); ?></a>
 			<a href="/products/coupons/add-edit/" title="<?php echo _('Add Coupon'); ?>" class="sub"><?php echo _('Add'); ?></a>
 		<?php 
@@ -45,7 +45,7 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 	?>
 	
 	<a href="/products/groups/" title="<?php echo _('Product Groups'); ?>" class="top"><?php echo _('Products Groups'); ?></a>
-	<?php if ( $product_groups ) { ?>
+	<?php if ( isset( $product_groups ) ) { ?>
 		<a href="/products/groups/" title="<?php echo _('View Product Groups'); ?>" class="sub"><?php echo _('View'); ?></a>
 		<a href="/products/groups/add-edit/" title="<?php echo _('Add Product Groups'); ?>" class="sub"><?php echo _('Add'); ?></a></li>
 	<?php } ?>

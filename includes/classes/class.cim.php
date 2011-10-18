@@ -124,7 +124,7 @@ class CIM {
 		$this->post_values['x_description']		= 'Imagine Retailer - Managed Website Order';
 
 		// If it's a test, set the right data
-		if( $testing ) {
+		if ( $testing ) {
 			$this->post_values['x_login']			= '54PB5egZ';
 			$this->post_values['x_tran_key']		= '48V258vr55AE8tcg';
 			$this->post_values['x_test_request'] 	= 'TRUE';
@@ -145,7 +145,7 @@ class CIM {
 	 * @returns bool
 	 */
 	private function authentication( $api_login_id, $transaction_key ) {
-		if( !empty( $api_login_id ) && !empty( $transaction_key ) ) {
+		if ( !empty( $api_login_id ) && !empty( $transaction_key ) ) {
 			$this->post_values['merchant_authentication'] = "<merchantAuthentication><name>$api_login_id</name><transactionKey>$transaction_key</transactionKey></merchantAuthentication>";
 			return true;
 		}
@@ -171,7 +171,7 @@ class CIM {
 <createCustomerProfileRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">';
 		$request .= $this->post_values['merchant_authentication'];
 		
-		if( is_array( $data['refId'] ) )
+		if ( is_array( $data['refId'] ) )
 		$request .= '<refID>' . $data['refID']
 
 	   <profile> 
@@ -265,13 +265,13 @@ class CIM {
 		$post_url = ( $this->testing ) ? $this->post_url_test : $this->post_url;
 
 		// Makes string out of array ready to post
-		foreach( $this->post_values as $key => $value ) { 
+		foreach ( $this->post_values as $key => $value ) { 
 			$post_string .= "$key=" . urlencode( $value ) . "&";
 		}
 		$post_string = rtrim( $post_string, "& " );
 		//echo $post_string;
 		
-		if( empty( $post_string ) )
+		if ( empty( $post_string ) )
 			return false;
 
 		$ch = curl_init( $post_url ); // initiate curl object

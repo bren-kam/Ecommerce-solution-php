@@ -8,16 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['email_marketing'] )
+if ( !$user['website']['email_marketing'] )
 	url::redirect('/analytics/');
 
 $mc_campaign_id = $_GET['mcid'];
 
-if( empty( $mc_campaign_id ) )
+if ( empty( $mc_campaign_id ) )
 	url::redirect('/analytics/email-marketing/');
 
 // Instantiate class
@@ -48,15 +48,15 @@ get_header();
 	<div id="subcontent">
 		<div id="dClickStats" class="hidden"><?php echo json_encode( $email['click_overlay'] ); ?></div>
 		<?php
-		if( count( $email['advice'] ) > 0 ) {
+		if ( count( $email['advice'] ) > 0 ) {
 			$advice = '';
 			
-			foreach( $email['advice'] as $adv ) {
-				if( 'negative' != $adv['type'] )
+			foreach ( $email['advice'] as $adv ) {
+				if ( 'negative' != $adv['type'] )
 					$advice .= $adv['msg'] . '<br />';
 			}
 			
-			if( !empty( $advice ) )
+			if ( !empty( $advice ) )
 				echo '<p><strong>', _('Advice') . ":</strong><br />$advice</p>";
 		}
 		?>

@@ -5,7 +5,7 @@
  * @subpackage Account
  */
 
-if( !nonce::verify( $_POST['nonce'], 'craigslist' ) ) return false;
+if ( !nonce::verify( $_POST['nonce'], 'craigslist' ) ) return false;
 
 // Instantiate classes
 $c = new Craigslist;
@@ -13,13 +13,13 @@ $query = $_POST['query'];
 $website_id = $user['website']['website_id'];
 
 
-if( !$product_id = $c->get_product_id( $_POST['search_by'], $query ) ) echo json_encode( array( 'result' => false, 'product_id' => false, 'message' => 'Failed to get product id.  Please refresh the page and try again.' ) );
+if ( !$product_id = $c->get_product_id( $_POST['search_by'], $query ) ) echo json_encode( array( 'result' => false, 'product_id' => false, 'message' => 'Failed to get product id.  Please refresh the page and try again.' ) );
 
 $product_result = $c->get_product( $product_id );
 $image_result = $c->get_product_image_urls( $product_id );
 $website_info = $c->get_website_info( $website_id );
 
-foreach( $website_info as &$info ){
+foreach ( $website_info as &$info ){
 	$info = stripslashes( $info );
 }
 

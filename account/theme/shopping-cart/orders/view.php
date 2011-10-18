@@ -95,7 +95,7 @@ get_header();
 				<th width="77"><strong><?php echo _('Total'); ?></strong></th>
 			</tr>
 			<!-- End: Table Heading -->
-			<?php foreach( $order['items'] as $website_order_item_id => $item ) { ?>
+			<?php foreach ( $order['items'] as $website_order_item_id => $item ) { ?>
 			<tr>
 				<td class="product"><img src="<?php echo $item['image'] ?>" width="80" alt="<?php echo $item['name']; ?>" /></td>
 				<td class="description">
@@ -116,9 +116,10 @@ get_header();
 						<div id="dOptions<?php echo $website_order_item_id; ?>" class="options hidden">
 						<br />
 						<?php
-						foreach( $item['product_options'] as $po_id => $po ) { // Loop through the product options							
+						if ( is_array( $item['product_options'] ) )
+						foreach ( $item['product_options'] as $po_id => $po ) { // Loop through the product options							
 							
-							switch( $po['option_type'] ) {
+							switch ( $po['option_type'] ) {
 								// If it's a checkbox
 								case 'checkbox':
 									echo '<p>', $po['option_name'];
@@ -146,10 +147,10 @@ get_header();
 						if ( 0 != $item['protection_price'] )
 							echo '<p>Protection ($', number_format( $item['protection_price'], 2 ), ')</p>';
 							
-						if( count( $item['extra'] ) > 0 )
-							foreach( $item['extra'] as $name => $value ) {
-								echo '<p>' . ucwords( $name ) . ": " . $value . '</p>';								
-							}
+						if ( is_array( $item['extra'] ) && count( $item['extra'] ) > 0 )
+						foreach ( $item['extra'] as $name => $value ) {
+							echo '<p>' . ucwords( $name ) . ": " . $value . '</p>';								
+						}
 						?>
 					</div>
 					<?php } ?>

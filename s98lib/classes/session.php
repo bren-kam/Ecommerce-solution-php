@@ -22,11 +22,11 @@ class session extends Base_Class {
 	 * @param array $data the array in a key => value pair
 	 * @return bool
 	 */
-	function store_array( $data ) {
+	public static function store_array( $data ) {
 		if ( !is_array( $data ) )
 			return false;
 			
-		foreach( $data as $key => $value ) {
+		switch ( $data as $key => $value ) {
 			$_SESSION[$key] = $value;
 		}
 		

@@ -62,13 +62,13 @@ class TestMatrix {
     echo "<p>Testing constructors and constructor-like methods...</p>";
 
     $A = new Matrix($columnwise, 3);
-    if($A instanceof Matrix) {
+    if ($A instanceof Matrix) {
       $this->try_success("Column-packed constructor...");
     } else
       $errorCount = $this->try_failure($errorCount, "Column-packed constructor...", "Unable to construct Matrix");
 
     $T = new Matrix($tvals);
-    if($T instanceof Matrix)
+    if ($T instanceof Matrix)
       $this->try_success("2D array constructor...");
     else
       $errorCount = $this->try_failure($errorCount, "2D array constructor...", "Unable to construct Matrix");
@@ -117,30 +117,30 @@ class TestMatrix {
     print "<p>Testing access methods...</p>";
 
 	$B = new Matrix($avals);
-	if($B->getRowDimension() == $rows)
+	if ($B->getRowDimension() == $rows)
 	  $this->try_success("getRowDimension...");
 	else
 	  $errorCount = $this->try_failure($errorCount, "getRowDimension...");
 
-	if($B->getColumnDimension() == $cols)
+	if ($B->getColumnDimension() == $cols)
 	  $this->try_success("getColumnDimension...");
 	else
 	  $errorCount = $this->try_failure($errorCount, "getColumnDimension...");
 
 	$barray = $B->getArray();
-	if($this->checkArrays($barray, $avals))
+	if ($this->checkArrays($barray, $avals))
 	  $this->try_success("getArray...");
 	else
 	  $errorCount = $this->try_failure($errorCount, "getArray...");
 
 	$bpacked = $B->getColumnPackedCopy();
-	if($this->checkArrays($bpacked, $columnwise))
+	if ($this->checkArrays($bpacked, $columnwise))
 	  $this->try_success("getColumnPackedCopy...");
 	else
 	  $errorCount = $this->try_failure($errorCount, "getColumnPackedCopy...");
 
 	$bpacked = $B->getRowPackedCopy();
-	if($this->checkArrays($bpacked, $rowwise))
+	if ($this->checkArrays($bpacked, $rowwise))
 	  $this->try_success("getRowPackedCopy...");
 	else
 	  $errorCount = $this->try_failure($errorCount, "getRowPackedCopy...");
@@ -177,33 +177,33 @@ class TestMatrix {
     echo "<p>Testing linear algebra methods...<p>";
 
     $A = new Matrix($columnwise, 3);
-    if( $this->checkMatrices($A->transpose(), $T) )
+    if ( $this->checkMatrices($A->transpose(), $T) )
       $this->try_success("Transpose check...");
     else
       $errorCount = $this->try_failure($errorCount, "Transpose check...", "Matrices are not equal");
 
-    if($this->checkScalars($A->norm1(), $columnsummax))
+    if ($this->checkScalars($A->norm1(), $columnsummax))
       $this->try_success("Maximum column sum...");
     else
       $errorCount = $this->try_failure($errorCount, "Maximum column sum...", "Incorrect: " . $A->norm1() . " != " . $columnsummax);
 
-    if($this->checkScalars($A->normInf(), $rowsummax))
+    if ($this->checkScalars($A->normInf(), $rowsummax))
       $this->try_success("Maximum row sum...");
     else
       $errorCount = $this->try_failure($errorCount, "Maximum row sum...", "Incorrect: " . $A->normInf() . " != " . $rowsummax );
 
-    if($this->checkScalars($A->normF(), sqrt($sumofsquares)))
+    if ($this->checkScalars($A->normF(), sqrt($sumofsquares)))
       $this->try_success("Frobenius norm...");
     else
       $errorCount = $this->try_failure($errorCount, "Frobenius norm...", "Incorrect:" . $A->normF() . " != " . sqrt($sumofsquares));
 
-    if($this->checkScalars($A->trace(), $sumofdiagonals))
+    if ($this->checkScalars($A->trace(), $sumofdiagonals))
       $this->try_success("Matrix trace...");
     else
       $errorCount = $this->try_failure($errorCount, "Matrix trace...", "Incorrect: " . $A->trace() . " != " . $sumofdiagonals);
 
     $B = $A->getMatrix(0, $A->getRowDimension(), 0, $A->getRowDimension());
-    if( $B->det() == 0 )
+    if ( $B->det() == 0 )
       $this->try_success("Matrix determinant...");
     else
       $errorCount = $this->try_failure($errorCount, "Matrix determinant...", "Incorrect: " . $B->det() . " != " . 0);
@@ -223,7 +223,7 @@ class TestMatrix {
     $QR = $A->qr();
     $R = $QR->getR();
     $Q = $QR->getQ();
-    if($this->checkMatrices($A, $Q->times($R)))
+    if ($this->checkMatrices($A, $Q->times($R)))
       $this->try_success("QRDecomposition...","");
     else
       $errorCount = $this->try_failure($errorCount,"QRDecomposition...","incorrect qr decomposition calculation");
@@ -256,7 +256,7 @@ class TestMatrix {
        $errorCount = $this->try_failure($errorCount, "inverse()...","incorrect inverse calculation");
 
     $DEF = new Matrix($rankdef);
-    if($this->checkScalars($DEF->rank(), min($DEF->getRowDimension(), $DEF->getColumnDimension())-1))
+    if ($this->checkScalars($DEF->rank(), min($DEF->getRowDimension(), $DEF->getColumnDimension())-1))
       $this->try_success("Rank...");
     else
       $this->try_failure("Rank...", "incorrect rank calculation");
@@ -264,7 +264,7 @@ class TestMatrix {
     $B = new Matrix($condmat);
     $SVD = $B->svd();
     $singularvalues = $SVD->getSingularValues();
-    if($this->checkScalars($B->cond(), $singularvalues[0]/$singularvalues[min($B->getRowDimension(), $B->getColumnDimension())-1]))
+    if ($this->checkScalars($B->cond(), $singularvalues[0]/$singularvalues[min($B->getRowDimension(), $B->getColumnDimension())-1]))
       $this->try_success("Condition number...");
     else
       $this->try_failure("Condition number...", "incorrect condition number calculation");
@@ -295,7 +295,7 @@ class TestMatrix {
     $Eig = $A->eig();
     $D = $Eig->getD();
     $V = $Eig->getV();
-    if( $this->checkMatrices($A->times($V),$V->times($D)) )
+    if ( $this->checkMatrices($A->times($V),$V->times($D)) )
       $this->try_success("EigenvalueDecomposition (symmetric)...","");
     else
       $errorCount = $this->try_failure($errorCount,"EigenvalueDecomposition (symmetric)...","incorrect symmetric Eigenvalue decomposition calculation");
@@ -371,7 +371,7 @@ class TestMatrix {
     $nx = count($x);
     $ny = count($y);
     if ($nx == $ny)
-      for($i=0; $i < $nx; ++$i)
+      for ($i=0; $i < $nx; ++$i)
         $this->checkScalars($x[$i],$y[$i]);
     else
       die("Attempt to compare vectors of different lengths");
@@ -394,7 +394,7 @@ class TestMatrix {
   * @param matrix $Y
   */
   function checkMatrices($X = null, $Y = null) {
-    if( $X == null || $Y == null )
+    if ( $X == null || $Y == null )
       return false;
 
     $eps = pow(2.0,-52.0);

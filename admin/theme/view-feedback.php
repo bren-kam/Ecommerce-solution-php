@@ -9,8 +9,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $f = new Feedback();
 $fc = new Feedback_Comments();
@@ -19,7 +19,7 @@ $fb = $f->get( $_GET['fid'] );
 $comments = $fc->get( $_GET['fid'] );
 
 // Auto assign feedback
-if( 0 == $fb['assigned_to_user_id'] )
+if ( 0 == $fb['assigned_to_user_id'] )
 	$fb['assigned_to_user_id'] = $f->update_assigned_to( $_GET['fid'], $user['user_id'] );
 
 css( 'form', 'view-feedback' );
@@ -69,7 +69,7 @@ get_header();
 					2 => _('High')
 				);
 				
-				foreach( $priorities as $pn => $p ) {
+				foreach ( $priorities as $pn => $p ) {
 					$selected = ( $fb['priority'] == $pn ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $pn . '"' . $selected . '>' . $p . "</option>\n";
@@ -87,7 +87,7 @@ get_header();
 					1 => _('Closed')
 				);
 				
-				foreach( $statuses as $sn => $s ) {
+				foreach ( $statuses as $sn => $s ) {
 					$selected = ( $fb['status'] == $sn ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $sn . '"' . $selected . '>' . $s . "</option>\n";
@@ -101,7 +101,7 @@ get_header();
 			<td>
 				<select id="sAssignedTo" class="dd" style="width: 150px">
 				<?php
-				foreach( $u->admin_users() as $au ) {
+				switch ( $u->admin_users() as $au ) {
 					$selected = ( $fb['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['first_name'] . ' ' . $au['last_name'] . "</option>\n";
@@ -131,8 +131,8 @@ get_header();
 		<div class="divider hidden" id="dFeedbackCommentsDivider"></div>
 		<div id="dComments">
 		<?php
-		if( is_array( $comments ) )
-		foreach( $comments as $c ) {
+		if ( is_array( $comments ) )
+		foreach ( $comments as $c ) {
 		?>
 		<div class="comment" id="dComment<?php echo $c['feedback_comment_id']; ?>">
 			<img src="http://manage.realstatistics.com/images/<?php echo ( empty( $c['picture'] ) ) ? 'icons/person.png' : 'users/' . $c['user_id'] . '/icon/' . $c['picture']; ?>" class="avatar" width="60" height="60" alt="<?php echo $c['name']; ?>" />
@@ -142,7 +142,7 @@ get_header();
 					<a href="javascript:;" class="delete-comment" title="Delete Feedback Comment"><img src="/images/icons/x.png" alt="X" width="16" height="16" /></a>
 				</p>
 				<p><?php echo $c['comment']; ?></p>
-				<p class="date"><?php echo date_time::date( 'm/d/Y g:ia', $c['date'] ); ?></p>
+				<p class="date"><?php echo dt::date( 'm/d/Y g:ia', $c['date'] ); ?></p>
 			</div>
 			<br clear="left" />
 		</div>

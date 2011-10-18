@@ -219,7 +219,7 @@ class PHPExcel_Best_Fit
 
 	protected function _calculateGoodnessOfFit($sumX,$sumY,$sumX2,$sumY2,$sumXY,$meanX,$meanY, $const) {
 		$SSres = $SScov = $SScor = $SStot = $SSsex = 0.0;
-		foreach($this->_xValues as $xKey => $xValue) {
+		foreach ($this->_xValues as $xKey => $xValue) {
 			$bestFitY = $this->_yBestFitValues[$xKey] = $this->getValueOfYForX($xValue);
 
 			$SSres += ($this->_yValues[$xKey] - $bestFitY) * ($this->_yValues[$xKey] - $bestFitY);
@@ -278,7 +278,7 @@ class PHPExcel_Best_Fit
 		$meanX = $x_sum / $this->_valueCount;
 		$meanY = $y_sum / $this->_valueCount;
 		$mBase = $mDivisor = $xx_sum = $xy_sum = $yy_sum = 0.0;
-		for($i = 0; $i < $this->_valueCount; ++$i) {
+		for ($i = 0; $i < $this->_valueCount; ++$i) {
 			$xy_sum += $xValues[$i] * $yValues[$i];
 			$xx_sum += $xValues[$i] * $xValues[$i];
 			$yy_sum += $yValues[$i] * $yValues[$i];

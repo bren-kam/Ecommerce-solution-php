@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $selected = "subscribers";
@@ -21,7 +21,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'subscribers' ); ?>
 	<div id="subcontent">
-		<table ajax="/ajax/email-marketing/subscribers/list/?s=0<?php if( isset( $_GET['elid'] ) ) echo '&elid=' . $_GET['elid']; ?>" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
+		<table ajax="/ajax/email-marketing/subscribers/list/?s=0<?php if ( isset( $_GET['elid'] ) ) echo '&elid=' . $_GET['elid']; ?>" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>
 				<tr>
 					<th width="30%" sort="1"><?php echo _('Email'); ?></th>

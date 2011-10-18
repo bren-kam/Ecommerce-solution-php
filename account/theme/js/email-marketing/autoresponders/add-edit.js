@@ -8,7 +8,7 @@ jQuery(function($) {
 	$('#aSendTest').click( function() {
 		var text = $(this).html();
 		
-		if( text.search( /\+/ ) > 0 ) {
+		if ( text.search( /\+/ ) > 0 ) {
 			$(this).html( text.replace( '+', '&ndash;' ) );
 			
 			// Show

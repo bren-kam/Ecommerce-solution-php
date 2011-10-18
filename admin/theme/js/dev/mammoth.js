@@ -12,7 +12,7 @@ var mammoth = function(context) {
 	var RTEs = $('textarea[rte]', context);
 	
 	// If there are RTEs
-	if( RTEs.length )
+	if ( RTEs.length )
 	head.js( '/ckeditor/ckeditor.js', '/ckeditor/adapters/jquery.js', function() {
 		RTEs.ckeditor({
 			autoGrow_minHeight : 100,
@@ -33,7 +33,7 @@ var mammoth = function(context) {
 	var ajaxForms = $('form[ajax]', context);
 
 	// If there are forms, load AJAX form plugin and PHP plugin
-	if( ajaxForms.length )
+	if ( ajaxForms.length )
 	head.js( '/js2/?f=jquery.form', function() {
 		// Assign all the forms the AJAX form plugin
 		ajaxForms.ajaxForm({

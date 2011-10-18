@@ -19,7 +19,7 @@ class url extends Base_Class {
 	 * @param int $code (Optional) The HTTP Status code, defaults to 302 Found
 	 * @returns bool
 	 */
-	public function redirect( $location, $code = 302 ) {
+	public static function redirect( $location, $code = 302 ) {
 		// HTTP Status code
 		header::http_status( $code );
 		
@@ -37,15 +37,24 @@ class url extends Base_Class {
 	 * @param bool $subdomains whether to include subdomains or not
 	 * @returns string
 	 */
-	public function domain( $url, $subdomains = true ) {
+	public static function domain( $url, $subdomains = true ) {
+		// Define variables
 		$parse_url = parse_url( trim( $url ) );
-   		$domain = trim( ( $parse_url['host'] ) ? $parse_url['host'] : array_shift( explode( '/', $parse_url['path'], 2) ) ); 
+		$path_parts = explode( '/', $parse_url['path'], 2 );
+		$host = ( isset( $parse_url['host'] ) ) ? $parse_url['host'] : array_shift( $path_parts );
+   		$domain = trim( $host );
 		
 		return ( $subdomains ) ? $domain : preg_replace( '/(?:[-a-zA-Z0-9]+\.)*([-a-zA-Z0-9]+\.[a-zA-Z]{2,3}){1,2}/', '$1', $domain );
 	}
 	
-	public function subdomain( $url ) {
-		fn::info( parse_url( trim( $url ) ) );
+	/**
+	 * Get the Subdomain
+	 *
+	 * @param $url
+	 * @return string
+	 */
+	public static function subdomain( $url ) {
+		return str_replace( '.' . self::domain( $url, false ), '', self::domain( $url ) );
 	}
 	
 	/**
@@ -85,7 +94,7 @@ class url extends Base_Class {
 	 * @param mixed $param3 Optional. Old query or uri
 	 * @return string New URL query string.
 	 */
-	public function add_query_arg() {
+	public static function add_query_arg() {
 		$ret = '';
 		if ( is_array( func_get_arg(0) ) ) {
 			$uri = ( @func_num_args() < 2 || false === @func_get_arg( 1 ) ) ? $_SERVER['REQUEST_URI'] : @func_get_arg( 1 );
@@ -158,7 +167,7 @@ class url extends Base_Class {
 	 * @param bool $query When false uses the $_SERVER value.
 	 * @return string New URL query string.
 	 */
-	public function remove_query_arg( $key, $query=false ) {
+	public static function remove_query_arg( $key, $query=false ) {
 		if ( is_array( $key ) ) { // removing multiple keys
 			foreach ( $key as $k )
 				$query = self::add_query_arg( $k, false, $query );

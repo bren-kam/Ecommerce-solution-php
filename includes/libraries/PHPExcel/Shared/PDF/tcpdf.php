@@ -4826,7 +4826,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->Link($ximg, $y, $w, $h, $link, 0);
 			}
 			// set pointer to align the successive text/objects
-			switch($align) {
+			switch ($align) {
 				case 'T': {
 					$this->y = $y;
 					$this->x = $this->img_rb_x;
@@ -4860,7 +4860,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.6.025 (2009-08-17)
 		 */
 		public function set_mqr($mqr) {
-			if(!defined('PHP_VERSION_ID')) {
+			if (!defined('PHP_VERSION_ID')) {
 				$version = PHP_VERSION;
 				define('PHP_VERSION_ID', (($version{0} * 10000) + ($version{2} * 100) + $version{4}));
 			}
@@ -4875,7 +4875,7 @@ if (!class_exists('TCPDF', false)) {
 		 * @since 4.6.025 (2009-08-17)
 		 */
 		public function get_mqr() {
-			if(!defined('PHP_VERSION_ID')) {
+			if (!defined('PHP_VERSION_ID')) {
 				$version = PHP_VERSION;
 				define('PHP_VERSION_ID', (($version{0} * 10000) + ($version{2} * 100) + $version{4}));
 			}
@@ -5350,7 +5350,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->buffer = &$pdfdoc;
 				$this->bufferlen = strlen($pdfdoc);
 			}
-			switch($dest) {
+			switch ($dest) {
 				case 'I': {
 					// Send PDF to the standard output
 					if (ob_get_contents()) {
@@ -5513,7 +5513,7 @@ if (!class_exists('TCPDF', false)) {
 			for ($n=1; $n <= $nb; ++$n) {
 				$temppage = $this->getPageBuffer($n);
 				if (!empty($this->pagegroups)) {
-					if(isset($this->newpagegroup[$n])) {
+					if (isset($this->newpagegroup[$n])) {
 						$pagegroupnum = 0;
 					}
 					++$pagegroupnum;
@@ -5609,7 +5609,7 @@ if (!class_exists('TCPDF', false)) {
 			$this->_out('1 0 obj');
 			$this->_out('<</Type /Pages');
 			$this->_out('/Kids [');
-			foreach($this->page_obj_id as $page_obj) {
+			foreach ($this->page_obj_id as $page_obj) {
 				$this->_out($page_obj.' 0 R');
 			}
 			$this->_out(']');
@@ -5914,7 +5914,7 @@ if (!class_exists('TCPDF', false)) {
 								break;
 							}
 							case 'link': {
-								if(is_string($pl['txt'])) {
+								if (is_string($pl['txt'])) {
 									// external URI link
 									$annots .= ' /A <</S /URI /URI '.$this->_datastring($this->unhtmlentities($pl['txt'])).'>>';
 								} else {
@@ -6057,7 +6057,7 @@ if (!class_exists('TCPDF', false)) {
 							 		}
 							 		if (isset($pl['opt']['mk']['bc']) AND (is_array($pl['opt']['mk']['bc']))) {
 							 			$annots .= ' /BC [';
-							 			foreach($pl['opt']['mk']['bc'] AS $col) {
+							 			foreach ($pl['opt']['mk']['bc'] AS $col) {
 							 				$col = intval($col);
 											$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
 							 				$annots .= ' '.$color;
@@ -6066,7 +6066,7 @@ if (!class_exists('TCPDF', false)) {
 							 		}
 							 		if (isset($pl['opt']['mk']['bg']) AND (is_array($pl['opt']['mk']['bg']))) {
 							 			$annots .= ' /BG [';
-							 			foreach($pl['opt']['mk']['bg'] AS $col) {
+							 			foreach ($pl['opt']['mk']['bg'] AS $col) {
 							 				$col = intval($col);
 											$color = $col <= 0 ? 0 : ($col >= 255 ? 1 : $col / 255);
 							 				$annots .= ' '.$color;
@@ -6143,7 +6143,7 @@ if (!class_exists('TCPDF', false)) {
 									if (is_array($pl['opt']['ff'])) {
 										// array of bit settings
 										$flag = 0;
-										foreach($pl['opt']['ff'] as $val) {
+										foreach ($pl['opt']['ff'] as $val) {
 											$flag += 1 << ($val - 1);
 										}
 									} else {
@@ -6198,7 +6198,7 @@ if (!class_exists('TCPDF', false)) {
 								}
 								if (isset($pl['opt']['opt']) AND (is_array($pl['opt']['opt'])) AND !empty($pl['opt']['opt'])) {
 						 			$annots .= ' /Opt [';
-						 			foreach($pl['opt']['opt'] AS $copt) {
+						 			foreach ($pl['opt']['opt'] AS $copt) {
 						 				if (is_array($copt)) {
 						 					$annots .= ' ['.$this->_textstring($copt[0]).' '.$this->_textstring($copt[1]).']';
 						 				} else {
@@ -6212,7 +6212,7 @@ if (!class_exists('TCPDF', false)) {
 						 		}
 						 		if (isset($pl['opt']['i']) AND (is_array($pl['opt']['i'])) AND !empty($pl['opt']['i'])) {
 						 			$annots .= ' /I [';
-						 			foreach($pl['opt']['i'] AS $copt) {
+						 			foreach ($pl['opt']['i'] AS $copt) {
 						 				$annots .= intval($copt).' ';
 						 			}
 						 			$annots .= ']';
@@ -6914,7 +6914,7 @@ if (!class_exists('TCPDF', false)) {
 					$objrefs .= $this->sig_obj_id.' 0 R';
 				}
 				if (!empty($this->form_obj_id)) {
-					foreach($this->form_obj_id as $objid) {
+					foreach ($this->form_obj_id as $objid) {
 						$objrefs .= ' '.$objid.' 0 R';
 					}
 				}
@@ -10033,7 +10033,7 @@ if (!class_exists('TCPDF', false)) {
 				$x = $x - $w;
 			}
 			// the followind avoid fields duplication after saving the document
-			$this->javascript .= "if(getField('tcpdfdocsaved').value != 'saved') {";
+			$this->javascript .= "if (getField('tcpdfdocsaved').value != 'saved') {";
 			$k = $this->k;
 			$this->javascript .= sprintf("f".$name."=this.addField('%s','%s',%d,[%.2F,%.2F,%.2F,%.2F]);", $name, $type, $this->PageNo()-1, $x*$k, ($this->h-$y)*$k+1, ($x+$w)*$k, ($this->h-$y-$h)*$k+1)."\n";
 			$this->javascript .= 'f'.$name.'.textSize='.$this->FontSizePt.";\n";
@@ -11282,7 +11282,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->_out('EMC');
 				$this->openMarkedContent = false;
 			}
-			switch($v) {
+			switch ($v) {
 				case 'print': {
 					$this->_out('/OC /OC1 BDC');
 					$this->openMarkedContent = true;
@@ -11998,7 +11998,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->Link($ximg, $y, $w, $h, $link, 0);
 			}
 			// set pointer to align the successive text/objects
-			switch($align) {
+			switch ($align) {
 				case 'T':{
 					$this->y = $y;
 					$this->x = $this->img_rb_x;
@@ -12219,7 +12219,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->img_rb_x = $x + $w;
 			}
 			// set pointer to align the successive text/objects
-			switch($align) {
+			switch ($align) {
 				case 'T':{
 					$this->y = $y;
 					$this->x = $this->img_rb_x;
@@ -12416,7 +12416,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->img_rb_x = $x + $w;
 			}
 			// set pointer to align the successive text/objects
-			switch($align) {
+			switch ($align) {
 				case 'T':{
 					$this->y = $y;
 					$this->x = $this->img_rb_x;
@@ -13947,7 +13947,7 @@ if (!class_exists('TCPDF', false)) {
 				$this->tmprtl = false;
 			}
 			//Opening tag
-			switch($tag['value']) {
+			switch ($tag['value']) {
 				case 'table': {
 					$cp = 0;
 					$cs = 0;
@@ -14046,7 +14046,7 @@ if (!class_exists('TCPDF', false)) {
 							// further development is required for other modes.
 							$tag['attribute']['align'] = 'bottom';
 						//} 
-						switch($tag['attribute']['align']) {
+						switch ($tag['attribute']['align']) {
 							case 'top': {
 								$align = 'T';
 								break;
@@ -14105,7 +14105,7 @@ if (!class_exists('TCPDF', false)) {
 						} else {
 							$this->Image($tag['attribute']['src'], $xpos, $this->GetY(), $iw, $ih, '', $imglink, $align, false, 300, '', false, false, $border);
 						}
-						switch($align) {
+						switch ($align) {
 							case 'T': {
 								$this->y = $prevy;
 								break;
@@ -14479,14 +14479,14 @@ if (!class_exists('TCPDF', false)) {
 			$firstorlast = ((!isset($dom[($key + 1)])) OR ((!isset($dom[($key + 2)])) AND ($dom[($key + 1)]['value'] == 'marker')));
 			$in_table_head = false;
 			//Closing tag
-			switch($tag['value']) {
+			switch ($tag['value']) {
 				case 'tr': {
 					$table_el = $dom[($dom[$key]['parent'])]['parent'];
-					if(!isset($parent['endy'])) {
+					if (!isset($parent['endy'])) {
 						$dom[($dom[$key]['parent'])]['endy'] = $this->y;
 						$parent['endy'] = $this->y;
 					}
-					if(!isset($parent['endpage'])) {
+					if (!isset($parent['endpage'])) {
 						$dom[($dom[$key]['parent'])]['endpage'] = $this->page;
 						$parent['endpage'] = $this->page;
 					}

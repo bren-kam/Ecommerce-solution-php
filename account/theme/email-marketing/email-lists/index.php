@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['email_marketing'] )
+if ( !$user['website']['email_marketing'] )
 	url::redirect('/email-marketing/subscribers/');
 
 $selected = "email_marketing";

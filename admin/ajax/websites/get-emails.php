@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -26,8 +26,8 @@ $aaData = array();
 
 $slot = 1;
 
-if( is_array( $emails ) )
-foreach( $emails as $email ) {
+if ( is_array( $emails ) )
+foreach ( $emails as $email ) {
 	$info = '<input type="hidden" id="hAddress' . $slot . '" value="' . $email['address'] . '"/>
 			 <input type="hidden" id="hPw' . $slot . '" value="' . $email['pw'] . '"/>
 			 <input type="hidden" id="hQuota' . $slot . '" value="' . $email['quota'] . '"/>';

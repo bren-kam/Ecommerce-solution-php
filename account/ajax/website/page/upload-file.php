@@ -17,7 +17,7 @@ $file_name = preg_replace( '/[^-_a-zA-Z0-9]/', '', $_POST['fn'] );
 $file_name = format::strip_extension( $file_name ) . '.' . $file_extension;
 $dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
-if( !is_dir( $dir ) )
+if ( !is_dir( $dir ) )
 	mkdir( $dir, 0777, true );
 
 $file_path = $dir . $file_name;
@@ -50,7 +50,7 @@ $ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred
 $upload_url = str_replace( '[domain]', ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'], $upload_url );
 
 // If they don't have any files, remove the message that is sitting there
-if( !$website_file_count )
+if ( !$website_file_count )
 	jQuery('#ulUploadFile li:first')->remove();
 
 // Add the new link and apply sparrow to it

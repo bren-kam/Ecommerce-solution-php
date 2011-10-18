@@ -4,7 +4,7 @@
  * @package Imagine Retailer
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-assigned-to' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-assigned-to' ) ) {
 	$t = new Tickets;
 	
 	$result = $t->update_assigned_to( $_POST['tid'], $_POST['atui'] );

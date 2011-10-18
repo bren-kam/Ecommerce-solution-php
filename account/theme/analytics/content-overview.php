@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
@@ -22,9 +22,11 @@ $a = new Analytics( $user['website']['ga_profile_id'] );
 $records = $a->get_metric_by_date( 'page_views' );
 $total = $a->get_totals();
 $content_overview_pages = $a->get_content_overview( '', '', 0 );
+$page_views_plotting_array = array();
 
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+if ( is_array( $records ) )
+foreach ( $records as $r_date => $r_value ) {
 	$page_views_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
@@ -68,7 +70,7 @@ get_header();
 	<h3><?php echo $date_start, ' - ', $date_end; ?></h3>
 	<h1><?php echo _('Content Overview'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'analytics/', 'traffic_sources_overview', 'traffic_sources' ); ?>
+	<?php get_sidebar( 'analytics/', 'content_overview' ); ?>
 	<div id="subcontent">
 		<?php nonce::field( 'get-graph', '_ajax_get_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
@@ -109,8 +111,9 @@ get_header();
 						</tr>
 					</thead>
 					<tbody>
-					<?php 
-					foreach( $content_overview_pages as $top ) { 
+					<?php
+					if ( is_array( $content_overview_pages ) )
+					foreach ( $content_overview_pages as $top ) { 
 						$top['page'] = str_replace( '&', '&amp;', $top['page'] ); 
 					?>
 					<tr>

@@ -19,7 +19,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	
 	// Change the width of all the items
 	$(".contact-box, .box-divider").css("width", $('#hBannerWidth').val() + "px");
- 	
+
 	// Make the upload image icon work with uploadify
 	$('#fUploadBanner').uploadify({
 		auto      	: true,

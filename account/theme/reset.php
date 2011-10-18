@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Reset image dimensions
- * @package Imagine Retailer
+ * @package Real Statistics
  */
 $w = new Websites;
 

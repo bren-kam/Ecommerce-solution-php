@@ -13,7 +13,7 @@ class Files extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 		
 		// Load Amazon S3
@@ -37,20 +37,20 @@ class Files extends Base_Class {
 	 */
 	public function upload_image( $image, $new_image_name, $width, $height, $industry, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
 		// If there was an image, upload it
-		if( empty( $image['name'] ) )
+		if ( empty( $image['name'] ) )
 			return false;
 		
 		list( $result, $image_file ) = image::resize( $image['tmp_name'], OPERATING_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
 		
-		if( !$result || !$image_file )
+		if ( !$result || !$image_file )
 			return false;
 		
 		// Make sure it exists
-		if( !is_file( $image_file ) )
+		if ( !is_file( $image_file ) )
 			return false;
 
 		// Upload the image
-		if( !empty( $industry ) && $this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . basename( $image_file ), S3::ACL_PUBLIC_READ ) ) {
+		if ( !empty( $industry ) && $this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . basename( $image_file ), S3::ACL_PUBLIC_READ ) ) {
 			// Delete the local image
 			unlink( $image_file );
 			return true;
@@ -82,7 +82,7 @@ class Files extends Base_Class {
 		// Create the image name
 		$attachment_name = format::slug( str_replace( $file_extension, '', $attachment_name ) ) . '.' . $file_extension;
 		
-		if( ( $ticket_upload_id = $this->add_upload( $directory . $attachment_name ) ) && $this->s3->putObjectFile( $attachment_path, $this->bucket, 'attachments/' . $directory . $attachment_name, S3::ACL_PUBLIC_READ ) ) {
+		if ( ( $ticket_upload_id = $this->add_upload( $directory . $attachment_name ) ) && $this->s3->putObjectFile( $attachment_path, $this->bucket, 'attachments/' . $directory . $attachment_name, S3::ACL_PUBLIC_READ ) ) {
 			unlink( $image );
 			return array( $ticket_upload_id, $attachment_name );
 		} else {
@@ -98,10 +98,10 @@ class Files extends Base_Class {
 	 * @return int
 	 */
 	public function add_upload( $key ) {
-		$this->db->insert( 'ticket_uploads', array( 'key' => $key, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'ss' );
+		$this->db->insert( 'ticket_uploads', array( 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'ss' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add upload.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -119,7 +119,7 @@ class Files extends Base_Class {
 		$key = $this->db->prepare( 'SELECT `key` FROM `ticket_uploads` WHERE `ticket_upload_id` = ?', 'i', $ticket_upload_id )->get_var('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get ticket upload key.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -128,7 +128,7 @@ class Files extends Base_Class {
 		$this->bucket = 'retailcatalog.us';
 		
 		// Delete the object
-		if( !$this->s3->deleteObject( $this->bucket, "attachments/{$key}" ) ) {
+		if ( !$this->s3->deleteObject( $this->bucket, "attachments/{$key}" ) ) {
 			$this->err( "Failed to remove upload.\nURI: $uri\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
 			return false;
 		}
@@ -137,7 +137,7 @@ class Files extends Base_Class {
 		$this->db->prepare( 'DELETE FROM `ticket_uploads` WHERE `ticket_upload_id` = ?', 'i', $ticket_upload_id )->query('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to deete ticket upload.', __LINE__, __METHOD__ );
 			return false;
 		}

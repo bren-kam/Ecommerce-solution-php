@@ -7,7 +7,7 @@ global $user;
 ?>
 <div id="footer">
 		<p>
-			<?php if( $user ) { ?>
+			<?php if ( $user ) { ?>
 			<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | 
 			<a href="/websites/" title="<?php echo _('Websites'); ?>"><?php echo _('Websites'); ?></a> | 
 			<a href="/products/" title="<?php echo _('Product Catalog'); ?>"><?php echo _('Product Catalog'); ?></a> | 
@@ -17,7 +17,7 @@ global $user;
 			<?php } ?>
 		</p>
 		<br /><br />
-		<p id="copyright">&copy; <?php echo _('Copyright'), ' ', date_time::date('Y'), '. ', _('All Rights Reserved'); ?>.</p>
+		<p id="copyright">&copy; <?php echo _('Copyright'), ' ', dt::date('Y'), '. ', _('All Rights Reserved'); ?>.</p>
 	</div>
 </div>
 <div id="ticket"><a href="javascript:;" id="aTicket" title="<?php echo _('Support'); ?>"><img src="/images/trans.gif" width="26" height="100" alt="<?php echo _('Support'); ?>" /></a></div>
@@ -40,7 +40,7 @@ global $user;
 
 <!-- End: Footer -->
 <?php list( $javascript, $before_javascript, $callback ) = get_js( true ); ?>
-<script type="text/javascript"><?php echo $before_javascript; ?>head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js', '/js/?files=<?php echo $javascript; ?>'<?php if( !empty( $callback ) ) echo ', function() {', $callback, '}'; ?>);</script>
+<script type="text/javascript"><?php echo $before_javascript; ?>head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js', '/js/?files=<?php echo $javascript; ?>'<?php if ( !empty( $callback ) ) echo ', function() {', $callback, '}'; ?>);</script>
 <?php footer(); ?>
 </body>
 </html>

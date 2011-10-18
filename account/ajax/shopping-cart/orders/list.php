@@ -25,7 +25,7 @@ foreach( $results as $result ) {
 		'<a href="/shopping-cart/orders/view/?oid=' . $result['website_order_id'] . '" title="' . _('View Order') . '">' . $result['website_order_id'] . '</a>'
 		, '$' . number_format( $result['total_cost'], 2 )
 		, $status
-		, date_time::date( 'F j, Y', $result['date_created'] )
+		, dt::date( 'F j, Y', $result['date_created'] )
 	);
 }
 

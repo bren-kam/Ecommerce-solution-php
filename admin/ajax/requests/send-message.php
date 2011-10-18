@@ -5,8 +5,8 @@
  * @subpackage Graphs
  */
 
-if( nonce::verify( $_POST['_send_message_nonce'], 'send-message' ) ) {
-	if( !$user ) {
+if ( nonce::verify( $_POST['_send_message_nonce'], 'send-message' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to send a message.') ) );
 		exit;
 	}

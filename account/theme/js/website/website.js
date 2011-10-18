@@ -4,7 +4,7 @@ jQuery(function(){
 	
 	// Make it update the slug automatically
 	$('.slug-title:first').keyup( function() {
-		if( 'undefined' == typeof( elSlug.attr('extra') ) || '' == elSlug.attr('extra') ){
+		if ( 'undefined' == typeof( elSlug.attr('extra') ) || '' == elSlug.attr('extra') ){
 			elSlug.val( slug( $(this).val() ) );
 		}
 	});

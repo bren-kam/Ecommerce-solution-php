@@ -6,7 +6,7 @@
 
 global $user;
 
-if( !$user )
+if ( !$user )
 	login();
 
 css( 'qunit' );
@@ -48,7 +48,7 @@ $javascript = get_js();
 	<div id="footer">
 		<p></p>
 		<br /><br />
-		<p id="copyright">&copy; <?php echo _('Copyright'), ' ', date_time::date('Y'), '. ', _('All Rights Reserved'); ?>.</p>
+		<p id="copyright">&copy; <?php echo _('Copyright'), ' ', dt::date('Y'), '. ', _('All Rights Reserved'); ?>.</p>
 	</div>
 </div>
 

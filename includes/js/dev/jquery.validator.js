@@ -35,7 +35,7 @@ function luhnCheck( number ) {
 }
 
 // From PHP.JS
-function inArray(needle,haystack,argStrict){var found=false,key,strict=!!argStrict;for(key in haystack){if((strict&&haystack[key]===needle)||(!strict&&haystack[key]==needle)){found=true;break;}}
+function inArray(needle,haystack,argStrict){var found=false,key,strict=!!argStrict;for (key in haystack){if ((strict&&haystack[key]===needle)||(!strict&&haystack[key]==needle)){found=true;break;}}
 return found;}
 
 function Validator(fName) {
@@ -45,7 +45,7 @@ function Validator(fName) {
 	var trigger = ( arguments.length > 0 ) ? arguments[1] : false;
 	
 	// Make sure the form is real, if not, show an error
-	if( !this.fObj ) {
+	if ( !this.fObj ) {
 		// Send error to firebug
 	  	console.error( "Could not get form object: " + fName );
 		return false;
@@ -55,7 +55,7 @@ function Validator(fName) {
 	this.fObj.onsubmit = null;
 	
 	// If we set the trigger or the onsubmit
-	if( trigger ) {
+	if ( trigger ) {
 		this.fObj.trigger = formSubmitHandler;
 	} else {
 		this.fObj.onsubmit = formSubmitHandler;
@@ -78,16 +78,16 @@ function Validator(fName) {
 
 /**
 function clearAllValidations() {
-	for(var i = 0; i < this.fObj.elements.length; i++) {
+	for (var i = 0; i < this.fObj.elements.length; i++) {
 		this.fObj.elements[i].vSet = null;
 	}
 }
 
 function clearValidations(elementArray) {
 	start = (arguments[1]) ? arguments[1] : 0;
-	for(var i = start; i < this.fObj.elements.length; i++) {
-		if(this.fObj.elements[i].val) {
-			if(inArray(this.fObj.elements[i].val.vSet[0][0], elementArray)) {
+	for (var i = start; i < this.fObj.elements.length; i++) {
+		if (this.fObj.elements[i].val) {
+			if (inArray(this.fObj.elements[i].val.vSet[0][0], elementArray)) {
 				this.fObj.elements[i].val.oldSet = this.fObj.elements[i].val.vSet;
 				this.fObj.elements[i].val.vSet = null;
 			}
@@ -97,9 +97,9 @@ function clearValidations(elementArray) {
 
 function retoreValidations(elementArray) {
 	start = (arguments[1]) ? arguments[1] : 0;
-	for(var i = start; i < this.fObj.elements.length; i++) {
-		if(this.fObj.elements[i].val) {
-			if(this.fObj.elements[i].val.oldSet) {
+	for (var i = start; i < this.fObj.elements.length; i++) {
+		if (this.fObj.elements[i].val) {
+			if (this.fObj.elements[i].val.oldSet) {
 				this.fObj.elements[i].val.vSet = this.fObj.elements[i].val.oldSet;
 			}
 		}
@@ -109,8 +109,8 @@ function retoreValidations(elementArray) {
 function removeValidation( elementName ) {
 	var elementObj = this.fObj[elementName];
 	
-	if( elementObj ) {
-		if( elementObj.val ) {
+	if ( elementObj ) {
+		if ( elementObj.val ) {
 			elementObj.val.oldSet = elementObj.val.vSet;
 			elementObj.val.vSet = null;
 		}
@@ -120,8 +120,8 @@ function removeValidation( elementName ) {
 
 function formSubmitHandler() {
 	// Loop through the form elements, if something doesn't validate return false
-	for( var i = 0; i < this.elements.length; i++ ) {
-		if( this.elements[i].val && this.elements[i].val.vSet && !this.elements[i].val.validate( this ) )
+	for ( var i = 0; i < this.elements.length; i++ ) {
+		if ( this.elements[i].val && this.elements[i].val.vSet && !this.elements[i].val.validate( this ) )
 			return false;
 	}
 	
@@ -135,20 +135,20 @@ function addValidation( elementName, desc, err ) {
 	var elementObj = this.fObj[elementName];
 	
 	// If the element doesn't exist, check to see if there are multiple
-	if( !elementObj ) {
+	if ( !elementObj ) {
 		// Get array
 		elementArray = elementName.split('|');
 		
 		// If more than one element exists
-		if( elementArray.length > 1 ) {
+		if ( elementArray.length > 1 ) {
 			// If we can't get either of the objects
-			if( !this.fObj[elementArray[0]] || !this.fObj[elementArray[1]] ) {
+			if ( !this.fObj[elementArray[0]] || !this.fObj[elementArray[1]] ) {
 				console.error("Could not get the input objects");
 				return;
 			}
 			
 			// If they don't have validation for this element, add it
-			if(!this.fObj[elementArray[0]].val)
+			if (!this.fObj[elementArray[0]].val)
 				// Add the validation
 				this.fObj[elementArray[0]].val = new Val();
 				
@@ -163,10 +163,10 @@ function addValidation( elementName, desc, err ) {
 		/**
 		 * NOTE: Note sure what this does -- probably with restoration and clearing of values
 		 *
-		if( elementObj.val ) {
+		if ( elementObj.val ) {
 			// Validation exists
 			
-			if(elementObj.val.oldSet) {
+			if (elementObj.val.oldSet) {
 				elementObj.val.vSet = elementObj.val.oldSet;
 			} else {
 				elementObj.val.add(elementName, desc, err);
@@ -178,7 +178,7 @@ function addValidation( elementName, desc, err ) {
 		}*/
 		
 		// If it doesn't exist, add it
-		if( !elementObj.val )
+		if ( !elementObj.val )
 			elementObj.val = new Val();
 		
 		// Add validation
@@ -207,9 +207,9 @@ function addVal(elementName, desc, error) {
 // Validate the form object
 function validate( fObj ) {
 	// Loop through the elements
-	for( i = 0; i < this.vSet.length; i++ ) {
+	for ( i = 0; i < this.vSet.length; i++ ) {
 		// If it's valid, continue
-		if( checkValidation( this.vSet[i][0], this.vSet[i][1], fObj ) )
+		if ( checkValidation( this.vSet[i][0], this.vSet[i][1], fObj ) )
 			continue;
 		
 		// Focus on the element (first one) and return false
@@ -256,7 +256,7 @@ function checkValidation( elementName, descriptor, fObj ) {
 	}
 	
 	// Loop through the commands
-	switch( command ) {
+	switch ( command ) {
 		case "alnum":
 		case "alnumhyphen":
 		case "alpha":
@@ -269,7 +269,7 @@ function checkValidation( elementName, descriptor, fObj ) {
 			var charpos = value.search( patterns[command] );
 			
 			// Validate it
-			if( value.length > 0 && charpos >= 0 )
+			if ( value.length > 0 && charpos >= 0 )
 				return false
 		break; 
 		
@@ -285,14 +285,14 @@ function checkValidation( elementName, descriptor, fObj ) {
 			var objValue = value.replace( /\D/g, '' );
 
 			// Make sure it's  valid credit card type
-			if( null == patterns['cc'].exec( objValue ) )
+			if ( null == patterns['cc'].exec( objValue ) )
 				return false;
 				
 			// Add the specific validation for the other types
-			switch( objValue[0] ) {
+			switch ( objValue[0] ) {
 				// Visa
 				case '4':
-					if( 13 != objValue.length && 16 != objValue.length )
+					if ( 13 != objValue.length && 16 != objValue.length )
 						return false;
 					
 					// Set the type to select it in the credit card drop down
@@ -301,7 +301,7 @@ function checkValidation( elementName, descriptor, fObj ) {
 
 				// MasterCard
 				case '5':
-					if( 16 != objValue.length )
+					if ( 16 != objValue.length )
 						return false;
 					
 					// Set the type to select it in the credit card drop down
@@ -310,7 +310,7 @@ function checkValidation( elementName, descriptor, fObj ) {
 
 				// Discover
 				case '6':
-					if( 16 != objValue.length )
+					if ( 16 != objValue.length )
 						return false;
 					
 					// Set the type to select it in the credit card drop down
@@ -319,7 +319,7 @@ function checkValidation( elementName, descriptor, fObj ) {
 
 				// AmEx
 				case '3':
-					if( 15 != objValue.length )
+					if ( 15 != objValue.length )
 						return false;
 					
 					// Set the type to select it in the credit card drop down
@@ -328,11 +328,11 @@ function checkValidation( elementName, descriptor, fObj ) {
 			}
 
 			// Do the Mod 10 (Luhn Check), if valid, select the right credit card type
-			if( !luhnCheck( objValue ) )
+			if ( !luhnCheck( objValue ) )
 				return false;
 			
 			// Make sure there is a card type
-			if( 'undefined' != typeof cardType )
+			if ( 'undefined' != typeof cardType )
 				$('#' + cmdValue + ' options:eq(' + cardType - 1 + ')').attr( 'selected', true ); // Select the option
 		break;
 
@@ -340,7 +340,7 @@ function checkValidation( elementName, descriptor, fObj ) {
 		case "date":
 		case "email": 
 		case "URL":
-			if( value.length > 0 && null == value.match( patterns[command] ) )
+			if ( value.length > 0 && null == value.match( patterns[command] ) )
 				return false;
 		break;
 
@@ -349,13 +349,13 @@ function checkValidation( elementName, descriptor, fObj ) {
 			// Set variables
 			var accept = cmdValue.split('|'), extArray = value.split('.'), ext = extArray[extArray.length-1].toLowerCase();
 			
-			if( -1 == accept.indexOf(ext) )
+			if ( -1 == accept.indexOf(ext) )
 				return false;
 		break; 
 		
 		// Greater than
 		case "gt":
-			if( parseInt( value ) <= parseInt( cmdValue ) )
+			if ( parseInt( value ) <= parseInt( cmdValue ) )
 				return false;
 		break;
 		
@@ -364,13 +364,13 @@ function checkValidation( elementName, descriptor, fObj ) {
 		case "img":
 			var imgFileArray = value.split("\\"), imgFile = imgFileArray[imgFileArray.length-1], charpos = imgFile.match( patterns['img'] );
 			
-			if( value.length > 0 && charpos >= 0 )
+			if ( value.length > 0 && charpos >= 0 )
 				return false;
 		break;
 		
 		// Lesser than
 		case "lt":
-			if( parseInt( value ) >= parseInt( cmdValue ) )
+			if ( parseInt( value ) >= parseInt( cmdValue ) )
 				return false;
 		break;
 		
@@ -379,37 +379,37 @@ function checkValidation( elementName, descriptor, fObj ) {
 			// Get the two elements
 			var tmpElements = elementName.split('|');
 			
-			if( $(fObj[tmpElements[0]]).val() != $(fObj[tmpElements[1]]).val() )
+			if ( $(fObj[tmpElements[0]]).val() != $(fObj[tmpElements[1]]).val() )
 				return false;
 		break;
 		
 		// Maximum length of a field
 		case "maxlen":
-			if( value.length > parseInt( cmdValue ) )
+			if ( value.length > parseInt( cmdValue ) )
 				return false;
 		break;              
 		
 		// Minimum length of a field
 		case "minlen": 
-			if( value.length < parseInt( cmdValue ) )
+			if ( value.length < parseInt( cmdValue ) )
 				return false;                 
 		break;
 		
 		// An item must exist be filled in
 		case "req": 
-			if( 0 == value.length || "checkbox" == fObj[elementName].type && !fObj[elementName].checked )
+			if ( 0 == value.length || "checkbox" == fObj[elementName].type && !fObj[elementName].checked )
 				return false;
 		break;
 		
 		// Must have a specific value
 		case "val":
-			if( value != cmdValue & value.length > 0 )
+			if ( value != cmdValue & value.length > 0 )
 				return false;
 		break;
 		
 		// Must not have a specific value
 		case "!val":
-			if( value == cmdValue && value.length > 0 )
+			if ( value == cmdValue && value.length > 0 )
 				return false;
 		break;
 

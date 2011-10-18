@@ -16,7 +16,7 @@ $pg = new Product_Groups;
 $v = new Validator;
 
 // Get the website product group id if there is one
-$website_product_group_id = (int) $_GET['wpgid'];
+$website_product_group_id = ( isset( $_GET['wpgid'] ) ) ? $_GET['wpgid'] : '';
 
 $v->form_name = 'fAddEditProductGroup';
 $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
@@ -24,8 +24,11 @@ $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
 // Add validation
 add_footer( $v->js_validation() );
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-product-group' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-product-group' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -46,11 +49,17 @@ $product_ids = $products = array();
 if ( $website_product_group_id ) {
 	$product_group = $pg->get( $website_product_group_id );
 	$product_ids = $pg->get_products( $website_product_group_id );
+} else {
+	$product_group = array(
+		'name' => ''
+	);
+	
+	$product_ids = array();
 }
 
 $product_ids = ( !empty( $_POST['products'] ) ) ? $_POST['products'] : $product_ids;
 
-if( count( $product_ids ) > 0 ) {
+if ( count( $product_ids ) > 0 ) {
 	$p = new Products;
 	$products = $p->get_products_by_ids( $product_ids );
 }
@@ -87,7 +96,7 @@ get_header();
 		?>
 		<form name="fAddEditProductGroup" action="/products/groups/add-edit/?wpgid=<?php echo $website_product_group_id; ?>" method="post">
 			<label for="tName"><?php echo _('Product Group Name'); ?>:</label>
-			<input type="text" class="tb" name="tName" id="tName" value="<?php echo ( !$success && $website_product_group_id && empty( $_POST['tName'] ) ) ? $product_group['name'] : $_POST['tName']; ?>" maxlength="50" />
+			<input type="text" class="tb" name="tName" id="tName" value="<?php echo ( !isset( $_POST['tName'] ) || !$success && $website_product_group_id ) ? $product_group['name'] : $_POST['tName']; ?>" maxlength="50" />
 			<br /><br />
 					
 			<h2><?php echo _('Products'); ?></h2>
@@ -133,13 +142,13 @@ get_header();
 			<h2><?php echo _('Selected Products'); ?></h2>
 			<div id="dSelectedProducts">
 				<?php
-				foreach( $products as $product ) {
+				foreach ( $products as $product ) {
 				?>
 				<div id="dProduct_<?php echo $product['product_id']; ?>" class="product">
 					<h4><?php echo format::limit_chars( $product['name'], 37 ); ?></h4>
 					<p align="center"><img src="http://<?php echo $product['industry']; ?>.retailcatalog.us/products/<?php echo $product['product_id']; ?>/<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" height="110" style="margin:10px" /></p>
 					<p><?php echo _('Brand'); ?>: <?php echo $product['brand']; ?></p>
-					<p class="product-actions" id="pProductAction<?php echo $product['productID']; ?>"><a href="javascript:;" class="remove-product" title="<?php echo _('Remove Product'); ?>"><?php echo _('Remove'); ?></a></p>
+					<p class="product-actions" id="pProductAction<?php echo $product['product_id']; ?>"><a href="javascript:;" class="remove-product" title="<?php echo _('Remove Product'); ?>"><?php echo _('Remove'); ?></a></p>
 					<input type="hidden" name="products[]" class="hidden-product" id="hProduct<?php echo $product['product_id']; ?>" value="<?php echo $product['product_id']; ?>" />
 				</div>
 				<?php } ?>

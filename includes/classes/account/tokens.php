@@ -11,7 +11,7 @@ class Tokens extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -31,7 +31,7 @@ class Tokens extends Base_Class {
 		$this->db->insert( 'tokens', array( 'user_id' => $user_id, 'key' => $token, 'token_type' => $token_type, 'date_valid' => date( 'Y-m-d H:i:s', time() + $expires * 3600 ) ), 'isss' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create token.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -50,7 +50,7 @@ class Tokens extends Base_Class {
         $user_id = $this->db->prepare( 'SELECT `user_id` FROM `tokens` WHERE `key` = ? AND `token_type` = ? AND `date_valid` > NOW()', 'ss', $token, $token_type )->get_var('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to check token.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -69,7 +69,7 @@ class Tokens extends Base_Class {
 		$this->db->prepare( 'DELETE FROM `tokens` WHERE `key` = ?', 's', $token )->query('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete token.', __LINE__, __METHOD__ );
 			return false;
 		}

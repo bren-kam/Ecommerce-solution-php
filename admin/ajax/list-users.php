@@ -14,7 +14,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'name';
@@ -62,9 +62,9 @@ $user_count = $u->count( $where );
 
 $aaData = array();
 
-if( is_array( $users ) )
-foreach( $users as $us ) {
-	switch( $us['status'] ) {
+if ( is_array( $users ) )
+foreach ( $users as $us ) {
+	switch ( $us['status'] ) {
 		case -1: 
 			$status = 'Not Active';
 		break;
@@ -84,7 +84,7 @@ foreach( $users as $us ) {
 	
 	$monthly = ( '1' == $us['monthly'] ) ? 'Monthly' : 'Yearly';
 	
-	$aaData[] = array( '<a href="/user/?uid=' . $us['user_id'] . '" title="' . $us['name'] . '">' . $us['name'] . '</a>', $us['email'], $us['account_type'], $us['users_limit'], $monthly, $status, date_time::date( 'm-d-Y', $us['date_created'] ) );
+	$aaData[] = array( '<a href="/user/?uid=' . $us['user_id'] . '" title="' . $us['name'] . '">' . $us['name'] . '</a>', $us['email'], $us['account_type'], $us['users_limit'], $monthly, $status, dt::date( 'm-d-Y', $us['date_created'] ) );
 }
 
 echo json_encode( array( 

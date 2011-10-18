@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
-if( empty( $_GET['wid'] ) )
-	url::redirect( $_SERVER['HTTP_REFERER'] );
+//if ( empty( $_GET['wid'] ) )
+	//url::redirect( $_SERVER['HTTP_REFERER'] );
 
 $w = new Websites;
 

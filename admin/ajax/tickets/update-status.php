@@ -4,7 +4,7 @@
  * @package Imagine Retailer
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-ticket-status' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-ticket-status' ) ) {
 	$t = new Tickets;
 	
 	$result = $t->update_status( $_POST['tid'], $_POST['s'] );

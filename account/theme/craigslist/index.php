@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $title = _('Craigslist Ads') . ' | ' . TITLE;
@@ -22,8 +22,8 @@ get_header();
 	<?php get_sidebar( 'craigslist/' ); ?>
 	<div id="subcontent">
 		<?php
-		if( isset( $_GET['m'] ) )
-		switch( $_GET['m'] ) {
+		if ( isset( $_GET['m'] ) )
+		switch ( $_GET['m'] ) {
 			case '1':
 				echo '<p class="message">', _('Your ad has been successfully created.'), '</p>';
 			break;

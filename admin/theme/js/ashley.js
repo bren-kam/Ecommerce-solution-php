@@ -9,7 +9,7 @@ jQuery(function($) {
 		select: function( event, ui ) {
 			$.post( '/ajax/ashley/get-product/', { _nonce : $('#_ajax_get_product').val(), pid : ui['item']['product_id'] }, function ( response ) {
 				// Make sure there was no error
-				if( !response['result'] ) {
+				if ( !response['result'] ) {
 					alert( response['error'] );
 					return false;
 				}
@@ -21,7 +21,7 @@ jQuery(function($) {
 				$('#product_id').text( product['product_id'] );
 				$('#slug').text( product['slug'] );
 				$('#images').html( product['images'] );
-				$('#new_description').html( product['description'] );
+				$('#description').text( product['description'] );
 				$('#status').text( product['status'] );
 				$('#brand').text( product['brand'] );
 				$('#sku').text( product['sku'] );
@@ -40,7 +40,7 @@ jQuery(function($) {
 		},
 		source: function( request, response ) {
 			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in cache ) {
+			if ( request['term'] in cache ) {
 				response( $.map( cache[request['term']], function( item ) {
 					return {
 						'label' : item['name'],

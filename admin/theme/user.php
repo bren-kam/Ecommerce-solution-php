@@ -9,8 +9,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $v = new Validator();
 $v->form_name = 'fUser';
@@ -26,19 +26,19 @@ $v->add_validation( 'tUsersLimit', 'num', _('The "Users Limit" field may only co
 
 $v->add_validation( 'tPassword|tRePassword', 'match', _('The "Password" and "Confirm Password" field must match') );
 
-if( nonce::verify( $_POST['_nonce'], 'update-user' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user' ) ) {
 	$errs = $v->validate();
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$information = array( 'account_type_id' => $_POST['sAccountType'], 'first_name' => $_POST['tFirstName'], 'last_name' => $_POST['tLastName'], 'email' => $_POST['tEmail'], 'users_limit' => $_POST['tUsersLimit'], 'monthly' => $_POST['sMonthly'], 'affiliate' => $_POST['sAffiliate'], 'status' => $_POST['sStatus'] );
 		
-		if( !empty( $_POST['tPassword'] ) )
+		if ( !empty( $_POST['tPassword'] ) )
 			$information['password'] = $_POST['tPassword'];
 		
 		$u->update_information( (int) $_GET['uid'], $information );
 		$success = true;
 	}
 } else {
-	if( !empty( $_POST ) )
+	if ( !empty( $_POST ) )
 		$errs = _('A verification error occurred. Please refresh the page and try again.');
 }
 
@@ -56,10 +56,10 @@ get_header();
 <div class="narrowcolumn">
 	<h1><?php echo $us['first_name'], ' ', $us['last_name']; ?></h1>
 	<?php 
-	if( $success ) 
+	if ( $success ) 
 		echo '<p>', $us['first_name'], ' ', $us['last_name'], ' has been successfully updated.';
 	
-	if( !empty( $errs ) ) 
+	if ( !empty( $errs ) ) 
 		echo "<p class='red'>$errs</p><br />";
 	?>
 	<form name="fUser" action="" method="post">
@@ -88,7 +88,7 @@ get_header();
 					4 => _('Free Account')
 				);
 				
-				foreach( $account_types as $acid => $ac ) {
+				foreach ( $account_types as $acid => $ac ) {
 					$selected = ( $us['account_type_id'] == $acid ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $acid . '"' . $selected . '>' . $ac . "</option>\n";
@@ -111,7 +111,7 @@ get_header();
 					0 => _('Yearly')
 				);
 				
-				foreach( $monthly_types as $mv => $m ) {
+				foreach ( $monthly_types as $mv => $m ) {
 					$selected = ( $us['monthly'] == $mv ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $mv . '"' . $selected . '>' . $m . "</option>\n";
@@ -130,7 +130,7 @@ get_header();
 					0 => _('Not Affiliate')
 				);
 				
-				foreach( $affiliate_types as $av => $a ) {
+				foreach ( $affiliate_types as $av => $a ) {
 					$selected = ( $us['affiliate'] == $av ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $av . '"' . $selected . '>' . $a . "</option>\n";
@@ -150,7 +150,7 @@ get_header();
 					1 => _('Active')
 				);
 				
-				foreach( $status_types as $sid => $s ) {
+				foreach ( $status_types as $sid => $s ) {
 					$selected = ( $us['status'] == $sid ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $sid . '"' . $selected . '>' . $s . "</option>\n";
@@ -189,9 +189,9 @@ get_header();
 	</form>
 	<?php echo $v->js_validation(); ?>
 	<br clear="all" />
-	<?php if( is_array( $linked_users ) ) { ?>
+	<?php if ( is_array( $linked_users ) ) { ?>
 	<h2>Users</h2>
-	<?php foreach( $linked_users as $lu ) { ?>
+	<?php foreach ( $linked_users as $lu ) { ?>
 	<p><a href="/user/?uid=<?php echo $lu['user_id']; ?>" title="View <?php echo $lu['name']; ?>"><?php echo $lu['name']; ?></a></p>
 	<?php } } ?>
 </div>

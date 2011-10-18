@@ -14,14 +14,13 @@
  * Properly includes a file and checks the right paths
  *
  * @param string $file
- * @param bool $require
- * @return string
+ * @return string|bool
  */
 function inc( $file, $require = true ) {
 	$file_path = INC_PATH . $file . '.php';
 	
-	if( file_exists( $file_path ) ) {
-		if( $require )
+	if ( file_exists( $file_path ) ) {
+		if ( $require )
 			require( $file_path );
 		
 		return $file_path;
@@ -36,13 +35,12 @@ function inc( $file, $require = true ) {
  * Properly includes a file and checks the right paths
  *
  * @param string $file
- * @return bool
  */
 function library( $file ) {
 	$file_path = INC_PATH . 'libraries/' . $file . '.php';
 	
 	
-	if( file_exists( $file_path ) ) {
+	if ( file_exists( $file_path ) ) {
 		require( $file_path );
 		return true;
 	}
@@ -56,12 +54,11 @@ function library( $file ) {
  * Properly includes a file and checks the right paths
  *
  * @param string $file
- * @return bool
  */
 function module( $file ) {
 	$file_path = INC_PATH . 'modules/' . $file . '.php';
 	
-	if( file_exists( $file_path ) ) {
+	if ( file_exists( $file_path ) ) {
 		require( $file_path );
 		return true;
 	}
@@ -81,8 +78,8 @@ function module( $file ) {
 function theme_inc( $file, $require = false ) {
 	$file_path = THEME_PATH . $file . '.php';
 	
-	if( file_exists( $file_path ) ) {
-		if( $require )
+	if ( file_exists( $file_path ) ) {
+		if ( $require )
 			require( $file_path );
 		
 		return $file_path;
@@ -102,7 +99,7 @@ function is( $key ) {
 	global $type;
 	$browser = fn::browser();
 	
-	switch( $key ) {
+	switch ( $key ) {
 		case 'ie8':
 			return ( 'Msie' == $browser['name'] && version_compare( '7', $browser['version'], '<' ) ) ? true : false;
 		break;
@@ -139,6 +136,9 @@ function timer_stop( $time_start ) {
 /**
  * Securely sets a secure cookie site-wide
  *
+ * @since 1.0.0
+ * @uses Website
+ *
  * @param string $name the name of the cookie (defined in load.php)
  * @param string $value the value of the cookie
  * @param string $expire how long the cookie should last
@@ -146,15 +146,50 @@ function timer_stop( $time_start ) {
 function set_cookie( $name, $value, $expire ) {
 	$secure = ( LIVE ) ? true : false;
 	$secure = false;
-
-    setcookie( $name, $value, time() + $expire, '/', '.' . SUBDOMAIN . '.' . DOMAIN, $secure, true );
+	
+/*	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {
+		setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', '.admin.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', '.account.' . DOMAIN, $secure, true );
+	} else {
+		setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', 'admin.' . DOMAIN );
+		setcookie( $name, $value, time() + $expire, '/', 'account.' . DOMAIN );
+		setcookie( $name, $value, time() + $expire, '/', 'admin2.' . DOMAIN );
+		setcookie( $name, $value, time() + $expire, '/', 'account2.' . DOMAIN );
+	//}*/
+		setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', 'admin.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', 'account.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', 'admin2.' . DOMAIN, $secure, true );
+		setcookie( $name, $value, time() + $expire, '/', 'account2.' . DOMAIN, $secure, true );
 }
 
 /**
  * Removes a cookie
  *
+ * @since 1.0.0
+ * @uses Website
+ *
  * @param string $name the name of the cookie (defined in load.php)
  */
 function remove_cookie( $name ) {
-    setcookie( $name, ' ', time() - 31536000, '/', '.' . SUBDOMAIN . '.' . DOMAIN );
+	/*if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {
+		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.admin.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.account.' . DOMAIN );
+	} else {
+		// Set the time to negative one year (negative values make it expire)
+		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.admin.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.account.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.admin2.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.account2.' . DOMAIN );
+	//}*/
+		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.admin.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.account.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.admin2.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.account2.' . DOMAIN );
+		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
 }

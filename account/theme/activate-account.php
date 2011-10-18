@@ -8,7 +8,7 @@
 global $user;
 
 // If user is logged in
-if( $user )
+if ( $user )
 	url::redirect('/');
 
 // Instantiate class
@@ -19,7 +19,7 @@ $token = $_GET['t'];
 
 $user_id = $tokens->check( $token, 'activate-account' );
 
-if( !$user_id )
+if ( !$user_id )
 	url::redirect('http://www.' . DOMAIN . '/');
 
 $v = new Validator();
@@ -28,18 +28,18 @@ $v->add_validation( 'tPassword', 'req', _('The "Password" field is required') );
 $v->add_validation( 'tPassword|tVerifyPassword', 'match', _('The Password and Confirm Password must match') );
 
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'change-password' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-password' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$success = $u->update_information( $user_id, array( 'password' => $_POST['tPassword'] ) );
 		
 		// If it was successful, delete the token
-		if( $success ) {
+		if ( $success ) {
 			$success = $tokens->delete( $token );
 			
-			if( $success ) {
+			if ( $success ) {
 				$au = new Authorized_Users();
 				$stores = $au->get-stores( $user_id );
 			}
@@ -48,7 +48,7 @@ if( nonce::verify( $_POST['_nonce'], 'change-password' ) ) {
 }
 
 // Add the validation
-if( !$success )
+if ( !$success )
 	add_footer( $v->js_validation() );
 
 $title = _('Activate Account') . ' | ' . TITLE;
@@ -56,7 +56,7 @@ get_header();
 ?>
 
 <div id="content">
-	<?php if( $success ) { ?>
+	<?php if ( $success ) { ?>
 		<h1><?php echo _('Account Activated'); ?></h1>
 		<br clear="all" />
 		<p><?php echo _('Thank you for updating your password. You are now an Authorized User for'), ' ', implode( ', ', $stores ), '.'; ?></p>

@@ -8,15 +8,15 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // If user's permission level is too low, redirect.
-if( $user['role'] < 7 )
-	url::redirect( '/login/' );
+if ( $user['role'] < 7 )
+	login();
 
 // If no one was selected, take them back to the users page
-if( empty( $_GET['uid'] ) )
+if ( empty( $_GET['uid'] ) )
 	url::redirect( '/users/' );
 
 $c = new Companies();
@@ -45,10 +45,10 @@ add_footer( $v->js_validation() );
 // Set to false
 $success = false;
 
-if( nonce::verify( $_POST['_nonce'], 'update-user' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user' ) ) {
 	$errs = $v->validate();
 	
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$information = array(
 			'company_id'			=> $_POST['sCompany'], 
 			'email'					=> $_POST['tEmail'],
@@ -65,10 +65,10 @@ if( nonce::verify( $_POST['_nonce'], 'update-user' ) ) {
 			'status'				=> $_POST['sStatus']
 		);
 		
-		if( !empty( $_POST['pPassword'] ) )
+		if ( !empty( $_POST['pPassword'] ) )
 			$information['password'] = $_POST['pPassword'];
 		
-		if( $user['role'] >= $us['role'] ) {
+		if ( $user['role'] >= $us['role'] ) {
 			$success = $u->update_information( $_GET['uid'], $information );
 		}
 	}
@@ -88,11 +88,11 @@ get_header();
 	<?php get_sidebar( 'users/' ); ?>
 	<div id="subcontent">
 		<?php 
-		if( !$success ) {
+		if ( !$success ) {
 			$main_form_class = '';
 			$success_class = ' class="hidden"';
 			
-			if( isset( $errs ) )
+			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		} else {
 			$success_class = '';
@@ -101,10 +101,10 @@ get_header();
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php 
-			if( isset( $errs ) && !empty( $errs ) ) {
+			if ( isset( $errs ) && !empty( $errs ) ) {
 				$error_message = '';
 				
-				foreach( $errs as $e ) {
+				foreach ( $errs as $e ) {
 					$error_message .= ( !empty( $error_message ) ) ? '<br />' . $e : $e;
 				}
 				
@@ -121,7 +121,7 @@ get_header();
 							<option value="">-- <?php echo _('Select a Company'); ?> --</option>
 							<?php 
 							$selected_company = ( empty( $_POST['sCompany'] ) ) ? $us['company_id'] : $_POST['sCompany'];
-							foreach( $companies as $c ) { 
+							foreach ( $companies as $c ) { 
 								$selected = ( $selected_company == $c['company_id'] ) ? ' selected="selected"' : '';
 							?>
 							<option value="<?php echo $c['company_id']; ?>"<?php echo $selected; ?>><?php echo $c['name']; ?></option>
@@ -161,7 +161,7 @@ get_header();
 							$statuses = array( 0 => 'Inactive', 1 => 'Active' );
 							$selected_status = ( empty( $_POST['sStatus'] ) ) ? $us['status'] : $_POST['sStatus'];
 							
-							foreach( $statuses as $s => $status_name ) { 
+							foreach ( $statuses as $s => $status_name ) { 
 								$selected = ( $selected_status == $s ) ? ' selected="selected"' : '';
 								
 								echo '<option value="', $s, '"', $selected, '>', $status_name, '</option>';
@@ -179,7 +179,7 @@ get_header();
 							$roles = array( 1 => 'Basic User', 5 => 'Basic Account', 7 => 'Online Specialist', 8 => 'Admin', 10 => 'Super Admin' );
 							$selected_role_number = ( empty( $_POST['sRole'] ) ) ? $us['role'] : $_POST['sRole'];
 							
-							for( $i = 1; $i <= $max_role; $i++ ) { 
+							for ( $i = 1; $i <= $max_role; $i++ ) { 
 								$selected = ( $selected_role_number == $i ) ? ' selected="selected"' : '';
 								$name = ( array_key_exists( $i, $roles ) ) ? $i . ' - ' . $roles[$i] : $i;
 								
@@ -235,7 +235,7 @@ get_header();
 			<br clear="all" /><br />
 			</form>
 			
-			<?php if( is_array( $websites ) ) { ?>
+			<?php if ( is_array( $websites ) ) { ?>
 				<h2><?php echo _('Websites'); ?></h2>
 				<?php
 				foreach ( $websites as $w ) { ?>

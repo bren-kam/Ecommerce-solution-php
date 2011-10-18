@@ -8,16 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 $page = $_GET['p'];
 
-if( empty( $page ) )
+if ( empty( $page ) )
 	url::redirect('/analytics/content-overview/');
 
 // Instantiate class
@@ -30,7 +30,7 @@ $records = $a->get_metric_by_date( 'page_views' );
 $total = $a->get_totals();
 
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+foreach ( $records as $r_date => $r_value ) {
 	$page_views_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 

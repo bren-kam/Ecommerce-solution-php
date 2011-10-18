@@ -11,7 +11,7 @@ class Tickets extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -32,10 +32,10 @@ class Tickets extends Base_Class {
 			$assigned_to_user_id = ( $user['role'] > 5 ) ? 493 : $user['website']['os_user_id']; 
 		}
 		
-		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => nl2br( htmlentities( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => date_time::date('Y-m-d H:i:s') ), 'iiisssssss' ); 
+		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => nl2br( htmlentities( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' ); 
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -55,10 +55,10 @@ class Tickets extends Base_Class {
 	public function create_empty() {
 		global $user, $u;
 		
-		$result = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'is' ); 
+		$result = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'is' ); 
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -87,7 +87,7 @@ class Tickets extends Base_Class {
 		$result = $this->db->update( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => htmlentities( nl2br( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'status' => 0 ), array( 'ticket_id' => $ticket_id ), 'iiissssssi', 'i' ); 
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -95,19 +95,19 @@ class Tickets extends Base_Class {
 		// Add images
 		$values = '';
 		
-		foreach( $images as $i ) {
-			if( !empty( $values ) )
+		foreach ( $images as $i ) {
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			$values .= "( $ticket_id, " . (int) $i . ')';
 		}
 		
-		if( !empty( $values ) ) {
+		if ( !empty( $values ) ) {
 			// Add image links
 			$this->db->query( "INSERT INTO `ticket_links` ( `ticket_id`, `ticket_upload_id` ) VALUES $values" );
 			
 			// Handle any error
-			if( $this->db->errno() ) {
+			if ( $this->db->errno() ) {
 				$this->err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
 				return false;
 			}

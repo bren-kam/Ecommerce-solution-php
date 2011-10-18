@@ -14,7 +14,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	/********** Categories Link  **********/
 	$('a#aAddCategory').click(function() {
 		// Make sure they actually put something in
-		if( 0 == $('#sProductCategory').val() ) {
+		if ( 0 == $('#sProductCategory').val() ) {
 			alert( $(this).attr('error') );
 			return;
 		}
@@ -23,7 +23,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		var option = $('#sProductCategory option:selected'), categoryID = option.val();
 
 		// It already exists, give an alert
-		if( '' != $('#dCategory' + categoryID).text() )
+		if ( '' != $('#dCategory' + categoryID).text() )
 			return;
 
 		var categoryName = option.html().replace( /&nbsp;/g, '' );
@@ -67,7 +67,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	/********** Product Link  **********/
 	// Trigger the check to make sure the slug is available
 	$('#tName').change( function() { 
-		if( $(this).attr('tmpval') == $(this).val() || '' == $(this).val().replace(/\s/g, '') ) {
+		if ( $(this).attr('tmpval') == $(this).val() || '' == $(this).val().replace(/\s/g, '') ) {
 			$('#dProductSlug, #pProductSlugError').hide();
 			return;
 		}
@@ -76,17 +76,17 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		var productSlug = $(this).val().slug(), categorySlug = $('.product-category:first').text().slug();
 
 		// If no categories selected, put it in the products category
-		if( '' == categorySlug )
+		if ( '' == categorySlug )
 			var categorySlug = 'products';
 		
 		// Create the product ID
-		if( '' == $('#hProductID').val() )
+		if ( '' == $('#hProductID').val() )
 			$.post( '/ajax/products/custom-products/create/', { _nonce : $('#_ajax_create_custom_product').val() }, ajaxResponse, 'json');
 		
 		var sProductSlug = $('#sProductSlug');
 		
 		// Makes sure it only changes the name when you first write the title
-		if( '' == sProductSlug.text() ) {
+		if ( '' == sProductSlug.text() ) {
 			// Assign the slugs
 			sProductSlug.text( productSlug );
 			$('#tProductSlug').val( productSlug );
@@ -141,15 +141,15 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	/********** Tags **********/
 	$('a#aAddTags').click(function() {
 		// Make sure they actually put something in
-		if( '' != $('#tAddTags').val().trim() ) {
+		if ( '' != $('#tAddTags').val().trim() ) {
 			// Declare options
 			var tags = $('#tAddTags').val().split(',');
 			
-			for( var i in tags ) {
+			for ( var i in tags ) {
 				var t = $.trim( tags[i] ), tSlug = t.slug();
 				
 				// It already exists, continue
-				if( '' != $.trim( $('#dTag_' + tSlug).text() ) )
+				if ( '' != $.trim( $('#dTag_' + tSlug).text() ) )
 					continue;
 	
 				// Add the slug
@@ -181,7 +181,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		minLength: 1,
 		source: function( request, response ) {
 			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in cache ) {
+			if ( request['term'] in cache ) {
 				response( $.map( cache[request['term']], function( item ) {
 					return {
 						'label' : item,
@@ -214,15 +214,15 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		var tAddSpecName = $('#tAddSpecName'), specName = tAddSpecName.val().trim().replace( /[|`]/g, '' ), taAddSpecValue = $('#taAddSpecValue'), specValue = taAddSpecValue.val().trim().replace( /[|`]/g, '' ), specSlug = ( specName + specValue ).slug();
 
 		// ake sure it's a valid entry
-		if( tAddSpecName.attr('tmpval') == specName || '' == specName || taAddSpecValue.attr('tmpval') == specValue || '' == specValue ) // || '' != $('#dSpec_' + specSlug + ' div:first').text()
+		if ( tAddSpecName.attr('tmpval') == specName || '' == specName || taAddSpecValue.attr('tmpval') == specValue || '' == specValue ) // || '' != $('#dSpec_' + specSlug + ' div:first').text()
 			return;
 
-		if( 'na' == specName.toLowerCase() )
+		if ( 'na' == specName.toLowerCase() )
 			specName = '';
 		
 		var values = specValue.split( /\n/ );
 		
-		for( var i in values ) {
+		for ( var i in values ) {
 			specValue = values[i].trim();
 			specSlug = ( specName + specValue ).slug();
 			
@@ -274,7 +274,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			var option = $(this), attributeItemID = option.val();
 		
 			// Make sure they actually put something in
-			if( '' != attributeItemID ) {
+			if ( '' != attributeItemID ) {
 				// Declare variables
 				var attributeItemName = option.text();
 	
@@ -345,12 +345,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	
 	/********** Page Load  **********/
 	// If you refresh the page, make sure you check the product name
-	if( tName.attr('tmpval') != tName.val() ) {
+	if ( tName.attr('tmpval') != tName.val() ) {
 		// Get slugs
 		var productSlug = $('#tProductSlug').val(), categorySlug = $('.product-category:first').text().slug();
 
 		// If no categories selected, put it in the products category
-		if( '' == categorySlug )
+		if ( '' == categorySlug )
 			var categorySlug = 'products';
 		
 		// Assign the slugs
@@ -364,7 +364,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	}
 	
 	// If its an edited product
-	if( $('#hProductID').val().length ) {
+	if ( $('#hProductID').val().length ) {
 		// Updates specifications
 		updateSpecs();
 		
@@ -392,7 +392,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		$('.img').each( function() {
 			var imageArray = $(this).val().split('|'), industry =$('#hIndustryName').val(), productID = $('#hProductID').val();
 			
-			for( var i in imageArray ) {
+			for ( var i in imageArray ) {
 				var imageName = imageArray[i], hiddenProductImageID = 'hProductImage_' + imageName.replace( /\.[a-zA_Z]{3,4}$/, '' ).replace( /^[^\/]+\//, '' );
 				
 				var imagePath = 'http://' + industry + '.retailcatalog.us/products/' + productID + '/thumbnail/' + imageName;
@@ -432,7 +432,7 @@ function categoryChangeProductLink() {
 	var categorySlug = $('.product-category:first').text().slug();
 
 	// If no categories selected, put it in the products
-		if( '' == categorySlug )
+		if ( '' == categorySlug )
 			var categorySlug = 'products';
 
 	// Assign the values
@@ -450,7 +450,7 @@ function updateCategories() {
 
 	// Update the hidden input
 	$('.product-category').each( function() {
-		if( categories.length )
+		if ( categories.length )
 			categories += '|';
 		
 		categories += $(this).attr('id').replace( 'dCategory', '');
@@ -471,7 +471,7 @@ function updateTags() {
 	
 	// Update the hidden input
 	$('.product-tag').each( function() {
-		if( tags.length )
+		if ( tags.length )
 			tags += '|';
 		
 		tags += $(this).attr('id').replace( 'dTag_', '' );
@@ -490,11 +490,11 @@ function updateSpecs() {
 
 	var specList = $("#dSpecificationsList").sortable('toArray');
 	
-	if( specList.length > 0 ) {
+	if ( specList.length > 0 ) {
 		var i = 1, hiddenValues = '';
 		
 		// Get the values
-		for( var sequence in specList ) {
+		for ( var sequence in specList ) {
 			hiddenValues += $('#' + specList[sequence] + ' .specification-name').text() + '`' + $('#' + specList[sequence] + ' .specification-value').text()  + '`' + sequence + '|';
 		}
 		
@@ -510,7 +510,7 @@ function updateAttributeItems() {
 
 	// Update the hidden input
 	$('.attribute').each( function() {
-		if( attributes.length )
+		if ( attributes.length )
 			attributes += '|';
 		
 		attributes += $(this).attr('id').replace( 'dAttributeItem_', '' );
@@ -529,7 +529,7 @@ function updateImageSequence() {
 	$("#dUploadedImages .product-image").each( function() {
 		var hiddenImage = $('#' + $(this).find('.remove-product-image').attr('extra') );
 		
-		if( typeof hiddenImage != 'undefined' && typeof hiddenImage.val() != 'undefined' ) {
+		if ( typeof hiddenImage != 'undefined' && typeof hiddenImage.val() != 'undefined' ) {
 			hiddenImage.val( hiddenImage.val().replace( /([^|"]+)(?:\|[\d]+)?/, '$1' ) + '|' + sequence );
 			sequence++;
 		}

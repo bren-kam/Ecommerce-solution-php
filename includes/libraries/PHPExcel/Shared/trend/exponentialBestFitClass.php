@@ -84,7 +84,7 @@ class PHPExcel_Exponential_Best_Fit extends PHPExcel_Best_Fit
 
 
 	private function _exponential_regression($yValues, $xValues, $const) {
-		foreach($yValues as &$value) {
+		foreach ($yValues as &$value) {
 			if ($value < 0.0) {
 				$value = 0 - log(abs($value));
 			} elseif ($value > 0.0) {

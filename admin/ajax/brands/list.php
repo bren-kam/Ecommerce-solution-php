@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = '`name`';
@@ -61,8 +61,8 @@ $brand_count = $b->count_brands( $where );
 
 $aaData = array();
 
-if( is_array( $brands ) )
-foreach( $brands as $br ) {
+if ( is_array( $brands ) )
+foreach ( $brands as $br ) {
 	$aaData[] = array( '<span>' . $br['name'] . '</span><br /><div><a href="/brands/edit/?bid=' . $br['brand_id'] . '" title="' . _('Edit Brand') . '">' . _('Edit') . '</a> | <a href="javascript:;" id="aDeleteBrand' . $br['brand_id'] . '" title="' . _('Delete Brand') . '" class="delete-brand">' . _('Delete') . '</a></div>', $br['link'] );
 }
 

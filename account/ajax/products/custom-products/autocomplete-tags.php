@@ -14,7 +14,7 @@ $t = new Tags;
 // Get the suggestions
 $suggestions = $t->autocomplete( $_POST['term'] );
 
-if( !$suggestions )
+if ( !$suggestions )
 	$suggestions = array();
 
 // Sent by the autocompleter

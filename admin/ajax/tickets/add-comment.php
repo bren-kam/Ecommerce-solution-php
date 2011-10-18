@@ -5,8 +5,8 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_nonce'], 'add-comment' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to add a ticket comment.') ) );
 		exit;
 	}
@@ -26,14 +26,14 @@ if( nonce::verify( $_POST['_nonce'], 'add-comment' ) ) {
 	$result = $tc->add( $_POST['tid'], $user['user_id'], nl2br( htmlentities( $content ) ), $_POST['p'], $_POST['a'] );
 	
 	// If it's not private, send an email to the client
-	if( '0' == $_POST['p'] )
+	if ( '0' == $_POST['p'] )
 		fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\nSupport Issue\n" . $ticket['message'], TICKET . ' <support@' . DOMAIN . '>' );
 	
 	$ticket_comment = $tc->get_single( $result );
-	$ticket_comment['date'] = date_time::date( 'm/d/Y g:ia', $ticket_comment['date'] );
+	$ticket_comment['date'] = dt::date( 'm/d/Y g:ia', $ticket_comment['date'] );
 	
 	// Send the assigned user an email if they are not submitting the comment
-	if( $ticket['assigned_to_user_id'] != $user['user_id'] ) {
+	if ( $ticket['assigned_to_user_id'] != $user['user_id'] ) {
 		// Get the user
 		$assigned_to_user = $u->get_user( $ticket['assigned_to_user_id'] );
 		

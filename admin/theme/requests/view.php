@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // Make sure we have a request selected
-if( empty( $_GET['rid'] ) )
+if ( empty( $_GET['rid'] ) )
 	url::redirect( '/requests/' );
 
 css( 'requests/view', 'jquery.ui' );
@@ -22,7 +22,7 @@ $r = new Requests;
 $request = $r->get( $_GET['rid'] );
 
 // Make the status english readable
-switch( $request['status'] ) {
+switch ( $request['status'] ) {
 	case 0:
 		$status_title = '<span class="orange">' . _('Open') . '</span>';
 		break;
@@ -71,7 +71,7 @@ get_header();
 				<td><strong><?php echo _('Request'); ?>:</strong></td>
 				<td>
 					<?php
-					switch( $request['type'] ) {
+					switch ( $request['type'] ) {
 						case 'Header Update':
 							$request_data = unserialize( html_entity_decode( $request['request'] ) );
 							echo 'See new data below';
@@ -92,14 +92,14 @@ get_header();
 		</table>
 		<br />
 		<?php
-		switch( $request['type'] ) {
+		switch ( $request['type'] ) {
 			case 'Header Update': {
 			?>
 			<br />
 			<h2><?php echo _('Page Data'); ?></h2>
 			<br />
 			<table cellpadding="0" cellspacing="0" id="tPageData" width="100%">
-				<?php if( 0 == $request['status'] && $request['web']['phone'] != $request_data['phone_number'] ) { ?>
+				<?php if ( 0 == $request['status'] && $request['web']['phone'] != $request_data['phone_number'] ) { ?>
 				<tr>
 					<td width="150">
 						<strong><?php echo _('Phone Number'); ?>:</strong><br />
@@ -118,9 +118,9 @@ get_header();
 				<?php
 				}
 				
-				if( isset( $request_data['image'] ) ) {
+				if ( isset( $request_data['image'] ) ) {
 					$remote_logo = 'http://' . $request['web']['domain'] . '/custom/uploads/images/' . $request['web']['logo'];
-					if( 0 == $request['status'] && @file_get_contents( $request_data['image'], FILE_BINARY ) != @file_get_contents( $remote_logo, FILE_BINARY ) ) {
+					if ( 0 == $request['status'] && @file_get_contents( $request_data['image'], FILE_BINARY ) != @file_get_contents( $remote_logo, FILE_BINARY ) ) {
 					?>
 					<tr>
 						<td>
@@ -157,7 +157,7 @@ get_header();
 					<td width="150"><strong><?php echo _('Title'); ?>:</strong></td>
 					<td><?php echo $request['page']['title']; ?></td>
 				</tr>
-				<?php if( 0 == $request['status'] && $request['page']['content'] != $request['original_page']['content'] ) { ?>
+				<?php if ( 0 == $request['status'] && $request['page']['content'] != $request['original_page']['content'] ) { ?>
 				<tr>
 					<td>
 						<strong><?php echo _('Content'); ?>:</strong><br />
@@ -176,7 +176,7 @@ get_header();
 				<?php 
 				}
 				
-				if( 0 == $request['status'] && $request['page']['meta_title'] != $request['original_page']['meta_title'] ) {
+				if ( 0 == $request['status'] && $request['page']['meta_title'] != $request['original_page']['meta_title'] ) {
 				?>
 				<tr>
 					<td>
@@ -196,7 +196,7 @@ get_header();
 				<?php 
 				}
 				
-				if( 0 == $request['status'] && $request['page']['meta_description'] != $request['original_page']['meta_description'] ) {
+				if ( 0 == $request['status'] && $request['page']['meta_description'] != $request['original_page']['meta_description'] ) {
 				?>
 				<tr>
 					<td>
@@ -216,7 +216,7 @@ get_header();
 				<?php 
 				}
 				
-				if( 0 == $request['status'] && $request['page']['meta_keywords'] != $request['original_page']['meta_keywords'] ) {
+				if ( 0 == $request['status'] && $request['page']['meta_keywords'] != $request['original_page']['meta_keywords'] ) {
 				?>
 				<tr>
 					<td>
@@ -237,15 +237,15 @@ get_header();
 			</table>
 			<br /><br />
 			
-			<?php if( isset( $request['meta'] ) && count( $request['meta'] ) > 0 ) { ?>
+			<?php if ( isset( $request['meta'] ) && count( $request['meta'] ) > 0 ) { ?>
 			<h2><?php echo _('Extra Data'); ?></h2>
 			<br/ >
 			<table cellpadding="0" cellspacing="0" id="tMetaData" width="100%">
 				<?php
 				//print_r( $request['meta'] );
-				foreach( $request['meta'] as $key => $pm ) {
+				switch ( $request['meta'] as $key => $pm ) {
 					$uc_key = ucwords( str_replace( '-', ' ', $key ) );
-					switch( $key ) {
+					switch ( $key ) {
 						case 'addresses':
 							$uc_key = _('Address(es)');
 							
@@ -255,16 +255,16 @@ get_header();
 							//echo html_entity_decode( str_replace( '&', '&amp;', $pm['value'] ), ENT_QUOTES, 'UTF-8' );
 							//exit;
 							
-							if( is_array( $address_array ) )
-							foreach( $address_array as $address ) {
-								if( !isset( $address['fax'] ) )
+							if ( is_array( $address_array ) )
+							foreach ( $address_array as $address ) {
+								if ( !isset( $address['fax'] ) )
 									$address['fax'] = '';
 		
 								$addresses .= "<p>\n";
 								$addresses .= "<strong>" . $address['location'] . "</strong><br />\n" . $address['address'] . "<br />\n" . $address['city'] . ', ' . $address['state'] . ' ' . $address['zip'] . "<br /><br />";
 								$addresses .= $address['phone'] . '<br />' . $address['fax'] . '<br />' . $address['email'] . '<br />' . $address['website'] . '<br /><br />';
 								
-								if( isset( $address['store-hours'] ) )
+								if ( isset( $address['store-hours'] ) )
 									$addresses .= '<strong>' . _('Store Hours') . ':</strong><br />' . $address['store-hours'];
 								
 								$addresses .= "</p>\n";
@@ -272,21 +272,21 @@ get_header();
 							
 							$pm['value'] = $addresses;
 							
-							if( isset( $request['original_meta'] ) && isset( $request['original_meta'][$key] ) ) {
+							if ( isset( $request['original_meta'] ) && isset( $request['original_meta'][$key] ) ) {
 								
 								$old_addresses = '';
 								$old_address_array = unserialize( $request['original_meta'][$key]['value'] );
 								
-								if( is_array( $old_address_array ) )
-								foreach( $old_address_array as $old_address ) {
-									if( !isset( $old_address['fax'] ) )
+								if ( is_array( $old_address_array ) )
+								foreach ( $old_address_array as $old_address ) {
+									if ( !isset( $old_address['fax'] ) )
 										$old_address['fax'] = '';
 		
 									$old_addresses .= "<p>\n";
 									$old_addresses .= "<strong>" . $old_address['location'] . "</strong><br />\n" . $old_address['address'] . "<br />\n" . $old_address['city'] . ', ' . $old_address['state'] . ' ' . $old_address['zip'] . "<br /><br />";
 									$old_addresses .= $old_address['phone'] . '<br />'. $old_address['fax'] . '<br />' . $old_address['email'] . '<br />' . $old_address['website'] . '<br /><br />';
 									
-									if( isset( $old_address['store-hours'] ) )
+									if ( isset( $old_address['store-hours'] ) )
 										$old_addresses .= '<strong>' .  _('Store Hours') . ':</strong><br />' . $old_address['store-hours'];
 									
 									$old_addresses .= "</p>\n";
@@ -302,7 +302,7 @@ get_header();
 					
 					$original_key_exists = ( isset( $request['original_meta'][$key] ) ) ? true : false;
 					
-					if( $original_key_exists && 0 == $request['status'] && $pm['value'] != $request['original_meta'][$key]['value'] ) {
+					if ( $original_key_exists && 0 == $request['status'] && $pm['value'] != $request['original_meta'][$key]['value'] ) {
 					?>
 					<tr>
 						<td width="150">
@@ -317,7 +317,7 @@ get_header();
 					<?php } else { ?>
 					<tr>
 						<td width="150"><strong><?php echo $uc_key; ?>:</strong></td>
-						<td<?php if( !$original_key_exists ) echo ' class="changed"'; ?>><?php echo $pm['value']; ?></td>
+						<td<?php if ( !$original_key_exists ) echo ' class="changed"'; ?>><?php echo $pm['value']; ?></td>
 					</tr>
 					<?php 
 					} 
@@ -326,15 +326,15 @@ get_header();
 			</table>
 			<?php } ?>
 			
-			<?php if( 0 == $request['status'] && isset( $request['attachments'] ) && count( $request['attachments'] ) > 0 ) { ?>
+			<?php if ( 0 == $request['status'] && isset( $request['attachments'] ) && count( $request['attachments'] ) > 0 ) { ?>
 			<h2><?php echo _('Attachments'); ?></h2>
 			<br/ >
 			<table cellpadding="0" cellspacing="0" id="tAttachments" width="100%">
 				<?php
-				foreach( $request['attachments'] as $attachment ) {
+				switch ( $request['attachments'] as $attachment ) {
 					$uc_key = ucwords( str_replace( '-', ' ', $attachment['key'] ) );
 					$image = ( @getimagesize( $attachment['value'] ) ) ? true : false;
-					if( isset( $request['original_attachments'][$attachment['key']] ) && $attachment['value'] != $request['original_attachments'][$attachment['key']]['value'] ) {
+					if ( isset( $request['original_attachments'][$attachment['key']] ) && $attachment['value'] != $request['original_attachments'][$attachment['key']]['value'] ) {
 							
 					?>
 					<tr>
@@ -344,14 +344,14 @@ get_header();
 						</td>
 						<td class="changed">
 							<div id="dRequested<?php echo $attachment['request_attachment_id']; ?>">
-								<?php if( $image ) { list( $width, $height ) = getimagesize( $attachment['value'] ); ?>
+								<?php if ( $image ) { list( $width, $height ) = getimagesize( $attachment['value'] ); ?>
 								<img src="<?php echo $attachment['value']; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" alt="<?php echo $uc_key; ?>" />
 								<?php } else { ?>
 								<a href="<?php echo $attachment['value']; ?>" title="<?php echo $uc_key; ?>"><?php echo $uc_key; ?></a>
 								<?php } ?>
 							</div>
 							<div id="dOriginal<?php echo $attachment['request_attachment_id']; ?>" class="hidden">
-								<?php if( $image ) { list( $width, $height ) = getimagesize( $request['original_attachments'][$attachment['key']]['value'] ); ?>
+								<?php if ( $image ) { list( $width, $height ) = getimagesize( $request['original_attachments'][$attachment['key']]['value'] ); ?>
 								<img src="<?php echo $request['original_attachments'][$attachment['key']]['value']; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" alt="<?php echo $uc_key; ?>" />
 								<?php } else { ?>
 								<a href="<?php echo $request['original_attachments'][$attachment['key']]['value']; ?>" title="<?php echo $uc_key; ?>"><?php echo $uc_key; ?></a>
@@ -362,8 +362,8 @@ get_header();
 					<?php } else { ?>
 					<tr>
 						<td width="150"><strong><?php echo $uc_key; ?>:</strong></td>
-						<td<?php if( !isset( $request['original_attachments'][$attachment['key']] ) ) echo ' class="changed"'; ?>>
-							<?php if( $image ) { list( $width, $height ) = getimagesize( $attachment['value'] ); ?>
+						<td<?php if ( !isset( $request['original_attachments'][$attachment['key']] ) ) echo ' class="changed"'; ?>>
+							<?php if ( $image ) { list( $width, $height ) = getimagesize( $attachment['value'] ); ?>
 							<img src="<?php echo $attachment['value']; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" alt="<?php echo $uc_key; ?>" />
 							<?php } else { ?>
 							<a href="<?php echo $attachment['value']; ?>" title="<?php echo $uc_key; ?>"><?php echo $uc_key; ?></a>
@@ -392,7 +392,7 @@ get_header();
 					<th><?php echo _('SKU'); ?></th>
 					<th><?php echo _('Collections/Product'); ?></th>
 				</tr>
-				<?php foreach( $request_data as $product ) { @list( $brand_id, $sku, $collections_product ) = explode( '~', $product ); ?>
+				<?php foreach ( $request_data as $product ) { @list( $brand_id, $sku, $collections_product ) = explode( '~', $product ); ?>
 				<tr>
 					<td><?php echo $brand_id; ?></td>
 					<td><?php echo $sku; ?></td>
