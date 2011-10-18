@@ -18,6 +18,7 @@ javascript( 'jquery', 'jquery.ui', 'data-tables/jquery.dataTables', 'data-tables
 
 $selected = 'websites';
 $title = _('Websites') . ' | ' . TITLE;
+
 get_header();
 ?>
 

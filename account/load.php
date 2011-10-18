@@ -7,14 +7,7 @@
  * $cache - Cache
  */
 
-define( 'PROFILE', ( 'true' == $_GET['profile'] ) ? true : false );
-
-if ( PROFILE ) {
-	// Enable XHProf (profiler)
-	require('/home/develop4/xhprof_lib/utils/xhprof_lib.php');
-	require('/home/develop4/xhprof_lib/utils/xhprof_runs.php');
-	xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
-}
+//define( 'PROFILE', ( 'true' == $_GET['profile'] ) ? true : false );
 
 /** Define LIVE if the website is live */
 define( 'LIVE', false );
@@ -36,6 +29,15 @@ define( 'INC_PATH', ABS_PATH . 'includes/' );
 
 /** Define THEME_PATH as the place with all the pages */
 define( 'THEME_PATH', ABS_PATH . 'account/theme/' );
+
+/*
+if ( PROFILE ) {
+	// Enable XHProf (profiler)
+	require('/home/develop4/xhprof_lib/utils/xhprof_lib.php');
+	require('/home/develop4/xhprof_lib/utils/xhprof_runs.php');
+	xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+}
+*/
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
@@ -60,11 +62,11 @@ $e = new Error_Handler();
 
 /** Dynamic definitions */
 define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );
-define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::subdomain( $_SERVER['HTTP_X_FORWARDED_HOST'] ) : url::subdomain( $_SERVER['HTTP_HOST'] ) );
+define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], true ) ) : str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_HOST'], true ) ) );
 
 /** Load Cookie Definitions */
 // Used to guarantee unique hash cookies
-define( 'COOKIE_HASH', md5( 'http://' . DOMAIN . '/' ) );
+define( 'COOKIE_HASH', md5( 'http://www.' . DOMAIN . '.com/' ) );
 
 // The Cookie for the authorization in a insecure environment
 define( 'AUTH_COOKIE', 'auth_' . COOKIE_HASH );
@@ -89,6 +91,7 @@ require_once INC_PATH . 'labels/' . DOMAIN . '.php';
 /** Routing */
 require_once OPERATING_PATH . 'routing.php' ;
 
+/*
 if ( PROFILE ) {
 	// End XHProf and save query
 	$profiler_namespace = 'account.imagineretailer.com';  // namespace for your application
@@ -99,5 +102,4 @@ if ( PROFILE ) {
 	// url to the XHProf UI libraries (change the host name and path)
 	$profiler_url = sprintf('http://account.imagineretailer.com/xhprof_html/index.php?run=%s&source=%s', $run_id, $profiler_namespace);
 	echo '<a href="'. $profiler_url .'" target="_blank">Profiler output</a>';
-}
-
+}*/

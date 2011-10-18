@@ -146,23 +146,14 @@ function timer_stop( $time_start ) {
 function set_cookie( $name, $value, $expire ) {
 	$secure = ( LIVE ) ? true : false;
 	$secure = false;
-	
-/*	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {
-		setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', '.admin.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', '.account.' . DOMAIN, $secure, true );
-	} else {
-		setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', 'admin.' . DOMAIN );
-		setcookie( $name, $value, time() + $expire, '/', 'account.' . DOMAIN );
-		setcookie( $name, $value, time() + $expire, '/', 'admin2.' . DOMAIN );
-		setcookie( $name, $value, time() + $expire, '/', 'account2.' . DOMAIN );
-	//}*/
-		setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', 'admin.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', 'account.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', 'admin2.' . DOMAIN, $secure, true );
-		setcookie( $name, $value, time() + $expire, '/', 'account2.' . DOMAIN, $secure, true );
+
+    setcookie( $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );
+    setcookie( $name, $value, time() + $expire, '/', '.' . SUBDOMAIN . '.' . DOMAIN, $secure, true );
+
+    // If it's set on the admin side, we also want to set it on the account side.
+    if ( stristr( SUBDOMAIN, 'admin' ) )
+        setcookie( $name, $value, time() + $expire, '/', '.' . str_replace( 'admin', 'account', SUBDOMAIN ) . '.' . DOMAIN, $secure, true );
+    
 }
 
 /**
@@ -174,22 +165,10 @@ function set_cookie( $name, $value, $expire ) {
  * @param string $name the name of the cookie (defined in load.php)
  */
 function remove_cookie( $name ) {
-	/*if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {
-		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.admin.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.account.' . DOMAIN );
-	} else {
-		// Set the time to negative one year (negative values make it expire)
-		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.admin.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.account.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.admin2.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.account2.' . DOMAIN );
-	//}*/
-		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.admin.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.account.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.admin2.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.account2.' . DOMAIN );
-		setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
+    setcookie( $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
+	setcookie( $name, ' ', time() - 31536000, '/', '.' . SUBDOMAIN . '.' . DOMAIN );
+
+    // If it's set on the admin side, we also want to set it on the account side.
+    if ( stristr( SUBDOMAIN, 'admin') )
+        setcookie( $name, ' ', time() - 31536000, '/', '.' . str_replace( 'admin', 'account', SUBDOMAIN ) . '.' . DOMAIN, $secure, true );
 }

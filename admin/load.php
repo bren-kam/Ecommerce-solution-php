@@ -53,11 +53,11 @@ $e = new Error_Handler();
 
 /** Dynamic definitions */
 define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );
-define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::subdomain( $_SERVER['HTTP_X_FORWARDED_HOST'] ) : url::subdomain( $_SERVER['HTTP_HOST'] ) );
+define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], true ) ) : str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_HOST'], true ) ) );
 
 /** Load Cookie Definitions */
 // Used to guarantee unique hash cookies
-define( 'COOKIE_HASH', md5( 'http://' . DOMAIN . '/' ) );
+define( 'COOKIE_HASH', md5( 'http://www.' . DOMAIN . '.com/' ) );
 
 // The Cookie for the authorization in a insecure environment
 define( 'AUTH_COOKIE', 'auth_' . COOKIE_HASH );

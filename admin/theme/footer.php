@@ -42,11 +42,12 @@ global $user;
 </div>
 
 <!-- End: Footer -->
-<?php 
+<?php
+
 $javascript = get_js();
 if ( 'eNpLtDKwqq4FXDAGTwH-' != $javascript ) { // That string means it's empty ?>
 <script type="text/javascript" src="/js/?files=<?php echo $javascript; ?>"></script>
-<?php 
+<?php
 }
 
 footer();

@@ -31,34 +31,27 @@ class Users extends Base_Class {
 		}
 		
 		if ( !empty( $this->encrypted_email ) ) {
-			global $user, $mc;
+            global $user;
 			
-			$user = $mc->get( $this->encrypted_email );
-			
-			// If memcache didn't get anything, get it and then add it
-			if ( !$user ) {
-				$user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
-				
-				// Get website
-				$user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
-				
-				if ( !isset( $_COOKIE['wid'] ) ) {
-					$user['website'] = current( $user['websites'] );
-					set_cookie( 'wid', $user['website']['website_id'], 172800 ); // 2 days
-				} elseif ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
-					$w = new Websites;
-					
-					$user['website'] = $w->get_website( $_COOKIE['wid'] );
-				} else {
-					$user['website'] = ( isset( $user['websites'][$_COOKIE['wid']] ) ) ? $user['websites'][$_COOKIE['wid']] : current( $user['websites'] );
-				}
-				
-				// They must have a website
-				if ( empty( $user['website'] ) )
-					url::redirect('/');
-				
-				$mc->add( $this->encrypted_email, $user, 7200 ); // 2 hours
-			}
+            $user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
+
+            // Get website
+            $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
+
+            if ( !isset( $_COOKIE['wid'] ) ) {
+                $user['website'] = current( $user['websites'] );
+                set_cookie( 'wid', $user['website']['website_id'], 172800 ); // 2 days
+            } elseif ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
+                $w = new Websites;
+
+                $user['website'] = $w->get_website( $_COOKIE['wid'] );
+            } else {
+                $user['website'] = ( isset( $user['websites'][$_COOKIE['wid']] ) ) ? $user['websites'][$_COOKIE['wid']] : current( $user['websites'] );
+            }
+
+            // They must have a website
+            if ( empty( $user['website'] ) )
+                url::redirect('/');
 		}
 	}
 	
