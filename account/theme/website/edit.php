@@ -64,7 +64,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 	// if there are no errors
 	if ( empty( $errs ) ) {
 		// Update the page
-		$success = $w->update_page( $website_page_id, stripslashes( $_POST['taContent'] ), $_POST['tMetaTitle'], $_POST['tMetaDescription'], $_POST['tMetaKeywords'] );
+		$success = $w->update_page( $website_page_id, stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
 		
 		// Update custom meta
 		switch ( $page['slug'] ) {
