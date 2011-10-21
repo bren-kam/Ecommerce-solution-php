@@ -123,6 +123,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-websi
 			//, 'facebook-password' => base64_encode( security::encrypt( $_POST['tFacebookPassword'], ENCRYPTION_KEY ) )
 			'facebook-url' => $_POST['tFacebookURL']
 			, 'limited-products' => ( isset( $_POST['cbLimitedProducts'] ) ) ? 1 : 0
+            , 'advertising-url' => $_POST['tAdvertisingURL']
 		) );
 	}
 }
@@ -132,7 +133,7 @@ $ftp = $w->get_ftp_data( $_GET['wid'] );
 $website_industries = $w->get_industries( $_GET['wid'] );
 $users = $u->get_users();
 
-$settings = $w->get_settings( $_GET['wid'], array( 'limited-products', 'custom-image-size', 'facebook-url' ) ); 
+$settings = $w->get_settings( $_GET['wid'], array( 'limited-products', 'custom-image-size', 'facebook-url', 'advertising-url' ) );
 $web['custom_image_size'] = $settings['custom-image-size'];
 
 // We must strip slashes, since $_POST automatically inserts them!
@@ -325,6 +326,10 @@ get_header();
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php echo $settings['facebook-url']; ?>" class="tb" />
+						</p>
+						<p>
+							<label for="tAdvertisingURL"><?php echo _('Advertising URL'); ?>:</label>
+							<input type="text" name="tAdvertisingURL" id="tAdvertisingURL" value="<?php echo $settings['advertising-url']; ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>
