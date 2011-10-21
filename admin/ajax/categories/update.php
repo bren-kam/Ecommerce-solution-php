@@ -15,7 +15,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-categ
 	
 	if ( $_POST['hCategoryID'] == $_POST['sParentCategory'] ) {
 		$cat = $c->get_category( $_GET['hCategoryID'] );
-		$parent_category_id = $cat['parent_category_id']
+		$parent_category_id = $cat['parent_category_id'];
 	} else {
 		$parent_category_id = $_POST['sParentCategory'];
 	}
