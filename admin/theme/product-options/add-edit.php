@@ -8,30 +8,30 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $add = ( empty( $_GET['poid'] ) ) ? true : false;
 $addEditTitle = ( $add ) ? _('Add') : _('Edit');
 
 $po = new Product_Options;
 
-if( !$add )
+if ( !$add )
 	$product_option = $po->get( $_GET['poid'] );
 
-if( nonce::verify( $_POST['_nonce'], 'add-edit-product-option' ) ) {
-	if( !isset( $_GET['poid'] ) || $_GET['poid'] == '' ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-product-option' ) ) {
+	if ( !isset( $_GET['poid'] ) || $_GET['poid'] == '' ) {
 		// Get what type of option it is
-		switch( $_POST['hForm'] ) {
+		switch ( $_POST['hForm'] ) {
 			case 'fDropDown':
 				$option_type = 'select';
 	
 				// Parse drop down items
-				if( !empty( $_POST['hListItems'] ) ) {
-					$options = explode( '|', stripslashes( $_POST['hListItems'] ) );
+				if ( !empty( $_POST['hListItems'] ) ) {
+					$options = explode( '|', $_POST['hListItems'] );
 					
-					foreach( $options as $o ) {
-						if( !empty( $o ) )
+					foreach ( $options as $o ) {
+						if ( !empty( $o ) )
 							$list_items[] = $o;
 					}
 				}
@@ -57,19 +57,19 @@ if( nonce::verify( $_POST['_nonce'], 'add-edit-product-option' ) ) {
 	
 		// Create it
 		$po->create( $option_type, $_POST['tOptionTitle_' . $ext], $_POST['tOptionName_' . $ext], $list_items );
-	// } elseif( nonce::verify( $_POST['_nonce'], 'update-product-option' ) ) {
-	} elseif( isset( $_GET['poid'] ) ) {
+	// } elseif ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-product-option' ) ) {
+	} elseif ( isset( $_GET['poid'] ) ) {
 		// Get what type of option it is
-		switch( $_POST['hForm'] ) {
+		switch ( $_POST['hForm'] ) {
 			case 'fDropDown':
 				$option_type = 'select';
 	
 				// Parse drop down items
-				if( !empty( $_POST['hListItems'] ) ) {
-					$options = explode( '|', stripslashes( $_POST['hListItems'] ) );
+				if ( !empty( $_POST['hListItems'] ) ) {
+					$options = explode( '|', $_POST['hListItems'] );
 					
-					foreach( $options as $o ) {
-						if( !empty( $o ) )
+					foreach ( $options as $o ) {
+						if ( !empty( $o ) )
 							$list_items[] = $o;
 					}
 				}
@@ -109,13 +109,13 @@ get_header();
 
 <div id="content">
 	<p id="pOptionBreadCrumb">&nbsp;<?php echo ( $add ) ? '<span id="sOptionCurrentPage" class="hidden">' . _('Choose Option Type') . '</span>' : '<a href="javascript:;" id="aOptionPage_dAddOptionStep1" title="' . _('Choose Option Type') . '" class="option-breadcrumb">' . _('Choose Option Type') . '</a> &gt; <span id="sOptionCurrentPage">' . $type_nice_name . '</span>'; ?></p>
-	<h1><?php echo $addEditTitle, _(' Product Option'); ?></h1>
+	<h1><?php echo $addEditTitle, ' ', _('Product Option'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'product-options/' ); ?>
 	<div id="subcontent">
 		<?php
-			if( !$add )
-			switch( $product_option['option_type'] ) {
+			if ( !$add )
+			switch ( $product_option['option_type'] ) {
 				case 'select':
 					$type_nice_name = _('Drop Down List');
 				break;
@@ -132,7 +132,7 @@ get_header();
 				default: break;
 			}
 		?>
-		<div id="dAddOptionStep1" class="page<?php if( !$add ) echo ' hidden'; ?>">
+		<div id="dAddOptionStep1" class="page<?php if ( !$add ) echo ' hidden'; ?>">
 			<table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
 				<tr>
 					<td width="20%" rowspan="3">&nbsp;</td>
@@ -163,17 +163,17 @@ get_header();
 			</table>
 		</div>
 		<?php $dropdown = ( isset( $product_option ) && 'select' == $product_option['option_type'] ) ? true : false; ?>
-		<div id="dOption_DropDown" class="page<?php if( $add || !$dropdown ) echo ' hidden'; ?>">
+		<div id="dOption_DropDown" class="page<?php if ( $add || !$dropdown ) echo ' hidden'; ?>">
 			<h3><?php echo _('Drop Down List'); ?></h3>
 			<p id="pAddOption_DropDown" class="hidden"></p>
-			<form action="/product-options/add-edit/?poid=<?php echo $_GET['poid']; ?>" name="fAddOption_DropDown" id="fAddOption_DropDown" method="post">
+			<form action="/product-options/add-edit/?poid=<?php if ( isset( $_GET['poid'] ) ) echo $_GET['poid']; ?>" name="fAddOption_DropDown" id="fAddOption_DropDown" method="post">
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionTitle_DropDown"><?php echo _('Drop Down Title'); ?>:</label></div>
-					<div class="cell"><input type="text" class="tb" name="tOptionTitle_DropDown" id="tOptionTitle_DropDown" maxlength="50" value="<?php if( $dropdown ) echo $product_option['option_title']; ?>" /></div>
+					<div class="cell"><input type="text" class="tb" name="tOptionTitle_DropDown" id="tOptionTitle_DropDown" maxlength="50" value="<?php if ( $dropdown ) echo $product_option['option_title']; ?>" /></div>
 				</div>
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionName_DropDown"><?php echo _('Drop Down Name'); ?>:</label></div>
-					<div class="cell"><input type="text" class="tb" name="tOptionName_DropDown" id="tOptionName_DropDown" maxlength="200" value="<?php if( $dropdown ) echo $product_option['option_name']; ?>" /></div>
+					<div class="cell"><input type="text" class="tb" name="tOptionName_DropDown" id="tOptionName_DropDown" maxlength="200" value="<?php if ( $dropdown ) echo $product_option['option_name']; ?>" /></div>
 				</div>
 				<br /><br />
 				<div class="row">
@@ -184,8 +184,8 @@ get_header();
 						$extra_count = ( isset( $product_option['extra'] ) ) ? count( $product_option['extra'] ) : 0;
 						$list_items = '';
 						
-						if( $dropdown && $extra_count > 0 )
-						foreach( $product_option['extra'] as $product_option_list_item_id => $li ) {
+						if ( $dropdown && $extra_count > 0 )
+						foreach ( $product_option['extra'] as $product_option_list_item_id => $li ) {
 							$li_slug = format::slug( $li );
 							
 							$list_items .= "$product_option_list_item_id:$li|";
@@ -216,64 +216,64 @@ get_header();
 					<div class="cell"><input type="submit" class="button" value="<?php echo ( $add ) ? _('Add Option') : _('Save'); ?>" /></div>
 				</div>
 				<input type="hidden" name="hListItems" id="hListItems" value="<?php echo $list_items; ?>" />
-				<?php if( !$add ) echo '<input type="hidden" name="hProductOptionID" value="' . $product_option['product_option_id'] . '" />'; ?>
+				<?php if ( !$add ) echo '<input type="hidden" name="hProductOptionID" value="' . $product_option['product_option_id'] . '" />'; ?>
 				<input type="hidden" name="hForm" value="fDropDown" />
 				<?php nonce::field( 'add-edit-product-option' ); ?>
 			</form>
 		</div>
 		
 		<?php $checkbox = ( isset( $product_option ) && 'checkbox' == $product_option['option_type'] ) ? true : false; ?>
-		<div id="dOption_Checkbox" class="page<?php if( $add || !$checkbox ) echo ' hidden'; ?>">
+		<div id="dOption_Checkbox" class="page<?php if ( $add || !$checkbox ) echo ' hidden'; ?>">
 			<h3><?php echo _('Checkbox'); ?></h3>
 			<p id="pAddOption_Checkbox" class="hidden"></p>
-			<form action="/product-options/add-edit/?poid=<?php echo $_GET['poid']; ?>" name="fAddOption_Checkbox" id="fAddOption_Checkbox" method="post">
+			<form action="/product-options/add-edit/?poid=<?php if ( isset( $_GET['poid'] ) ) echo $_GET['poid']; ?>" name="fAddOption_Checkbox" id="fAddOption_Checkbox" method="post">
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionTitle_Checkbox"><?php echo _('Checkbox Title'); ?>:</label></div>
-					<div class="cell"><input type="text" class="tb" name="tOptionTitle_Checkbox" id="tOptionTitle_Checkbox" maxlength="50" value="<?php if( $checkbox ) echo $product_option['option_title']; ?>" /></div>
+					<div class="cell"><input type="text" class="tb" name="tOptionTitle_Checkbox" id="tOptionTitle_Checkbox" maxlength="50" value="<?php if ( $checkbox ) echo $product_option['option_title']; ?>" /></div>
 				</div>
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionName_Checkbox"><?php echo _('Checkbox Name'); ?>:</label></div>
-					<div class="cell"><input type="text" class="tb" name="tOptionName_Checkbox" id="tOptionName_Checkbox" maxlength="200" value="<?php if( $checkbox ) echo $product_option['option_name']; ?>" /></div>
+					<div class="cell"><input type="text" class="tb" name="tOptionName_Checkbox" id="tOptionName_Checkbox" maxlength="200" value="<?php if ( $checkbox ) echo $product_option['option_name']; ?>" /></div>
 				</div>
 				<br /><br />
 				<div class="row">
 					<div class="cell" style="width:15%;">&nbsp;</div>
 					<div class="cell"><input type="submit" class="button" value="<?php echo ( $add ) ? _('Add Option') : _('Save'); ?>" /></div>
 				</div>
-				<?php if( !$add ) echo '<input type="hidden" name="hProductOptionID" value="' . $product_option['product_option_id'] . '" />'; ?>
+				<?php if ( !$add ) echo '<input type="hidden" name="hProductOptionID" value="' . $product_option['product_option_id'] . '" />'; ?>
 				<input type="hidden" name="hForm" value="fCheckbox" />
 				<?php nonce::field( 'add-edit-product-option' ); ?>
 			</form>
 		</div>
 		
 		<?php $text = ( isset( $product_option ) && 'text' == $product_option['option_type'] && 'textarea' != $product_option['option_type'] ) ? true : false; ?>
-		<div id="dOption_Text" class="<?php if( $add || !$text ) echo ' hidden'; ?> page">
+		<div id="dOption_Text" class="<?php if ( $add || !$text ) echo ' hidden'; ?> page">
 			<h3><?php echo _('Text'); ?></h3>
 			<p id="pAddOption_Text" class="hidden"></p>
-			<form action="/product-options/add-edit/?poid=<?php echo $_GET['poid']; ?>" name="fAddOption_Text" id="fAddOption_Text" method="post">
+			<form action="/product-options/add-edit/?poid=<?php if ( isset( $_GET['poid'] ) ) echo $_GET['poid']; ?>" name="fAddOption_Text" id="fAddOption_Text" method="post">
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionSize_Text"><?php echo _('Size'); ?>:</label></div>
 					<div class="cell">
 						<select name="tOptionSize_Text" id="tOptionSize_Text" class="dd">
 							<option value="text"><?php echo _('One Line'); ?></option>
-							<option value="textarea"<?php if( $text && 'textarea' == $product_option['option_type'] ) echo ' selected="selected"'; ?>><?php echo _('Multiple Lines'); ?></option>
+							<option value="textarea"<?php if ( $text && 'textarea' == $product_option['option_type'] ) echo ' selected="selected"'; ?>><?php echo _('Multiple Lines'); ?></option>
 						</select>
 					</div>
 				</div>
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionTitle_Text"><?php echo _('Text Field Title'); ?>:</label></div>
-					<div class="cell"><input type="text" class="tb" name="tOptionTitle_Text" id="tOptionTitle_Text" maxlength="50" value="<?php if( $text ) echo $product_option['option_title']; ?>" /></div>
+					<div class="cell"><input type="text" class="tb" name="tOptionTitle_Text" id="tOptionTitle_Text" maxlength="50" value="<?php if ( $text ) echo $product_option['option_title']; ?>" /></div>
 				</div>						
 				<div class="row">
 					<div class="cell" style="width:15%;"><label for="tOptionName_Text"><?php echo _('Text Name'); ?>:</label></div>
-					<div class="cell"><input type="text" class="tb" name="tOptionName_Text" id="tOptionName_Text" maxlength="200" value="<?php if( $text ) echo $product_option['option_name']; ?>" /></div>
+					<div class="cell"><input type="text" class="tb" name="tOptionName_Text" id="tOptionName_Text" maxlength="200" value="<?php if ( $text ) echo $product_option['option_name']; ?>" /></div>
 				</div>
 				<br /><br />
 				<div class="row">
 					<div class="cell" style="width:15%;">&nbsp;</div>
 					<div class="cell"><input type="submit" class="button" value="<?php echo ( $add ) ? _('Add Option') : _('Save'); ?>" /></div>
 				</div>
-				<?php if( !$add ) echo '<input type="hidden" name="hProductOptionID" value="' . $product_option['product_option_id'] . '" />'; ?>
+				<?php if ( !$add ) echo '<input type="hidden" name="hProductOptionID" value="' . $product_option['product_option_id'] . '" />'; ?>
 				<input type="hidden" name="hForm" value="fText" />
 				<?php nonce::field( 'add-edit-product-option' ); ?>
 			</form>

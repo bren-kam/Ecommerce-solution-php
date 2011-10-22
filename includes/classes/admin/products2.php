@@ -22,7 +22,7 @@ class Products2 extends Base_Class {
 	 * @return int
 	 */
 	public function create( $user_id ) {
-		$this->db->insert( 'products2', array( 'user_id_created' => $user_id, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'is' );
+		$this->db->insert( 'products2', array( 'user_id_created' => $user_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'is' );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -70,7 +70,7 @@ class Products2 extends Base_Class {
 		}
 		
 		if ( is_array( $product_images ) )
-		foreach( $product_images as $image )
+		foreach ( $product_images as $image )
 			$images[$image['swatch']][] = $image['image'];
 		
 		return $images;
@@ -123,7 +123,7 @@ class Products2 extends Base_Class {
 		$ps_array = explode( '|', stripslashes( $product_specifications ) );
 		
 		// serialize product specificatons
-		foreach( $ps_array as $ps ) {
+		foreach ( $ps_array as $ps ) {
 			if ( '' != $ps ) {
 				list( $spec_name, $spec_value, $sequence ) = explode( '`', $ps );
 				$product_specs[] = array( $spec_name, $spec_value, $sequence );
@@ -203,11 +203,11 @@ class Products2 extends Base_Class {
 			return false;
 		
 		// @Fix there should be a more efficient way then a double loop with sql queries
-		foreach( $category_ids as $cid ) {
+		foreach ( $category_ids as $cid ) {
 			$parent_categories = $c->get_parent_category_ids( $cid );
 			
 			// Delete parent categories if the website doesn't have any products
-			foreach( $parent_categories as $pc_id ) {
+			foreach ( $parent_categories as $pc_id ) {
 				$websites_without_products = $this->websites_without_products( $pc_id, $website_ids, $c );
 				
 				if ( empty( $websites_without_products ) )
@@ -263,7 +263,7 @@ class Products2 extends Base_Class {
 		/**
 		 * Check if category do not exists insert it
 		 */
-		foreach( $categories_array as $category_id ) {
+		foreach ( $categories_array as $category_id ) {
 			if ( empty( $category_id ) )
 				continue;
 			
@@ -280,7 +280,7 @@ class Products2 extends Base_Class {
 			
 			// Create an array having the categories based on the website
 			if ( is_array( $category_results ) )
-			foreach( $category_results as $cr ) {
+			foreach ( $category_results as $cr ) {
 				$category_ids[$cr['website_id']][] = $cr['category_id'];
 			}
 			
@@ -290,12 +290,12 @@ class Products2 extends Base_Class {
 			$parent_categories = $c->get_parent_category_ids( $category_id );
 			
 			// Cycle through the websites and findout if they already have the category
-			foreach( $website_ids_array as $wid ) {
+			foreach ( $website_ids_array as $wid ) {
 				if ( !is_array( $category_results ) || !in_array( $category_id, $category_ids[$wid] ) ) {
 					$website_without_category_ids[] = $wid;
 					
 					// Add the parent category_ids
-					foreach( $parent_categories as $cat ) {
+					foreach ( $parent_categories as $cat ) {
 						if ( !in_array( $cat, $category_ids[$wid] ) )
 							$website_without_parent_category_ids[$cat][] = $wid;
 					}
@@ -315,7 +315,7 @@ class Products2 extends Base_Class {
 				
 				// @Fix this is a looped sql statement
 				if ( is_array( $without_parent_category_ids ) && count( $without_parent_category_ids ) > 0 )
-				foreach( $without_parent_category_ids as $wpci ) {
+				foreach ( $without_parent_category_ids as $wpci ) {
 					if ( is_array( $website_without_parent_category_ids[$wpci] ) )
 						$this->add_product_category( $product_id, $wpci, $website_without_parent_category_ids[$wpci] );
 				}
@@ -338,7 +338,7 @@ class Products2 extends Base_Class {
 		// Initiate values
 		$values = '';
 		
-		foreach( $images as $key => $image ) {
+		foreach ( $images as $key => $image ) {
 			// Putting the definition of $sequence down below (after the list() statement) made it actually not assign zero.  Putting it up here too.
 			$sequence = 0;
 			
@@ -400,7 +400,7 @@ class Products2 extends Base_Class {
 		
 		$values = '';
 		
-		foreach( $website_ids as $wid ) {
+		foreach ( $website_ids as $wid ) {
 			if ( !empty( $values ) )
 				$values .= ',';
 			
@@ -433,7 +433,7 @@ class Products2 extends Base_Class {
 		$values = '';
 		
 		if ( is_array( $categories ) )
-		foreach( $categories as $cid ) {
+		foreach ( $categories as $cid ) {
 			if ( !empty( $values ) )
 				$values .= ',';
 			
@@ -495,7 +495,7 @@ class Products2 extends Base_Class {
 		$website_with_products = array();
 		
 		// This all the websites with products
-		foreach( $website_result_array as $row ) {
+		foreach ( $website_result_array as $row ) {
 			$website_with_products[] = $row['website_id'];
 		}
 		
@@ -503,7 +503,7 @@ class Products2 extends Base_Class {
 		$all_website_ids = explode( ',', $website_ids );
 		$websites_without_products = '';
 		
-		foreach( $all_website_ids as $wid ) {
+		foreach ( $all_website_ids as $wid ) {
 			if ( in_array( $wid, $website_with_products ) )
 				continue;
 			

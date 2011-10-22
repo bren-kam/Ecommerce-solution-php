@@ -49,7 +49,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );

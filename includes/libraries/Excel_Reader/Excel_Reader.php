@@ -381,9 +381,9 @@ class Excel_Reader
         $res = $this->_ole->read($sFileName);
 
         // oops, something goes wrong (Darko Miljanovic)
-        if($res === false) {
+        if ($res === false) {
             // check error code
-            if($this->_ole->error == 1) {
+            if ($this->_ole->error == 1) {
             // bad file
                 die('The filename ' . $sFileName . ' is not readable');
             }

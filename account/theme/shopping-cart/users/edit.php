@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $sc = new Shopping_Cart;
@@ -30,12 +30,11 @@ $data = $_POST;
 
 $success = false;
 
-if( !empty( $data ) ) {
+if ( !empty( $data ) ) {
 	
-	$a = $v->Validate();
-	if ( $a ) $errs[] = $a;
+	$errs = $v->validate();
 	
-	if( empty( $errs ) )
+	if ( empty( $errs ) )
 		$success = $sc->edit_user( $_POST['hUid'], $_POST['tEmail'], ( ( $_POST['pPassword'] == '' ) ? '' : $_POST['pPassword'] ), $_POST['tBillingFirstName'], $_POST['tBillingLastName'], $_POST['tBillingAddress'], $_POST['tBillingAddress2'], $_POST['tBillingCity'], $_POST['sBillingState'], $_POST['tBillingZip'], $_POST['tBillingPhone'], $_POST['tBillingAltPhone'], $_POST['tShippingFirstName'], $_POST['tShippingLastName'], $_POST['tShippingAddress'], $_POST['tShippingAddress2'], $_POST['tShippingCity'], $_POST['sShippingState'], $_POST['tShippingZip'], $_POST['sStatus'] );
 }
 
@@ -57,10 +56,11 @@ get_header();
 	<div id="subcontent">
 		<div id="dErrors">
         <?php 
-			foreach( $errs as $err ) {
-				echo "<p class='error'>" . $err . "</p>";
-			}
-			if( $success ) echo "<p class='success'>User successfully edited!</p>";
+			if ( isset( $errs ) )
+				echo "<p class='error'>$errs</p>";
+			
+			if ( $success ) 
+				echo '<p class="success">User successfully edited!</p>';
 		?>
 		</div>
 	    <form name="fEditUser" action="/shopping-cart/edit-user/?uid=<?php echo $uid; ?>" method="post">
@@ -78,8 +78,8 @@ get_header();
                 <td><label for="sStatus">Status:</label></td>
                 <td>
                 	<select name="sStatus">
-                        <option value="1"<?php if( $u['status'] == '1' ) echo ' selected="selected"'; ?>>Active</option>
-                        <option value="0"<?php if( $u['status'] == '0' || $u['status'] == '' ) echo ' selected="selected"'; ?>>Inactive</option>
+                        <option value="1"<?php if ( $u['status'] == '1' ) echo ' selected="selected"'; ?>>Active</option>
+                        <option value="0"<?php if ( $u['status'] == '0' || $u['status'] == '' ) echo ' selected="selected"'; ?>>Inactive</option>
                     </select>
                 </td>
             </tr>

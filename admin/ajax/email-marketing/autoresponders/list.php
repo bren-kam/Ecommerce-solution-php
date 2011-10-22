@@ -22,8 +22,8 @@ $confirm = _('Are you sure you want to delete this autoresponder? This cannot be
 $delete_autoresponder_nonce = nonce::create( 'delete-autoresponder' );
 
 // Create output
-if( is_array( $autoresponders ) )
-foreach( $autoresponders as $a ) {
+if ( is_array( $autoresponders ) )
+foreach ( $autoresponders as $a ) {
 	$actions = ( $a['default'] ) ? '' : ' | <a href="/ajax/email-marketing/autoresponders/delete/?eaid=' . $a['email_autoresponder_id'] . '&amp;_nonce=' . $delete_autoresponder_nonce . '" title="' . _('Delete Autoresponder') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>';
 	
  	$data[] = array( 

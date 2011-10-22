@@ -1728,7 +1728,7 @@ class PHPExcel_Calculation {
 			//	Return strings wrapped in quotes
 			return '"'.$value.'"';
 		//	Convert numeric errors to NaN error
-		} else if((is_float($value)) && ((is_nan($value)) || (is_infinite($value)))) {
+		} else if ((is_float($value)) && ((is_nan($value)) || (is_infinite($value)))) {
 			return PHPExcel_Calculation_Functions::NaN();
 		}
 
@@ -1748,7 +1748,7 @@ class PHPExcel_Calculation {
 				return substr($value,1,-1);
 			}
 		//	Convert numeric errors to NaN error
-		} else if((is_float($value)) && ((is_nan($value)) || (is_infinite($value)))) {
+		} else if ((is_float($value)) && ((is_nan($value)) || (is_infinite($value)))) {
 			return PHPExcel_Calculation_Functions::NaN();
 		}
 		return $value;
@@ -1823,7 +1823,7 @@ class PHPExcel_Calculation {
 
 		if (is_null($result)) {
 			return 0;
-		} elseif((is_float($result)) && ((is_nan($result)) || (is_infinite($result)))) {
+		} elseif ((is_float($result)) && ((is_nan($result)) || (is_infinite($result)))) {
 			return PHPExcel_Calculation_Functions::NaN();
 		}
 		return $result;
@@ -1998,7 +1998,7 @@ class PHPExcel_Calculation {
 	public static function _getMatrixDimensions(&$matrix) {
 		$matrixRows = count($matrix);
 		$matrixColumns = 0;
-		foreach($matrix as $rowKey => $rowValue) {
+		foreach ($matrix as $rowKey => $rowValue) {
 			$colCount = count($rowValue);
 			if ($colCount > $matrixColumns) {
 				$matrixColumns = $colCount;
@@ -2108,7 +2108,7 @@ class PHPExcel_Calculation {
 		if (is_array($value)) {
 			$returnMatrix = array();
 			$pad = $rpad = ', ';
-			foreach($value as $row) {
+			foreach ($value as $row) {
 				if (is_array($row)) {
 					$returnMatrix[] = implode($pad,$row);
 					$rpad = '; ';
@@ -2117,7 +2117,7 @@ class PHPExcel_Calculation {
 				}
 			}
 			return '{ '.implode($rpad,$returnMatrix).' }';
-		} elseif(is_bool($value)) {
+		} elseif (is_bool($value)) {
 			return ($value) ? 'TRUE' : 'FALSE';
 		}
 
@@ -2175,7 +2175,7 @@ class PHPExcel_Calculation {
 				$temp = explode('"',$formula);
 				//	Open and Closed counts used for trapping mismatched braces in the formula
 				$openCount = $closeCount = 0;
-				foreach($temp as $i => &$value) {
+				foreach ($temp as $i => &$value) {
 					//	Only count/replace in alternate array entries
 					if (($i % 2) == 0) {
 						$openCount += substr_count($value,'{');
@@ -2600,7 +2600,7 @@ class PHPExcel_Calculation {
 
 							$oData = array_merge(explode(':',$operand1Data['reference']),explode(':',$operand2Data['reference']));
 							$oCol = $oRow = array();
-							foreach($oData as $oDatum) {
+							foreach ($oData as $oDatum) {
 								$oCR = PHPExcel_Cell::coordinateFromString($oDatum);
 								$oCol[] = PHPExcel_Cell::columnIndexFromString($oCR[0]) - 1;
 								$oRow[] = $oCR[1];
@@ -2660,10 +2660,10 @@ class PHPExcel_Calculation {
 					case '|'	:			//	Intersect
 						$rowIntersect = array_intersect_key($operand1,$operand2);
 						$cellIntersect = $oCol = $oRow = array();
-						foreach(array_keys($rowIntersect) as $col) {
+						foreach (array_keys($rowIntersect) as $col) {
 							$oCol[] = PHPExcel_Cell::columnIndexFromString($col) - 1;
 							$cellIntersect[$col] = array_intersect_key($operand1[$col],$operand2[$col]);
-							foreach($cellIntersect[$col] as $row => $data) {
+							foreach ($cellIntersect[$col] as $row => $data) {
 								$oRow[] = $row;
 							}
 						}
@@ -2816,9 +2816,9 @@ class PHPExcel_Calculation {
 //						$this->_writeDebug('Argument is a matrix: '.self::_showValue($operand1));
 //						$result = array();
 //						$row = 0;
-//						foreach($operand1 as $args) {
+//						foreach ($operand1 as $args) {
 //							if (is_array($args)) {
-//								foreach($args as $arg) {
+//								foreach ($args as $arg) {
 //									$this->_writeDebug('Evaluating '. $functionName.'( '.self::_showValue($arg).' )');
 //									$r = call_user_func_array($functionCall,$arg);
 //									$this->_writeDebug('Evaluation Result is '.self::_showTypeDetails($r));
@@ -2840,7 +2840,7 @@ class PHPExcel_Calculation {
 						if (strpos($functionCall,'::') !== false) {
 							$result = call_user_func_array(explode('::',$functionCall),$args);
 						} else {
-							foreach($args as &$arg) {
+							foreach ($args as &$arg) {
 								$arg = PHPExcel_Calculation_Functions::flattenSingleValue($arg);
 							}
 							unset($arg);
@@ -2921,14 +2921,14 @@ class PHPExcel_Calculation {
 		if ((is_array($operand1)) || (is_array($operand2))) {
 			$result = array();
 			if ((is_array($operand1)) && (!is_array($operand2))) {
-				foreach($operand1 as $x => $operandData) {
+				foreach ($operand1 as $x => $operandData) {
 					$this->_writeDebug('Evaluating '.self::_showValue($operandData).' '.$operation.' '.self::_showValue($operand2));
 					$this->_executeBinaryComparisonOperation($cellID,$operandData,$operand2,$operation,$stack);
 					$r = $stack->pop();
 					$result[$x] = $r['value'];
 				}
 			} elseif ((!is_array($operand1)) && (is_array($operand2))) {
-				foreach($operand2 as $x => $operandData) {
+				foreach ($operand2 as $x => $operandData) {
 					$this->_writeDebug('Evaluating '.self::_showValue($operand1).' '.$operation.' '.self::_showValue($operandData));
 					$this->_executeBinaryComparisonOperation($cellID,$operand1,$operandData,$operation,$stack);
 					$r = $stack->pop();
@@ -2936,7 +2936,7 @@ class PHPExcel_Calculation {
 				}
 			} else {
 				if (!$recursingArrays) { self::_checkMatrixOperands($operand1,$operand2,2); }
-				foreach($operand1 as $x => $operandData) {
+				foreach ($operand1 as $x => $operandData) {
 					$this->_writeDebug('Evaluating '.self::_showValue($operandData).' '.$operation.' '.self::_showValue($operand2[$x]));
 					$this->_executeBinaryComparisonOperation($cellID,$operandData,$operand2[$x],$operation,$stack,True);
 					$r = $stack->pop();
@@ -3222,7 +3222,7 @@ class PHPExcel_Calculation {
 		// Return value
 		$returnValue = array();
 		// Loop functions
-		foreach($this->_PHPExcelFunctions as $functionName => $function) {
+		foreach ($this->_PHPExcelFunctions as $functionName => $function) {
 			if ($function['functionCall'] != 'PHPExcel_Calculation_Functions::DUMMY') {
 				$returnValue[$functionName] = new PHPExcel_Calculation_Function($function['category'],
 																				$functionName,

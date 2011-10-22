@@ -125,8 +125,10 @@ class Validator {
 	 * @access public
 	 * @return string
 	 */
-	 public function validate() {
-		foreach( $this->elements as $element ) {
+	public function validate() {
+		$error_string = '';
+		
+		foreach ( $this->elements as $element ) {
 			$error_string .= $this->check_validation( $element[0], $element[1], $element[2] );
 		}
 
@@ -192,10 +194,17 @@ class Validator {
 	 * @return string
 	 */
 	 private function check_validation( $element_name, $descriptor, $err = '' ) {
-	 	list( $cmd, $command_value ) = explode( '=', $descriptor );
+	 	$descriptor_array = explode( '=', $descriptor );
+		
+		$cmd = $descriptor_array[0];
+		
+		// If it exists, set it
+		if ( isset( $descripor_array[1] ) )
+			$command_value = $descripor_array[1];
+		
 		$t = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		
-		switch( $cmd ) {
+		switch ( $cmd ) {
 			case 'alnum':
 			case 'alphanumeric':
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['alnum'], $_POST[$element_name] ) > 0 ) {
@@ -243,7 +252,7 @@ class Validator {
 
 				// Make sure it's valid credit card type
 				if ( 0 != preg_match( $this->patterns['cc'], $obj_value, $matches ) ) {
-					switch( $first_num ) {
+					switch ( $first_num ) {
 						// AmEx
 						case '3':
 							if ( 15 != $obj_length )

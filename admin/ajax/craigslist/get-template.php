@@ -5,7 +5,7 @@
  * @subpackage Account
  */
 
-if( !nonce::verify( $_POST['nonce'], 'craigslist' ) ) return false;
+if ( !nonce::verify( $_POST['nonce'], 'craigslist' ) ) return false;
 
 $c = new Craigslist;
 

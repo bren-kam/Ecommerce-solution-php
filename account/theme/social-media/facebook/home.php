@@ -8,21 +8,24 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
 $sm = new Social_Media;
 	$wf = new Website_Files;
 
-if( nonce::verify( $_POST['_nonce'], 'home' ) )
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'home' ) )
 	$success = $sm->update_home( $_POST['taContent'] );
 
 // Get variables 
 $home = $sm->get_home();
 $website_files = $wf->get_all();
 	
-if( !$home ) {
+if ( !$home ) {
 	$home['key'] = $sm->create_home();
 	$home['content'] = '';
 }
@@ -40,7 +43,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<p class="success"><?php echo _('Your home page has been successfully updated!'); ?></p>
 		<?php } ?>
 		
@@ -61,12 +64,12 @@ get_header();
 		<div id="dUploadFile" class="hidden">
 			<ul id="ulUploadFile">
 				<?php
-				if( is_array( $website_files ) ) {
+				if ( is_array( $website_files ) ) {
 					// Set variables
 					$ajax_delete_file_nonce = nonce::create('delete-file');
 					$confirm = _('Are you sure you want to delete this file?');
 					
-					foreach( $website_files as $wf ) {
+					foreach ( $website_files as $wf ) {
 						$file_name = format::file_name( $wf['file_path'] );
 						echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 					}

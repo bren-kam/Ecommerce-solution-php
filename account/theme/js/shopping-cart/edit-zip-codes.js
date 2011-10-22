@@ -23,7 +23,7 @@ function postLoad( $ ) {
 	
 	$('#aNewZipCode').live( 'click', function() {
 		var zip = $("#tNewZipCode").val();
-		if( zip ) {
+		if ( zip ) {
 			var html = '<tr id="trZip' + zip + '"><td>' + zip + '</td><td><a href="#" id="aRemoveZip' + zip + '" class="remove-zip"><img src="/images/icons/x.png" width="15" height="17" alt="Delete"/></a><input type="hidden" name="hZip' + zip + '" value="' + zip + '"/></td></tr>';
 			$("#trAddZipCode").before( html );
 			$("#tNewZipCode").val( '' );

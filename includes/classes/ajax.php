@@ -21,7 +21,7 @@ class AJAX {
 	 */
 	public function __construct( $nonce, $key, $override = false ) {
 		// Make sure it's a valid request
-		if( !$override && !nonce::verify( $nonce, $key ) ) {
+		if ( !$override && !nonce::verify( $nonce, $key ) ) {
 			$this->add_response( 'error', _('A verification error occurred. Please refresh the page and try again.') );
 			$this->respond( false );
 		}
@@ -44,7 +44,7 @@ class AJAX {
 	 * Asserts that the value is OK, if not, exits out
 	 */
 	public function ok( $assertion, $error ) {
-		if( $assertion )
+		if ( $assertion )
 			return;
 		
 		$this->add_response( 'error', $error );
@@ -60,7 +60,7 @@ class AJAX {
 		$this->add_response( 'success', $success );
 		
 		// If it is successful, don't send data we don't need to
-		if( $success )
+		if ( $success )
 			unset( $this->json_response['error'] );
 		
 		// Set the header

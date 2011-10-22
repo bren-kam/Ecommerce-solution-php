@@ -4,7 +4,7 @@
  * @package Real Statistics
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-assigned-to' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-assigned-to' ) ) {
 	$f = new Feedback;
 	
 	$result = $f->update_assigned_to( $_POST['fid'], $_POST['atui'] );

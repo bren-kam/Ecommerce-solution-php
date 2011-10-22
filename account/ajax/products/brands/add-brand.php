@@ -11,7 +11,7 @@ $ajax->ok( $user, _('You must be signed in to add a brand.') );
 $b = new Brands;
 $brand = $b->add_top_brand( $_POST['bid'], $_POST['s'] );
 
-if( $brand ) {
+if ( $brand ) {
 	$dBrand = '<div id="dBrand_' . $_POST['bid'] . '" class="brand">';
 	$dBrand .= '<img src="' . $brand['image'] . '" title="' . $brand['name'] . '" />';
 	$dBrand .= '<h4>' . $brand['name'] . '</h4>';

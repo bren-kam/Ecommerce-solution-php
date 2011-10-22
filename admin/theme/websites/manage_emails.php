@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // If their permissions are too low....
-if( $user['role'] < 9 )
+if ( $user['role'] < 9 )
 	url::redirect( '/websites/' );
 
 unset( $_SESSION['websites'] );

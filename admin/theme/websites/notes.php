@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // Instantiate classes
 $v = new Validator();
@@ -20,11 +20,11 @@ $v->form_name = 'fNewNote';
 $v->add_validation( 'taNoteContents', 'req', _('The note may not be empty') );
 
 // Check to see if they are creating a note
-if( nonce::verify( $_POST['_nonce'], 'add-note' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-note' ) ) {
 	$errs = $v->validate();
 	
 	// Create the note if there are no errors
-	if( empty( $errs ) )
+	if ( empty( $errs ) )
 		$w->create_note( $_GET['wid'], $user['user_id'], $_POST['taNoteContents'] );
 }
 
@@ -60,11 +60,11 @@ get_header();
 		<?php add_footer( $v->js_validation() ); ?>
 		<br /><br />
 		<div id="dNotes">
-			<?php foreach( $notes as $n ) { ?>
+			<?php foreach ( $notes as $n ) { ?>
 			<div id="dNote<?php echo $n['website_note_id']; ?>" class="dNote">
 				<div class="title">
 					<strong><?php echo $n['contact_name']; ?></strong>
-					<br /><?php echo date_time::date( 'M j Y', $n['date_created'] ); ?>
+					<br /><?php echo dt::date( 'M j Y', $n['date_created'] ); ?>
 					<?php
 					if ( $n['user_id'] == $user['user_id'] )
 						echo '<br /><a href="#" class="edit-note" title="Edit">Edit</a> | <a href="#" class="delete-note" title="Delete">Delete</a>';

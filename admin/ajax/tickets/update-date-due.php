@@ -4,7 +4,7 @@
  * @package Imagine Retailer
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-date-due' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-date-due' ) ) {
 	$t = new Tickets;
 	
 	// Get the date pieces

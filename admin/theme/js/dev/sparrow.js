@@ -19,19 +19,19 @@ var sparrow = function(context) {
 		 */
 		$(this).focus( function() {
 			// If the value is equal to the temporary value when they focus, empty it
-			if( $(this).val() == $(this).attr('tmpval') )
+			if ( $(this).val() == $(this).attr('tmpval') )
 				$(this).val('').removeClass('tmpval');
 		}).blur( function() {
 			// Set the variables so they don't have to be grabbed twice
 			var value = $(this).val(), tmpValue = $(this).attr('tmpval');
 			
 			// Fill in with the temporary value if it's empty or if it matches the temporary value
-			if( 0 == value.length || value == tmpValue ) 
+			if ( 0 == value.length || value == tmpValue ) 
 				$(this).val( tmpValue ).addClass('tmpval');
 		});
 		
 		// If there is no value, set it to the correct value
-		if( !$(this).val().length )
+		if ( !$(this).val().length )
 			$(this).val( $(this).attr('tmpval') ).addClass('tmpval');
 	});
 	
@@ -39,7 +39,7 @@ var sparrow = function(context) {
 	var tables = $('table[ajax],table.dt', context);
 	
 	// If there are tables, load datatables plugin and load the content
-	if( tables.length )
+	if ( tables.length )
 	head.js( '/js2/?f=jquery.datatables', function() {
 		// Make each table
 		tables.addClass('dt').each( function() {
@@ -47,14 +47,14 @@ var sparrow = function(context) {
 			var aPerPage = $(this).attr('perPage').split(','), opts = '', ths = $(this).find('th').append('<img src="/images/trans.gif" width="10" height="8" />'), sorting = new Array(), a = $(this).attr('ajax');
 			
 			// Form options
-			for( var i in aPerPage ) {
+			for ( var i in aPerPage ) {
 				opts += '<option value="' + aPerPage[i] + '">' + aPerPage[i] + '</option>';
 			}
 			
-			if( ths.length ) {
+			if ( ths.length ) {
 				// Create sorting array
-				for( var i = 0; i < ths.length; i++ ) {
-					if( $(ths[i]).attr('sort') ) {
+				for ( var i = 0; i < ths.length; i++ ) {
+					if ( $(ths[i]).attr('sort') ) {
 						var s = $(ths[i]).attr('sort'), direction = ( -1 == s.search('desc') ) ? 'asc' : 'desc';
 						sorting[s.replace( ' desc', '' ) - 1] = [i, direction];
 					}
@@ -80,7 +80,7 @@ var sparrow = function(context) {
 			};
 			
 			// If it's AJAX
-			if( a )
+			if ( a )
 				settings.bProcessing = 1, settings.bServerSide = 1, settings.sAjaxSource = a;
 			
 			// Make the dataTable
@@ -91,7 +91,7 @@ var sparrow = function(context) {
 	// Make dialogs
 	var dialogs = $('a[rel=dialog]', context);
 	
-	if( dialogs.length )
+	if ( dialogs.length )
 	head.js( '/js2/?f=jquery.boxy', function() {
 		// Make dialogs
 		dialogs.click( function(e) {
@@ -104,7 +104,7 @@ var sparrow = function(context) {
 			};
 			
 			// If exists, and they want to cache it use it
-			if( content.length && '0' != $(this).attr('cache') ) {
+			if ( content.length && '0' != $(this).attr('cache') ) {
 				new Boxy( content, settings );
 			} else {
 				// If it doesn't exist, add it to the page, load the AJAX ontent, run sparrow, then create it
@@ -125,14 +125,14 @@ var sparrow = function(context) {
 		// Should have another way to do confirm boxes from dialogs
 		var confirmQuestion = $(this).attr('confirm');
 		
-		if( confirmQuestion && !confirm( confirmQuestion ) )
+		if ( confirmQuestion && !confirm( confirmQuestion ) )
 			return
 		
 		$.get( $(this).attr('href'), ajaxResponse, 'json' );
 	}).removeAttr('ajax'); // Prevent it from getting called again
 	
 	// If mammoth exists, call it
-	if( 'function' == typeof( mammoth ) )
+	if ( 'function' == typeof( mammoth ) )
 		mammoth( context );
 }
 
@@ -148,9 +148,9 @@ head.ready( function() {
 // Create a function to handle ajax responses
 function ajaxResponse( response ) {
 	// Test for success
-	if( response['success'] ) {
+	if ( response['success'] ) {
 		// Assign it to PHP function to handle the jquery if it exists
-		if( response['refresh'] ) {
+		if ( response['refresh'] ) {
 			// Refresh the page
 			window.location = window.location;
 		} else if ( 'object' == typeof( response['jquery'] ) ) {
@@ -161,7 +161,7 @@ function ajaxResponse( response ) {
 		}
 	} else {
 		// Handle Errors
-		if( response['error'] )
+		if ( response['error'] )
 			alert( response['error'] );
 	}
 }

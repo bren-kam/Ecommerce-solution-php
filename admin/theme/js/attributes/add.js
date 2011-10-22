@@ -22,11 +22,11 @@ function postLoad( $ ) {
 	$('#aAddListItem').click( function() {
 		var itemNames = $('#tListItemValue').val().split(',');
 		
-		for( i in itemNames ) {
+		for ( i in itemNames ) {
 			var itemName = itemNames[i], itemSlug = itemName.slug() + '_' + i;
 			
 			// If they entered nothing, do nothing
-			if( '' == itemName || 'Item Name' == itemName )
+			if ( '' == itemName || 'Item Name' == itemName )
 				return;
 			
 			// Start creating new div
@@ -84,14 +84,14 @@ function postLoad( $ ) {
 		var parent = $(this).parents('div.list-item:first'), attributeNameField = parent.find('.edit-attribute-name'), attributeName = attributeNameField.val();
 		
 		// Make sure it's not an empty profile_name
-		if( '' == attributeName ) {
+		if ( '' == attributeName ) {
 			alert( 'Please enter an attribute name' );
 			attributeNameField.focus();
 			return;
 		}
 		
 		// Make sure it's within 15 characters
-		if( attributeName.length > 100 ) {
+		if ( attributeName.length > 100 ) {
 			alert( 'The attribute name may only have up to 100 characters' );
 			attributeNameField.focus();
 			return;

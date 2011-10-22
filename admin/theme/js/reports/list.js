@@ -47,7 +47,7 @@ function postLoad( $ ) {
 		var criterion = $(this).parents('.criterion:first'), type = $('.type:first', criterion).attr('class').replace( 'type ', '' ), s = $('.search:first', criterion).attr('class').replace( 'search ', '' );
 		
 		// If there's no search, ignore it
-		if( !type.length )
+		if ( !type.length )
 			return;
 		
 		// Update the criteria
@@ -59,7 +59,7 @@ function postLoad( $ ) {
 	
 	// Add checkboxes to the criteria
 	$('.cb').click( function() {
-		if( $(this).attr('checked') ) {
+		if ( $(this).attr('checked') ) {
 			criteria['checkboxes'][$(this).val()] = 1;
 		} else {
 			delete criteria['checkboxes'][$(this).val()];
@@ -85,14 +85,14 @@ function trSearchClick() {
  */
 function ajaxSearchClick( response ) {
 	// Make sure there was no error
-	if( !response['result'] ) {
+	if ( !response['result'] ) {
 		alert( response['error'] );
 		return false;
 	}
 	
 	var trs = '';
 	
-	for( var i in response['report'] ) {
+	for ( var i in response['report'] ) {
 		var w = response['report'][i];
 		trs += '<tr><td><a href="http://' + w['domain'] + '/" title="' + w['title'] + '" target="_blank">' + w['title'] + '</a></td><td>' + w['company'] + '</td><td>' + w['products'] + '</td><td>' + w['date_created'] + '</td></tr>';
 	}
@@ -116,7 +116,7 @@ function autocompleteSuccess( request, response ) {
 	var cacheType = $('#sType').val();
 
 	// Find out if they are already cached so we don't have to do another ajax called
-	if( request['term'] in cache[cacheType] ) {
+	if ( request['term'] in cache[cacheType] ) {
 		response( $.map( cache[cacheType][request['term']], function( item ) {
 			return {
 				'label' : item[cacheType],

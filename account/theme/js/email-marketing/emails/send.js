@@ -25,7 +25,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		
 		// AJAX call to grab templates
 		$.post( '/ajax/email-marketing/emails/get-templates/', { _nonce: $('#_ajax_get_templates').val(), 'type': type }, function( data ) {
-			if( data['success'] ) {
+			if ( data['success'] ) {
 				var slider = div.find('.slider:first'), ul = $('#ulSlider_' + type), templateImage = $('.template-image', div), lis = '';
 				templateImage.empty();
 				$('a', slider).remove();
@@ -33,7 +33,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 				
 				var showCarousel = ( data['templates'].length > 3 ) ? true : false;
 				
-				for( var i in data['templates'] ) {
+				for ( var i in data['templates'] ) {
 					var t = data['templates'][i], CSSClass = ( i > 0 ) ? ' class="hidden"' : ' class="selected"';
 					var thumbnail = ( 0 == t['thumbnail'].length ) ? '/images/emails/thumbnails/default.jpg' : t['thumbnail'];
 					var image = ( 0 == t['image'].length ) ? '/images/emails/default.jpg' : t['image'];
@@ -42,20 +42,20 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 					templateImage.append( '<img src="' + image + '" id="iTemplateImage' + t['email_template_id'] + '"' + CSSClass + ' width="400" alt="' + t['name'] + '" />' );
 				}
 				
-				if( showCarousel ) {
+				if ( showCarousel ) {
 					ul.wrap( '<div id="dSlider_' + type + '">' );
 					slider.prepend( '<a href="javascript:;" class="arrow-up disabled previous_slide" title="Previous">&nbsp;</a><br />' );
 				}
 				
 				ul.append( lis );
 
-				if( showCarousel )
+				if ( showCarousel )
 					slider.append( '<a href="javascript:;" class="arrow-down enabled next_slide" title="Next">&nbsp;</a>' );
 
 				templateImage.append( '\<a href="javascript:;" class="button choose-template" title="Choose Template">Choose Template</a>' );
 				div.append( '<br clear="all" />' );
 				
-				if( showCarousel )
+				if ( showCarousel )
 				setTimeout( function() {
 					$('#dSlider_' + type).jCarouselLite({
 						btnNext: '.next_slide',
@@ -108,7 +108,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$('#tAutoSuggestBox1, #tAutoSuggestBox2').autocomplete( {
 		minLength: 1,
 		source:function( request, response ) {
-			if( request['term'] in cache['offer-box'] ) {
+			if ( request['term'] in cache['offer-box'] ) {
 				response( $.map( cache['offer-box'][request['term']], function( item ) {
 					return {
 						'label' : item['name'],
@@ -152,7 +152,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			var cacheType = $('#sAutoComplete').val();
 			
 			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in cache[cacheType] ) {
+			if ( request['term'] in cache[cacheType] ) {
 				response( $.map( cache[cacheType][request['term']], function( item ) {
 					return {
 						'label' : item['name'],
@@ -211,7 +211,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	// AJAX form, saves as well
 	$('#fSendEmail').ajaxForm({
 		beforeSubmit:  function() {
-			if( !saveForm() )
+			if ( !saveForm() )
 				return false;
 		},  // pre-submit callback
 		success:       saveFormSuccess,
@@ -220,7 +220,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	
 	// Send test link
 	$('#aSendTest').click( function() {
-		if( $(this).text().search( /\+/ ) > 0 ) {
+		if ( $(this).text().search( /\+/ ) > 0 ) {
 			// Expand
 			$('#dSendTest').show();
 			
@@ -237,7 +237,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$('#bSendTest').click( function() {
 		var tTestEmail = $('#tTestEmail'), email = tTestEmail.val();
 		
-		if( 0 == email.length || email == tTestEmail.attr('tmpval') || null == email.match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/) ) {
+		if ( 0 == email.length || email == tTestEmail.attr('tmpval') || null == email.match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/) ) {
 			alert( $(this).attr('error') );
 			$('#tTestEmail').focus();
 			return false;
@@ -249,7 +249,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	
 	// Send email
 	$('#aSendEmail').click( function() {
-		if( 0 == $('#hEmailMessageID').val() ) {
+		if ( 0 == $('#hEmailMessageID').val() ) {
 			alert( $(this).attr('error') );
 			return false;
 		}
@@ -261,7 +261,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$('.select-box-type').change( function() {
 		var boxID = $(this).attr('id').replace( /^s/, '' );
 		
-		switch( $(this).val() ) {
+		switch ( $(this).val() ) {
 			case '':
 				$( '#dText' + boxID, '#dProduct' + boxID ).hide();
 			break;
@@ -281,7 +281,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	// Check all button
 	$('#aCheckAll').click( function() {
 		$('input.mailing-list').each( function() {
-			if( !$(this).attr( 'disabled' ) )
+			if ( !$(this).attr( 'disabled' ) )
 				$(this).attr( 'checked', true );
 		});
 	});
@@ -319,7 +319,7 @@ function testMessage() {
 	$.post( '/ajax/email-marketing/emails/test/', { _nonce : $('#_ajax_test_message').val(), 'email' : $('#tTestEmail').val(), emid : $('#hEmailMessageID').val() }, function( success ) {
 		$.unblockUI();
 		
-		if( success ) {
+		if ( success ) {
 			$('#pSuccessMessage').show().delay(5000).hide();
 		} else {
 			alert( 'An error occurred while trying to send the test email. Please refresh the page and try again.' );
@@ -338,7 +338,7 @@ function sendScheduleEmail() {
 		$.unblockUI();
 		
 		// Handle any errors
-		if( !response['success'] ) {
+		if ( !response['success'] ) {
 			alert( response['error'] );
 			return;
 		}
@@ -354,7 +354,7 @@ function sendScheduleEmail() {
  * @return bool
  */
 function saveForm( saveFormCallback ) {
-	if( !$('#dStep1 .cb:checked:first').length ) {
+	if ( !$('#dStep1 .cb:checked:first').length ) {
 		alert( 'You must select a Mailing List first' );
 		return false;
 	}
@@ -362,7 +362,7 @@ function saveForm( saveFormCallback ) {
 	$.blockUI({ timeout: 0, message: '<h1><img src="/images/icons/ajax-loading.gif" alt="Saving..." width="28" height="28" /><br />Saving...</h1>' }); 
 	resortProducts();
 	
-	if( 'function' == typeof( saveFormCallback ) )
+	if ( 'function' == typeof( saveFormCallback ) )
 		globalCallback = saveFormCallback;
 	
 	$('#fSendEmail').ajaxSubmit({
@@ -377,10 +377,10 @@ function saveForm( saveFormCallback ) {
 function saveFormSuccess( response ) {
 	$.unblockUI();
 	
-	if( response['success'] ) {
+	if ( response['success'] ) {
 		$('#hEmailMessageID').val( response['email_message_id'] );
 		
-		if( 'function' == typeof( globalCallback ) )
+		if ( 'function' == typeof( globalCallback ) )
 			globalCallback();
 		
 		globalCallback = null;

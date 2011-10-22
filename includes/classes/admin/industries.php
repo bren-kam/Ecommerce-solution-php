@@ -12,7 +12,7 @@ class Industries extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -25,7 +25,7 @@ class Industries extends Base_Class {
 		$industries = $this->db->get_results( 'SELECT `industry_id`, `name` FROM `industries` ORDER BY `name` ASC', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -43,7 +43,7 @@ class Industries extends Base_Class {
 		$industry = $this->db->get_row( 'SELECT `industry_id`, `name` FROM `industries` WHERE `industry_id` = ' . (int) $industry_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industry.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -61,7 +61,7 @@ class Industries extends Base_Class {
 		$industry_name = $this->db->get_var( 'SELECT a.`name` FROM `industries` AS a LEFT JOIN `products` AS b ON ( a.`industry_id` = b.`industry_id` ) WHERE b.`product_id` = ' . (int) $product_id );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industry by product.', __LINE__, __METHOD__ );
 			return false;
 		}

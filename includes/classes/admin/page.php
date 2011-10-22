@@ -21,8 +21,8 @@ class Page_Model extends Model {
 		$metadata = $this->db->query( sprintf( "SELECT * FROM `website_pagemeta` WHERE `website_page_id` = %d", $website_page_id ) )->result_array( FALSE );
 		
 		// unencrypt data
-		if( is_array( $metadata ) )
-		foreach( $metadata as $md ) {
+		if ( is_array( $metadata ) )
+		foreach ( $metadata as $md ) {
 			$new_metadata[$md['key']] = $md['value'];
 		}
 		
@@ -39,11 +39,11 @@ class Page_Model extends Model {
 	public function set_pagemeta( $metadata, $website_page_id ) {
 		$original_metadata = $this->get_pagemeta( $website_page_id );
 		
-		foreach( $metadata as $md ) {
+		foreach ( $metadata as $md ) {
 			// Find out if the the key/page_id combination already exists. If so, update it. If not, insert it.			
 			$this->db->query( ( array_key_exists( $md['key'], $original_metadata ) ) ? sprintf( "UPDATE `website_pagemeta` SET `value` = '%s' WHERE `website_page_id` = %d AND `key` = '%s'", format::sql_string( $md['value'] ), $website_page_id, format::sql_string( $md['key'] ) ) : sprintf( "INSERT INTO `website_pagemeta` ( `website_page_id`, `key`, `value` ) VALUES ( %d, '%s', '%s' )", $website_page_id, format::sql_string( $md['key'] ), format::sql_string( $md['value'] ) ) );
 			
-			if( mysql_errno() )
+			if ( mysql_errno() )
 				return false;
 		}
 		
@@ -77,7 +77,7 @@ class Page_Model extends Model {
 		// Find out if the the key/page_id combination already exists. If so, update it. If not, insert it.
 		$this->db->query( ( $website_attachment_id ) ? sprintf( "UPDATE `website_attachments` SET `value` = '%s' WHERE `website_attachment_id` = %d", format::sql_string( $value ), $website_attachment_id ) : sprintf( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value` ) VALUES ( %d, '%s', '%s' )", $website_page_id, format::sql_string( $key ), format::sql_string( $value ) ) );
 		
-		if( mysql_errno() )
+		if ( mysql_errno() )
 			return false;
 		
 		return true;

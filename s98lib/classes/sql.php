@@ -202,18 +202,20 @@ class SQL extends Base_Class {
 	 * @return bool Always true
 	 */
 	function __destruct() {
-		$this->m->kill( $this->m->thread_id );
+		if ( isset( $this->m->thread_id ) )
+			$this->m->kill( $this->m->thread_id );
+		
 		$this->m->close();
 		return true;
 	}
 	
 	private function now() {
-		return date_time::date( 'datetime' );
+		return dt::date( 'datetime' );
 	}
 	
 	public function escape( $data ) {
 		if ( is_array( $data ) ) {
-			foreach( (array) $data as $k => $v ) {
+			foreach ( (array) $data as $k => $v ) {
 				$data[$k] = ( is_array( $v ) ) ? $this->escape( $v ) : $this->m->real_escape_string( $v );
 			}
 		} else {
@@ -458,7 +460,7 @@ class SQL extends Base_Class {
 			// Get all the rows
 			$num_rows = 0;
 			if ( $prepared ) {
-				foreach( $this->col_info as $field ) {
+				foreach ( $this->col_info as $field ) {
 					$result[$field->name] = '';
 					$results[$field->name] = &$result[$field->name];
 				}
@@ -468,7 +470,7 @@ class SQL extends Base_Class {
 				while( $this->statement->fetch() ) {
 					$row = new stdClass();
 					
-					foreach( $results as $k => $v ) {
+					foreach ( $results as $k => $v ) {
 						$row->$k = $v;
 					}
 					
@@ -560,11 +562,11 @@ class SQL extends Base_Class {
 			return false;
 		
 		$bits = $wheres = array();
-		foreach( (array) array_keys( $data ) as $field ) {
+		foreach ( (array) array_keys( $data ) as $field ) {
 			$bits[] = "`$field` = ?";
 		}
 
-		foreach( (array) array_keys( $where ) as $field ) {
+		foreach ( (array) array_keys( $where ) as $field ) {
 			$wheres[] = "`$field` = ?";
 		}
 
@@ -708,7 +710,7 @@ class SQL extends Base_Class {
 			if ( $this->last_result ) {
 				$i = 0;
 				
-				foreach( (array) $this->last_result as $row ) {
+				foreach ( (array) $this->last_result as $row ) {
 					if ( $output == ARRAY_N ) {
 						// ...integer-keyed row arrays
 						$new_array[$i] = array_values( get_object_vars( $row ) );
@@ -737,7 +739,7 @@ class SQL extends Base_Class {
 		if ( $this->col_info ) {
 			if ( $col_offset == -1 ) {
 				$i = 0;
-				foreach( (array) $this->col_info as $col ) {
+				foreach ( (array) $this->col_info as $col ) {
 					$new_array[$i] = $col->{ $info_type };
 					$i++;
 				}
@@ -809,7 +811,7 @@ class SQL extends Base_Class {
 		$caller = array();
 		
 		$bt = array_reverse( $bt );
-		foreach( (array) $bt as $call ) {
+		foreach ( (array) $bt as $call ) {
 			if ( @$call['class'] == __CLASS__ )
 				continue;
 			
@@ -876,7 +878,7 @@ class SQL extends Base_Class {
 			'dir' => dirname(__FILE__),
 			'class' => __CLASS__,
 			'method' => $method,
-			'date_created' => date_time::now()
+			'date_created' => dt::now()
 		);
 		
 		// If it fails to insert, send an email with the information

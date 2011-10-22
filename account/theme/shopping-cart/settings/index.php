@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
@@ -21,7 +21,10 @@ $v->add_validation( 'email-receipt', 'email', _('The "Email" field must contain 
 
 add_footer( $v->js_validation() );
 
-if ( nonce::verify( $_POST['_nonce'], 'general-settings' ) ) {
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'general-settings' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -45,12 +48,12 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'shopping-cart/', 'settings' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<p class="success"><?php echo _('Settings successfully saved!'); ?></p>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
         <form name="fGeneralSettings" id="fGeneralSettings" action="/shopping-cart/general-settings/" method="post">

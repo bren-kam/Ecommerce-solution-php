@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 unset( $_SESSION['websites'] );
 
@@ -18,6 +18,7 @@ javascript( 'jquery', 'jquery.ui', 'data-tables/jquery.dataTables', 'data-tables
 
 $selected = 'websites';
 $title = _('Websites') . ' | ' . TITLE;
+
 get_header();
 ?>
 

@@ -8,16 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 $source = $_GET['s'];
 
-if( empty( $source ) )
+if ( empty( $source ) )
 	url::redirect('/analytics/traffic-sources/');
 
 // Instantiate class
@@ -30,7 +30,7 @@ $records = $a->get_metric_by_date( 'visits' );
 $total = array_merge( $a->get_traffic_sources_totals(), $a->get_totals() );
 
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 

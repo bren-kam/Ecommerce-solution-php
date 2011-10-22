@@ -46,12 +46,12 @@ function postLoad( $ ) {
 		var brandID = $(this).attr('id').replace( 'aDeleteBrand', '' );
 		
 		// Make sure they really want to delete it
-		if( !confirm( 'Are you sure you want to delete "' + $(this).parents('td:first').find('span:first').text() + '"? This action cannot be undone.' ) )
+		if ( !confirm( 'Are you sure you want to delete "' + $(this).parents('td:first').find('span:first').text() + '"? This action cannot be undone.' ) )
 			return;
 		
 		$.post( '/ajax/brands/delete/', { _nonce: $('#_ajax_delete_brand').val(), 'bid' : brandID }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -69,7 +69,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );

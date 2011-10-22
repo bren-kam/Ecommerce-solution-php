@@ -5,15 +5,15 @@
  * @subpackage Graphs
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-request' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-request' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to approve or disapprove a request.') ) );
 		exit;
 	}
 	
 	$r = new Requests;
 	
-	if( 'approve' == $_POST['hAction'] ) {
+	if ( 'approve' == $_POST['hAction'] ) {
 		$result = $r->approve( (int) $_POST['hRequestID'] );
 	} else {
 		$result = $r->disapprove( (int) $_POST['hRequestID'] );

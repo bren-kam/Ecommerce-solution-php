@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // Need to have something here
-if( empty( $_GET['tid'] ) )
+if ( empty( $_GET['tid'] ) )
 	url::redirect('/tickets/');
 
 $tickets = new Tickets();
@@ -21,14 +21,14 @@ $tc = new Ticket_Comments();
 $ticket = $tickets->get( $_GET['tid'] );
 
 // Don't want them to see this if they don't have the right role
-if( $user['role'] < $ticket['role'] && $user['user_id'] != $ticket['user_id'] )
+if ( $user['role'] < $ticket['role'] && $user['user_id'] != $ticket['user_id'] )
 	url::redirect( '/tickets/' );
 
 $tu = $u->get_user( $ticket['user_id'] );
 $comments = $tc->get( $_GET['tid'] );
 
 // Auto assign feedback
-if( 0 == $ticket['assigned_to_user_id'] )
+if ( 0 == $ticket['assigned_to_user_id'] )
 	$ticket['assigned_to_user_id'] = $tickets->update_assigned_to( $_GET['tid'], $user['user_id'] );
 
 css( 'form', 'jquery.uploadify', 'tickets/ticket' );
@@ -65,7 +65,7 @@ get_header();
 				<label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label>
 				<select id="sAssignedTo" class="dd" style="width: 150px">
 				<?php
-				foreach( $admin_users as $au ) {
+				foreach ( $admin_users as $au ) {
 					$selected = ( $ticket['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
@@ -82,7 +82,7 @@ get_header();
 					1 => _('Closed')
 				);
 				
-				foreach( $statuses as $sn => $s ) {
+				foreach ( $statuses as $sn => $s ) {
 					$selected = ( $ticket['status'] == $sn ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $sn . '"' . $selected . '>' . $s . "</option>\n";
@@ -92,7 +92,7 @@ get_header();
 			</td>
 		</tr>
 		<tr>
-			<td><strong><?php echo _('Website'); ?>:</strong> <a href="http://<?php if( !empty( $ticket['subdomain'] ) ) echo $ticket['subdomain'], '.'; echo $ticket['domain']; ?>/" title="<?php echo $ticket['website']; ?>" target="_blank"><?php echo $ticket['website']; ?></a></td>
+			<td><strong><?php echo _('Website'); ?>:</strong> <a href="http://<?php if ( !empty( $ticket['subdomain'] ) ) echo $ticket['subdomain'], '.'; echo $ticket['domain']; ?>/" title="<?php echo $ticket['website']; ?>" target="_blank"><?php echo $ticket['website']; ?></a></td>
 			<td><strong><?php echo _('OS'); ?>:</strong> <?php echo $ticket['browser_platform']; ?></td>
 			<td class="move">
 				<label for="sPriority"><?php echo _('Priority'); ?>:</label>
@@ -104,7 +104,7 @@ get_header();
 					2 => _('Urgent')
 				);
 				
-				foreach( $priorities as $pn => $p ) {
+				foreach ( $priorities as $pn => $p ) {
 					$selected = ( $ticket['priority'] == $pn ) ? ' selected="selected"' : '';
 					
 					echo '<option value="' . $pn . '"' . $selected . '>' . $p . "</option>\n";
@@ -114,11 +114,11 @@ get_header();
 			</td>
 		</tr>
 		<tr>
-			<td><strong><?php echo _('Date'); ?>:</strong><?php echo date_time::date( 'm-d-Y', $ticket['date_created'] ); ?></td>
+			<td><strong><?php echo _('Date'); ?>:</strong><?php echo dt::date( 'm-d-Y', $ticket['date_created'] ); ?></td>
 			<td>&nbsp;</td>
 			<td class="move">
 				<label for="tDateDue"><?php echo _('Due'); ?>:</label>
-				<input type="text" id="tDateDue" class="tb" value="<?php echo ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : date_time::date('m-d-Y', $ticket['date_due']); ?>" />
+				<input type="text" id="tDateDue" class="tb" value="<?php echo ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : dt::date('m-d-Y', $ticket['date_due']); ?>" />
 			</td>
 		</tr>
 	</table>
@@ -129,8 +129,8 @@ get_header();
 	</blockquote>
 	<div class="attachments">
 	<?php
-	if( is_array( $ticket['attachments'] ) )
-	foreach( $ticket['attachments'] as $ta ) {
+	if ( isset( $ticket['attachments'] ) && is_array( $ticket['attachments'] ) )
+	foreach ( $ticket['attachments'] as $ta ) {
 	?>
 	<a href="<?php echo $ta['link']; ?>" target="_blank" title="<?php echo _('Download'), ' ', $ta['name']; ?>"><?php echo $ta['name']; ?></a>
 	<?php } ?>
@@ -150,29 +150,29 @@ get_header();
 		<div class="divider" id="dTicketCommentsDivider"></div>
 		<div id="dComments">
 		<?php
-		if( is_array( $comments ) )
-		foreach( $comments as $c ) {
-			if( $user['user_id'] == $ticket['user_id'] && '1' == $c['private'] )
+		if ( is_array( $comments ) )
+		foreach ( $comments as $c ) {
+			if ( $user['user_id'] == $ticket['user_id'] && '1' == $c['private'] )
 				continue;
 		?>
 		<div class="comment" id="dComment<?php echo $c['ticket_comment_id']; ?>">
 			<p class="name">
-				<?php if( '1' == $c['private'] ) { ?>
-				<img src="/images/icons/tickets/lock.gif" width="11" height="15" alt="<?php echo _('Private'); ?>" class="private" />
+				<?php if ( '1' == $c['private'] ) { ?>
+				<img src="/images/icons/tickets/lock.gif" width="11" height="15"0 alt="<?php echo _('Private'); ?>" class="private" />
 				<?php
 				}
 				
 				echo $c['name'];
 				?>
-				<span class="date"><?php echo date_time::date( 'm/d/Y g:ia', $c['date'] ); ?></span>
+				<span class="date"><?php echo dt::date( 'm/d/Y g:ia', $c['date'] ); ?></span>
 				
 				<a href="javascript:;" class="delete-comment" title="<?php echo _('Delete Feedback Comment'); ?>"><img src="/images/icons/x.png" alt="X" width="16" height="16" /></a>
 			</p>
 			<p class="message"><?php echo $c['comment']; ?></p>
 			<div class="attachments">
 			<?php
-			if( is_array( $c['attachments'] ) )
-			foreach( $c['attachments'] as $ca ) {
+			if ( is_array( $c['attachments'] ) )
+			foreach ( $c['attachments'] as $ca ) {
 			?>
 			<a href="<?php echo $ca['link']; ?>" target="_blank" title="<?php echo _('Download'), ' ', $ca['name']; ?>"><?php echo $ca['name']; ?></a>
 			<?php } ?>

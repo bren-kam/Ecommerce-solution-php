@@ -1534,7 +1534,7 @@ class PHPExcel_Writer_Excel5_Workbook extends PHPExcel_Writer_Excel5_BIFFwriter
 
 						case 1: // GIF, not supported by BIFF8, we convert to PNG
 							$blipType = PHPExcel_Shared_Escher_DggContainer_BstoreContainer_BSE::BLIPTYPE_PNG;
-							$imageResource = imagecreatefromgif($filename);
+							$imageResource = imagecreatefromgif ($filename);
 							ob_start();
 							imagepng($imageResource);
 							$blipData = ob_get_contents();

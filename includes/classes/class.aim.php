@@ -128,7 +128,7 @@ class AIM {
 		$this->post_values['x_description']		= 'Imagine Retailer - Managed Website Order';
 
 		// If it's a test, set the right data
-		if( $testing ) {
+		if ( $testing ) {
 			$this->post_values['x_login']			= '54PB5egZ';
 			$this->post_values['x_tran_key']		= '48V258vr55AE8tcg';
 			$this->post_values['x_test_request'] 	= 'TRUE';
@@ -150,7 +150,7 @@ class AIM {
 	 * @var int $order_id the order id (invoice number) of the order
 	 */
 	public function set_parameter( $key, $value ) { 
-		if( array_key_exists( $key, $this->post_values ) ) {
+		if ( array_key_exists( $key, $this->post_values ) ) {
 			$this->post_values[$key] = $value;
 			return true;
 		}
@@ -176,13 +176,13 @@ class AIM {
 		$post_url = ( $this->testing ) ? $this->post_url_test : $this->post_url;
 
 		// Makes string out of array ready to post
-		foreach( $this->post_values as $key => $value ) { 
+		foreach ( $this->post_values as $key => $value ) { 
 			$post_string .= "$key=" . urlencode( $value ) . "&";
 		}
 		$post_string = rtrim( $post_string, "& " );
 		//echo $post_string;
 		
-		if( empty( $post_string ) )
+		if ( empty( $post_string ) )
 			return false;
 
 		$ch = curl_init( $post_url ); // initiate curl object

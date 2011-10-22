@@ -10,8 +10,8 @@ library( 'GAPI' );
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 return;
 
@@ -27,7 +27,7 @@ $start_date = '2011-03-15';
 $end_date = '2011-05-04';
 $i = 0;
 
-foreach( $website_ids as $website_id ) {
+foreach ( $website_ids as $website_id ) {
 	$gap_id = $w->get_ga_profile_id( $website_id );
 	
 	while( $start_date != $end_date ) {
@@ -36,11 +36,11 @@ foreach( $website_ids as $website_id ) {
 		list( $pages, $dates ) = $a->get_date_pages( $gap_id );
 				
 		$j = 0;
-		foreach( $ga->getResults() as $result ) {
+		switch ( $ga->getResults() as $result ) {
 			$metrics = $result->getMetrics();
 			$dimensions = $result->getDimensions();
 			
-			if( $today == $dimensions['date'] || in_array( $dimensions['date'], $dates ) && in_array( $dimensions['pagePath'], $pages ) )
+			if ( $today == $dimensions['date'] || in_array( $dimensions['date'], $dates ) && in_array( $dimensions['pagePath'], $pages ) )
 				continue;
 			
 			$a->add( $gap_id, $dimensions['pagePath'], $dimensions['source'], $dimensions['medium'], $dimensions['keyword'], $metrics['bounces'], $metrics['entrances'], $metrics['exits'], $metrics['newVisits'], $metrics['pageviews'], $metrics['timeOnPage'], $metrics['visits'], $dimensions['date'] );

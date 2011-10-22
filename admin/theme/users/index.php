@@ -8,12 +8,12 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // If user's permission level is too low, redirect.
-if( $user['role'] < 7 )
-	url::redirect( '/login/' );
+if ( $user['role'] < 7 )
+	login();
 
 css( 'data-tables/TableTools.css', 'data-tables/ui.css', 'users/list' );
 javascript( 'jquery', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'users/list' );

@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 unset( $_SESSION['products'] );
 
@@ -29,8 +29,8 @@ get_header();
 	<?php get_sidebar( 'products/' ); ?>
 	<div id="subcontent">
 		<?php
-		if( isset( $_GET['m'] ) )
-		switch( $_GET['m'] ) {
+		if ( isset( $_GET['m'] ) )
+		switch ( $_GET['m'] ) {
 			case '1':
 				echo '<p class="message">', _('Your product has been successfully added.'), '</p>';
 			break;
@@ -73,8 +73,8 @@ get_header();
 								<select id="sUsers">
 									<option value="all"><?php echo _('All Users'); ?></option>
 									<?php
-									if( is_array( $users ) )
-									foreach( $users as $u ) {
+									if ( is_array( $users ) )
+									foreach ( $users as $u ) {
 									?>
 									<option value="<?php echo $u['user_id']; ?>"><?php echo $u['contact_name']; ?></option>
 									<?php } ?>

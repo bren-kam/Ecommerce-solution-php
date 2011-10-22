@@ -4,7 +4,7 @@ jQuery(function($) {
 	
 	// Put the tooltip there
 	$('#dLargeGraph').bind("plothover", function( event, pos, item ) {
-		if( item ) {
+		if ( item ) {
 			var x = date( 'F j, Y', item.datapoint[0] / 1000 + 86400 ), y = item.datapoint[1];
 			showTooltip(item.pageX, item.pageY, x, y, "tooltipHover");
 		} else {
@@ -28,7 +28,7 @@ jQuery(function($) {
 				yaxis: { min: 0 }
 			}
 			
-			switch( name ) {
+			switch ( name ) {
 				case 'Direct Traffic':
 				case 'Referring Sites':
 				case 'Search Engines':
@@ -99,7 +99,7 @@ jQuery(function($) {
 });
 
 function showTooltip( x, y, date_number, contents, type ) {
-	if( time ) {
+	if ( time ) {
 		var data =  format_time( contents );
 	} else {
 		var data = ( '%' == percent || decimal ) ? number_format( contents, 2 ) : number_format( contents );
@@ -459,15 +459,15 @@ function format_time( time_in_seconds ) {
 	var tm = new Date( time_in_seconds );
 		
 	var hours = tm.getUTCHours();
-	if( hours < 10 )
+	if ( hours < 10 )
 		hours = '0' + hours;
 
 	var minutes = tm.getUTCMinutes();
-	if( minutes < 10 )
+	if ( minutes < 10 )
 		minutes = '0' + minutes;
 
 	var seconds = tm.getUTCSeconds();
-	if( seconds < 10 )
+	if ( seconds < 10 )
 		seconds = '0' + seconds;
 		
 	return hours + ':' + minutes + ':' + seconds;

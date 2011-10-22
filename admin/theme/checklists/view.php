@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // Make sure we have a checklist selected
-if( empty( $_GET['cid'] ) )
+if ( empty( $_GET['cid'] ) )
 	url::redirect( '/checklists/' );
 
 css( 'form', 'checklists/view' );
@@ -51,11 +51,11 @@ get_header();
 		<div id="dList">
 			<?php
 				nonce::field('update-item' , '_ajax_update_item_nonce');
-				if( is_array( $items ) ) {
-				foreach( $items as $section_title => $section_items ) {
+				if ( is_array( $items ) ) {
+				foreach ( $items as $section_title => $section_items ) {
 			?>
 				<div><br /><h3><?php echo $section_title; ?></h3></div>
-				<?php foreach( $section_items as $item ) { ?>
+				<?php foreach ( $section_items as $item ) { ?>
 				<div id="dItem<?php echo $item['checklist_website_item_id']; ?>" class="list-item<?php echo ( $item['checked'] ) ? ' done' : ''; ?>">
 					<span class="sequence"><?php echo $item['sequence']; ?> . </span>
 					<span class="check"> <input type="checkbox" class="item-checkbox" value="<?php echo $item['checklist_website_item_id']; ?>" id="cItem<?php echo $item['checklist_website_item_id']; ?>"<?php echo ( $item['checked'] ) ? ' checked="checked"' : ''; ?> /></span>

@@ -17,7 +17,7 @@ class FB extends Base_Class {
 	 */
 	public function __construct( $app_id, $secret, $skip = false, $parameters = false ) {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 		
 		library('facebook/facebook');
@@ -49,7 +49,7 @@ class FB extends Base_Class {
 		
 		// Login or logout url will be needed depending on current user state.
 		if (!$this->user && !$skip) {
-			if( $parameters ) {
+			if ( $parameters ) {
 				// If we need to get permission
 				$permissions = '&' . http_build_query( $parameters );
 				$redirect_uri = urlencode( "http://apps.facebook.com/op-analytics/" );

@@ -5,8 +5,8 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_nonce'], 'create-category' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'create-category' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to create a category') ) );
 		exit;
 	}

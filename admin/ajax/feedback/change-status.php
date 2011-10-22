@@ -4,9 +4,9 @@
  * @package Real Statistics
  */
  
-if( nonce::verify( $_POST['_nonce'], 'change-status' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-status' ) ) {
 	// Change the session value
-	if( empty( $_POST['s'] ) ) {
+	if ( empty( $_POST['s'] ) ) {
 		unset( $_SESSION['status'] );
 	} else {
 		$_SESSION['status'] = (int) $_POST['s'];

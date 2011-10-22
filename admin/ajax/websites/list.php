@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch( $_GET['iSortCol_' . $i] ) {
+		switch ( $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'b.`company_id`';
@@ -65,10 +65,10 @@ $c = new Checklists;
 $where = '';
 
 // Live websites
-if( isset( $_SESSION['websites']['state'] ) )
+if ( isset( $_SESSION['websites']['state'] ) )
 	$where .= ' AND a.`live` = ' . $_SESSION['websites']['state'];
 
-if( isset( $_SESSION['websites']['search'] ) ) {
+if ( isset( $_SESSION['websites']['search'] ) ) {
 	$where .= " AND ( a.`title` LIKE '" . $w->db->escape( $_SESSION['websites']['search'] ) . "%' OR " .
 					"a.`domain` LIKE '" . $w->db->escape( $_SESSION['websites']['search'] ) . "%' OR " .
 					"b.`contact_name` LIKE '" . $w->db->escape( $_SESSION['websites']['search'] ) . "%' )";
@@ -79,8 +79,8 @@ $websites = $w->list_websites( $where, $order_by, $limit );
 $websites_count = $w->count_websites( $where );
 
 // We must strip slashes for proper display of apostrphes, etc.
-foreach( $websites as &$website ){
-	foreach( $website as &$slot )
+foreach ( $websites as &$website ){
+	foreach ( $website as &$slot )
 	{
 		$slot = stripslashes( $slot);
 	}
@@ -91,9 +91,9 @@ $incomplete_checklists = $c->incomplete_checklists();
 
 $aaData = array();
 
-if( is_array( $websites ) )
-foreach( $websites as $web ) {
-	$image = '<img src="/images/icons/companies/' . $web['company_id'] . '.gif" alt="' . $web['company'] . '" title="' . $web['company'] . '" width="24" height="24" />';
+if ( is_array( $websites ) )
+foreach ( $websites as $web ) {
+	$image = '<img src="/images/icons/companies/' . $web['company_id'] . '.gif" alt="" width="24" height="24" />';
 	
 	$title = '<a href="http://' . $web['domain'] . '/" title="' . $web['domain'] . ' - ' . $web['online_specialist'] . '" target="_blank"><strong>' . $web['title'] . '</strong></a><br />';
 	$title .= '<span class="web-actions" style="display: block"><a href="/websites/edit/?wid=' . $web['website_id'] . '" title="' . _('Edit') . ' ' . $web['title'] . '">' . _('Edit') . '</a> | ';
@@ -101,7 +101,7 @@ foreach( $websites as $web ) {
 	$title .= '<a href="/users/control/?uid=' . $web['user_id'] . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
     $title .= '<a href="/websites/notes/?wid=' . $web['website_id'] . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
 	
-	if( isset( $incomplete_checklists[$web['website_id']] ) )
+	if ( isset( $incomplete_checklists[$web['website_id']] ) )
 		$title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$web['website_id']] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
 	
 	$title .= '</span>';

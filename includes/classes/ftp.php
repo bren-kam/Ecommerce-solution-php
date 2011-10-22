@@ -34,7 +34,7 @@ class FTP extends Base_Class {
 		
 		parent::__construct();
 
-		if( !$skip ) {
+		if ( !$skip ) {
 			$w = new Websites;
 			
 			$web = $w->get_website( $website_id );
@@ -43,7 +43,7 @@ class FTP extends Base_Class {
 			$current_directory = '/public_html/custom/uploads';
 			
 			// Is this necessary?
-			// if( !empty( $web['subdomain'] ) )
+			// if ( !empty( $web['subdomain'] ) )
 			// 	$current_directory = str_replace( 'public_html/', 'public_html/' . $web['subdomain'] . '/' );
 
 			$this->host     = security::decrypt( base64_decode( $ftp_data['ftp_host'] ), ENCRYPTION_KEY );
@@ -83,7 +83,7 @@ class FTP extends Base_Class {
 		if ( !$this->chdir( $this->cwd . $remote_dir ) )
 			$this->mkdir( $this->cwd . $remote_dir );		
 		
-		if( empty( $new_file_name ) )
+		if ( empty( $new_file_name ) )
 			$new_file_name = $this->get_file_name( $file_path );
 		
 		$pathinfo = pathinfo( $file_path );
@@ -134,7 +134,7 @@ class FTP extends Base_Class {
 		$temp_handle = fopen('php://temp', 'r+');
 		
 		// Try both methods
-		if( !ftp_fget( $this->conn_id, $temp_handle, $this->cwd . $file_name, $mode, 0 ) ) {
+		if ( !ftp_fget( $this->conn_id, $temp_handle, $this->cwd . $file_name, $mode, 0 ) ) {
 			// Get the other mode
 			$alternate_mode = ( FTP_ASCII == $mode ) ? FTP_BINARY : FTP_ASCII;
 
@@ -171,15 +171,15 @@ class FTP extends Base_Class {
 	 */
 	public function connect() {
 		// Find out if we're connecting with SSL
-		if( $this->ssl == false ) {
-			if( !$this->conn_id = ftp_connect( $this->host, $this->port ) ) {
+		if ( $this->ssl == false ) {
+			if ( !$this->conn_id = ftp_connect( $this->host, $this->port ) ) {
 				$this->errors[] = 'Failed to connect';
 				return false;
 			}
 		} else {
 			// Test to see if the SSL function exists
 			if ( function_exists('ftp_ssl_connect') ) {
-				if( !$this->conn_id = ftp_ssl_connect($this->host, $this->port) ) {
+				if ( !$this->conn_id = ftp_ssl_connect($this->host, $this->port) ) {
 					$this->error = 'Failed to connect via SSL';
 					return false;
 				}
@@ -191,21 +191,21 @@ class FTP extends Base_Class {
 		}
 
  		// Login to the server
-		if( !$result = @ftp_login( $this->conn_id, $this->username, $this->password ) ) {
+		if ( !$result = @ftp_login( $this->conn_id, $this->username, $this->password ) ) {
 			$this->errors[] = 'FTP credentials are invalid';
 			return false;
 		}
 		
  		// Set how many seconds should go by before it times out
-		if( !@ftp_set_option( $this->conn_id, FTP_TIMEOUT_SEC, $this->timeout ) )
+		if ( !@ftp_set_option( $this->conn_id, FTP_TIMEOUT_SEC, $this->timeout ) )
 			$this->errors[] = 'Could not set option "FTP_TIMEOUT_SEC"';
 
 		// Try set passive mode
-		if( !ftp_pasv( $this->conn_id, $this->passive ) )
+		if ( !ftp_pasv( $this->conn_id, $this->passive ) )
 			$this->errors[] = 'Could not set passive mode';
 
 		// Get the system type
-		if( !$this->system_type = ftp_systype( $this->conn_id ) )
+		if ( !$this->system_type = ftp_systype( $this->conn_id ) )
 			$this->errors[] = 'Could not get system type';
 
 		if ( !$this->chdir( $this->cwd ) ) {
@@ -226,7 +226,7 @@ class FTP extends Base_Class {
 	 * Returns bool true if connected
 	 */
 	private function maintain_connection() {
-		if( !ftp_systype( $this->conn_id ) )
+		if ( !ftp_systype( $this->conn_id ) )
 			return $this->connect();
 
 		return true;
@@ -241,11 +241,11 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	private function put( $local_file_path, $remote_file_path, $mode = FTP_ASCII ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 		
 		// Try both methods
-		if( !ftp_put( $this->conn_id, $remote_file_path, $local_file_path, $mode ) ) {
+		if ( !ftp_put( $this->conn_id, $remote_file_path, $local_file_path, $mode ) ) {
 			// Get the other mode
 			$alternate_mode = ( FTP_ASCII == $mode ) ? FTP_BINARY : FTP_ASCII;
 	
@@ -264,7 +264,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	private function _get( $local_file_path, $remote_file_path, $mode = FTP_ASCII ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		// Try both methods
@@ -286,7 +286,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	public function chmod( $permissions, $remote_file_path ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		// If the permissions are not octal, they will be now
@@ -303,7 +303,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	private function chdir( $remote_directory ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 		
 		return @ftp_chdir( $this->conn_id, $remote_directory );
@@ -316,7 +316,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	private function _delete( $remote_file_path ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		return ftp_delete( $this->conn_id, $remote_file_path );
@@ -329,7 +329,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	public function mkdir( $remote_directory ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		return( ftp_mkdir( $this->conn_id, $remote_directory ) ) ? true : false;
@@ -342,7 +342,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	private function rmdir( $remote_directory ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		return ftp_rmdir( $this->conn_id, $remote_directory );
@@ -356,7 +356,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	private function rename( $old_name, $new_name ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		return ftp_rename( $this->conn_id, $old_name, $new_name );
@@ -369,7 +369,7 @@ class FTP extends Base_Class {
 	 * @return array directory list on success
 	 */
 	public function dir_list( $remote_directory = '' ) {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 		
 		return ftp_nlist( $this->conn_id, $this->cwd . $remote_directory );
@@ -381,7 +381,7 @@ class FTP extends Base_Class {
 	 * @return bool
 	 */
 	public function cdup() {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		return ftp_cdup( $this->conn_id );
@@ -393,7 +393,7 @@ class FTP extends Base_Class {
 	 * @return string the directories name
 	 */
 	public function current_dir() {
-		if( !$this->maintain_connection() )
+		if ( !$this->maintain_connection() )
 			return false;
 
 		return ftp_pwd( $this->conn_id );
@@ -409,7 +409,7 @@ class FTP extends Base_Class {
 	 */
 	private function octal( &$i ) {
 		// If it's not octal, turn it into octal
-    	if( decoct( octdec( $i ) ) != $i )
+    	if ( decoct( octdec( $i ) ) != $i )
 			octdec( str_pad( $i, 4, '0', STR_PAD_LEFT ) );
 	}
 

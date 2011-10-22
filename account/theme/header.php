@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Imagine Retailer
+ * @package Real Statistics
  * @page Header
  */
 
@@ -10,7 +10,7 @@ javascript( 'sparrow', 'header' );
 list( $css, $ie8 ) = get_css();
 global $title, $meta_description, $meta_keywords, $selected, $dynamic, $u, $user;
 
-if( !empty( $selected ) )
+if ( !empty( $selected ) )
 	$$selected = ' class="selected"';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -21,7 +21,7 @@ if( !empty( $selected ) )
 <meta name="description" content="<?php echo $meta_description; ?>" />
 <meta name="keywords" content="<?php echo $meta_keywords; ?>" />
 <link type="text/css" rel="stylesheet" href="/css/?files=<?php echo $css; ?>" />
-<?php if( $ie8 ) { ?>
+<?php if ( $ie8 ) { ?>
 <!--[if IE 8]>
 <link type="text/css" rel="stylesheet" href="/css/?files=<?php echo $ie8; ?>" />
 <![endif]-->
@@ -36,7 +36,7 @@ if( !empty( $selected ) )
 	<div id="header">
 		<?php $margin = floor( ( 108 - LOGO_HEIGHT ) / 2 ); ?>
 		<div id="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" height="<?php echo LOGO_HEIGHT; ?>" alt="<?php echo TITLE, ' ', _('Logo'); ?>" style="margin: <?php echo $margin; ?>px 0" /></div>
-		<?php if( $user ) { ?>
+		<?php if ( $user ) { ?>
 		<a href="/logout/" id="aLogout" title="<?php echo _('Log out'); ?>"><?php echo _('Log out'); ?></a>
 		
 		<div id="links"><a href="/settings/" title="<?php echo _('Account Settings'); ?>"><?php echo _('Account Settings'); ?></a></div>
@@ -45,9 +45,9 @@ if( !empty( $selected ) )
 	<div id="nav">
 		<div id="nav-links">
 			<?php if ( $user ) { ?>
-				<a href="/" title="<?php echo _('Home'); ?>"<?php echo $home; ?>><?php echo _('Home'); ?></a>
+				<a href="/" title="<?php echo _('Home'); ?>"<?php if ( isset( $home ) ) echo $home; ?>><?php echo _('Home'); ?></a>
 				<?php
-				if( isset( $user['website'] ) ) { 
+				if ( isset( $user['website'] ) ) { 
 					$links = array( 
 						'pages'				=> array( 'website', _('Website') )
 						, 'product_catalog'	=> ( 'High Impact' == $user['website']['type'] ) ? array( 'products/top-brands', _('Brands') ) : array( 'products', _('Products') )
@@ -61,14 +61,14 @@ if( !empty( $selected ) )
 					
 					$keys = array_keys( $links );
 					
-					foreach( $user['website'] as $k => $v ) {
+					foreach ( $user['website'] as $k => $v ) {
 						// Don't need to deal with antyhing other keys
-						if( 'email_marketing' != $k && ( !in_array( $k, $keys ) || !$v ) )
+						if ( 'email_marketing' != $k && ( !in_array( $k, $keys ) || !$v ) )
 							continue;
 						
 						$selectedClass = ( $k == $selected ) ? ' class="selected"' : '';
 						
-						if( 'blog' == $k ) {
+						if ( 'blog' == $k ) {
 						?>
 						<form action="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm">
 							<input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user['website']['wordpress_username'] ), ENCRYPTION_KEY ); ?>" />
@@ -86,10 +86,10 @@ if( !empty( $selected ) )
 		</div>
 		<div id="site">
 			<?php 
-			if( $user && $user['website'] ) {
+			if ( $user && $user['website'] ) {
 				?> 
 				<a href="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>/" title="<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>" target="_blank"><?php echo '<span class="highlight">', _('Site:'), '</span> ', ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?></a>
-				<?php if( count( $user['websites'] ) > 1 ) { ?>
+				<?php if ( count( $user['websites'] ) > 1 ) { ?>
 				<span class="highlight">(</span> <a href="/dialogs/change-website/#dChangeWebsite" title="<?php echo _('Change Active Site'); ?>" rel="dialog"><?php echo _('Change'); ?></a> <span class="highlight">)</span>
 				<?php
 				}

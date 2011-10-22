@@ -29,7 +29,7 @@ function updatEmailLists() {
 	
 	// Make a string
 	$('#dDefault input.cb').each( function() {
-		if( $(this).attr('checked') )
+		if ( $(this).attr('checked') )
 			email_lists += ( '' == email_lists ) ? $(this).val() : '|' + $(this).val();
 	});
 	

@@ -12,7 +12,7 @@ class compress extends Base_Class {
 	 * @param string $input the css to compress
 	 * @returns string
 	 */
-	public function css( $input ) {
+	public static function css( $input ) {
 		// Remove comments
 		$output = preg_replace('#/\*.*?\*/#s', '', $input);
 		// Remove whitespace
@@ -35,7 +35,7 @@ class compress extends Base_Class {
 	 * @param string $input the javascript to compress
 	 * @returns string
 	 */
-	public function javascript( $input ) {
+	public static function javascript( $input ) {
 		return JSMin::minify( $input );
 	}
 }

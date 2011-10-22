@@ -11,7 +11,7 @@ class Websites extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -25,7 +25,7 @@ class Websites extends Base_Class {
 		$website = $this->db->get_row( 'SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = ' . (int) $website_id, ARRAY_A );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -45,7 +45,7 @@ class Websites extends Base_Class {
 		$industry_ids = $this->db->get_col( 'SELECT `industry_id` FROM `website_industries` WHERE `website_id` = ' . (int) $user['website']['website_id'] );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -66,7 +66,7 @@ class Websites extends Base_Class {
 		$this->db->update( 'websites', $fields, array( 'website_id' => $user['website']['website_id'] ), $fields_safety, 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update website', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -94,7 +94,7 @@ class Websites extends Base_Class {
 		$this->db->update( 'website_pages', array( 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssi', 'ii' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get check if request exists.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -112,7 +112,7 @@ class Websites extends Base_Class {
 		$ftp_data = $this->db->get_row( 'SELECT `ftp_host`, `ftp_username`, `ftp_password` FROM `websites` WHERE `website_id` = ' . (int) $website_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get FTP data.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -134,14 +134,14 @@ class Websites extends Base_Class {
 		$page = $this->db->get_row( "SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords` FROM `website_pages` WHERE `website_page_id` = $website_page_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// unencrypt data
-		if( is_array( $page ) )
-		foreach( $page as $k => $v ) {
+		if ( is_array( $page ) )
+		foreach ( $page as $k => $v ) {
 			$new_page[$k] = html_entity_decode( $v, ENT_QUOTES, 'UTF-8' );
 		}
 		
@@ -163,7 +163,7 @@ class Websites extends Base_Class {
 		$pages = $this->db->get_results( "SELECT `slug`, `title` FROM `website_pages` WHERE `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get pages.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -183,7 +183,7 @@ class Websites extends Base_Class {
 		$arguments = func_get_args();
 		
 		// Needs to have at least two arguments
-		if( count( $arguments ) <= 1 )
+		if ( count( $arguments ) <= 1 )
 			return false;
 		
 		global $user;
@@ -200,7 +200,7 @@ class Websites extends Base_Class {
 		$metadata = $this->db->get_results( "SELECT `key`, `value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) WHERE a.`key` IN ($keys) AND b.`website_page_id` = $website_page_id AND b.`website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get metadata.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -209,8 +209,8 @@ class Websites extends Base_Class {
 		$new_metadata = array_fill_keys( $arguments, '' );
 		
 		// Decrypt any meta data
-		if( is_array( $metadata ) )
-		foreach( $metadata as $md ) {
+		if ( is_array( $metadata ) )
+		foreach ( $metadata as $md ) {
 			$new_metadata[$md['key']] = html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' );
 		}
 		
@@ -233,8 +233,8 @@ class Websites extends Base_Class {
 		// Insert/update in one awesome query. Have to create the values for it first
 		$values = '';
 		
-		foreach( $metadata as $k => $v ) {
-			if( !empty( $values ) )
+		foreach ( $metadata as $k => $v ) {
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			// Form values string
@@ -245,7 +245,7 @@ class Websites extends Base_Class {
 		$this->db->query( "INSERT INTO `website_pagemeta` ( `website_page_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update all the website pagemeta', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -266,7 +266,7 @@ class Websites extends Base_Class {
 		$pages = $this->db->get_results( "SELECT `website_page_id`, `slug`, `title`, `status`, UNIX_TIMESTAMP( `date_updated` ) AS date_updated FROM `website_pages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list pages.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -284,7 +284,7 @@ class Websites extends Base_Class {
 		$count = $this->db->get_var( "SELECT COUNT( `website_page_id` ) FROM `website_pages` WHERE 1 $where" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count pages.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -304,7 +304,7 @@ class Websites extends Base_Class {
 		$page = $this->db->prepare( 'SELECT `website_page_id`, `slug`, `title`, `content` FROM `website_pages` WHERE `slug` = ? AND `website_id` = ? AND `status` = 1', 'si', $slug, $user['website']['website_id'] )->get_row( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get page by slug.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -325,7 +325,7 @@ class Websites extends Base_Class {
 		$attachments = $this->db->prepare( 'SELECT `website_attachment_id`, `key, `value` FROM `website_attachments` WHERE `key` = ? AND `website_page_id` = ?', 'si', $key, $website_page_id )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attachments by name.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -348,9 +348,9 @@ class Websites extends Base_Class {
 		$settings = func_get_args();
 		
 		// If they did pass in an array
-		if( is_array( $settings[0] ) ) {
+		if ( is_array( $settings[0] ) ) {
 			$settings = $settings[0];
-		} elseif( !is_array( $settings ) ) {
+		} elseif ( !is_array( $settings ) ) {
 			return;
 		}
 		
@@ -360,8 +360,8 @@ class Websites extends Base_Class {
 		// Put the settings in a SQL format
 		$sql_settings = '';
 		
-		foreach( $settings as $s ) {
-			if( !empty( $sql_settings ) )
+		foreach ( $settings as $s ) {
+			if ( !empty( $sql_settings ) )
 				$sql_settings .= ',';
 			
 			$sql_settings .= "'" . $this->db->escape( $s ) . "'";
@@ -371,7 +371,7 @@ class Websites extends Base_Class {
 		$settings_array = $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $website_id AND `key` IN ($sql_settings) ORDER BY `key`", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website_settings.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -380,8 +380,8 @@ class Websites extends Base_Class {
 		
 		// @Fix should not loop queries
 		// Now make sure they exist, if not, create them, and then run again
-		foreach( $settings as $s ) {
-			if( !array_key_exists( $s, $new_settings ) ) {
+		foreach ( $settings as $s ) {
+			if ( !array_key_exists( $s, $new_settings ) ) {
 				$this->create_setting( $s );
 				$new_settings[$s] = '';
 			}
@@ -403,7 +403,7 @@ class Websites extends Base_Class {
 		$this->db->insert( 'website_settings', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'value' => $value ), 'iss' );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create website setting.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -427,11 +427,11 @@ class Websites extends Base_Class {
 		$statement = $this->db->prepare( "UPDATE `website_settings` SET `value` = ? WHERE `website_id` = $website_id AND `key` = ?" );
 		$statement->bind_param( 'ss', $v, $k );
 		
-		foreach( $settings as $k => $v ) {
+		foreach ( $settings as $k => $v ) {
 			$statement->execute();
 			
 			// Handle any error
-			if( $statement->errno ) {
+			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
 				$this->err( "Failed to update website's settings.", __LINE__, __METHOD__ );
 				return false;
@@ -453,14 +453,14 @@ class Websites extends Base_Class {
 	public function create_page( $slug, $title ) {
 		global $user;
 		
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			return false;
 		
 		// Insert the page
-		$this->db->insert( 'website_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'status' => 1, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'issis' );
+		$this->db->insert( 'website_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'issis' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create website page.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -478,14 +478,14 @@ class Websites extends Base_Class {
 		global $user;
 		
 		// Must have the proper role
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			return false;
 		
 		// Delete the website page
 		$this->db->prepare( 'DELETE FROM `website_pages` WHERE `website_page_id` = ? AND `website_id` = ?', 'ii', $website_page_id, $user['website']['website_id'] )->query('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete website page.', __LINE__, __METHOD__ );
 			return false;
 		}

@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 unset( $_SESSION['craigslist'] );
 
@@ -27,8 +27,8 @@ get_header();
 	<?php get_sidebar( 'craigslist/' ); ?>
 	<div id="subcontent">
 		<?php
-		if( isset( $_GET['m'] ) )
-		switch( $_GET['m'] ) {
+		if ( isset( $_GET['m'] ) )
+		switch ( $_GET['m'] ) {
 			case '1':
 				echo '<p class="message">', _('Your ad template has been successfully added.'), '</p>';
 			break;

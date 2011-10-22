@@ -840,7 +840,7 @@ function escapeHtml(s) {
 	}
 	s = s + "";
 	return s.replace(/[\&"<>\\]/g, function(s) {
-		switch(s) {
+		switch (s) {
 			case "&": return "&amp;";
 			case "\\": return "\\\\";
 			case '"': return '\"';
@@ -1039,8 +1039,8 @@ QUnit.equiv = function () {
                 parents.push(a);
                 for (i = 0; i < len; i++) {
                     loop = false;
-                    for(j=0;j<parents.length;j++){
-                        if(parents[j] === a[i]){
+                    for (j=0;j<parents.length;j++){
+                        if (parents[j] === a[i]){
                             loop = true;//dont rewalk array
                         }
                     }
@@ -1070,8 +1070,8 @@ QUnit.equiv = function () {
 
                 for (i in a) { // be strict: don't ensures hasOwnProperty and go deep
                     loop = false;
-                    for(j=0;j<parents.length;j++){
-                        if(parents[j] === a[i])
+                    for (j=0;j<parents.length;j++){
+                        if (parents[j] === a[i])
                             loop = true; //don't go down the same path twice
                     }
                     aProperties.push(i); // collect a's properties

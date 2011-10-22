@@ -4,7 +4,7 @@
  * @package Imagine Retailer
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-priority' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-priority' ) ) {
 	$t = new Tickets;
 	
 	$result = $t->update_priority( $_POST['tid'], $_POST['p'] );

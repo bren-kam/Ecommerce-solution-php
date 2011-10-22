@@ -12,7 +12,7 @@ class Industries extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -25,7 +25,7 @@ class Industries extends Base_Class {
 		$industries = $this->db->get_results( 'SELECT `industry_id`, `name` FROM `industries` ORDER BY `name` ASC', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get industries.', __LINE__, __METHOD__ );
 			return false;
 		}

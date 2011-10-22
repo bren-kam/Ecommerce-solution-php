@@ -15,7 +15,7 @@ $w = new Websites();
 $website_page_id = (int) $_POST['wpid'];
 
 // Need to make sure we get a proper key
-switch( $_POST['k'] ) {
+switch ( $_POST['k'] ) {
 	case 'ham':
 		$key = 'hide-all-maps';
 	break;

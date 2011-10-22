@@ -16,11 +16,11 @@ head.ready(function() {
 		var sState = $('#sState'), abbr = sState.val(), option = sState.find('option:selected'), name = option.text(), tax = parseFloat( $('#tAmount').val() );
 		
 		// Make sure we have the proper tax
-		if( tax.length < 5 )
+		if ( tax.length < 5 )
 			tax = '0' + tax;
 		
 		// Validation
-		if( !tax || '' == abbr ) {
+		if ( !tax || '' == abbr ) {
 			alert( $(this).attr('error') );
 			return
 		}
@@ -53,11 +53,11 @@ head.ready(function() {
 	});
 	
 	// Add new zip code
-	$('#aNewTaxZipCode').live( 'click', function() {
+	$('#aNewTaxZipCode').live( 'click', function(){
 		var abbr = $("#hState").val(), zip = $("#tNewTaxZipCode").val(), cost = $("#tNewTaxZipCost").val();
 		
 		// Validation
-		if( !zip || !cost ) {
+		if ( !zip || !cost ) {
 			alert( $(this).attr('error') );
 			return false;
 		}
@@ -88,7 +88,7 @@ head.ready(function() {
 		
 		// Add a field to the form for each zip code
 		$('#tEditZipCodes input.zip-code-cost').each( function() {
-			fTaxes.prepend('<input type="hidden" class="zip-' + abbr + '" name="zip_codes[' + abbr + '][' + $(this).attr('id').replace( 'tZipCost', '' ) + ']" value="' + $(this).val() + '" />');
+			fTaxes.append('<input type="hidden" class="zip-' + abbr + '" name="zip_codes[' + abbr + '][' + $(this).attr('id').replace( 'tZipCost', '' ) + ']" value="' + $(this).val() + '" />');
 		});
 		
 		// Close the dialog

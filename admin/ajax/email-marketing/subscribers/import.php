@@ -13,7 +13,7 @@ $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
 
 // See what we're dealing with
-switch( $file_extension ) {
+switch ( $file_extension ) {
 	case 'xls':
 		// Load excel reader
 		library('Excel_Reader/Excel_Reader');
@@ -49,10 +49,10 @@ switch( $file_extension ) {
 $ajax->okay( is_array( $rows ), _('There were no emails to import') );
 
 // Loop through emails
-foreach( $rows as $r ) {
+foreach ( $rows as $r ) {
 	// Determine the column being used for name or email
-	if( !isset( $email_column ) || !isset( $name_column ) )
-	if( stristr( $r[0 + $index], 'name' ) && stristr( $r[1 + $index], 'email' ) ) {
+	if ( !isset( $email_column ) || !isset( $name_column ) )
+	if ( stristr( $r[0 + $index], 'name' ) && stristr( $r[1 + $index], 'email' ) ) {
 		$email_column = 1 + $index;
 		$name_column =  0 + $index;
 		continue;
@@ -60,12 +60,12 @@ foreach( $rows as $r ) {
 		$email_column = 0 + $index;
 		$name_column = 1 + $index;
 		
-		if( stristr( $r[0 + $index], 'email' ) && stristr( $r[1 + $index], 'name' ) )
+		if ( stristr( $r[0 + $index], 'email' ) && stristr( $r[1 + $index], 'name' ) )
 			continue;
 	}
 	
 	// If there is an invalid email, skip it
-	if( empty( $r[$email_column] ) || 0 == preg_match( "/^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$/", $r[$email_column] ) )
+	if ( empty( $r[$email_column] ) || 0 == preg_match( "/^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$/", $r[$email_column] ) )
 		continue;
 	
 	// Create emails
@@ -83,7 +83,7 @@ $last_ten_emails = array_slice( $emails, 0, 10 );
 $email_html = '';
 
 // Create HTML
-foreach( $last_ten_emails as $e ) {
+foreach ( $last_ten_emails as $e ) {
 	$email_html .= '<tr><td>' + $e[0] + '</td><td>' + $e[1] + '</td></tr>';
 }
 

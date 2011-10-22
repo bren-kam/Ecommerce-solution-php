@@ -54,7 +54,7 @@ class Base_Class {
 		}
 		*/
 	
-		if( !headers_sent() ){
+		if ( !headers_sent() ){
 			header::nocache();
 			header::send( 'Content-Type: text/html; charset=utf-8' );
 		}

@@ -8,11 +8,11 @@
  * @since 1.0
  */
 
-if( isset( $_GET["locale"] ) )
+if ( isset( $_GET["locale"] ) )
 	$locale = $_GET["locale"];
 
 // Try to determine the language from the header accept-language
-if( !isset( $locale ) && isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) {
+if ( !isset( $locale ) && isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) {
 	// We want the middle piece
 	$lang = explode( ',', $_SERVER['HTTP_ACCEPT_LANGUAGE'] );
 	

@@ -8,13 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $w = new Websites;
 
+// Initialize variable
+$success = false;
+
 // Update the settings
-if( nonce::verify( $_POST['_nonce'], 'update-sale-page' ) )
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-sale-page' ) )
 	$success = $w->update_settings( array( 'page_sale-slug' => format::slug( $_POST['tSaleSlug'] ), 'page_sale-title' => $_POST['tSaleTitle'] ) );
 
 $s = $w->get_settings( 'page_sale-slug', 'page_sale-title' );
@@ -31,14 +34,14 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'sale' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo _('Your sale page has been updated successfully!'); ?></p>
 		</div>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fSale" action="/website/sale/" method="post">

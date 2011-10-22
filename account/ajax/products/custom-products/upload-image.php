@@ -37,9 +37,8 @@ $f->upload_image( $_FILES["Filedata"], $new_image_name, 500, 500, $industry, 'pr
 $image = '<div class="product-image" id="dProductImage_' . $new_image_name . '">';
 $image .= '<img src="http://' . $industry . '.retailcatalog.us/products/' . $product_id . '/thumbnail/' . $full_image_name . '" width="50" />';
 $image .= '<a href="http://' . $industry . '.retailcatalog.us/products/' . $product_id . '/large/' . $full_image_name . '" title="' . _('View Image') . '" target="_blank">' . _('View') . '</a>';
-$image .= '<br /><a href="/ajax/products/custom-products/remove-image/?_nonce=' . nonce::create('remove-image') . '&amp;pid=' . $product_id . '&amp;i=' . $new_image_name . '" title="' . _('Remove Image') . '" ajax="1" confirm="' . _('Are you sure you want to remove this image? This cannot be undone') . '" extra="hProductImage_' . $new_image_name . '" class="remove-product-image">' . _('Remove') . '</a>';
-// @Fix - putting the / at the beginning of the image name actually triggers a bug!  $image .= '<input type="hidden" class="hidden-value" name="hProductImages[]" id="' . $new_image_name . '" value="/' . $full_image_name . '" />';
-$image .= '<input type="hidden" class="hidden-value" name="hProductImages[]" id="hProductImage_' . $new_image_name . '" value="' . $full_image_name . '|[currentImages]" />';
+$image .= '<br /><a href="/ajax/products/custom-products/remove-image/?_nonce=' . nonce::create('remove-image') . '&amp;pid=' . $product_id . '&amp;i=' . $new_image_name . '" title="' . _('Remove Image') . '" ajax="1" confirm="' . _('Are you sure you want to remove this image? This cannot be undone') . '">' . _('Remove') . '</a>';
+$image .= '<input type="hidden" class="hidden-value" name="hProductImages[]" id="' . $new_image_name . '" value="/' . $full_image_name . '" />';
 $image .= '</div>';
 
 jQuery('#dUploadedImages .loading:first')

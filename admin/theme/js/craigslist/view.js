@@ -20,7 +20,7 @@ jQuery(function($) {
 	} );
 	
 	$('#sAutoComplete').change( function() {
-		switch( $(this).val() ) {
+		switch ( $(this).val() ) {
 			case 'category_id':
 				ac.setOptions( {
 					width: 300,
@@ -49,26 +49,26 @@ jQuery(function($) {
 		var current_value = $(this).attr('name');
 		var reset_values = false;
 
-		for( i in query_array ) {
-			if( !reset_values && ( i == current_type || 'all-craigslist' == current_type ) ) {
+		for ( i in query_array ) {
+			if ( !reset_values && ( i == current_type || 'all-craigslist' == current_type ) ) {
 				reset_values = true;
-				if( 'all-craigslist' == current_type ) {
+				if ( 'all-craigslist' == current_type ) {
 					$('#tAutoComplete').val( $('#tAutoComplete').attr('tmpval') ).css( 'color', '#929292' );
 					load_all_craigslist_templates()
 				} else {
-					//if( 'all-products' != current_type )
+					//if ( 'all-products' != current_type )
 					continue;
 				}
 			}
 
-			if( reset_values ) {
+			if ( reset_values ) {
 				delete( query_array[i] );
 			}
 
 			var last_value = i;
 		}
 
-		if( Object.size( query_array ) != 0 && last_value != 'category' ) {
+		if ( Object.size( query_array ) != 0 && last_value != 'category' ) {
 			load_craigslist( current_type, current_value );
 		} else {
 			// If you want to display all products, remove the next 3 lines
@@ -113,12 +113,12 @@ jQuery(function($) {
 		var craigslist_template_id = parseInt( $(this).attr('id').replace( 'aViewDelete', '' ) );
 	
 		// Make sure they want to delete it
-		if( confirm( 'Are you sure you want to delete the template? ' + $(this).attr('title').replace( 'Delete ', '' ) + '?' ) ) {
+		if ( confirm( 'Are you sure you want to delete the template? ' + $(this).attr('title').replace( 'Delete ', '' ) + '?' ) ) {
 			$.post( '/craigslist/delete/', {
 				_nonce: $('#_ajax_delete_craigslist_nonce').val(),
 				caid: parseInt( craigslist_template_id )
 			}, function( json ) {
-				if( true == json ) {
+				if ( true == json ) {
 					//$('#trViewCraigslist' + craigslist_template_id).remove();
 					var table = view_craigslist;		
 					var row = "#sViewCraigslistAdActions" + craigslist_template_id;
@@ -146,12 +146,12 @@ jQuery(function($) {
 		var craigslist_template_id = parseInt( $(this).attr('id').replace( 'aViewClone', '' ) );
 	
 		// Make sure they want to delete it
-		if( confirm( 'Are you sure you want to delete the template ' + $(this).attr('title').replace( 'Delete ', '' ) + '?' ) ) {
+		if ( confirm( 'Are you sure you want to delete the template ' + $(this).attr('title').replace( 'Delete ', '' ) + '?' ) ) {
 			$.post( '/craigslist/delete/', {
 				_nonce: $('#_ajax_delete_craigslist_nonce').val(),
 				caid: parseInt( craigslist_template_id )
 			}, function( json ) {
-				if( true == json ) {
+				if ( true == json ) {
 					$('#trViewCraigslist' + craigslist_template_id).remove();
 					var table = $('#tViewCraigslist');
 					
@@ -198,8 +198,8 @@ function load_all_craigslist() {
 		type: "POST",//request is a POSt request
 		dataType: "json",//expect json as return
 		success: function( result ) { //trigger this on success
-			if( result['success'] ) {
-				if( 0 == result['craigslist_count'] ) {
+			if ( result['success'] ) {
+				if ( 0 == result['craigslist_count'] ) {
 					$('#dListCraigslist').hide();
 					$('#dMsgNoCraigslist').show();
 				} else {
@@ -224,8 +224,8 @@ function load_craigslist( criteria, searchString ) {
 		},
 		dataType: "json",//expect json as return
 		success: function( result ) { //trigger this on success
-			if( result['success'] ) {
-				if( 0 == result['craigslist_count'] ) {
+			if ( result['success'] ) {
+				if ( 0 == result['craigslist_count'] ) {
 					$('#dListCraigslist').hide();
 					$('#dMsgNoCraigslist').show();
 				} else {
@@ -253,11 +253,11 @@ function update_breadcrumb() {
 
 	var breadcrumb = ( length > 0 ) ? '<a href="#" id="all-craigslist-templates" class="crumb" title="All Craigslist Templates">All Craigslist Templates</a>' : 'All Craigslist Templates';
 
-	for( i in query_array ) {
-		switch( i ) {
+	for ( i in query_array ) {
+		switch ( i ) {
 			case 'category':
-				if( 'brd_undefined' != query_array[i] ) {
-					if( typeof( categories[query_array[i]] ) == 'undefined' ) {
+				if ( 'brd_undefined' != query_array[i] ) {
+					if ( typeof( categories[query_array[i]] ) == 'undefined' ) {
 						var cat_name = $('#cat_' + query_array[i]).text();
 						categories[query_array[i]] = cat_name;
 					} else {

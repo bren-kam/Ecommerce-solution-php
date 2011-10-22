@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['email_marketing'] )
+if ( !$user['website']['email_marketing'] )
 	url::redirect('/analytics/');
 
 $a = new Analytics;
@@ -40,8 +40,8 @@ get_header();
 			</thead>
 			<tbody>
 			<?php 
-			foreach( $emails as $e ) { 
-				$last_updated = date_time::date( 'F jS, Y \a\t g:i a', $e['last_updated'] );
+			foreach ( $emails as $e ) { 
+				$last_updated = dt::date( 'F jS, Y \a\t g:i a', $e['last_updated'] );
 			?>
 				<tr>
 					<td><a href="/analytics/email/?mcid=<?php echo $e['mc_campaign_id']; ?>" title="<?php echo $e['subject']; ?>"><?php echo $e['subject']; ?></a></td>

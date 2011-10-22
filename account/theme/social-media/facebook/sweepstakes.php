@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Classes
@@ -24,18 +24,18 @@ $v->add_validation( 'sEmailList', 'val!=0', _('You must select an email list.') 
 // Get Timezone
 $timezone = $e->get_setting('timezone');
 
-if( nonce::verify( $_POST['_nonce'], 'sweepstakes' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'sweepstakes' ) ) {
 	$errs = $v->validate();
 	
 	// If there are no errors
-	if( empty( $errs ) ) {
-		$start_date = date_time::date('Y-m-d', strtotime( $_POST['tStartDate'] ) );
-		$end_date = date_time::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
+	if ( empty( $errs ) ) {
+		$start_date = dt::date('Y-m-d', strtotime( $_POST['tStartDate'] ) );
+		$end_date = dt::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
 		
 		// Turn start time into machine-readable time
 		list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
 		
-		if( 'pm' == $am_pm ) {
+		if ( 'pm' == $am_pm ) {
 			list( $hour, $minute ) = explode( ':', $start_time );
 			
 			$start_date .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
@@ -46,7 +46,7 @@ if( nonce::verify( $_POST['_nonce'], 'sweepstakes' ) ) {
 		// Turn end time into machine-readable time
 		list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
 		
-		if( 'pm' == $am_pm ) {
+		if ( 'pm' == $am_pm ) {
 			list( $hour, $minute ) = explode( ':', $end_time );
 			
 			$end_date .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
@@ -55,8 +55,8 @@ if( nonce::verify( $_POST['_nonce'], 'sweepstakes' ) ) {
 		}
 		
 		// Adjust for time zone
-		$start_date = date_time::date( 'Y-m-d H:i:s', strtotime( $start_date ) - ( $timezone * 3600 ) - 18000 );
-		$end_date = date_time::date( 'Y-m-d H:i:s', strtotime( $end_date ) - ( $timezone * 3600 ) - 18000 );
+		$start_date = dt::date( 'Y-m-d H:i:s', strtotime( $start_date ) - ( $timezone * 3600 ) - 18000 );
+		$end_date = dt::date( 'Y-m-d H:i:s', strtotime( $end_date ) - ( $timezone * 3600 ) - 18000 );
 		
 		// Update Sweepstakes
 		$success = $sm->update_sweepstakes( $_POST['sEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $start_date, $end_date, $_POST['contest-rules'], stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
@@ -68,10 +68,10 @@ $email_lists = $e->get_email_lists();
 $website_files = $wf->get_all();
 
 // Add Javascript
-if( 0 != $sweepstakes['fb_page_id'] )
+if ( 0 != $sweepstakes['fb_page_id'] )
 	add_footer( $v->js_validation() );
 
-if( !$sweepstakes ) {
+if ( !$sweepstakes ) {
 	$sweepstakes = array(
 		'key' => $sm->create_sweepstakes()
 		, 'before' => ''
@@ -85,10 +85,10 @@ if( !$sweepstakes ) {
 	$sweepstakes['end_date'] = $sweepstakes['end_date'] + $timezone * 3600 + 18000;
 } else {
 	// Make sure they have a good starting date
-	if( 0 == $sweepstakes['start_date'] )
+	if ( 0 == $sweepstakes['start_date'] )
 		$sweepstakes['start_date'] = time() - ( 3600 * $timezone ) - 18000;
 
-	if( 0 == $sweepstakes['end_date'] )
+	if ( 0 == $sweepstakes['end_date'] )
 		$sweepstakes['end_date'] = $sweepstakes['start_date'] - ( 3600 * $timezone ) - 18000 + 604800; // 1 week
 }
 
@@ -108,7 +108,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $sweepstakes['fb_page_id'] ) { ?>
+		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $sweepstakes['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Sweepstakes application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=113993535359575" title="<?php echo _('Online Platform - Sweepstakes'); ?>" target="_blank"><?php echo _('Sweepstakes'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -154,8 +154,7 @@ get_header();
 			<br /><br />
 		<?php } else { ?>
 		<form name="fSweepstakes" action="/social-media/facebook/sweepstakes/" method="post">
-			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $sweepstakes['fb_page_id']; ?>?sk=app_113993535359575" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
-			<?php if( $success ) { ?>
+			<?php if ( $success ) { ?>
 			<p class="success"><?php echo _('Your sweepstakes page has been successfully updated!'); ?></p>
 			<?php } ?>
 			
@@ -172,15 +171,15 @@ get_header();
 			
 			<h2 class="title"><label for="tStartDate"><?php echo _('Start of Sweepstakes'); ?>:</label></h2>
 			<p>
-				<input type="text" class="tb" name="tStartDate" id="tStartDate" value="<?php echo date_time::date( 'm/d/Y', $sweepstakes['start_date'] ); ?>" />
-				<input type="text" class="tb" name="tStartTime" id="tStartTime" value="<?php echo date_time::date( 'h:i a', $sweepstakes['start_date'] ); ?>" style="width:75px" />
+				<input type="text" class="tb" name="tStartDate" id="tStartDate" value="<?php echo dt::date( 'm/d/Y', $sweepstakes['start_date'] ); ?>" />
+				<input type="text" class="tb" name="tStartTime" id="tStartTime" value="<?php echo dt::date( 'h:i a', $sweepstakes['start_date'] ); ?>" style="width:75px" />
 			</p>
 			<br />
 
 			<h2 class="title"><label for="tEndDate"><?php echo _('End of Sweepstakes'); ?>:</label></h2>
 			<p>
-				<input type="text" class="tb" name="tEndDate" id="tEndDate" value="<?php echo date_time::date( 'm/d/Y', $sweepstakes['end_date'] ); ?>" />
-				<input type="text" class="tb" name="tEndTime" id="tEndTime" value="<?php echo date_time::date( 'h:i a', $sweepstakes['end_date'] ); ?>" style="width:75px" />
+				<input type="text" class="tb" name="tEndDate" id="tEndDate" value="<?php echo dt::date( 'm/d/Y', $sweepstakes['end_date'] ); ?>" />
+				<input type="text" class="tb" name="tEndTime" id="tEndTime" value="<?php echo dt::date( 'h:i a', $sweepstakes['end_date'] ); ?>" style="width:75px" />
 			</p>
 			<br />
 			
@@ -189,7 +188,7 @@ get_header();
 				<select name="sEmailList" id="sEmailList">
 					<option value="">-- <?php echo _('Select Email List'); ?> --</option>
 					<?php 
-					foreach( $email_lists as $el ) {
+					foreach ( $email_lists as $el ) {
 						$selected = ( $el['email_list_id'] == $sweepstakes['email_list_id'] ) ? ' selected="selected"' : '';
 						?>
 					<option value="<?php echo $el['email_list_id']; ?>"<?php echo $selected; ?>><?php echo $el['name']; ?></option>
@@ -200,7 +199,7 @@ get_header();
 			<br />
 			
 			<h2 class="title"><label for="contest-rules"><?php echo ( $user['website']['pages'] ) ? _('Contest Rules Page') : _('Contest Rules Link'); ?>:</label></h2>
-			<?php if( $user['website']['pages'] ) { ?>
+			<?php if ( $user['website']['pages'] ) { ?>
 				<p>
 					<select name="contest-rules" id="contest-rules">
 						<option value="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/">-- <?php echo _('Contest Rule Page'); ?> --</option>
@@ -209,7 +208,7 @@ get_header();
 						$pages = $w->get_pages();
 						$domain = ( empty( $user['website']['subdomain'] ) ) ? $user['website']['domain'] : $user['website']['subdomain'] . '.' . $user['website']['domain'];
 						
-						foreach( $pages as $p ) {
+						foreach ( $pages as $p ) {
 							$link = 'http://' . $domain . '/' . $p['slug'] . '/';
 							
 							$selected = ( $link == $sweepstakes['contest_rules_url'] ) ? ' selected="selected"' : '';
@@ -250,12 +249,12 @@ get_header();
 		<div id="dUploadFile" class="hidden">
 			<ul id="ulUploadFile">
 				<?php
-				if( is_array( $website_files ) ) {
+				if ( is_array( $website_files ) ) {
 					// Set variables
 					$ajax_delete_file_nonce = nonce::create('delete-file');
 					$confirm = _('Are you sure you want to delete this file?');
 					
-					foreach( $website_files as $wf ) {
+					foreach ( $website_files as $wf ) {
 						$file_name = format::file_name( $wf['file_path'] );
 						echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 					}

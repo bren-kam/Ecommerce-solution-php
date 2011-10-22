@@ -4,8 +4,8 @@
  * @package Imagine Retailer
  */
 
-if( nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to get a product') ) );
 		exit;
 	}
@@ -38,9 +38,6 @@ if( nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
 	$tags = $ta->get( 'product', $pid );
 	$attribute_items = $a->get_attribute_items_by_product( $pid );
 	
-	// Product Description
-	$product['description'] = html_entity_decode( $product['description'], ENT_QUOTES );
-	
 	// Define empty variables
 	$product['images'] = $product['categories'] = $product_specifications = $product['tags'] = $product['attributes'] = '';
 	
@@ -48,8 +45,8 @@ if( nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
 	
 	// Images
 	if ( count( $images ) > 0 )
-	foreach( $images as $swatch => $image_array  ) {
-		foreach( $image_array as $img ) {
+	foreach ( $images as $swatch => $image_array  ) {
+		foreach ( $image_array as $img ) {
 			$product['images'] .= '<img src="http://' . $industries[$product['industry_id']]['name'] . '.retailcatalog.us/products/' . $product['product_id'] . "/thumbnail/$img" . '" width="46" height="46" alt="" /> ';
 		}
 	}
@@ -64,8 +61,8 @@ if( nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
 	$product['industry'] = $industries[$product['industry_id']]['name'];
 	
 	// Categories
-	if( is_array( $categories_list ) )
-	foreach( $categories_list as $c ) {
+	if ( is_array( $categories_list ) )
+	foreach ( $categories_list as $c ) {
 		$product['categories'] .= $c['name'] . '<br />';
 	}
 	
@@ -73,16 +70,16 @@ if( nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
 	$specifications = unserialize( html_entity_decode( $product['product_specifications'], ENT_QUOTES, 'UTF-8' ) );
 	$new_slugs = 0;
 	
-	if( !empty( $product['product_specifications'] ) ) {
+	if ( !empty( $product['product_specifications'] ) ) {
 		$product_specifications .= '<table>';
 		
 		$specifications = unserialize( html_entity_decode( $product['product_specifications'], ENT_QUOTES, 'UTF-8' ) );
 		$new_slugs = 0;
 		
-		if( is_array( $specifications ) && count( $specifications ) > 0 )
-		foreach( $specifications as $ps ) {
+		if ( is_array( $specifications ) && count( $specifications ) > 0 )
+		foreach ( $specifications as $ps ) {
 			$ps_slug = str_replace( ' ', '-', strtolower( $ps[0] ) );
-			if( empty( $ps_slug ) ) {
+			if ( empty( $ps_slug ) ) {
 				$ps_slug = $new_slugs;
 				$new_slugs++;
 			}
@@ -99,13 +96,13 @@ if( nonce::verify( $_POST['_nonce'], 'get-product' ) ) {
 	$product['product_specifications'] = $product_specifications;
 	
 	// Tags
-	if( is_array( $tags ) )
-	foreach( $tags as $t ) {
+	if ( is_array( $tags ) )
+	foreach ( $tags as $t ) {
 		$product['tags'] .= ucwords( $t ) . '<br />';
 	}
 	
 	// Attribute Items
-	foreach( $attribute_items as $ai ) {
+	foreach ( $attribute_items as $ai ) {
 		$product['attributes'] .= '<strong>' . $ai['title'] . ' &ndash;</strong> ' . $ai['attribute_item_name'] . '<br />';
 	}
 	

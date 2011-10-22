@@ -25,7 +25,7 @@ add_footer( $v->js_validation() );
 $website_shipping_method_id = false;
 
 // Modify the settings
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-custom-shipping-method' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-custom-shipping-method' ) ) {
 	$errs = $v->validate();
 
 	if ( empty( $errs ) ) {
@@ -53,7 +53,7 @@ $methods = $sc->get_shipping_methods( $user['website']['website_id'] );
 $name = $method = $amount = '';
 
 // Assign the methods
-foreach( $methods as $m ) {
+foreach ( $methods as $m ) {
 	// Has to equal it
 	if ( $m['website_shipping_method_id'] != $website_shipping_method_id )
 		continue;
@@ -66,7 +66,7 @@ foreach( $methods as $m ) {
 
 
 // Get zip codes
-if( $website_shipping_method_id || !empty( $_POST['tZip'] ) )
+if ( $website_shipping_method_id || !empty( $_POST['tZip'] ) )
 	$zips = ( $website_shipping_method_id ) ? $sc->get_shipping_zip_codes( $website_shipping_method_id ) : $_POST['tZip'];
 
 javascript( '/shopping-cart/shipping/add-edit-custom' );

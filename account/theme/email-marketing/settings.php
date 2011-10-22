@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['email_marketing'] )
+if ( !$user['website']['email_marketing'] )
 	url::redirect('/email-marketing/subscribers/');
 
 // Instantiate class
@@ -32,18 +32,21 @@ $v->add_validation( 'from_email', 'email', 'The "From Email" field must contain 
 
 add_footer( $v->js_validation() );
 
+// Initialize variables
+$success = false;
+
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'edit-settings' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-settings' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$settings = array();
 		$setting_keys = array_keys( $empty_settings );
 		
 		// Assign new values for settings
-		foreach( $setting_keys as $sk ) {
-			if( !isset( $_POST[$sk] ) )
+		foreach ( $setting_keys as $sk ) {
+			if ( !isset( $_POST[$sk] ) )
 				continue;
 			
 			$settings[$sk] = $_POST[$sk];
@@ -67,14 +70,14 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'settings' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo _('Your settings have been successfully updated!'); ?></p>
 		</div>
 		<?php
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fSettings" action="/email-marketing/settings/" method="post">

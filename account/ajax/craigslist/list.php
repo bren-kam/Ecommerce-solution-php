@@ -22,7 +22,7 @@ $confirm_delete = _('Are you sure you want to delete a craigslist ad? This canno
 $craigslist_ad_nonce = nonce::create( 'craigslist-ad' );
 
 // Create output
-foreach( $craigslist_ads as $ad ) {
+foreach ( $craigslist_ads as $ad ) {
 	$status = ( $ad['date_posted'] + $ad['duration'] * 86400 > time() ) ? 
 		intval( ( ( $ad['date_posted']  + intval( $ad['duration'] ) * 86400 ) - time() ) / 86400 + 1 ) : 
 		- 1;
@@ -43,7 +43,7 @@ foreach( $craigslist_ads as $ad ) {
 					addslashes( $ad['product_name'] ),
 					addslashes( $ad['sku'] ),
 					addslashes( $status_message ),
-					addslashes( date_time::date( 'n/j/Y' , $ad['date_created'] ) ) );
+					addslashes( dt::date( 'n/j/Y' , $ad['date_created'] ) ) );
 }
 
 // Send response

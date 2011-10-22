@@ -12,7 +12,7 @@ class Tickets extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 	}
 	
@@ -26,10 +26,10 @@ class Tickets extends Base_Class {
 	public function create( $summary, $message ) {
 		global $user, $u;
 		
-		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => 493, 'website_id' => 0, 'summary' => stripslashes( $summary ), 'message' => nl2br( htmlentities( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => date_time::date('Y-m-d H:i:s') ), 'iiisssssss' ); 
+		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => 493, 'website_id' => 0, 'summary' => stripslashes( $summary ), 'message' => nl2br( htmlentities( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' ); 
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -49,10 +49,10 @@ class Tickets extends Base_Class {
 	public function create_empty() {
 		global $user, $u;
 		
-		$result = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'is' ); 
+		$result = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'is' ); 
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -79,7 +79,7 @@ class Tickets extends Base_Class {
 		$result = $this->db->update( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => 493, 'website_id' => 0, 'summary' => stripslashes( $summary ), 'message' => htmlentities( nl2br( $message ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'status' => 0 ), array( 'ticket_id' => $ticket_id ), 'iiissssssi', 'i' ); 
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -87,19 +87,19 @@ class Tickets extends Base_Class {
 		// Add images
 		$values = '';
 		
-		foreach( $images as $i ) {
-			if( !empty( $values ) )
+		foreach ( $images as $i ) {
+			if ( !empty( $values ) )
 				$values .= ',';
 			
 			$values .= "( $ticket_id, " . (int) $i . ')';
 		}
 		
-		if( !empty( $values ) ) {
+		if ( !empty( $values ) ) {
 			// Add image links
 			$this->db->query( "INSERT INTO `ticket_links` ( `ticket_id`, `ticket_upload_id` ) VALUES $values" );
 			
 			// Handle any error
-			if( $this->db->errno() ) {
+			if ( $this->db->errno() ) {
 				$this->err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
 				return false;
 			}
@@ -127,7 +127,7 @@ class Tickets extends Base_Class {
 		$this->db->update( 'tickets', array( 'priority' => $priority ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update ticket priority.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -150,7 +150,7 @@ class Tickets extends Base_Class {
 		$this->db->update( 'tickets', array( 'status' => $status ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update ticket status.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -173,7 +173,7 @@ class Tickets extends Base_Class {
 		$this->db->update( 'tickets', array( 'assigned_to_user_id' => $assigned_to_user_id ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update ticket assigned_to_user_id.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -196,7 +196,7 @@ class Tickets extends Base_Class {
 		$this->db->update( 'tickets', array( 'date_due' => $date_due ), array( 'ticket_id' => $ticket_id ), 's', 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update ticket date_due.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -215,7 +215,7 @@ class Tickets extends Base_Class {
 		$ticket = $this->db->get_row( "SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = " . (int) $ticket_id, ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -223,12 +223,12 @@ class Tickets extends Base_Class {
 		// Get attachments if there are any
 		$attachments = $this->db->get_col( 'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_id` = ' . (int) $ticket_id );
 		
-		foreach( $attachments as $link ) {
+		foreach ( $attachments as $link ) {
 			$ticket['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', format::file_name( $link ) ) ) );
 		}
 		
 		// If there was an error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( "Failed to get ticket attachments.", __LINE__, __METHOD__ );
 			return false;
 		}
@@ -245,15 +245,23 @@ class Tickets extends Base_Class {
 	 * @return array
 	 */
 	public function list_tickets( $limit, $where, $order_by ) {
-		// Get linked users
-		$tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`ticket_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by, d.`ticket_comment_id` DESC LIMIT $limit", ARRAY_A );
+		global $mc;
+		
+		$tickets = $mc->get( "tickets::list_tickets > {$limit} > {$where} > {$order_by}" );
+		
+		if ( empty( $tickets ) ) {
+			// Get linked users
+			$tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`ticket_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by, d.`ticket_comment_id` DESC LIMIT $limit", ARRAY_A );
 
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
-			return false;
-		}
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
+				return false;
+			}
 			
+			$mc->add( "tickets::list_tickets > {$limit} > {$where} > {$order_by}", $tickets, 7200 );
+		}
+		
 		return $tickets;
 	}
 	
@@ -264,13 +272,21 @@ class Tickets extends Base_Class {
 	 * @return int
 	 */
 	public function count( $where ) {
-		// Get linked tickets
-		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
+		global $mc;
 		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to count tickets.', __LINE__, __METHOD__ );
-			return false;
+		$count = $mc->get( 'tickets::count' );
+		
+		if ( empty( $count ) ) {
+			// Get linked tickets
+			$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
+			
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to count tickets.', __LINE__, __METHOD__ );
+				return false;
+			}
+			
+			$mc->add( 'tickets::count', $count, 7200 );
 		}
 		
 		return $count;
@@ -282,17 +298,17 @@ class Tickets extends Base_Class {
 	 * @return bool
 	 */
 	public function email_overdue_tickets() {
-		$overdue_tickets = $this->db->get_results( "SELECT a.`email`, b.`ticket_id`, b.`summary`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `tickets` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( a.`company_id` = c.`company_id` ) WHERE b.`status` = 0 AND b.`date_due` <> '0000-00-00 00:00:00' AND b.`date_due` < DATE( NOW() )", ARRAY_A );
+		$overdue_tickets = $this->db->get_results( "SELECT a.`email`, b.`ticket_id`, b.`summary`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `tickets` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( a.`company_id` = c.`company_id` ) WHERE a.`status` = 0 AND a.`date_due` <> '0000-00-00 00:00:00' AND a.`date_due` < DATE( NOW() )", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get emails to email for overdue tickets.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// Email each over the overdue persons
-		if( is_array( $overdue_tickets ) )
-		foreach( $overdue_tickets as $ot ) {
+		if ( is_array( $overdue_tickets ) )
+		foreach ( $overdue_tickets as $ot ) {
 			fn::mail( $ot['email'], html_entity_decode( $ot['name'] ) . ' Overdue Ticket: #' . $ot['ticket_id'] . ' - ' . $ot['summary'], "Summary:\n" . $ot['summary'] . "\n\nClick here to view the ticket:\nhttp://admin." . $ot['domain'] . "/tickets/ticket/?tid=" . $ot['ticket_id'] );
 		}
 		
@@ -311,7 +327,7 @@ class Tickets extends Base_Class {
 		$attachments = $this->db->get_col( 'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) LEFT JOIN `tickets` AS c ON ( b.`ticket_id` = c.`ticket_id` ) WHERE c.`status` = -1 AND c.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -323,7 +339,7 @@ class Tickets extends Base_Class {
 		$this->db->query( 'DELETE a.*, b.*, c.* FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) LEFT JOIN `tickets` AS c ON ( b.`ticket_id` = c.`ticket_id` ) WHERE c.`status` = -1 AND c.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete ticket upload.', __LINE__, __METHOD__ );
 			return false;
 		}

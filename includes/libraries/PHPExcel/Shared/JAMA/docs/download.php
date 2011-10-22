@@ -25,7 +25,7 @@ $tarName = "$pkgName.tar.gz";
 
 $tarPath = $buildDir.$pkgName."/downloads/".$tarName;
 
-if($_GET['op'] == "download") {  
+if ($_GET['op'] == "download") {  
   
 	require_once('Archive/Tar.php');  
 	

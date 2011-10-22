@@ -20,10 +20,10 @@ $options = '';
 $disabled_attributes = $_POST['da'];
 
 // Loop through the attributes list
-foreach( $attribute_list as $al ) {
+foreach ( $attribute_list as $al ) {
 	$options .= '<optgroup label="' . $al . '">';
 	
-	foreach( $attributes[$al] as $attribute ) {
+	foreach ( $attributes[$al] as $attribute ) {
 		$disabled = ( in_array( $attribute['attribute_item_id'], $disabled_attributes ) ) ? ' disabled="disabled"' : '';
 		
 		$options .= '<option value="' . $attribute['attribute_item_id'] . '"' . $disabled . '>' . $attribute['attribute_item_name'] . '</option>';

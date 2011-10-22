@@ -88,7 +88,7 @@ $.fn.ajaxSubmit = function(options) {
 	if (options.data) {
 		options.extraData = options.data;
 		for (n in options.data) {
-			if(options.data[n] instanceof Array) {
+			if (options.data[n] instanceof Array) {
 				for (var k in options.data[n]) {
 					a.push( { name: n, value: options.data[n][k] } );
 				}
@@ -315,7 +315,7 @@ $.fn.ajaxSubmit = function(options) {
 			finally {
 				// reset attrs and remove "extra" input elements
 				form.setAttribute('action',a);
-				if(t) {
+				if (t) {
 					form.setAttribute('target', t);
 				} else {
 					$form.removeAttr('target');
@@ -604,7 +604,7 @@ $.fn.formToArray = function(semantic) {
 	}
 
 	var i,j,n,v,el,max,jmax;
-	for(i=0, max=els.length; i < max; i++) {
+	for (i=0, max=els.length; i < max; i++) {
 		el = els[i];
 		n = el.name;
 		if (!n) {
@@ -613,7 +613,7 @@ $.fn.formToArray = function(semantic) {
 
 		if (semantic && form.clk && el.type == "image") {
 			// handle image inputs on the fly when semantic == true
-			if(!el.disabled && form.clk == el) {
+			if (!el.disabled && form.clk == el) {
 				a.push({name: n, value: $(el).val()});
 				a.push({name: n+'.x', value: form.clk_x}, {name: n+'.y', value: form.clk_y});
 			}
@@ -622,7 +622,7 @@ $.fn.formToArray = function(semantic) {
 
 		v = $.fieldValue(el, true);
 		if (v && v.constructor == Array) {
-			for(j=0, jmax=v.length; j < jmax; j++) {
+			for (j=0, jmax=v.length; j < jmax; j++) {
 				a.push({name: n, value: v[j]});
 			}
 		}
@@ -751,7 +751,7 @@ $.fieldValue = function(el, successful) {
 		var a = [], ops = el.options;
 		var one = (t == 'select-one');
 		var max = (one ? index+1 : ops.length);
-		for(var i=(one ? index : 0); i < max; i++) {
+		for (var i=(one ? index : 0); i < max; i++) {
 			var op = ops[i];
 			if (op.selected) {
 				var v = op.value;

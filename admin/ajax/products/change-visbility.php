@@ -5,13 +5,13 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_nonce'], 'change-visibility' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-visibility' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in view products.') ) );
 		exit;
 	}
 	
-	switch( $_POST['s'] ) {
+	switch ( $_POST['s'] ) {
 		default:
 			unset( $_SESSION['product']['visibility'] );
 		break;

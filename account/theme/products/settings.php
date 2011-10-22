@@ -23,12 +23,15 @@ $v->add_validation( 'request-a-quote-email', 'email', _('The "Request-a-Quote Em
 // Add validation
 add_footer( $v->js_validation() );
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if ( nonce::verify( $_POST['_nonce'], 'update-product-settings' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-product-settings' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$new_settings = array();
 		
 		foreach ( $settings_array as $k ) {
@@ -39,6 +42,9 @@ if ( nonce::verify( $_POST['_nonce'], 'update-product-settings' ) ) {
 		$success = $w->update_settings( $new_settings );
 	}
 }
+
+// Make sure the settings exist
+$settings['request-a-quote-email'] = '';
 
 // Get the settings
 $settings = $w->get_settings( $settings_array );
@@ -60,25 +66,25 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'products/' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo _('Your settings has been successfully updated!'); ?></p>
 		</div>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form action="/products/settings/" method="post" name="fSettings">
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td width="175"><label for="request-a-quote-email"><?php echo _('Request-a-Quote Email'); ?>:</label></td>
-					<td><input type="text" class="tb" name="request-a-quote-email" id="request-a-quote-email" value="<?php echo ( $success ) ? $settings['request-a-quote-email'] : $_POST['request-a-quote-email']; ?>" maxlength="150" /></td>
+					<td><input type="text" class="tb" name="request-a-quote-email" id="request-a-quote-email" value="<?php echo ( $success || !isset( $_POST['request-a-quote-email'] ) ) ? $settings['request-a-quote-email'] : $_POST['request-a-quote-email']; ?>" maxlength="150" /></td>
 				</tr>
 				<?php
-				foreach( $checkboxes as $k => $v ) {
-					$checked = '1' == $_POST[$k] || !isset( $_POST[$k] ) && $settings[$k];
+				foreach ( $checkboxes as $k => $v ) {
+					$checked = ( ( isset( $_POST['k'] ) && '1' == $_POST[$k] ) || ( !isset( $_POST[$k] ) && $settings[$k] ) );
 					?>
 					<tr>
 						<td>&nbsp;</td>

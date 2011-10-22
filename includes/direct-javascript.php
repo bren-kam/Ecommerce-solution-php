@@ -25,15 +25,15 @@ header::send( array(
 
 $js_paths = array( INC_PATH, THEME_PATH );
 
-if( '/' == $js_file[0] )
+if ( '/' == $js_file[0] )
 	$js_file = substr( $js_file, 1 );
 
 $js_file .= '.js';
 
-foreach( $js_paths as $jsp ) {
+foreach ( $js_paths as $jsp ) {
 	$jsf = $jsp . 'js/' . $js_file;
 	
-	if( is_file( $jsf ) ) {
+	if ( is_file( $jsf ) ) {
 		$js = $jsf;
 		break;
 	}
@@ -43,11 +43,11 @@ foreach( $js_paths as $jsp ) {
 $compressed_js_file_path = INC_PATH . 'cache/js/' . $js_file;
 
 // If a cache does not exist, create it, otherwise, read it
-if( !file_exists( $compressed_js_file_path ) ) {
+if ( !file_exists( $compressed_js_file_path ) ) {
 	$js = compress::javascript( file_get_contents( $js ) );
 	
 	// Write to file
-	if( LIVE && $fh = @fopen( $compressed_js_file_path, 'w' ) ) {
+	if ( LIVE && $fh = @fopen( $compressed_js_file_path, 'w' ) ) {
 		fwrite( $fh, $js );
 		fclose( $fh );
 	}

@@ -7,13 +7,13 @@ global $user;
 ?>
 <div id="footer">
 		<p>
-			<?php if( $user ) { ?>
+			<?php if ( $user ) { ?>
 			<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | 
 			<a href="/websites/" title="<?php echo _('Websites'); ?>"><?php echo _('Websites'); ?></a> | 
 			<a href="/products/" title="<?php echo _('Product Catalog'); ?>"><?php echo _('Product Catalog'); ?></a> | 
 			<a href="/users/" title="<?php echo _('Users'); ?>"><?php echo _('Users'); ?></a> | 
 			<a href="/checklists/" title="<?php echo _('Checklists'); ?>"><?php echo _('Checklists'); ?></a> | 
-			<?php if( $user['role'] >= 8 ) { ?>
+			<?php if ( $user['role'] >= 8 ) { ?>
 			<a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a>
 			<?php } ?>
 			<a href="/help/" title="<?php echo _('Help'); ?>"><?php echo _('Help'); ?></a>
@@ -36,17 +36,18 @@ global $user;
 		<p class="col-2 float-right text-right"><input type="submit" class="button" value="<?php echo _('Create Ticket'); ?>" /></p>
 	</form>
 	<p class="col-2 float-left"><input type="file" id="fTicketUpload" class="hidden" /></p>
-	<input type="hidden" id="hTicketWebsiteID" value="<?php echo $user['website']['website_id']; ?>" />
+	<input type="hidden" id="hTicketWebsiteID" value="<?php if ( isset( $user['website'] ) ) echo $user['website']['website_id']; ?>" />
 	<input type="hidden" id="hUserID" value="<?php echo $user['user_id']; ?>" />
 	<?php nonce::field( 'ticket-upload', '_ajax_ticket_upload' ); ?>
 </div>
 
 <!-- End: Footer -->
-<?php 
+<?php
+
 $javascript = get_js();
-if( 'eNpLtDKwqq4FXDAGTwH-' != $javascript ) { // That string means it's empty ?>
+if ( 'eNpLtDKwqq4FXDAGTwH-' != $javascript ) { // That string means it's empty ?>
 <script type="text/javascript" src="/js/?files=<?php echo $javascript; ?>"></script>
-<?php 
+<?php
 }
 
 footer();

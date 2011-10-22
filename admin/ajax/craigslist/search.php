@@ -9,13 +9,13 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 'result' => false, 'error' => _('You have been logged out. Please sign in again to continue.'), 'redirect' => 'true' ) );
 	return false;
 }
 
-if( nonce::verify( $_POST['_nonce'], 'search' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'search' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in search websites.') ) );
 		exit;
 	}

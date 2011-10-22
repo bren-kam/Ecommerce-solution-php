@@ -8,10 +8,10 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
-if( $user['role'] < 7 )
+if ( $user['role'] < 7 )
 	url::redirect( '/' );
 
 $w = new Websites;

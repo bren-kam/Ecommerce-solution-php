@@ -23,9 +23,10 @@ $v->add_validation( 'tAmount', 'req', _('Please enter a valid amount' ) );
 add_footer( $v->js_validation() );
 
 $website_shipping_method_id = false;
+$success = false;
 
 // Modify the settings
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-custom-shipping-method' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-custom-shipping-method' ) ) {
 	$errs = $v->validate();
 
 	if ( empty( $errs ) ) {
@@ -44,7 +45,7 @@ if ( nonce::verify( $_POST['_nonce'], 'add-edit-custom-shipping-method' ) ) {
 }
 
 // Determine website shipping method id
-$website_shipping_method_id = $_GET['wsmid'];
+$website_shipping_method_id = ( isset( $_GET['wsmid'] ) ) ? $_GET['wsmid'] : '';
 
 // Get shipping methods
 $methods = $sc->get_shipping_methods( $user['website']['website_id'] );
@@ -53,7 +54,7 @@ $methods = $sc->get_shipping_methods( $user['website']['website_id'] );
 $name = $method = $amount = '';
 
 // Assign the methods
-foreach( $methods as $m ) {
+foreach ( $methods as $m ) {
 	// Has to equal it
 	if ( $m['website_shipping_method_id'] != $website_shipping_method_id )
 		continue;
@@ -66,7 +67,7 @@ foreach( $methods as $m ) {
 
 
 // Get zip codes
-if( $website_shipping_method_id || !empty( $_POST['tZip'] ) )
+if ( $website_shipping_method_id || !empty( $_POST['tZip'] ) )
 	$zips = ( $website_shipping_method_id ) ? $sc->get_shipping_zip_codes( $website_shipping_method_id ) : $_POST['tZip'];
 
 javascript( 'shopping-cart/shipping/add-edit-custom' );
@@ -110,7 +111,7 @@ get_header();
                 	<td><label><?php echo _('Zip Codes'); ?>:</label></td>
                     <td>
                     	<?php 
-						if ( is_array( $zips ) ) {
+						if ( isset( $zips ) && is_array( $zips ) ) {
 						foreach ( $zips as $zip ) {
 						?>
                         <span id="sZip<?php echo $zip; ?>">
@@ -127,8 +128,8 @@ get_header();
                     </td>
                 </tr>
 			</table>
-            <br/><br/>
-			<input type="hidden" name="hID" value="<?php echo ( $_POST['hID'] ) ? $_POST['hID'] : $_GET['wsmid']; ?>" />
+            <br /><br />
+			<input type="hidden" name="hID" value="<?php echo ( isset( $_POST['hID'] ) ) ? $_POST['hID'] : $website_shipping_method_id; ?>" />
 			<input type="submit" class="button" value="<?php echo _('Save Shipping Method') ; ?>" />
 			<?php nonce::field('add-edit-custom-shipping-method'); ?>
 		</form>	

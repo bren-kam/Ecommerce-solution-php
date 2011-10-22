@@ -13,8 +13,8 @@ $t = new Tickets;
 
 $ticket_message = '';
 
-foreach( $_POST['requests'] as $r ) {
-	if( !empty( $ticket_message ) )
+foreach ( $_POST['requests'] as $r ) {
+	if ( !empty( $ticket_message ) )
 		$ticket_message .= "\n\n";
 	
 	// Get the brand, sku and collection

@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 css( 'categories/list', 'jquery.ui' );
 javascript( 'jquery', 'jquery.ui', 'categories/list' );
