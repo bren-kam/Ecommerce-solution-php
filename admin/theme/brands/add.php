@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $po = new Product_Options;
 $v = new Validator();
@@ -26,10 +26,13 @@ $v->add_validation( 'fPicture', 'img', _('The "Image" field may only hold an ima
 
 add_footer( $v->js_validation() );
 
-if( nonce::verify( $_POST['_nonce'], 'add-brand' ) ) {
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-brand' ) ) {
 	$errs = $v->validate();
 	
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$b = new Brands;
 		
 		// Create the brand
@@ -51,11 +54,11 @@ get_header();
 	<?php get_sidebar( 'brands/' ); ?>
 	<div id="subcontent">
 		<?php 
-		if( !$success ) {
+		if ( !$success ) {
 			$main_form_class = '';
 			$success_class = ' class="hidden"';
 			
-			if( isset( $errs ) )
+			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		} else {
 			$success_class = '';
@@ -64,29 +67,22 @@ get_header();
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php 
-			if( isset( $errs ) && !empty( $errs ) ) {
-				$error_message = '';
-				
-				foreach( $errs as $e ) {
-					$error_message .= ( !empty( $error_message ) ) ? '<br />' . $e : $e;
-				}
-				
-				echo "<p class='red'>$error_message</p>";
-			}
+			if ( isset( $errs ) )
+				echo "<p class='red'>$errs</p>";
 			?>
 			<form action="/brands/add/" name="fAddBrand" id="fAddBrand" method="post" enctype="multipart/form-data">
 				<table cellpadding="0" cellspacing="0" width="100%">
 					<tr>
 						<td width="80"><label for="tName"><?php echo _('Name'); ?></label></td>
-						<td><input type="text" name="tName" id="tName" maxlength="100" class="tb" value="<?php if( !$success ) echo $_POST['tName']; ?>" /></td>
+						<td><input type="text" name="tName" id="tName" maxlength="100" class="tb" value="<?php if ( !$success && isset( $_POST['tName'] ) ) echo $_POST['tName']; ?>" /></td>
 					</tr>
 					<tr>
 						<td width="80"><label for="tSlug"><?php echo _('Slug'); ?></label></td>
-						<td><input type="text" name="tSlug" id="tSlug" maxlength="100" class="tb" value="<?php if( !$success ) echo $_POST['tSlug']; ?>" /></td>
+						<td><input type="text" name="tSlug" id="tSlug" maxlength="100" class="tb" value="<?php if ( !$success && isset( $_POST['tSlug'] ) ) echo $_POST['tSlug']; ?>" /></td>
 					</tr>
 					<tr>
 						<td><label for="tLink"><?php echo _('Website'); ?></label></td>
-						<td><input type="text" name="tLink" id="tLink" maxlength="200" class="tb" value="<?php if( !$success ) echo $_POST['tLink']; ?>" /></td>
+						<td><input type="text" name="tLink" id="tLink" maxlength="200" class="tb" value="<?php if ( !$success && isset( $_POST['tLink'] ) ) echo $_POST['tLink']; ?>" /></td>
 					</tr>
 					<tr>
 						<td><label for="sProductOptions"><?php echo _('Product Options'); ?></label></td>
@@ -95,9 +91,11 @@ get_header();
 							<select name="sProductOptions" id="sProductOptions" class="dd">
 								<option value="">-- <?php echo _('Select a Product Option'); ?> --</option>
 								<?php
-								if( is_array( $product_options ) )
-								foreach( $product_options as $po ) {
-									$selected = ( !$success && $po['product_option_id'] == $_POST['sProductOptions'] ) ? ' selected="selected"' : '';
+								$product_option_id = ( isset( $_POST['sProductOptions'] ) ) ? $_POST['sProductOptions'] : '';
+								
+								if ( is_array( $product_options ) )
+								foreach ( $product_options as $po ) {
+									$selected = ( !$success && $po['product_option_id'] == $product_option_id ) ? ' selected="selected"' : '';
 									
 									echo '<option value="', $po['product_option_id'], '"', $selected, '>', $po['option_title'], '</option>';
 								}

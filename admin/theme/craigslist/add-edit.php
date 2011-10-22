@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // Instantiate classes
 $c = new Categories;
@@ -40,10 +40,18 @@ CKEDITOR.on("dialogDefinition", function( ev ) {
 // Get categories
 $categories = $c->get_list();
 
+$cid = ( isset( $_GET['cid'] ) ) ? $_GET['cid'] : false;
+
 // Get everything
-if( !empty( $_GET['cid'] ) ) {
-	$cid = (int) $_GET['cid'];
+if ( $cid ) {
 	$template = $craigslist->get( $cid );
+} else {
+	$template = array(
+		'craigslist_template_id' => ''
+		, 'category_id' => ''
+		, 'title' => ''
+		, 'description' => ''
+	);
 }
 
 // Add Validation
@@ -52,24 +60,24 @@ $v->add_validation( 'tTitle', 'req', _('The "Title" field is required"') );
 
 add_footer( $v->js_validation() );
 
-if( nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
 	// Server side validation
 	$errs = $v->validate();
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$craigslist_template_id = (int) $_POST['hCraigslistID'];
 		$title = (string) $_POST['tTitle'];
 		$description = (string) $_POST['taDescription'];
 		$category_id = (int) $_POST['sCraigslistCategory'];
 		
 		// Update or Create the template
-		if( $craigslist_template_id == 0 ){
+		if ( $craigslist_template_id == 0 ){
 			$success = $craigslist->create( $category_id, $title, $description );
 		} else {
 			$success = $craigslist->update( $craigslist_template_id, $category_id, $title, $description );
 		}
 		
 		// If they just created a product, they are now editing
-		if( $success && empty( $_GET['cid'] ) ) {
+		if ( $success && empty( $_GET['cid'] ) ) {
 			url::redirect( '/craigslist/?m=1' );
 		} else {
 			url::redirect( '/craigslist/?m=2' );
@@ -106,7 +114,7 @@ get_header();
 						<?php echo $categories; ?>
 					</select>
 					<br clear="all" />
-					<input type="hidden" name="hCategory" id="hCategory" value="<?php if( $template['category_id'] ) echo $template['category_id']; ?>"/>
+					<input type="hidden" name="hCategory" id="hCategory" value="<?php if ( $template['category_id'] ) echo $template['category_id']; ?>"/>
 				</div>
 			</div>
 		<!-- End of Box Categories -->
@@ -142,7 +150,10 @@ get_header();
 		</div>
 
 		<div class="page-content">
-			<?php if( $errors ) echo '<p class="error">', $errors, '</p>'; ?>
+			<?php 
+			if ( isset( $errs ) )
+				echo "<p class='red'>$errs</p>";
+			?>
 			<input type="hidden" id="hCraigslistID" name="hCraigslistID" value="<?php echo ( isset( $template['craigslist_template_id'] ) ) ? $template['craigslist_template_id'] : ''; ?>" />
 			<div id="dTitleContainer"><input type="text" name="tTitle" id="tTitle" title="<?php echo _('Ad Title'); ?>" value="<?php echo ( isset( $template['title'] ) ) ? str_replace( '"', '&quot;', $template['title'] ) : _('Ad Title'); ?>" maxlength="200" /></div>
 			
@@ -153,7 +164,7 @@ get_header();
 				<h2><?php echo _('Preview Template'); ?></h2> <a href="#" id="aRefreshPreview"><?php echo _('Refresh'); ?></a>
 			</div>
             <div id="dPreviewArea" style="background-color:#fff;border:1px solid black;width:100%; padding:10px; margin-top:10px;">
-            	Hit "refresh" to preview your ad.
+            	<?php echo _('Hit "refresh" to preview your ad.'); ?>
             </div>
 			<br /><br />
 			<?php nonce::field( 'add-edit-craigslist' ); ?>

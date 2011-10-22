@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
@@ -32,7 +32,7 @@ $traffic_sources = $a->get_traffic_sources_totals();
 $pie_chart = $a->pie_chart( $traffic_sources );
 
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
@@ -141,7 +141,7 @@ get_header();
 							<th align="right"><strong><?php echo _('Page Views'); ?></strong></th>
 							<th align="right"><strong><?php echo _('% Page Views'); ?></strong></th>
 						</tr>
-						<?php foreach( $content_overview_pages as $top ) { ?>
+						<?php foreach ( $content_overview_pages as $top ) { ?>
 						<tr>
 							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
 							<td align="right"><?php echo number_format( $top['page_views'] ); ?></td>

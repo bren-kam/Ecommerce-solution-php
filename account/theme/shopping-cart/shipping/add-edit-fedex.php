@@ -16,13 +16,16 @@ $sc = new Shopping_Cart;
 $w = new Websites;
 
 // Determine website shipping method id
-$website_shipping_method_id = (int) $_GET['wsmid'];
+$website_shipping_method_id = ( isset( $_GET['wsmid'] ) ) ? $_GET['wsmid'] : '';
 
 $settings = $w->get_settings( 'shipping-fedex' );
 $settings = unserialize( $settings['shipping-fedex'] );
 
+// This prevents it from getting called while it is undefined
+$success = false;
+
 // Modify the settings
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-fedex-shipping-method' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-fedex-shipping-method' ) ) {
 	if ( $website_shipping_method_id ) {
 		$success = $sc->update_shipping_method( $website_shipping_method_id, $_POST['sService'], 'N/A', 'N/A', $_POST['extra'] );
 	} else {
@@ -56,7 +59,7 @@ get_header();
 		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
-        <?php if( empty( $settings ) || in_array( '', $settings ) ) { ?>
+        <?php if ( empty( $settings ) || in_array( '', $settings ) ) { ?>
         <p class="error">You must set up your Fedex Account before adding Fedex shipping methods.</p>
         <p><a href="/shopping-cart/shipping/settings/">Click here</a> to set up your Fedex account information.</p>
         <?php } else { ?>
@@ -90,7 +93,7 @@ get_header();
 								, 'FEDEX_NATIONAL_FREIGHT' => _('FedEx National Freight')
 							);
 							
-							foreach( $services as $sv => $s ) {
+							foreach ( $services as $sv => $s ) {
 								$selected = ( $shipping_method['name'] == $sv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $sv; ?>"<?php echo $selected; ?>><?php echo $s; ?></option>
@@ -113,7 +116,7 @@ get_header();
 								, 'FEDEX_25KG_BOX' => _('FedEx 25Kg Box')
 							);
 							
-							foreach( $sizes as $sv => $s ) {
+							foreach ( $sizes as $sv => $s ) {
 								$selected = ( $shipping_method['extra']['packaging_type'] == $sv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $sv; ?>"<?php echo $selected; ?>><?php echo $s; ?></option>

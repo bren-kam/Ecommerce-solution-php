@@ -4,8 +4,8 @@
  * @package Imagine Retailer
  */
 
-if( nonce::verify( $_POST['_nonce'], 'remove-attachment' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'remove-attachment' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to remove an attachment.') ) );
 		exit;
 	}

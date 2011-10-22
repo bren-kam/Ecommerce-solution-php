@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate Class
@@ -16,7 +16,10 @@ $e = new Email_Marketing;
 
 $email_lists = $e->get_email_lists();
 
-if( nonce::verify( $_POST['_complete_nonce'], 'import-subscribers' ) && !empty( $_POST['hEmailLists'] ) )
+// Initialize variable
+$completed = false;
+
+if ( isset( $_POST['_complete_nonce'] ) && nonce::verify( $_POST['_complete_nonce'], 'import-subscribers' ) && !empty( $_POST['hEmailLists'] ) )
 	$completed = $e->complete_import( explode( '|', $_POST['hEmailLists'] ) );
 
 css( 'jquery.uploadify' );
@@ -32,7 +35,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'subscribers', 'import_subscribers' ); ?>
 	<div id="subcontent">
-	<?php if( $completed ) { ?>
+	<?php if ( $completed ) { ?>
 	<p><?php echo _('Your emails have been imported successfully!'); ?></p>
 	<?php } else { ?>
 	<div id="dUploadedSubscribers" class="hidden">
@@ -75,7 +78,7 @@ get_header();
 		<br /><br />
 		<p>
 		<?php 
-			foreach( $email_lists as $el ) { 
+			foreach ( $email_lists as $el ) { 
 				$checked = ( 0 == $el['category_id'] ) ? ' checked="checked"' : '';
 		?>
 			<input type="checkbox" class="cb" value="<?php echo $el['email_list_id']; ?>"<?php echo $checked; ?> /> <?php echo $el['name']; ?><br />

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Errors
- * @package Imagine Retailer
+ * @package Real Statistics
  * @subpackage Admin
  */
 
@@ -9,8 +9,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 css( 'errors', 'data-tables/TableTools.css', 'data-tables/ui.css', 'jquery.ui' );
 javascript( 'jquery',  'jquery.tmp-val', 'jquery.common', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'jquery.ui', 'errors' );

@@ -46,16 +46,16 @@ function postLoad( $ ) {
 	});
 	
 	// Make sure its not gray
-	if( 'Template Title' != $('#tTitle').val() )
+	if ( 'Template Title' != $('#tTitle').val() )
 		$('#tTitle').css( 'color', '#000000' );
 
 	// If its an edited product
-	if( $('#hCraigslistID').val().length ) {
+	if ( $('#hCraigslistID').val().length ) {
 		// Update the categories dropdown (sUpdateCategory)
 	}
 	
 	// Make sure the category selector is set to the proper category
-	if( $("#hCategory").val().length ){
+	if ( $("#hCategory").val().length ){
 		var Category = parseInt( $('#hCategory').val() );
 		var targetIndex = $('#sCraigslistCategory').children('option[value='+ Category +']');		
 		targetIndex = targetIndex[0].index;
@@ -68,7 +68,7 @@ function postLoad( $ ) {
 		var titleHTML = $("#tTitle").val();
 		var store_logo = "<p align='center'><a href='http://199.47.222.27/' title='Generic Store' target='_blank'><img src='http://199.47.222.27/custom/uploads/images/logo.jpg' /></a></p>";
 		
-		if( !categoryID ) {
+		if ( !categoryID ) {
 			alert( 'Please select a category.' );
 			return;
 		}
@@ -76,11 +76,11 @@ function postLoad( $ ) {
 		var currentCategory = $("#dPreviewCategoryID").val();
 		var productID = $("#dPreviewProductID").val();
 				
-		if( categoryID != currentCategory ) productID = '';
+		if ( categoryID != currentCategory ) productID = '';
 		
 		$.post( '/ajax/craigslist/get-preview-data/', { '_nonce': $('#_ajax_preview_craigslist').val(), 'cid' : categoryID, 'pid' : productID }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			} else {
@@ -101,13 +101,13 @@ function postLoad( $ ) {
 				var photoData = new Object();
 				var photoURL = '';
 				while(1){					
-					if( editorHTML.indexOf('[Photo]') < 0 ) break;
+					if ( editorHTML.indexOf('[Photo]') < 0 ) break;
 					else {
 						photoData = response['result']['photos'][photoIndex];
 						photoURL = "<img src='http://" + photoData['industry'] + ".retailcatalog.us/products/" + photoData['product_id'] + "/large/" + photoData['image'] + "' />";
 						editorHTML = editorHTML.replace('[Photo]', photoURL);
 						photoIndex++;
-						if( photoIndex >= ( response['result']['photos'] ).length) photoIndex = 0;
+						if ( photoIndex >= ( response['result']['photos'] ).length) photoIndex = 0;
 					}
 				}
 				$("#dPreviewArea").html( editorHTML );

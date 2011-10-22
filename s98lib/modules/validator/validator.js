@@ -45,7 +45,7 @@ function luhn_check( number ) {
 }
 
 // From PHP.JS
-function in_array(needle,haystack,argStrict){var found=false,key,strict=!!argStrict;for(key in haystack){if ((strict&&haystack[key]===needle)||(!strict&&haystack[key]==needle)){found=true;break;}}
+function in_array(needle,haystack,argStrict){var found=false,key,strict=!!argStrict;for (key in haystack){if ((strict&&haystack[key]===needle)||(!strict&&haystack[key]==needle)){found=true;break;}}
 return found;}
 
 function Validator(fName) {
@@ -86,14 +86,14 @@ function Validator(fName) {
 }
 
 function clear_all_validations() {
-	for(var i = 0; i < this.fObj.elements.length; i++) {
+	for (var i = 0; i < this.fObj.elements.length; i++) {
 		this.fObj.elements[i].vSet = null;
 	}
 }
 
 function clear_validations(elementArray) {
 	start = (arguments[1]) ? arguments[1] : 0;
-	for(var i = start; i < this.fObj.elements.length; i++) {
+	for (var i = start; i < this.fObj.elements.length; i++) {
 		if (this.fObj.elements[i].val) {
 			if (in_array(this.fObj.elements[i].val.vSet[0][0], elementArray)) {
 				this.fObj.elements[i].val.oldSet = this.fObj.elements[i].val.vSet;
@@ -105,7 +105,7 @@ function clear_validations(elementArray) {
 
 function restore_validations(elementArray) {
 	start = (arguments[1]) ? arguments[1] : 0;
-	for(var i = start; i < this.fObj.elements.length; i++) {
+	for (var i = start; i < this.fObj.elements.length; i++) {
 		if (this.fObj.elements[i].val) {
 			if (this.fObj.elements[i].val.oldSet) {
 				this.fObj.elements[i].val.vSet = this.fObj.elements[i].val.oldSet;
@@ -115,7 +115,7 @@ function restore_validations(elementArray) {
 }
 
 function form_submit_handler() {
-	for(var i = 0; i < this.elements.length; i++) {
+	for (var i = 0; i < this.elements.length; i++) {
 		if (this.elements[i].val && this.elements[i].val.vSet && !this.elements[i].val.validate(this)) {
 			return false;
 		}
@@ -185,7 +185,7 @@ function addVal(elementName, desc, error) {
 }
 
 function validate(fObj) {
-	for(i = 0; i < this.vSet.length; i++)
+	for (i = 0; i < this.vSet.length; i++)
 	{
 		if (!checkValidation(this.vSet[i][0], this.vSet[i][1], this.vSet[i][2], fObj)) {
 			elementArray = this.vSet[i][0].split("|");
@@ -218,7 +218,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 		'zip': /[^-0-9]/
 	}
 	
-	switch(command) 
+	switch (command) 
 	{
 		case "alnum": 
 		case "alphanumeric": 
@@ -267,7 +267,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 			// Make sure it's  valid credit card type
 			if ( null != patterns['cc'].exec( objValue ) ) {
 				// Add the specific validation for the other types
-				switch( firstNum ) {
+				switch ( firstNum ) {
 					// Visa
 					case '4':
 						if ( 13 != objLength  && 16 != objLength ) {

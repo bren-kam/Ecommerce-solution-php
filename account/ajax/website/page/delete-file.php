@@ -28,7 +28,7 @@ $ajax->ok( $wf->delete( $website_file_id ), _('An error occurred while trying to
 jQuery('#li' . $website_file_id)->remove();
 
 // Get the files, see how many there are
-if( !$wf->get_count() )
+if ( !$wf->get_count() )
 	jQuery('#ulUploadFile')->append('<li>', _('You have not uploaded any files.') . '</li>'); // Add a message
 
 // Add the response

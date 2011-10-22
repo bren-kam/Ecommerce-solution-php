@@ -22,16 +22,16 @@ header::send( array(
 $css_paths = array( INC_PATH, THEME_PATH );
 
 // Find the CSS files and combine them
-foreach( $files as $css_file ) {
-	if( '/' == $css_file[0] )
+foreach ( $files as $css_file ) {
+	if ( '/' == $css_file[0] )
 		$css_file = substr( $css_file, 1 );
 	
 	$css_file = ( !stristr( $css_file, '.css' ) ) ? $css_file . '.css' : $css_file;
 	
-	foreach( $css_paths as $cssp ) {
+	foreach ( $css_paths as $cssp ) {
 	 	$cssf = $cssp . 'css/' . $css_file;
 		
-		if( is_file( $cssf ) )
+		if ( is_file( $cssf ) )
 			$css_files[] = $cssf;
 	}
 }
@@ -40,8 +40,11 @@ foreach( $files as $css_file ) {
 $compressed_css_file_path = INC_PATH . 'cache/css/' . md5( implode( '|', $css_files ) ) . '.css';
 
 // If a cache does not exist, create it, otherwise, read it
-if( !file_exists( $compressed_css_file_path ) ) {
-	foreach( $css_files as $css_file ) {
+if ( !file_exists( $compressed_css_file_path ) ) {
+	// Declare variables
+	$css = '';
+	
+	foreach ( $css_files as $css_file ) {
 		//$css .= file_get_contents( $css_file ); 
 		$css .= compress::css( file_get_contents( $css_file ) );
 	}
@@ -50,7 +53,7 @@ if( !file_exists( $compressed_css_file_path ) ) {
 	$css = $compress_css->css;
 	
 	// Write to file
-	if( LIVE && $fh = @fopen( $compressed_css_file_path, 'w' ) ) {
+	if ( LIVE && $fh = @fopen( $compressed_css_file_path, 'w' ) ) {
 		fwrite( $fh, $css );
 		fclose( $fh );
 	}

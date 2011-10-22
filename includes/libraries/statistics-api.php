@@ -27,7 +27,7 @@ class Stat_API {
 	 */
 	public function __construct( $api_key ) {
 		// Do we need to debug
-		if( self::DEBUG )
+		if ( self::DEBUG )
 			error_reporting( E_ALL );
 		
 		$this->api_key = $api_key;
@@ -105,7 +105,7 @@ class Stat_API {
 	 * @param array $params (optional|array) an array of the parameters to be sent
 	 */
 	private function execute( $method, $params = array() ) {
-		if( empty( $this->api_key ) ) {
+		if ( empty( $this->api_key ) ) {
 			$this->error = 'Cannot send request without an API Key.';
 			$this->success = false;
 		}
@@ -124,7 +124,7 @@ class Stat_API {
 		$this->response = json_decode( curl_exec( $ch ) );
 		curl_close($ch);
 		
-		if( $this->response->success )
+		if ( $this->response->success )
 			$this->success = true;
 		
 		$this->message = $this->response->message;

@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 css('dashboard');
@@ -24,7 +24,11 @@ get_header();
 	<br /><br />
 	<div id="nav-icons">
 		<?php
-		if( $user && isset( $user['website'] ) ) { 
+		if ( $user && isset( $user['website'] ) ) {
+            // Need to get settings
+            $w = new Websites;
+			$settings = $w->get_settings('advertising-url');
+
 			$links = array( 
 				'pages'				=> array( 'website', _('Website') )
 				, 'product_catalog'	=> ( 'High Impact' == $user['website']['type'] ) ? array( 'products/top-brands', _('Brands') ) : array( 'products', _('Products') )
@@ -38,18 +42,24 @@ get_header();
 			
 			$keys = array_keys( $links );
 			
-			foreach( $user['website'] as $k => $v ) {
+			foreach ( $user['website'] as $k => $v ) {
 				// Don't need to deal with antyhing other keys
-				if( 'email_marketing' != $k && ( !in_array( $k, $keys ) || !$v ) )
+				if ( 'email_marketing' != $k && ( !in_array( $k, $keys ) || !$v ) )
 					continue;
 				
-				if( 'blog' == $k ) {
-				?>
-				<a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $links[$k][1]; ?>" id="blog"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
-				<?php } else { ?>
-				<a href="/<?php echo $links[$k][0]; ?>/" title="<?php echo $links[$k][1]; ?>" id="<?php echo $links[$k][0]; ?>"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
-				<?php
+				if ( 'blog' == $k ) {
+                    ?>
+                    <a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $links[$k][1]; ?>" id="blog"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
+                <?php } else { ?>
+                    <a href="/<?php echo $links[$k][0]; ?>/" title="<?php echo $links[$k][1]; ?>" id="<?php echo $links[$k][0]; ?>"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
+                    <?php
 				}
+                
+                if ( !empty( $settings['advertising-url'] ) ) {
+				?>
+                    <a href="<?php echo $settings['advertising-url']; ?>" title="<?php echo _('Advertising Portal'); ?>" id="advertising-url" target="_blank"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Advertising Portal'); ?>" /><br /><?php echo _('Advertising Portal'); ?></a>
+                    <?php
+                }
 			}
 		}
 		?>

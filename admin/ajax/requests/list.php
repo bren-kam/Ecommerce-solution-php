@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -27,8 +27,8 @@ $order_by = '';
 		
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
-	for( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch( $_GET['iSortCol_' . $i] ) {
+	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
+		switch ( $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'days_left';
@@ -66,7 +66,7 @@ $r = new Requests;
 /* Filtering  */
 $where = ' AND a.`status` = ' . (int) $_GET['status'];
 
-if( !empty( $_GET['sSearch'] ) ) {
+if ( !empty( $_GET['sSearch'] ) ) {
 	$search = $r->db->escape( $_GET['sSearch'] );
 	$where .= " AND ( b.`title` LIKE '{$search}%' OR c.`contact_name` LIKE '{$search}' )";
 }
@@ -76,13 +76,13 @@ $request_count = $r->count_requests( $where );
 
 $aaData = array();
 
-//foreach( $visitors as $v ) {
-foreach( $requests as $r ) {
+//foreach ( $visitors as $v ) {
+foreach ( $requests as $r ) {
 	$name = ( 'Anonymous' == $r['user_name'] ) ? _('Anonymous ') . $r['request_id'] : $r['user_name'];
 	
-	if( '0' == $_GET['status'] ) {
+	if ( '0' == $_GET['status'] ) {
 		// Determined which color should be used for days left
-		switch( $r['days_left'] ) {
+		switch ( $r['days_left'] ) {
 			case ( $r['days_left'] < 10 ):
 				$color = 'red';
 			break;

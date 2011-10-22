@@ -8,12 +8,12 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 // If user's permission level is too low, redirect.
-if( $user['role'] < 7 )
-	url::redirect( '/login/' );
+if ( $user['role'] < 7 )
+	login();
 
 $c = new Companies();
 $v = new Validator();
@@ -38,11 +38,11 @@ add_footer( $v->js_validation() );
 // Set to false
 $success = false;
 
-if( nonce::verify( $_POST['_nonce'], 'add-user' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-user' ) ) {
 	$errs = $v->validate();
 	
-	if( empty( $errs ) ) {
-		if( $user['role'] <= 8 ) $_POST['sCompany'] = $user['company_id'];	
+	if ( empty( $errs ) ) {
+		if ( $user['role'] <= 8 ) $_POST['sCompany'] = $user['company_id'];	
 		$success = $u->create( $_POST['sCompany'], $_POST['tEmail'], $_POST['pPassword'], $_POST['tContactName'], $_POST['tStoreName'], ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] ) );
 	}
 }
@@ -61,11 +61,11 @@ get_header();
 	<?php get_sidebar( 'users/' ); ?>
 	<div id="subcontent">
 		<?php 
-		if( !$success ) {
+		if ( !$success ) {
 			$main_form_class = '';
 			$success_class = ' class="hidden"';
 			
-			if( isset( $errs ) )
+			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		} else {
 			$success_class = '';
@@ -74,10 +74,10 @@ get_header();
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php 
-			if( isset( $errs ) && !empty( $errs ) ) {
+			if ( isset( $errs ) && !empty( $errs ) ) {
 				$error_message = '';
 				
-				foreach( $errs as $e ) {
+				foreach ( $errs as $e ) {
 					$error_message .= ( !empty( $error_message ) ) ? '<br />' . $e : $e;
 				}
 				
@@ -88,15 +88,15 @@ get_header();
 			<table cellpadding="0" cellspacing="0">
 				<?php
                 // If their role is too low, only show them their own company.
-				if( $user['role'] > 8 ) { ?>
+				if ( $user['role'] > 8 ) { ?>
 				<tr>
 					<td><label for="sCompany"><?php echo _('Company'); ?>: <span class="red">*</span></label></td>
 					<td>
                         <select name="sCompany" id="sCompany">
 							<option value="">-- <?php echo _('Select a Company'); ?> --</option>
 							<?php 
-							foreach( $companies as $c ) { 
-								$selected = ( !$success && $_POST['sCompany'] == $c['company_id'] ) ? ' selected="selected"' : '';
+							foreach ( $companies as $c ) { 
+								$selected = ( !$success && isset( $_POST['sCompany'] ) && $_POST['sCompany'] == $c['company_id'] ) ? ' selected="selected"' : '';
 							?>
 							<option value="<?php echo $c['company_id']; ?>"<?php echo $selected; ?>><?php echo $c['name']; ?></option>
 							<?php } ?>
@@ -110,7 +110,7 @@ get_header();
 				?>
 				<tr>
 					<td><label for="tEmail"><?php echo _('Email'); ?>: <span class="red">*</span></label></td>
-					<td><input type="text" name="tEmail" id="tEmail" maxlength="100" value="<?php if( !$success ) echo $_POST['tEmail']; ?>" class="tb" /></td>
+					<td><input type="text" name="tEmail" id="tEmail" maxlength="100" value="<?php if ( !$success && isset( $_POST['tEmail'] ) ) echo $_POST['tEmail']; ?>" class="tb" /></td>
 				</tr>
 				<tr>
 					<td><label for="pPassword"><?php echo _('Password'); ?>: <span class="red">*</span></label></td>
@@ -122,11 +122,11 @@ get_header();
 				</tr>
 				<tr>
 					<td><label for="tContactName"><?php echo _('Contact Name'); ?>: <span class="red">*</span></label></td>
-					<td><input type="text" name="tContactName" id="tContactName" maxlength="80" value="<?php if( !$success ) echo $_POST['tContactName']; ?>" class="tb" /></td>
+					<td><input type="text" name="tContactName" id="tContactName" maxlength="80" value="<?php if ( !$success && isset( $_POST['tContactName'] ) ) echo $_POST['tContactName']; ?>" class="tb" /></td>
 				</tr>
 				<tr>
 					<td><label for="tStoreName"><?php echo _('Store Name'); ?>:</label></td>
-					<td><input type="text" name="tStoreName" id="tStoreName" maxlength="80" value="<?php if( !$success ) echo $_POST['tStoreName']; ?>" class="tb" /></td>
+					<td><input type="text" name="tStoreName" id="tStoreName" maxlength="80" value="<?php if ( !$success && isset( $_POST['tStoreName'] ) ) echo $_POST['tStoreName']; ?>" class="tb" /></td>
 				</tr>
 				<tr>
 					<td><label for="sRole"><?php echo _('Role'); ?>:</label></td>
@@ -137,7 +137,7 @@ get_header();
 							$roles = array( 1 => 'Basic User', 5 => 'Basic Account', 7 => 'Online Specialist', 8 => 'Admin', 10 => 'Super Admin' );
 							$selected_role_number = ( !$success && isset( $_POST['sRole'] ) ) ? $_POST['sRole'] : 5;
 							
-							for( $i = 1; $i <= $max_role; $i++ ) { 
+							for ( $i = 1; $i <= $max_role; $i++ ) { 
 								$selected = ( $selected_role_number == $i ) ? ' selected="selected"' : '';
 								$name = ( array_key_exists( $i, $roles ) ) ? $i . ' - ' . $roles[$i] : $i;
 								

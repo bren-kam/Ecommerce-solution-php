@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $w = new Websites;
 
@@ -39,11 +39,11 @@ $v->add_validation( 'tTemplateImageThumbnail', 'url', 'The "Template Image Thumb
 // Set to false
 $success = false;
 
-if( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-template' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-template' ) ) {
 	$errs = $v->validate();
 	
 	// echo stripslashes( $_POST['taProductTemplate'] ); exit;
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$em = new Emails();
 		$success = $em->add_template( $_POST['sWebsiteID'], $_POST['tViewProductButton'], $_POST['tProductColor'], $_POST['tPriceColor'], $_POST['taDefaultTemplate'], $_POST['taProductTemplate'], $_POST['tTemplateImage'], $_POST['tTemplateImageThumbnail'] );
 	}
@@ -67,11 +67,11 @@ get_header();
 	<?php get_sidebar( 'emails/' ); ?>
 	<div id="subcontent">
 		<?php 
-		if( !$success ) {
+		if ( !$success ) {
 			$main_form_class = '';
 			$success_class = ' class="hidden"';
 			
-			if( isset( $errs ) )
+			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		} else {
 			$success_class = '';
@@ -80,10 +80,10 @@ get_header();
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php
-			if( isset( $errs ) && !empty( $errs ) ) {
+			if ( isset( $errs ) && !empty( $errs ) ) {
 				$error_message = '';
 				
-				foreach( $errs as $e ) {
+				foreach ( $errs as $e ) {
 					$error_message .= ( !empty( $error_message ) ) ? "<br />$e" : $e;
 				}
 				
@@ -98,7 +98,7 @@ get_header();
                         <select name="sWebsiteID" id="sWebsiteID">
                             <option value="">-- Select a Website --</option>
                             <?php 
-                            foreach( $websites as $website ) { 
+                            foreach ( $websites as $website ) { 
                                 $selected = ( !$success && isset( $_POST['sWebsiteID'] ) && $_POST['sWebsiteID'] == $website['website_id'] ) ? ' selected="selected"' : '';
                             ?>
                             <option value="<?php echo $website['website_id']; ?>"<?php echo $selected; ?>><?php echo $website['title']; ?></option>
@@ -108,31 +108,31 @@ get_header();
                 </tr>
                 <tr>
                     <td><label for="tViewProductButton">View Product Button <span class="red">*</span></label></td>
-                    <td><input type="text" name="tViewProductButton" id="tViewProductButton" maxlength="200" value="<?php if( !$success && isset( $_POST['tViewProductButton'] ) ) echo $_POST['tViewProductButton']; ?>" /></td>
+                    <td><input type="text" name="tViewProductButton" id="tViewProductButton" maxlength="200" value="<?php if ( !$success && isset( $_POST['tViewProductButton'] ) ) echo $_POST['tViewProductButton']; ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="tProductColor">Product Color: <span class="red">*</span></label></td>
-                    <td><input type="text" name="tProductColor" id="tProductColor" maxlength="6" value="<?php if( !$success && isset( $_POST['tProductColor'] ) ) echo $_POST['tProductColor']; ?>" /></td>
+                    <td><input type="text" name="tProductColor" id="tProductColor" maxlength="6" value="<?php if ( !$success && isset( $_POST['tProductColor'] ) ) echo $_POST['tProductColor']; ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="tPriceColor">Price Color: <span class="red">*</span></label></td>
-                    <td><input type="text" name="tPriceColor" id="tPriceColor" maxlength="6" value="<?php if( !$success && isset( $_POST['tPriceColor'] ) ) echo $_POST['tPriceColor']; ?>" /></td>
+                    <td><input type="text" name="tPriceColor" id="tPriceColor" maxlength="6" value="<?php if ( !$success && isset( $_POST['tPriceColor'] ) ) echo $_POST['tPriceColor']; ?>" /></td>
                 </tr>
                 <tr>
                     <td valign="top"><label for="taDefaultTemplate">Default Template: <span class="red">*</span></label></td>
-                    <td><textarea name="taDefaultTemplate" id="taDefaultTemplate" cols="50" rows="3"><?php if( !$success && isset( $_POST['taDefaultTemplate'] ) ) echo $_POST['taDefaultTemplate']; ?></textarea></td>
+                    <td><textarea name="taDefaultTemplate" id="taDefaultTemplate" cols="50" rows="3"><?php if ( !$success && isset( $_POST['taDefaultTemplate'] ) ) echo $_POST['taDefaultTemplate']; ?></textarea></td>
                 </tr>
                 <tr>
                     <td valign="top"><label for="taProductTemplate">Product Template: <span class="red">*</span></label></td>
-                    <td><textarea name="taProductTemplate" id="taProductTemplate" cols="50" rows="3"><?php if( !$success && isset( $_POST['taProductTemplate'] ) ) echo $_POST['taProductTemplate']; ?></textarea></td>
+                    <td><textarea name="taProductTemplate" id="taProductTemplate" cols="50" rows="3"><?php if ( !$success && isset( $_POST['taProductTemplate'] ) ) echo $_POST['taProductTemplate']; ?></textarea></td>
                 </tr>
                 <tr>
                     <td><label for="tTemplateImage">Template Image <span class="red">*</span></label></td>
-                    <td><input type="text" name="tTemplateImage" id="tTemplateImage" maxlength="200" value="<?php if( !$success && isset( $_POST['tTemplateImage'] ) ) echo $_POST['tTemplateImage']; ?>" /></td>
+                    <td><input type="text" name="tTemplateImage" id="tTemplateImage" maxlength="200" value="<?php if ( !$success && isset( $_POST['tTemplateImage'] ) ) echo $_POST['tTemplateImage']; ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="tTemplateImageThumbnail">Template Image Thumbnail <span class="red">*</span></label></td>
-                    <td><input type="text" name="tTemplateImageThumbnail" id="tTemplateImageThumbnail" maxlength="200" value="<?php if( !$success && isset( $_POST['tTemplateImageThumbnail'] ) ) echo $_POST['tTemplateImageThumbnail']; ?>" /></td>
+                    <td><input type="text" name="tTemplateImageThumbnail" id="tTemplateImageThumbnail" maxlength="200" value="<?php if ( !$success && isset( $_POST['tTemplateImageThumbnail'] ) ) echo $_POST['tTemplateImageThumbnail']; ?>" /></td>
                 </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>

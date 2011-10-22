@@ -25,7 +25,7 @@ $settings = $w->get_settings( 'shipping-usps' );
 $settings = unserialize( $settings['shipping-usps'] );
 
 // Modify the settings
-if ( nonce::verify( $_POST['_nonce'], 'add-edit-usps-shipping-method' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-usps-shipping-method' ) ) {
 	if ( $website_shipping_method_id ) {
 		$success = $sc->update_shipping_method( $website_shipping_method_id, $_POST['sService'], 'N/A', 'N/A', $_POST['extra'] );
 	} else {
@@ -59,7 +59,7 @@ get_header();
 		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
-        <?php if( empty( $settings ) || in_array( '', $settings ) ) { ?>
+        <?php if ( empty( $settings ) || in_array( '', $settings ) ) { ?>
         <p class="error">You must set up your USPS Account before adding USPS shipping methods.</p>
         <p><a href="/shopping-cart/shipping/settings/">Click here</a> to set up your USPS account information.</p>
         <?php } else { ?>
@@ -88,7 +88,7 @@ get_header();
 								, 'ONLINE' => _('Online')
 							);
 							
-							foreach( $services as $sv => $s ) {
+							foreach ( $services as $sv => $s ) {
 								$selected = ( $shipping_method['name'] == $sv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $sv; ?>"<?php echo $selected; ?>><?php echo $s; ?></option>
@@ -107,7 +107,7 @@ get_header();
 								, 'OVERSIZE' => _('Oversize (girth over 108in under 131in)')
 								);
 							
-							foreach( $sizes as $sv => $s ) {
+							foreach ( $sizes as $sv => $s ) {
 								$selected = ( $shipping_method['extra']['size'] == $sv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $sv; ?>"<?php echo $selected; ?>><?php echo $s; ?></option>
@@ -125,7 +125,7 @@ get_header();
 								, 'FLAT' => _('Flat')
 							);
 							
-							foreach( $mail_types as $mtv => $mt ) {
+							foreach ( $mail_types as $mtv => $mt ) {
 								$selected = ( $shipping_method['extra']['mail_type'] == $sv ) ? ' selected="selected"' : '';
 								?>
 								<option value="<?php echo $mtv; ?>"<?php echo $selected; ?>><?php echo $mt; ?></option>

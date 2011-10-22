@@ -5,13 +5,13 @@
  * @subpackage Admin
  */
  
-if( nonce::verify( $_POST['_nonce'], 'change-state' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-state' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in view websites.') ) );
 		exit;
 	}
 	
-	switch( $_POST['s'] ) {
+	switch ( $_POST['s'] ) {
 		default:
 		case 'all':
 			unset( $_SESSION['websites']['state'] );

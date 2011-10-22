@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $a = new Analytics( $user['website']['ga_profile_id'] );
@@ -20,7 +20,7 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Visitors'), ' <span class="small">', date_time::date( 'M j, Y', strtotime( $start_date ) ), ' - ', date_time::date( 'M j, Y', strtotime( $end_date ) ), '</span>'; ?></h1>
+	<h1><?php echo _('Visitors'), ' <span class="small">', dt::date( 'M j, Y', strtotime( $start_date ) ), ' - ', dt::date( 'M j, Y', strtotime( $end_date ) ), '</span>'; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'visitors' ); ?>
 	<div id="subcontent">

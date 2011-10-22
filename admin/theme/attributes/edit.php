@@ -8,26 +8,25 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $a = new Attributes;
 
-if( nonce::verify( $_POST['_nonce'], 'edit-attribute' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-attribute' ) ) {
 	
 	// Parse attribute items
-	if( is_array( $_POST['hListItems'] ) ) {
-		foreach( $_POST['hListItems'] as $name ) {
-			if( !empty( $name ) )
-				$attribute_list[] = $name;
-		}
+	if ( is_array( $_POST['hListItems'] ) )
+	foreach ( $_POST['hListItems'] as $name ) {
+		if ( !empty( $name ) )
+			$attribute_list[] = $name;
 	}
 	
 	// Create the attribute
 	$attribute_id = $a->update( $_POST['hAttributeID'], $_POST['tAttributeTitle'], $_POST['tAttributeName'], $attribute_list );
 	
 	// If successfull, send to attributes
-	if( $attribute_id )
+	if ( $attribute_id )
 		url::redirect( '/attributes/' );
 }
 
@@ -63,8 +62,8 @@ get_header();
 				<div class="cell">
 					<div id="dItemsList">
 					<?php
-					if( is_array( $attribute_items ) )
-					foreach( $attribute_items as $ai ) {
+					if ( is_array( $attribute_items ) )
+					foreach ( $attribute_items as $ai ) {
 					?>
 					<div id="dEditListItem_<?php echo format::slug( $ai['attribute_item_name'] ); ?>" class="list-item-container">
 						<div class="list-item">

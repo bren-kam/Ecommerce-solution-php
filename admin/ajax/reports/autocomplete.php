@@ -5,9 +5,9 @@
  * @subpackage Admin
  */
 
-if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 	// Get the right suggestions for the right type
-	switch( $_POST['type'] ) {
+	switch ( $_POST['type'] ) {
 		case 'brand':
 			$b = new Brands;
 
@@ -28,7 +28,7 @@ if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 	}
 	
 	// Needs to return an array, even if nothing was gotten
-	if( !$results )
+	if ( !$results )
 		$results = array();
 	
 	// Needs to be in JSON

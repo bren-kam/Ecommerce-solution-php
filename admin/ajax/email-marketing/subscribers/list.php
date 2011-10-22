@@ -19,7 +19,7 @@ $dt->add_where( " AND a.`website_id` = " . $user['website']['website_id'] );
 $dt->search( array( 'a.`email`' => false, 'a.`name`' => false ) );
 
 // Find out whether it's for a specific email list id or not
-if( isset( $_GET['elid'] ) ) {
+if ( isset( $_GET['elid'] ) ) {
 	$dt->add_where( " AND b.`email_list_id` = " . (int) $_GET['elid'] );
 
 	// Get subscribers by email list id
@@ -32,22 +32,22 @@ if( isset( $_GET['elid'] ) ) {
 }
 
 // Only if they are subscribed
-if( $status ) {
+if ( $status ) {
 	$confirm = _('Are you sure you want to unsubscribe this email? This cannot be undone.');
 	$unsubscribe_email_nonce = nonce::create( 'unsubscribe-email' );
 }
 	
 // Create output
-if( is_array( $subscribers ) )
-foreach( $subscribers as $s ) {
-	if( $status )
+if ( is_array( $subscribers ) )
+foreach ( $subscribers as $s ) {
+	if ( $status )
 		$actions = ' | <a href="/ajax/email-marketing/subscribers/unsubscribe/?eid=' . $s['email_id'] . '&amp;e=' . $s['email'] . '&amp;_nonce=' . $unsubscribe_email_nonce . '"  title="' . _('Unsubscribe Email') . '" ajax="1" confirm="' . $confirm . '">' . _('Unsubscribe') . '</a>';
 
 	$data[] = array( 
 		$s['email'] . '<br /><div class="actions"><a href="/email-marketing/subscribers/add-edit/?eid=' . $s['email_id'] . '" title="' . _('Edit Subscriber') . '">' . _('Edit Subscriber') . '</a>' . $actions . '</div>',
 		$s['name'],
 		$s['phone'],
-		date_time::date( 'F jS, Y g:i a', $s['date'] )
+		dt::date( 'F jS, Y g:i a', $s['date'] )
 	);
 }
 

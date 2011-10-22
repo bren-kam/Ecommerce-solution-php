@@ -8,10 +8,10 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
-if( empty( $_GET['bid'] ) )
+if ( empty( $_GET['bid'] ) )
 	url::redirect( '/brands/' );
 
 $b = new Brands;
@@ -31,10 +31,10 @@ $v->add_validation( 'fPicture', 'img', _('The "Image" field may only hold an ima
 
 add_footer( $v->js_validation() );
 
-if( nonce::verify( $_POST['_nonce'], 'update-brand' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-brand' ) ) {
 	$errs = $v->validate();
 	
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		// Create the brand
 		$success = $b->update( $_POST['hBrandID'], $_POST['tName'], $_POST['tSlug'], $_POST['tLink'], $_FILES['fPicture'], $_POST['hProductOptions'] );
 	}
@@ -54,11 +54,11 @@ get_header();
 	<?php get_sidebar( 'brands/' ); ?>
 	<div id="subcontent">
 		<?php 
-		if( !$success ) {
+		if ( !isset( $success ) || !$success ) {
 			$main_form_class = '';
 			$success_class = ' class="hidden"';
 			
-			if( isset( $errs ) )
+			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		} else {
 			$success_class = '';
@@ -67,15 +67,8 @@ get_header();
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php 
-			if( isset( $errs ) && !empty( $errs ) ) {
-				$error_message = '';
-				
-				foreach( $errs as $e ) {
-					$error_message .= ( !empty( $error_message ) ) ? '<br />' . $e : $e;
-				}
-				
-				echo "<p class='red'>$error_message</p>";
-			}
+			if ( isset( $errs ) )
+				echo "<p class='red'>$errs</p>";
 			?>
 			<form action="/brands/edit/?bid=<?php echo $_GET['bid']; ?>" name="fEditBrand" id="fEditBrand" method="post" enctype="multipart/form-data">
 				<table cellpadding="0" cellspacing="0" width="100%">
@@ -96,8 +89,8 @@ get_header();
 						<td>
 							<div id="dProductOptionsList">
 								<?php
-								if( is_array( $brand['product_options'] ) )
-								foreach( $brand['product_options'] as $product_option_id ) {
+								if ( is_array( $brand['product_options'] ) )
+								foreach ( $brand['product_options'] as $product_option_id ) {
 									$po = $product_options[$product_option_id];
 								?>
 								<div extra="<?php echo $po['title']; ?>" id="dProductOption<?php echo $po['product_option_id']; ?>" class="product-option-container">
@@ -113,9 +106,9 @@ get_header();
 							<select name="sProductOptions" id="sProductOptions" class="dd">
 								<option value="">-- <?php echo _('Select a Product Option'); ?> --</option>
 								<?php
-								if( is_array( $product_options ) )
-								foreach( $product_options as $po ) {
-									$selected = ( $po['product_option_id'] == $_POST['sProductOptions'] ) ? ' selected="selected"' : '';
+								if ( is_array( $product_options ) )
+								foreach ( $product_options as $po ) {
+									$selected = ( isset( $_POST['sProductOptions'] ) && $po['product_option_id'] == $_POST['sProductOptions'] ) ? ' selected="selected"' : '';
 									
 									echo '<option value="', $po['product_option_id'], '"', $selected, '>', $po['option_title'], '</option>';
 								}
@@ -127,7 +120,7 @@ get_header();
 					<tr>
 						<td><label for="fPicture"><?php echo _('Picture'); ?></label></td>
 						<td>
-							<?php if( !empty( $brand['image'] ) ) { ?>
+							<?php if ( !empty( $brand['image'] ) ) { ?>
 							<div id="dImageContainer">
 								<img src="<?php echo $brand['image']; ?>" style="padding-bottom: 5px;" alt="<?php echo $brand['name']; ?>" />
 								<br />

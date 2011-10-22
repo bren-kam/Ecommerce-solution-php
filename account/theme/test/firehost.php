@@ -19,7 +19,7 @@ get_header();
 	<p>The response on that page should contain the following:</p>
 	<blockquote style="margin-left:40px">
 <?php echo str_replace( '[br]', '<br />', htmlentities("<br />[br]
-<b>Parse error</b>:  syntax error, unexpected ';' in <b>/home/imaginer/public_html/account2/ajax/test/firehost.php</b> on line <b>7</b><br />") ); ?>
+<b>Parse error</b>:  syntax error, unexpected ';' in <b>/home/develop4/public_html/account2/ajax/test/firehost.php</b> on line <b>7</b><br />") ); ?>
 	</blockquote>
 	<br clear="all" />
 	

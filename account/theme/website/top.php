@@ -8,14 +8,17 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 	
-if( !empty( $user['website']['logo'] ) )
+if ( !empty( $user['website']['logo'] ) )
 	$logo = 'http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . '/' . 'custom/uploads/images/' . $user['website']['logo'];
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'top-section' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'top-section' ) ) {
 	$w = new Websites;
 	$success = $w->update( array( 'phone' => $_POST['tPhone'] ), 's' );
 }
@@ -33,12 +36,12 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'top' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<p class="success"><?php echo _('The "Top" section has been updated successfully!'); ?></p>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fTop" action="/website/top/" method="post">

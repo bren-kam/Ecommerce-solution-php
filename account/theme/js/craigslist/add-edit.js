@@ -241,6 +241,7 @@ function refreshPreview() {
 	
 	var sku = $("#hProductSKU").val();
 	
+
 	//get the contents of the tinyMCE editor and replace tags with actual stuff.
 	var newContent = CKEDITOR.instances.taDescription.getData();
 	newContent = newContent.replace( /\[Brand\]/gi, brand );

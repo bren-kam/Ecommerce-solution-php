@@ -6,7 +6,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		minLength: 1,
 		source: function( request, response ) {
 			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in brands ) {
+			if ( request['term'] in brands ) {
 				response( $.map( brands[request['term']], function( item ) {
 					return {
 						'label' : item['name'],

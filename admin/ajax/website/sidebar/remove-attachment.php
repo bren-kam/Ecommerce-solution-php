@@ -30,7 +30,7 @@ if ( '1' == $_GET['si'] ) {
 	$ajax->ok( $wa->update_value( $_GET['waid'], '' ), _('An error occurred while trying to remove your website attachment. Please refresh the page and try again.') );
 	
 	// Figure out what it's getting replaced with
-	switch( $_GET['t'] ) {
+	switch ( $_GET['t'] ) {
 		case 'dRoomPlannerContent':
 			$replacement = '<img src="/media/images/placeholders/240x100.png" width="200" height="100" alt="' . _('Placeholder') . '" />';
 		break;

@@ -1,12 +1,6 @@
-Options +FollowSymLinks -Indexes
+Options +FollowSymLinks -MultiViews -Indexes
 RewriteEngine on
 RewriteBase /
-
-RewriteCond %{HTTP_HOST} ^199.47.222.21
-RewriteRule (.*) http://www.imagineretailer.com/$1 [R=301,L]
-
-RewriteCond %{HTTP_HOST} ^imagineretailer.com [NC] 
-RewriteRule ^(.*)$ http://www.imagineretailer.com/$1 [L,R=301]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

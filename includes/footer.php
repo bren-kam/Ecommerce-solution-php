@@ -6,7 +6,7 @@
 <!-- End: Wrapper -->  
   
 <div id="footer">
-	<?php if( ! isset( $ssl ) ) { ?>
+	<?php if ( ! isset( $ssl ) ) { ?>
 	<div style="margin-top:10px;">
     	<!-- Start SocialFollow.com Button Code -->
 		<img src="http://www.socialfollow.com/button/image/?b=2755" class="socialFollowImage" alt="Follow Me!" />

@@ -17,7 +17,7 @@ class f extends Base_Class {
 	 * @param string $path
 	 * @return |array
 	 */
-	public function read( $path ) {
+	public static function read( $path ) {
 		$handle = fopen( $path, 'r' );
 		$content = fread( $handle, filesize( $path ) );
 		fclose( $handle );		
@@ -33,7 +33,7 @@ class f extends Base_Class {
 	 * @param string $path
 	 * @return array
 	 */
-	public function read_dir( $path ) {
+	public static function read_dir( $path ) {
 		$files = array();
 		
 		// Open the directory

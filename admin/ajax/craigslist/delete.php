@@ -5,8 +5,8 @@
  * @subpackage Graphs
  */
  
-if( nonce::verify( $_POST['_nonce'], 'delete-craigslist' ) ) {
-	if( !$user ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'delete-craigslist' ) ) {
+	if ( !$user ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to delete a craigslist template.') ) );
 		exit;
 	}

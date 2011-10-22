@@ -14,7 +14,7 @@ $a = new Analytics( $user['website']['ga_profile_id'] );
 
 $records = $a->get_metric_by_date( $_POST['metric'] );
 
-foreach( $records as $r_date => $r_value ) {
+foreach ( $records as $r_date => $r_value ) {
 	$plotting_array[] = array( $r_date, $r_value );
 }
 

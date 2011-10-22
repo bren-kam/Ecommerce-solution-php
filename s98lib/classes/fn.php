@@ -24,7 +24,7 @@ class fn extends Base_Class {
 	 * @param bool $echo (optional) whether to echo the information or not
 	 * @return |array
 	 */
-	public function info( $object, $echo = true ) {
+	public static function info( $object, $echo = true ) {
 		// For Imagine Retailer specifically
 		global $user;
 		
@@ -52,10 +52,10 @@ class fn extends Base_Class {
 	 * @param bool $text (optional) whether to send text email
 	 * @return bool
 	 */
-	public function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true ) {
+	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true ) {
 		// Find out if they passes a string or array, if they passed an array parse it
 		if ( is_array( $to ) ) {
-			foreach( $to as $name => $email_address ) {
+			foreach ( $to as $name => $email_address ) {
 				$to_addresses .= ",$name <$email_address>";
 			}
 			
@@ -170,7 +170,7 @@ class fn extends Base_Class {
 	 * @param mixed $data Value to check to see if was serialized.
 	 * @return bool
 	 */
-	public function is_serialized( $data ) {
+	public static function is_serialized( $data ) {
 		// if it isn't a string, it isn't serialized
 		if ( !is_string( $data ) )
 			return false;

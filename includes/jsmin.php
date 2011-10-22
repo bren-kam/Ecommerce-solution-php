@@ -74,7 +74,7 @@ class JSMin {
   // -- Protected Instance Methods ---------------------------------------------
 
   protected function action($d) {
-    switch($d) {
+    switch ($d) {
       case 1:
         $this->output[] = $this->a;
 
@@ -250,7 +250,7 @@ class JSMin {
     $c = $this->get();
 
     if ($c === '/') {
-      switch($this->peek()) {
+      switch ($this->peek()) {
         case '/':
           for (;;) {
             $c = $this->get();
@@ -264,7 +264,7 @@ class JSMin {
           $this->get();
 
           for (;;) {
-            switch($this->get()) {
+            switch ($this->get()) {
               case '*':
                 if ($this->peek() === '/') {
                   $this->get();

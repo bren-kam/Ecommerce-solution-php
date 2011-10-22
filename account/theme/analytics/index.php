@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['live'] )
+if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
@@ -22,12 +22,14 @@ $a = new Analytics( $user['website']['ga_profile_id'] );
 $records = $a->get_metric_by_date( 'visits' );
 $total = $a->get_totals();
 $traffic_sources = $a->get_traffic_sources_totals();
+$visits_plotting_array = array();
 
 // Pie Chart
 $pie_chart = $a->pie_chart( $traffic_sources );
 
 // Visits plotting
-foreach( $records as $r_date => $r_value ) {
+if ( is_array( $records ) )
+foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
@@ -110,15 +112,15 @@ get_header();
 					<div id="dTrafficSourcesData">
 						<p class="blue-marker">
 							<span class="label"><?php echo _('Direct Traffic'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['direct'] ); ?> (<?php echo round( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+							<span class="data"><?php echo number_format( $traffic_sources['direct'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
 						<p class="green-marker">
 							<span class="label"><?php echo _('Referring Sites'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['referring'] ); ?> (<?php echo round( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+							<span class="data"><?php echo number_format( $traffic_sources['referring'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
 						<p class="orange-marker">
 							<span class="label"><?php echo _('Search Engines'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+							<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
 						<?php if ( $traffic_sources['other'] > 0 ) { ?>
 						<p class="yellow-marker">
@@ -142,7 +144,10 @@ get_header();
 							<th align="right"><strong><?php echo _('Page Views'); ?></strong></th>
 							<th align="right"><strong><?php echo _('% Page Views'); ?></strong></th>
 						</tr>
-						<?php foreach( $content_overview_pages as $top ) { ?>
+						<?php 
+						if ( is_array( $content_overview_pages ) )
+						foreach ( $content_overview_pages as $top ) {
+						?>
 						<tr>
 							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
 							<td align="right"><?php echo number_format( $top['page_views'] ); ?></td>

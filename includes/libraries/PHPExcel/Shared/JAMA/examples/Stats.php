@@ -524,11 +524,11 @@ class Base {/*{{{*/
         }
         $sumN = 0;
         if ($this->_dataOption == STATS_DATA_CUMMULATIVE) {
-            foreach($this->_data as $val=>$freq) {
+            foreach ($this->_data as $val=>$freq) {
                 $sumN += $freq * pow((double)$val, (double)$n);
             }
         } else {
-            foreach($this->_data as $val) {
+            foreach ($this->_data as $val) {
                 $sumN += pow((double)$val, (double)$n);
             }
         }
@@ -570,14 +570,14 @@ class Base {/*{{{*/
         }
         $prodN = 1.0;
         if ($this->_dataOption == STATS_DATA_CUMMULATIVE) {
-            foreach($this->_data as $val=>$freq) {
+            foreach ($this->_data as $val=>$freq) {
                 if ($val == 0) {
                     return 0.0;
                 }
                 $prodN *= $freq * pow((double)$val, (double)$n);
             }
         } else {
-            foreach($this->_data as $val) {
+            foreach ($this->_data as $val) {
                 if ($val == 0) {
                     return 0.0;
                 }
@@ -1003,7 +1003,7 @@ class Base {/*{{{*/
             }
             $invsum = 0.0;
             if ($this->_dataOption == STATS_DATA_CUMMULATIVE) {
-                foreach($this->_data as $val=>$freq) {
+                foreach ($this->_data as $val=>$freq) {
                     if ($val == 0) {
                         return PEAR::raiseError('cannot calculate a '.
                                 'harmonic mean with data values of zero.');
@@ -1011,7 +1011,7 @@ class Base {/*{{{*/
                     $invsum += $freq / $val;
                 }
             } else {
-                foreach($this->_data as $val) {
+                foreach ($this->_data as $val) {
                     if ($val == 0) {
                         return PEAR::raiseError('cannot calculate a '.
                                 'harmonic mean with data values of zero.');

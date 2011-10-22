@@ -8,13 +8,16 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $w = new Websites;
 
+// Initialize variable
+$success = false;
+
 // Update the settings
-if( nonce::verify( $_POST['_nonce'], 'update-room-planner' ) )
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-room-planner' ) )
 	$success = $w->update_settings( array( 'page_room-planner-slug' => format::slug( $_POST['tRoomPlannerSlug'] ), 'page_room-planner-title' => $_POST['tRoomPlannerTitle'] ) );
 
 $s = $w->get_settings( 'page_room-planner-slug', 'page_room-planner-title' );
@@ -31,14 +34,14 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'room_planner' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo _('Your room planner page has been updated successfully!'); ?></p>
 		</div>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fRoomPlanner" action="/website/room-planner/" method="post">

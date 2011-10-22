@@ -5,9 +5,9 @@
  * @subpackage Admin
  */
 
-if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 	// Get the right suggestions for the right type
-	switch( $_POST['type'] ) {
+	switch ( $_POST['type'] ) {
 		case 'domain':
 			$w = new Websites;
 
@@ -19,14 +19,14 @@ if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 
 			$results = $u->autocomplete( $_POST['term'] , 'store_name' );
 			
-			foreach( $results as &$result ) $result['store_name'] = stripslashes( $result['store_name'] );
+			foreach ( $results as &$result ) $result['store_name'] = stripslashes( $result['store_name'] );
 		break;
 		
 		case 'title':
 			$w = new Websites;
 			
 			$results = $w->autocomplete( $_POST['term'], 'title' );
-			foreach( $results as &$result ) $result['title'] = stripslashes( $result['title'] );
+			foreach ( $results as &$result ) $result['title'] = stripslashes( $result['title'] );
 		break;
 	}
 	

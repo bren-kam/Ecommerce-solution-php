@@ -85,12 +85,12 @@ function postLoad( $ ) {
 	$('.delete-product').live( 'click', function() {
 		var productID = $(this).attr('id').replace( 'aDelete', '' );
 		
-		if( !confirm( "Are you sure you want to delete this product? This action cannot be undone." ) ) 
+		if ( !confirm( "Are you sure you want to delete this product? This action cannot be undone." ) ) 
 			return;
 		
 		$.post( '/ajax/products/delete/', { '_nonce': $('#_ajax_delete_product').val(), 'pid': productID }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -107,7 +107,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );
@@ -124,7 +124,7 @@ function secureCallback( i ) {
 function setProductSession( key, value ) {
 	$.post( '/ajax/products/set-session/', { '_nonce' : $('#_ajax_set_session').val(), 'key' : key, 'value' : value }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( 'An error occurred while trying change state. Please refresh the page and try again.' );
 			return false;
 		}
@@ -162,7 +162,7 @@ function trSearchClick() {
  */
 function ajaxSearchClick( response ) {
 	// Make sure there was no error
-	if( !response['result'] ) {
+	if ( !response['result'] ) {
 		alert( 'An error occurred while trying to search. Please refresh the page and try again.' );
 		return false;
 	}
@@ -198,7 +198,7 @@ function autocompleteSuccess( request, response ) {
 	var cacheType = $('#sAutoComplete').val();
 	
 	// Find out if they are already cached so we don't have to do another ajax called
-	if( request['term'] in cache[cacheType] ) {
+	if ( request['term'] in cache[cacheType] ) {
 		response( $.map( cache[cacheType][request['term']], function( item ) {
 			return {
 				'label' : item[cacheType],

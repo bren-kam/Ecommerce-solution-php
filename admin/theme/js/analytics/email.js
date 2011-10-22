@@ -9,7 +9,7 @@ jQuery(function($) {
 			div.fadeIn().addClass('selected');
 			
 			// Handle Click Overlay
-			if( 'undefined' == typeof( click_overlay ) && 'dClickOverlay' == div.attr('id') )
+			if ( 'undefined' == typeof( click_overlay ) && 'dClickOverlay' == div.attr('id') )
 			setTimeout( function() {
 				var contents = $('#ifClickOverlay').contents();
 				
@@ -21,13 +21,13 @@ jQuery(function($) {
 				var total_clicks = parseInt( $('#sTotalClicks').text() );
 				var cs = new Array();
 				
-				for( var i in click_stats ) {
+				for ( var i in click_stats ) {
 					cs[removeMailChimpQueryString(i)] =  click_stats[i]['clicks'];
 				}
 				
 				$('a', contents).each( function() {
 					var href = $(this).attr('href');
-					if( '#' == href )
+					if ( '#' == href )
 						return;
 					
 					var pos = $(this).offset();  

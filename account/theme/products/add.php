@@ -26,8 +26,8 @@ if ( $user['role'] <= 5 ) {
 // Instantiate Products -- this will be used everywhere
 $p = new Products;
 
-if( nonce::verify( $_POST['_nonce'], 'add-products' ) ) {
-	if( $p->add_products( $_POST['products'] ) )
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-products' ) ) {
+	if ( $p->add_products( $_POST['products'] ) )
 		url::redirect('/products/?m=1');
 }
 
@@ -86,7 +86,7 @@ get_header();
 				<div id="dNarrowSearch">
 					<h2><?php echo _('Narrow Your Search'); ?></h2>
 					<br />
-					<p id="pAdditionalProducts" class="red<?php if( $product_count < $user['website']['products'] ) echo ' hidden'; ?>"><?php echo _('Please contact your Online Specialist to add additional products. Product Usage has exceeded the number of items allowed.'); ?></p>
+					<p id="pAdditionalProducts" class="red<?php if ( $product_count < $user['website']['products'] ) echo ' hidden'; ?>"><?php echo _('Please contact your Online Specialist to add additional products. Product Usage has exceeded the number of items allowed.'); ?></p>
 					<table cellpadding="0" cellspacing="0" id="tNarrowSearch" width="100%" class="form">
 						<tr>
 							<td style="width:270px"><label for="sCategory"><?php echo _('Category'); ?></label></td>
@@ -151,8 +151,8 @@ get_header();
 					<select name="sRequestBrand" id="sRequestBrand" error='<?php echo _('The "Brand" field is required'); ?>'>
 						<option value="">-- <?php echo _('Select a Brand'); ?> --</option>
 						<?php
-						if( is_array( $brands ) )
-						foreach( $brands as $b ) {
+						if ( is_array( $brands ) )
+						foreach ( $brands as $b ) {
 						?>
 						<option value="<?php echo $b['brand_id']; ?>"><?php echo $b['name']; ?></option>
 						<?php } ?>

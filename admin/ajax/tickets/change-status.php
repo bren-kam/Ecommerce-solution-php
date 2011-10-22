@@ -4,9 +4,9 @@
  * @package Imagine Retailer
  */
  
-if( nonce::verify( $_POST['_nonce'], 'change-status' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-status' ) ) {
 	// Change the session value
-	if( empty( $_POST['s'] ) ) {
+	if ( empty( $_POST['s'] ) ) {
 		unset( $_SESSION['tickets']['status'] );
 	} else {
 		$_SESSION['tickets']['status'] = (int) $_POST['s'];

@@ -1664,7 +1664,7 @@ if (!class_exists('QRcode', false)) {
 				$inputitem['bstream'] = $this->appendBitstream($inputitem['bstream'], $st1['bstream']);
 				$inputitem['bstream'] = $this->appendBitstream($inputitem['bstream'], $st2['bstream']);
 			} else {
-				switch($inputitem['mode']) {
+				switch ($inputitem['mode']) {
 					case QR_MODE_NM: {
 						$inputitem = $this->encodeModeNum($inputitem, $version);
 						break;
@@ -1773,7 +1773,7 @@ if (!class_exists('QRcode', false)) {
 		 protected function estimateBitsModeNum($size) {
 			$w = (int)$size / 3;
 			$bits = $w * 10;
-			switch($size - $w * 3) {
+			switch ($size - $w * 3) {
 				case 1: {
 					$bits += 4;
 					break;
@@ -1875,7 +1875,7 @@ if (!class_exists('QRcode', false)) {
 			if ($size <= 0) {
 				return false;
 			}
-			switch($mode) {
+			switch ($mode) {
 				case QR_MODE_NM: {
 					return $this->checkModeNum($size, $data);
 				}
@@ -1910,7 +1910,7 @@ if (!class_exists('QRcode', false)) {
 				$version = 1;
 			}
 			foreach ($items as $item) {
-				switch($item['mode']) {
+				switch ($item['mode']) {
 					case QR_MODE_NM: {
 						$bits = $this->estimateBitsModeNum($item['size']);
 						break;
@@ -1970,7 +1970,7 @@ if (!class_exists('QRcode', false)) {
 		 */
 		 protected function lengthOfCode($mode, $version, $bits) {
 			$payload = $bits - 4 - $this->lengthIndicator($mode, $version);
-			switch($mode) {
+			switch ($mode) {
 				case QR_MODE_NM: {
 					$chunks = (int)($payload / 10);
 					$remain = $payload - $chunks * 10;

@@ -8,11 +8,11 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Can't be here if they are an authorized user
-if( 1 == $user['role'] )
+if ( 1 == $user['role'] )
 	urll::redirect('/settings/');
 
 $title = _('Authorized Users') . ' | ' . TITLE;

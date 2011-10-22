@@ -16,11 +16,11 @@ head.ready(function() {
 		var sState = $('#sState'), abbr = sState.val(), option = sState.find('option:selected'), name = option.text(), tax = parseFloat( $('#tAmount').val() );
 		
 		// Make sure we have the proper tax
-		if( tax.length < 5 )
+		if ( tax.length < 5 )
 			tax = '0' + tax;
 		
 		// Validation
-		if( !tax || '' == abbr ) {
+		if ( !tax || '' == abbr ) {
 			alert( $(this).attr('error') );
 			return
 		}
@@ -57,7 +57,7 @@ head.ready(function() {
 		var abbr = $("#hState").val(), zip = $("#tNewTaxZipCode").val(), cost = $("#tNewTaxZipCost").val();
 		
 		// Validation
-		if( !zip || !cost ) {
+		if ( !zip || !cost ) {
 			alert( $(this).attr('error') );
 			return false;
 		}

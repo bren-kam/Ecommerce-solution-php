@@ -1105,7 +1105,7 @@ class PHPExcel_Writer_Excel5_Parser
 	 */
 	function _match($token)
 	{
-		switch($token) {
+		switch ($token) {
 			case "+":
 				return $token;
 				break;

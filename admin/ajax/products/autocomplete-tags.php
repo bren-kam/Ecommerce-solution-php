@@ -5,7 +5,7 @@
  * @subpackage Admin
  */
 
-if( nonce::verify( $_POST['_nonce'], 'autocomplete-tags' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete-tags' ) ) {
 	$t = new Tags;
 	
 	// Get the autocomplete entries

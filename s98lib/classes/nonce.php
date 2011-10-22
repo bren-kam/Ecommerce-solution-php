@@ -16,7 +16,7 @@ class nonce extends security {
 	 *
 	 * @return int
 	 */
-	public function tick() {
+	public static function tick() {
 		return ceil( time() / ( NONCE_DURATION / 2 ) );
 	}
 	
@@ -30,7 +30,7 @@ class nonce extends security {
 	 * @param int $user_id (Optional) the user id
 	 * @returns string
 	 */
-	static public function create( $action = '' , $user_id = 0 ) {
+	public static function create( $action = '' , $user_id = 0 ) {
 		$i = self::tick();
 		return substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 );
 	}
@@ -46,7 +46,7 @@ class nonce extends security {
 	 * @param int $user_id (Optional) the user id
 	 * @returns string
 	 */
-	public function verify( $nonce, $action = '' , $user_id = 0 ) {
+	public static function verify( $nonce, $action = '' , $user_id = 0 ) {
 		$i = self::tick();
 		
 		// Nonce generated 0-6 hours ago
@@ -73,7 +73,7 @@ class nonce extends security {
 	 * @param bool $referer Optional, default false. Whether to set the referer field for validation.
 	 * @return string Nonce field.
 	 */
-	function field( $action = '', $name = "_nonce", $echo = true, $referer = false ) {
+	public static function field( $action = '', $name = "_nonce", $echo = true, $referer = false ) {
 		$nonce_field = '<input type="hidden" id="' . $name . '" name="' . $name . '" value="' . self::create( $action ) . '" />';
 		
 		if ( $echo )
@@ -98,7 +98,7 @@ class nonce extends security {
 	 * @param string $action Optional. Nonce action name
 	 * @return string URL with nonce action added.
 	 */
-	function url( $action_url, $action = -1, $uid = 0 ) {
+	public static function url( $action_url, $action = -1, $uid = 0 ) {
 		$action_url = str_replace( '&amp;', '&', $action_url );
 		
 		return url::add_query_arg( '_nonce', self::create( $action, $uid ), $action_url );

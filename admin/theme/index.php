@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 css( 'dashboard' );
 css_ie8( 'dashboard' );
@@ -29,7 +29,7 @@ get_header();
 	<div id="nav-icons">
 		<a href="/websites/" title="<?php echo _('Websites'); ?>" id="websites"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Websites'); ?>" /><br /><?php echo _('Websites'); ?></a>
 		<a href="/products/" title="<?php echo _('Products'); ?>" id="products"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Products'); ?>" /><br /><?php echo _('Products'); ?></a>
-		<?php if( $user['role'] >= 7 ) { ?>
+		<?php if ( $user['role'] >= 7 ) { ?>
         <a href="/users/" title="<?php echo _('Users'); ?>" id="users"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Users'); ?>" /><br /><?php echo _('Users'); ?></a>
 		<?php } ?>
         <a href="/checklists/" title="<?php echo _('Checklists'); ?>" id="checklists"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Checklists'); ?>" /><br /><?php echo _('Checklists'); ?></a>

@@ -1,0 +1,47 @@
+/**************/
+/* Issues */
+/**************/
+.dataTables_wrapper .top { position: absolute; width: 100% }
+#tListIssues_filter { position: absolute; width: 300px !important;; top: -51px; right: 0; }
+#tListIssues_processing { position: absolute; z-index: 9999 }
+.dataTables_filter input {
+	font-size: 12px; padding: 8px 11px 9px; border: 1px solid #c8d2d6; width: 217px; color: #808b9d; font-weight: bold;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+#dListIssues { padding: 1px; background:#fff; border: 1px solid #b5b5b9; position: relative;  }
+#tListIssues {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
+#tListIssues th, #tListIssues td { font-weight: bold; vertical-align:middle; }
+#tListIssues tr {margin:1px 0px;}
+#tListIssues th { font-size: 14px; background: #8F919B; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
+#tListIssues th.center { text-align: center; padding-left: 0 }
+#tListIssues th img { float: right; margin: 8px 5px 0 0; }
+#tListIssues th.sorting_asc img { background: #8F919B url(/images/backgrounds/tickets/arrow-up.png) 0 0 no-repeat }
+#tListIssues th.sorting_desc img { background: #8F919B url(/images/backgrounds/tickets/arrow-down.png) 0 0 no-repeat }
+#tListIssues_paginate { position:relative; bottom: 2px }
+.bottom { position: relative; top: 7px }
+
+#tListIssues td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 7px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
+#tListIssues tr.last td { border-bottom: 0 }
+#tListIssues td.priority { padding: 0; }
+#tListIssues tr.odd, #tListIssues tr.odd td{ background:#fff; }
+#tListIssues tr.even,#tListIssues tr.even td { background: #f2f3f5 }
+#sStatuses { position: absolute; z-index: 9999; padding: 7px 5px 7px 17px; width: 148px; height: 35px; display: block; right: 320px; top: -51px; border: 1px solid #c8d2d6; font-size: 12px; font-weight: bold; color: #808b9d;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+#sStatuses option {
+	padding: 7px 17px;
+}
+
+
+.yellow { color: #FFBA00; }
+.rb { position: relative; top: 3px; }
+label { margin-right: 10px }
+.normal { color: #6abe00 }
+.high { color: #d70000 }
+.low, .normal, .high { display: block; text-align:center; padding: 7px 5px 10px; font-weight: bold }
+span.urgent{ padding: 7px 5px 9px; margin-bottom: 1px; }
+

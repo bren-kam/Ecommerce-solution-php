@@ -4,7 +4,7 @@
  * @package Real Statistics
  */
  
-if( nonce::verify( $_POST['_nonce'], 'update-priority' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-priority' ) ) {
 	$f = new Feedback;
 	
 	$result = $f->update_priority( $_POST['fid'], $_POST['p'] );

@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 $title = _('Shopping Cart - List Orders') . ' | ' . TITLE;

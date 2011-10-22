@@ -55,16 +55,16 @@ $pdf->Cell( 0, 2, 'Days Left: ' . $c['days_left'], 0, 1, 'R' );
 
 $pdf->Ln();
 
-foreach( $items as $section_title => $section_items ) {
+foreach ( $items as $section_title => $section_items ) {
 	$pdf->SetFont( 'helvetica', 'B', 21 );
 	$pdf->Cell( 0, 20, $section_title, 0, 1 );
 	
-	foreach( $section_items as $si ) {
+	foreach ( $section_items as $si ) {
 		$pdf->SetFont( 'helvetica', 'B', 13 );
 		$pdf->Cell( 0, 2, $si['name'], 'B', 0 );
 		
 		// Do we need to make it red?
-		if( !$si['checked'] )
+		if ( !$si['checked'] )
 			$pdf->setTextColor( 255, 0, 0 );
 		
 		$pdf->Cell( 0, 2, ( $si['checked'] ) ? 'Yes' : 'NO', 'B', 1, 'R' );
@@ -72,11 +72,11 @@ foreach( $items as $section_title => $section_items ) {
 		// Make the color black
 		$pdf->setTextColor( 0, 0, 0 );
 
-		if( isset( $si['messages'] ) && count( $si['messages'] ) > 0 ) {
+		if ( isset( $si['messages'] ) && count( $si['messages'] ) > 0 ) {
 			// Set the font size
 			$pdf->SetFont( 'helvetica', '', 10 );
 			
-			foreach( $si['messages'] as $m ) {
+			switch ( $si['messages'] as $m ) {
 				$pdf->WriteHTML( '<strong>' . $m['contact_name'] . '</strong> - ' . date( 'F jS, Y g:i a', $m['date_created'] ) . ': ' . $m['note'], 0, 0 );
 				$pdf->Ln();
 			}

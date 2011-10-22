@@ -8,7 +8,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
+if ( !$user )
 	login();
 
 // Instantiate classes
@@ -21,7 +21,10 @@ $v->add_validation( 'aim-transaction-key', 'req', _('The "AIM Transaction Key" f
 
 add_footer( $v->js_validation() );
 
-if ( nonce::verify( $_POST['_nonce'], 'update-payment-gateway-settings' ) ) {
+// Initialize Variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-payment-gateway-settings' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -48,12 +51,12 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'shopping-cart/', 'settings' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<p class="success"><?php echo _('Payment Gateway Settings successfully saved!'); ?></p>
 		<?php 
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
         <form name="fPaymentGateway" action="/shopping-cart/settings/payment-gateway/" method="post">
@@ -74,11 +77,11 @@ get_header();
             </tr>
             <tr>
                 <td width="150"><label for="aim-login"><?php echo _("AIM Login:"); ?></label></td>
-                <td><input class="tb" type="text" name="aim-login" id="aim-login" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['aim-login'] : security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ); ?>" maxlength="30" /></td>
+                <td><input class="tb" type="text" name="aim-login" id="aim-login" value="<?php echo ( !$success && isset( $_POST['aim-login'] ) ) ? $_POST['aim-login'] : security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ); ?>" maxlength="30" /></td>
             </tr>
             <tr>
                 <td width="150"><label for="aim-transaction-key"><?php echo _("AIM Transaction Key:"); ?></label></td>
-                <td><input class="tb" type="text" name="aim-transaction-key" id="aim-transaction-key" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['aim-transaction-key'] : security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ); ?>" maxlength="30" /></td>
+                <td><input class="tb" type="text" name="aim-transaction-key" id="aim-transaction-key" value="<?php echo ( !$success && isset( $_POST['aim-transaction-key'] ) ) ? $_POST['aim-transaction-key'] : security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ); ?>" maxlength="30" /></td>
             </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>

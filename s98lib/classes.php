@@ -11,7 +11,7 @@
  */
 if ( !function_exists( __autoload ) && AUTOLOAD ) {
 	function __autoload( $class_name ) {
-		s98_fw_classes( $class_name );
+		s98lib_classes( $class_name );
 	}
 }
 
@@ -26,7 +26,7 @@ if ( !function_exists( __autoload ) && AUTOLOAD ) {
  * 
  * @param string $class_name the class name is automatically sent here
  */
-function s98_fw_classes( $class_name ) {
+function s98lib_classes( $class_name ) {
 	if ( '_' == $class_name[0] ) {
 		$prefix = '_';
 		$class_name = substr( $class_name, 1 );

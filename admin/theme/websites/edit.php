@@ -8,8 +8,8 @@
 global $user;
 
 // If user is not logged in
-if( !$user )
-	url::redirect( '/login/' );
+if ( !$user )
+	login();
 
 $w = new Websites;
 $i = new Industries;
@@ -30,10 +30,13 @@ $v->add_validation( 'tType', 'req', _('The "Website Type" is required') );
 
 $v->add_validation( 'tGAProfileID', 'num', _('The "Google Analytics Profile ID" field must contain a number') );
 
-if( nonce::verify( $_POST['_nonce'], 'update-website' ) ) {
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-website' ) ) {
 	$errs = $v->validate();
 	
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		// Start fields array
 		$fields = array( 
 			// Information
@@ -69,17 +72,17 @@ if( nonce::verify( $_POST['_nonce'], 'update-website' ) ) {
 		$fields_safety = 'iisssssiisiiiiiiiiiiissi';
 		
 		// FTP data
-		if( !empty( $_POST['tFTPHost'] ) ) {
+		if ( !empty( $_POST['tFTPHost'] ) ) {
 			$fields['ftp_host'] = base64_encode( security::encrypt( $_POST['tFTPHost'], ENCRYPTION_KEY ) );
 			$fields_safety .= 's';
 		}
 		
-		if( !empty( $_POST['tFTPUser'] ) ) {
+		if ( !empty( $_POST['tFTPUser'] ) ) {
 			$fields['ftp_username'] = base64_encode( security::encrypt( $_POST['tFTPUser'], ENCRYPTION_KEY ) );
 			$fields_safety .= 's';
 		}
 		
-		if( !empty( $_POST['tFTPPassword'] ) ) {
+		if ( !empty( $_POST['tFTPPassword'] ) ) {
 			$fields['ftp_password'] = base64_encode( security::encrypt( $_POST['tFTPPassword'], ENCRYPTION_KEY ) );
 			$fields_safety .= 's';
 		}
@@ -87,25 +90,25 @@ if( nonce::verify( $_POST['_nonce'], 'update-website' ) ) {
 		// Industries
 		$w->remove_industries( $_GET['wid'] );
 		
-		foreach( $industries as $industry ) {
-			if( isset( $_POST['cbIndustry' . $industry['industry_id']] ) )
+		foreach ( $industries as $industry ) {
+			if ( isset( $_POST['cbIndustry' . $industry['industry_id']] ) )
 				$industry_ids[] = $industry['industry_id'];
 		}
 		
 		$w->add_industries( $industry_ids, $_GET['wid'] );
 			
 		// Extras
-		if( !empty( $_POST['tWordPressUsername'] ) ) {
+		if ( !empty( $_POST['tWordPressUsername'] ) ) {
 			$fields['wordpress_username'] = base64_encode( security::encrypt( $_POST['tWordPressUsername'], ENCRYPTION_KEY ) );
 			$fields_safety .= 's';
 		}
 
-		if( !empty( $_POST['tWordPressPassword'] ) ) {
+		if ( !empty( $_POST['tWordPressPassword'] ) ) {
 			$fields['wordpress_password'] = base64_encode( security::encrypt( $_POST['tWordPressPassword'], ENCRYPTION_KEY ) );
 			$fields_safety .= 's';
 		}
 		
-		if( isset( $_POST['cbCustomImageSize'] ) ) {
+		if ( isset( $_POST['cbCustomImageSize'] ) ) {
 			$size = ( 500 > (int) $_POST['tCustomImageSize'] ) ? 500 : (int) $_POST['tCustomImageSize'];
 			$w->update_settings( $_GET['wid'], array( 'custom-image-size' => $size ) );
 		} else {
@@ -120,6 +123,7 @@ if( nonce::verify( $_POST['_nonce'], 'update-website' ) ) {
 			//, 'facebook-password' => base64_encode( security::encrypt( $_POST['tFacebookPassword'], ENCRYPTION_KEY ) )
 			'facebook-url' => $_POST['tFacebookURL']
 			, 'limited-products' => ( isset( $_POST['cbLimitedProducts'] ) ) ? 1 : 0
+            , 'advertising-url' => $_POST['tAdvertisingURL']
 		) );
 	}
 }
@@ -129,11 +133,11 @@ $ftp = $w->get_ftp_data( $_GET['wid'] );
 $website_industries = $w->get_industries( $_GET['wid'] );
 $users = $u->get_users();
 
-$settings = $w->get_settings( $_GET['wid'], array( 'limited-products', 'custom-image-size', 'facebook-url' ) ); 
+$settings = $w->get_settings( $_GET['wid'], array( 'limited-products', 'custom-image-size', 'facebook-url', 'advertising-url' ) );
 $web['custom_image_size'] = $settings['custom-image-size'];
 
 // We must strip slashes, since $_POST automatically inserts them!
-foreach( $web as &$slot ){
+foreach ( $web as &$slot ){
 	$slot = stripslashes( $slot );
 }
 
@@ -151,11 +155,11 @@ get_header();
 	<?php $sidebar_emails = true; get_sidebar( 'websites/' ); ?>
 	<div id="subcontent">
 		<?php 
-		if( !$success ) {
+		if ( !isset( $success ) || !$success ) {
 			$main_form_class = '';
 			$success_class = ' class="hidden"';
 			
-			if( isset( $errs ) )
+			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		} else {
 			$success_class = '';
@@ -164,10 +168,10 @@ get_header();
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php
-			if( isset( $errs ) && !empty( $errs ) ) {
+			if ( isset( $errs ) && !empty( $errs ) ) {
 				$error_message = '';
 				
-				foreach( $errs as $e ) {
+				foreach ( $errs as $e ) {
 					$error_message .= ( !empty( $error_message ) ) ? "<br />$e" : $e;
 				}
 				
@@ -177,10 +181,10 @@ get_header();
 			
 			<form action="/websites/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditWebsite">
 			<?php 
-			if( '0' == $web['version'] )
+			if ( '0' == $web['version'] )
 				echo '<p>', _('Website has not been installed. Please verify domain and FTP data below and'), ' <a href="/websites/install/?wid=', $web['website_id'], '" title="', _('Install Website'), '">', _('click here to install the website'), '</a>.</p>';
 			
-			if( isset( $_GET['i'] ) )
+			if ( isset( $_GET['i'] ) )
 				echo ( '1' == $_GET['i'] ) ? '<p>' . _('The website was successfully installed!') . '</p>' : '<p>' . _('An error occurred while trying to install the website. Please check the error log for details.') . '</p>';
 			?>
 			<table cellpadding="0" cellspacing="0" width="100%">
@@ -218,14 +222,14 @@ get_header();
 								<option value="">-- <?php echo _('Select a User'); ?> --</option>
 								<?php 
 								$user_email = '';
-								foreach( $users as $u ) { 
+								foreach ( $users as $u ) { 
 									// We don't want any empty users
-									if( '' == $u['contact_name'] )
+									if ( '' == $u['contact_name'] )
 										continue;
 									
 									$selected = ( $web['user_id'] == $u['user_id'] ) ? ' selected="selected"' : '';
 									$email = ( $u['email'] ) ? 'email="' . $u['email'] . '"' : '';
-									if( $web['user_id'] == $u['user_id'] ) $user_email = $u['email'];
+									if ( $web['user_id'] == $u['user_id'] ) $user_email = $u['email'];
 								?>
 								<option value="<?php echo $u['user_id']; ?>"<?php echo $selected . $email; ?>><?php echo $u['contact_name']; ?></option>
 								<?php } ?>
@@ -240,9 +244,9 @@ get_header();
 							<select name="sOSUserID" id="sOSUserID" class="tb">
 								<option value="">-- <?php echo _('Select a User'); ?> --</option>
 								<?php 
-								foreach( $users as $u ) { 
+								foreach ( $users as $u ) { 
 									// We don't want any empty users
-									if( '' == $u['contact_name'] || $u['role'] < 7 )
+									if ( '' == $u['contact_name'] || $u['role'] < 7 )
 										continue;
 									
 									$selected = ( $web['os_user_id'] == $u['user_id'] ) ? ' selected="selected"' : '';
@@ -287,7 +291,7 @@ get_header();
 						
 						<h2><?php echo _('Industries'); ?></h2>
 						<?php 
-						foreach( $industries as $i ) { 
+						foreach ( $industries as $i ) { 
 							$checked = ( in_array( $i['industry_id'], $website_industries ) ) ? ' checked="checked"' : '';
 						?>
 						<p><input type="checkbox" name="cbIndustry<?php echo $i['industry_id']; ?>" id="cbIndustry<?php echo $i['industry_id']; ?>" value="" class="cb"<?php echo $checked; ?>/> <label for="cbIndustry<?php echo $i['industry_id']; ?>"><?php echo ucwords( $i['name'] ); ?></label></p>
@@ -313,30 +317,26 @@ get_header();
 						</p>
 						<p>
                             <label for="tWordPressUsername"><?php echo _('WordPress Username'); ?>:</label>
-							<input type="text" name="tWordPressUsername" id="tWordPressUsername" value="<?php echo security::decrypt( base64_decode( $web['wordpress_username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+							<input type="text" name="tWordPressUsername" id="tWordPressUsername" value="<?php if ( !empty( $web['wordpress_username'] ) ) echo security::decrypt( base64_decode( $web['wordpress_username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tWordPressPassword"><?php echo _('WordPress Password'); ?>:</label>
-							<input type="text" name="tWordPressPassword" id="tWordPressPassword" value="<?php echo security::decrypt( base64_decode( $web['wordpress_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+							<input type="text" name="tWordPressPassword" id="tWordPressPassword" value="<?php if ( !empty( $web['wordpress_password'] ) ) echo security::decrypt( base64_decode( $web['wordpress_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
 						</p>
-						<?php /*<p>
-                            <label for="tFacebookUsername"><?php echo _('Facebook Username'); ?>:</label>
-							<input type="text" name="tFacebookUsername" id="tFacebookUsername" value="<?php echo security::decrypt( base64_decode( $settings['facebook-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
-						</p>
-						<p>
-							<label for="tFacebookPassword"><?php echo _('Facebook Password'); ?>:</label>
-							<input type="text" name="tFacebookPassword" id="tFacebookPassword" value="<?php echo security::decrypt( base64_decode( $settings['facebook-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
-						</p>*/?>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php echo $settings['facebook-url']; ?>" class="tb" />
+						</p>
+						<p>
+							<label for="tAdvertisingURL"><?php echo _('Advertising URL'); ?>:</label>
+							<input type="text" name="tAdvertisingURL" id="tAdvertisingURL" value="<?php echo $settings['advertising-url']; ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>
 							<input type="text" name="tMCListID" id="tMCListID" value="<?php echo $web['mc_list_id']; ?>" class="tb" />
 						</p>
 						<p>
-                        	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 
+                        	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 
                             <label for="cbLive" class="inline"><?php echo _('Max image size for custom products:'); ?></label>&nbsp;
                             <input type="text" name="tCustomImageSize" id="tCustomImageSize" style="width:50px !important;" value="<?php echo ( isset( $web['custom_image_size'] ) ) ? $web['custom_image_size'] : ''; ?>" class="tb" />
 						</p>

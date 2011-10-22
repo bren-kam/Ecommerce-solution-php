@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -28,7 +28,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch( $_GET['iSortCol_' . $i] ) {
+		switch ( $_GET['iSortCol_' . $i] ) {
 			default:
 			case 1:
 				$field = 'a.`title`';
@@ -55,10 +55,10 @@ $c = new Craigslist;
 /* Filtering  */
 $where = '';
 
-if( isset( $_SESSION['craigslist']['search'] ) ) {
+if ( isset( $_SESSION['craigslist']['search'] ) ) {
 	$where .= ' WHERE (';
 					 
-	switch( $_SESSION['craigslist']['category'] ) { //$_POST['t'] ){
+	switch ( $_SESSION['craigslist']['category'] ) { //$_POST['t'] ){
 		default:
 		case 'title':
 			$where .= 'a.`title`';
@@ -79,8 +79,8 @@ $craigslist_count= $c->count_craigslist( $where );
 
 $aaData = array();
 
-if( is_array( $craigslists ) )
-foreach( $craigslists as $template) {	
+if ( is_array( $craigslists ) )
+foreach ( $craigslists as $template) {	
 	$title = '<strong>' . $template['title'] . '</strong><br/>';
 	$title .= '<span class="web-actions" style="display:block">';
 	$title .= '<a href="/craigslist/add-edit/?cid=' . $template['craigslist_template_id'] . '" title="Edit ' . $template['title'] . '">Edit</a> | ';

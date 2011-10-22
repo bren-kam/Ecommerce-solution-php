@@ -5,14 +5,14 @@
  * @subpackage Admin
  */
 
-if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 	$p = new Products;
 	
 	/* Filtering  */
 	$where = ( isset( $_SESSION['products']['visibility'] ) ) ? " AND `publish_visibility` = '" . $p->db->escape( $_SESSION['products']['visibility'] ) . "'" : " AND `publish_visibility` <> 'deleted'";
 	
-	if( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['products']['user'] ) ) {
-		switch( $_SESSION['products']['product-status'] ) {
+	if ( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['products']['user'] ) ) {
+		switch ( $_SESSION['products']['product-status'] ) {
 			case 'created':
 				$where .= ' AND `user_id_created` = ' . (int) $_SESSION['products']['user'];
 			break;
@@ -23,9 +23,9 @@ if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 		}
 	}
 	
-	if( isset( $_SESSION['products']['search'] ) ) {
-		if( isset( $_SESSION['products']['type'] ) ) {
-			switch( $_SESSION['products']['type'] ) {
+	if ( isset( $_SESSION['products']['search'] ) ) {
+		if ( isset( $_SESSION['products']['type'] ) ) {
+			switch ( $_SESSION['products']['type'] ) {
 				case 'products':
 					$type = 'a.`name`';
 				break;
@@ -43,12 +43,12 @@ if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 			$type = 'a.`sku`';
 		}
 		
-		if( $_SESSION['products']['type'] != $_POST['type'] )
+		if ( $_SESSION['products']['type'] != $_POST['type'] )
 			$where .= " AND ( $type LIKE '" . $p->db->escape( $_SESSION['products']['search'] ) . "%' )";
 	}
 	
 	// Get the right suggestions for the right type
-	switch( $_POST['type'] ) {
+	switch ( $_POST['type'] ) {
 		case 'products':
 			$results = $p->autocomplete( $_POST['term'] , 'a.`name`', 'products', $where );
 		break;
@@ -62,7 +62,7 @@ if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {
 		break;
 	}
 	
-	if( NULL == $results )
+	if ( NULL == $results )
 		$results = array();
 	
 	// Needs to be in JSON

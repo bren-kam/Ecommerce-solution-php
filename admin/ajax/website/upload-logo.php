@@ -21,7 +21,7 @@ $image_name = $_POST['wid'] . '.' . strtolower( format::file_extension( $_FILES[
 $upload_dir = OPERATING_PATH . 'media/uploads/site_logos/';
 
 // Directory needs to exist
-if( !is_dir( $upload_dir ) )
+if ( !is_dir( $upload_dir ) )
 	mkdir( $upload_dir, 0777, true );
 
 // Resize the image

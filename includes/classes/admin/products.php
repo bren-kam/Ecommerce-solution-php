@@ -22,7 +22,7 @@ class Products extends Base_Class {
 	 * @return int
 	 */
 	public function create( $user_id ) {
-		$this->db->insert( 'products', array( 'user_id_created' => $user_id, 'date_created' => date_time::date('Y-m-d H:i:s') ), 'is' );
+		$this->db->insert( 'products', array( 'user_id_created' => $user_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'is' );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -52,24 +52,6 @@ class Products extends Base_Class {
 	}
 	
 	/**
-	 * Gets a single product
-	 *
-	 * @param int $product_id the id of the product
-	 * @return array
-	 */
-	public function get_feed( $product_id ) {
-		$product = $this->db->get_row( 'SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry  FROM `products2` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) WHERE a.`product_id` = ' . (int) $product_id, ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $product;
-	}
-	
-	/**
 	 * Get images for single product
 	 *
 	 * @param int $product_id
@@ -87,41 +69,17 @@ class Products extends Base_Class {
 			return false;
 		}
 		
+		// Define images
 		$images = array();
 		
 		if ( is_array( $product_images ) )
-		foreach( $product_images as $image ) {
+		foreach ( $product_images as $image ) {
 			$images[$image['swatch']][] = $image['image'];
 		}
 		
 		return $images;
 	}
-
-	/**
-	 * Get images for single product
-	 *
-	 * @param int $product_id
-	 * @return array
-	 */
-	public function get_feed_images( $product_id ) {
-		// Typecast
-		$product_id = (int) $product_id;
-		
-		$product_images = $this->db->get_results( "SELECT `swatch`, `image` FROM `product_images2` WHERE `product_id` = $product_id AND `image` <> '' ORDER BY `sequence`", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product images.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		if ( is_array( $product_images ) )
-		foreach( $product_images as $image )
-			$images[$image['swatch']][] = $image['image'];
-		
-		return $images;
-	}
-
+	
 	/**
 	 * Get categories
 	 *
@@ -169,7 +127,7 @@ class Products extends Base_Class {
 		$ps_array = explode( '|', stripslashes( $product_specifications ) );
 		
 		// serialize product specificatons
-		foreach( $ps_array as $ps ) {
+		foreach ( $ps_array as $ps ) {
 			if ( '' != $ps ) {
 				list( $spec_name, $spec_value, $sequence ) = explode( '`', $ps );
 				$product_specs[] = array( $spec_name, $spec_value, $sequence );
@@ -180,22 +138,22 @@ class Products extends Base_Class {
 			$list_price = 0;
 		
 		$this->db->update( 'products', array(
-			'brand_id' => $brand_id,
-			'industry_id' => $industry_id,
-			'name' => $name,
-			'slug' => $slug,
-			'description' => stripslashes( $description ),
-			'status' => $status,
-			'sku' => $sku,
-			'price' => $price,
-			'list_price' => $list_price,
-			'weight' => $weight,
-			'volume' => $volume,
-			'product_specifications' => serialize( $product_specs ),
-			'publish_visibility' => $publish_visibility,
-			'publish_date' => $publish_date,
-			'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 127 ),
-		), array( 'product_id' => $product_id ), 'iisssssdddisssi', 'i' );
+				'brand_id' => $brand_id,
+				'industry_id' => $industry_id,
+				'name' => $name,
+				'slug' => $slug,
+				'description' => $description,
+				'status' => $status,
+				'sku' => $sku,
+				'price' => $price,
+				'list_price' => $list_price,
+				'weight' => $weight,
+				'volume' => $volume,
+				'product_specifications' => serialize( $product_specs ),
+				'publish_visibility' => $publish_visibility,
+				'publish_date' => $publish_date,
+				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 127 ),
+			), array( 'product_id' => $product_id ), 'iisssssdddisssi', 'i' );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -249,11 +207,11 @@ class Products extends Base_Class {
 			return false;
 		
 		// @Fix there should be a more efficient way then a double loop with sql queries
-		foreach( $category_ids as $cid ) {
+		foreach ( $category_ids as $cid ) {
 			$parent_categories = $c->get_parent_category_ids( $cid );
 			
 			// Delete parent categories if the website doesn't have any products
-			foreach( $parent_categories as $pc_id ) {
+			foreach ( $parent_categories as $pc_id ) {
 				$websites_without_products = $this->websites_without_products( $pc_id, $website_ids, $c );
 				
 				if ( empty( $websites_without_products ) )
@@ -309,7 +267,7 @@ class Products extends Base_Class {
 		/**
 		 * Check if category do not exists insert it
 		 */
-		foreach( $categories_array as $category_id ) {
+		foreach ( $categories_array as $category_id ) {
 			if ( empty( $category_id ) )
 				continue;
 			
@@ -326,7 +284,7 @@ class Products extends Base_Class {
 			
 			// Create an array having the categories based on the website
 			if ( is_array( $category_results ) )
-			foreach( $category_results as $cr ) {
+			foreach ( $category_results as $cr ) {
 				$category_ids[$cr['website_id']][] = $cr['category_id'];
 			}
 			
@@ -336,12 +294,12 @@ class Products extends Base_Class {
 			$parent_categories = $c->get_parent_category_ids( $category_id );
 			
 			// Cycle through the websites and findout if they already have the category
-			foreach( $website_ids_array as $wid ) {
+			foreach ( $website_ids_array as $wid ) {
 				if ( !is_array( $category_results ) || !in_array( $category_id, $category_ids[$wid] ) ) {
 					$website_without_category_ids[] = $wid;
 					
 					// Add the parent category_ids
-					foreach( $parent_categories as $cat ) {
+					foreach ( $parent_categories as $cat ) {
 						if ( !in_array( $cat, $category_ids[$wid] ) )
 							$website_without_parent_category_ids[$cat][] = $wid;
 					}
@@ -361,7 +319,7 @@ class Products extends Base_Class {
 				
 				// @Fix this is a looped sql statement
 				if ( is_array( $without_parent_category_ids ) && count( $without_parent_category_ids ) > 0 )
-				foreach( $without_parent_category_ids as $wpci ) {
+				foreach ( $without_parent_category_ids as $wpci ) {
 					if ( is_array( $website_without_parent_category_ids[$wpci] ) )
 						$this->add_product_category( $product_id, $wpci, $website_without_parent_category_ids[$wpci] );
 				}
@@ -388,7 +346,7 @@ class Products extends Base_Class {
 		if ( !is_array( $images ) )
 			return true;
 		
-		foreach( $images as $key => $image ) {
+		foreach ( $images as $key => $image ) {
 			// Putting the definition of $sequence down below (after the list() statement) made it actually not assign zero.  Putting it up here too.
 			$sequence = 0;
 			
@@ -450,7 +408,7 @@ class Products extends Base_Class {
 		
 		$values = '';
 		
-		foreach( $website_ids as $wid ) {
+		foreach ( $website_ids as $wid ) {
 			if ( !empty( $values ) )
 				$values .= ',';
 			
@@ -483,7 +441,7 @@ class Products extends Base_Class {
 		$values = '';
 		
 		if ( is_array( $categories ) )
-		foreach( $categories as $cid ) {
+		foreach ( $categories as $cid ) {
 			if ( !empty( $values ) )
 				$values .= ',';
 			
@@ -545,7 +503,7 @@ class Products extends Base_Class {
 		$website_with_products = array();
 		
 		// This all the websites with products
-		foreach( $website_result_array as $row ) {
+		foreach ( $website_result_array as $row ) {
 			$website_with_products[] = $row['website_id'];
 		}
 		
@@ -553,7 +511,7 @@ class Products extends Base_Class {
 		$all_website_ids = explode( ',', $website_ids );
 		$websites_without_products = '';
 		
-		foreach( $all_website_ids as $wid ) {
+		foreach ( $all_website_ids as $wid ) {
 			if ( in_array( $wid, $website_with_products ) )
 				continue;
 			
@@ -656,7 +614,7 @@ class Products extends Base_Class {
 			$as = " AS $as";
 		
 		// Get results
-		$results = $this->db->prepare( "SELECT DISTINCT( $field )$as FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) WHERE e.`sequence` = 0 AND $field LIKE ? $where GROUP BY a.`product_id` ORDER BY $field", 's', $query . '%' )->get_results( '', ARRAY_A );
+		$results = $this->db->prepare( "SELECT DISTINCT( $field )$as FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) WHERE e.`sequence` = 0 AND $field LIKE ? $where GROUP BY a.`product_id` ORDER BY $field LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -771,7 +729,7 @@ class Products extends Base_Class {
 	 * @return bool
 	 */
 	public function remove_image( $image, $product_id ) {
-		$this->db->prepare( 'DELETE FROM `product_images` WHERE `image` = ? AND `product_id` = ? LIMIT 1', 'si', $image, $product_id )->query('');
+		$this->db->prepare( 'DELETE FROM `product_images` WHERE `image` = ? AND `product_id` = ?', 'si', $image, $product_id )->query('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -806,27 +764,10 @@ class Products extends Base_Class {
 	 * @return int
 	 */
 	public function get_old_ashley_product_id() {
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`user_id_created` <> 353 AND a.`name` NOT LIKE '%Group%' AND a.`sku` NOT LIKE '% - Group' AND a.`publish_visibility` <> 'deleted' AND b.`name` LIKE 'Ashley Furniture%' LIMIT 1" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get old ashley product id.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $product_id;
-	}
+		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`user_id_created` <> 353 AND a.`publish_visibility` <> 'deleted' AND b.`name` LIKE 'Ashley Furniture%' LIMIT 1" );
 	
-	/**
-	 * Get old ashley product id
-	 *
-	 * @return int
-	 */
-	public function get_old_ashley_feed_product_id() {
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`user_id_created` = 353 AND a.`publish_visibility` <> 'deleted' AND `timestamp` < '2011-08-25' AND b.`name` LIKE 'Ashley Furniture%' ORDER BY a.`product_id` ASC LIMIT 1" );
-		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get old ashley product id.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -835,85 +776,18 @@ class Products extends Base_Class {
 	}
 
 	/**
-	 * Get old ashley product id
-	 *
-	 * @return int
-	 */
-	public function get_old_ashley_feed_product_id_reverse() {
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`user_id_created` = 353 AND a.`publish_visibility` <> 'deleted' AND `timestamp` < '2011-08-25' AND b.`name` LIKE 'Ashley Furniture%' ORDER BY a.`product_id` DESC LIMIT 1" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get old ashley product id.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $product_id;
-	}
-	
-	/**
-	 * Get total old ashley product id
-	 *
-	 * @return int
-	 */
-	public function get_total_old_ashley_products() {
-		$total = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`user_id_created` <> 353 AND a.`name` NOT LIKE '%Group%' AND a.`sku` NOT LIKE '% - Group' AND a.`publish_visibility` <> 'deleted' AND b.`name` LIKE 'Ashley Furniture%'" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get total of old ashley products.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $total;
-	}
-	
-	/**
-	 * Get total old ashley product id
-	 *
-	 * @return int
-	 */
-	public function get_total_old_ashley_feed_products() {
-		$total = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) WHERE a.`user_id_created` = 353 AND a.`publish_visibility` <> 'deleted' AND `timestamp` < '2011-08-25' AND b.`name` LIKE 'Ashley Furniture%'" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get old ashley product id.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $total;
-	}
-	
-	/**
 	 * Get the new ashley product id
 	 *
 	 * @return int
 	 */
-	public function get_new_ashley_product_id( $old_product_id, $sku ) {
-		// Turn the SKU into the right sku
-		preg_match( '/([a-zA-Z]?[0-9]+)(?:\s-\s[a-zA-Z0-9]*)?/', $sku, $matches );
-		$sku = $this->db->escape( $matches[1] );
-		
+	public function get_new_ashley_product_id( $old_product_id ) {
 		// Type Juggling
 		$old_product_id = (int) $old_product_id;
 		
-		$product_id = $this->db->get_var( "SELECT `product_id` FROM `products` WHERE `user_id_created` = 353 AND `sku` = '$sku'  LIMIT 1" );
+		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `products` AS b ON ( a.`sku` = b.`sku` ) LEFT JOIN `brands` AS c ON ( b.`brand_id` = c.`brand_id` ) WHERE a.`user_id_created` = 353 AND c.`name` LIKE 'Ashley Furniture%' AND b.`publish_visibility` <> 'deleted' AND b.`user_id_created` <> 353 AND b.`product_id` = $old_product_id LIMIT 1" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get new ashley product id by SKU.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// If success, return it
-		if ( $product_id > 0 )
-			return $product_id;
-		
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `products` AS b ON ( a.`sku` = b.`sku` ) LEFT JOIN `brands` AS c ON ( b.`brand_id` = c.`brand_id` ) WHERE a.`user_id_created` = 353 AND c.`name` LIKE 'Ashley%' AND b.`publish_visibility` <> 'deleted' AND b.`user_id_created` <> 353 AND b.`product_id` = $old_product_id LIMIT 1" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -923,43 +797,10 @@ class Products extends Base_Class {
 			return $product_id;
 		
 		// If failure, return it
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `products` AS b ON ( a.`slug` = b.`slug` ) LEFT JOIN `brands` AS c ON ( b.`brand_id` = c.`brand_id` ) WHERE a.`user_id_created` = 353 AND c.`name` LIKE 'Ashley%' AND b.`publish_visibility` = 'deleted' AND b.`user_id_created` <> 353 AND b.`product_id` = $old_product_id LIMIT 1" );
+		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `products` AS b ON ( a.`slug` = b.`slug` ) LEFT JOIN `brands` AS c ON ( b.`brand_id` = c.`brand_id` ) WHERE a.`user_id_created` = 353 AND c.`name` LIKE 'Ashley Furniture%' AND b.`publish_visibility` <> 'deleted' AND b.`user_id_created` <> 353 AND b.`product_id` = $old_product_id LIMIT 1" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $product_id;
-	}
-	
-	/**
-	 * Get the new ashley product id
-	 *
-	 * @return int
-	 */
-	public function get_new_ashley_feed_product_id( $old_product_id ) {
-		// Type Juggling
-		$old_product_id = (int) $old_product_id;
-		
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products2` AS a LEFT JOIN `products` AS b ON ( a.`sku` = b.`sku` ) LEFT JOIN `brands` AS c ON ( b.`brand_id` = c.`brand_id` ) WHERE a.`user_id_created` = 353 AND c.`name` LIKE 'Ashley%' AND b.`publish_visibility` <> 'deleted' AND b.`user_id_created` = 353 AND b.`product_id` = $old_product_id LIMIT 1" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// If success, return it
-		if ( $product_id > 0 )
-			return $product_id;
-		
-		// If failure, return it
-		$product_id = $this->db->get_var( "SELECT a.`product_id` FROM `products2` AS a LEFT JOIN `products` AS b ON ( a.`slug` = b.`slug` ) LEFT JOIN `brands` AS c ON ( b.`brand_id` = c.`brand_id` ) WHERE a.`user_id_created` = 353 AND c.`name` LIKE 'Ashley%' AND b.`publish_visibility` = 'deleted' AND b.`user_id_created` = 353 AND b.`product_id` = $old_product_id LIMIT 1" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -974,28 +815,10 @@ class Products extends Base_Class {
 	 * @return array
 	 */
 	public function autocomplete_new_ashley( $term ) {
-		$suggestions = $this->db->prepare( "SELECT `product_id`, CONCAT( `sku`, ' - ', `name` ) AS name, CONCAT( `sku`, ' - ', `name` ) AS value FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` <> 'deleted' AND `sku` LIKE ? LIMIT 10", 's', $term . '%' )->get_results( '', ARRAY_A );
+		$suggestions = $this->db->prepare( "SELECT `product_id`, CONCAT( `sku`, ' - ', `name` ) AS name, CONCAT( `sku`, ' - ', `name` ) AS value FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` LIKE ? LIMIT 10", 's', $term . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete for new ashley products.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $suggestions;
-	}
-	
-	/**
-	 * Autocomplete new ashley products
-	 *
-	 * @param string $term
-	 * @return array
-	 */
-	public function autocomplete_new_ashley_feed( $term ) {
-		$suggestions = $this->db->prepare( "SELECT `product_id`, CONCAT( `sku`, ' - ', `name` ) AS name, CONCAT( `sku`, ' - ', `name` ) AS value FROM `products2` WHERE `user_id_created` = 353 AND `publish_visibility` <> 'deleted' AND `sku` LIKE ? LIMIT 10", 's', $term . '%' )->get_results( '', ARRAY_A );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete for new ashley products.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -1011,207 +834,15 @@ class Products extends Base_Class {
 	 * @return int
 	 */
 	public function replace_product( $old_product_id, $new_product_id ) {
-		// Type Juggling
-		$old_product_id = (int) $old_product_id;
-		$new_product_id = (int) $new_product_id;
-		
-		// Don't care if there are duplicates
-		$this->db->query( "UPDATE IGNORE `website_products` SET `product_id` = $new_product_id WHERE `product_id` = $old_product_id" );
+		$this->db->prepare( 'UPDATE `website_products` SET `product_id` = ? WHERE `product_id` = ?', 'ii', $old_product_id, $new_product_id )->query('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to replace product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		// If there were any ones not done, remove them now
-		$this->db->update( 'website_products', array( 'active' => 0 ), array( 'product_id' => $old_product_id ), 'i', 'i' );
-		
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to remove old website products.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Copy over the categories, attributes and pictures
-		// Categories
-		$this->db->query( "INSERT INTO `product_categories` ( `product_id`, `category_id` ) SELECT $new_product_id, `category_id` FROM `product_categories` WHERE `product_id` = $old_product_id ON DUPLICATE KEY UPDATE `category_id` = VALUES( `category_id` )" );
-		
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to copy categories for replaced product.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		// Attributes
-		$this->db->query( "INSERT INTO `attribute_item_relations` ( `attribute_item_id`, `product_id` ) SELECT `attribute_item_id`, $new_product_id FROM `attribute_item_relations` WHERE `product_id` = $old_product_id ON DUPLICATE KEY UPDATE `attribute_item_id` = VALUES( `attribute_item_id` )" );
-		
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to copy attributes for replaced product.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Get old product images
-		$images = $this->db->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $old_product_id" );
-		
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get images for old product.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		if ( is_array( $images ) && count( $images ) > 0 ) {
-			// Get the last sequence number
-			$last_sequence = $this->db->get_var( "SELECT COALESCE( `sequence`, -1 ) FROM `product_images` WHERE `product_id` = $new_product_id OR `product_id` IS NULL ORDER BY `sequence` DESC" );
-			
-			if( $this->db->errno() ) {
-				$this->err( 'Failed to get last sequence for new replacement product.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			$last_sequence = ( $this->db->num_rows > 0 ) ? (int) $last_sequence : -1;
-			
-			library( 'S3' );
-			$s3 = new S3( config::key('aws-access-key'), config::key('aws-secret-key') );
-			$bucket = 'furniture.retailcatalog.us';
-			
-			$values = '';
-			
-			foreach ( $images as $i ) {
-				if ( !empty( $values ) )
-					$values .= ',';
-				
-				$last_sequence++;
-				
-				$values .= "( $new_product_id, '" . $this->db->escape( $i ) . "', $last_sequence )";
-				
-				// We also have to copy the location to the new location
-				$s3->copyObject( $bucket, 'products/' . $old_product_id . '/' . $i, $bucket, 'products/' . $new_product_id . '/' . $i, S3::ACL_PUBLIC_READ );
-				$s3->copyObject( $bucket, 'products/' . $old_product_id . '/thumbnail/' . $i, $bucket, 'products/' . $new_product_id . '/thumbnail/' . $i, S3::ACL_PUBLIC_READ );
-				$s3->copyObject( $bucket, 'products/' . $old_product_id . '/large/' . $i, $bucket, 'products/' . $new_product_id . '/large/' . $i, S3::ACL_PUBLIC_READ );
-				
-				//$s3->deleteObject( $bucket, 'products/' . $old_product_id . '/' . $i );
-				//$s3->deleteObject( $bucket, 'products/' . $old_product_id . '/thumbnail/' . $i );
-				//$s3->deleteObject( $bucket, 'products/' . $old_product_id . '/large/' . $i );
-			}
-			
-			// Copy the images
-			$this->db->query( "INSERT INTO `product_images` ( `product_id`, `image`, `sequence` ) VALUES $values" );
-			
-			if( $this->db->errno() ) {
-				$this->err( 'Failed to insert new images.', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-		
-		// Make sure the new product is public
-		$this->db->update( 'products', array( 'publish_visibility' => 'public' ), array( 'product_id' => $new_product_id ), 's', 'i' );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to make new replacement product public.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Replace old feed product
-	 *
-	 * @param int $old_product_id
-	 * @param int $new_product_id
-	 * @return int
-	 */
-	public function replace_old_feed_product( $old_product_id, $new_product_id ) {
-		// Type Juggling
-		$old_product_id = (int) $old_product_id;
-		$new_product_id = (int) $new_product_id;
-		
-		// Get new product
-		$new_product = $this->get_feed( $new_product_id );
-		
-		
-		// Update new product
-		$this->db->update( 'products', array( 
-				'brand_id' => $new_product['brand_id']
-				, 'industry_id' => $new_product['industry_id']
-				, 'name' => $new_product['name']
-				, 'slug' => $new_product['slug']
-				, 'description' => $new_product['description']
-				, 'status' => $new_product['status']
-				, 'sku' => $new_product['sku']
-				, 'price' => $new_product['price']
-				, 'list_price' => $new_product['list_price']
-				, 'weight' => $new_product['weight']
-				, 'volume' => $new_product['volume']
-				, 'product_specifications' => $new_product['product_specifications']
-				, 'publish_visibility' => 'public' 
-			), 
-			array( 'product_id' => $old_product_id ), 
-			'iisssssddddss', 
-			'i' 
-		);
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to update old product.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Get new product images
-		$images = $this->db->get_col( "SELECT `image` FROM `product_images2` WHERE `product_id` = $new_product_id" );
-		
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get images for new product.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		if ( is_array( $images ) ) {
-			// Get the last sequence number
-			$last_sequence = (int) $this->db->get_var( "SELECT COALESCE( `sequence`, 0 ) FROM `product_images` WHERE `product_id` = $old_product_id ORDER BY `sequence` DESC" );
-			
-			if( $this->db->errno() ) {
-				$this->err( 'Failed to get last sequence for old product.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			library( 'S3' );
-			$s3 = new S3( config::key('aws-access-key'), config::key('aws-secret-key') );
-			$bucket = 'furniture.retailcatalog.us';
-			
-			$values = '';
-			
-			foreach ( $images as $i ) {
-				if ( 'Array' == $i )
-					continue;
-				
-				if ( !empty( $values ) )
-					$values .= ',';
-				
-				$last_sequence++;
-				
-				$values .= "( $old_product_id, '" . $this->db->escape( $i ) . "', $last_sequence )";
-				
-				// We also have to copy the location to the new location
-				$s3->copyObject( $bucket, 'products/' . $new_product_id . '/' . $i, $bucket, 'products/' . $old_product_id . '/' . $i, S3::ACL_PUBLIC_READ );
-				$s3->copyObject( $bucket, 'products/' . $new_product_id . '/' . $i, $bucket, 'products/' . $old_product_id . '/thumbnail/' . $i, S3::ACL_PUBLIC_READ );
-				$s3->copyObject( $bucket, 'products/' . $new_product_id . '/' . $i, $bucket, 'products/' . $old_product_id . '/large/' . $i, S3::ACL_PUBLIC_READ );
-				
-				//$s3->deleteObject( $bucket, 'products/' . $new_product_id . '/' . $i );
-				//$s3->deleteObject( $bucket, 'products/' . $new_product_id . '/thumbnail/' . $i );
-				//$s3->deleteObject( $bucket, 'products/' . $new_product_id . '/large/' . $i );
-			}
-			
-			if ( !empty( $values ) ) {
-				// Copy the images
-				$this->db->query( "INSERT INTO `product_images` ( `product_id`, `image`, `sequence` ) VALUES $values" );
-				
-				if( $this->db->errno() ) {
-					$this->err( 'Failed to insert new images.', __LINE__, __METHOD__ );
-					return false;
-				}
-			}
-		}
-		
-		return $rows_affected;
+		return $this->rows_affected;
 	}
 	
 	/**
@@ -1224,206 +855,15 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 		
-		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`product_id` = $product_id AND b.`active` = 1" );
+		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`product_id` = $product_id" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get websitse related to a product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return $websites;
-	}
-
-	/**
-	 * Get websites products list (the websites that have a product)
-	 *
-	 * @param int $product_id
-	 * @return int
-	 */
-	public function get_website_ids_related_to_product( $product_id ) {
-		// Type Juggling
-		$product_id = (int) $product_id;
-		
-		$websites = $this->db->get_col( "SELECT a.`website_id` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`product_id` = $product_id AND b.`active` = 1" );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get websitse related to a product.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $websites;
-	}
-	
-	/**
-	 * Removes discontinued products
-	 *
-	 * @param int $product_id
-	 * @param array $websitE_ids
-	 * @return bool
-	 */
-	public function remove_products( $product_id, $website_ids ) {
-		if ( !is_array( $website_ids ) )
-			return true;
-		
-		$c = new Account_Categories;
-		
-		// Type Juggling
-		$product_id = (int) $product_id;
-
-		foreach ( $website_ids as $wid ) {
-			// Type Juggling
-			$website_id = (int) $wid;
-			
-			// Set all the products as inactive
-			$this->db->update( 'website_products', array( 'active' => 0 ), array( 'product_id' => $product_id, 'website_id' => $website_id ), 'i', 'ii' );
-				
-			// Handle any error
-			if( $this->db->errno() ) {
-				$this->err( 'Failed to delete website product.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			// @website safe
-			// Get the product categories
-			$category_ids = $this->get_product_categories( $product_id );
-			
-			if( !$category_ids )
-				continue;
-			
-			$category_ids_string = '';
-			
-			foreach( $category_ids as $cid ) {
-				$parent_categories = $c->get_parent_category_ids( $cid );
-				
-				// Delete parent categories if the website doesn't have any products
-				foreach( $parent_categories as $pc_id ) {
-					// @Fix there should be a more efficient way than looping this query
-					if( !$this->without_products2( $pc_id, $c, $website_id ) )
-						continue;
-					
-					// Add this to the list of categories that needs to be deleted
-					if( !empty( $category_ids_string ) )
-						$category_ids_string .= ',';
-					
-					$category_ids_string .= $pc_id;
-				}
-				
-				// See if this category and all ones under this
-				if( !$this->without_products2( $cid, $c, $website_id ) )
-					continue;
-				
-				// Add this to the list of categories that needs to be deleted
-				if( !empty( $category_ids_string ) )
-					$category_ids_string .= ',';
-				
-				$category_ids_string .= $cid;
-			}
-			
-			if( !empty( $category_ids_string ) ) {
-				$this->db->query( "DELETE FROM `website_categories` WHERE `website_id` = $website_id AND `category_id` IN($category_ids_string)" );
-					
-				// Handle any error
-				if( $this->db->errno() ) {
-					$this->err( 'Failed to deleted parent website categories.', __LINE__, __METHOD__ );
-					return false;
-				}
-			}
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Check to see if a category is without products without products
-	 *
-	 * @param int $category_id
-	 * @param array
-	 * @return array
-	 */
-	private function without_products2( $category_id, $c, $website_id ) {
-		$website_id = (int) $website_id;
-		
-		$categories = $c->get_sub_category_ids( $category_id );
-		$categories[] = $category_id;
-		
-		// @Fix shouldn't need to do the count
-		$count = $this->db->get_var( "SELECT COUNT(*) FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND a.`website_id` = $website_id AND b.`category_id` IN(" . implode( ',', $categories ) . ')', ARRAY_A );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get websites without products.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $count > 0;
-	}
-
-	/**
-	 * Repair missing product images
-	 *
-	 * @return bool
-	 */
-	public function repair_missing_product_images() {
-		$products = $this->db->get_results( 'SELECT c.`website_id`, d.`title` AS website, a.`product_id`, a.`name`, a.`sku` FROM `products` AS a LEFT JOIN `product_images` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_products` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `websites` AS d ON (c.`website_id` = d.`website_id`) WHERE b.`product_id` IS NULL AND c.`product_id` IS NOT NULL GROUP BY c.`website_id`, c.`product_id`', ARRAY_A );
-	
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get products with no images.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		library( 'S3' );
-		$s3 = new S3( config::key('aws-access-key'), config::key('aws-secret-key') );
-		$bucket = config::key('aws-bucket-domain');
-		$added_images = 0;
-		
-		echo '<table><tr><th>Website</th><th>Control Website</th><th>Product ID</th><th>Name</th><th>SKU</th></tr>';
-		foreach( $products as $p ) {
-			$tr = '<tr><td>';
-			
-			if ( $last_website_id != $p['website_id'] )
-				$tr .= $p['website'];
-			
-			$tr .= '</td><td>';
-			
-			if ( $last_website_id != $p['website_id'] )
-				$tr .= '<a href="http://admin.imagineretailer.com/websites/control/?wid=' . $p['website_id'] . '">http://admin.imagineretailer.com/websites/control/?wid=' . $p['website_id'] . '</a>';
-			
-			echo $tr, '</td><td>', $p['product_id'], '</td><td>', $p['name'], '</td><td>', $p['sku'], '</td></tr>';
-			$last_website_id = $p['website_id'];
-		}
-		echo '</table>';
-			
-		/*
-		foreach ( $products as $p ) {
-			$image_values = '';
-			$sequence = 0;
-			
-			$images = $s3->getBucket( $p['industry'] . '.retailcatalog.us', 'products/' . $p['product_id'] . '/', NULL, NULL, '/' );
-			
-			if ( count( $images ) < 1 || false == $images )
-				continue;
-			
-			foreach ( $images as $i ) {
-				if ( !empty( $image_values ) )
-					$image_values .= ',';
-				
-				$image_values .= '(' . (int) $p['product_id'] . ", '" . $this->db->escape( str_replace( 'products/' . $p['product_id'] . '/', '', $i['name'] ) ) . "', " . (int) $sequence . ')';
-				$sequence++;
-			}
-			
-			$this->db->query( "INSERT INTO `product_images` ( `product_id`, `image`, `sequence` ) VALUES $image_values" );
-
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to add product images.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			$added_images += $sequence + 1;
-		}*/
 	}
 
 	/**

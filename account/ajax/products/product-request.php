@@ -13,8 +13,8 @@ $t = new Tickets;
 
 $ticket_message = '';
 
-foreach( $_POST['requests'] as $r ) {
-	if( !empty( $ticket_message ) )
+switch ( $_POST['requests'] as $r ) {
+	if ( !empty( $ticket_message ) )
 		$ticket_message .= "\n\n";
 	
 	// Get the brand, sku and collection
@@ -23,7 +23,7 @@ foreach( $_POST['requests'] as $r ) {
 	// Add it to the message
 	$ticket_message .= 'Brand: ' . $ticket_array[0] . "\n";
 	$ticket_message .= 'SKU: ' . $ticket_array[1] . "\n";
-	$ticket_message .= 'Collection: ' . $ticket_array[2] . "\n\n";
+	$ticket_message .= 'Collection: ' . $ticket_array[2];
 	
 	$subject = ( $user['website']['live'] ) ? 'Live' : 'Staging';
 }

@@ -218,7 +218,7 @@ class PHPExcel
      */
     public function addSheet(PHPExcel_Worksheet $pSheet = null, $iSheetIndex = null)
     {
-        if(is_null($iSheetIndex))
+        if (is_null($iSheetIndex))
         {
             $this->_workSheetCollection[] = $pSheet;
         }
@@ -461,7 +461,7 @@ class PHPExcel
 				}
 			}
 			$returnCount = 0;
-			foreach($this->_namedRanges as $_namedRange) {
+			foreach ($this->_namedRanges as $_namedRange) {
 				if ($_namedRange->getName() == $namedRange) {
 					if ((!is_null($pSheet)) && ($_namedRange->getWorksheet()->getTitle() == $pSheet->getTitle())) {
 						return $_namedRange;
@@ -493,7 +493,7 @@ class PHPExcel
 					unset($this->_namedRanges[$key]);
 				}
 			}
-			foreach($this->_namedRanges as $_namedRange) {
+			foreach ($this->_namedRanges as $_namedRange) {
 				if ($_namedRange->getName() == $namedRange) {
 					if ((!is_null($pSheet)) && ($_namedRange->getWorksheet()->getTitle() == $pSheet->getTitle())) {
 						$key = $pSheet->getTitle().'!'.$namedRange;
@@ -537,7 +537,7 @@ class PHPExcel
 	 * Implement PHP __clone to create a deep clone, not just a shallow copy.
 	 */
 	public function __clone() {
-		foreach($this as $key => $val) {
+		foreach ($this as $key => $val) {
 			if (is_object($val) || (is_array($val))) {
 				$this->{$key} = unserialize(serialize($val));
 			}

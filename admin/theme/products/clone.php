@@ -1,7 +1,7 @@
 <?php
 $product_id = (int) $_GET['pid'];
 
-if( empty( $product_id ) )
+if ( empty( $product_id ) )
 	url::redirect( '/products/' );
 
 $p = new Products;

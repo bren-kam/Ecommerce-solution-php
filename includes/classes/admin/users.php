@@ -20,29 +20,29 @@ class Users extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if( !parent::__construct() )
+		if ( !parent::__construct() )
 			return false;
 		
 		// Find out if the user has a cookie set, if so, sign him or her in
-		if( isset( $_COOKIE[SECURE_AUTH_COOKIE] ) ) {
+		if ( isset( $_COOKIE[SECURE_AUTH_COOKIE] ) ) {
 			$this->encrypted_email = $_COOKIE[SECURE_AUTH_COOKIE];
 		} elseif ( isset( $_COOKIE[AUTH_COOKIE] ) ) {
 			$this->encrypted_email = $_COOKIE[AUTH_COOKIE];
 		}
 		
-		if( !empty( $this->encrypted_email ) ) {
+		if ( !empty( $this->encrypted_email ) ) {
 			global $user, $mc;
 			
 			$user = $mc->get( $this->encrypted_email );
 			
 			// If memcache didn't get anything, get it and then add it
-			if( !$user ) {
+			if ( !$user ) {
 				$user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
 				
 				// If they're not an admin but in an admin section, send them to the login screen
-				if( $user['role'] <= 5 && ADMIN ) {
+				if ( $user['role'] <= 5 && ADMIN ) {
 					$this->logout();
-					url::redirect( '/login/' );
+					login();
 				}
 				
 				$mc->add( $this->encrypted_email, $user, 7200 ); // 2 hours
@@ -66,7 +66,7 @@ class Users extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the users
@@ -74,7 +74,7 @@ class Users extends Base_Class {
 		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id`, `phone` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list users.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -92,14 +92,14 @@ class Users extends Base_Class {
 		global $user;
 		
 		// If they are below 8, that means they are a partner
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the user count
 		$user_count = $this->db->get_var( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where" );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count users.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -116,7 +116,7 @@ class Users extends Base_Class {
 		$users = $this->db->get_results( "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00'", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get product users.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -138,10 +138,10 @@ class Users extends Base_Class {
 	 * @return bool|int
 	 */
 	public function create( $company_id, $email, $password, $contact_name, $store_name, $role ) {
-		$this->db->insert( 'users', array( 'company_id' => $company_id, 'email' => $email, 'password' => md5( $password ), 'contact_name' => $contact_name, 'store_name' => $store_name, 'role' => $role, 'date_created' => date_time::now() ), 'issssis' );
+		$this->db->insert( 'users', array( 'company_id' => $company_id, 'email' => $email, 'password' => md5( $password ), 'contact_name' => $contact_name, 'store_name' => $store_name, 'role' => $role, 'date_created' => dt::now() ), 'issssis' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create user.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -161,19 +161,19 @@ class Users extends Base_Class {
 	public function update_information( $user_id, $information ) {
 		global $user;
 		
-		if( isset( $information['password'] ) )
+		if ( isset( $information['password'] ) )
 			$information['password'] = md5( $information['password'] );
 		
 		$this->db->update( 'users', $information, array( 'user_id' => $user_id ), str_repeat( 's', count( $information ) ), 'i' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update information for user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// If it was this user, update it
-		if( $user['user_id'] == $user_id )
+		if ( $user['user_id'] == $user_id )
 			$user = array_merge( $user, $information );
 		
 		return $user_id;
@@ -191,7 +191,7 @@ class Users extends Base_Class {
 		$this->db->update( 'users', array( 'status' => 1 ), array( 'user_id' => $user_id, 'status' => -1 ), 'i', 'ii' );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to activate user.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -210,13 +210,13 @@ class Users extends Base_Class {
 		$user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `products`, `role` FROM `users` WHERE `role` > 5 AND `status` = 1 AND `email` = ? AND `password` = MD5(?)', 'ss', $email, $password )->get_row( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to sign in user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// If no user was found, return false
-		if( !$user )
+		if ( !$user )
 			return false;
 		
 		$expiration = ( $remember_me ) ? 1209600 : 172800; // Two Weeks : Two Days
@@ -250,10 +250,10 @@ class Users extends Base_Class {
 	 */
 	private function record_login( $user_id ) {
 		// Set the last login date to now
-		$this->db->update( 'users', array( 'last_login' => date_time::date('Y-m-d H:i:s') ), array( 'user_id' => $user_id ), 's', 'i' );
+		$this->db->update( 'users', array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $user_id ), 's', 'i' );
 	
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to record login.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -272,15 +272,15 @@ class Users extends Base_Class {
 		$user = $this->db->prepare( "SELECT `user_id`, `account_type_id`, CONCAT( `first_name`, ' ', `last_name` ) AS name, `status` FROM `users` WHERE `email` = ?", 's', $email )->get_row( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get user data.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		if( $user ) {
+		if ( $user ) {
 			$e = new Emails();
 			
-			if( -1 == $user['status'] ) {
+			if ( -1 == $user['status'] ) {
 				// This means their account was never activated, so send the same email
 				$e->send_confirmation( $user['user_id'], $email );
 				
@@ -307,7 +307,7 @@ class Users extends Base_Class {
 		$user_id = $this->db->prepare( 'SELECT `user_id` FROM `users` WHERE `email` = ?', 's', $email )->get_var('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to check if an email existed.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -326,7 +326,7 @@ class Users extends Base_Class {
 		$date_created = $this->db->prepare( 'SELECT `date_created` FROM `users` WHERE `user_id` = ?', 'i', $user_id )->get_var('');
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to check if a user existed.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -347,12 +347,12 @@ class Users extends Base_Class {
 		
 		$user = $mc->get( 'get_user > ' . $user_id );
 		
-		if( empty( $user ) ) {
+		if ( empty( $user ) ) {
 			// Prepare the statement
 			$user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `work_phone`, `cell_phone`, `billing_first_name`, `billing_last_name`, `billing_address1`, `billing_city`, `billing_state`, `billing_zip`, `products`, `role`, `status`, `date_created` FROM `users` WHERE `user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
 			
 			// Handle any error
-			if( $this->db->errno() ) {
+			if ( $this->db->errno() ) {
 				$this->err( 'Failed to get user.', __LINE__, __METHOD__ );
 				return false;
 			}
@@ -373,13 +373,13 @@ class Users extends Base_Class {
 		global $user;
 		
 		// Make sure they can only see what they're supposed to
-		if( $user['role'] < 8 )
+		if ( $user['role'] < 8 )
 			$where .= ' AND `company_id` = ' . $user['company_id'];
 		
 		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE 1 $where ORDER BY `contact_name`", ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get users.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -400,7 +400,7 @@ class Users extends Base_Class {
 		$row = $this->db->get_row( 'SELECT `user_id` FROM `users` WHERE `user_id` = ' . (int) $user_id . ' AND `status` = -1', ARRAY_A );
 
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get inactive user.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -421,7 +421,7 @@ class Users extends Base_Class {
 		$user_id = $this->db->prepare( 'SELECT `user_id` FROM `users` WHERE `email` = ? AND `status` = -1', 's', $email )->get_var( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get inactive user by email.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -443,12 +443,12 @@ class Users extends Base_Class {
 		$user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `products`, `role` FROM `users` WHERE `status` = 1 AND `email` = ?', 's', $email )->get_row( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get user by email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		if( $assign_user_id )
+		if ( $assign_user_id )
 			$this->user_id = (int) $user['user_id'];
 		
 		return $user;
@@ -477,7 +477,7 @@ class Users extends Base_Class {
 		$results = $this->db->prepare( "SELECT DISTINCT( `$field` ) FROM `users` WHERE `$field` LIKE ? $where ORDER BY `$field`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -500,7 +500,7 @@ class Users extends Base_Class {
 		$this->db->update( 'users', array( 'salt' => $salt, 'password' => $hash ), array( 'user_id' => $user_id ), array( '%s', '%s' ), array( '%d' ) );
 		
 		// Handle any error
-		if( $this->db->errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( "Failed to update user's password.", __LINE__, __METHOD__ );
 			return false;
 		}

@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -31,7 +31,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'name';
@@ -74,11 +74,11 @@ if ( $_GET['sSearch'] != "" ) {
 }
 
 // Grab only the right status
-if( isset( $_SESSION['tickets']['status'] ) )
+if ( isset( $_SESSION['tickets']['status'] ) )
 	$where .= ' AND a.`status` = ' . $_SESSION['tickets']['status'];
 
 // Grab only the right status
-if( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] )
+if ( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] )
 	$where .= ( '-1' == $_SESSION['tickets']['assigned-to'] ) ? ' AND c.`role` <= ' . $user['role'] : ' AND c.`user_id` = ' . $_SESSION['tickets']['assigned-to'];
 
 $tickets = $t->list_tickets( $limit, $where, $order_by );
@@ -86,8 +86,8 @@ $ticket_count = $t->count( $where );
 
 $aaData = array();
 
-foreach( $tickets as $ticket ) {
-	switch( $ticket['priority'] ) {
+foreach ( $tickets as $ticket ) {
+	switch ( $ticket['priority'] ) {
 		case 0:
 			$priority = '<span class="normal">NORMAL</span>';
 		break;
@@ -101,8 +101,8 @@ foreach( $tickets as $ticket ) {
 		break;
 	}
 	
-	$date_due = ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : date_time::date( 'm/d/Y', $ticket['date_due'] );
-	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'] . '|' . $ticket['waiting'], $ticket['website'], $priority, $ticket['assigned_to'], date_time::date( 'm/d/Y', $ticket['date_created'] ), $date_due );
+	$date_due = ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : dt::date( 'm/d/Y', $ticket['date_due'] );
+	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'] . '|' . $ticket['waiting'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ), $date_due );
 }
 
 echo json_encode( array( 

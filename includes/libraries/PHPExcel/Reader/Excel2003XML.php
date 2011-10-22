@@ -216,7 +216,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 
 		$headers = explode("\n",$data);
 		$valid = true;
-		foreach($signature as $key => $match) {
+		foreach ($signature as $key => $match) {
 			if (isset($headers[$key])) {
 				$line = trim(rtrim($headers[$key], "\r\n"));
 				if ($line != $match) {
@@ -249,7 +249,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 
 	private static function identifyFixedStyleValue($styleList,&$styleAttributeValue) {
 		$styleAttributeValue = strtolower($styleAttributeValue);
-		foreach($styleList as $style) {
+		foreach ($styleList as $style) {
 			if ($styleAttributeValue == strtolower($style)) {
 				$styleAttributeValue = $style;
 				return true;
@@ -334,7 +334,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 //		echo '</pre><hr />';
 //
 		$docProps = $objPHPExcel->getProperties();
-		foreach($xml->DocumentProperties[0] as $propertyName => $propertyValue) {
+		foreach ($xml->DocumentProperties[0] as $propertyName => $propertyValue) {
 			switch ($propertyName) {
 				case 'Title' :
 						$docProps->setTitle($propertyValue);
@@ -368,7 +368,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 		}
 
 
-		foreach($xml->Styles[0] as $style) {
+		foreach ($xml->Styles[0] as $style) {
 			$style_ss = $style->attributes($namespaces['ss']);
 			$styleID = (string) $style_ss['ID'];
 //			echo 'Style ID = '.$styleID.'<br />';
@@ -382,7 +382,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 //				echo $styleType.'<br />';
 				switch ($styleType) {
 					case 'Alignment' :
-							foreach($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
+							foreach ($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
 //								echo $styleAttributeKey.' = '.$styleAttributeValue.'<br />';
 								$styleAttributeValue = (string) $styleAttributeValue;
 								switch ($styleAttributeKey) {
@@ -403,10 +403,10 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 							}
 							break;
 					case 'Borders' :
-							foreach($styleData->Border as $borderStyle) {
+							foreach ($styleData->Border as $borderStyle) {
 								$borderAttributes = $borderStyle->attributes($namespaces['ss']);
 								$thisBorder = array();
-								foreach($borderAttributes as $borderStyleKey => $borderStyleValue) {
+								foreach ($borderAttributes as $borderStyleKey => $borderStyleValue) {
 //									echo $borderStyleKey.' = '.$borderStyleValue.'<br />';
 									switch ($borderStyleKey) {
 										case 'LineStyle' :
@@ -433,7 +433,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 							}
 							break;
 					case 'Font' :
-							foreach($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
+							foreach ($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
 //								echo $styleAttributeKey.' = '.$styleAttributeValue.'<br />';
 								$styleAttributeValue = (string) $styleAttributeValue;
 								switch ($styleAttributeKey) {
@@ -461,7 +461,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 							}
 							break;
 					case 'Interior' :
-							foreach($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
+							foreach ($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
 //								echo $styleAttributeKey.' = '.$styleAttributeValue.'<br />';
 								switch ($styleAttributeKey) {
 									case 'Color' :
@@ -471,7 +471,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 							}
 							break;
 					case 'NumberFormat' :
-							foreach($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
+							foreach ($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
 //								echo $styleAttributeKey.' = '.$styleAttributeValue.'<br />';
 								$styleAttributeValue = str_replace($fromFormats,$toFormats,$styleAttributeValue);
 								switch ($styleAttributeValue) {
@@ -485,7 +485,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 							}
 							break;
 					case 'Protection' :
-							foreach($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
+							foreach ($styleAttributes as $styleAttributeKey => $styleAttributeValue) {
 //								echo $styleAttributeKey.' = '.$styleAttributeValue.'<br />';
 							}
 							break;
@@ -497,7 +497,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 //		echo '<hr />';
 
 		$worksheetID = 0;
-		foreach($xml->Worksheet as $worksheet) {
+		foreach ($xml->Worksheet as $worksheet) {
 			$worksheet_ss = $worksheet->attributes($namespaces['ss']);
 			if ((isset($this->_loadSheetsOnly)) && (isset($worksheet_ss['Name'])) &&
 				(!in_array($worksheet_ss['Name'], $this->_loadSheetsOnly))) {
@@ -513,7 +513,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 			}
 
 			$columnID = 'A';
-			foreach($worksheet->Table->Column as $columnData) {
+			foreach ($worksheet->Table->Column as $columnData) {
 				$columnData_ss = $columnData->attributes($namespaces['ss']);
 				if (isset($columnData_ss['Index'])) {
 					$columnID = PHPExcel_Cell::stringFromColumnIndex($columnData_ss['Index']-1);
@@ -527,7 +527,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 			}
 
 			$rowID = 1;
-			foreach($worksheet->Table->Row as $rowData) {
+			foreach ($worksheet->Table->Row as $rowData) {
 				$row_ss = $rowData->attributes($namespaces['ss']);
 				if (isset($row_ss['Index'])) {
 					$rowID = (integer) $row_ss['Index'];
@@ -542,7 +542,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 					$objPHPExcel->getActiveSheet()->getRowDimension($rowID)->setRowHeight($rowHeight);
 				}
 				$columnID = 'A';
-				foreach($rowData->Cell as $cell) {
+				foreach ($rowData->Cell as $cell) {
 
 					$cell_ss = $cell->attributes($namespaces['ss']);
 					if (isset($cell_ss['Index'])) {
@@ -613,7 +613,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 							$columnNumber = PHPExcel_Cell::columnIndexFromString($columnID);
 							//	Convert R1C1 style references to A1 style references (but only when not quoted)
 							$temp = explode('"',$cellDataFormula);
-							foreach($temp as $key => &$value) {
+							foreach ($temp as $key => &$value) {
 								//	Only replace in alternate array entries (i.e. non-quoted blocks)
 								if (($key % 2) == 0) {
 									preg_match_all('/(R(\[?-?\d*\]?))(C(\[?-?\d*\]?))/',$value, $cellReferences,PREG_SET_ORDER+PREG_OFFSET_CAPTURE);
@@ -623,7 +623,7 @@ class PHPExcel_Reader_Excel2003XML implements PHPExcel_Reader_IReader
 									$cellReferences = array_reverse($cellReferences);
 									//	Loop through each R1C1 style reference in turn, converting it to its A1 style equivalent,
 									//		then modify the formula to use that new reference
-									foreach($cellReferences as $cellReference) {
+									foreach ($cellReferences as $cellReference) {
 										$rowReference = $cellReference[2][0];
 										//	Empty R reference is the current row
 										if ($rowReference == '') $rowReference = $rowID;

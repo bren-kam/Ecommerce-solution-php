@@ -12,12 +12,18 @@ if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if( !$user['website']['email_marketing'] )
+if ( !$user['website']['email_marketing'] )
 	url::redirect('/email-marketing/subscribers/');
 
 $e = new Email_Marketing;
 $email_lists = $e->get_email_lists( true );
-$em = $e->get_email_message( $_GET['emid'] );
+
+// Initialize variable
+$email_message_id = ( isset( $_GET['emid'] ) ) ? $_GET['emid'] : '';
+
+// Get email message
+$em = $e->get_email_message( $email_message_id );
+
 $timezone = $e->get_setting('timezone');
 
 // Set the meta
@@ -25,13 +31,13 @@ if ( 'offer' == $em['type'] ) {
 	$offer_1 = explode( '|', $em['meta']['offer_1'] );
 	$offer_2 = explode( '|', $em['meta']['offer_2'] );
 	
-	if( !empty( $offer_1[1] ) || !empty( $offer_2[1] ) ) {
+	if ( !empty( $offer_1[1] ) || !empty( $offer_2[1] ) ) {
 		$p = new Products;
 		
-		if( !empty( $offer_1[1] ) )
+		if ( !empty( $offer_1[1] ) )
 			$offer_1['product'] = $p->get_product( $offer_1[1] );
 
-		if( !empty( $offer_2[1] ) )
+		if ( !empty( $offer_2[1] ) )
 			$offer_2['product'] = $p->get_product( $offer_2[1] );
 	}
 }
@@ -63,9 +69,9 @@ get_header();
 				<h2><?php echo _('Basic Email Information'); ?></h2>
 				<br />
 				<?php
-				if( !empty( $em['date_sent'] ) ) {
+				if ( !empty( $em['date_sent'] ) ) {
 					// Adjust for timezone
-					$em['date_sent'] = date_time::date( 'Y-m-d H:i:s', strtotime( $em['date_sent'] ) + $timezone * 3600 + 18000 );
+					$em['date_sent'] = dt::date( 'Y-m-d H:i:s', strtotime( $em['date_sent'] ) + $timezone * 3600 + 18000 );
 
 					list( $date, $time ) = explode( ' ', $em['date_sent'] );
 				}
@@ -78,9 +84,9 @@ get_header();
 					</tr>
 					<tr>
 						<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-						<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? date_time::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
+						<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
 						<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-						<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? date_time::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : date_time::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+						<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
 					</tr>
 					<tr>
 						<td valign="top"><label><?php echo _('Mailing List(s)'); ?>:</label></td>
@@ -89,14 +95,14 @@ get_header();
 							<br /><br />
 							<?php
 							$options = '';
-							if( $em['email_lists'] )
+							if ( $em['email_lists'] )
 								$email_list_ids = array_keys( $em['email_lists'] );
 							
-							foreach( $email_lists as $el ) {
+							foreach ( $email_lists as $el ) {
 								$disabled = ( 0 == $el['count'] ) ? ' disabled="disabled"' : '';
-								$checked = ( $email_list_ids && in_array( $el['email_list_id'], $email_list_ids ) ) ? ' checked="checked"' : '';
+								$checked = ( isset( $email_list_ids ) && $email_list_ids && in_array( $el['email_list_id'], $email_list_ids ) ) ? ' checked="checked"' : '';
 								
-								if( 0 == $el['category_id'] ) {
+								if ( 0 == $el['category_id'] ) {
 									$options = '<p><input type="checkbox" class="cb mailing-list" id="cbMailingList' . $el['email_list_id'] . '" name="email_lists[]" value="' . $el['email_list_id'] . '"' . $checked . $disabled . ' /> <label for="cbMailingList' . $el['email_list_id'] . '">' . $el['name'] . ' (' . _('Subscribers') . ': ' . $el['count'] . ')</label></p>' . $options;
 								} else {
 									$options .= '<p><input type="checkbox" class="cb mailing-list" id="cbMailingList' . $el['email_list_id'] . '" name="email_lists[]" value="' . $el['email_list_id'] . '"' . $checked . $disabled . ' /> <label for="cbMailingList' . $el['email_list_id'] . '">' . $el['name'] . ' (' . _('Subscribers') . ': ' . $el['count'] . ')</label></p>';
@@ -115,7 +121,7 @@ get_header();
 				<p class="col-2 text-right" style="position: absolute; right: 10px; top: 15px"><a href="javascript:;" id="aPreviousStep1" class="previous button" title="<?php echo _('Previous'); ?>"><?php echo _('Previous'); ?></a> <a href="javascript:;" class="save button" title="<?php echo _('Save'); ?>"><?php echo _('Save'); ?></a></p>
 				<br />
 				<div id="dChooseType" style="height: 170px">
-					<?php if( $user['company_id'] != 4 ) { ?>
+					<?php if ( $user['company_id'] != 4 ) { ?>
 					<div class="choose-div">
 						<a href="javascript:;" id="aOffer" title="<?php echo _('Offer Email'); ?>" class="choose">
 							<img src="/images/icons/email-marketing/emails/email-offer.gif" width="162" height="131" alt="<?php echo _('Offer Email'); ?>" />
@@ -163,8 +169,8 @@ get_header();
 					<div class="template-image"></div>
 					<br clear="all" />
 				</div>
-				<input type="hidden" name="hEmailType" id="hEmailType" value="<?php if( !empty( $em['type'] ) ) echo $em['type']; ?>" />
-				<input type="hidden" name="hEmailTemplateID" id="hEmailTemplateID" value="<?php if( !empty( $em['email_template_id'] ) ) echo $em['email_template_id']; ?>" />
+				<input type="hidden" name="hEmailType" id="hEmailType" value="<?php if ( !empty( $em['type'] ) ) echo $em['type']; ?>" />
+				<input type="hidden" name="hEmailTemplateID" id="hEmailTemplateID" value="<?php if ( !empty( $em['email_template_id'] ) ) echo $em['email_template_id']; ?>" />
 			</div>
 			<div class="hidden" id="dStep3" style="position:relative">
 				<h2 class="col-2"><?php echo _('Email Content'); ?></h2>
@@ -181,18 +187,18 @@ get_header();
 							<td width="245" valign="top">
 								<select name="sBox1" id="sBox1" class="select-box-type">
 									<option value=""><?php echo _('Select Left Box Type'); ?></option>
-									<option value="text"<?php if( !empty( $offer_1 ) && 'text' == $offer_1[0] ) echo ' selected="selected"'; ?>><?php echo _('Text'); ?></option>
-									<option value="product"<?php if( !empty( $offer_1 ) && 'product' == $offer_1[0] ) echo ' selected="selected"'; ?>><?php echo _('Product'); ?></option>
+									<option value="text"<?php if ( !empty( $offer_1 ) && 'text' == $offer_1[0] ) echo ' selected="selected"'; ?>><?php echo _('Text'); ?></option>
+									<option value="product"<?php if ( !empty( $offer_1 ) && 'product' == $offer_1[0] ) echo ' selected="selected"'; ?>><?php echo _('Product'); ?></option>
 								</select>
 								<br /><br />
-								<div id="dTextBox1"<?php if( empty( $offer_1 ) || 'text' != $offer_1[0] ) echo ' class="hidden"'; ?>>
-									<textarea cols="33" rows="3" name="taBox1" id="taBox1"><?php if( !empty( $offer_1 ) && 'text' == $offer_1[0] ) echo $offer_1[1]; ?></textarea>
+								<div id="dTextBox1"<?php if ( empty( $offer_1 ) || 'text' != $offer_1[0] ) echo ' class="hidden"'; ?>>
+									<textarea cols="33" rows="3" name="taBox1" id="taBox1"><?php if ( !empty( $offer_1 ) && 'text' == $offer_1[0] ) echo $offer_1[1]; ?></textarea>
 								</div>
-								<div id="dProductBox1"<?php if( empty( $offer_1 ) || 'product' != $offer_1[0] ) echo ' class="hidden"'; ?>>
+								<div id="dProductBox1"<?php if ( empty( $offer_1 ) || 'product' != $offer_1[0] ) echo ' class="hidden"'; ?>>
 									<input type="text" class="tb" name="tAutoSuggestBox1" id="tAutoSuggestBox1" tmpval="<?php echo _('Product Name / SKU'); ?>" />
 									<div id="dProductContainerBox1" class="product-container">
 										<?php 
-										if( !empty( $offer_1['product'] ) ) { 
+										if ( !empty( $offer_1['product'] ) ) { 
 											$product_image = 'http://' . $offer_1['product']['industry'] . '.retailcatalog.us/products/' . $offer_1['product']['product_id'] . '/' . $offer_1['product']['image'];
 										?>
 										<div id="dProduct_<?php echo $offer_1[1]; ?>" class="product">
@@ -214,18 +220,18 @@ get_header();
 							<td width="245" valign="top">
 								<select name="sBox2" id="sBox2" class="select-box-type">
 									<option value=""><?php echo _('Select Right Box Type'); ?></option>
-									<option value="text"<?php if( isset( $offer_2 ) && 'text' == $offer_2[0] ) echo ' selected="selected"'; ?>><?php echo _('Text'); ?></option>
-									<option value="product"<?php if( isset( $offer_2 ) && 'product' == $offer_2[0] ) echo ' selected="selected"'; ?>><?php echo _('Product'); ?></option>
+									<option value="text"<?php if ( isset( $offer_2 ) && 'text' == $offer_2[0] ) echo ' selected="selected"'; ?>><?php echo _('Text'); ?></option>
+									<option value="product"<?php if ( isset( $offer_2 ) && 'product' == $offer_2[0] ) echo ' selected="selected"'; ?>><?php echo _('Product'); ?></option>
 								</select>
 								<br /><br />
-								<div id="dTextBox2"<?php if( empty( $offer_2 ) || 'text' != $offer_2[0] ) echo ' class="hidden"'; ?>>
-									<textarea cols="33" rows="3" name="taBox2" id="taBox2"><?php if( !empty( $offer_2 ) && 'text' == $offer_2[0] ) echo $offer_2[1]; ?></textarea>
+								<div id="dTextBox2"<?php if ( empty( $offer_2 ) || 'text' != $offer_2[0] ) echo ' class="hidden"'; ?>>
+									<textarea cols="33" rows="3" name="taBox2" id="taBox2"><?php if ( !empty( $offer_2 ) && 'text' == $offer_2[0] ) echo $offer_2[1]; ?></textarea>
 								</div>
-								<div id="dProductBox2"<?php if( empty( $offer_2 ) || 'product' != $offer_2[0] ) echo ' class="hidden"'; ?>>
+								<div id="dProductBox2"<?php if ( empty( $offer_2 ) || 'product' != $offer_2[0] ) echo ' class="hidden"'; ?>>
 									<input type="text" class="tb" name="tAutoSuggestBox2" id="tAutoSuggestBox2" tmpval="<?php echo _('Product Name / SKU'); ?>" />
 									<div id="dProductContainerBox2" class="product-container">
 										<?php 
-										if( !empty( $offer_2['product'] ) ) { 
+										if ( !empty( $offer_2['product'] ) ) { 
 											$product_image = 'http://' . $offer_2['product']['industry'] . '.retailcatalog.us/products/' . $offer_2['product']['product_id'] . '/' . $offer_2['product']['image'];
 										?>
 										<div id="dProduct_<?php echo $offer_2[1]; ?>" class="product">
@@ -246,7 +252,7 @@ get_header();
 						</tr>
 					</table>
 				</div>
-				<div id="dCustom_product" class="custom-template<?php if( empty( $em['type'] ) || 'product' != $em['type'] ) echo ' hidden'; ?>">
+				<div id="dCustom_product" class="custom-template<?php if ( empty( $em['type'] ) || 'product' != $em['type'] ) echo ' hidden'; ?>">
 					<br /><br />
 					
 					<h2 id="h2ProductCount"><?php echo _('Products Chosen'), ': '; echo ( isset( $em['type'] ) && 'product' == $em['type'] ) ? count( $em['meta'] ) : '0'; ?>/9</h2>
@@ -293,15 +299,15 @@ get_header();
 					<h2><?php echo _('Selected Products'); ?></h2>
 					<div id="dSelectedProducts">
 						<?php 
-						if( isset( $em['meta'] ) && 'product' == $em['type'] ) {
+						if ( isset( $em['meta'] ) && 'product' == $em['type'] ) {
 							$meta = array();
-							foreach( $em['meta'] as $product ) {
+							foreach ( $em['meta'] as $product ) {
 								$meta[$product['order']] = $product;
 							}
 							
 							ksort( $meta );
 						
-							foreach( $meta as $product ) {
+							foreach ( $meta as $product ) {
 								$product_image = 'http://' . $product['industry'] . '.retailcatalog.us/products/' . $product['product_id'] . '/' . $product['image'];
 								?>
 								<div id="dProduct_<?php echo $product['product_id']; ?>" class="product">

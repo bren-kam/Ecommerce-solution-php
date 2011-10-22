@@ -16,7 +16,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			var cacheType = $('#sAutoComplete').val();
 			
 			// Find out if they are already cached so we don't have to do another ajax called
-			if( request['term'] in cache[cacheType] ) {
+			if ( request['term'] in cache[cacheType] ) {
 				response( $.map( cache[cacheType][request['term']], function( item ) {
 					return {
 						'label' : item['name'],

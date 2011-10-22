@@ -32,11 +32,11 @@ $website_files = $wf->get_all();
 $v->form_name = 'fEditPage';
 
 // Products can be blank
-if( 'products' != $page['slug'] )
+if ( 'products' != $page['slug'] )
 	$v->add_validation( 'taContent', 'req', _('Page Content is required.') );
 
 // Custom validation
-switch( $page['slug'] ) {
+switch ( $page['slug'] ) {
 	case 'financing':
 		$v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must conain a valid link') );
 	break;
@@ -54,17 +54,20 @@ add_footer( $v->js_validation() );
 
 /***** HANDLE SUBMIT *****/
 
+// Initialize variable
+$success = false;
+
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'edit-page' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		// Update the page
-		$success = $w->update_page( $website_page_id, stripslashes( $_POST['taContent'] ), $_POST['tMetaTitle'], $_POST['tMetaDescription'], $_POST['tMetaKeywords'] );
+		$success = $w->update_page( $website_page_id, stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
 		
 		// Update custom meta
-		switch( $page['slug'] ) {
+		switch ( $page['slug'] ) {
 			case 'contact-us':
 				$pagemeta = array( 'addresses' => htmlspecialchars( stripslashes( $_POST['hAddresses'] ) ) );
 			break;
@@ -82,11 +85,11 @@ if( nonce::verify( $_POST['_nonce'], 'edit-page' ) ) {
 			break;
 		}
 		
-		if( $_POST['tTitle'] == 'Page Title....' ) $_POST['tTitle'] = '';
+		if ( $_POST['tTitle'] == 'Page Title....' ) $_POST['tTitle'] = '';
 		$pagemeta['page-title'] = $_POST['tTitle'];
 		
 		// Set pagemeta
-		if( is_array( $pagemeta ) )
+		if ( is_array( $pagemeta ) )
 			$w->set_pagemeta( $website_page_id, $pagemeta );
 		
 		// Get new page
@@ -99,7 +102,7 @@ if( nonce::verify( $_POST['_nonce'], 'edit-page' ) ) {
 css( 'jquery.uploadify' );
 javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'website/page' );
 
-switch( $page['slug'] ) {
+switch ( $page['slug'] ) {
 	case 'contact-us':
 		css('website/pages/contact-us');
 		javascript('website/pages/contact-us');
@@ -144,19 +147,19 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'edit_page' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 		<div class="success">
-			<p><?php echo _('Your page has been updated.'); ?> <a href="http://<?php if( !empty( $user['website']['subdomain'] ) ) echo $user['website']['subdomain'], '.'; echo $user['website']['domain'], '/', $page['slug']; ?>/" title="<?php echo _('View Page'); ?>" target="_blank"><?php echo _('View the page.'); ?></a></p>
+			<p><?php echo _('Your page has been updated.'); ?> <a href="http://<?php if ( !empty( $user['website']['subdomain'] ) ) echo $user['website']['subdomain'], '.'; echo $user['website']['domain'], '/', $page['slug']; ?>/" title="<?php echo _('View Page'); ?>" target="_blank"><?php echo _('View the page.'); ?></a></p>
 			<p><a href="/website/" title="<?php echo _('Edit Other Pages'); ?>"><?php echo _('Click here to edit other pages.'); ?></a></p>
 		</div>
 		<?php
 		}
 		
-		if( isset( $errs ) )
+		if ( isset( $errs ) )
 			echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fEditPage" action="/website/edit/?wpid=<?php echo $website_page_id; ?>" method="post">
-		<?php if( $page['slug'] == 'products' ) { ?>
+		<?php if ( $page['slug'] == 'products' ) { ?>
         <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="Page Title...."/>
         <?php } ?>
         <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $page['content']; ?></textarea>
@@ -179,7 +182,7 @@ get_header();
 		</div>
 		
 		<?php
-		if( in_array( $page['slug'], array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
+		if ( in_array( $page['slug'], array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
 			require theme_inc( 'website/pages/' . $page['slug'] );
 		?>
 		<br /><br />
@@ -192,12 +195,12 @@ get_header();
 		<div id="dUploadFile" class="hidden">
 			<ul id="ulUploadFile">
 				<?php
-				if( is_array( $website_files ) ) {
+				if ( is_array( $website_files ) ) {
 					// Set variables
 					$ajax_delete_file_nonce = nonce::create('delete-file');
 					$confirm = _('Are you sure you want to delete this file?');
 					
-					foreach( $website_files as $wf ) {
+					foreach ( $website_files as $wf ) {
 						$file_name = format::file_name( $wf['file_path'] );
 						echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 					}

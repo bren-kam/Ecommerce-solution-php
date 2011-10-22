@@ -12,9 +12,9 @@ jQuery(function($) {
 		var page_id = $(this).attr('id').replace( 'aDeletePage', '' );
  
 		// Make sure they want to delete it
-		if( confirm( 'Are you sure you want to delete the page ' + $(this).attr('title').replace( 'Delete ', '' ) + '?' ) ) {
+		if ( confirm( 'Are you sure you want to delete the page ' + $(this).attr('title').replace( 'Delete ', '' ) + '?' ) ) {
 			$.post( '/pages/delete/', { 'pid': page_id, '_nonce' : $('#_nonce').val() }, function( json ) {
-				if( true == json ) {
+				if ( true == json ) {
 					$('#trPage' + page_id).remove();
 					
 					// Update the table
@@ -35,7 +35,7 @@ jQuery(function($) {
 		var note_id = $(this).parents('div.dNote:first').attr('id').replace( 'dNote_', '' );
 		var dnote = $('#dNote_' + note_id + ' .note');
 		var dnote_html = dnote.html();
-		if( dnote.hasClass( 'editing' ) ) return false;
+		if ( dnote.hasClass( 'editing' ) ) return false;
 		else
 		{
 			dnote.html( '<br /><a href="#" class="update-note" >Update</a> | <a href="#" class="cancel-edit" >Cancel</a>' );
@@ -66,7 +66,7 @@ jQuery(function($) {
 
 	$('.delete-note').live( 'click', function(){
 		// Make sure they want to delete it
-		if( confirm( 'Are you sure you want to delete this note?' ) ) {
+		if ( confirm( 'Are you sure you want to delete this note?' ) ) {
 			var user_id = parseInt( $("#dCurrentUserId").attr("name") );
 			var note_id = $(this).parents('div.dNote:first').attr('id').replace( 'dNote_', '' );
 			$.post( '/websites/delete_website_note/', {

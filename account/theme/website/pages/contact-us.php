@@ -8,9 +8,9 @@
 			$i = 0;
 			$addresses = unserialize( $contacts );
 			
-			if( is_array( $addresses ) )
-			foreach( $addresses as $contact ) {
-				if( !isset( $contact['fax'] ) )
+			if ( is_array( $addresses ) )
+			foreach ( $addresses as $contact ) {
+				if ( !isset( $contact['fax'] ) )
 					$contact['fax'] = '';
 				
 				$i++;
@@ -44,7 +44,7 @@
 			</div>
 			<?php } ?>
 		<?php } ?>
-		<input type="hidden" name="hAddresses" id="hAddresses" value="<?php if( isset( $contacts['value'] ) ) echo htmlentities( $contacts['value'] ); ?>" />
+		<input type="hidden" name="hAddresses" id="hAddresses" value="<?php if ( isset( $contacts['value'] ) ) echo htmlentities( $contacts['value'] ); ?>" />
 	</div>
 	<br clear="all" /><br />
 	<br />
@@ -98,9 +98,9 @@
 		</tr>
 	</table>
 	<br />
-	<input type="checkbox" class="cb" id="cbHideAllMaps" value="yes"<?php if( 'true' == $hide_all_maps ) echo ' checked="checked"'; ?> /> <label for="cbHideAllMaps"><?php echo _('Hide All Maps'); ?></label><br/>
+	<input type="checkbox" class="cb" id="cbHideAllMaps" value="yes"<?php if ( 'true' == $hide_all_maps ) echo ' checked="checked"'; ?> /> <label for="cbHideAllMaps"><?php echo _('Hide All Maps'); ?></label><br/>
 	<br/>
-	<input type="checkbox" class="cb" id="cbMultipleLocationMap" value="yes"<?php if( 'true' == $multiple_location_map ) echo ' checked="checked"'; ?> /> <label for="cbMultipleLocationMap"><?php echo _('Multiple Location Map'); ?></label>
+	<input type="checkbox" class="cb" id="cbMultipleLocationMap" value="yes"<?php if ( 'true' == $multiple_location_map ) echo ' checked="checked"'; ?> /> <label for="cbMultipleLocationMap"><?php echo _('Multiple Location Map'); ?></label>
 </div>
 <div id="dEditAddress" class="hidden">
 <table cellpadding="0" cellspacing="0" class="form">

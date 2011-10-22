@@ -20,7 +20,7 @@ $f = new Files;
 $user = $u->get_user( $_POST['uid'] );
 $user['website']['website_id'] = 0;
 
-if( '0' == $_POST['tid'] ) {
+if ( '0' == $_POST['tid'] ) {
 	// Instantiate the class
 	$t = new Tickets;
 	

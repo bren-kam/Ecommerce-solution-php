@@ -18,7 +18,7 @@ function postLoad( $ ) {
 	
 	// Make the form verify that the images is a proper field
 	$('#fAddEdit').submit( function() {
-		if( ( $('.remove-product-image') ).length < 1 ) {
+		if ( ( $('.remove-product-image') ).length < 1 ) {
 			alert( 'Products require at least one image to publish' );
 			return false;
 		};
@@ -54,20 +54,20 @@ function postLoad( $ ) {
 	
 	/********* Trigger aAddCategory so that it adds a category when the product is published ********/
 	$('#iPublish').click(function() {
-		//if( $('#sProductCategory').val() != 0 ) $('a#aAddCategory').click();
+		//if ( $('#sProductCategory').val() != 0 ) $('a#aAddCategory').click();
 	});
 	
 	/********** Categories Link  **********/
 	$('a#aAddCategory').click(function() {
 		// Make sure they actually put something in
-		if( 0 == $('#sProductCategory').val() ) {
+		if ( 0 == $('#sProductCategory').val() ) {
 			alert('Please select a category');
 		} else {
 			// Declare options
 			var option = $('#sProductCategory option:selected'), categoryID = option.val();
 
 			// It already exists, give an alert
-			if( '' != $('#dCategory' + categoryID).text() ) {
+			if ( '' != $('#dCategory' + categoryID).text() ) {
 				alert('That category has already been selected');
 				return;
 			}
@@ -117,21 +117,21 @@ function postLoad( $ ) {
 	/********** Product Link  **********/
 	// Trigger the check to make sure the slug is available
 	$('#tName').change( function() { 
-		if( 'Product Name' == $(this).val() || '' == $(this).val().replace(/\s/g, '') ) {
+		if ( 'Product Name' == $(this).val() || '' == $(this).val().replace(/\s/g, '') ) {
 			$('#dProductSlug, #pProductSlugError').slideUp();
 		} else {
 			// Get slugs
 			var productSlug = $(this).val().slug(), categorySlug = $('.product-category:first').text().slug();
 
 			// If no categories selected, put it in the products category
-			if( '' == categorySlug )
+			if ( '' == categorySlug )
 				var categorySlug = 'products';
 			
 			// Create the product ID
-			if( '' == $('#hProductID').val() ) {
+			if ( '' == $('#hProductID').val() ) {
 				$.post( '/ajax/products/create/', { '_nonce' : $('#_ajax_create_product').val() }, function( response ) {
 					// Handle any errors
-					if( !response['result'] ) {
+					if ( !response['result'] ) {
 						alert( response['error'] );
 						return;
 					}
@@ -144,7 +144,7 @@ function postLoad( $ ) {
 			var sProductSlug = $('#sProductSlug');
 			
 			// Makes sure it only changes the name when you first write the title
-			if( '' == sProductSlug.text() ) {
+			if ( '' == sProductSlug.text() ) {
 				// Assign the slugs
 				sProductSlug.text( productSlug );
 				$('#tProductSlug').val( productSlug );
@@ -205,15 +205,15 @@ function postLoad( $ ) {
 	/********** Tags **********/
 	$('a#aAddTags').click(function() {
 		// Make sure they actually put something in
-		if( '' != $('#tAddTags').val().trim() ) {
+		if ( '' != $('#tAddTags').val().trim() ) {
 			// Declare options
 			var tags = $('#tAddTags').val().split(',');
 
-			for( var i in tags ) {
+			for ( var i in tags ) {
 				var t = tags[i].trim(), tSlug = t.slug();
 
 				// It already exists, continue
-				if( '' != $('#dTag_' + tSlug).text().trim() )
+				if ( '' != $('#dTag_' + tSlug).text().trim() )
 					continue;
 	
 	
@@ -255,15 +255,15 @@ function postLoad( $ ) {
 		var specName = $('#tAddSpecName').val().trim().replace( /[|`]/g, '' ), specValue = $('#taAddSpecValue').val().trim().replace( /[|`]/g, '' ), specSlug = ( specName + specValue ).slug();
 
 		// ake sure it's a valid entry
-		if( 'Name' == specName || '' == specName || 'Value' == specValue || '' == specValue ) // || '' != $('#dSpec_' + specSlug + ' div:first').text()
+		if ( 'Name' == specName || '' == specName || 'Value' == specValue || '' == specValue ) // || '' != $('#dSpec_' + specSlug + ' div:first').text()
 			return;
 
-		if( 'na' == specName.toLowerCase() )
+		if ( 'na' == specName.toLowerCase() )
 			specName = '';
 		
 		var values = specValue.split( /\n/ );
 		
-		for( var i in values ) {
+		for ( var i in values ) {
 			specValue = values[i].trim();
 			specSlug = ( specName + specValue ).slug();
 			
@@ -316,7 +316,7 @@ function postLoad( $ ) {
 			var option = $(this), attributeItemID = option.val();
 		
 			// Make sure they actually put something in
-			if( '' != attributeItemID ) {
+			if ( '' != attributeItemID ) {
 				// Declare variables
 				var attributeItemName = option.text();
 	
@@ -365,7 +365,7 @@ function postLoad( $ ) {
 	$('#sIndustry').change( function() {
 		$.post( '/ajax/products/change-industry/', { '_nonce': $('#_ajax_change_industry').val(), 'pid': $('#hProductID').val(), 'iid' : $('#sIndustry option:selected').val() }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -383,17 +383,16 @@ function postLoad( $ ) {
 		'multi'			: true,
 		'scriptData'	: { '_nonce' : $('#_ajax_upload_image').val(), 'pid' : $('#hProductID').val() },
 		'onSelect'		: function( e, queueID, fileObj ) {
-			if( '' == $("#tName").val() || 'Product Name' == $("#tName").val() ) { alert( "You must enter a product name before uploading images" ); $('#fUploadImages').uploadifyCancel(); return false; }
+			if ( '' == $("#tName").val() || 'Product Name' == $("#tName").val() ) { alert( "You must enter a product name before uploading images" ); $('#fUploadImages').uploadifyCancel(); return false; }
 			$('#dUploadedImages').append('<div class="product-image"><span id="sLoading' + queueID + '" class="image-loading"><br/><img src="/images/ajax-loader.gif"/><br/><br/><br/>Loading</span></div>');
 		},
 		'onComplete'	: function( e, queueID, fileObj, response ) {
-			var currentImages = ( document.getElementsByName( 'hProductImages[]' ) ).length;
-			var variables = response.split('|'), hiddenProductImageID = 'hProductImage_' + variables[1].replace( /\.[a-zA_Z]{3,4}$/g, '' ).replace( /^[^\/]+\//, '' ).replace( /[\/\.]/g, '' );
+			var variables = response.split('|'), hiddenProductImageID = 'hProductImage_' + variables[1].replace( /\.[a-zA_Z]{3,4}$/, '' ).replace( /^[^\/]+\//, '' );
 			
 			//$('#dUploadedImages').append('<div class="product-image"><img src="' + variables[0] + '" width="50" /><a href="' + variables[0].replace( 'thumbnail/', 'large/' ) + '" title="View Image" target="_blank">View</a><br /><a href="javascript:;" class="remove-product-image" title=\'Remove Image\' extra="' + hiddenProductImageID + '">Remove</a></div>');
 			$('#sLoading' + queueID ).replaceWith( '<img src="' + variables[0] + '" width="50" /><a href="' + variables[0].replace( 'thumbnail/', 'large/' ) + '" title="View Image" target="_blank">View</a><br /><a href="javascript:;" class="remove-product-image" title=\'Remove Image\' extra="' + hiddenProductImageID + '">Remove</a>' );
 			// Added the .replace to hiddenProductIMageID, because it wasn't removing the forward slashes and I feel unsafe messing around too much w/ the regex
-			$('#fAddEdit').append('<input type="hidden" class="hidden-value" name="hProductImages[]" id="' + hiddenProductImageID.replace( /[\/\.]/g, '' ) + '" value="' + variables[1].replace( '/', '' ) +  '|' + currentImages + '" />');
+			$('#fAddEdit').append('<input type="hidden" class="hidden-value" name="hProductImages[]" id="' + hiddenProductImageID.replace( /[\/\.]/g, '' ) + '" value="' + variables[1] + '" />');
 			$('#hProductImages-tmp').remove();
 			updateImageSequence();
 		},
@@ -405,7 +404,7 @@ function postLoad( $ ) {
 	// Remove product images
 	$('.remove-product-image').live( 'click', function() {
 		// Make sure they want to remove it
-		if( !confirm( 'Are you sure you want to remove this image? This cannot be undone.' ) )
+		if ( !confirm( 'Are you sure you want to remove this image? This cannot be undone.' ) )
 			return false;
 		
 		parent = $(this).parents('.product-image:first');
@@ -414,7 +413,7 @@ function postLoad( $ ) {
 		// $( '#' + $(this).attr('extra') ).remove();
 		var field = $(this).attr('extra');
 		$( '#' + field.replace( /[\/\.]/g, '' ) ).remove();
-		if( ( $( '.hidden-value' ) ).length <= 0 )
+		if ( ( $( '.hidden-value' ) ).length <= 0 )
 			$( "#fAddEdit" ).after( '<input type="hidden" name="hProductImages" id="hProductImages-tmp" />' );
 		
 		// Remove image
@@ -423,7 +422,7 @@ function postLoad( $ ) {
 		// AJAX remove image
 		$.post( '/ajax/products/remove-image/', { '_nonce': $('#_ajax_remove_image').val(), 'pid' : $('#hProductID').val(), 'image' : parent.find('img:first').attr('src') }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -435,12 +434,12 @@ function postLoad( $ ) {
 
 	/********** Page Load  **********/
 	// If you refresh the page, make sure you check the product name
-	if( 'Product Name' != $('#tName').val() ) {
+	if ( 'Product Name' != $('#tName').val() ) {
 		// Get slugs
 		var productSlug = $('#tProductSlug').val(), categorySlug = $('.product-category:first').text().slug();
 
 		// If no categories selected, put it in the products category
-		if( '' == categorySlug )
+		if ( '' == categorySlug )
 			var categorySlug = 'products';
 
 		// Assign the slugs
@@ -462,23 +461,23 @@ function postLoad( $ ) {
 	$('#tListPrice').attr( 'tmpVal', 'List Price (Optional)' );
 	
 	// Make sure its not gray
-	if( 'Product Name' != $('#tName').val() )
+	if ( 'Product Name' != $('#tName').val() )
 		$('#tName').css( 'color', '#000000' );
 
 	// Make sure its not gray
-	if( 'SKU' != $('#tSKU').val() )
+	if ( 'SKU' != $('#tSKU').val() )
 		$('#tSKU').css( 'color', '#000000' );
 
 	// Make sure its not gray
-	if( 'Price' != $('#tPrice').val() )
+	if ( 'Price' != $('#tPrice').val() )
 		$('#tPrice').css( 'color', '#000000' );
 	
 	// Make sure its not gray
-	if( 'List Price (Optional)' != $('#tListPrice').val() )
+	if ( 'List Price (Optional)' != $('#tListPrice').val() )
 		$('#tListPrice').css( 'color', '#000000' );
 	
 	// If its an edited product
-	if( $('#hProductID').val().length ) {
+	if ( $('#hProductID').val().length ) {
 		// Updates specifications
 		updateSpecs();
 		
@@ -503,7 +502,7 @@ function postLoad( $ ) {
 		$('.img').each( function() {
 			var imageArray = $(this).val().split('|'), industry =$('#hIndustryName').val(), productID = $('#hProductID').val();
 			
-			for( var i in imageArray ) {
+			for ( var i in imageArray ) {
 				var imageName = imageArray[i], hiddenProductImageID = 'hProductImage_' + imageName.replace( /\.[a-zA_Z]{3,4}$/, '' ).replace( /^[^\/]+\//, '' );
 				
 				var imagePath = 'http://' + industry + '.retailcatalog.us/products/' + productID + '/thumbnail/' + imageName;
@@ -542,7 +541,7 @@ String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replac
  */
 function autocompleteSuccess( request, response ) {
 	// Find out if they are already cached so we don't have to do another ajax called
-	if( request['term'] in cache ) {
+	if ( request['term'] in cache ) {
 		response( $.map( cache[request['term']], function( item ) {
 			return {
 				'label' : item,
@@ -591,7 +590,7 @@ function categoryChangeProductLink() {
 	var categorySlug = $('.product-category:first').text().slug();
 
 	// If no categories selected, put it in the products
-		if( '' == categorySlug )
+		if ( '' == categorySlug )
 			var categorySlug = 'products';
 
 	// Assign the values
@@ -613,7 +612,7 @@ function updateCategories() {
 
 	// Update the hidden input
 	$('.product-category').each( function() {
-		if( categories.length )
+		if ( categories.length )
 			categories += '|';
 		
 		categories += $(this).attr('id').replace( 'dCategory', '');
@@ -624,19 +623,19 @@ function updateCategories() {
 	// Load attribute items
 	$.post( '/ajax/products/category-attribute-items/', { '_nonce': $('#_ajax_category_attribute_items').val(), 'c' : categories.replace( '|', ',' ) }, function( response ) {
 		// Handle any errors
-		if( !response['result'] ) {
+		if ( !response['result'] ) {
 			alert( response['error'] );
 			return;
 		}
 		
 		var disableAttributes = $('#hAttributes').val().split('|'), aOptions = '<option value="">-- Select an Attribute --</option>', attributeList = array_keys( response['attributes'] );
 		
-		for( i in attributeList ) {
+		for ( i in attributeList ) {
 			var a = attributeList[i];
 			
 			aOptions += '<optgroup label="' + a + '">';
 			
-			for( j in response['attributes'][a] ) {
+			for ( j in response['attributes'][a] ) {
 				var ai = response['attributes'][a][j];
 				var disabled = ( in_array( ai['attribute_item_id'], disableAttributes ) ) ? ' disabled="disabled"' : '';
 				aOptions += '<option value="' + ai['attribute_item_id'] + '"' + disabled + '>' + ai['attribute_item_name'] + '</option>';
@@ -658,7 +657,7 @@ function updateTags() {
 	
 	// Update the hidden input
 	$('.product-tag').each( function() {
-		if( tags.length )
+		if ( tags.length )
 			tags += '|';
 		
 		tags += $(this).attr('id').replace( 'dTag_', '' );
@@ -677,11 +676,11 @@ function updateSpecs() {
 
 	var specList = $("#dSpecificationsList").sortable('toArray');
 	
-	if( specList.length > 0 ) {
+	if ( specList.length > 0 ) {
 		var i = 1, hiddenValues = '';
 		
 		// Get the values
-		for( var sequence in specList ) {
+		for ( var sequence in specList ) {
 			hiddenValues += $('#' + specList[sequence] + ' .specification-name').text() + '`' + $('#' + specList[sequence] + ' .specification-value').text()  + '`' + sequence + '|';
 		}
 		
@@ -697,7 +696,7 @@ function updateAttributeItems() {
 
 	// Update the hidden input
 	$('.attribute').each( function() {
-		if( attributes.length )
+		if ( attributes.length )
 			attributes += '|';
 		
 		attributes += $(this).attr('id').replace( 'dAttributeItem_', '' );
@@ -716,7 +715,7 @@ function updateImageSequence() {
 	$("#dUploadedImages .product-image").each( function() {
 		var hiddenImage = $('#' + $(this).find('.remove-product-image').attr('extra') );
 		
-		if( typeof hiddenImage != 'undefined' && typeof hiddenImage.val() != 'undefined' ) {
+		if ( typeof hiddenImage != 'undefined' && typeof hiddenImage.val() != 'undefined' ) {
 			hiddenImage.val( hiddenImage.val().replace( /([^|"]+)(?:\|[\d]+)?/, '$1' ) + '|' + sequence );
 			sequence++;
 		}

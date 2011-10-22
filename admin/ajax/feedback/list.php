@@ -9,7 +9,7 @@
 global $user;
 
 // If user is not logged in
-if( !$user ) {
+if ( !$user ) {
 	echo json_encode( array( 
 		'redirect' => true,
 		'sEcho' => intval( $_GET['sEcho'] ),
@@ -30,7 +30,7 @@ $order_by = '';
 /* Ordering */
 if ( isset( $_GET['iSortCol_0'] ) ) {
 	for ( $i = 0 ;$i < intval( $_GET['iSortingCols'] ); $i++ ) {
-		switch(  $_GET['iSortCol_' . $i] ) {
+		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
 				$field = 'name';
@@ -73,7 +73,7 @@ if ( $_GET['sSearch'] != "" ) {
 }
 
 // Grab only the right status
-if( isset( $_SESSION['status'] ) )
+if ( isset( $_SESSION['status'] ) )
 	$where .= ' AND a.`status` = ' . (int) $_SESSION['status'];
 
 $feedback = $f->list_feedback( $limit, $where, $order_by );
@@ -81,8 +81,8 @@ $feedback_count = $f->count( $where );
 
 $aaData = array();
 
-foreach( $feedback as $fb ) {
-	switch( $fb['status'] ) {
+foreach ( $feedback as $fb ) {
+	switch ( $fb['status'] ) {
 		case 0:
 			$status = 'Open';
 		break;
@@ -96,7 +96,7 @@ foreach( $feedback as $fb ) {
 		break;
 	}
 	
-	switch( $fb['priority'] ) {
+	switch ( $fb['priority'] ) {
 		case 0:
 			$priority = '<span class="green">Low</span>';
 		break;
@@ -110,7 +110,7 @@ foreach( $feedback as $fb ) {
 		break;
 	}
 	
-	$aaData[] = array( $fb['name'], '<a href="/view-feedback/?fid=' . $fb['feedback_id'] . '" title="View Feedback">' . format::limit_chars( $fb['message'], 55 ) . '</a>', "$priority", $status, $fb['assigned_to'], date_time::date( 'm/d/Y', $fb['date_created'] ) );
+	$aaData[] = array( $fb['name'], '<a href="/view-feedback/?fid=' . $fb['feedback_id'] . '" title="View Feedback">' . format::limit_chars( $fb['message'], 55 ) . '</a>', "$priority", $status, $fb['assigned_to'], dt::date( 'm/d/Y', $fb['date_created'] ) );
 }
 
 echo json_encode( array( 

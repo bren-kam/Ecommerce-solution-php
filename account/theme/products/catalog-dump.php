@@ -22,18 +22,21 @@ $v->add_validation( 'hBrandID', 'req', _('You must select a brand before dumping
 
 add_footer( $v->js_validation() );
 
-if( nonce::verify( $_POST['_nonce'], 'catalog-dump' ) ) {
+// Initialize variable
+$success = false;
+
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'catalog-dump' ) ) {
 	// Server side validation
 	$errs = $v->validate();
 	
 	// Dump brand i there was no errors
-	if( empty( $errs ) ) {
+	if ( empty( $errs ) ) {
 		$p = new Products;
 		
 		list( $success, $quantity, $no_industries ) = $p->dump_brand( $_POST['hBrandID'] );
 		
-		if( !$success ) {
-			if( $no_industries ) {
+		if ( !$success ) {
+			if ( $no_industries ) {
 				$errs .= _("This website has no industries.  Please contact your online specialist for assistance with this.");			
 			} else {
 				$errs .= _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog.");
@@ -55,7 +58,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'products/' ); ?>
 	<div id="subcontent">
-		<?php if( $success ) { ?>
+		<?php if ( $success ) { ?>
 			<p class="success"><?php echo $quantity, _(' brand products added successfully!'); ?></p>
 		<?php
 		}

@@ -9,6 +9,7 @@
 $ajax = new AJAX( $_POST['_nonce'], 'upload-banner' );
 $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 
+
 // Get the file extension
 $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
 
@@ -30,9 +31,8 @@ $banner_name = "$name.$file_extension";
 $upload_url = 'http://account2.' . DOMAIN . '/media/uploads/site_uploads/' . $_POST['wid'] . "/$banner_name";
 $upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
-
 // Directory needs to exist
-if( !is_dir( $upload_dir ) )
+if ( !is_dir( $upload_dir ) )
 	mkdir( $upload_dir, 0777, true );
 
 // Resize the image

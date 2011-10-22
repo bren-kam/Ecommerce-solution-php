@@ -23,7 +23,7 @@ class security extends Base_Class {
 	 * @param bool $enabled whether to redirect to enabled SSL or disabled
 	 * @return bool
 	 */
-	public function ssl( $enabled = true ) {
+	public static function ssl( $enabled = true ) {
 		if ( $enabled ) {
 			if ( !self::is_ssl() )
 				url::redirect( 'https://'  . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], 401 );
@@ -41,7 +41,7 @@ class security extends Base_Class {
 	 * @param bool $enabled whether to redirect to enabled SSL or disabled
 	 * @return bool
 	 */
-	public function is_ssl() {
+	public static function is_ssl() {
 		return ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) || ( !isset( $_SERVER['HTTPS'] ) && 443 == $_SERVER['SERVER_PORT'] ) ) ? true : false;
 	}
 	
@@ -55,7 +55,7 @@ class security extends Base_Class {
 	 * @param hash_key a second hash key
 	 * @return string
 	 */
-	public function encrypt( $string, $hash_key ) {
+	public static function encrypt( $string, $hash_key ) {
 		
 		if ( !defined( 'ENCRYPTION_KEY' ) )
 			return false;
@@ -85,7 +85,7 @@ class security extends Base_Class {
 	 * @param string $encryption_key (optional) will override encryption key within
 	 * @return string
 	 */
-	public function decrypt( $string, $hash_key, $encryption_key = '' ) {
+	public static function decrypt( $string, $hash_key, $encryption_key = '' ) {
 		$ek = ( empty( $encryption_key ) && defined( 'ENCRYPTION_KEY' ) ) ? ENCRYPTION_KEY : $encryption_key;
 		
 		if ( empty( $ek ) )
@@ -115,7 +115,7 @@ class security extends Base_Class {
 	 * @param string $secret_key (Optional) the secret key
 	 * @return string salt
 	 */
-	static public function salt( $method, $secret_key = '' ) {
+	public static function salt( $method, $secret_key = '' ) {
 		if ( empty( $secret_key ) )
 			$secret_key = SECRET_KEY;
 		
@@ -133,7 +133,7 @@ class security extends Base_Class {
 	 * @param string $secret_key the secret key
 	 * @return string Hash of $data
 	 */
-	static public function hash( $data, $method, $secret_key = '' ) {
+	public static function hash( $data, $method, $secret_key = '' ) {
 		$salt = self::salt( $method, $secret_key );
 		
 		return hash_hmac( 'md5', $data, $salt );
@@ -148,10 +148,10 @@ class security extends Base_Class {
 	 * @param int $length the length of the password
 	 * @return string password
 	 */
-	public function generate_password( $length = 12 ) {
+	public static function generate_password( $length = 12 ) {
 		$possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@#$%^&*()_-+=|}]{[":;,.?/';
 		
-		for( $i = 1; $i <= $length; $i++ ):
+		for ( $i = 1; $i <= $length; $i++ ):
 			$char = $possible[mt_rand( 0, strlen( $possible ) - 1 )];
 			$string .= $char;
 		endfor;
@@ -170,7 +170,7 @@ class security extends Base_Class {
 	 * @param bool $anchor (optional) whether to return as an anchor or just the email address
 	 * @return string 
 	 */
-	public function encrypt_email( $email, $title = '', $anchor = true ) {
+	public static function encrypt_email( $email, $title = '', $anchor = true ) {
 		if ( !empty( $title ) )
 			$title = " title='$title'";
 		

@@ -60,7 +60,7 @@ class PHPExcel_Polynomial_Best_Fit extends PHPExcel_Best_Fit
 	public function getValueOfYForX($xValue) {
 		$retVal = $this->getIntersect();
 		$slope = $this->getSlope();
-		foreach($slope as $key => $value) {
+		foreach ($slope as $key => $value) {
 			if ($value != 0.0) {
 				$retVal += $value * pow($xValue, $key + 1);
 			}
@@ -79,7 +79,7 @@ class PHPExcel_Polynomial_Best_Fit extends PHPExcel_Best_Fit
 		$intersect = $this->getIntersect($dp);
 
 		$equation = 'Y = '.$intersect;
-		foreach($slope as $key => $value) {
+		foreach ($slope as $key => $value) {
 			if ($value != 0.0) {
 				$equation .= ' + '.$value.' * X';
 				if ($key > 0) {
@@ -94,7 +94,7 @@ class PHPExcel_Polynomial_Best_Fit extends PHPExcel_Best_Fit
 	public function getSlope($dp=0) {
 		if ($dp != 0) {
 			$coefficients = array();
-			foreach($this->_slope as $coefficient) {
+			foreach ($this->_slope as $coefficient) {
 				$coefficients[] = round($coefficient,$dp);
 			}
 			return $coefficients;
@@ -113,7 +113,7 @@ class PHPExcel_Polynomial_Best_Fit extends PHPExcel_Best_Fit
 		$x_sum = array_sum($xValues);
 		$y_sum = array_sum($yValues);
 		$xx_sum = $xy_sum = 0;
-		for($i = 0; $i < $this->_valueCount; ++$i) {
+		for ($i = 0; $i < $this->_valueCount; ++$i) {
 			$xy_sum += $xValues[$i] * $yValues[$i];
 			$xx_sum += $xValues[$i] * $xValues[$i];
 			$yy_sum += $yValues[$i] * $yValues[$i];
@@ -139,7 +139,7 @@ class PHPExcel_Polynomial_Best_Fit extends PHPExcel_Best_Fit
 		$C = $matrixA->solve($matrixB);
 
 		$coefficients = array();
-		for($i = 0; $i < $C->m; ++$i) {
+		for ($i = 0; $i < $C->m; ++$i) {
 			$r = $C->get($i, 0);
 			if (abs($r) <= pow(10, -9)) {
 				$r = 0;
@@ -151,7 +151,7 @@ class PHPExcel_Polynomial_Best_Fit extends PHPExcel_Best_Fit
 		$this->_slope = $coefficients;
 
 		$this->_calculateGoodnessOfFit($x_sum,$y_sum,$xx_sum,$yy_sum,$xy_sum);
-		foreach($this->_xValues as $xKey => $xValue) {
+		foreach ($this->_xValues as $xKey => $xValue) {
 			$this->_yBestFitValues[$xKey] = $this->getValueOfYForX($xValue);
 		}
 	}	//	function _polynomial_regression()

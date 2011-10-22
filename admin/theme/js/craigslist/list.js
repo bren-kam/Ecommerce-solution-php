@@ -69,12 +69,12 @@ function postLoad( $ ) {
 	$('.delete-craigslist').live( 'click', function() {
 		var craigslistID = $(this).attr('id').replace( 'aDelete', '' );
 		
-		if( !confirm( "Are you sure you want to delete this template? This action cannot be undone." ) ) 
+		if ( !confirm( "Are you sure you want to delete this template? This action cannot be undone." ) ) 
 			return;
 		
 		$.post( '/ajax/craigslist/delete/', { '_nonce': $('#_ajax_delete_craigslist').val(), 'cid': craigslistID }, function( response ) {
 			// Handle any errors
-			if( !response['result'] ) {
+			if ( !response['result'] ) {
 				alert( response['error'] );
 				return;
 			}
@@ -91,7 +91,7 @@ function postLoad( $ ) {
  */
 function secureCallback( i ) {
 	// Call the global one if we're still logged in
-	if( i['redirect'] ) {
+	if ( i['redirect'] ) {
 		window.location = '/login/';
 	} else {
 		serverCallback( i );
@@ -126,9 +126,9 @@ function trSearchClick() {
  */
 function ajaxSearchClick( response ) {
 	// Make sure there was no error
-	if( !response['result'] ) {
+	if ( !response['result'] ) {
 		alert( response['error'] );
-		if( response['redirect'] ) window.location = '/login/';
+		if ( response['redirect'] ) window.location = '/login/';
 		return false;
 	}
 	
@@ -168,7 +168,7 @@ function trStateChange() {
  */
 function ajaxStateChange( response ) {
 	// Make sure there was no error
-	if( !response['result'] ) {
+	if ( !response['result'] ) {
 		alert( response['error'] );
 		return false;
 	}
@@ -191,7 +191,7 @@ function autocompleteSuccess( request, response ) {
 	var cacheType = $('#sAutoComplete').val();
 	
 	// Find out if they are already cached so we don't have to do another ajax called
-	if( request['term'] in cache[cacheType] ) {
+	if ( request['term'] in cache[cacheType] ) {
 		response( $.map( cache[cacheType][request['term']], function( item ) {
 			return {
 				'label' : item[cacheType],

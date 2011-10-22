@@ -19,7 +19,7 @@ if ( $user['website']['pages'] ) {
 	$wf = new Website_Files;
 
 	$website_files = $wf->get_all();
-} else if ( nonce::verify( $_POST['_nonce'], 'about-us' ) ) {
+} else if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'about-us' ) ) {
 	$success = $sm->update_about_us( stripslashes( $_POST['taContent'] ) );
 }
 
@@ -44,7 +44,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $about_us['fb_page_id'] ) { ?>
+		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the About Us application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=233746136649331" title="<?php echo _('Online Platform - About Us'); ?>" target="_blank"><?php echo _('About Us'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -88,11 +88,11 @@ get_header();
 			<br />
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/about-us/step6.jpg" class="image-border" width="489" height="187" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
-		<?php } else { ?>
-			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $about_us['fb_page_id']; ?>?sk=app_233746136649331" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
-			<?php if ( $success ) { ?>
+		<?php
+		} else {
+			if ( $success ) { ?>
 				<p class="success"><?php echo _('Your about us page has been successfully updated!'); ?></p>
-			<?php 
+				<?php 
 			}
 			
 			if ( $user['website']['pages'] ) {
@@ -119,7 +119,7 @@ get_header();
 						$ajax_delete_file_nonce = nonce::create('delete-file');
 						$confirm = _('Are you sure you want to delete this file?');
 						
-						foreach( $website_files as $wf ) {
+						foreach ( $website_files as $wf ) {
 							$file_name = format::file_name( $wf['file_path'] );
 							echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 						}
