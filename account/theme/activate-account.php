@@ -41,7 +41,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-passw
 			
 			if ( $success ) {
 				$au = new Authorized_Users();
-				$stores = $au->get-stores( $user_id );
+				$stores = $au->get_stores( $user_id );
 			}
 		}
 	}
