@@ -503,10 +503,10 @@ class Websites extends Base_Class {
 				$ftp = new FTP( $website_id, "/public_html/" . $subdomain );
 				$ftp->cwd = "/public_html/" . $subdomain;
 				
-				if ( !$ftp->add( '/home/develop4/public_html/admin/media/data/htaccess.txt', '', '.htaccess' ) )
+				if ( !$ftp->add( OPERATING_PATH . '/media/data/htaccess.txt', '', '.htaccess' ) )
 					return false;
 
-				if ( !$ftp->add( '/home/develop4/public_html/admin/media/data/config.php', '' ) )
+				if ( !$ftp->add( OPERATING_PATH . '/media/data/config.php', '' ) )
 					return false;
 				
 				
