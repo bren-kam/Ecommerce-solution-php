@@ -31,6 +31,7 @@ get_header();
 					<tr>
 						<th width="10%" class="center"><?php echo _('Days Left'); ?></th>
 						<th width="30%"><?php echo _('Website'); ?></th>
+						<th width="20%"><?php echo _('Online Specialist'); ?></th>
 						<th width="20%"><?php echo _('Type'); ?></th>
 						<th width="20%"><?php echo _('Date Created'); ?></th>
 					</tr>
