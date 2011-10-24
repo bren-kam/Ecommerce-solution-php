@@ -69,8 +69,8 @@ foreach ( $checklists as $cl ) {
 			$color = 'green';
 		break;
 	}
-		
-	$aaData[] = array( '<span class="' . $color . '">' . $cl['days_left'] . '</span>',  $cl['title'] . '<br /><a href="/checklists/view/?cid=' . $cl['checklist_id'] . '" title="View Checklist">View</a>', $cl['type'], $cl['date_created'] );
+
+	$aaData[] = array( '<span class="' . $color . '">' . $cl['days_left'] . '</span>',  $cl['title'] . '<br /><a href="/checklists/view/?cid=' . $cl['checklist_id'] . '" title="View Checklist">View</a>', $cl['online_specialist'], $cl['type'], $cl['date_created'] );
 }
 
 echo json_encode( array( 
