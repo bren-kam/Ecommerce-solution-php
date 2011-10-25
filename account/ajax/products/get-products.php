@@ -24,6 +24,10 @@ $settings = $w->get_settings( 'limited-products' );
 if ( $category_id )
 	$where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $wc->get_all_child_categories( $category_id ) ) ) ) . ')';
 
+// If they only want discontinued products, then only grab them
+if ( '1' == $_POST['od'] )
+    $where .= " AND a.`status` = 'discontinued'";
+
 // Search type
 if ( !empty( $_POST['v'] ) ) {
 	switch ( $_POST['s'] ) {
