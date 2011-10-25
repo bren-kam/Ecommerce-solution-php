@@ -1702,7 +1702,7 @@ class Products extends Base_Class {
 		
 		// Magical Query #2
 		// Insert website products
-		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`brand_id` = $brand_id AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE b.`active` = 1" );
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`brand_id` = $brand_id AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
