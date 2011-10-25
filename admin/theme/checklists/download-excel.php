@@ -46,7 +46,7 @@ foreach ( $items as $section_title => $section_items ) {
 		
 		// Add all the messages for each checklist item
 		if ( isset( $si['messages'] ) && count( $si['messages'] ) > 0 )
-		switch ( $si['messages'] as $m ) {
+		foreach ( $si['messages'] as $m ) {
 			$contact_name = $messages->createTextRun( $m['contact_name'] );
 			$contact_name->getFont()->setBold( true );
 			

@@ -76,7 +76,7 @@ foreach ( $items as $section_title => $section_items ) {
 			// Set the font size
 			$pdf->SetFont( 'helvetica', '', 10 );
 			
-			switch ( $si['messages'] as $m ) {
+			foreach ( $si['messages'] as $m ) {
 				$pdf->WriteHTML( '<strong>' . $m['contact_name'] . '</strong> - ' . date( 'F jS, Y g:i a', $m['date_created'] ) . ': ' . $m['note'], 0, 0 );
 				$pdf->Ln();
 			}
