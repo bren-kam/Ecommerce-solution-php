@@ -325,11 +325,11 @@ get_header();
 						</p>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
-							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php echo $settings['facebook-url']; ?>" class="tb" />
+							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tAdvertisingURL"><?php echo _('Advertising URL'); ?>:</label>
-							<input type="text" name="tAdvertisingURL" id="tAdvertisingURL" value="<?php echo $settings['advertising-url']; ?>" class="tb" />
+							<input type="text" name="tAdvertisingURL" id="tAdvertisingURL" value="<?php if ( !is_array( $settings['advertising-url'] ) ) echo $settings['advertising-url']; ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>
