@@ -32,7 +32,7 @@ class Checklists extends Base_Class {
 			$where = ( empty( $where ) ) ? ' AND c.`company_id` = ' . $user['company_id'] : $where . ' AND c.`company_id` = ' . $user['company_id'];
 		
 		// Get the checklists
-		$checklists = $this->db->get_results( "SELECT a.`checklist_id`, a.`type`, a.`date_created`, b.`title`, DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$checklists = $this->db->get_results( "SELECT a.`checklist_id`, a.`type`, a.`date_created`, b.`title`, d.`contact_name` AS 'online_specialist', DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) LEFT JOIN `users` AS d ON ( b.`os_user_id` = d.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
