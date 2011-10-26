@@ -437,8 +437,8 @@ class Products extends Base_Class {
 		// Type Juggling
 		$website_id = (int) $user['website']['website_id'];
 		
-		$products = $this->db->get_results( "SELECT b.`name`, d.`name` AS category, e.`name` AS brand FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( b.`product_id` = c.`product_id` ) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1", ARRAY_A );
-		
+		$products = $this->db->get_results( "SELECT b.`name`, d.`name` AS category, e.`name` AS brand FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( b.`product_id` = c.`product_id` ) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND a.`active` = 1 AND b.`publish_visibility` = 'public' GROUP BY a.`product_id`", ARRAY_A );
+
 		// Handle any error
 		if( $this->db->errno() ) {
 			$this->err( 'Failed to get all products.', __LINE__, __METHOD__ );
@@ -705,7 +705,8 @@ class Products extends Base_Class {
 	 *
 	 * @param int $limit (optional) the number of products to get
 	 * @param string $where (optional) a 'WHERE' clause to add on to the SQL Statement
-	 * @return associative array/bool products
+     * @param int $page
+	 * @return array products
 	 */
 	 public function get_website_products( $limit = 20, $where = '', $page = 1 ) {
 		global $user;
