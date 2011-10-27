@@ -14,9 +14,6 @@ $w = new Websites;
 // Get settings
 $settings = $w->get_settings('limited-products');
 
-// Make sure they have permission to remove this product
-$ajax->ok( $user['role'] >= 6 || '1' != $settings['limited-products'], _('You do not have permission to remove this product') );
-
 // Delete the product
 $ajax->ok( $p->remove( $_GET['pid'] ), _('An error occurred while trying to remove your product. Please refresh the page and try again.') );
 
