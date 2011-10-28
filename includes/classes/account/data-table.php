@@ -71,7 +71,7 @@ class Data_Table extends Base_Class {
 	/**
 	 * Add something to the where string
 	 *
-	 * @param string $where
+	 * @param array $search
 	 */
 	public function search( $search ) {
 		if ( empty( $_GET['sSearch'] ) )

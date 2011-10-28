@@ -25,7 +25,7 @@ get_header('facebook/');
 
 <div id="content">
 	<?php if( $signed_request['page']['admin'] ) { ?>
-		<p><strong>Admin:</strong> <a href="javascript:top.location.href='http://apps.facebook.com/op-contact-us/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
+		<p><strong>Admin:</strong> <a href="#" onclick="top.location.href='http://apps.facebook.com/op-contact-us/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
 	<?php 
 	}
 	

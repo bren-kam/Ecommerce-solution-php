@@ -18,12 +18,10 @@ class Ticket_Comments extends Base_Class {
 	/**
 	 * Add new ticket comment
 	 *
-	 * @since 1.0.0
-	 *
 	 * @param int $ticket_id
 	 * @param int $user_id
 	 * @param string $comment
-	 * @param bool $private (optional|0)
+	 * @param int $private (optional|0)
 	 * @param array $attachments (optional|array)
 	 * @return int
 	 */

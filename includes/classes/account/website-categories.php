@@ -111,6 +111,9 @@ class Website_Categories extends Base_Class {
 				continue;
 			
 			$child_categories[] = $cc['category_id'];
+
+			// Get sub sub categories
+			$child_categories = array_merge( $child_categories, $this->get_all_child_categories( $cc['category_id'] ) );
 		}
 		 
 		return $child_categories;

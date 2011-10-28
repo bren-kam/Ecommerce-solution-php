@@ -44,7 +44,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $current_ad['fb_page_id'] ) { ?>
+		<?php if ( 0 == $current_ad['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the Current Ad application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=186618394735117" title="<?php echo _('Online Platform - Current Ad'); ?>" target="_blank"><?php echo _('Current Ad'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />

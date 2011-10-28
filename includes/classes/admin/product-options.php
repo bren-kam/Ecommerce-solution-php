@@ -218,7 +218,7 @@ class Product_Options extends Base_Class {
 	public function get_all() {
 		$product_options = $this->db->get_results( 'SELECT * FROM `product_options`', ARRAY_A );
 		
-		if ( mysql_errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get product options', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -237,7 +237,7 @@ class Product_Options extends Base_Class {
 		$this->db->query( 'DELETE FROM `product_option_relations` WHERE `brand_id` = ' . (int) $brand_id );
 		
 		// Handle errors
-		if ( mysql_errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete product options', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -259,7 +259,7 @@ class Product_Options extends Base_Class {
 		$this->db->query( "DELETE FROM `product_options` WHERE `product_option_id` = $product_option_id" );
 		
 		// Handle errors
-		if ( mysql_errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete product option', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -268,7 +268,7 @@ class Product_Options extends Base_Class {
 		$this->db->query( "DELETE FROM `product_option_list_items` WHERE `product_option_id` = $product_option_id" );
 		
 		// Handle errors
-		if ( mysql_errno() ) {
+		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete product option list items', __LINE__, __METHOD__ );
 			return false;
 		}

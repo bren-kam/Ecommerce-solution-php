@@ -24,6 +24,10 @@ $settings = $w->get_settings( 'limited-products' );
 if ( $category_id )
 	$where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $wc->get_all_child_categories( $category_id ) ) ) ) . ')';
 
+// If they only want discontinued products, then only grab them
+if ( '1' == $_POST['od'] )
+    $where .= " AND a.`status` = 'discontinued'";
+
 // Search type
 if ( !empty( $_POST['v'] ) ) {
 	switch ( $_POST['s'] ) {
@@ -93,9 +97,7 @@ foreach ( $products as $product ) {
 	</p>
 	<p class="product-actions" id="pProductAction<?php echo $product['product_id']; ?>">
 		<a href="<?php echo $product['link']; ?>" title='View "<?php echo $product['name']; ?>"' target="_blank"><?php echo _('View'); ?></a> | 
-		<?php if ( $user['role'] >= 6 || $settings['limited-products'] != '1' ) { ?>
 		<a href="/ajax/products/remove/?_nonce=<?php echo $remove_product_nonce; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo _('Remove Product'); ?>" ajax="1" confirm="<?php echo $confirm_remove_product; ?>"><?php echo _('Remove'); ?></a> |
-		<?php } ?>
 		<a href="javascript:;" class="edit-product" title="<?php echo _('Edit Product'); ?>"><?php echo _('Edit'); ?></a><br />
 		<a href="/ajax/products/set-category-image/?_nonce=<?php echo $set_category_image_nonce; ?>&amp;cid=<?php echo $_POST['cid']; ?>&amp;i=<?php echo urlencode( $image_url ); ?>" title="<?php echo _('Set as Category Picture'); ?>" ajax="1"><?php echo _('Set as Category Picture'); ?></a>
 	</p>

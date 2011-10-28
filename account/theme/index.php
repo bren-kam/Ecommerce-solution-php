@@ -54,13 +54,13 @@ get_header();
                     <a href="/<?php echo $links[$k][0]; ?>/" title="<?php echo $links[$k][1]; ?>" id="<?php echo $links[$k][0]; ?>"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
                     <?php
 				}
-                
-                if ( !empty( $settings['advertising-url'] ) ) {
-				?>
-                    <a href="<?php echo $settings['advertising-url']; ?>" title="<?php echo _('Advertising Portal'); ?>" id="advertising-url" target="_blank"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Advertising Portal'); ?>" /><br /><?php echo _('Advertising Portal'); ?></a>
-                    <?php
-                }
 			}
+
+            if ( !empty( $settings['advertising-url'] ) ) {
+            ?>
+                <a href="<?php echo $settings['advertising-url']; ?>" title="<?php echo _('Advertising Portal'); ?>" id="advertising-url" target="_blank"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Advertising Portal'); ?>" /><br /><?php echo _('Advertising Portal'); ?></a>
+                <?php
+            }
 		}
 		?>
 	</div>

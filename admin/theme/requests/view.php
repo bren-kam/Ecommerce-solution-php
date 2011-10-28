@@ -242,8 +242,7 @@ get_header();
 			<br/ >
 			<table cellpadding="0" cellspacing="0" id="tMetaData" width="100%">
 				<?php
-				//print_r( $request['meta'] );
-				switch ( $request['meta'] as $key => $pm ) {
+				foreach ( $request['meta'] as $key => $pm ) {
 					$uc_key = ucwords( str_replace( '-', ' ', $key ) );
 					switch ( $key ) {
 						case 'addresses':
@@ -331,7 +330,7 @@ get_header();
 			<br/ >
 			<table cellpadding="0" cellspacing="0" id="tAttachments" width="100%">
 				<?php
-				switch ( $request['attachments'] as $attachment ) {
+				foreach ( $request['attachments'] as $attachment ) {
 					$uc_key = ucwords( str_replace( '-', ' ', $attachment['key'] ) );
 					$image = ( @getimagesize( $attachment['value'] ) ) ? true : false;
 					if ( isset( $request['original_attachments'][$attachment['key']] ) && $attachment['value'] != $request['original_attachments'][$attachment['key']]['value'] ) {
