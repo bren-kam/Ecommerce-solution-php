@@ -41,7 +41,7 @@ get_header('facebook/');
 
 <div id="content">
 	<?php if( $signed_request['page']['admin'] ) { ?>
-		<p><strong>Admin:</strong> <a href="javascript:top.location.href='http://apps.facebook.com/share-and-save/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
+		<p><strong>Admin:</strong> <a href="#" onclick="top.location.href='http://apps.facebook.com/share-and-save/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
 	<?php 
 	}
 	
@@ -84,7 +84,7 @@ get_header('facebook/');
 		</form>
 	<?php } ?>
 	
-	<p style="float:left; margin-top: 10px"><a href="javascript:window.print();" title="Print">Print</a></p>
+	<p style="float:left; margin-top: 10px"><a href="#" onclick="window.print();" title="Print">Print</a></p>
 	
 	<?php
 	if( $signed_request['page']['liked'] && !empty( $tab['share_text'] ) ) {
@@ -97,7 +97,7 @@ get_header('facebook/');
 		$link .= 'message=' . urlencode( 'Checkout this Offer!' ) . '&';
 		$link .= 'redirect_uri=http://www.facebook.com/pages/Test/' . $signed_request['page']['id'] . '?sk=app_118945651530886';
 	?>
-	<p style="float:right"><a href="javascript:top.location.href='<?php echo $link; ?>';" title="<?php echo _('Share'); ?>"><img src="http://apps.imagineretailer.com/images/buttons/share.png" width="72" height="32" alt="<?php echo _('Share'); ?>" /></a>
+	<p style="float:right"><a href="#" onclick="top.location.href='<?php echo $link; ?>';" title="<?php echo _('Share'); ?>"><img src="http://apps.imagineretailer.com/images/buttons/share.png" width="72" height="32" alt="<?php echo _('Share'); ?>" /></a>
 	<?php } ?>
 </div>
 

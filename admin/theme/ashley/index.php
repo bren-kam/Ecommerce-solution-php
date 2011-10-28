@@ -116,7 +116,7 @@ get_header();
 				<?php
 				// Images
 				if ( count( $product['images'] ) > 0 )
-				switch ( $product['images'] as $swatch => $image_array  ) {
+				foreach ( $product['images'] as $swatch => $image_array  ) {
 					foreach ( $image_array as $img ) {
  						echo '<img src="http://' . $industries[$product['industry_id']]['name'] . '.retailcatalog.us/products/' . $product['product_id'] . "/thumbnail/$img" . '" width="46" height="46" alt="" /> ';
 					}
@@ -127,7 +127,7 @@ get_header();
 				<?php
 				// Images
 				if ( count( $new_product['images'] ) > 0 )
-				switch ( $new_product['images'] as $swatch => $image_array  ) {
+				foreach ( $new_product['images'] as $swatch => $image_array  ) {
 					foreach ( $image_array as $img ) {
  						echo '<img src="http://' . $industries[$product['industry_id']]['name'] . '.retailcatalog.us/products/' . $product['product_id'] . "/thumbnail/$img" . '" width="46" height="46" alt="" /> ';
 					}
@@ -170,7 +170,7 @@ get_header();
 			<td>
 				<?php
 				if ( is_array( $product['categories_list'] ) )
-				switch ( $product['categories_list'] as $c ) {
+				foreach ( $product['categories_list'] as $c ) {
 					echo $c['name'], '<br />';
 				} 
 				?>
@@ -178,7 +178,7 @@ get_header();
 			<td id="categories">
 				<?php
 				if ( is_array( $new_product['categories_list'] ) )
-				switch ( $new_product['categories_list'] as $c ) {
+				foreach ( $new_product['categories_list'] as $c ) {
 					echo $c['name'], '<br />';
 				} 
 				?>
@@ -238,7 +238,7 @@ get_header();
 			<td>
 				<?php
 				if ( is_array( $product['tags'] ) )
-				switch ( $product['tags'] as $t ) {
+				foreach ( $product['tags'] as $t ) {
 					echo ucwords( $t ), '<br />';
 				}
 				?>
@@ -246,7 +246,7 @@ get_header();
 			<td id="tags">
 				<?php
 				if ( is_array( $new_product['tags'] ) )
-				switch ( $new_product['tags'] as $t ) {
+				foreach ( $new_product['tags'] as $t ) {
 					echo ucwords( $t ), '<br />';
 				}
 				?>
@@ -256,14 +256,14 @@ get_header();
 			<td>Attributes:</td>
 			<td>
 				<?php
-				switch ( $product['attribute_items'] as $ai ) {
+				foreach ( $product['attribute_items'] as $ai ) {
 					echo '<strong>', $ai['title'], ' &ndash;</strong> ', $ai['attribute_item_name'], '<br />';
 				}
 				?>
 			</td>
 			<td id="attributes">
 				<?php
-				switch ( $new_product['attribute_items'] as $ai ) {
+				foreach ( $new_product['attribute_items'] as $ai ) {
 					echo '<strong>', $ai['title'], ' &ndash;</strong> ', $ai['attribute_item_name'], '<br />';
 				}
 				?>

@@ -85,6 +85,10 @@ get_header();
 						<td valign="top"><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter SKU...'); ?>" style="width: 100% !important;" /></td>
 						<td class="text-right" width="125"><a href="javascript:;" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
 					</tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td><input type="checkbox" class="cb" id="cbOnlyDiscontinued" value="1" /> <label for="cbOnlyDiscontinued"><?php echo _('Search Only Discontinued Products'); ?></label></td>
+                    </tr>
 				</table>
 				<img id="iNYSArrow" src="/images/narrow-your-search.png" alt="" width="76" height="27" />
 			</div>

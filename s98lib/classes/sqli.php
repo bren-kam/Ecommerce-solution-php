@@ -182,7 +182,7 @@ class SQL extends Base_Class {
 			// Allows for binding on the spot
 			
 			// Properly format the last_query
-			switch ( $values as $index => $v ) {
+			foreach ( $values as $index => $v ) {
 				$pos = strpos( $this->last_query, '?' );
 
 				switch ( $format[$index] ) {

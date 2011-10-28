@@ -7,7 +7,7 @@ $zip_codes = $sc->get_shipping_zip_codes( $_GET['wsmid'] );
 
 $html = '';
 
-switch ( $zip_codes as $z ) {
+foreach ( $zip_codes as $z ) {
 	$html .= '<tr id="trZip' . $z . '"><td>' . $z . '</td><td><a href="#" id="aRemoveZip' . $z . '" class="remove-zip"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '"/></a><input type="hidden" name="hZip' . $z . '" value="' . $z . '"/></td></tr>';
 }
 

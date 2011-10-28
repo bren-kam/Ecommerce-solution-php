@@ -42,7 +42,7 @@ if ( $user['website']['shopping_cart'] ) {
 	// Set the product options
 	$product_options = false;
 	if ( isset( $_POST['product_options'] ) )
-	switch ( $_POST['product_options'] as $po_id => $value ) {
+	foreach ( $_POST['product_options'] as $po_id => $value ) {
 		if ( isset( $_POST['tPrice' . $po_id] ) ) {
 			$product_options[$po_id] = $_POST['tPrice' . $po_id];
 		} else {
@@ -50,7 +50,7 @@ if ( $user['website']['shopping_cart'] ) {
 		}
 	
 		if ( isset( $_POST['product_list_items'][$po_id] ) )
-		switch ( $_POST['product_list_items'][$po_id] as $li_id => $value ) {
+		foreach ( $_POST['product_list_items'][$po_id] as $li_id => $value ) {
 			$product_options[$po_id]['list_items'][intval($li_id)] = $_POST['tPrices'][$po_id][$li_id];
 		}
 	}

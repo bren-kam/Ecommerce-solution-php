@@ -437,8 +437,8 @@ class Products extends Base_Class {
 		// Type Juggling
 		$website_id = (int) $user['website']['website_id'];
 		
-		$products = $this->db->get_results( "SELECT b.`name`, d.`name` AS category, e.`name` AS brand FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( b.`product_id` = c.`product_id` ) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
-		
+		$products = $this->db->get_results( "SELECT b.`name`, d.`name` AS category, e.`name` AS brand FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( b.`product_id` = c.`product_id` ) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND a.`active` = 1 AND b.`publish_visibility` = 'public' GROUP BY a.`product_id`", ARRAY_A );
+
 		// Handle any error
 		if( $this->db->errno() ) {
 			$this->err( 'Failed to get all products.', __LINE__, __METHOD__ );
@@ -705,7 +705,8 @@ class Products extends Base_Class {
 	 *
 	 * @param int $limit (optional) the number of products to get
 	 * @param string $where (optional) a 'WHERE' clause to add on to the SQL Statement
-	 * @return associative array/bool products
+     * @param int $page
+	 * @return array products
 	 */
 	 public function get_website_products( $limit = 20, $where = '', $page = 1 ) {
 		global $user;
@@ -1702,7 +1703,7 @@ class Products extends Base_Class {
 		
 		// Magical Query #2
 		// Insert website products
-		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`brand_id` = $brand_id AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE b.`active` = 1" );
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND a.`brand_id` = $brand_id AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1711,7 +1712,7 @@ class Products extends Base_Class {
 		}
 		
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT a.`category_id` FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_categories` AS c ON ( a.`category_id` = c.`category_id` AND c.`website_id` = $website_id ) WHERE b.`industry_id` IN($industries) AND b.`publish_visibility` = 'public' AND b.`brand_id` = $brand_id AND c.`category_id` IS NULL" );
+		$category_ids = $this->db->get_col( "SELECT DISTINCT a.`category_id` FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_categories` AS c ON ( a.`category_id` = c.`category_id` AND c.`website_id` = $website_id ) WHERE b.`industry_id` IN($industries) AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND b.`brand_id` = $brand_id AND c.`category_id` IS NULL" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

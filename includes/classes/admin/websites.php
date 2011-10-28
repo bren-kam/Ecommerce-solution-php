@@ -503,10 +503,10 @@ class Websites extends Base_Class {
 				$ftp = new FTP( $website_id, "/public_html/" . $subdomain );
 				$ftp->cwd = "/public_html/" . $subdomain;
 				
-				if ( !$ftp->add( '/home/develop4/public_html/admin/media/data/htaccess.txt', '', '.htaccess' ) )
+				if ( !$ftp->add( OPERATING_PATH . '/media/data/htaccess.txt', '', '.htaccess' ) )
 					return false;
 
-				if ( !$ftp->add( '/home/develop4/public_html/admin/media/data/config.php', '' ) )
+				if ( !$ftp->add( OPERATING_PATH . '/media/data/config.php', '' ) )
 					return false;
 				
 				
@@ -695,8 +695,8 @@ class Websites extends Base_Class {
 		$this->db->query( "DELETE FROM `checklists` WHERE `website_id` = $website_id");
 		
 		// Delete from Analytics
-		$this->db->query( "DELETE FROM `analytics_data` WHERE `ga_profile_id` IN ( SELECT `ga_profile_id` FROM `websites` WHERE `ga_profile_id` <> 0 AND `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `analytics_visitor_pages` WHERE `analytics_visitor_id` IN ( SELECT `analytics_visitor_id` FROM `analytics_visitors` WHERE `website_id` = $website_id )");
+		$this->db->query( "DELETE a.* FROM `analytics_data` AS a LEFT JOIN `websites` AS b ON ( a.`ga_profile_id` = b.`ga_profile_id` ) WHERE a.`ga_profile_id` <> 0 AND b.`website_id` = $website_id");
+		$this->db->query( "DELETE a.* FROM `analytics_visitor_pages` AS a LEFT JOIN `analytics_visitors` AS b ON ( a.`analytics_visitor_id` = b.`analytics_visitor_id` ) WHERE b.`website_id` = $website_id");
 		$this->db->query( "DELETE FROM `analytics_visitors` WHERE `website_id` = $website_id");
 		
 		// Delete from Requests

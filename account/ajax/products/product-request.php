@@ -13,7 +13,7 @@ $t = new Tickets;
 
 $ticket_message = '';
 
-switch ( $_POST['requests'] as $r ) {
+foreach ( $_POST['requests'] as $r ) {
 	if ( !empty( $ticket_message ) )
 		$ticket_message .= "\n\n";
 	

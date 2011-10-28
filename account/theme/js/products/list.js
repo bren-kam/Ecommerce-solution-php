@@ -45,7 +45,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	});
 	
 	// Create the search functionality
-	$('#aSearch').click(  loadProducts );
+	$('#aSearch').click( loadProducts );
 	
 	// Make the list sortable
 	$("#dProductList").sortable( {
@@ -377,7 +377,8 @@ function updateCoupons() {
  */
 function loadProducts() {
 	// Define variables
-	var categoryID = $('#sCategory').val(), tAutoComplete = $('#tAutoComplete'), autoComplete = tAutoComplete.val(), hCurrentPage = $("#hCurrentPage"), sProductsPerPage = $('#sProductsPerPage'), itemsPerPage = parseInt( ( sProductsPerPage.length ) ? sProductsPerPage.val() : 20 );
+	var categoryID = $('#sCategory').val(), tAutoComplete = $('#tAutoComplete'), autoComplete = tAutoComplete.val(), hCurrentPage = $("#hCurrentPage"), sProductsPerPage = $('#sProductsPerPage'), cbOnlyDiscontinued = ( $('#cbOnlyDiscontinued').attr('checked') ) ? '1' : '0';
+    var itemsPerPage = parseInt( ( sProductsPerPage.length ) ? sProductsPerPage.val() : 20 );
 	
 	// If we're not supposed to refresh, do stuff
 	if ( parseInt( $("#doNotRefresh").val() ) > 0 )
@@ -395,7 +396,7 @@ function loadProducts() {
 	}
 	
 	// Get the products
-	$.post( '/ajax/products/get-products/', { _nonce : $('#_ajax_get_products').val(), cid : categoryID, s : $('#sAutoComplete').val(), v : autoComplete, n : itemsPerPage, p : currentPage }, function( html ) { //trigger this on success
+	$.post( '/ajax/products/get-products/', { _nonce : $('#_ajax_get_products').val(), cid : categoryID, s : $('#sAutoComplete').val(), v : autoComplete, n : itemsPerPage, p : currentPage, od : cbOnlyDiscontinued }, function( html ) { //trigger this on success
 		// Load the content
 		$('#dProductList').html( html ).sparrow();
 		

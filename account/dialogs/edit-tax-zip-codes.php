@@ -15,7 +15,7 @@ if ( array_key_exists( $_GET['state'], $taxes['zip_codes'] ) ) {
 ?>
 <div style="height:400px; overflow:auto">
 <table cellpadding="0" cellspacing="0" class="form" id="tEditZipCodes">
-	<?php switch ( $zip_codes as $zip => $cost ) { ?>
+	<?php foreach ( $zip_codes as $zip => $cost ) { ?>
 	<tr>
 		<td><?php echo $zip; ?></td>
 		<td><input type="text" class="tb zip-code-cost" id="tZipCost<?php echo $zip; ?>" value="<?php echo $cost; ?>"/></td>
