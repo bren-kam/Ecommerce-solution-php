@@ -53,7 +53,7 @@ get_header();
 	<?php get_sidebar( 'products/' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
-			<p class="success"><?php _('Your products have been added successfully!'); ?></p>
+			<p class="success"><?php echo $quantity, _(' products added successfully!'); ?></p>
 		<?php
 		}
 		

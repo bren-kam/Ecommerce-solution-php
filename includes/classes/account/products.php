@@ -267,6 +267,9 @@ class Products extends Base_Class {
 			// Get the type
 			if ( in_array( $k, $strings ) ) {
 				$field_types .= 's';
+
+                // Need to make sure we don't have any white spaces
+                $v = trim( $v );
 			} elseif ( in_array( $k, $floats ) ) {
 				$field_types .= 'd';
 			} elseif ( in_array( $k, $integers ) ) {
@@ -1373,7 +1376,8 @@ class Products extends Base_Class {
 		}
 		
 		$suggestions = $this->db->get_results( "SELECT a.`product_id` AS value, a.`$field` AS name FROM `products` AS a LEFT JOIN `website_industries` AS b ON ( a.`industry_id` = b.`industry_id` ) WHERE a.`publish_visibility` = 'public' AND ( a.`website_id` = 0 OR a.`website_id` = $website_id  ) AND b.`website_id` = $website_id $where ORDER BY a.`$field` LIMIT 10", ARRAY_A );
-		
+
+        echo $this->db->last_query;
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted products.', __LINE__, __METHOD__ );
@@ -1799,12 +1803,12 @@ class Products extends Base_Class {
 
         // Escape all the SKUs
         foreach ( $product_skus as &$ps ) {
-            $ps = "'" . $this->db->escape( $ps ) . "'";
+            $ps = "'" . $this->db->escape( trim( $ps ) ) . "'";
         }
 
         // Turn it into a string
         $product_skus = implode( ",", $product_skus );
-
+        
 		// Instantiate class
 		$w = new Websites;
 
@@ -1819,8 +1823,9 @@ class Products extends Base_Class {
 
 		// Magical Query #1
 		// Get the count of the products that would be added (exclude ones that the website already has)
-		$product_count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN ( $industries ) AND a.`publish_visibility` = 'public' AND a.`sku` IN ( $product_skus ) AND ( c.`product_id` IS NULL OR c.`active` = 0 )" );
+		$product_count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN ( $industries ) AND a.`publish_visibility` = 'public' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 )" );
 
+        echo $this->db->last_query;
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get product count.', __LINE__, __METHOD__ );
