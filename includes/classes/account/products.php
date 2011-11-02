@@ -1735,7 +1735,7 @@ class Products extends Base_Class {
 				$parent_category_ids[$cid] = $c->get_parent_category_ids( $cid );
 			}
 			
-			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
+			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -1825,7 +1825,6 @@ class Products extends Base_Class {
 		// Get the count of the products that would be added (exclude ones that the website already has)
 		$product_count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN ( $industries ) AND a.`publish_visibility` = 'public' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 )" );
 
-        echo $this->db->last_query;
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get product count.', __LINE__, __METHOD__ );
@@ -1875,7 +1874,7 @@ class Products extends Base_Class {
 				$parent_category_ids[$cid] = $c->get_parent_category_ids( $cid );
 			}
 
-			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
+			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
 
 			// Handle any error
 			if ( $this->db->errno() ) {

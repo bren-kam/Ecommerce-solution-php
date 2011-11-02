@@ -50,10 +50,10 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Add Bulk'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'products/' ); ?>
+	<?php get_sidebar( 'products/', 'products' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
-			<p class="success"><?php echo $quantity, _(' products added successfully!'); ?></p>
+			<p class="success"><?php echo $quantity, _(' products added successfully!'); ?> <a href="/products/" title="<?php echo _('View Products'); ?>"><?php echo _('View products here.'); ?></a></p>
 		<?php
 		}
 		
@@ -62,7 +62,7 @@ get_header();
 		?>
         <p><?php echo _('Separate SKU’s by putting one on each line.'); ?></p>
 		<form action="/products/add-bulk/" method="post" name="fAddBulk">
-            <textarea name="taProductSKUs" id="taProductSKUs" cols="50" rows="20" class="col-2"><?php echo $_POST['taProductSKUs']; ?></textarea>
+            <textarea name="taProductSKUs" id="taProductSKUs" cols="50" rows="20" class="col-2"><?php if ( !$success ) echo $_POST['taProductSKUs']; ?></textarea>
             <br /><br />
 			<p><input type="submit" class="button" value="<?php echo _('Add Bulk'); ?>" /></p>
 			<?php nonce::field('add-bulk'); ?>
