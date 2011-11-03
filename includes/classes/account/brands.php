@@ -50,6 +50,28 @@ class Brands extends Base_Class {
 		return $brands;
 	}
 
+    /**
+	 * Get All website brands and return in an associative array
+	 *
+	 * @return array
+	 */
+	public function get_website_brands() {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+		$brands = $this->db->get_results( "SELECT a.* FROM `brands` AS a LEFT JOIN `products` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS c ON ( b.`product_id` = c.`product_id` ) WHERE c.`website_id` = $website_id GROUP BY a.`brand_id` ORDER BY `name` ASC", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website brands.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $brands;
+	}
+
 	/**
 	 * Get a new top brand (return nothing if it's not there)
 	 *
