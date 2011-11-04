@@ -88,9 +88,9 @@ get_header();
 			<br />
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/products/step6.jpg" class="image-border" width="491" height="186" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
-		<?php
-		} else {
-			if ( $success ) { ?>
+		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $products['fb_page_id']; ?>?sk=app_163636730371197" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
+			<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your products page has been successfully updated!'); ?></p>
 			<?php 
 			}

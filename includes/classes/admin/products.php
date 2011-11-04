@@ -144,7 +144,7 @@ class Products extends Base_Class {
 				'slug' => $slug,
 				'description' => $description,
 				'status' => $status,
-				'sku' => $sku,
+				'sku' => trim( $sku ),
 				'price' => $price,
 				'list_price' => $list_price,
 				'weight' => $weight,

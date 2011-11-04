@@ -107,6 +107,7 @@ get_header();
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/share-and-save/step6.jpg" class="image-border" width="497" height="186" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
 		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $share_and_save['fb_page_id']; ?>?sk=app_118945651530886" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<form name="fShareAndSave" action="/social-media/facebook/share-and-save/" method="post">
 				<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your email share and save page has been successfully updated!'); ?></p>

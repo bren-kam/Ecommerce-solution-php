@@ -35,6 +35,10 @@ $user_id = $fb->user;
 // Get the website
 $tab = $esu->get_tab( $signed_request['page']['id'] );
 
+// If it's secured, make the images secure
+if ( security::is_ssl() )
+    $tab = preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab );
+
 $title = _('Email Sign Up') . ' | ' . _('Online Platform');
 get_header('facebook/');
 ?>
