@@ -20,8 +20,10 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 			
 			<?php if ( $user['role'] >= 7 ) { ?>
 				<a href="/products/catalog-dump/" title="<?php echo _('Catalog Dump'); ?>" class="sub"><?php echo _('Catalog Dump'); ?></a>
-			<?php
-			}
+			<?php } ?>
+
+            <a href="/products/add-bulk/" title="<?php echo _('Add Bulk'); ?>" class="sub"><?php echo _('Add Bulk'); ?></a>
+            <?php
 		}
 	}
 	?>

@@ -37,7 +37,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'catalog-dump
 		
 		if ( !$success ) {
 			if ( $no_industries ) {
-				$errs .= _("This website has no industries.  Please contact your online specialist for assistance with this.");			
+				$errs .= _("This website has no industries.  Please contact your online specialist for assistance with this issue.");
 			} else {
 				$errs .= _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog.");
 			}

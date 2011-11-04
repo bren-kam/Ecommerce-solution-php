@@ -139,6 +139,7 @@ get_header();
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step6.jpg" class="image-border" width="489" height="190" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
 		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $fan_offer['fb_page_id']; ?>?sk=app_165348580198324" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<form name="fFanOffer" action="/social-media/facebook/fan-offer/" method="post">
 				<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your fan offer page has been successfully updated!'); ?></p>

@@ -36,10 +36,9 @@ class Websites extends Base_Class {
 	/**
 	 * Get website industries
 	 *
-	 * @param int $website_id
 	 * @return array
 	 */
-	public function get_website_industries( $industry_id ) {
+	public function get_website_industries() {
 		global $user;
 		
 		$industry_ids = $this->db->get_col( 'SELECT `industry_id` FROM `website_industries` WHERE `website_id` = ' . (int) $user['website']['website_id'] );
