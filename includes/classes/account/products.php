@@ -1460,7 +1460,7 @@ class Products extends Base_Class {
 	/**
 	 * List website products
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_website_products( $variables ) {
@@ -1485,7 +1485,7 @@ class Products extends Base_Class {
 	 * @return array
 	 */
 	public function count_website_products( $where ) {
-		$count = $this->db->get_col( "SELECT a.`product_id` AS brand FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN website_products AS c ON ( a.`product_id` = c.`product_id` ) WHERE c.`active` = 1 $where GROUP BY a.`product_id`" );
+		$count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN website_products AS c ON ( a.`product_id` = c.`product_id` ) WHERE c.`active` = 1 $where GROUP BY a.`product_id`" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1501,7 +1501,7 @@ class Products extends Base_Class {
 	/**
 	 * List custom products
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_custom_products( $variables ) {
@@ -1541,7 +1541,7 @@ class Products extends Base_Class {
 	/**
 	 * List custom products
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_add_products( $variables ) {
@@ -1577,7 +1577,79 @@ class Products extends Base_Class {
 		// @Fix should not require the count function
 		return $count;
 	}
-	
+
+    /**
+	 * List product prices
+	 *
+	 * @param array $variables( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_product_prices( $variables ) {
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`alternate_price`, a.`price`, a.`sale_price`, a.`alternate_price_name`, a.`price_note`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND b.`publish_visibility` = 'public' AND b.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY a.`product_id` $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list products prices.', __LINE__, __METHOD__ );
+			return false;
+		}
+        
+		return $products;
+	}
+
+	/**
+	 * Count the product prices
+	 *
+	 * @param string $where
+	 * @return int
+	 */
+	public function count_product_prices( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND b.`publish_visibility` = 'public' AND b.`publish_date` <> '0000-00-00 00:00:00' $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count product prices.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $count;
+	}
+
+    /**
+     * Set Product Prices
+     *
+     * @param array $values
+     * @return bool
+     */
+    public function set_product_prices( $values ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+         // Prepare statement
+		$statement = $this->db->prepare( "UPDATE `website_products` SET `alternate_price` = ?, `price` = ?, `sale_price` = ?, `alternate_price_name` = ?, `price_note` = ? WHERE `website_id` = $website_id AND `active` = 1 AND `product_id` = ?" );
+		$statement->bind_param( 'dddssi', $alternate_price, $price, $sale_price, $alternate_price_name, $price_note, $product_id );
+
+		foreach ( $values as $product_id => $array ) {
+            // Get the values
+            extract( $array );
+
+            $statement->execute();
+
+			// Handle any error
+			if ( $statement->errno ) {
+				$this->db->m->error = $statement->error;
+				$this->err( 'Failed to update website products sequence', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+
+        return true;
+    }
+
 	/**
 	 * Clones a product
 	 *
