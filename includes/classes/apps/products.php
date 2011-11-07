@@ -48,6 +48,7 @@ class Products extends Base_Class {
 			// Declare variables for loop
 			$i = 1;
 			$total_categories = count( $categories );
+			$ssl = security::is_ssl();
 			
 			// Create rows
 			foreach ( $categories as $cat ) {
@@ -84,8 +85,10 @@ class Products extends Base_Class {
 				list( $image_width, $image_height ) = image::proportions( $image_width, $image_height, 160, 160 );
 				$category_padding = ( 160 - $image_height ) / 2;
 				
+				$image_link = ( $ssl ) ? str_replace( 'http://', 'https://s3.amazonaws.com/', $cat['image_url'] ) : $cat['image_url'];
+				
 				// Create tab listing
-				$tab .= '<li' . $padding . '><a href="http://' . $tab_data['domain'] . '/' . $cat['slug'] . '/" class="img" title="' . $cat['name'] . '" target="_blank"><img src="' . $cat['image_url'] . '" width="' . $image_width . '" height="' . $image_height . '" alt="' . $cat['name'] . '" style="padding:' . $category_padding . 'px 0" /></a><br /><a href="http://' . $tab_data['domain'] . '/' . $cat['slug'] . '/" title="' . $cat['name'] . '" target="_blank">' . $cat['name'] . "</a></li>\n";
+				$tab .= '<li' . $padding . '><a href="http://' . $tab_data['domain'] . '/' . $cat['slug'] . '/" class="img" title="' . $cat['name'] . '" target="_blank"><img src="' . $image_link . '" width="' . $image_width . '" height="' . $image_height . '" alt="' . $cat['name'] . '" style="padding:' . $category_padding . 'px 0" /></a><br /><a href="http://' . $tab_data['domain'] . '/' . $cat['slug'] . '/" title="' . $cat['name'] . '" target="_blank">' . $cat['name'] . "</a></li>\n";
 				
 				if ( 0 == $i % 3 ) {
 					$tab .= "</ul>\n";
