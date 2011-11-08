@@ -35,13 +35,17 @@ $user_id = $fb->user;
 // Get the website
 $tab = $esu->get_tab( $signed_request['page']['id'] );
 
+// If it's secured, make the images secure
+if ( security::is_ssl() )
+    $tab = preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab );
+
 $title = _('Email Sign Up') . ' | ' . _('Online Platform');
 get_header('facebook/');
 ?>
 
 <div id="content">
 	<?php if ( $signed_request['page']['admin'] ) { ?>
-		<p><strong>Admin:</strong> <a href="javascript:top.location.href='http://apps.facebook.com/op-email-sign-up/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
+		<p><strong>Admin:</strong> <a href="#" onclick="top.location.href='http://apps.facebook.com/op-email-sign-up/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
 	<?php 
 	}
 	

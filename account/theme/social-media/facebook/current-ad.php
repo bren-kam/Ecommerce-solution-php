@@ -44,7 +44,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $current_ad['fb_page_id'] ) { ?>
+		<?php if ( 0 == $current_ad['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the Current Ad application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=186618394735117" title="<?php echo _('Online Platform - Current Ad'); ?>" target="_blank"><?php echo _('Current Ad'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -88,9 +88,9 @@ get_header();
 			<br />
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/current-ad/step6.jpg" class="image-border" width="489" height="187" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
-		<?php
-		} else {
-			if ( $success ) { ?>
+		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $current_ad['fb_page_id']; ?>?sk=app_186618394735117" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
+			<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your Current Ad page has been successfully updated!'); ?></p>
 				<?php 
 			}

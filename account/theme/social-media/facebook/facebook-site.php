@@ -40,7 +40,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $facebook_site['fb_page_id'] ) { ?>
+		<?php if ( 0 == $facebook_site['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Facebook Site application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=114243368669744" title="<?php echo _('Online Platform - Facebook Site'); ?>" target="_blank"><?php echo _('Facebook Site'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -84,11 +84,9 @@ get_header();
 			<br />
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/facebook-site/step6.jpg" class="image-border" width="502" height="188" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
-		<?php 
-		
-		} else { 
-			if ( $success ) { 
-			?>
+		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $facebook_site['fb_page_id']; ?>?sk=app_114243368669744" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
+			<?php if( $success ) { ?>
 			<p class="success"><?php echo _('Your facebook site has been successfully updated!'); ?></p>
 			<?php } ?>
 			

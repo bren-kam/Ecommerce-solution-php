@@ -44,7 +44,7 @@ switch ( $email_type ) {
 		$i = 0;
 		
 		if ( isset( $_POST['products'] ) )
-		switch ( $_POST['products'] as $product_data ) {
+		foreach ( $_POST['products'] as $product_data ) {
 			list( $product_id, $product_price ) = explode( '|', $product_data );
 			$message_meta[] = array( 'product', serialize( array( 'product_id' => $product_id, 'price' => $product_price, 'order' => $i ) ) );
 			$i++;

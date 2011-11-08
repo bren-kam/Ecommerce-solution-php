@@ -55,7 +55,7 @@ if ( !empty( $selected ) )
 			<?php if ( $user['role'] >= 7 ) { ?>
 			<a href="/reports/" title="<?php echo _('Reports'); ?>"<?php if ( isset( $reports ) ) echo $reports; ?>><?php echo _('Reports'); ?></a>
 			<?php } ?>
-			<a href="/help/" title="<?php echo _('Help'); ?>"><?php echo _('Help'); ?></a>
+			<a href="http://admin.<?php echo str_replace( 'testing.', '', DOMAIN ); ?>/help/" title="<?php echo _('Help'); ?>"><?php echo _('Help'); ?></a>
 			<?php } ?>
 		</div>
 		<?php /*if ( $user ) { ?>

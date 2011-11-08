@@ -26,7 +26,7 @@ class session extends Base_Class {
 		if ( !is_array( $data ) )
 			return false;
 			
-		switch ( $data as $key => $value ) {
+		foreach ( $data as $key => $value ) {
 			$_SESSION[$key] = $value;
 		}
 		

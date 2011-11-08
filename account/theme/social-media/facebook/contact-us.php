@@ -44,7 +44,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $contact_us['fb_page_id'] ) { ?>
+		<?php if ( 0 == $contact_us['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Contact Us application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=245607595465926" title="<?php echo _('Online Platform - Contact Us'); ?>" target="_blank"><?php echo _('Contact Us'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -88,13 +88,11 @@ get_header();
 			<br />
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/contact-us/step6.jpg" class="image-border" width="491" height="187" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
-		<?php
-		} else {
-		
-			if ( $success ) {
-			?>
+		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $contact_us['fb_page_id']; ?>?sk=app_245607595465926" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
+			<?php if( $success ) { ?>
 				<p class="success"><?php echo _('Your contact us page has been successfully updated!'); ?></p>
-			<?php 
+			<?php
 			}
 			
 			if ( $user['website']['pages'] ) {

@@ -87,7 +87,7 @@ class Authorized_Users extends Base_Class {
 			$from    = $user['website']['title'] . '<' . $user['email'] . '>';
 			$headers = 'CC: ' . $user['website']['title'] . '<' . $user['email'] . '> \r\n';
 			$subject = $user['website']['title'] . ' has added you as an Authorized User at ' . DOMAIN . '.';
-			$message = '<br /><strong>' . $user['website']['title'] . "</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />";
+			$message = '<br /><strong>' . $user['website']['title'] . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
 			$message .= '<a href="http://account.' . DOMAIN . '/login/" title="Login">http://account.' . DOMAIN . '/login/</a>';
 			$message .= '<br /><br />Please contact ' . DOMAIN . ' if you have any questions. Thank you for your time.<br /><br />';
 			$message .= '<strong>Email:</strong> info@' . DOMAIN . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';

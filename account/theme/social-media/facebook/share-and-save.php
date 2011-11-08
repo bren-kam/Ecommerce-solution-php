@@ -62,7 +62,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $share_and_save['fb_page_id'] ) { ?>
+		<?php if ( 0 == $share_and_save['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Share and Save application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=118945651530886" title="<?php echo _('Online Platform - Share and Save'); ?>" target="_blank"><?php echo _('Share and Save'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
@@ -107,6 +107,7 @@ get_header();
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/share-and-save/step6.jpg" class="image-border" width="497" height="186" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
 		<?php } else { ?>
+			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $share_and_save['fb_page_id']; ?>?sk=app_118945651530886" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<form name="fShareAndSave" action="/social-media/facebook/share-and-save/" method="post">
 				<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your email share and save page has been successfully updated!'); ?></p>

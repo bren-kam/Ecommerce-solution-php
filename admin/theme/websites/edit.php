@@ -260,7 +260,7 @@ get_header();
 						<h2><?php echo _('Features'); ?></h2>
 						<p><input type="checkbox" name="cbWebsite" id="cbWebsite" value="1" class="cb"<?php if ( $web['pages'] ) echo ' checked="checked"'; ?> /> <label for="cbWebsite"><?php echo _('Website'); ?></label></p>
 						<p><input type="checkbox" name="cbProductCatalog" id="cbProductCatalog" value="1" class="cb"<?php if ( $web['product_catalog'] ) echo ' checked="checked"'; ?> /> <label for="cbProductCatalog"><?php echo _('Product Catalog'); ?></label></p>
-						<p><input type="checkbox" name="cbLimitedProducts" id="cbLimitedProducts" value="1" class="cb"<?php if ( $settings['limited-products'] ) echo ' checked="checked"'; ?> /> <label for="cbLimitedProducts"><?php echo _('Limited Products'); ?></label></p>
+						<p><input type="checkbox" name="cbLimitedProducts" id="cbLimitedProducts" value="1" class="cb"<?php if ( '1' == $settings['limited-products'] ) echo ' checked="checked"'; ?> /> <label for="cbLimitedProducts"><?php echo _('Limited Products'); ?></label></p>
 						<p><input type="checkbox" name="cbBlog" id="cbBlog" value="1" class="cb"<?php if ( $web['blog'] ) echo ' checked="checked"'; ?> /> <label for="cbBlog"><?php echo _('Blog'); ?></label></p>
 						<p><input type="checkbox" name="cbEmailMarketing" id="cbEmailMarketing" value="1" class="cb"<?php if ( $web['email_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label></p>
 						<p><input type="checkbox" name="cbShoppingCart" id="cbShoppingCart" value="1" class="cb"<?php if ( $web['shopping_cart'] ) echo ' checked="checked"'; ?> /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label></p>
@@ -325,11 +325,11 @@ get_header();
 						</p>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
-							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php echo $settings['facebook-url']; ?>" class="tb" />
+							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tAdvertisingURL"><?php echo _('Advertising URL'); ?>:</label>
-							<input type="text" name="tAdvertisingURL" id="tAdvertisingURL" value="<?php echo $settings['advertising-url']; ?>" class="tb" />
+							<input type="text" name="tAdvertisingURL" id="tAdvertisingURL" value="<?php if ( !is_array( $settings['advertising-url'] ) ) echo $settings['advertising-url']; ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>

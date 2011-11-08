@@ -280,7 +280,7 @@ class Email_Marketing extends Base_Class {
 		
 		global $user;
 		
-		// First, get mailchimp and unsubscribe trhe email - that way, emails that fail to unsub aren't deleted from our DB
+		// First, get mailchimp and unsubscribe the email - that way, emails that fail to unsubscribe they aren't deleted from our DB
 		$mc = $this->mailchimp_instance();
 		$success = $mc->listUnsubscribe( $user['website']['mc_list_id'], $email );
 		
@@ -289,7 +289,8 @@ class Email_Marketing extends Base_Class {
 			// @Fix - A check needs to be done to see if it was added
 			//if( !$success ) 
 				//return false;
-		
+
+        // @Fix this isn't being used
 		// Get list_id for this email
 		$email_lists = $this->db->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = " . (int) $email_id );
 		
@@ -2094,62 +2095,6 @@ class Email_Marketing extends Base_Class {
 				$this->db->query( "UPDATE `email_templates` SET `template` = '$new_template' WHERE `email_template_id` = " . $t['email_template_id'] );
 			}
 		}
-	}
-	
-	/**
-	 * Transfers all of a site's email lists, and all its subscribers, to another site
-	 * @Fix - this is a very hacky solution, and not necessary.  Feel free to delete in future releases
-	 * @param int site_a the site to transfer from
-	 * @param int site_b the site to transfer to
-	 * @return bool
-	 */
-	public function transfer_emails( $site_a, $site_b ) {
-		return false;
-		
-		$emails = $this->db->prepare( 'SELECT * FROM `emails` WHERE `website_id` = ?', 'i', $site_a )->get_results( '', ARRAY_A );
-		
-		foreach ( $emails as $email ) {
-			print_r( $email );
-			echo "<br/><br/>";
-			$this->db->insert( 'emails', array( 'website_id' => (int) $site_b, 'email' => $email['email'], 'phone' => $email['phone'], 'statis' => $email['status'], 'date_created' => $email['date_created'], 'date_unsubscribed' => $email['date_unsubscribed'], 'date_synced' => $email['date_synced'] ), 'ii' );
-		}
-		exit;
-		
-		if ( !site_a || !site_b ) return false;
-		
-		// First, get all of site's email lists.
-		$email_lists_1 = $this->db->prepare( 'SELECT `email_list_id`, `category_id`, `name`, `description` FROM `email_lists` WHERE `website_id` = ? ORDER BY `name`', 'i', $site_a )->get_results( '', ARRAY_A );
-		
-		// Now, get all the target site's email lists
-		$email_lists_2 = $this->db->prepare( 'SELECT `email_list_id`, `category_id`, `name`, `description` FROM `email_lists` WHERE `website_id` = ? ORDER BY `name`', 'i', $site_b )->get_results( '', ARRAY_A );
-		
-		$num = 0;
-		
-		foreach ( $email_lists_1 as $e1 ) {
-			// Get the emails on a list
-			$emails1 = $this->db->get_results( 'SELECT `email_id` FROM `email_associations` WHERE `email_list_id` = ' . $e1['email_list_id'] . ' GROUP BY `email_id`', ARRAY_A );
-			
-			foreach ( $email_lists_2 as $e2 ) {
-				if ( $e2['name'] == $e1['name'] ) {
-					$email_list_id = $e2['email_list_id'];
-					break;
-				}
-			}
-			
-			// Insert the emails in
-			foreach ( $emails1 as $email ) {
-				//$this->db->insert( 'email_associations', array( 'email_id' => $email['email_id'], 'email_list_id' => $email_list_id ), 'ii' );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->err( 'Failed to get template options.', __LINE__, __METHOD__ );
-					return false;
-				}
-				
-				$num++;
-			}
-		}
-		echo 'NUMBER OF ASSOCIATIONS INSERTED:' . $num;
 	}
 	
 	/**

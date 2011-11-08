@@ -37,13 +37,17 @@ $user_id = $fb->user;
 // Get the website
 $tab = $fo->get_tab( $signed_request['page']['id'], $signed_request['page']['liked'] );
 
+// If it's secured, make the images secure
+if ( security::is_ssl() )
+    $tab = preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab );
+
 $title = _('Fan Offer') . ' | ' . _('Online Platform');
 get_header('facebook/');
 ?>
 
 <div id="content">
 	<?php if( $signed_request['page']['admin'] ) { ?>
-		<p><strong>Admin:</strong> <a href="javascript:top.location.href='http://apps.facebook.com/op-fan-offer/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
+		<p><strong>Admin:</strong> <a href="#" onclick="top.location.href='http://apps.facebook.com/op-fan-offer/?app_data=<?php echo url::encode( array( 'uid' => security::encrypt( $user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) ); ?>';">Update Settings</a></p>
 	<?php 
 	}
 	
@@ -57,7 +61,7 @@ get_header('facebook/');
 	
 	?>
 	
-	<p style="float:left; margin-top: 10px"><a href="javascript:window.print();" title="Print">Print</a></p>
+	<p style="float:left; margin-top: 10px"><a href="#" onclick="window.print();" title="Print">Print</a></p>
 	
 	<?php
 	if( $signed_request['page']['liked'] && !empty( $tab['share_text'] ) ) {
@@ -70,7 +74,7 @@ get_header('facebook/');
 		$link .= 'message=' . urlencode( 'Checkout this Fan Offer!' ) . '&';
 		$link .= 'redirect_uri=http://www.facebook.com/pages/Test/' . $signed_request['page']['id'] . '?sk=app_165348580198324';
 	?>
-	<p style="float:right"><a href="javascript:top.location.href='<?php echo $link; ?>';" title="Share"><img src="http://apps.imagineretailer.com/images/buttons/share.png" width="72" height="32" alt="<?php echo _('Share'); ?>" /></a>
+	<p style="float:right"><a href="#" onclick="top.location.href='<?php echo $link; ?>';" title="Share"><img src="http://apps.imagineretailer.com/images/buttons/share.png" width="72" height="32" alt="<?php echo _('Share'); ?>" /></a>
 	<?php
 	} 
 	

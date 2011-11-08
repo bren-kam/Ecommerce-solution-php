@@ -34,13 +34,13 @@ if ( !is_dir( $upload_dir ) )
 	mkdir( $upload_dir, 0777, true );
 
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your image.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, 1000, 1000 ), _('An error occurred while trying to resize your image.') );
 
 // Get our local directory
 $local_file_path = $upload_dir . $image_name;
 
 // Add it to their site
-$ajax->ok( $ftp->add( $local_file_path, 'images/' ), _('An error occurred while trying to upload your image. Please refresh the page and try again.') );
+$ajax->ok( $ftp->add( $local_file_path, 'images/' ), _('An error occurred while trying to upload your sidebar image. Please refresh the page and try again.') );
 
 // Create the upload url
 $upload_url = '/custom/uploads/images/' . $image_name;

@@ -10,7 +10,7 @@ $ajax->ok( $user, _('You must be signed in to set a category image.') );
 
 $wc = new Website_Categories;
 
-// Delete the product
+// Set category image
 $ajax->ok( $wc->set_category_image( $_GET['cid'], $_GET['i'] ), _('An error occurred while trying to set your category image. Please refresh the page and try again.') );
 
 // Send response

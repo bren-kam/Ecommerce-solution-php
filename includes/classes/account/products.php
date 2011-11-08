@@ -267,6 +267,9 @@ class Products extends Base_Class {
 			// Get the type
 			if ( in_array( $k, $strings ) ) {
 				$field_types .= 's';
+
+                // Need to make sure we don't have any white spaces
+                $v = trim( $v );
 			} elseif ( in_array( $k, $floats ) ) {
 				$field_types .= 'd';
 			} elseif ( in_array( $k, $integers ) ) {
@@ -437,8 +440,8 @@ class Products extends Base_Class {
 		// Type Juggling
 		$website_id = (int) $user['website']['website_id'];
 		
-		$products = $this->db->get_results( "SELECT b.`name`, d.`name` AS category, e.`name` AS brand FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( b.`product_id` = c.`product_id` ) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
-		
+		$products = $this->db->get_results( "SELECT b.`name`, d.`name` AS category, e.`name` AS brand FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( b.`product_id` = c.`product_id` ) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND a.`active` = 1 AND b.`publish_visibility` = 'public' GROUP BY a.`product_id`", ARRAY_A );
+
 		// Handle any error
 		if( $this->db->errno() ) {
 			$this->err( 'Failed to get all products.', __LINE__, __METHOD__ );
@@ -705,7 +708,8 @@ class Products extends Base_Class {
 	 *
 	 * @param int $limit (optional) the number of products to get
 	 * @param string $where (optional) a 'WHERE' clause to add on to the SQL Statement
-	 * @return associative array/bool products
+     * @param int $page
+	 * @return array products
 	 */
 	 public function get_website_products( $limit = 20, $where = '', $page = 1 ) {
 		global $user;
@@ -1372,7 +1376,8 @@ class Products extends Base_Class {
 		}
 		
 		$suggestions = $this->db->get_results( "SELECT a.`product_id` AS value, a.`$field` AS name FROM `products` AS a LEFT JOIN `website_industries` AS b ON ( a.`industry_id` = b.`industry_id` ) WHERE a.`publish_visibility` = 'public' AND ( a.`website_id` = 0 OR a.`website_id` = $website_id  ) AND b.`website_id` = $website_id $where ORDER BY a.`$field` LIMIT 10", ARRAY_A );
-		
+
+        echo $this->db->last_query;
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted products.', __LINE__, __METHOD__ );
@@ -1459,7 +1464,7 @@ class Products extends Base_Class {
 	/**
 	 * List website products
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_website_products( $variables ) {
@@ -1484,7 +1489,7 @@ class Products extends Base_Class {
 	 * @return array
 	 */
 	public function count_website_products( $where ) {
-		$count = $this->db->get_col( "SELECT a.`product_id` AS brand FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN website_products AS c ON ( a.`product_id` = c.`product_id` ) WHERE c.`active` = 1 $where GROUP BY a.`product_id`" );
+		$count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `brands` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN website_products AS c ON ( a.`product_id` = c.`product_id` ) WHERE c.`active` = 1 $where GROUP BY a.`product_id`" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1500,7 +1505,7 @@ class Products extends Base_Class {
 	/**
 	 * List custom products
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_custom_products( $variables ) {
@@ -1540,7 +1545,7 @@ class Products extends Base_Class {
 	/**
 	 * List custom products
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_add_products( $variables ) {
@@ -1576,7 +1581,79 @@ class Products extends Base_Class {
 		// @Fix should not require the count function
 		return $count;
 	}
-	
+
+    /**
+	 * List product prices
+	 *
+	 * @param array $variables( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_product_prices( $variables ) {
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`alternate_price`, a.`price`, a.`sale_price`, a.`alternate_price_name`, a.`price_note`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND b.`publish_visibility` = 'public' AND b.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY a.`product_id` $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list products prices.', __LINE__, __METHOD__ );
+			return false;
+		}
+        
+		return $products;
+	}
+
+	/**
+	 * Count the product prices
+	 *
+	 * @param string $where
+	 * @return int
+	 */
+	public function count_product_prices( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND b.`publish_visibility` = 'public' AND b.`publish_date` <> '0000-00-00 00:00:00' $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count product prices.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $count;
+	}
+
+    /**
+     * Set Product Prices
+     *
+     * @param array $values
+     * @return bool
+     */
+    public function set_product_prices( $values ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+         // Prepare statement
+		$statement = $this->db->prepare( "UPDATE `website_products` SET `alternate_price` = ?, `price` = ?, `sale_price` = ?, `alternate_price_name` = ?, `price_note` = ? WHERE `website_id` = $website_id AND `active` = 1 AND `product_id` = ?" );
+		$statement->bind_param( 'dddssi', $alternate_price, $price, $sale_price, $alternate_price_name, $price_note, $product_id );
+
+		foreach ( $values as $product_id => $array ) {
+            // Get the values
+            extract( $array );
+
+            $statement->execute();
+
+			// Handle any error
+			if ( $statement->errno ) {
+				$this->db->m->error = $statement->error;
+				$this->err( 'Failed to update website products sequence', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+
+        return true;
+    }
+
 	/**
 	 * Clones a product
 	 *
@@ -1702,7 +1779,7 @@ class Products extends Base_Class {
 		
 		// Magical Query #2
 		// Insert website products
-		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`brand_id` = $brand_id AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE b.`active` = 1" );
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND a.`brand_id` = $brand_id AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1711,7 +1788,7 @@ class Products extends Base_Class {
 		}
 		
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT a.`category_id` FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_categories` AS c ON ( a.`category_id` = c.`category_id` AND c.`website_id` = $website_id ) WHERE b.`industry_id` IN($industries) AND b.`publish_visibility` = 'public' AND b.`brand_id` = $brand_id AND c.`category_id` IS NULL" );
+		$category_ids = $this->db->get_col( "SELECT DISTINCT a.`category_id` FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_categories` AS c ON ( a.`category_id` = c.`category_id` AND c.`website_id` = $website_id ) WHERE b.`industry_id` IN($industries) AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND b.`brand_id` = $brand_id AND c.`category_id` IS NULL" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1730,7 +1807,7 @@ class Products extends Base_Class {
 				$parent_category_ids[$cid] = $c->get_parent_category_ids( $cid );
 			}
 			
-			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
+			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -1777,6 +1854,145 @@ class Products extends Base_Class {
 			}
 		}
 		
+		return array( true, $quantity, false );
+	}
+
+    /**
+	 * Add Bulk
+	 *
+	 * @param string $product_skus
+	 * @return bool
+	 */
+	public function add_bulk( $product_skus ) {
+		global $user;
+
+        // Turn the SKUs into an array
+        $product_skus = explode( "\n", $product_skus );
+
+        // Make sure they entered in SKUs
+        if ( !is_array( $product_skus ) || empty( $product_skus ) )
+            return false;
+
+        // Escape all the SKUs
+        foreach ( $product_skus as &$ps ) {
+            $ps = "'" . $this->db->escape( trim( $ps ) ) . "'";
+        }
+
+        // Turn it into a string
+        $product_skus = implode( ",", $product_skus );
+        
+		// Instantiate class
+		$w = new Websites;
+
+		// Get industries
+		$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $w->get_website_industries() ) );
+
+		if ( $industries == '' )
+			return array( false, 0, true );
+
+		// Type Juggling
+		$website_id = (int) $user['website']['website_id'];
+
+		// Magical Query #1
+		// Get the count of the products that would be added (exclude ones that the website already has)
+		$product_count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN ( $industries ) AND a.`publish_visibility` = 'public' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 )" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get product count.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// How many free slots do we have
+		$free_slots = $user['website']['products'] - $this->get_website_products_count();
+
+		// Get the quantity
+		$quantity = $free_slots - $product_count;
+
+		// If we don't have the space
+		if ( $quantity < 0 )
+			return array( false, $quantity * -1 );
+
+		// How many products are we adding?
+		$quantity = $product_count;
+
+		// Magical Query #2
+		// Insert website products
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to dump website products.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Get category IDs
+		$category_ids = $this->db->get_col( "SELECT DISTINCT a.`category_id` FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_categories` AS c ON ( a.`category_id` = c.`category_id` AND c.`website_id` = $website_id ) WHERE b.`industry_id` IN($industries) AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND b.`sku` IN ( $product_skus ) AND c.`category_id` IS NULL" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// If there are any categories that need to be added
+		if ( !empty( $category_ids ) ) {
+			// Need to get the parent categories
+			$c = new Categories;
+
+			$parent_category_ids = $used_parent_category_ids = array();
+
+			foreach ( $category_ids as $cid ) {
+				$parent_category_ids[$cid] = $c->get_parent_category_ids( $cid );
+			}
+
+			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
+
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to get website category images.', __LINE__, __METHOD__ );
+				return false;
+			}
+
+			// Create insert
+			$values = '';
+			$category_images = ar::assign_key( $category_images, 'category_id', true );
+
+			foreach ( $category_ids as $cid ) {
+				if ( !empty( $values ) )
+					$values .= ',';
+
+				// This image will be used for the parent categories as well
+				$image = $this->db->escape( $category_images[$cid] );
+				$values .= "( $website_id, $cid, '$image' )";
+
+				foreach ( $parent_category_ids[$cid] as $pcid ) {
+					// Don't set the same parent category twice
+					if ( in_array( $pcid, $used_parent_category_ids ) )
+						continue;
+
+					if ( !empty( $values ) )
+						$values .= ',';
+
+					$values .= "( $website_id, $pcid, '$image' )";
+
+					// Add it to the list
+					$used_parent_category_ids[] = $pcid;
+				}
+			}
+
+			// Add the values
+			if ( !empty( $values ) ) {
+				$this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES $values ON DUPLICATE KEY UPDATE `category_id` = VALUES( `category_id` )" );
+
+				// Handle any error
+				if ( $this->db->errno() ) {
+					$this->err( 'Failed to add website categories.', __LINE__, __METHOD__ );
+					return false;
+				}
+			}
+		}
+
 		return array( true, $quantity, false );
 	}
 	
