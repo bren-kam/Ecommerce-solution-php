@@ -55,7 +55,7 @@ get_header();
 					<td>http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>/<input type="text" class="tb slug" name="tSaleSlug" id="tSaleSlug" maxlength="50" value="<?php echo $s['page_sale-slug']; ?>" />/</td>
 				</tr>
 				<tr>
-					<td><a href="javascript:;" title="<?php echo _('Remove All Sale Items'); ?>" ajax="/ajax/website/remove-sale-items/?_nonce=<?php echo nonce::create('remove-all-sale-items'); ?>" confirm="<?php echo _('Are you sure you want to remove all sale items?'); ?>"><?php echo _('Remove All Sale Items'); ?></a></td>
+					<td><a href="/ajax/website/remove-sale-items/?_nonce=<?php echo nonce::create('remove-sale-items'); ?>" title="<?php echo _('Remove All Sale Items'); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove all sale items?'); ?>"><?php echo _('Remove All Sale Items'); ?></a></td>
 					<td><span id="sRemoveAllSaleItems" class="hidden success"><?php echo _('All sale items successfully removed.'); ?></span></td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
