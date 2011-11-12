@@ -1305,7 +1305,7 @@ class Products extends Base_Class {
 	 *
 	 * @return bool
 	 */
-	public function remove_all_sale_items() {
+	public function remove_sale_items() {
 		global $user;
 		
 		$this->db->update( 'website_products', array( 'on_sale' => 0 ), array( 'website_id' => $user['website']['website_id'] ), 'i', 'i' );
