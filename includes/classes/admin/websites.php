@@ -695,10 +695,11 @@ class Websites extends Base_Class {
 		$this->db->query( "DELETE FROM `checklists` WHERE `website_id` = $website_id");
 		
 		// Delete from Analytics
-		$this->db->query( "DELETE a.* FROM `analytics_data` AS a LEFT JOIN `websites` AS b ON ( a.`ga_profile_id` = b.`ga_profile_id` ) WHERE a.`ga_profile_id` <> 0 AND b.`website_id` = $website_id");
+		/*$this->db->query( "DELETE a.* FROM `analytics_data` AS a LEFT JOIN `websites` AS b ON ( a.`ga_profile_id` = b.`ga_profile_id` ) WHERE a.`ga_profile_id` <> 0 AND b.`website_id` = $website_id");
 		$this->db->query( "DELETE a.* FROM `analytics_visitor_pages` AS a LEFT JOIN `analytics_visitors` AS b ON ( a.`analytics_visitor_id` = b.`analytics_visitor_id` ) WHERE b.`website_id` = $website_id");
 		$this->db->query( "DELETE FROM `analytics_visitors` WHERE `website_id` = $website_id");
-		
+		*/
+
 		// Delete from Requests
 		$this->db->query( "DELETE FROM `request_attachments` WHERE `request_page_id` IN ( SELECT `request_page_id` FROM `request_pages` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `websites` WHERE `website_id` = $website_id ) )");
 		$this->db->query( "DELETE FROM `request_pagemeta` WHERE `request_page_id` IN ( SELECT `request_page_id` FROM `request_pages` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `websites` WHERE `website_id` = $website_id ) )");
@@ -708,7 +709,19 @@ class Websites extends Base_Class {
 		
 		// Delete authorized users
 		$this->db->query( "DELETE FROM `auth_user_websites` WHERE `website_id` = $website_id");
-		
+
+        // Delete from Social Media
+        $this->db->query( "DELETE FROM `sm_about_us` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_analytics` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_contact_us` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_current_ad` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_email_sign_up` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_facebook_site` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_fan_offer` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_products` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_share_and_save` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_sweepstakes` WHERE `website_id` = $website_id");
+
 		// Delete from Websites
 		$this->db->query( "DELETE FROM `websites` WHERE `website_id` = $website_id");
 		$this->db->query( "DELETE FROM `website_attachments` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $website_id )");
