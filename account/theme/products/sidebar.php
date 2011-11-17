@@ -23,6 +23,7 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 			<?php } ?>
 
             <a href="/products/add-bulk/" title="<?php echo _('Add Bulk'); ?>" class="sub"><?php echo _('Add Bulk'); ?></a>
+            <a href="/products/product-prices/" title="<?php echo _('Product Prices'); ?>" class="sub"><?php echo _('Product Prices'); ?></a>
             <?php
 		}
 	}
