@@ -205,7 +205,7 @@ get_header();
 						echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 					}
 				} else {
-					echo '<li>', _('You have not uploaded any files.') . '</li>';
+					echo '<li class="no-files">', _('You have not uploaded any files.') . '</li>';
 				}
 				?>
 			</ul>
