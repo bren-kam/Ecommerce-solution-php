@@ -23,9 +23,11 @@ class Files extends Base_Class {
 	}
 	
 	/**
-	 * Uploads an Image to Amazon
+	 * Upload Image
+     *
+     * Uploads an image to Amazon
 	 *
-	 * @param file $image the product image file
+	 * @param object $image the product image file
 	 * @param string $new_image_name the new image name
 	 * @param int $width the width you want the image to be
 	 * @param int $height the height you want the image to be
@@ -33,7 +35,7 @@ class Files extends Base_Class {
 	 * @param string $directory (Optional) any path to the directory you want the file to be in
 	 * @param bool $keep_proportions (Optional|true) keep image proportions
 	 * @param bool fill_constraints (Optional|true) fill the constraints given
-	 * @returns bool/int
+	 * @return bool
 	 */
 	public function upload_image( $image, $new_image_name, $width, $height, $industry, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
 		// If there was an image, upload it
@@ -56,6 +58,32 @@ class Files extends Base_Class {
 			return true;
 		}
 		
+		return false;
+	}
+
+    /**
+	 * Upload File
+     *
+     * Uploads a file to Amazon S3
+	 *
+	 * @param string $file_path
+	 * @param string $file_name
+	 * @param int $website_id
+	 * @param string $directory (Optional) any path to the directory you want the file to be in
+	 * @return bool
+	 */
+	public function upload_file( $file_path, $file_name, $website_id, $directory = '' ) {
+		// Make sure it exists
+		if ( !is_file( $file_path ) )
+			return false;
+
+		// Upload the image
+		if ( !empty( $website_id ) && $this->s3->putObjectFile( $file_path, 'websites' . $this->bucket, $website_id . '/' . $directory . basename( $file_name ), S3::ACL_PUBLIC_READ ) ) {
+			// Delete the local image
+			unlink( $file_path );
+			return true;
+		}
+
 		return false;
 	}
 	
@@ -147,17 +175,27 @@ class Files extends Base_Class {
 
 	
 	/**
-	 * Delets an image from the Amazon S3
+	 * Deletss an image from the Amazon S3
 	 *
 	 * @param string $image_path the image path (key)
 	 * @param string $industry the industry
-	 * @returns bool/int
+	 * @return bool
 	 */
 	public function delete_image( $image_path, $industry ) {
 		return $this->s3->deleteObject( $industry . $this->bucket, $image_path );
 	}
+
+    /**
+	 * Deletes a file from the Amazon S3
+	 *
+	 * @param string $file_url
+	 * @return bool
+	 */
+	public function delete_file( $file_url ) {
+		return $this->s3->deleteObject( 'websites' . $this->bucket, $file_url );
+	}
 	
-		/**
+    /**
 	 * Report an error
 	 *
 	 * Make the parent error function a little less complicated
@@ -165,6 +203,7 @@ class Files extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

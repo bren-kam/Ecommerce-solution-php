@@ -10,7 +10,7 @@ $ajax->ok( $user, _('You must be signed in to delete a file.') );
 
 // Instantiate class
 $wf = new Website_Files();
-$ftp = new FTP( $user['website']['website_id'] );
+$f = new Files;
 
 // Type Juggling
 $website_file_id = (int) $_GET['wfid'];
@@ -18,8 +18,8 @@ $website_file_id = (int) $_GET['wfid'];
 // Get the file
 $file = $wf->get_by_id( $website_file_id );
 
-// Delete file from ftp
-$ftp->delete( format::file_name( $file['file_path'] ), 'files/' );
+// Delete from Amazon S3
+$ajax->ok( $f->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $file['file_path'] ) ), _('An error occurred while trying to delete your file from the server. Please refresh the page and try again.') . str_replace( 'http://websites.retailcatalog.us/', '', $file['file_path'] ) );
 
 // Delete from website
 $ajax->ok( $wf->delete( $website_file_id ), _('An error occurred while trying to delete your file. Please refresh the page and try again.') );

@@ -43,6 +43,7 @@ jQuery(function($) {
 		fileDesc	: 'Valid File Formats', // @Fix needs to be put in PHP
 		scriptData	: { '_nonce' : $('#_ajax_upload_file').val(), 'wid' : $('#hWebsiteID').val() },
 		onComplete	: function( e, queueID, fileObj, response ) {
+            alert( response );
 			ajaxResponse( $.parseJSON( response ) );
 		},
 		onSelect	: function() {
