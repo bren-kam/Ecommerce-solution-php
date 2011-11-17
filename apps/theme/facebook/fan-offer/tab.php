@@ -39,7 +39,7 @@ $tab = $fo->get_tab( $signed_request['page']['id'], $signed_request['page']['lik
 
 // If it's secured, make the images secure
 if ( security::is_ssl() )
-    $tab = preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab );
+    $tab = ( stristr( $tab, 'websites.retailcatalog.us' ) ) ? preg_replace( '/(?<=src=")(http:\/\/)/i', 'https://s3.amazonaws.com/', $tab ) : preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab );
 
 $title = _('Fan Offer') . ' | ' . _('Online Platform');
 get_header('facebook/');
