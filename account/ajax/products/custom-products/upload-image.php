@@ -12,7 +12,6 @@ $product_id = (int) $_POST['pid'];
 
 $ajax->ok( $product_id, _('Please enter a name for your product first') );
 
-
 $new_image_name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
 $image_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
 $full_image_name = $new_image_name . '.' . $image_extension;

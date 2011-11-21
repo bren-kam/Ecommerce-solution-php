@@ -9,10 +9,10 @@ jQuery.fn.tmpVal = function() {
 	}
 
 	$(this).each( function() {
-		var standard_value = ( $(this).attr('title').length > 0 ) ? $(this).attr('title') : $(this).val();
+		var standard_value = (  'undefined' != $(this).attr('title') && '' != $(this).attr('title') ) ? $(this).attr('title') : $(this).val();
 	
 		// Set it to that color now
-		if ( temp_color.length > 0)
+		if (  'undefined' != typeof temp_color.length && temp_color.length > 0)
 			$(this).css( 'color', temp_color );
 
 		// Make sure it's not already there
@@ -24,7 +24,7 @@ jQuery.fn.tmpVal = function() {
 				$(this).val('');
 				
 				// If there is color, set it now
-				if ( temp_color.length > 0 )
+				if ( 'undefined' != temp_color && '' != temp_color )
 					$(this).css( 'color', standard_color );
 		});
 
