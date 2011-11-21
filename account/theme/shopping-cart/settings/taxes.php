@@ -38,7 +38,7 @@ get_header();
 	<?php get_sidebar( 'shopping-cart/', 'settings' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) echo '<p class="success">' . _('Tax settings successfully edited') . '</p>'; ?>
-		<form name="fTaxes" id="fTaxes" action="/shopping-cart/taxes/" method="post">
+		<form name="fTaxes" id="fTaxes" action="/shopping-cart/settings/taxes/" method="post">
 			<table id="tWebsiteTaxes" width="700">
 				<tr>
 					<th width="40%"><strong><?php echo _('State'); ?></strong></th>

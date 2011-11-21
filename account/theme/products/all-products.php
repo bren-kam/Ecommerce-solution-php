@@ -27,9 +27,10 @@ get_header();
 		<table class="dt" width="100%" perPage="100,250,500">
 			<thead>
 				<tr>
-					<th width="40%" sort="1"><?php echo _('Product Name'); ?></th>
-					<th width="30%"><?php echo _('Category'); ?></th>
-					<th width="30%"><?php echo _('Brand'); ?></th>
+					<th width="30%" sort="1"><?php echo _('Product Name'); ?></th>
+                    <th width="20%"><?php echo _('SKU'); ?></th>
+					<th width="25%"><?php echo _('Category'); ?></th>
+					<th width="25%"><?php echo _('Brand'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -38,6 +39,7 @@ get_header();
 				foreach ( $products as $product ) { ?>
 					<tr>
 						<td><?php echo $product['name']; ?></td>
+                        <td><?php echo $product['sku']; ?></td>
 						<td><?php echo $product['category']; ?></td>
 						<td><?php echo $product['brand']; ?></td>
 					</tr>
