@@ -903,31 +903,31 @@ class Websites extends Base_Class {
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
 		
-		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> '' AND `live` = $live", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> ''", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get websites for upgrading.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+		$connection = ssh2_connect( '199.204.138.145', 22 );
+        if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+            continue;
+        
 		$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags' . ' | tail -n 1 | tr -d "/"' ) );
 		
 		foreach ( $websites as $w ) {
 			if ( in_array( $w['website_id'], $omit_websites ) || version_compare( $w['version'], $system_version, '>=' ) )
 				continue;
 			
-			$ftp['host'] = security::decrypt( base64_decode( $w['ftp_host'] ), ENCRYPTION_KEY );
-			$ftp['username'] = security::decrypt( base64_decode( $w['ftp_username'] ), ENCRYPTION_KEY );
-			$ftp['password'] = security::decrypt( base64_decode( $w['ftp_password'] ), ENCRYPTION_KEY );
-			
-			$connection = ssh2_connect( $ftp['host'], 22 );
-			if ( !@ssh2_auth_password( $connection, $ftp['username'], $ftp['password'] ) )
-				continue;
-			
-			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . ' public_html' );
-			
+			$username = security::decrypt( base64_decode( $w['ftp_username'] ), ENCRYPTION_KEY );
+
+			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
+			echo $username . "<br />\n";
+
 			$this->update_website_version( $system_version, $w['website_id'] );
+
 		}
 		
 		return true;
