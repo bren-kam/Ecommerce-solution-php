@@ -119,11 +119,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-websi
 		
 		// Update Facebook settings
 		$w->update_settings( $_GET['wid'], array( 
-			//'facebook-username' => base64_encode( security::encrypt( $_POST['tFacebookUsername'], ENCRYPTION_KEY ) )
-			//, 'facebook-password' => base64_encode( security::encrypt( $_POST['tFacebookPassword'], ENCRYPTION_KEY ) )
 			'facebook-url' => $_POST['tFacebookURL']
 			, 'limited-products' => ( isset( $_POST['cbLimitedProducts'] ) ) ? 1 : 0
             , 'advertising-url' => $_POST['tAdvertisingURL']
+            , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY ) )
+            , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
 		) );
 	}
 }
@@ -133,7 +133,15 @@ $ftp = $w->get_ftp_data( $_GET['wid'] );
 $website_industries = $w->get_industries( $_GET['wid'] );
 $users = $u->get_users();
 
-$settings = $w->get_settings( $_GET['wid'], array( 'limited-products', 'custom-image-size', 'facebook-url', 'advertising-url' ) );
+$settings = $w->get_settings( $_GET['wid'], array(
+    'limited-products'
+    , 'custom-image-size'
+    , 'facebook-url'
+    , 'advertising-url'
+    , 'ga-username'
+    , 'ga-password'
+));
+
 $web['custom_image_size'] = $settings['custom-image-size'];
 
 // We must strip slashes, since $_POST automatically inserts them!
@@ -323,6 +331,14 @@ get_header();
 							<label for="tWordPressPassword"><?php echo _('WordPress Password'); ?>:</label>
 							<input type="text" name="tWordPressPassword" id="tWordPressPassword" value="<?php if ( !empty( $web['wordpress_password'] ) ) echo security::decrypt( base64_decode( $web['wordpress_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
 						</p>
+                        <p>
+                            <label for="tGAUsername"><?php echo _('Google Analytics Username'); ?>:</label>
+							<input type="text" name="tGAUsername" id="tGAUsername" value="<?php if ( !empty( $settings['ga-username'] ) ) echo security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+						</p>
+						<p>
+							<label for="tGAPassword"><?php echo _('Google Analytics Password'); ?>:</label>
+							<input type="text" name="tGAPassword" id="tGAPassword" value="<?php if ( !empty( $settings['ga-password'] ) ) echo security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+						</p>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
@@ -354,7 +370,7 @@ get_header();
 		</div>
 		<div id="dSuccess"<?php echo $success_class; ?>>
 			<p><?php echo _('Website has been successfully updated!'); ?></p>
-			<p><?php echo _('Click here to <a href="/websites/" title="View Websites">view all websites</a> or <a href="#" id="aContinueEditingWebsite" title="Continue Editing Website">continue editing website</a>.'); ?></p>
+			<p><?php echo _('Click here to <a href="/websites/" title="View Websites">view all websites</a> or <a href="javascript:;" id="aContinueEditingWebsite" title="Continue Editing Website">continue editing website</a>.'); ?></p>
 			<br /><br />
 			<br /><br />
 			<br /><br />
