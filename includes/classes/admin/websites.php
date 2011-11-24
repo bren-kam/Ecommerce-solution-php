@@ -1001,7 +1001,7 @@ class Websites extends Base_Class {
 		}
 		
 		// Assign the key
-		$settings = ar::assign_key( $settings, 'key' );
+		$settings = ar::assign_key( $settings, 'key', true );
 		
 		foreach ( $keys as $key ) {
 			if ( !isset( $settings[$key] ) )
