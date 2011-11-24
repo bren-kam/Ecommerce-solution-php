@@ -95,7 +95,7 @@ if ( is_array( $websites ) )
 foreach ( $websites as $web ) {
 	$image = '<img src="/images/icons/companies/' . $web['company_id'] . '.gif" alt="" width="24" height="24" />';
 	
-	$title = '<a href="http://' . $web['domain'] . '/" title="' . $web['domain'] . ' - ' . $web['online_specialist'] . '" target="_blank"><strong>' . $web['title'] . '</strong></a><br />';
+	$title = '<a href="http://' . $web['domain'] . '/" target="_blank"><strong title="' . $web['domain'] . ' - ' . $web['online_specialist'] . '">' . $web['title'] . '</strong></a><br />';
 	$title .= '<span class="web-actions" style="display: block"><a href="/websites/edit/?wid=' . $web['website_id'] . '" title="' . _('Edit') . ' ' . $web['title'] . '">' . _('Edit') . '</a> | ';
 	$title .= '<a href="/websites/control/?wid=' . $web['website_id'] . '" title="' . _('Control') . ' ' . $web['title'] . '" target="_blank">' . _('Control Website') . '</a> | ';
 	$title .= '<a href="/users/control/?uid=' . $web['user_id'] . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
