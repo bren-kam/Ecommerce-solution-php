@@ -5,16 +5,24 @@
  * @subpackage Account
  */
 
-if ( !nonce::verify( $_POST['nonce'], 'craigslist' ) ) return false;
+$ajax = new AJAX( $_POST['_nonce'], 'get-category-template-count' );
+$ajax->ok( $user, _('You must be signed in to get a category template count.') );
 
 // Instantiate classes
 $c = new Craigslist;
-$category_id = $_POST['category_id'];
 
-$result = $c->count_templates_for_category( $category_id );
+$count = $c->count_templates_for_category( $_POST['cid'] );
 
-if ( !$result ){
-	echo json_encode( array( 'noresults' => true, 'result' => 0 ) );
+if ( !$count ) {
+	// no template
+	jQuery('#hTemplateCount')->openEditorAndPreview();
 } else {
-	echo json_encode( array( 'noresults' => false, 'result' => $result ) );
+	jQuery('#hTemplateCount')
+		->val( $count )
+		->openTemplateSelector();
 }
+
+// Add the jQuery
+$ajax->add_response( 'jquery', jQuery::getResponse() );
+
+$ajax->respond();

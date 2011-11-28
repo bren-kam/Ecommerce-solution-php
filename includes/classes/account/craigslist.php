@@ -11,28 +11,8 @@ class Craigslist extends Base_Class {
 	 */
 	public function __construct() {
 		// Need to load the parent constructor
-		if ( !parent::__construct() )
+		if( !parent::__construct() )
 			return false;
-	}
-	
-	/**
-	 * Gets the data for an autocomplete request
-	 *
-	 * @param string $query the query that was given
-	 * @param string $field the field that is needed
-	 * @param int $website_id the id of the website being searched for
-	 * @return array
-	 */
-	public function autocomplete( $query, $field, $website_id ) {
-		$results = $this->db->get_results( "SELECT DISTINCT a.`$field` FROM `products` AS a LEFT JOIN `website_industries` as b ON ( a.`industry_id` = b.`industry_id` ) LEFT JOIN `website_products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE ( a.`website_id` = 0 || a.`website_id` = $website_id ) AND a.`publish_visibility` = 'public' AND b.`website_id` = $website_id AND c.`website_id` = $website_id AND `$field` LIKE '$query%' ORDER BY `$field`", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to perform autocomplete', __LINE__, __METHOD__ );
-			return false;
-		}
-				
-		return $results;
 	}
 	
 	/**
@@ -52,7 +32,7 @@ class Craigslist extends Base_Class {
 												 WHERE a.`active` = '1' $where GROUP BY a.`craigslist_ad_id` $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -78,7 +58,7 @@ class Craigslist extends Base_Class {
 												 WHERE a.`craigslist_ad_id` = ? LIMIT 1", 'i', $craigslist_ad_id )->get_row('', ARRAY_A);
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -93,10 +73,10 @@ class Craigslist extends Base_Class {
 	 * @return int number of ads.
 	 */
 	public function count_templates_for_category( $category_id ){
-		$results = $this->db->prepare( "SELECT COUNT(`craigslist_template_id`) FROM `craigslist_templates` WHERE `category_id` = ? AND `publish_visibility` = 'visible'", 'i', $category_id )->get_var( '' );
+		$results = $this->db->prepare( "SELECT COUNT( DISTINCT `craigslist_template_id`) FROM `craigslist_templates` WHERE `category_id` = ? AND `publish_visibility` = 'visible'", 'i', $category_id )->get_var( '' );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -109,45 +89,45 @@ class Craigslist extends Base_Class {
 	 *
 	 * @param int $category_id
 	 * @param int $direction
-	 * @param int $start
-	 * @param string $order
-	 * @return template
+	 * @param int $template_index
+	 * @return string
 	 */
-	public function get_template( $category_id, $direction, $start, $order){		
-		$start = intval( $start );
+	public function get_template( $category_id, $direction, $template_index ) {
+		// Type Juggling
+		$category_id = (int) $category_id;
+		$direction = (int) $direction;
+		$template_index = (int) $template_index;
 		
-		switch ( $direction ){
+		$limit = ' LIMIT ' . ( $template_index - 1 ) . ', 1';
+		/*
+		switch ( $direction ) {
+			default:
 			case 1:
-				$where = " a.`craigslist_template_id` > $start ";
-				$order = " ASC";
-				break;
+				$where = " a.`craigslist_template_id` > $template_id";
+				$order = ' ASC';
+			break;
 			
 			case -1:
-				$where = " a.`craigslist_template_id` < $start ";
-				$order = " DESC";
-				break;
-				
-			default:
-				$where = " a.`craigslist_template_id` = $start ";
-				$order = " ASC";
-				break;
+				$where = " a.`craigslist_template_id` < $template_id";
+				$order = ' DESC';
+			break;
+			
+			
+				$where = " a.`craigslist_template_id` = $start";
+				$order = ' ASC';
+			break;
 		}
-	  
+		*/
 		
-		$results = $this->db->prepare( "
-						 SELECT a.`craigslist_template_id`, a.`title`, a.`description`, a.`category_id`, b.`name` AS `category_name` 
-						 FROM `craigslist_templates` AS a LEFT JOIN `categories` AS b ON (a.`category_id` = b.`category_id`) 
-						 WHERE ( " . $where . " ) AND a.`category_id` = ? ORDER BY a.`craigslist_template_id` " . $order . " LIMIT 1
-						 "
-						, 'i' , $category_id )->get_row('', ARRAY_A );
+		$template = $this->db->get_row( "SELECT a.`craigslist_template_id`, a.`title`, a.`description`, a.`category_id`, b.`name` AS `category_name` FROM `craigslist_templates` AS a LEFT JOIN `categories` AS b ON (a.`category_id` = b.`category_id`) WHERE a.`category_id` = $category_id AND a.`publish_visibility` = 'visible' ORDER BY a.`craigslist_template_id` ASC" . $limit, ARRAY_A );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $results;
+		return $template;
 	}
 	
 	/**
@@ -158,93 +138,15 @@ class Craigslist extends Base_Class {
 	 */
 	public function count_craigslist_ads( $where ) {
 		// @Fix need to make this count without PHP's count
-		$craigslist_ad_ids = $this->db->get_results( "SELECT a.`craigslist_ad_id`
-												 FROM `craigslist_ads` AS a 
-												 LEFT JOIN `products` AS c ON( a.product_id = c.product_id ) 
-												 WHERE a.`active` = '1' $where GROUP BY a.`craigslist_ad_id`", ARRAY_A );
+		$craigslist_ad_ids = $this->db->get_results( "SELECT a.`craigslist_ad_id` FROM `craigslist_ads` AS a LEFT JOIN `products` AS c ON( a.product_id = c.product_id ) WHERE a.`active` = '1' $where GROUP BY a.`craigslist_ad_id`", ARRAY_A );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return count( $craigslist_ad_ids );
-	}
-	
-	/**
-	 * Gets the product_id searched by a criterion
-	 *
-	 * @param string $search_by
-	 * @param string $query
-	 * @return int product id
-	 */
-	public function get_product_id( $search_by, $query )
-	{
-		if ( !$search_by || !$query) return false;
-		
-		switch ( $search_by ) {
-			case 'sku':
-				$search_by = 'sku';
-				break;
-			case 'product_name':
-				$search_by = 'name';
-			break;
-			default:
-				return false;
-			break;
-		}
-
-		$result = $this->db->prepare( "SELECT `product_id` FROM `products` WHERE `$search_by` = ?", 's', $query )->get_var( '' );
-		//echo "|$result|";
-		//exit;
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product id.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $result;
-	}
-		
-	/**
-	 * Gets a single product of product_id.
-	 *
-	 * @param int $product_id
-	 * @return array
-	 */
-	public function get_product( $product_id ) {
-		// Type Juggling
-		$product_id = (int) $product_id;
-		
-		$product = $this->db->get_row( "SELECT a.`description`, d.`name` as `brand`, a.`product_id`, a.`name` AS `product_name`, c.`category_id`, c.`name` AS `category_name`, a.`sku`, a.`product_specifications` FROM `products` AS a INNER JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON ( b.`category_id` = c.`category_id` ) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) WHERE ( a.`product_id` = $product_id ) LIMIT 1", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product info.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $product;
-	}
-	
-	/**
-	 * Retrieves the partial URLs of all images for a given Product_id
-	 *
-	 * @param int $product_id
-	 * @return array
-	 */
-	public function get_product_image_urls( $product_id ) {
-		$results = $this->db->get_col( "SELECT CONCAT( 'http://', b.`name`, '.retailcatalog.us/products/', c.`product_id`, '/', a.`image` ) AS image_url FROM `product_images` AS a LEFT JOIN `products` AS c ON (a.`product_id` = c.`product_id`) LEFT JOIN `industries` AS b ON (c.`industry_id` = b.`industry_id`) WHERE a.`product_id` = " . (int)$product_id . " ORDER BY a.`sequence` ASC LIMIT 10" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product image urls.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $results;
 	}
 	
 	/**
@@ -276,7 +178,7 @@ class Craigslist extends Base_Class {
 						  'iiiississ' );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to create Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -293,7 +195,7 @@ class Craigslist extends Base_Class {
 		$this->db->update( 'craigslist_ads', array( 'active' => '0' ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'i', 'i' );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to delete Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -313,7 +215,7 @@ class Craigslist extends Base_Class {
 		$this->db->insert( 'craigslist_ads', array( 'craigslist_template_id' => $ad['craigslist_template_id'], 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m=d H:i:s", time() ) ), 'iiissiiis' );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to copy Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
@@ -349,29 +251,11 @@ class Craigslist extends Base_Class {
 			array( 'craigslist_ad_id' => $craigslist_ad_id ), 'iiiississ', 'i' );
 		
 		// Handle any error
-		if ( $this->db->errno() ) {
+		if( $this->db->errno() ) {
 			$this->err( 'Failed to update Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		return $result;
-	}
-	
-	/**
-	 * Gets misc website info
-	 *
-	 * @param int $websites_id
-	 * @return array
-	 */
-	public function get_website_info( $website_id ){
-		$results = $this->db->prepare( "SELECT `title`, `domain`, `logo` FROM `websites` WHERE `website_id` = ?", 'i', $website_id )->get_row('', ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website info.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $results;
 	}
 	
 	/**
@@ -382,6 +266,7 @@ class Craigslist extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
