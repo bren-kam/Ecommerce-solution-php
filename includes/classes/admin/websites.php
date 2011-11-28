@@ -695,10 +695,11 @@ class Websites extends Base_Class {
 		$this->db->query( "DELETE FROM `checklists` WHERE `website_id` = $website_id");
 		
 		// Delete from Analytics
-		$this->db->query( "DELETE a.* FROM `analytics_data` AS a LEFT JOIN `websites` AS b ON ( a.`ga_profile_id` = b.`ga_profile_id` ) WHERE a.`ga_profile_id` <> 0 AND b.`website_id` = $website_id");
+		/*$this->db->query( "DELETE a.* FROM `analytics_data` AS a LEFT JOIN `websites` AS b ON ( a.`ga_profile_id` = b.`ga_profile_id` ) WHERE a.`ga_profile_id` <> 0 AND b.`website_id` = $website_id");
 		$this->db->query( "DELETE a.* FROM `analytics_visitor_pages` AS a LEFT JOIN `analytics_visitors` AS b ON ( a.`analytics_visitor_id` = b.`analytics_visitor_id` ) WHERE b.`website_id` = $website_id");
 		$this->db->query( "DELETE FROM `analytics_visitors` WHERE `website_id` = $website_id");
-		
+		*/
+
 		// Delete from Requests
 		$this->db->query( "DELETE FROM `request_attachments` WHERE `request_page_id` IN ( SELECT `request_page_id` FROM `request_pages` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `websites` WHERE `website_id` = $website_id ) )");
 		$this->db->query( "DELETE FROM `request_pagemeta` WHERE `request_page_id` IN ( SELECT `request_page_id` FROM `request_pages` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `websites` WHERE `website_id` = $website_id ) )");
@@ -708,7 +709,19 @@ class Websites extends Base_Class {
 		
 		// Delete authorized users
 		$this->db->query( "DELETE FROM `auth_user_websites` WHERE `website_id` = $website_id");
-		
+
+        // Delete from Social Media
+        $this->db->query( "DELETE FROM `sm_about_us` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_analytics` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_contact_us` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_current_ad` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_email_sign_up` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_facebook_site` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_fan_offer` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_products` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_share_and_save` WHERE `website_id` = $website_id");
+        $this->db->query( "DELETE FROM `sm_sweepstakes` WHERE `website_id` = $website_id");
+
 		// Delete from Websites
 		$this->db->query( "DELETE FROM `websites` WHERE `website_id` = $website_id");
 		$this->db->query( "DELETE FROM `website_attachments` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $website_id )");
@@ -890,31 +903,31 @@ class Websites extends Base_Class {
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
 		
-		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> '' AND `live` = $live", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> ''", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get websites for upgrading.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+		$connection = ssh2_connect( '199.204.138.145', 22 );
+        if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+            continue;
+        
 		$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags' . ' | tail -n 1 | tr -d "/"' ) );
 		
 		foreach ( $websites as $w ) {
 			if ( in_array( $w['website_id'], $omit_websites ) || version_compare( $w['version'], $system_version, '>=' ) )
 				continue;
 			
-			$ftp['host'] = security::decrypt( base64_decode( $w['ftp_host'] ), ENCRYPTION_KEY );
-			$ftp['username'] = security::decrypt( base64_decode( $w['ftp_username'] ), ENCRYPTION_KEY );
-			$ftp['password'] = security::decrypt( base64_decode( $w['ftp_password'] ), ENCRYPTION_KEY );
-			
-			$connection = ssh2_connect( $ftp['host'], 22 );
-			if ( !@ssh2_auth_password( $connection, $ftp['username'], $ftp['password'] ) )
-				continue;
-			
-			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . ' public_html' );
-			
+			$username = security::decrypt( base64_decode( $w['ftp_username'] ), ENCRYPTION_KEY );
+
+			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
+			echo $username . "<br />\n";
+
 			$this->update_website_version( $system_version, $w['website_id'] );
+
 		}
 		
 		return true;
