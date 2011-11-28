@@ -49,7 +49,7 @@ foreach ( $images as $i ) {
 	$html = preg_replace( '/\[Photo\]/', '<img src="' . $i . '" />', $html, 1);
 }
 
-//jQuery('#dCraigslistPreview')->html( $html );
+jQuery('#dCraigslistPreview')->html( $html );
 jQuery('#hTemplateID')->val( $template['craigslist_template_id'] );
 jQuery('#hTemplateTitle, #tTitle')->val( str_replace( $search, $replace, $template['title'] ) );
 jQuery('#hTemplateDescription')->val( $template['description'] );

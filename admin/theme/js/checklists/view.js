@@ -86,7 +86,7 @@ function postLoad( $ ) {
 
 	// Marks an item as checked or not
 	$('.item-checkbox').live( 'click', function() {
-		var itemID = $(this).val(), state = $(this).attr('checked');
+		var itemID = $(this).val(), state = $(this).is(':checked');
 		
 		$.post( '/ajax/checklists/view/update-item/', { '_nonce': $('#_ajax_update_item').val(), 'iid' : itemID, 's' : state }, function( response ) {
 			// Handle any error

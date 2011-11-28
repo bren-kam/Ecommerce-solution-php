@@ -21,7 +21,10 @@ $dt->set_row_count( $c->count_craigslist_ads( $dt->get_where() ) );
 $confirm_delete = _('Are you sure you want to delete a craigslist ad? This cannot be undone.');
 $craigslist_ad_nonce = nonce::create( 'craigslist-ad' );
 
+$data = array();
+
 // Create output
+if ( is_array( $craigslist_ads ) )
 foreach ( $craigslist_ads as $ad ) {
 	$status = ( $ad['date_posted'] + $ad['duration'] * 86400 > time() ) ? 
 		intval( ( ( $ad['date_posted']  + intval( $ad['duration'] ) * 86400 ) - time() ) / 86400 + 1 ) : 
