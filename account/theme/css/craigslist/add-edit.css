@@ -39,7 +39,7 @@ div.even { background-color: #E3E3E3 !important; }
 #fUploadImagesUploader { margin-top: 30px; }
 
 /***** Add Products *****/
-#tTitle {
+#tTitle, #tCraigslistPublishTitle {
 	width:100%; height: 30px; font-size: 18px; padding: 2px 2px 0;
 	border: 1px solid #636363;
 	-webkit-border-radius: 4px;
@@ -63,3 +63,7 @@ input.cb { width: 15px !important; }
 #dPreviewArea p { margin-bottom: 20px; }
 #dPreviewArea ul { list-style:none; margin-left:15px; }
 #dPreviewArea a { color:#00f; }
+
+#taCraigslistPublish { width:100% }
+#dCraigslistCustomPreview { background-color:#FFF; border:1px solid #666; padding:10px; }
+#dCraigslistPreview { margin:5px; padding:10px; border:1px solid #666; }

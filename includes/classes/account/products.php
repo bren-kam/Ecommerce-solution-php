@@ -500,6 +500,27 @@ class Products extends Base_Class {
 		
 		return $images;
 	}
+
+    /**
+	 * Retrieves the partial URLs of all images for a given Product_id
+	 *
+	 * @param int $product_id
+	 * @return array
+	 */
+	public function get_product_image_urls( $product_id ) {
+		// Type Juggling
+		$product_id = (int) $product_id;
+
+		$images = $this->db->get_col( "SELECT CONCAT( 'http://', b.`name`, '.retailcatalog.us/products/', c.`product_id`, '/', a.`image` ) AS image_url FROM `product_images` AS a LEFT JOIN `products` AS c ON (a.`product_id` = c.`product_id`) LEFT JOIN `industries` AS b ON (c.`industry_id` = b.`industry_id`) WHERE a.`product_id` = $product_id ORDER BY a.`sequence` ASC LIMIT 5" );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get product image urls.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $images;
+	}
 	
 	/**
 	 * Get categories

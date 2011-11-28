@@ -11,9 +11,20 @@ $row = $result->fetch_assoc();
 
 $stat->add_graph_value( 7139, $row['websites'], date('Y-m-d') ); // RS - Total Paid Users
 
+$result = $mysqli->query( 'SELECT COUNT( `product_id` ) AS count FROM `products` WHERE ( `timestamp` > DATE_SUB( NOW(), INTERVAL 3 DAY ) AND `user_id_modified` = 353 ) OR ( `date_created` > DATE_SUB( NOW(), INTERVAL 3 DAY ) AND `user_id_created` = 353 )' );
+$row = $result->fetch_assoc();
+
+if ( 0 == $row['count'] ) {
+	$headers = "From: Grey Suit Retail <noreply@greysuitretail.com>" . "\r\n" .
+		"Reply-to: Grey Suit Retail <noreply@greysuitretail.com>" . "\r\n" .
+		"X-Mailer: PHP/" . phpversion();
+
+	mail( 'kerry@studio98.com', 'Ashley Feed - No Update', 'There has been no update in the Ashley Feed for 3 days. Please investigate.', $headers );
+}
+
 // Remove unnecessary analytics data
-$result = $mysqli->query( 'DELETE FROM `analytics_visitors` WHERE `date_created` < DATE_SUB( NOW(), INTERVAL 30 DAY )' );
-$result = $mysqli->query( 'DELETE FROM `analytics_visitor_pages` WHERE `date_visited` < DATE_SUB( NOW(), INTERVAL 30 DAY )' );
+//$result = $mysqli->query( 'DELETE FROM `analytics_visitors` WHERE `date_created` < DATE_SUB( NOW(), INTERVAL 30 DAY )' );
+//$result = $mysqli->query( 'DELETE FROM `analytics_visitor_pages` WHERE `date_visited` < DATE_SUB( NOW(), INTERVAL 30 DAY )' );
 
 // Delete empty products (that were created by going to the page)
 $result = $mysqli->query( "DELETE FROM `products` WHERE '' = `name` AND ( 0 = `brand_id` OR `brand_id` IS NULL ) AND ( 'public' = `publish_visibility` OR '' = `publish_visibility` )" );

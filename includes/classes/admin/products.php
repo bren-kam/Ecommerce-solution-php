@@ -152,7 +152,7 @@ class Products extends Base_Class {
 				'product_specifications' => serialize( $product_specs ),
 				'publish_visibility' => $publish_visibility,
 				'publish_date' => $publish_date,
-				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 127 ),
+				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 353 ),
 			), array( 'product_id' => $product_id ), 'iisssssdddisssi', 'i' );
 
 		// Handle any error

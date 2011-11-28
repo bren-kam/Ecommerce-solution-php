@@ -58,7 +58,7 @@ require_once INC_PATH . 'functions.php';
 require_once INC_PATH . 'classes.php';
 
 /** Error Handler */
-$e = new Error_Handler();
+//$e = new Error_Handler();
 
 /** Dynamic definitions */
 define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );
