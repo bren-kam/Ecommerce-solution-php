@@ -1398,8 +1398,7 @@ class Products extends Base_Class {
 		
 		$suggestions = $this->db->get_results( "SELECT a.`product_id` AS value, a.`$field` AS name FROM `products` AS a LEFT JOIN `website_industries` AS b ON ( a.`industry_id` = b.`industry_id` ) WHERE a.`publish_visibility` = 'public' AND ( a.`website_id` = 0 OR a.`website_id` = $website_id  ) AND b.`website_id` = $website_id $where ORDER BY a.`$field` LIMIT 10", ARRAY_A );
 
-        echo $this->db->last_query;
-		// Handle any error
+        // Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted products.', __LINE__, __METHOD__ );
 			return false;
