@@ -62,25 +62,15 @@ class Products extends Base_Class {
 			$values .= "( $website_id, $product_id )";
 		}
 		
-		// Hack -- ON DUPLICATE KEY UPDATE itself to prevent duplicate key errors
 		// Insert website products
-		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `website_id` = `website_id`" );
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `active` = 1" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add website products.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		// Have to set `active` to 1
-		$this->db->query( "UPDATE `website_products` SET `active` = 1 WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to re-add website products.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
+
 		$product_ids = implode( ',', $products );
 		
 		// Get category IDs
