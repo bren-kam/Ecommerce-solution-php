@@ -236,7 +236,7 @@ function refreshPreview() {
 	var storeURL = $('#hStoreURL').val();
 	var category = $("#hProductCategoryName").val();
 	var brand = $("#hProductBrandName").val();
-	var product_description = $("#hProductDescription").html();
+	var product_description = $("#hProductDescription").val();
 	var product_specs = ""; // $("").val();
 	
 	var sku = $("#hProductSKU").val();
