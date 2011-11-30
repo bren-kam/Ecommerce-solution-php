@@ -86,6 +86,7 @@ $ticket_count = $t->count( $where );
 
 $aaData = array();
 
+if ( is_array( $tickets ) )
 foreach ( $tickets as $ticket ) {
 	switch ( $ticket['priority'] ) {
 		case 0:
