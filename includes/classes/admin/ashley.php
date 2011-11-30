@@ -26,7 +26,7 @@ class Ashley extends Base_Class {
 		$this->file = new Files();
 		
 	}
-	 
+
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
 	 * 
