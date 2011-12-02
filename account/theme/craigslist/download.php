@@ -27,12 +27,12 @@ fputcsv( $outstream, array('Header', 'Location', 'Ad', 'Category', 'Item Number'
 foreach ( $craigslist_ads as $cad ) {
     $ad = str_replace( '[Product Name]', $cad['name'], $cad['text'] );
     $ad = str_replace( '[Store Name]', $user['website']['title'], $ad );
-    $ad = str_replace( '[Store Logo]', 'http://' . $domain . '/custom/uploads/images/' . $user['website']['logo'], $ad );
+    $ad = str_replace( '[Store Logo]', '<img src="http://' . $domain . '/custom/uploads/images/' . $user['website']['logo'] . '" alt="" />', $ad );
     $ad = str_replace( '[Category]', $cad['category'], $ad );
     $ad = str_replace( '[Brand]', $cad['brand'], $ad );
     $ad = str_replace( '[Product Description]', $cad['description'], $ad );
     $ad = str_replace( '[SKU]', $cad['sku'], $ad );
-    $ad = str_replace( '[Photo]', $cad['image'], $ad );
+    $ad = str_replace( '[Photo]', '<img src="http://' . $cad['image'] . '" alt="" />', $ad );
 
     fputcsv( $outstream, array(
         $cad['title']
