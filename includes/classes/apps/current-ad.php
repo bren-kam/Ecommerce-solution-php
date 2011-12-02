@@ -42,7 +42,6 @@ class Current_Ad extends Base_Class {
 				return false;
 			}
 			
-
 			// Get website
 			$domain = $this->db->prepare( "SELECT IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain FROM `websites` AS a LEFT JOIN `sm_current_ad` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`fb_page_id` = ?", 's', $fb_page_id )->get_var('');
 			
@@ -54,7 +53,6 @@ class Current_Ad extends Base_Class {
 			
 			// Form Tab
 			$tab = '<h1>Current Ad</h1>';
-			
 			
 			foreach ( $attachments as $att ) {
 				$k = $att['key'];
@@ -110,7 +108,9 @@ class Current_Ad extends Base_Class {
 						if ( !empty( $e ) )
 							$tab .= '<a href="' . $e . '" target="_blank">';
 						
-						$tab .= '<img src="http://' . $domain . $v . '" alt="" />';
+						$url = ( stristr( $v, 'websites.retailcatalog.us' ) ) ? $v : 'http://' . $domain .$v;
+
+						$tab .= '<img src="' . $url . '" alt="" />';
 						
 						if ( !empty( $e ) )
 							$tab .= '</a>';

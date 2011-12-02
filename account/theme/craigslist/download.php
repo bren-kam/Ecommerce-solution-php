@@ -9,12 +9,17 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 
 // Initialize class
 $c = new Craigslist;
+$w = new Websites;
+
+// Get the location
+$contact_us = $w->get_page_by_slug( 'contact-us' );
+$addresses = unserialize( $w->get_pagemeta_by_key( $contact_us['website_page_id'], 'addresses' ) );
+$location = ( is_array( $addresses ) ) ? $addresses[0]['city'] . ', ' . $addresses[0]['state'] : '';
 
 // Get ads
 $craigslist_ads = $c->download();
 
 // Declare variables
-$city = $u->get_city();
 $domain = ( empty( $user['website']['subdomain'] ) ) ? $user['website']['domain'] : $user['website']['subdomain'] . '.' . $user['website']['domain'];
 
 // Set it so we can use fputcsv
@@ -36,7 +41,7 @@ foreach ( $craigslist_ads as $cad ) {
 
     fputcsv( $outstream, array(
         $cad['title']
-        , $city
+        , $location
         , $ad
         , $cad['top_category']
         , $cad['sku']
