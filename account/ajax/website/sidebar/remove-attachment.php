@@ -17,9 +17,9 @@ $f = new Files;
 // Get the file
 $attachment = $wa->get( $_GET['waid'] );
 
-if ( stristr( $attachment, 'http://' ) ) {
+if ( stristr( $attachment['value'], 'http://' ) ) {
     $file = $wf->get_by_file_path( $attachment['value'] );
-
+	
     // Delete from Amazon S3
     $ajax->ok( $f->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $file['file_path'] ) ), _('An error occurred while trying to delete your file from the server. Please refresh the page and try again.') . str_replace( 'http://websites.retailcatalog.us/', '', $file['file_path'] ) );
 

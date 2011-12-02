@@ -133,7 +133,7 @@ class Categories extends Base_Class {
 		return $this->categories_list[$category_id];
 	}
 	
-		/**
+	/**
 	 * Get Parent Categories
 	 *
 	 * @param int $category_id
@@ -160,6 +160,19 @@ class Categories extends Base_Class {
 		}
 		
 		return $parent_categories;
+	}
+
+    /**
+	 * Get Top Category
+	 *
+	 * @param int $category_id
+	 * @return array
+	 */
+	public function get_top( $category_id ) {
+		if ( 0 == $category_id )
+			return false;
+
+        return ( 0 == $this->categories_list[$category_id]['parent_category_id'] ) ? $this->categories_list[$category_id] : $this->get_top( $this->categories_list[$category_id]['parent_category_id'] );
 	}
 	
 	/**

@@ -339,6 +339,29 @@ class Users extends Base_Class {
 		
 		return $user;
 	}
+
+    /**
+	 * Gets a user location by billing address
+	 *
+	 * @return array
+	 */
+	public function get_city() {
+        global $user;
+
+        // Type Juggling
+        $user_id = (int) $user['user_id'];
+
+		// Prepare the statement
+		$city = $this->db->get_var( "SELECT `billing_city` FROM `users` WHERE `user_id` = $user_id" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get user city.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $city;
+	}
 	
 	/**
 	 * Report an error

@@ -48,7 +48,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		fileDesc	: 'Video Files', // @Fix needs to be put in PHP
 		scriptData	: { _nonce : $('#_ajax_upload_video').val(), wid : $('#hWebsiteID').val(), wpid : $('#hWebsitePageID').val() },
 		onComplete	: function( e, queueID, fileObj, response ) {
-			alert( response );
             ajaxResponse( $.parseJSON( response ) );
 		},
 		sizeLimit	: 26214400,// (25mb) In bytes? Really?

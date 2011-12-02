@@ -37,7 +37,7 @@ $f = new Files;
 $user['website'] = $w->get_website( $_POST['wid'] );
 
 // Upload the file
-$ajax->ok( move_uploaded_file( $_FILES['Filedata']['tmp_name'], $file_path ), _('An error occurred while trying to upload your video2. Please refresh the page and try again.') );
+$ajax->ok( move_uploaded_file( $_FILES['Filedata']['tmp_name'], $file_path ), _('An error occurred while trying to upload your video. Please refresh the page and try again.') );
 
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $file_path, $file_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your video. Please refresh the page and try again') );

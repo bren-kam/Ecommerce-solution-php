@@ -20,7 +20,7 @@ $dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 if ( !is_dir( $dir ) )
 	mkdir( $dir, 0777, true );
 
-$file_path = $dir . $file_name;
+$file_path = $dir . $image_name;
 
 // User is blank, must fill website
 global $user;
@@ -38,16 +38,16 @@ $user['website'] = $w->get_website( $_POST['wid'] );
 $ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $file_name, 1000, 1000 ), _('An error occurred while trying to resize your image.') );
 
 // Transfer file to Amazon
-$ajax->ok( $f->upload_file( $file_path, $file_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your image. Please refresh the page and try again') );
+$ajax->ok( $f->upload_file( $file_path, $image_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your image1. Please refresh the page and try again') );
 
 // Declare variables
 $upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id'] . '/sidebar/' . $image_name;
 
 // Set the website data, if successful, delete the local file
-$ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'sidebar-image', $upload_url ), _('An error occurred while trying to upload your image. Please refresh the page and try again.') );
+$ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'sidebar-image', $upload_url ), _('An error occurred while trying to upload your image3. Please refresh the page and try again.') );
 
 // Add file to database
-$ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred while trying to add the image to your website. Please refresh the page and try again.') );
+$ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred while trying to add the image to your website2. Please refresh the page and try again.') );
 
 // Delete the file
 if ( is_file( $file_path ) )
