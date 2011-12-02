@@ -53,8 +53,8 @@ class About_Us extends Base_Class {
 			// Form Tab
 			$tab = '<h1>' . $page['title'] . '</h1>';
 			
-			if ( !empty( $attachment ) )
-				$tab .= '<img src="http://' . $page['domain'] . $attachment . '" align="right" alt="About Us" />';
+			//if ( !empty( $attachment ) )
+				//$tab .= '<img src="http://' . $page['domain'] . $attachment . '" align="right" alt="About Us" />';
 			
 			$tab .= html_entity_decode( $page['content'], ENT_QUOTES, 'UTF-8' );
 		} else {

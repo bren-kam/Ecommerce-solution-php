@@ -274,5 +274,9 @@ function sidebar( $key ) {
  */
 function login() {
 	$_SESSION['referer'] = ( isset( $_SERVER['REDIRECT_URL'] ) ) ? $_SERVER['REDIRECT_URL'] : '';
+
+    if ( !empty( $_SERVER['QUERY_STRING'] ) )
+        $_SESSION['referer'] .= '?' . $_SERVER['QUERY_STRING'];
+    
 	url::redirect( '/login/' );
 }

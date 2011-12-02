@@ -212,7 +212,14 @@ class Craigslist extends Base_Class {
 	 */
 	public function copy( $craigslist_ad_id ) {
 		$ad = $this->db->prepare( "SELECT `craigslist_template_id`, `product_id`, `website_id`, `title`, `text`, `craigslist_city_id`, `craigslist_category_id`, `craigslist_district_id` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ?", 'i', $craigslist_ad_id )->get_row('', ARRAY_A);
-		$this->db->insert( 'craigslist_ads', array( 'craigslist_template_id' => $ad['craigslist_template_id'], 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m=d H:i:s", time() ) ), 'iiissiiis' );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist details.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        $this->db->insert( 'craigslist_ads', array( 'craigslist_template_id' => $ad['craigslist_template_id'], 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m-d H:i:s", time() ) ), 'iiissiiis' );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
