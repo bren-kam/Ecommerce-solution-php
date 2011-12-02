@@ -9,43 +9,51 @@
 $ajax = new AJAX( $_POST['_nonce'], 'upload-video' );
 $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 
+error_reporting(E_ALL);
 
 // Get the file extension
 $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
 
+$file_name = "video.$file_extension";
+
+// Set variables
+$dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
+
+if ( !is_dir( $dir ) )
+	mkdir( $dir, 0777, true );
+
+$file_path = $dir . $file_name;
+
+// User is blank, must fill website
 global $user;
 
 // Instantiate classes
 $w = new Websites;
 $wa = new Website_Attachments;
+$wf = new Website_Files;
+$f = new Files;
 
+// Fill the global $user['website']
 $user['website'] = $w->get_website( $_POST['wid'] );
 
-// Instantiate other classes now that ther user['website'] is in place
-$ftp = new FTP( (int) $_POST['wid'] );
+// Upload the file
+$ajax->ok( move_uploaded_file( $_FILES['Filedata']['tmp_name'], $file_path ), _('An error occurred while trying to upload your video2. Please refresh the page and try again.') );
 
-$name = "video.$file_extension";
+// Transfer file to Amazon
+$ajax->ok( $f->upload_file( $file_path, $file_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your video. Please refresh the page and try again') );
 
-// Set variables
-$upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] ;
-$local_file_path = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . "/$name";
+// Declare variables
+$upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id'] . '/sidebar/' . $file_name;
 
-// Directory needs to exist
-if ( !is_dir( $upload_dir ) )
-	mkdir( $upload_dir, 0777, true );
+// Update the attachment
+$ajax->ok( $wa->update( $_POST['wpid'], 'video', $upload_url ), _('An error occurred while trying to update your video. Please refresh the page and try again.') );
 
-// Move it to a local file
-$ajax->ok( move_uploaded_file( $_FILES['Filedata']['tmp_name'], $local_file_path ) );
-
-// Add it to their site
-$ajax->ok( $ftp->add( $local_file_path, 'video/' ), _('An error occurred while trying to upload your video. Please refresh the page and try again.') );
-	
-// Update the video
-// No Workee --> $ajax->ok( $wa->update( $_POST['wpid'], 'video', 'http://' . $user['website']['domain'] . '/custom/uploads/video/' . $name ), _('An error occurred while trying to update your video. Please refresh the page and try again.') );
-$ajax->ok( $wa->update( $_POST['wpid'], 'video', '/custom/uploads/video/' . $name ), _('An error occurred while trying to update your video. Please refresh the page and try again.') );
+// Add file to database
+$ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred while trying to add your video to your website. Please refresh the page and try again.') );
 
 // Delete the file
-unlink( $local_file_path );
+if ( is_file( $file_path ) )
+    unlink( $file_path );
 
 // Add the response
 $ajax->add_response( 'refresh', 1 );

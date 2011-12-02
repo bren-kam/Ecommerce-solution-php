@@ -12,6 +12,17 @@ $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 // Get the file extension
 $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
 
+$file_name = $_POST['name'];
+$image_name = "$file_name.$file_extension";
+
+$dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
+
+if ( !is_dir( $dir ) )
+	mkdir( $dir, 0777, true );
+
+$file_path = $dir . $image_name;
+
+// User is blank, must fill website
 global $user;
 
 // Instantiate classes
@@ -21,51 +32,20 @@ $user['website'] = $w->get_website( $_POST['wid'] );
 
 // Instantiate other classes now that ther user['website'] is in place
 $wa = new Website_Attachments;
-$ftp = new FTP( (int) $_POST['wid'] );
-
-$name = $_POST['name'];
-
-// Set variables
-$image_name = "$name.$file_extension";
-$upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
-
-// Directory needs to exist
-if ( !is_dir( $upload_dir ) )
-	mkdir( $upload_dir, 0777, true );
+$f = new Files;
 
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your image.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your image.') );
 
-// Get our local directory
-$local_file_path = $upload_dir . $image_name;
+// Transfer file to Amazon
+$ajax->ok( $f->upload_file( $file_path, $image_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your image. Please refresh the page and try again') );
 
-// Add it to their site
-$ajax->ok( $ftp->add( $local_file_path, 'images/' ), _('An error occurred while trying to upload your image. Please refresh the page and try again.') );
-
-// Create the upload url
-$upload_url = '/custom/uploads/images/' . $image_name;
-
-// (Not needed for this one, since we don't want to create new files) Set the website data, if successful, delete the local file
-// $ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'sidebar-image', $upload_url ), _('An error occurred while trying to upload your image. Please refresh the page and try again.') );
+// Declare variables
+$upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id'] . '/sidebar/' . $image_name;
 
 // Delete the file
-unlink( $local_file_path );
-
-// $new_image = "<img src='http://" . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . $upload_url . "' alt='" . _('Current Ad Image') . "' />";
-// $replace_id = '#' . $_POST['replace_id'];
+if ( is_file( $file_path ) )
+    unlink( $file_path );
 
 echo true;
 return true;
-
-//@Fix nothing below here is working.  WTF?
-/*
-jQuery( $replace_id ) //$replace_id )
-	->replace( $new_image );
-	//->sparrow();
-
-// Add the response
-$ajax->add_response( 'jquery', jQuery::getResponse() );
-
-// Send response
-$ajax->respond();
-*/
