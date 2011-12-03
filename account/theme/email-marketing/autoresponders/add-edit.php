@@ -11,14 +11,15 @@ global $user;
 if ( !$user )
 	login();
 
-// Redirect to main section if they don't have email marketing
-if ( !$user['website']['email_marketing'] )
-	url::redirect('/email-marketing/subscribers/');
-
 $e = new Email_Marketing;
 
 // Get the email autoresponder id if there is one
 $email_autoresponder_id = ( isset( $_GET['eaid'] ) ) ? $_GET['eaid'] : false;
+
+// Redirect to main section if they don't have email marketing -- they have to be editing the default autoresponder
+if ( !$user['website']['email_marketing'] && !$email_autoresponder_id )
+	url::redirect('/email-marketing/subscribers/');
+
 
 $v = new Validator();
 $v->form_name = 'fAddEditAutoresponder';
@@ -51,6 +52,9 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-aut
 // Get the email list if necessary
 if ( $email_autoresponder_id ) {
 	$autoresponder = $e->get_autoresponder( $email_autoresponder_id );
+
+    if ( !$user['website']['email_marketing'] && 1 != $autoresponder['default'] )
+    	url::redirect('/email-marketing/subscribers/');
 } else {
 	$autoresponder = array(
 		'default' => ''
