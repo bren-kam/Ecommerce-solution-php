@@ -18,7 +18,7 @@ $email_autoresponder_id = ( isset( $_GET['eaid'] ) ) ? $_GET['eaid'] : false;
 
 // Redirect to main section if they don't have email marketing -- they have to be editing the default autoresponder
 if ( !$user['website']['email_marketing'] && !$email_autoresponder_id )
-	url::redirect('/email-marketing/subscribers/');
+	url::redirect('/email-marketing/autoresponders/');
 
 
 $v = new Validator();
@@ -54,7 +54,7 @@ if ( $email_autoresponder_id ) {
 	$autoresponder = $e->get_autoresponder( $email_autoresponder_id );
 
     if ( !$user['website']['email_marketing'] && 1 != $autoresponder['default'] )
-    	url::redirect('/email-marketing/subscribers/');
+    	url::redirect('/email-marketing/autoresponders/');
 } else {
 	$autoresponder = array(
 		'default' => ''
