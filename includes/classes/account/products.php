@@ -62,25 +62,15 @@ class Products extends Base_Class {
 			$values .= "( $website_id, $product_id )";
 		}
 		
-		// Hack -- ON DUPLICATE KEY UPDATE itself to prevent duplicate key errors
 		// Insert website products
-		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `website_id` = `website_id`" );
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `active` = 1" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to add website products.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		// Have to set `active` to 1
-		$this->db->query( "UPDATE `website_products` SET `active` = 1 WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to re-add website products.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
+
 		$product_ids = implode( ',', $products );
 		
 		// Get category IDs
@@ -418,7 +408,7 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 		
-		$product = $this->db->get_row( "SELECT a.`product_id`, a.`name`, a.`slug`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`, c.`name` AS category, e.`image`, f.`name` AS industry FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) INNER JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) WHERE a.`product_id` = $product_id AND e.`sequence` = 0", ARRAY_A );
+		$product = $this->db->get_row( "SELECT a.`product_id`, a.`name`, a.`slug`, a.`description`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`, c.`name` AS category, e.`image`, f.`name` AS industry FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) INNER JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) WHERE a.`product_id` = $product_id AND e.`sequence` = 0", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1398,8 +1388,7 @@ class Products extends Base_Class {
 		
 		$suggestions = $this->db->get_results( "SELECT a.`product_id` AS value, a.`$field` AS name FROM `products` AS a LEFT JOIN `website_industries` AS b ON ( a.`industry_id` = b.`industry_id` ) WHERE a.`publish_visibility` = 'public' AND ( a.`website_id` = 0 OR a.`website_id` = $website_id  ) AND b.`website_id` = $website_id $where ORDER BY a.`$field` LIMIT 10", ARRAY_A );
 
-        echo $this->db->last_query;
-		// Handle any error
+        // Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autocompleted products.', __LINE__, __METHOD__ );
 			return false;

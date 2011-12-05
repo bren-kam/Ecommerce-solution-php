@@ -160,6 +160,13 @@ get_header();
 				break;
 				
 				case 'sidebar-image':
+                    if ( stristr( $a['value'], 'http:' ) ) {
+                        $image_url = $a['value'];
+                    } else {
+                        $image_url = 'http://';
+                        $image_url .= ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '';
+                        $image_url .= $user['website']['domain'] . $a['value'];
+                    }
 					?>
 					<div class="contact-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a['website_attachment_id']; ?>">
 						<h2><?php echo _('Sidebar Image'); ?></h2>
@@ -170,7 +177,7 @@ get_header();
 							<br />
 							<form action="/ajax/website/sidebar/update-extra/" method="post" ajax="1">
 								<div align="center">
-									<p><img src="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'], $a['value']; ?>" alt="<?php echo _('Sidebar Image'); ?>" /></p>
+									<p><img src="<?php echo $image_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" /></p>
 									<p><a href="/ajax/website/sidebar/remove-attachment/?_nonce=<?php echo nonce::create('remove-attachment'); ?>&amp;waid=<?php echo $a['website_attachment_id']; ?>&amp;t=dAttachment_<?php echo $a['website_attachment_id']; ?>&amp;si=1" id="aRemove<?php echo $a['website_attachment_id']; ?>" title="<?php echo _('Remove Image'); ?>" ajax="1" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a></p>
 									<p><input type="text" class="tb" name="extra" id="tSidebarImage<?php echo $a['website_attachment_id']; ?>" tmpval="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a['extra'] ) ) ? 'http://' : $a['extra']; ?>" /></p>
 									<p id="pTempSidebarImage<?php echo $a['website_attachment_id']; ?>" class="success hidden"><?php echo _('Your Sidebar Image link has been successfully updated.'); ?></p>
@@ -190,6 +197,14 @@ get_header();
 				break;
 				
 				case 'video':
+                     if ( stristr( $a['value'], 'http:' ) ) {
+                        $video_url = $a['value'];
+                    } else {
+                        $video_url = 'http://';
+                        $video_url .= ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '';
+                        $video_url .= $user['website']['domain'] . $a['value'];
+                    }
+
 					$h2 = _('Video');
 					$content_id = 'dVideoContent';
 					$placerholder = '<img src="/images/placeholders/354x235.png" width="354" height="235" alt="' . _('Placeholder') . '" />';
@@ -197,7 +212,7 @@ get_header();
 					$key = substr( substr( md5( DOMAIN . '17e972798ee5066d58c' ), 11, 30 ), 0, -2 );
 					
 					$value = '<div id="player" style="width:239px; height:213px; margin:0 auto"></div>';
-					
+
 					add_footer('
 					<script type="text/javascript" language="javascript">
 						head.js( "/js2/?f=flowplayer", function() {
@@ -205,7 +220,7 @@ get_header();
 								key: \'' . $key . '\',
 								playlist: [
 									{
-										url: \'http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . $a['value'] . "',
+										url: \'' . $video_url . "',
 										autoPlay: false, 
 										autoBuffering: true
 									}

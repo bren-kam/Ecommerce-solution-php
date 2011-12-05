@@ -90,7 +90,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			$("#dPreviewTemplate").hide();
 			
 			var editorHTML = $("#hTemplateDescription").val(), iItemName = $("#hProductName").val(), iItemStoreName = $("#hStoreName").val(), iItemStoreLogo = $("#hStoreLogo").val(), iItemCategory = $("#hProductCategoryName").val();
-			var iItemBrand = $("#hProductBrandName").val(), iItemProductDescription = $("#hProductDescription").html(), iItemSpecs = '', iItemSKU = $("#hProductSKU").val();
+			var iItemBrand = $("#hProductBrandName").val(), iItemProductDescription = $("#hProductDescription").val(), iItemSpecs = '', iItemSKU = $("#hProductSKU").val();
 			var storeURL = $('#hStoreURL').val();
 			
 			// Set the text area, so it submits properly
@@ -137,9 +137,9 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			}
 			
 			// Set the text area, so it submits properly
-			$("#hCraigslistAdDescription").val( $("#taDescription").html() );
+			$("#hCraigslistAdDescription").val( $("#taDescription").val() );
 			
-			$('#tCraigslistPublishTitle').val( $("#hTemplateTitle").val() );
+			$('#tCraigslistPublishTitle').val( $("#tTitle").val() );
 			$("#taCraigslistPublish").html( htmlToText( content ) );
 			
 			$("#dGenerateHTML").show();
@@ -166,7 +166,8 @@ function checkAdStatus(){
 		$.post(  '/ajax/craigslist/get/', { '_nonce' : $('#_nonce').val(), 'craigslist_ad_id' : craigslistAdId },
 		   function( result ) {
 				if( result['success'] ) {
-					selectProduct();
+					$.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'pid' : result['results']['product_id'] }, ajaxResponse, 'json' );
+
 				} else {
 				}
 			}, 
@@ -236,12 +237,11 @@ function refreshPreview() {
 	var storeURL = $('#hStoreURL').val();
 	var category = $("#hProductCategoryName").val();
 	var brand = $("#hProductBrandName").val();
-	var product_description = $("#hProductDescription").html();
+	var product_description = $("#hProductDescription").val();
 	var product_specs = ""; // $("").val();
 	
 	var sku = $("#hProductSKU").val();
 	
-
 	//get the contents of the tinyMCE editor and replace tags with actual stuff.
 	var newContent = CKEDITOR.instances.taDescription.getData();
 	newContent = newContent.replace( /\[Brand\]/gi, brand );

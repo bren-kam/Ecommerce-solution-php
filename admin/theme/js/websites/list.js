@@ -14,10 +14,7 @@ jQuery( postLoad );
  */
 function postLoad( $ ) {
 	cache = { 'domain' : {}, 'store_name' : {}, 'title' : {} };
-	
-	// Create tmp values
-	$('#tAutoComplete').tmpVal( '#929292', '#000' );
-	
+
 	// Create autocomplete
 	$('#tAutoComplete').autocomplete({
 		minLength: 1,

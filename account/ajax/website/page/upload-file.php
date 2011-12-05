@@ -40,11 +40,15 @@ $ajax->ok( move_uploaded_file( $_FILES['Filedata']['tmp_name'], $file_path ), _(
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $file_path, $file_name, $user['website']['website_id'], 'mm/' ), _('An error occurred while trying to upload your file to the website. Please refresh the page and try again') );
 
-// Delcare variables
+// Declare variables
 $upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id'] . '/mm/' . $file_name;
 
 // Add file to database
 $ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred while trying to add file to your website. Please refresh the page and try again.') );
+
+// Delete the file
+if ( is_file( $file_path ) )
+    unlink( $file_path );
 
 // If they don't have any files, remove the message that is sitting there
 jQuery('#ulUploadFile li.no-files')->remove();

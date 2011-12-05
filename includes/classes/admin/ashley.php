@@ -26,7 +26,7 @@ class Ashley extends Base_Class {
 		$this->file = new Files();
 		
 	}
-	 
+
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
 	 * 
@@ -249,7 +249,7 @@ class Ashley extends Base_Class {
 				$message .= "\n\n\n";
 			}
 			
-			mail( 'david@greysuitretail.com, rafferty@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
+			mail( 'david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
 		}
 	}
 	

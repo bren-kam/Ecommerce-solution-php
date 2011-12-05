@@ -212,7 +212,14 @@ class Craigslist extends Base_Class {
 	 */
 	public function copy( $craigslist_ad_id ) {
 		$ad = $this->db->prepare( "SELECT `craigslist_template_id`, `product_id`, `website_id`, `title`, `text`, `craigslist_city_id`, `craigslist_category_id`, `craigslist_district_id` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ?", 'i', $craigslist_ad_id )->get_row('', ARRAY_A);
-		$this->db->insert( 'craigslist_ads', array( 'craigslist_template_id' => $ad['craigslist_template_id'], 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m=d H:i:s", time() ) ), 'iiissiiis' );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist details.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        $this->db->insert( 'craigslist_ads', array( 'craigslist_template_id' => $ad['craigslist_template_id'], 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m-d H:i:s", time() ) ), 'iiissiiis' );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -257,6 +264,35 @@ class Craigslist extends Base_Class {
 		}
 		return $result;
 	}
+
+    /**
+     * Download Craigslist
+     *
+     * @return array
+     */
+    public function download() {
+        global $user;
+
+        // Type Juggling
+        $website_id = $user['website']['website_id'];
+
+        $craigslist_ads = $this->db->get_results( "SELECT a.`title`, a.`text`, b.`description`, b.`name`,b.`sku`, c.`category_id`, d.`name` AS category, e.`name` AS brand, CONCAT( 'http://', g.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', f.`image` ) AS image FROM `craigslist_ads` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_categories` AS c ON ( a.`product_id` = c.`product_id`) LEFT JOIN `categories` AS d ON ( c.`category_id` = d.`category_id` ) LEFT JOIN `brands` AS e ON ( b.`brand_id` = e.`brand_id` ) LEFT JOIN `product_images` AS f ON ( b.`product_id` = f.`product_id` ) LEFT JOIN `industries` AS g ON ( b.`industry_id` = g.`industry_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND a.`product_id` <> 0 AND f.`sequence` = 0", ARRAY_A );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get Craigslist Ads.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        $c = new Categories();
+
+        foreach( $craigslist_ads as &$cad ) {
+            $category = $c->get_top( $cad['category_id'] );
+            $cad['top_category'] = $category['name'];
+        }
+
+        return $craigslist_ads;
+    }
 	
 	/**
 	 * Report an error
