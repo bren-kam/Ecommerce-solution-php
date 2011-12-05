@@ -889,49 +889,103 @@ class Websites extends Base_Class {
 	 *
 	 * @param bool $live
 	 */
-	public function upgrade_websites( $live = 0 ) {
-		// Typecast
-		$live = (int) $live;
-		
+	/**
+	 * Updates all installed websites
+	 *
+	 * @param bool $live
+	 */
+	/**
+	 * Updates all installed websites
+	 */
+	public function upgrade_websites() {
+        // We want to make sure there are no errors
+        error_reporting( E_ALL );
+
+        // Decide which websites should never be updated
 		$omit_websites = array(
 			96 // Testing
-			, 182
 		);
-		
+
+        // Get all Subversion information
 		$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r --no-auth-cache';
 		$svn['repo_url'] = 'https://svn.codespaces.com/imagineretailer/system';
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
-		
-		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> ''", ARRAY_A );
-		
+
+        // Grab al the websites
+		$websites = $this->db->get_results( "SELECT `website_id`, `ftp_host`, `ftp_username`, `ftp_password`, `theme`, `version` FROM `websites` WHERE `version` <> '0' AND `ftp_host` <> '' AND `ftp_username` <> '' AND `ftp_password` <> ''", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get websites for upgrading.', __LINE__, __METHOD__ );
 			return false;
 		}
 
+        // Establish SSH connection
 		$connection = ssh2_connect( '199.204.138.145', 22 );
         if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
-            continue;
-        
+            return;
+
+        // Get the latest subversion system
 		$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags' . ' | tail -n 1 | tr -d "/"' ) );
-		
+
+        // Loop through each website
 		foreach ( $websites as $w ) {
-			if ( in_array( $w['website_id'], $omit_websites ) || version_compare( $w['version'], $system_version, '>=' ) )
+			// Make sure it's not a website we are supposed to omit
+            if ( in_array( $w['website_id'], $omit_websites ) )
 				continue;
-			
+
+            // Get the username of this website
 			$username = security::decrypt( base64_decode( $w['ftp_username'] ), ENCRYPTION_KEY );
 
-			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
+            // Echo it so if there are problems we can see which one is causing the issues
 			echo $username . "<br />\n";
 
-			$this->update_website_version( $system_version, $w['website_id'] );
+            // Update the website
+			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
 
+            // If it failed to update it means that SSH connection probably failed
+			if ( !$stream ) {
+				// Reestablish SSH Connection
+                $connection = ssh2_connect( '199.204.138.145', 22 );
+
+				if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+					return false;
+
+                // Try to update again
+				$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
+
+                // If it still failed, stop looping through so we don't update a website that shouldn't be updated.
+				if ( !$stream )
+					break;
+			}
+
+            // Make sure all the new files have the right ownership
+			$stream = ssh2_exec( $connection, "chown -R $username:$username /home/$username/public_html/*" );
+
+            // If it failed to update it means that SSH connection probably failed
+			if ( !$stream ) {
+				// Reestablish SSH Connection
+                $connection = ssh2_connect( '199.204.138.145', 22 );
+
+				if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+					return;
+
+                // Try to change ownership again
+				$stream = ssh2_exec( $connection, "chown -R $username:$username /home/$username/public_html/*" );
+
+                // If it still failed, stop looping through so we don't update a website that shouldn't be updated.
+				if ( !$stream )
+					break;
+			}
+
+            // Update the website version
+			$this->update_website_version( $system_version, $w['website_id'] );
 		}
-		
-		return true;
-	}
+
+        // Return the success
+        return true;
+    }
 	
 	/**
 	 * Deletes a website setting

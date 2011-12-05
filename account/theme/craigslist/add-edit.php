@@ -18,10 +18,10 @@ $form = $_POST;
 if( $form ) {
 	$publish = ( $form['hPublishConfirm'] == '1' ) ? true : false;
 	if( $form['hCraigslistAdId'] != '' ) {
-		$result = $c->update( $form['hCraigslistAdId'], $form['hTemplateID'], $form['hProductID'], $user['website']['website_id'], $form['sChooseDays'], $form['tTitle'], $form['hCraigslistAdDescription'], 1, $publish );
+		$result = $c->update( $form['hCraigslistAdId'], $form['hTemplateID'], $form['hProductID'], $user['website']['website_id'], $form['sChooseDays'], stripslashes( $form['tTitle'] ), stripslashes( $form['hCraigslistAdDescription'] ), 1, $publish );
 		url::redirect('/craigslist/?m=2');
 	} else {
-		$result = $c->create( $form['hTemplateID'], $form['hProductID'], $user['website']['website_id'], $form['sChooseDays'], $form['tTitle'], $form['hCraigslistAdDescription'], 1, $publish );
+		$result = $c->create( $form['hTemplateID'], $form['hProductID'], $user['website']['website_id'], $form['sChooseDays'], stripslashes( $form['tTitle'] ), stripslashes( $form['hCraigslistAdDescription'] ), 1, $publish );
 		url::redirect('/craigslist/?m=1');
 	}
 }

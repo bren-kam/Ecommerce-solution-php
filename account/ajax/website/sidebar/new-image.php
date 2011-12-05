@@ -12,44 +12,46 @@ $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 // Get the file extension
 $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
 
+$file_name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
+$image_name = "$file_name.$file_extension";
+
+$dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
+
+if ( !is_dir( $dir ) )
+	mkdir( $dir, 0777, true );
+
+$file_path = $dir . $image_name;
+
+// User is blank, must fill website
 global $user;
 
 // Instantiate classes
 $w = new Websites;
+$wa = new Website_Attachments;
+$wf = new Website_Files;
+$f = new Files;
 
+// Fill the global $user['website']
 $user['website'] = $w->get_website( $_POST['wid'] );
 
-// Instantiate other classes now that ther user['website'] is in place
-$wa = new Website_Attachments;
-$ftp = new FTP( (int) $_POST['wid'] );
-
-$name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
-
-// Set variables
-$image_name = "$name.$file_extension";
-$upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
-
-// Directory needs to exist
-if ( !is_dir( $upload_dir ) )
-	mkdir( $upload_dir, 0777, true );
-
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, 1000, 1000 ), _('An error occurred while trying to resize your image.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $file_name, 1000, 1000 ), _('An error occurred while trying to resize your image.') );
 
-// Get our local directory
-$local_file_path = $upload_dir . $image_name;
+// Transfer file to Amazon
+$ajax->ok( $f->upload_file( $file_path, $image_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your image1. Please refresh the page and try again') );
 
-// Add it to their site
-$ajax->ok( $ftp->add( $local_file_path, 'images/' ), _('An error occurred while trying to upload your sidebar image. Please refresh the page and try again.') );
-
-// Create the upload url
-$upload_url = '/custom/uploads/images/' . $image_name;
+// Declare variables
+$upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id'] . '/sidebar/' . $image_name;
 
 // Set the website data, if successful, delete the local file
-$ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'sidebar-image', $upload_url ), _('An error occurred while trying to upload your image. Please refresh the page and try again.') );
+$ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'sidebar-image', $upload_url ), _('An error occurred while trying to upload your image3. Please refresh the page and try again.') );
+
+// Add file to database
+$ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred while trying to add the image to your website2. Please refresh the page and try again.') );
 
 // Delete the file
-unlink( $local_file_path );
+if ( is_file( $file_path ) )
+    unlink( $file_path );
 		
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '">';
 $contact_box .= '<h2>' . _('Sidebar Image') . '</h2>';
@@ -57,7 +59,7 @@ $contact_box .= '<a href="/ajax/website/sidebar/update-status/?_nonce=' . nonce:
 $contact_box .= '<div id="dSidebarImage' . $website_attachment_id . '"><br />';
 $contact_box .= '<form action="/ajax/website/sidebar/update-extra/" method="post" ajax="1">';
 $contact_box .= '<div align="center">';
-$contact_box .= '<p><img src="http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . $upload_url . '" alt="' . _('Sidebar Image') . '" /></p>';
+$contact_box .= '<p><img src="' . $upload_url . '" alt="' . _('Sidebar Image') . '" /></p>';
 $contact_box .= '<p><a href="/ajax/website/sidebar/remove-attachment/?_nonce=' . nonce::create('remove-attachment') . '&amp;waid=' . $website_attachment_id . '&amp;t=dAttachment_' . $website_attachment_id . '&amp;si=1" id="aRemove' . $website_attachment_id . '" title="' . _('Remove Image') . '" ajax="1" confirm="' . _('Are you sure you want to remove this sidebar element?') . '">' . _('Remove') . '</a></p>';
 $contact_box .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $website_attachment_id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
 $contact_box .= '<p id="pTempSidebarImage' . $website_attachment_id . '" class="success hidden">' . _('Your Sidebar Image link has been successfully updated.') . '</p><br />';

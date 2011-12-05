@@ -23,7 +23,7 @@
 	<a href="/email-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>
 	<?php if ( isset( $autoresponders ) ) { ?>
 		<a href="/email-marketing/autoresponders/" title="<?php echo _('View Autoresponders'); ?>" class="sub<?php if ( isset( $view_autoresponders ) ) echo ' selected'; ?>"><?php echo _('View'); ?></a>
-		<a href="/email-marketing/autoresponders/add-edit/" title="<?php echo _('Add Autoresponder'); ?>" class="sub<?php if ( isset( $add_edit_autoresponder ) ) echo ' selected'; ?>"><?php echo _('>Add'); ?></a>
+		<a href="/email-marketing/autoresponders/add-edit/" title="<?php echo _('Add Autoresponder'); ?>" class="sub<?php if ( isset( $add_edit_autoresponder ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 	
 	<a href="/email-marketing/settings/" title="<?php echo _('Settings'); ?>" class="top<?php if ( isset( $settings ) ) echo ' selected'; ?>"><?php echo _('Settings'); ?></a>

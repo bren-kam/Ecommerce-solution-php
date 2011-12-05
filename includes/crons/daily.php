@@ -19,7 +19,7 @@ if ( 0 == $row['count'] ) {
 		"Reply-to: Grey Suit Retail <noreply@greysuitretail.com>" . "\r\n" .
 		"X-Mailer: PHP/" . phpversion();
 
-	mail( 'kerry@studio98.com', 'Ashley Feed - No Update', 'There has been no update in the Ashley Feed for 3 days. Please investigate.', $headers );
+	mail( 'kerry@studio98.com, rafferty@studio98.com, david@greysuitretail.com', 'Ashley Feed - No Update', 'There has been no update in the Ashley Feed for 3 days. Please investigate.', $headers );
 }
 
 // Remove unnecessary analytics data

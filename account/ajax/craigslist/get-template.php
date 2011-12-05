@@ -45,11 +45,11 @@ $images_html = '';
 
 if ( is_array( $images ) )
 foreach ( $images as $i ) {
-	$images_html .= preg_replace( '/\[Photo\]/', '<img src="' . $i . '" class="hiddenImage" />', $html, 1);
+	$images_html .= '<img src="' . $i . '" class="hiddenImage" />';
 	$html = preg_replace( '/\[Photo\]/', '<img src="' . $i . '" />', $html, 1);
 }
 
-//jQuery('#dCraigslistPreview')->html( $html );
+jQuery('#dCraigslistPreview')->html( $html );
 jQuery('#hTemplateID')->val( $template['craigslist_template_id'] );
 jQuery('#hTemplateTitle, #tTitle')->val( str_replace( $search, $replace, $template['title'] ) );
 jQuery('#hTemplateDescription')->val( $template['description'] );

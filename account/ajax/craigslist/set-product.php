@@ -15,7 +15,7 @@ $p = new Products;
 $ajax->ok( $product = $p->get_product( $_POST['pid'] ), _('Failed to get product. Please refresh the page and try again.') );
 $ajax->ok( $images = $p->get_product_image_urls( $_POST['pid'] ), _('Failed to get product images. Please refresh the page and try again.') );
 
-jQuery('#hProductDescription')->html( $product['description'] );
+jQuery('#hProductDescription')->val( $product['description'] );
 jQuery('#hProductName')->val( $product['name'] );
 jQuery('#hProductCategoryID')->val( $product['category_id'] );
 jQuery('#hProductId')->val( $product['product_id'] );

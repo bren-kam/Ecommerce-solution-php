@@ -14,7 +14,7 @@ if ( !$user )
 unset( $_SESSION['websites'] );
 
 css( 'data-tables/TableTools', 'data-tables/ui', 'websites/list' );
-javascript( 'jquery', 'jquery.ui', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard', 'data-tables/jquery.tableTools', 'jquery.tmp-val', 'websites/list' );
+javascript( 'jquery', 'jquery.ui', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard', 'data-tables/jquery.tableTools', 'websites/list' );
 
 $selected = 'websites';
 $title = _('Websites') . ' | ' . TITLE;
@@ -57,7 +57,7 @@ get_header();
 									<option value="store_name"><?php echo _('Store Name'); ?></option>
 								</select>
 							</td>
-							<td width="245" valign="top"><input type="text" name="tAutoComplete" id="tAutoComplete" value="<?php echo _('Enter Website Name...'); ?>" style="height:17px; padding: 1px 0 0 2px; width: 100%;" /></td>
+							<td width="245" valign="top"><input type="text" name="tAutoComplete" id="tAutoComplete" tmpval="<?php echo _('Enter Website Name...'); ?>" style="height:17px; padding: 1px 0 0 2px; width: 100%;" /></td>
 							<td colspan="2">&nbsp;</td>
 							<td id="tdSearch"><a href="javascript:;" id="aResetSearch" title="<?php echo _('Reset Search'); ?>" style="margin-right:14px"><?php echo _('Reset Search'); ?></a> <a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
 						</tr>
