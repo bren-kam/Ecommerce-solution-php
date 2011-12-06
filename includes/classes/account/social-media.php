@@ -723,6 +723,63 @@ class Social_Media extends Base_Class {
 		return $analytics;
 	}
 	
+	/***** AUTO POSTING *****/
+	
+	/**
+	 * Create Auto Posting
+	 *
+	 * @return string
+	 */
+	public function create_auto_posting() {
+		global $user;
+		
+		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		
+		$this->db->insert( 'sm_auto_posting', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create share and save.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return $key;
+	}
+	
+	/**
+	 * Get Auto Posting
+	 *
+	 * @return array
+	 */
+	public function get_auto_posting() {
+		global $user;
+		
+		// Type Juggling
+		$website_id = (int) $user['website']['website_id'];
+		
+		// Get the auto posting
+		$auto_posting = $this->db->get_row( "SELECT `fb_user_id`, `key`, `access_token` FROM `sm_auto_posting` WHERE `website_id` = $website_id", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get the auto posting.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// We need to grab the pages
+		if ( $auto_posting ) {
+			$auto_posting['pages'] = $this->db->get_col( 'SELECT `fb_page_id` FROM `sm_auto_posting_pages` WHERE `fb_user_id` = ' . (int) $auto_posting['fb_user_id'] );
+		
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to get the auto posting pages.', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+		
+		return $auto_posting;
+	}
+	
 	/**
 	 * Report an error
 	 *
