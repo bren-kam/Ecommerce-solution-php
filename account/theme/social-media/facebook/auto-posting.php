@@ -37,8 +37,14 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
 	$success = $fb->api( $_POST['sFBPageID'] . '/feed', 'POST', array( 'message' => $_POST['taPost'] ) );
 }
 
-css( 'jquery.uploadify' );
-javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'website/page' );
+//$timezone = $e->get_setting('timezone');
+$timezone = 0;
+
+css( 'jquery.uploadify', 'jquery.timepicker' );
+javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/auto-posting' );
+
+// Load the jQuery UI CSS
+add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
 $selected = "social_media";
 $title = _('Auto Posting') . ' | ' . _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
@@ -85,8 +91,14 @@ get_header();
 							</td>
 						</tr>
 						<tr>
-							<td><label for="taPost"><?php echo _('Post'); ?></label></td>
-							<td valign="top"><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
+							<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
+							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
+							<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
+							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+						</tr>
+						<tr>
+							<td class="top"><label for="taPost"><?php echo _('Post'); ?></label></td>
+							<td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
 						</tr>
 						<tr><td colspan="2">&nbsp;</td></tr>
 						<tr>
