@@ -84,6 +84,8 @@ get_header();
 								<?php 
 								if ( is_array( $pages ) )
 								foreach ( $pages as $p ) {
+                                    if ( 'Application' = $p['type'] )
+                                        continue;
 								?>
 									<option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
 								<?php } ?>

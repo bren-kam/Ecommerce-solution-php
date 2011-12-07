@@ -49,7 +49,7 @@ get_header('facebook/');
 ?>
 
 <div id="content">
-	<h1><?php echo _('Online Platform - Share and Save'); ?></h1>
+	<h1><?php echo _('Online Platform - Auto Posting'); ?></h1>
 	<?php if( $success && $website ) { ?>
 	<div class="success">
 		<p><?php echo _('Your information has been successfully updated!'); ?></p>

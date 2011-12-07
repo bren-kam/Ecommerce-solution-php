@@ -111,7 +111,9 @@ class Files extends Base_Class {
 		$attachment_name = format::slug( str_replace( $file_extension, '', $attachment_name ) ) . '.' . $file_extension;
 		
 		if ( ( $ticket_upload_id = $this->add_upload( $directory . $attachment_name ) ) && $this->s3->putObjectFile( $attachment_path, $this->bucket, 'attachments/' . $directory . $attachment_name, S3::ACL_PUBLIC_READ ) ) {
-			unlink( $image );
+			if ( is_file( $attachment_path ) )
+                unlink( $attachment_path );
+            
 			return array( $ticket_upload_id, $attachment_name );
 		} else {
 			$this->err( "Failed to upload attachment.\nDirectory: $directory\nAttachment Name: $attachment_name\nBucket: " . $this->bucket, __LINE__, __METHOD__ );

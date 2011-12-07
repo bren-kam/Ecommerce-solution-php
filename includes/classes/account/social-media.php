@@ -766,17 +766,6 @@ class Social_Media extends Base_Class {
 			return false;
 		}
 		
-		// We need to grab the pages
-		if ( $auto_posting ) {
-			$auto_posting['pages'] = $this->db->get_col( 'SELECT `fb_page_id` FROM `sm_auto_posting_pages` WHERE `fb_user_id` = ' . (int) $auto_posting['fb_user_id'] );
-		
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get the auto posting pages.', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-		
 		return $auto_posting;
 	}
 	
