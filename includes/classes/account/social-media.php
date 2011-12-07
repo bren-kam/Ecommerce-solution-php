@@ -758,7 +758,7 @@ class Social_Media extends Base_Class {
 		$website_id = (int) $user['website']['website_id'];
 		
 		// Get the auto posting
-		$auto_posting = $this->db->get_row( "SELECT `fb_user_id`, `key`, `access_token` FROM `sm_auto_posting` WHERE `website_id` = $website_id", ARRAY_A );
+		$auto_posting = $this->db->get_row( "SELECT `fb_user_id`, `fb_page_id`, `key`, `access_token` FROM `sm_auto_posting` WHERE `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -768,7 +768,32 @@ class Social_Media extends Base_Class {
 		
 		return $auto_posting;
 	}
-	
+
+	/**
+	 * Get Auto Posting
+	 *
+	 * @param string $access_token
+	 * @param string $post
+	 * @param string $link
+	 * @param string $date_posted
+	 * @param int $status (optional|0)
+	 * @return bool
+	 */
+	public function create_auto_posting_post( $access_token, $post, $link, $date_posted, $status = 0 ) {
+		global $user;
+		
+		// Create the auto-posting post
+		$this->db->insert( 'sm_auto_posting_posts', array( 'website_id' => $user['website']['website_id'], 'access_token' => $access_token, 'post' => $post, 'link' => $link, 'status' => $status, 'date_posted' => $date_posted, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssiss' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create the auto-posting post.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+
 	/**
 	 * Report an error
 	 *
@@ -777,6 +802,7 @@ class Social_Media extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

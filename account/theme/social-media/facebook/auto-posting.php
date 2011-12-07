@@ -15,9 +15,11 @@ if ( !$user )
 $sm = new Social_Media;
 $v = new Validator;
 $fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3' );
+$w = new Websites;
 
 // Get variables
 $auto_posting = $sm->get_auto_posting();
+$timezone = $w->get_setting( 'timezone' );
 
 if ( $auto_posting ) {
 	$fb->setAccessToken( $auto_posting['access_token'] );
@@ -30,15 +32,46 @@ if ( $auto_posting ) {
 }
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) ) {
-	$fb->setAccessToken( $pages[$_POST['sFBPageID']]['access_token'] );
-	
-	// Information:
-	// http://developers.facebook.com/docs/reference/api/page/#posts
-	$success = $fb->api( $_POST['sFBPageID'] . '/feed', 'POST', array( 'message' => $_POST['taPost'] ) );
-}
+	$date_posted = $_POST['tDate'];
 
-//$timezone = $e->get_setting('timezone');
-$timezone = 0;
+	// Turn it into machine-readable time
+	if ( !empty( $_POST['tTime'] ) ) {
+		list( $time, $am_pm ) = explode( ' ', $_POST['tTime'] );
+		
+		if ( 'pm' == strtolower( $am_pm ) ) {
+			list( $hour, $minute ) = explode( ':', $time );
+			
+			$date_posted .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+		} else {
+			$date_posted .= ' ' . $time . ':00';
+		}
+	}
+	
+	// Adjust for time zone
+	$date_posted = date( 'Y-m-d H:i:s', strtotime( $date_posted ) - (  $timezone * 3600 ) - 18000 );
+	
+	// Get link
+	preg_match( '/(?:(http|ftp|https):\/\/|www\.)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/', $_POST['taPost'], $matches );
+	
+	if ( !empty( $matches[0] ) ) {
+		$link = ( stristr( $matches[0], 'http://' ) ) ? $matches[0] : 'http://' . $matches[0];
+	} else {
+		$link = '';
+	}
+	
+	if ( time() >= strtotime( $date_posted ) ) {
+		$fb->setAccessToken( $pages[$auto_posting['fb_page_id']]['access_token'] );
+		
+		// Information:
+		// http://developers.facebook.com/docs/reference/api/page/#posts
+		$fb->api( $auto_posting['fb_page_id'] . '/feed', 'POST', array( 'message' => $_POST['taPost'], 'link' => $link ) );
+		
+		$success = $sm->create_auto_posting_post( $pages[$auto_posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $date_posted, 1 );
+	} else {
+		$success = $sm->create_auto_posting_post( $pages[$auto_posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $date_posted );
+	}
+	
+}
 
 css( 'jquery.uploadify', 'jquery.timepicker' );
 javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/auto-posting' );
@@ -78,29 +111,18 @@ get_header();
 				<form action="" method="post" name="fFBPost">
 					<table>
 						<tr>
-							<td><label for="sFBPageID"><?php echo _('Page'); ?></label></td>
-							<td>
-								<select name="sFBPageID" id="sFBPageID">
-								<?php 
-								if ( is_array( $pages ) )
-								foreach ( $pages as $p ) {
-                                    if ( 'Application' = $p['type'] )
-                                        continue;
-								?>
-									<option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
-								<?php } ?>
-								</select>
-							</td>
+							<td><strong><?php echo _('Page'); ?>:</strong></td>
+							<td><?php echo $pages[$auto_posting['fb_page_id']]['name']; ?></td>
+						</tr>
+						<tr>
+							<td class="top"><label for="taPost"><?php echo _('Post'); ?>:</label></td>
+							<td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
 						</tr>
 						<tr>
 							<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
 							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
 							<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
 							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
-						</tr>
-						<tr>
-							<td class="top"><label for="taPost"><?php echo _('Post'); ?></label></td>
-							<td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
 						</tr>
 						<tr><td colspan="2">&nbsp;</td></tr>
 						<tr>

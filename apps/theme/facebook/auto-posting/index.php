@@ -17,16 +17,20 @@ $user = $fb->user;
 // Set Validation
 $v->add_validation( 'tFBConnectionKey', 'req', _('The "Facebook Connection Key" field is required') );
 
-// See if we're connected
-$connected = $ap->connected( $user );
-
 // Make sure it's a valid request
 if ( nonce::verify( $_POST['_nonce'], 'connect-to-field' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
 	if( empty( $errs ) )
-		$success = $ap->connect( $user, $_POST['tFBConnectionKey'], $fb->getAccessToken() );
+		$success = $ap->connect( $user, $_POST['sFBPageID'], $_POST['tFBConnectionKey'], $fb->getAccessToken() );
+}
+
+// See if we're connected
+$connected = $ap->connected( $user );
+
+if ( !$connected ) {
+	$accounts = $fb->api( "/$user/accounts" );
 }
 
 add_footer('<div id="fb-root"></div>
@@ -67,6 +71,21 @@ get_header('facebook/');
 			<tr>
 				<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
 				<td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="" /></td>
+			</tr>
+			<tr>
+				<td><label for="sFBPageID"><?php echo _('Facebook Page'); ?>:</label></td>
+				<td>
+					<select name="sFBPageID" id="sFBPageID">
+						<?php
+						if ( is_array( $accounts['data'] ) )
+						foreach ( $accounts['data'] as $page ) {
+							if ( 'Application' == $page['category'] )
+								continue;
+							?>
+							<option value="<?php echo $page['id']; ?>"><?php echo $page['name']; ?></option>
+						<?php } ?>
+					</select>
+				</td>
 			</tr>
 			<tr>
 				<td>&nbsp;</td>

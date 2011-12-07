@@ -26,13 +26,14 @@ class Auto_Posting extends Base_Class {
 	 * Connect a website
 	 *
 	 * @param int $fb_user_id
+	 * @param int $fb_page_id
 	 * @param string $key
 	 * @param string $access_token
 	 * @return array
 	 */
-	public function connect( $fb_user_id, $key, $access_token ) {
+	public function connect( $fb_user_id, $fb_page_id, $key, $access_token ) {
 		// Connect the websites
-		$this->db->update( 'sm_auto_posting', array( 'fb_user_id' => $fb_user_id, 'access_token' => $access_token ), array( 'key' => $key ), 'ss', 's' );
+		$this->db->update( 'sm_auto_posting', array( 'fb_user_id' => $fb_user_id, 'fb_page_id' => $fb_page_id, 'access_token' => $access_token ), array( 'key' => $key ), 'iis', 's' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

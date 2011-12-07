@@ -390,6 +390,26 @@ class Websites extends Base_Class {
 	}
 	
 	/**
+	 * Get Website Setting
+	 *
+	 * @param string $key
+	 * @return string
+	 */
+	public function get_setting( $key ) {
+		global $user;
+		
+		$value = $this->db->prepare( 'SELECT `value` FROM `website_settings` WHERE `key` = ? AND `website_id` = ?', 'si', $key, $user['website']['website_id'] )->get_var('');
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website setting.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return $value;
+	}
+	
+	/**
 	 * Creates a setting
 	 * 
 	 * @param string $key
@@ -500,6 +520,7 @@ class Websites extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

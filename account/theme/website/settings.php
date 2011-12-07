@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate Class
 $w = new Websites;
 
-$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-loading-color' );
+$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-loading-color', 'timezone' );
 		
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -79,6 +79,10 @@ foreach ( $settings_array as $k => &$val ) {
 		case 'banner-speed':
 			$val = 3;
 		break;
+		
+		case 'timezone':
+			$val = '';
+		break;
 	}
 	
 	$default_settings[$k] = $val;
@@ -128,6 +132,17 @@ get_header();
 				<tr>
 					<td><label for="banner-background-color"><?php echo _('Background Color'); ?>:</label></td>
 					<td><input type="text" class="tb" name="banner-background-color" id="banner-background-color" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-background-color'] : $settings['banner-background-color']; ?>" maxlength="6" /></td>
+				</tr>
+				<tr>
+					<td><label for="timezone"><?php echo _('Timezone'); ?>:</label></td>
+					<td>
+						<select name="timezone" id="timezone">
+							<?php
+							$timezone = ( !$success && !empty( $_POST['timezone'] ) ) ? $_POST['timezone'] : $settings['timezone'];
+							data::timezones( true, $timezone );
+							?>
+						</select>
+					</td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
