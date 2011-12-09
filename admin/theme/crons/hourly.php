@@ -25,7 +25,7 @@ if ( is_array( $posts ) ) {
 		
 		// Information:
 		// http://developers.facebook.com/docs/reference/api/page/#posts
-		if ( $fb->api( $p['fb_page_id'] . '/feed', 'POST', array( 'message' => $p['post'], 'link' => $p['link'] ) )
+		if ( $fb->api( $p['fb_page_id'] . '/feed', 'POST', array( 'message' => $p['post'], 'link' => $p['link'] ) ) )
 			$sm_auto_posting_post_ids[] = $p['sm_auto_posting_post_id'];
 	}
 	

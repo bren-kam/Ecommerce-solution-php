@@ -29,9 +29,12 @@ if ( nonce::verify( $_POST['_nonce'], 'connect-to-field' ) ) {
 // See if we're connected
 $connected = $ap->connected( $user );
 
-if ( !$connected ) {
-	$accounts = $fb->api( "/$user/accounts" );
-}
+// Connected pages
+$pages = ( $connected ) ? $ap->get_connected_pages( $user ) : array();
+	
+
+// Get the accounts of the user
+$accounts = $fb->api( "/$user/accounts" );
 
 add_footer('<div id="fb-root"></div>
 <script>
@@ -62,42 +65,44 @@ get_header('facebook/');
 	}
 	
 	if( isset( $errs ) )
-			echo "<p class='error'>$errs</p>";
+		echo "<p class='error'>$errs</p>";
 	
-	if( !$connected ) { 
+	if( $connected ) { 
 	?>
-		<form name="fConnect" method="post" action="/facebook/auto-posting/">
-		<table cellpadding="0" cellspacing="0">
-			<tr>
-				<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
-				<td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="" /></td>
-			</tr>
-			<tr>
-				<td><label for="sFBPageID"><?php echo _('Facebook Page'); ?>:</label></td>
-				<td>
-					<select name="sFBPageID" id="sFBPageID">
-						<?php
-						if ( is_array( $accounts['data'] ) )
-						foreach ( $accounts['data'] as $page ) {
-							if ( 'Application' == $page['category'] )
-								continue;
-							?>
-							<option value="<?php echo $page['id']; ?>"><?php echo $page['name']; ?></option>
-						<?php } ?>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
-			</tr>
-		</table>
-		<?php nonce::field('connect-to-field'); ?>
-		</form>
-	<?php } else { ?>
 		<p class="success"><?php echo _('You are connected!'); ?></p>
 		<p><?php echo _('You can now sign into your dashboard to control the posting to your pages.'); ?></p>
+		
+		<br /><br />
+		<p><?php echo _('You can connect another account with a different Facebook Connection Key.'); ?></p>
 	<?php } ?>
+	<form name="fConnect" method="post" action="/facebook/auto-posting/">
+	<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
+			<td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="" /></td>
+		</tr>
+		<tr>
+			<td><label for="sFBPageID"><?php echo _('Facebook Page'); ?>:</label></td>
+			<td>
+				<select name="sFBPageID" id="sFBPageID">
+					<?php
+					if ( is_array( $accounts['data'] ) )
+					foreach ( $accounts['data'] as $page ) {
+						if ( 'Application' == $page['category'] || in_array( $page['id'], $pages ) )
+							continue;
+						?>
+						<option value="<?php echo $page['id']; ?>"><?php echo $page['name']; ?></option>
+					<?php } ?>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
+		</tr>
+	</table>
+	<?php nonce::field('connect-to-field'); ?>
+	</form>
 </div>
 
 <?php get_footer('facebook/'); ?>

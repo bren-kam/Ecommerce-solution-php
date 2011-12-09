@@ -21,11 +21,16 @@ $w = new Websites;
 $auto_posting = $sm->get_auto_posting();
 $timezone = $w->get_setting( 'timezone' );
 
-if ( $auto_posting ) {
+// Figure out what the time is
+$now = new DateTime;
+$now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
+
+// Get the auto posting variable if it exists
+if ( 0 != $auto_posting['fb_page_id'] ) {
 	$fb->setAccessToken( $auto_posting['access_token'] );
 	$accounts = $fb->api( '/' . $auto_posting['fb_user_id'] . '/accounts' );
 	$pages = ar::assign_key( $accounts['data'], 'id' );
-} else {
+} elseif ( !$auto_posting ) {
 	$auto_posting = array(
 		'key' => $sm->create_auto_posting()
 	);
@@ -48,7 +53,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
 	}
 	
 	// Adjust for time zone
-	$date_posted = date( 'Y-m-d H:i:s', strtotime( $date_posted ) - (  $timezone * 3600 ) - 18000 );
+	$new_date_posted = new DateTime;
+	$new_date_posted->setTimestamp( strtotime( $date_posted ) - (  $timezone * 3600 ) + $now->getOffset() );
+	
+	// Make sure we don't have anything extra
+	$_POST['taPost'] = stripslashes( $_POST['taPost'] );
 	
 	// Get link
 	preg_match( '/(?:(http|ftp|https):\/\/|www\.)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/', $_POST['taPost'], $matches );
@@ -59,16 +68,16 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
 		$link = '';
 	}
 	
-	if ( time() >= strtotime( $date_posted ) ) {
+	if ( time() >= $new_date_posted->getTimestamp() ) {
 		$fb->setAccessToken( $pages[$auto_posting['fb_page_id']]['access_token'] );
 		
 		// Information:
 		// http://developers.facebook.com/docs/reference/api/page/#posts
 		$fb->api( $auto_posting['fb_page_id'] . '/feed', 'POST', array( 'message' => $_POST['taPost'], 'link' => $link ) );
 		
-		$success = $sm->create_auto_posting_post( $pages[$auto_posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $date_posted, 1 );
+		$success = $sm->create_auto_posting_post( $pages[$auto_posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $new_date_posted->format('Y-m-d H:i:s'), 1 );
 	} else {
-		$success = $sm->create_auto_posting_post( $pages[$auto_posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $date_posted );
+		$success = $sm->create_auto_posting_post( $pages[$auto_posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $new_date_posted->format('Y-m-d H:i:s') );
 	}
 	
 }
@@ -120,9 +129,9 @@ get_header();
 						</tr>
 						<tr>
 							<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
+							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? $now->format('Y-m-d') : $date; ?>" maxlength="10" /></td>
 							<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i a') : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
 						</tr>
 						<tr><td colspan="2">&nbsp;</td></tr>
 						<tr>

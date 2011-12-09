@@ -69,23 +69,23 @@ class Auto_Posting extends Base_Class {
 	/**
 	 * Get Connected Website
 	 *
-	 * @param int $fb_page_id
+	 * @param int $fb_user_id
 	 * @return array
 	 */
-	public function get_connected_website( $fb_page_id ) {
+	public function get_connected_pages( $fb_user_id ) {
 		// Type Juggling
-		$fb_page_id = (int) $fb_page_id;
+		$fb_user_id = (int) $fb_user_id;
 		
-		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, b.`key` FROM `websites` AS a LEFT JOIN `sm_share_and_save` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`fb_page_id` = $fb_page_id", ARRAY_A );
+		// See if there is a website_id associated with the user
+		$fb_page_ids = $this->db->get_col( "SELECT `fb_page_id` FROM `sm_auto_posting` WHERE `fb_user_id` = $fb_user_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get connected website.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get connected pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $website;
+		return $fb_page_ids;
 	}
 	
 	/**
@@ -96,7 +96,6 @@ class Auto_Posting extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
-     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
