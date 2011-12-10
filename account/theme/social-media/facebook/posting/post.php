@@ -96,7 +96,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Posting'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'social-media/' ); ?>
+	<?php get_sidebar( 'social-media/', 'posting' ); ?>
 	<div id="subcontent">
 		<?php if ( 0 == $posting['fb_user_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Posting application.'); ?></h2>
@@ -112,7 +112,7 @@ get_header();
 		<?php } else { ?>
 			<h2 class="title"><?php echo _('Post To Your Pages'); ?></h2>
 			<?php if ( $success ) { ?>
-				<p class="success"><?php echo _('Your message has been successfully posted to your Facebook page!'); ?></p>
+				<p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>
 			<?php
 			}
 			
