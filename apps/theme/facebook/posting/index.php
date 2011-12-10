@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Auto Posting
+ * @page Posting
  * @package Imagine Retailer
  */
 
@@ -8,7 +8,7 @@ global $user;
 
 // Instantiate Classes
 $fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3', false, array( 'scope' => 'manage_pages,offline_access,publish_stream' ) );
-$ap = new Auto_Posting;
+$p = new Posting;
 $v = new Validator;
 
 // Get User
@@ -23,14 +23,14 @@ if ( nonce::verify( $_POST['_nonce'], 'connect-to-field' ) ) {
 	
 	// if there are no errors
 	if( empty( $errs ) )
-		$success = $ap->connect( $user, $_POST['sFBPageID'], $_POST['tFBConnectionKey'], $fb->getAccessToken() );
+		$success = $p->connect( $user, $_POST['sFBPageID'], $_POST['tFBConnectionKey'], $fb->getAccessToken() );
 }
 
 // See if we're connected
-$connected = $ap->connected( $user );
+$connected = $p->connected( $user );
 
 // Connected pages
-$pages = ( $connected ) ? $ap->get_connected_pages( $user ) : array();
+$pages = ( $connected ) ? $p->get_connected_pages( $user ) : array();
 	
 
 // Get the accounts of the user
@@ -51,12 +51,12 @@ add_footer('<div id="fb-root"></div>
   }());
 </script>');
 
-$title = _('Auto Posting') . ' | ' . _('Online Platform');
+$title = _('Posting') . ' | ' . _('Online Platform');
 get_header('facebook/');
 ?>
 
 <div id="content">
-	<h1><?php echo _('Online Platform - Auto Posting'); ?></h1>
+	<h1><?php echo _('Online Platform - Posting'); ?></h1>
 	<?php if( $success && $website ) { ?>
 	<div class="success">
 		<p><?php echo _('Your information has been successfully updated!'); ?></p>
@@ -75,7 +75,7 @@ get_header('facebook/');
 		<br /><br />
 		<p><?php echo _('You can connect another account with a different Facebook Connection Key.'); ?></p>
 	<?php } ?>
-	<form name="fConnect" method="post" action="/facebook/auto-posting/">
+	<form name="fConnect" method="post" action="/facebook/posting/">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>

@@ -723,23 +723,23 @@ class Social_Media extends Base_Class {
 		return $analytics;
 	}
 	
-	/***** AUTO POSTING *****/
+	/***** POSTING *****/
 	
 	/**
-	 * Create Auto Posting
+	 * Create Posting
 	 *
 	 * @return string
 	 */
-	public function create_auto_posting() {
+	public function create_posting() {
 		global $user;
 		
 		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
 		
-		$this->db->insert( 'sm_auto_posting', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_posting', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create share and save.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to create posting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -747,30 +747,30 @@ class Social_Media extends Base_Class {
 	}
 	
 	/**
-	 * Get Auto Posting
+	 * Get Posting
 	 *
 	 * @return array
 	 */
-	public function get_auto_posting() {
+	public function get_posting() {
 		global $user;
 		
 		// Type Juggling
 		$website_id = (int) $user['website']['website_id'];
 		
-		// Get the auto posting
-		$auto_posting = $this->db->get_row( "SELECT `fb_user_id`, `fb_page_id`, `key`, `access_token` FROM `sm_auto_posting` WHERE `website_id` = $website_id", ARRAY_A );
+		// Get the posting
+		$posting = $this->db->get_row( "SELECT `fb_user_id`, `fb_page_id`, `key`, `access_token` FROM `sm_posting` WHERE `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the auto posting.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get the posting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $auto_posting;
+		return $posting;
 	}
 
 	/**
-	 * Get Auto Posting
+	 * Get Posting
 	 *
 	 * @param string $access_token
 	 * @param string $post
@@ -779,20 +779,84 @@ class Social_Media extends Base_Class {
 	 * @param int $status (optional|0)
 	 * @return bool
 	 */
-	public function create_auto_posting_post( $access_token, $post, $link, $date_posted, $status = 0 ) {
+	public function create_posting_post( $access_token, $post, $link, $date_posted, $status = 0 ) {
 		global $user;
 		
-		// Create the auto-posting post
-		$this->db->insert( 'sm_auto_posting_posts', array( 'website_id' => $user['website']['website_id'], 'access_token' => $access_token, 'post' => $post, 'link' => $link, 'status' => $status, 'date_posted' => $date_posted, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssiss' );
+		// Create the posting post
+		$this->db->insert( 'sm_posting_posts', array( 'website_id' => $user['website']['website_id'], 'access_token' => $access_token, 'post' => $post, 'link' => $link, 'status' => $status, 'date_posted' => $date_posted, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssiss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create the auto-posting post.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to create the posting post.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return true;
 	}
+
+    /**
+	 * List Posting posts
+	 *
+	 * @param array( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_posting_posts( $variables ) {
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+
+		$posts = $this->db->get_results( "SELECT `sm_posting_post_id`, `post`, `status`, `date_posted` FROM `sm_posting_posts` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list posts.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $posts;
+	}
+
+	/**
+	 * Count Posting posts
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_posting_posts( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( `sm_posting_post_id` )  FROM `sm_posting_posts` WHERE 1 $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count posting posts.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return $count;
+	}
+
+    /**
+     * Delete posting post
+     * 
+     * @param $sm_posting_post_id
+     * @return bool
+     */
+    public function delete_posting_post( $sm_posting_post_id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $sm_posting_post_id = (int) $sm_posting_post_id;
+
+        // Delete the post
+        $this->db->query( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `website_id` = $website_id AND `status` = 0" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to delete posting post.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
 
 	/**
 	 * Report an error

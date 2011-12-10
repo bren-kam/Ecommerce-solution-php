@@ -1,11 +1,11 @@
 <?php
 /**
- * Handles all the stuff for Auto Posting
+ * Handles all the stuff for Posting
  *
  * @package Imagine Retailer
  * @since 1.0
  */
-class Auto_Posting extends Base_Class {
+class Posting extends Base_Class {
 	/**
 	 * The connected website_id
 	 *
@@ -33,7 +33,7 @@ class Auto_Posting extends Base_Class {
 	 */
 	public function connect( $fb_user_id, $fb_page_id, $key, $access_token ) {
 		// Connect the websites
-		$this->db->update( 'sm_auto_posting', array( 'fb_user_id' => $fb_user_id, 'fb_page_id' => $fb_page_id, 'access_token' => $access_token ), array( 'key' => $key ), 'iis', 's' );
+		$this->db->update( 'sm_posting', array( 'fb_user_id' => $fb_user_id, 'fb_page_id' => $fb_page_id, 'access_token' => $access_token ), array( 'key' => $key ), 'iis', 's' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -55,7 +55,7 @@ class Auto_Posting extends Base_Class {
 		$fb_user_id = (int) $fb_user_id;
 		
 		// See if there is a website_id associated with the user
-		$this->website_id = $this->db->get_var( "SELECT `website_id` FROM `sm_auto_posting` WHERE `fb_user_id` = $fb_user_id" );
+		$this->website_id = $this->db->get_var( "SELECT `website_id` FROM `sm_posting` WHERE `fb_user_id` = $fb_user_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -77,7 +77,7 @@ class Auto_Posting extends Base_Class {
 		$fb_user_id = (int) $fb_user_id;
 		
 		// See if there is a website_id associated with the user
-		$fb_page_ids = $this->db->get_col( "SELECT `fb_page_id` FROM `sm_auto_posting` WHERE `fb_user_id` = $fb_user_id" );
+		$fb_page_ids = $this->db->get_col( "SELECT `fb_page_id` FROM `sm_posting` WHERE `fb_user_id` = $fb_user_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -96,6 +96,7 @@ class Auto_Posting extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

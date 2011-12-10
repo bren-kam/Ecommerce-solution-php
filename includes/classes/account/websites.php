@@ -80,17 +80,19 @@ class Websites extends Base_Class {
 	 * Updates page information
 	 *
 	 * @param int $website_page_id
+     * @param string $slug
+     * @param string $title
 	 * @param string $content
 	 * @param string $meta_title
 	 * @param string $meta_description
 	 * @param string $meta_keywords
 	 * @return bool
 	 */
-	public function update_page( $website_page_id, $content, $meta_title, $meta_description, $meta_keywords ) {
+	public function update_page( $website_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords ) {
 		global $user;
 		
 		// Update existing request
-		$this->db->update( 'website_pages', array( 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssi', 'ii' );
+		$this->db->update( 'website_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssi', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
