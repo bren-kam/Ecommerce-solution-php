@@ -24,8 +24,6 @@ $delete_post_nonce = nonce::create( 'delete-post' );
 // Create output
 if ( is_array( $posts ) )
 foreach ( $posts as $p ) {
-	$actions = ( 1 == $p['status'] ) ? '' : ;
-
     // Determine what to do based off the status
     if ( 1 == $p['status'] ) {
         $actions = '';
