@@ -169,12 +169,11 @@ get_header();
                 <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="Page Title..." />
             </div>
             <div id="dPageSlug">
-                <span style="float:right;">
-                	<a href="javascript:;" id="aCancelPageSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>&nbsp;&nbsp;
-                	<a href="javascript:;" id="aEditPageSlug" title="<?php echo _('Edit Link'); ?>" class="button round"><?php echo _('Edit'); ?></a>
-                    <a href="javascript:;" id="aSavePageSlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
-                </span>
-            	<span style="clear:right;"><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['domain']; ?>/<span id="sPageSlug"><?php echo $page['slug']; ?></span><input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb hidden" value="<?php echo $page['slug']; ?>" />/</span>
+            	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['domain']; ?>/<span id="sPageSlug"><?php echo $page['slug']; ?></span><input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb hidden" value="<?php echo $page['slug']; ?>" />/</span>
+                &nbsp;
+                <a href="javascript:;" id="aCancelPageSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
+                <a href="javascript:;" id="aEditPageSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
+                <a href="javascript:;" id="aSavePageSlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
             </div>
             <br />
             <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $page['content']; ?></textarea>
