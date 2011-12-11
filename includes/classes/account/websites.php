@@ -22,7 +22,10 @@ class Websites extends Base_Class {
 	 * @return array
 	 */
 	public function get_website( $website_id ) {
-		$website = $this->db->get_row( 'SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = ' . (int) $website_id, ARRAY_A );
+        // Type Jugglin
+        $website_id = (int) $website_id;
+
+		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id AND `status` = 1", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -257,7 +260,7 @@ class Websites extends Base_Class {
 	/**
 	 * List Pages
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param $variables array( $where, $order_by, $limit )
 	 * @return array
 	 */
 	public function list_pages( $variables ) {

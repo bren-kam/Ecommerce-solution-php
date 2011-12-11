@@ -127,7 +127,10 @@ class Websites extends Base_Class {
 	 * @return array
 	 */
 	public function get_website( $website_id ) {
-		$website = $this->db->get_row( 'SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = ' . (int) $website_id, ARRAY_A );
+        // Type Juggling
+        $website_id = (int) $website_id;
+
+		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -145,7 +148,10 @@ class Websites extends Base_Class {
 	 * @return array
 	 */
 	public function get_user_websites( $user_id ) {
-		$websites = $this->db->get_results( 'SELECT * FROM `websites` WHERE `user_id` = ' . (int) $user_id, ARRAY_A );
+        // Type Jugglin
+        $user_id = (int) $user_id;
+
+		$websites = $this->db->get_results( "SELECT * FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -180,7 +186,7 @@ class Websites extends Base_Class {
 		// Get the websites
 		// $websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		// Original version ^, version below omits counting because it's difficult to get a 100% accurate count
-		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND a.`status` = 1 AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		foreach ( $websites as &$website ){
 			$website_id = $website['website_id'];
@@ -219,7 +225,7 @@ class Websites extends Base_Class {
 		
 		// @Fix -- shouldn't have to count the results
 		// Get the website count
-		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id`", ARRAY_A ) );
+		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where AND a.`status` = 1 AND b.`status` = 1 GROUP BY a.`website_id`", ARRAY_A ) );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -672,68 +678,18 @@ class Websites extends Base_Class {
 	 * @return bool
 	 */
 	public function delete( $website_id ) {
-		global $user;
-		
 		// Typecast
 		$website_id = (int) $website_id;
-		
-		// Has to be Kerry or Casey
-		if ( !in_array( $user['user_id'], array( 1, 565 ) ) )
-			return false;
-		
-		// Delete from email section
-		$this->db->query( "DELETE FROM `emails` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `email_associations` WHERE `email_list_id` IN ( SELECT `email_list_id` FROM `email_lists` WHERE `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `email_autoresponders` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `email_lists` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `email_settings` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `email_templates` WHERE `email_template_id` IN ( SELECT `email_template_id` FROM `email_template_associations` WHERE `object_id` = $website_id AND `type` = 'website' )" );
-		
-		// Delete from Checklists
-		$this->db->query( "DELETE FROM `checklist_website_item_notes` WHERE `checklist_website_item_id` IN ( SELECT `checklist_website_item_id` FROM `checklist_website_items` WHERE `checklist_id` IN ( SELECT `checklist_id` FROM `checklists` WHERE `website_id` = $website_id ) )");
-		$this->db->query( "DELETE FROM `checklist_website_items` WHERE `checklist_id` IN ( SELECT `checklist_id` FROM `checklists` WHERE `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `checklists` WHERE `website_id` = $website_id");
-		
-		// Delete from Analytics
-		/*$this->db->query( "DELETE a.* FROM `analytics_data` AS a LEFT JOIN `websites` AS b ON ( a.`ga_profile_id` = b.`ga_profile_id` ) WHERE a.`ga_profile_id` <> 0 AND b.`website_id` = $website_id");
-		$this->db->query( "DELETE a.* FROM `analytics_visitor_pages` AS a LEFT JOIN `analytics_visitors` AS b ON ( a.`analytics_visitor_id` = b.`analytics_visitor_id` ) WHERE b.`website_id` = $website_id");
-		$this->db->query( "DELETE FROM `analytics_visitors` WHERE `website_id` = $website_id");
-		*/
 
-		// Delete from Requests
-		$this->db->query( "DELETE FROM `request_attachments` WHERE `request_page_id` IN ( SELECT `request_page_id` FROM `request_pages` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `websites` WHERE `website_id` = $website_id ) )");
-		$this->db->query( "DELETE FROM `request_pagemeta` WHERE `request_page_id` IN ( SELECT `request_page_id` FROM `request_pages` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `websites` WHERE `website_id` = $website_id ) )");
-		$this->db->query( "DELETE FROM `request_messages` WHERE `request_id` IN ( SELECT `request_id` FROM `requests` WHERE `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `request_pages` WHERE `request_id` IN ( SELECT `request_id` FROM `requests` WHERE `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `requests` WHERE `website_id` = $website_id");
-		
-		// Delete authorized users
-		$this->db->query( "DELETE FROM `auth_user_websites` WHERE `website_id` = $website_id");
+        $this->db->query( "UPDATE `websites` SET `status` = 0 WHERE `website_id` = $website_id" );
 
-        // Delete from Social Media
-        $this->db->query( "DELETE FROM `sm_about_us` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_analytics` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_contact_us` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_current_ad` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_email_sign_up` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_facebook_site` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_fan_offer` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_products` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_share_and_save` WHERE `website_id` = $website_id");
-        $this->db->query( "DELETE FROM `sm_sweepstakes` WHERE `website_id` = $website_id");
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to delete website.', __LINE__, __METHOD__ );
+            return false;
+        }
 
-		// Delete from Websites
-		$this->db->query( "DELETE FROM `websites` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_attachments` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `website_categories` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_errors` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_files` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_image_dimensions` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_industries` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $website_id )");
-		$this->db->query( "DELETE FROM `website_pages` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_products` WHERE `website_id` = $website_id");
-		$this->db->query( "DELETE FROM `website_top_brands` WHERE `website_id` = $website_id");
+        return true;
 	}
 	
 	/**

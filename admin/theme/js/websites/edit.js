@@ -20,6 +20,17 @@ function postLoad( $ ) {
 	$('#sUserID option').click( function() {
 		$('#tUserEmail').val( ( $(this).attr('email') ) );
 	});
+
+    // Cancel Website
+    $('#aCancelWebsite').click( function(e) {
+        e.preventDefault();
+
+        if ( !confirm( 'Are you sure you want to cancel this website? This cannot be undone.') )
+            return;
+
+        // Delete the website
+        window.location = $(this).attr('href');
+    });
 }
 
 /**
