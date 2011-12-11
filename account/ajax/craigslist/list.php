@@ -26,16 +26,20 @@ $data = array();
 // Create output
 if ( is_array( $craigslist_ads ) )
 foreach ( $craigslist_ads as $ad ) {
-	$status = ( $ad['date_posted'] + $ad['duration'] * 86400 > time() ) ? 
-		intval( ( ( $ad['date_posted']  + intval( $ad['duration'] ) * 86400 ) - time() ) / 86400 + 1 ) : 
-		- 1;
-	
-	// Set the links
-	$links = ( $status == -1 ) ? '<a href="/craigslist/add-edit/?cid=' . $ad['craigslist_ad_id'] . '" title=\'' . _('Edit') . ' "' . $ad['craigslist_ad_id'] . '"\' class="edit-craiglist-ad">' . _('Edit / Publish') . '</a> | ' : '';
-	
-	// Status message
-	$status_message = ( $status == -1 ) ? _('Ready to Publish') : $status . ' ' . _('Days Remaining');
-	
+    // Get the status
+	$status = ( $ad['date_posted'] + $ad['duration'] * 86400 > time() ) ? intval( ( ( $ad['date_posted']  + intval( $ad['duration'] ) * 86400 ) - time() ) / 86400 + 1 ) : -1;
+
+    if ( -1 == $status ) {
+        $links = '<a href="/craigslist/add-edit/?cid=' . $ad['craigslist_ad_id'] . '" title="' . _('Edit') . '" class="edit-craiglist-ad">' . _('Edit / Publish') . '</a> | ';
+        $status_message = _('Ready to Publish');
+    } else {
+        $links = '';
+        $status_message = $status . ' ' . _('Days Remaining');
+    }
+
+    // Get the date
+    $date = new DateTime( $ad['date_created'] );
+
 	$data[] = array( $ad['title'] . '<br />
 					<div class="actions">' . 
 						$links .
@@ -43,10 +47,10 @@ foreach ( $craigslist_ads as $ad ) {
 						<a href="/ajax/craigslist/delete/?cid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $craigslist_ad_nonce . '" title="' . _('Delete Craiglist Ad') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a>
 					</div>',
 					format::limit_chars( strip_tags( html_entity_decode( str_replace( "\n", '', $ad['text'] ) ) ), 45, NULL, TRUE ) . '...', 
-					addslashes( $ad['product_name'] ),
-					addslashes( $ad['sku'] ),
-					addslashes( $status_message ),
-					addslashes( dt::date( 'n/j/Y' , $ad['date_created'] ) ) );
+					$ad['product_name'],
+					$ad['sku'],
+					$status_message,
+					$date->format('n/j/Y');
 }
 
 // Send response

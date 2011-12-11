@@ -18,7 +18,7 @@ class Craigslist extends Base_Class {
 	/**
 	 * Gets craigslist ads
 	 *
-	 * @param array( $where, $order_by, $limit )
+	 * @param array $variables( $where, $order_by, $limit )
 	 * @return array $craigslist_ads
 	 */
 	public function get_craigslist_ads( $variables ) {
@@ -26,7 +26,7 @@ class Craigslist extends Base_Class {
 		list( $where, $order_by, $limit ) = $variables;
 		
 		$craigslist_ads = $this->db->get_results( "SELECT a.`title`, a.`craigslist_ad_id`, a.`text`, a.`duration`, 
-												 c.`name` AS `product_name`, c.`sku`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted 
+												 c.`name` AS `product_name`, c.`sku`, a.`date_created`, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted 
 												 FROM `craigslist_ads` AS a 
 												 LEFT JOIN `products` AS c ON( a.product_id = c.product_id ) 
 												 WHERE a.`active` = '1' $where GROUP BY a.`craigslist_ad_id` $order_by LIMIT $limit", ARRAY_A );
@@ -38,6 +38,25 @@ class Craigslist extends Base_Class {
 		}
 		
 		return $craigslist_ads;
+	}
+
+    	/**
+	 * Countscraigslist ads
+	 *
+	 * @param string $where
+	 * @return int
+	 */
+	public function count_craigslist_ads( $where ) {
+		// @Fix need to make this count without PHP's count
+		$craigslist_ad_ids = $this->db->get_results( "SELECT a.`craigslist_ad_id` FROM `craigslist_ads` AS a LEFT JOIN `products` AS c ON( a.product_id = c.product_id ) WHERE a.`active` = '1' $where GROUP BY a.`craigslist_ad_id`", ARRAY_A );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return count( $craigslist_ad_ids );
 	}
 	
 	/**
@@ -128,25 +147,6 @@ class Craigslist extends Base_Class {
 		}
 		
 		return $template;
-	}
-	
-	/**
-	 * Countscraigslist ads
-	 *
-	 * @param string $where
-	 * @return int
-	 */
-	public function count_craigslist_ads( $where ) {
-		// @Fix need to make this count without PHP's count
-		$craigslist_ad_ids = $this->db->get_results( "SELECT a.`craigslist_ad_id` FROM `craigslist_ads` AS a LEFT JOIN `products` AS c ON( a.product_id = c.product_id ) WHERE a.`active` = '1' $where GROUP BY a.`craigslist_ad_id`", ARRAY_A );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return count( $craigslist_ad_ids );
 	}
 	
 	/**
