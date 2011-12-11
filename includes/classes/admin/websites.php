@@ -29,13 +29,14 @@ class Websites extends Base_Class {
 	 */
     public function create( $user_id, $os_user_id, $domain, $subdomain, $title, $type ) {
 		$this->db->insert( 'websites', array( 
-			'user_id' => $user_id, 
-			'os_user_id' => $os_user_id, 
-			'domain' => $domain, 
-			'subdomain' => $subdomain, 
-			'title' => $title, 
-			'type' => $type,
-			'date_created' => dt::now() ), 'iisssss');
+			'user_id' => $user_id
+			, 'os_user_id' => $os_user_id
+			, 'domain' => $domain
+			, 'subdomain' => $subdomain
+			, 'title' => $title
+			, 'type' => $type
+            , 'status' => 1
+			, 'date_created' => dt::now() ), 'iissssis');
 		
 		// Handle errors
 		if ( $this->db->errno() ) {
