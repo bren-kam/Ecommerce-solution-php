@@ -22,6 +22,7 @@ $delete_user_nonce = nonce::create( 'delete-user' );
 $confirm_delete = _('Are you sure you want to delete this user? This cannot be undone.');
 
 // Format Data
+if ( is_array( $users ) )
 foreach ( $users as $usr ) {
 	$data[] = array(
 		$usr['email'] . '<br />

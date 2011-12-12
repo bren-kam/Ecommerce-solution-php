@@ -75,4 +75,65 @@ jQuery(function($) {
 			uploader  	: '/media/flash/uploadify.swf'
 		});
 	});
+
+    /********** Page Link  **********/
+	// Trigger the check to make sure the slug is available
+    $('#tTitle').change( function() {
+		if ( $(this).attr('tmpval') == $(this).val() || '' == $(this).val().replace(/\s/g, '') ) {
+			$('#dPageSlug, #pPageSlugError').hide();
+			return;
+		}
+
+		// Get slugs
+		var pageSlug = $(this).val().slug(), sPageSlug = $('#sPageSlug');
+
+		// Makes sure it only changes the name when you first write the title
+		if ( '' == sPageSlug.text() ) {
+			// Assign the slugs
+			sPageSlug.text( pageSlug );
+			$('#tPageSlug').val( pageSlug );
+		}
+
+		// Show the text
+		$('#dPageSlug').show();
+	});
+
+	// The "Edit" slug button
+	$('#aEditPageSlug').click( function() {
+		// Hide the slug
+		$('#sPageSlug, #aEditPageSlug').hide();
+
+		// Show the other buttons
+		$('#tPageSlug, #aSavePageSlug, #aCancelPageSlug').show();
+	});
+
+	// The "Save" slug button
+	$('#aSavePageSlug').click( function() {
+		var productSlug = $('#tPageSlug').val().slug();
+
+		// Assign the slugs
+		$('#sPageSlug').text( productSlug );
+		$('#tPageSlug').val( productSlug );
+
+		// Hide the buttons
+		$('#tPageSlug, #aSavePageSlug, #aCancelPageSlug').hide();
+
+		// Show the slug
+		$('#sPageSlug, #aEditPageSlug').show();
+	});
+
+	// The "Cancel" slug link
+	$('#aCancelPageSlug').click( function() {
+		// Assign the slugs
+		$('#tPageSlug').val( $('#sPageSlug').text() );
+
+		// Hide the buttons
+		$('#tPageSlug, #aSavePageSlug, #aCancelPageSlug').hide();
+
+		// Show the slug
+		$('#sPageSlug, #aEditPageSlug').show();
+	});
 });
+
+// Turns text into a slug
+String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); }

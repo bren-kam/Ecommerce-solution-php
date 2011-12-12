@@ -18,7 +18,7 @@ $ajax->ok( $images = $p->get_product_image_urls( $_POST['pid'] ), _('Failed to g
 jQuery('#hProductDescription')->val( $product['description'] );
 jQuery('#hProductName')->val( $product['name'] );
 jQuery('#hProductCategoryID')->val( $product['category_id'] );
-jQuery('#hProductId')->val( $product['product_id'] );
+jQuery('#hProductID')->val( $product['product_id'] );
 jQuery('#hProductCategoryName')->val( $product['category'] );
 jQuery('#hProductSKU')->val( $product['sku'] );
 jQuery('#hProductSpecs')->val( $product['product_specs'] );

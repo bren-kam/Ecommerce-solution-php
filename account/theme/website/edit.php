@@ -64,7 +64,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 	// if there are no errors
 	if ( empty( $errs ) ) {
 		// Update the page
-		$success = $w->update_page( $website_page_id, stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
+		$success = $w->update_page( $website_page_id, $_POST['tPageSlug'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
 		
 		// Update custom meta
 		switch ( $page['slug'] ) {
@@ -82,12 +82,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 
 			case 'products':
 				$pagemeta = array( 'top' => $_POST['sTop'] );
+
+                if ( $_POST['tTitle'] == 'Page Title....' ) $_POST['tTitle'] = '';
+                    $pagemeta['page-title'] = $_POST['tTitle'];
 			break;
 		}
-		
-		if ( $_POST['tTitle'] == 'Page Title....' ) $_POST['tTitle'] = '';
-		$pagemeta['page-title'] = $_POST['tTitle'];
-		
+
 		// Set pagemeta
 		if ( is_array( $pagemeta ) )
 			$w->set_pagemeta( $website_page_id, $pagemeta );
@@ -134,16 +134,22 @@ switch ( $page['slug'] ) {
 	default:break;
 }
 
-$page_title = $w->get_pagemeta_by_key( $website_page_id, 'page-title' );
+if ( 'products' == $page['slug'] ) {
+    $page_title = $w->get_pagemeta_by_key( $website_page_id, 'page-title' );
+} else {
+    $page_title = $page['title'];
+}
+
 /***** NORMAL PAGE FUNCTIONS *****/
 
 $selected = "website";
+css('website/page');
 $title = _('Edit Page') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Edit Page'), ' - ', $page['title']; ?></h1>
+	<h1><?php echo _('Edit Page'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'website/', 'edit_page' ); ?>
 	<div id="subcontent">
@@ -159,36 +165,44 @@ get_header();
 			echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fEditPage" action="/website/edit/?wpid=<?php echo $website_page_id; ?>" method="post">
-		<?php if ( $page['slug'] == 'products' ) { ?>
-        <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="Page Title...."/>
-        <?php } ?>
-        <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $page['content']; ?></textarea>
-		<p><a href="javascript:;" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p>
-		<br />
-		<div id="dMetaData" class="hidden">
-			<p>
-				<label for="tMetaTitle"><?php echo _('Meta Title'); ?></label> <small>(<?php echo _('Recommended not to exceed 70 characters'); ?>)</small><br />
-				<input type="text" class="tb" name="tMetaTitle" id="tMetaTitle" value="<?php echo $page['meta_title']; ?>" />
-			</p>
-			<p>
-				<label for="tMetaDescription"><?php echo _('Meta Description'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
-				<input type="text" class="tb"  name="tMetaDescription" id="tMetaDescription" value="<?php echo $page['meta_description']; ?>" />
-			</p>
-			<p>
-				<label for="tMetaKeywords"><?php echo _('Meta Keywords'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
-				<input type="text" class="tb" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $page['meta_keywords']; ?>" />
-			</p>
-			<br />
-		</div>
-		
-		<?php
-		if ( in_array( $page['slug'], array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
-			require theme_inc( 'website/pages/' . $page['slug'] );
-		?>
-		<br /><br />
-		<br /><br />
-		<p><input type="submit" id="bSubmit" value="<?php echo _('Save'); ?>" class="button" /></p>
-		<?php nonce::field( 'edit-page' ); ?>
+            <div id="dTitleContainer">
+                <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="Page Title..." />
+            </div>
+            <div id="dPageSlug">
+            	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['domain']; ?>/<span id="sPageSlug"><?php echo $page['slug']; ?></span><input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb hidden" value="<?php echo $page['slug']; ?>" />/</span>
+                &nbsp;
+                <a href="javascript:;" id="aCancelPageSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
+                <a href="javascript:;" id="aEditPageSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
+                <a href="javascript:;" id="aSavePageSlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
+            </div>
+            <br />
+            <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $page['content']; ?></textarea>
+            <p><a href="javascript:;" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p>
+            <br />
+            <div id="dMetaData" class="hidden">
+                <p>
+                    <label for="tMetaTitle"><?php echo _('Meta Title'); ?></label> <small>(<?php echo _('Recommended not to exceed 70 characters'); ?>)</small><br />
+                    <input type="text" class="tb" name="tMetaTitle" id="tMetaTitle" value="<?php echo $page['meta_title']; ?>" />
+                </p>
+                <p>
+                    <label for="tMetaDescription"><?php echo _('Meta Description'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
+                    <input type="text" class="tb"  name="tMetaDescription" id="tMetaDescription" value="<?php echo $page['meta_description']; ?>" />
+                </p>
+                <p>
+                    <label for="tMetaKeywords"><?php echo _('Meta Keywords'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
+                    <input type="text" class="tb" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $page['meta_keywords']; ?>" />
+                </p>
+                <br />
+            </div>
+
+            <?php
+            if ( in_array( $page['slug'], array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
+                require theme_inc( 'website/pages/' . $page['slug'] );
+            ?>
+            <br /><br />
+            <br /><br />
+            <p><input type="submit" id="bSubmit" value="<?php echo _('Save'); ?>" class="button" /></p>
+            <?php nonce::field( 'edit-page' ); ?>
 		</form>
 		<br />
 		

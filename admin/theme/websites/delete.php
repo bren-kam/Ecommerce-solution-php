@@ -11,12 +11,12 @@ global $user;
 if ( !$user )
 	login();
 
-//if ( empty( $_GET['wid'] ) )
-	//url::redirect( $_SERVER['HTTP_REFERER'] );
+// Make sure they have permission to remove it
+if ( 10 == $user['role'] ) {
+    $w = new Websites;
+    $w->delete( $_GET['wid'] );
+}
 
-$w = new Websites;
-
-$w->delete( $_GET['wid'] );
-
+// Redirect to main website page
 url::redirect( '/websites/' );
 ?>

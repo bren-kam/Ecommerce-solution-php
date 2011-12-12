@@ -185,8 +185,11 @@ get_header();
 				
 				echo "<p class='red'>$error_message</p>";
 			}
+
+            if ( 10 == $user['role'] ) {
 			?>
-			
+                <p align="right"><a href="/websites/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelWebsite" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Website'); ?></a></p>
+            <?php } ?>
 			<form action="/websites/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditWebsite">
 			<?php 
 			if ( '0' == $web['version'] )
