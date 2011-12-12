@@ -755,7 +755,8 @@ class Products extends Base_Class {
 			$this->err( 'Failed to get website products.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+        if ( is_array( $products ) )
 		foreach ( $products as &$p ) {
 			$p['link'] = ( 0 == $p['category_id'] ) ? '/' . $p['slug'] : $c->category_url( $p['category_id'] ) . $p['slug'] . '/';
 		}
@@ -1817,7 +1818,7 @@ class Products extends Base_Class {
 				$parent_category_ids[$cid] = $c->get_parent_category_ids( $cid );
 			}
 			
-			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
+			$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_categories` AS e ON ( a.`category_id` = e.`category_id` AND e.`website_id` = $website_id) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`brand_id` = $brand_id AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`category_id` IS NULL GROUP BY a.`category_id`", ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {

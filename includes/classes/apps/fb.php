@@ -52,7 +52,7 @@ class FB extends Base_Class {
 			if ( $parameters ) {
 				// If we need to get permission
 				$permissions = '&' . http_build_query( $parameters );
-				$redirect_uri = urlencode( "http://apps.facebook.com/op-analytics/" );
+				$redirect_uri = urlencode( "http://apps.facebook.com/op-posting/" );
 			} else {
 				$permissions = '';
 				$redirect_uri = urlencode( "http://www.facebook.com/apps/application.php?id=$app_id" );

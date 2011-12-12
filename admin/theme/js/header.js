@@ -119,7 +119,7 @@ jQuery(function($) {
 				// Add the new link and apply sparrow to it
 				$('#ticket-attachments')
 					.show()
-					.append( '<p id="pAttachment' + response['ticket_upload_id'] + '">' + response['ticket_upload_id'] + '<input type="hidden" name="hTicketImages[]" value="' + response['ticket_upload_id'] + '" /> <a href="/ajax/support/delete-attachment/?_nonce=' + response['delete_attachment_nonce'] + '&amp;tuid=' + response['ticket_upload_id'] + '" title="Remove Attachment" ajax="1" confirm="Are you sure you want to remove this attachment? This cannot be undone."><img src="/images/icons/x.png" width="15" height="17" alt="Remove Attachment" /></a></p>' );
+					.append( '<p id="pAttachment' + response['ticket_upload_id'] + '">' + response['attachment_name'] + '<input type="hidden" name="hTicketImages[]" value="' + response['ticket_upload_id'] + '" /> <a href="/ajax/support/delete-attachment/?_nonce=' + response['delete_attachment_nonce'] + '&amp;tuid=' + response['ticket_upload_id'] + '" title="Remove Attachment" ajax="1" confirm="Are you sure you want to remove this attachment? This cannot be undone."><img src="/images/icons/x.png" width="15" height="17" alt="Remove Attachment" /></a></p>' );
 				
 				// Make anchors support AJAX calls
 				$('#ticket-attachments a[ajax]:first', context).click( function( e ) {

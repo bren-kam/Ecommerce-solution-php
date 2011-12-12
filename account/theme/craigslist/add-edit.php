@@ -46,7 +46,7 @@ get_header();
 	<div id="subcontent">
 		<form id="fAddCraigslistTemplate" method="post" />
 			<input id="hCraigslistAdId" name="hCraigslistAdId" type="hidden" value="<?php if ( $cid ) echo $cid;?>" />
-			<input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value="<?php if ( $ad ) echo $ad['text']; ?>"/>
+			<input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value=""/>
 			<input id="hProductID" name="hProductID" type="hidden" value="<?php if ( isset( $_POST['hProductID'] ) ) echo $_POST['hProductID'];?>" />
 			<input id="hProductName" name="hProductName" type="hidden" value="<?php if ( $ad ) echo $ad['product_name']; ?>" />
 			<input id="hProductCategoryID" type="hidden" value="0" />
@@ -82,12 +82,6 @@ get_header();
                     <option value="product"><?php echo _('Product Name'); ?></option>
                 </select>
 				<input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" value="<?php if ( $ad ) echo $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
 				<br /><br />
             </div>
     		
@@ -183,6 +177,10 @@ get_header();
 				</table>
             </div>
     	</form>
+		<br /><br />
+		<br /><br />
+		<br /><br />
+		<br /><br />
 	</div>
 </div>
 <br /><br />

@@ -276,10 +276,11 @@ class IRR {
 	private function create_website() {
 		// Gets parameters and errors out if something is missing
 		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'type', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'domain_registration', 'additional_email_addresses', 'products' );
-		$website['date_created'] = date_time::date('Y-m-d H:i:s');
+		$website['status'] = 1;
+        $website['date_created'] = date_time::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, array( '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%d' ) );
+		$this->db->insert( 'websites', $website, array( '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%d', '%d', '%s' ) );
 		
 		// If there was a MySQL error
 		if( mysql_errno() ) {

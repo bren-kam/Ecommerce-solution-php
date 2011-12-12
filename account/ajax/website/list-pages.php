@@ -24,7 +24,10 @@ $delete_page_nonce = nonce::create( 'delete-page' );
 $dont_show = array( 'sidebar', 'furniture', 'brands' );
 $standard_pages = array( 'home', 'financing', 'current-offer', 'contact-us', 'about-us', 'products' );
 $can_delete = $user['role'] >= 7;
-		
+
+// Initialize variable
+$data = array();
+
 // Create output
 if ( is_array( $pages ) )
 foreach ( $pages as $p ) {
