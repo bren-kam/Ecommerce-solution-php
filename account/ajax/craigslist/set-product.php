@@ -11,11 +11,25 @@ $ajax->ok( $user, _('You must be signed in to set a craigslist product.') );
 // Instantiate class
 $p = new Products;
 
+if ( isset( $_POST['pid'] ) ) {
+    // Assign the Product ID
+    $product_id = $_POST['pid'];
+} else {
+    // That means they passed a craigslist ad ID
+    $c = new Craigslist;
+
+    // Get the ad
+    $ad = $c->get( $_POST['caid'] );
+
+    // Assign the Product ID
+    $product_id = $ad['product_id'];
+}
+
 // Try to get the product
-$ajax->ok( $product = $p->get_product( $_POST['pid'] ), _('Failed to get product. Please refresh the page and try again.') );
+$ajax->ok( $product = $p->get_product( $product_id ), _('Failed to get product. Please refresh the page and try again.') );
 
 // Try to get the images for the product
-$ajax->ok( $images = $p->get_product_image_urls( $_POST['pid'] ), _('Failed to get product images. Please refresh the page and try again.') );
+$ajax->ok( $images = $p->get_product_image_urls( $product_id ), _('Failed to get product images. Please refresh the page and try again.') );
 
 jQuery('#hProductDescription')->val( $product['description'] );
 jQuery('#hProductName')->val( $product['name'] );

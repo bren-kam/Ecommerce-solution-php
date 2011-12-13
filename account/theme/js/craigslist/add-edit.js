@@ -198,17 +198,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 function checkAdStatus(){
 	craigslistAdID = parseInt( $('#hCraigslistAdID').val() );
 
-	if( craigslistAdID ) {
-		$.post(  '/ajax/craigslist/get/', { '_nonce' : $('#_nonce').val(), 'caid' : craigslistAdID },
-		   function( result ) {
-				if( result['success'] ) {
-					$.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'pid' : result['results']['product_id'] }, ajaxResponse, 'json' );
-
-				} else {
-				}
-			}, 
-			'json' );
-	}
+	if( craigslistAdID )
+        $.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'caid' : craigslistAdID }, ajaxResponse, 'json' );
 }
 
 // Needs to be done at the end of the previous function
@@ -217,6 +208,7 @@ $.fn.determineTemplate = function() {
 		openEditorAndPreview();
 	} else {
 		getFirstTemplate();
+        openEditorAndPreview();
 	}
 }
 
@@ -246,7 +238,7 @@ $.fn.openEditorAndPreview = openEditorAndPreview;
  * Opens the editor and template area
  */
 function openTemplateSelector() {
-	$("#dAdPaging").html( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
+	$("#dAdPaging").text( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
 	$("#dNarrowSearch").hide();
 	$("#dPreviewTemplate").show();
 	
@@ -266,30 +258,20 @@ function loadTemplatePreview( direction ) {
  * Gets the next product in the lineup for sampling purposes
  */
 function refreshPreview() {
-	var productID = parseInt( $("#hProductID").val() );
-	var product_name = $("#hProductName").val();
-	var store_name = $("#hStoreName").val();
-	var store_logo = $("#hStoreLogo").val();
-	var storeURL = $('#hStoreURL').val();
-	var category = $("#hProductCategoryName").val();
-	var brand = $("#hProductBrandName").val();
-	var product_description = $("#hProductDescription").val();
-	var product_specs = ""; // $("").val();
-	
-	var sku = $("#hProductSKU").val();
-	
+	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
+	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val();
+
 	//get the contents of the tinyMCE editor and replace tags with actual stuff.
 	var newContent = CKEDITOR.instances.taDescription.getData();
-	newContent = newContent.replace( /\[Brand\]/gi, brand );
-	newContent = newContent.replace( /\[Product\ Name\]/gi, product_name );
-	newContent = newContent.replace( /\[Product\ Specs\]/g, product_specs );
-	newContent = newContent.replace( /\[Category\]/gi, category );
-	newContent = newContent.replace( /\[Store\ Name\]/gi, store_name );
-	newContent = newContent.replace( /\[Store\ Logo\]/gi, '<img src="' + storeURL + '/custom/uploads/images/' + store_logo + '" alt="" />' );
-	newContent = newContent.replace( /\[Product\ Description\]/gi, product_description );
-	newContent = newContent.replace( /\[SKU\]/gi, sku );
-	newContent = newContent.replace( /\[Photo\]/gi, '[Photo]' );
-	
+
+    newContent = newContent.replace( '[Product Name]', productName );
+    newContent = newContent.replace( '[Store Name]', storeName );
+    newContent = newContent.replace( '[Store Logo]', '<img src="' + storeURL + '/custom/uploads/images/' + storeLogo + '" alt="" />' );
+    newContent = newContent.replace( '[Category]', category );
+    newContent = newContent.replace( '[Brand]', brand );
+    newContent = newContent.replace( '[Product Description]', productDescription );
+    newContent = newContent.replace( '[SKU]', sku );
+
 	var photos = new Array;
 	photos = document.getElementsByClassName( 'hiddenImage' );
 	var photoHTML = '', index = 0;
@@ -316,4 +298,3 @@ function htmlToText( html ) {
 	html = html.replace( '>', '&gt;');
 	return html;
 }
-

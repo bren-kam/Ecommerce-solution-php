@@ -20,7 +20,7 @@ $success = false;
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
 	$publish = '1' == $_POST['hPublishConfirm'];
 
-    if ( empty ( $_P['hCraigslistAdID'] ) ) {
+    if ( empty ( $_POST['hCraigslistAdID'] ) ) {
         // Create ad
         $result = $c->create( $_POST['hTemplateID'], $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
 
@@ -51,35 +51,31 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo ( $cid ) ? _('Edit Craigslist Ad') : _('Create Craigslist Ad'); ?></h1>
+	<h1><?php echo ( $caid ) ? _('Edit Craigslist Ad') : _('Create Craigslist Ad'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'craigslist/' ); ?>
 	<div id="subcontent">
 		<form name="fAddCraigslistTemplate" id="fAddCraigslistTemplate" action="" method="post">
-			<input id="hCraigslistAdID" name="hCraigslistAdID" type="hidden" value="<?php if ( $cid ) echo $cid;?>" />
+			<input id="hCraigslistAdID" name="hCraigslistAdID" type="hidden" value="<?php if ( $caid ) echo $caid; ?>" />
             <input id="hProductID" name="hProductID" type="hidden" value="<?php if ( isset( $_POST['hProductID'] ) ) echo $_POST['hProductID'];?>" />
-        <input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value="<?php if ( $ad ) echo $ad['text']; ?>"/>
+            <input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value="<?php if ( $ad ) echo $ad['text']; ?>"/>
 			<input id="hProductName" name="hProductName" type="hidden" value="<?php if ( $ad ) echo $ad['product_name']; ?>" />
 			<input id="hProductCategoryID" type="hidden" value="0" />
 			<input id="hProductCategoryName" type="hidden" value="" />
 			<input id="hProductSKU" type="hidden" value="<?php if ( $ad ) echo $ad['sku']; ?>" />
-			<input id="hProductSpecs" type="hidden" value="0" />
 			<input id="hProductBrandName" type="hidden" value="0" />
 			<input id="hProductDescription" type="hidden" value="" />
 			<input id="hStoreName" type="hidden" value="0" />
 			<input id="hStoreURL" type="hidden" value="0" />
-			<input id="hStoreLogo" type="hidden" value="( Logo )" />
-			<input id="hPublishConfirm" name="hPublishConfirm" type="hidden" value="" />
+			<input id="hStoreLogo" type="hidden" value="" />
 			<input id="hPublishType" type="hidden" value="<?php echo ( $ad ) ? 1 : 0; ?>" />
 			<input id="hPublishConfirm" type="hidden" value="<?php if ( $publish ) echo '1'; ?>" />
-			<input id="hPublishStyle" type="hidden" value="<?php if ( $ad ) echo ( $ad['craigslist_template_id'] ) ? 'template' : 'custom'; ?>" />
 			<input id="hTemplateID" name="hTemplateID" type="hidden" value="0" />
 			<input id="hTemplateTitle" type="hidden" value="" />
 			<input id="hTemplateIndex" type="hidden" value="1" />
 			<input id="hTemplateCount" type="hidden" value="" />
 			<input id="hTemplateDescription" type="hidden" value="" />
-			<input id="hSearchType" type="hidden" value="sku" />
-			
+
 			<div id="dNarrowSearch">
 				<?php 
 				nonce::field( 'products-autocomplete', '_ajax_autocomplete' ); 
