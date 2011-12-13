@@ -13,15 +13,16 @@ $p = new Products;
 
 // Try to get the product
 $ajax->ok( $product = $p->get_product( $_POST['pid'] ), _('Failed to get product. Please refresh the page and try again.') );
+
+// Try to get the images for the product
 $ajax->ok( $images = $p->get_product_image_urls( $_POST['pid'] ), _('Failed to get product images. Please refresh the page and try again.') );
 
 jQuery('#hProductDescription')->val( $product['description'] );
 jQuery('#hProductName')->val( $product['name'] );
 jQuery('#hProductCategoryID')->val( $product['category_id'] );
-jQuery('#hProductId')->val( $product['product_id'] );
+jQuery('#hProductID')->val( $product['product_id'] );
 jQuery('#hProductCategoryName')->val( $product['category'] );
 jQuery('#hProductSKU')->val( $product['sku'] );
-jQuery('#hProductSpecs')->val( $product['product_specs'] );
 jQuery('#hProductBrandName')->val( $product['brand'] );
 jQuery('#hStoreName')->val( $user['website']['title'] ); 
 jQuery('#hStoreLogo')->val( $user['website']['logo'] );

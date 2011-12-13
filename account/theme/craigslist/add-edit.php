@@ -13,22 +13,33 @@ if( !$user )
 
 $c = new Craigslist();
 
-$form = $_POST;
+// Initialize variable
+$success = false;
 
-if( $form ) {
-	$publish = ( $form['hPublishConfirm'] == '1' ) ? true : false;
-	if( $form['hCraigslistAdId'] != '' ) {
-		$result = $c->update( $form['hCraigslistAdId'], $form['hTemplateID'], $form['hProductID'], $user['website']['website_id'], $form['sChooseDays'], stripslashes( $form['tTitle'] ), stripslashes( $form['hCraigslistAdDescription'] ), 1, $publish );
-		url::redirect('/craigslist/?m=2');
-	} else {
-		$result = $c->create( $form['hTemplateID'], $form['hProductID'], $user['website']['website_id'], $form['sChooseDays'], stripslashes( $form['tTitle'] ), stripslashes( $form['hCraigslistAdDescription'] ), 1, $publish );
-		url::redirect('/craigslist/?m=1');
-	}
+// Make sure it's a valid request
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
+	$publish = '1' == $_POST['hPublishConfirm'];
+
+    if ( empty ( $_P['hCraigslistAdID'] ) ) {
+        // Create ad
+        $result = $c->create( $_POST['hTemplateID'], $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
+
+        url::redirect('/craigslist/?m=1');
+    } else {
+        // Update Ad
+        $result = $c->update( $_POST['hCraigslistAdID'], $_POST['hTemplateID'], $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
+
+        url::redirect('/craigslist/?m=2');
+    }
+} else {
+    $publish = 0;
 }
 
-$cid = ( $_GET['cid'] ) ? $_GET['cid'] : false;
+// Get the category ID
+$caid = ( isset( $_GET['caid'] ) ) ? $_GET['caid'] : false;
 
-$ad = ( $cid ) ? $c->get( $cid ) : false;
+// Get the ad
+$ad = ( $caid ) ? $c->get( $caid ) : false;
 
 $title = _('Craigslist Ads') . ' | ' . TITLE;
 
@@ -44,10 +55,10 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'craigslist/' ); ?>
 	<div id="subcontent">
-		<form id="fAddCraigslistTemplate" method="post" />
-			<input id="hCraigslistAdId" name="hCraigslistAdId" type="hidden" value="<?php if ( $cid ) echo $cid;?>" />
-			<input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value="<?php if ( $ad ) echo $ad['text']; ?>"/>
-			<input id="hProductID" name="hProductID" type="hidden" value="<?php if ( isset( $_POST['hProductID'] ) ) echo $_POST['hProductID'];?>" />
+		<form name="fAddCraigslistTemplate" id="fAddCraigslistTemplate" action="" method="post">
+			<input id="hCraigslistAdID" name="hCraigslistAdID" type="hidden" value="<?php if ( $cid ) echo $cid;?>" />
+            <input id="hProductID" name="hProductID" type="hidden" value="<?php if ( isset( $_POST['hProductID'] ) ) echo $_POST['hProductID'];?>" />
+        <input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value="<?php if ( $ad ) echo $ad['text']; ?>"/>
 			<input id="hProductName" name="hProductName" type="hidden" value="<?php if ( $ad ) echo $ad['product_name']; ?>" />
 			<input id="hProductCategoryID" type="hidden" value="0" />
 			<input id="hProductCategoryName" type="hidden" value="" />
@@ -82,13 +93,7 @@ get_header();
                     <option value="product"><?php echo _('Product Name'); ?></option>
                 </select>
 				<input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" value="<?php if ( $ad ) echo $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
-				<br /><br />
+                <br /><br />
             </div>
     		
             <div id="dItemDescription" class="hidden"></div>
@@ -182,7 +187,12 @@ get_header();
 					</tr>
 				</table>
             </div>
+            <?php nonce::field('add-edit-craigslist'); ?>
     	</form>
+        <br /><br />
+		<br /><br />
+		<br /><br />
+		<br /><br />
 	</div>
 </div>
 <br /><br />
