@@ -82,17 +82,26 @@ class Analytics extends Base_Class {
 		
 		// Get dates
 		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
-		
-		// Determine what it's supposed to be
-		$sql_select = $this->metric_sql_calculation( $metric, false );
 
+		// Determine what it's supposed to be
+		list( $ga_dimension, $ga_metric, $ga_filter ) = $this->metric_sql_calculation( $metric );
+
+        $ga_dimensions = ( is_null( $ga_dimension ) ) ? NULL : array( $ga_dimension );
+        $ga_metrics = ( is_null( $ga_metric ) ) ? NULL : array( $ga_metric );
+
+        // Get Data
+        $this->ga->requestReportData( $this->ga_profile_id, array('date'), $ga_metrics, array('date'), $ga_filter, $date_start, $date_end, 1, 10000 );
+
+        $results = $this->ga->getResults();
+
+        /**
 		$metric = $this->db->prepare( "SELECT $sql_select, ( UNIX_TIMESTAMP( `date` ) - 21600 ) * 1000 AS date FROM `analytics_data` WHERE `date` >= ? AND `date` <= ? AND `ga_profile_id` = ? " . $this->extra_where . " GROUP BY `date`", 'ssi', $date_start, $date_end, $this->ga_profile_id )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get metric by date.', __LINE__, __METHOD__ );
 			return false;
-		}
+		}*/
 		
 		return $this->pad_dates( ar::assign_key( $metric, 'date', true ), ( strtotime( $date_start ) - 21600 ) * 1000, ( strtotime( $date_end ) - 21600 ) * 1000 );
 	}
@@ -111,6 +120,7 @@ class Analytics extends Base_Class {
 
         // Declare variables
         $totals = array();
+
         list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 
         // Get data
@@ -434,6 +444,7 @@ class Analytics extends Base_Class {
 	/**
 	 * Gets an individual email
 	 *
+     * @param string $mc_campaign_id
 	 * @return array
 	 */
 	public function get_email( $mc_campaign_id ) {
@@ -486,8 +497,8 @@ class Analytics extends Base_Class {
 	/**
 	 * Update a Campaign's analytics
 	 *
-	 * @param int $mc_campaign_id
-	 * @param array $statistics
+	 * @param string $mc_campaign_id
+	 * @param array $s
 	 * @return bool
 	 */
 	private function update_analytics( $mc_campaign_id, $s ) {
@@ -506,177 +517,13 @@ class Analytics extends Base_Class {
 		
 		return true;
 	}
-	
-	/***** FACEBOOK ****
-	
-	/**
-	 * Initializes facebook by getting the information that's needed for all the calculations
-	 *
-	 * @return bool
-	 
-	public function facebook_init() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
-		$facebook_data = $this->db->get_row( "SELECT `fb_page_id`, `token` FROM `sm_analytics` WHERE `website_id` = $website_id", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update analytics.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Set the values
-		$this->fb_token = $facebook_data['token'];
-		$this->fb_page_id = $facebook_data['fb_page_id'];
-		
-		return true;
-	}
-	
-	/**
-	 * Facebook User Data
-	 *
-	 * @return array
-	
-	public function fb_user_data() {
-		$page_like_adds['day'] = $this->fb_api( 'page_fans', array( 
-			'since' => $this->date_start
-			, 'until' => $this->date_end 
-		) );
-		
-		$data = $this->fb_api( 'page_fans', array( 
-			'since' => $this->date_start
-			, 'until' => $this->date_end 
-		) );
-		
-		//page_like_adds
-		
-		foreach ( $data as $metrics ) {
-			foreach ( $metrics as $m ) {
-				//if ( $m['name'] == 'page_stream_views_unique' )
-					//print_r( $m );
-				//echo "&nbsp;&nbsp;&nbsp;&nbsp;" . $m['name'] . "\n<br />";
-			}
-		}
-		
-		// Facebook goes by Pacific Daylight Time
-		$end_date = new DateTime( $this->date_end, new DateTimeZone( timezone_name_from_abbr('PDT') ) );
-		
-		$lifetime_likes = $this->fql( "SELECT metric, value FROM insights WHERE object_id=" . $this->fb_page_id . " AND metric='page_fans' AND end_time=" . $end_date->getTimestamp() . " AND period=period('lifetime')" );
-		
-		$lifetime_likes[0]->value;
-	}
-	
-	/**
-	 * Perform Facebook insighs API requests via CURL
-	 *
-	 * @param string $metric
-	 * @param array $params
-	 * @return array
-	 
-	private function fb_api( $metric, $params ) {
-		$params = array_merge( $params, array( 
-			'access_token' => $this->fb_token
-			, 'method' => 'GET'
-			, 'format' => 'json-strings'
-		));
-		
-		if ( !empty( $metric ) )
-			$metric = '/' . $metric;
-		
-		$url = 'https://graph.facebook.com/' . $this->fb_page_id . '/insights' . $metric;;
-		
-		$ch = curl_init();
-		$opts = array(
-			CURLOPT_CONNECTTIMEOUT => 10,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_TIMEOUT => 60,
-			CURLOPT_USERAGENT => 'facebook-php-2.0',
-			CURLOPT_URL => $url,
-			CURLOPT_POSTFIELDS => http_build_query($params, null, '&')
-		);
-		
-		curl_setopt_array($ch, $opts);
-		
-		$result = curl_exec($ch);
-		
-		if ( false === $result ) {
-			$e = new Exception(curl_error($ch), curl_errno($ch));
-			curl_close($ch);
-			throw $e;
-		}
-		
-		curl_close($ch);
-		
-		return json_decode( $result, true );
-	}
-	
-	/**
-	 * Facebook User Data
-	 *
-	 * @return array
-	 
-	public function fb_user_data() {
-		//" . strtotime( $this->date_end ) . "
-		//1311742800 
-		
-		// Facebook goes by Pacific Daylight Time
-		$end_date = new DateTime( $this->date_end, new DateTimeZone( timezone_name_from_abbr('PDT') ) );
-		
-		$page_active_users = $this->fql( "SELECT metric, value FROM insights WHERE object_id=" . $this->fb_page_id . " AND metric='page_active_users' AND end_time=" . $end_date->getTimestamp() . " AND period=86400" );
-		
-		print_r( $page_active_users );
-		echo $page_active_users[0]->value;
-	}*/
-	
-	/**
-	 * Perform Facebook insighs API requests via CURL
-	 *
-	 * @param string $params
-	 * @return array
-	 
-	private function fql( $query ) {
-		$params = array( 
-			'access_token' => $this->fb_token
-			, 'method' => 'fql.query'
-			, 'format' => 'json-strings'
-			, 'query' => $query
-		);
-	
-		$url = 'https://api.facebook.com/restserver.php';
-		
-		$ch = curl_init();
-		$opts = array(
-			CURLOPT_CONNECTTIMEOUT => 10,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_TIMEOUT => 60,
-			CURLOPT_USERAGENT => 'facebook-php-2.0',
-			CURLOPT_URL => $url,
-			CURLOPT_POSTFIELDS => http_build_query($params, null, '&')
-		);
-		
-		curl_setopt_array($ch, $opts);
-		
-		$result = curl_exec($ch);
-		
-		if ( false === $result ) {
-			$e = new Exception(curl_error($ch), curl_errno($ch));
-			curl_close($ch);
-			throw $e;
-		}
-		
-		curl_close($ch);
-		
-		return json_decode( $result );
-	}*/
-	
+
 	/***** OTHER FUNCTIONS *****/
 	
 	/**
 	 * Gets the click overlay email
 	 *
+     * @param string $mc_campaign_id
 	 * @return array
 	 */
 	public function click_overlay_html( $mc_campaign_id ) {
@@ -723,58 +570,73 @@ class Analytics extends Base_Class {
 	/**
 	 * Gives the correct calculation for a metric
 	 *
-	 * @param string $metric \\
-	 * @param bool $as whether to include "AS _____" in the sql string
+	 * @param string $metric
 	 * @return string
 	 */
-	private function metric_sql_calculation( $metric, $as = true ) {
+	private function metric_sql_calculation( $metric ) {
+        // Initialize variables
+        $ga_metric = $ga_dimension = $ga_filter = NULL;
+
 		// Determine what it's supposed to be
 		switch ( $metric ) {
 			case 'bounce_rate':
-				$sql_select = "ROUND( SUM( `bounces` ) / SUM(`entrances`) * 100, 2 )";
-				break;
+				// $sql_select = "ROUND( SUM( `bounces` ) / SUM(`entrances`) * 100, 2 )";
+                $ga_metric = 'entranceBounceRate';
+			break;
 			
 			case 'direct':
-				$sql_select = "ROUND( SUM( IF( '(none)' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
-				break;
+				// $sql_select = "ROUND( SUM( IF( '(none)' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
+                $ga_dimension = 'medium';
+                $ga_filter = 'medium==(none)';
+			break;
 			
 			case 'exit_rate':
-				$sql_select = "ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 )";
-				break;
+				//$sql_select = "ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 )";
+                $ga_metric = 'exitRate';
+			break;
 				
 			case 'new_visits':
-				$sql_select = "ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 )";
-				break;
+				//$sql_select = "ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 )";
+                $ga_metric = 'percentNewVisits';
+			break;
 			
 			case 'pages_by_visits':
-				$sql_select = "ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 )";
-				break;
+				//$sql_select = "ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 )";
+                $ga_metric = 'pageviewsPerVisit';
+			break;
+
+            case 'page_views':
+                $ga_metric = 'pageviews';
+            break;
 			
 			case 'referring':
-				$sql_select = "ROUND( SUM( IF( 'referral' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
-				break;
+				//$sql_select = "ROUND( SUM( IF( 'referral' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
+                $ga_dimension = 'medium';
+                $ga_filter = 'medium==referral';
+			break;
 
 			case 'search_engines':
-				$sql_select = "ROUND( SUM( IF( 'organic' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
-				break;
+				//$sql_select = "ROUND( SUM( IF( 'organic' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
+                $ga_dimension = 'medium';
+                $ga_filter = 'medium==organic';
+			break;
 
 			case 'time_on_site':
-				$sql_select = "( SUM( `time_on_page` ) / SUM(`visits`) ) * 1000";
-				break;
+                //$sql_select = "( SUM( `time_on_page` ) / SUM(`visits`) ) * 1000";
+                $ga_metric = 'avgTimeOnSite';
+			break;
 			
 			case 'time_on_page':
-				$sql_select = "SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) * 1000";
-				break;
-				
+				//$sql_select = "SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) * 1000";
+                $ga_metric = 'avgTimeOnPage';
+			break;
+
 			default:
-				$sql_select = 'SUM( `' . $this->db->escape( $metric ) . '` )';
-				break;
+				$ga_metric = $metric;
+			break;
 		}
-		
-		if ( $as )
-			$sql_select .= ' AS ' . $metric;
-		
-		return $sql_select;
+
+		return array( $ga_dimension, $ga_metric, $ga_filter );
 	}
 	
 	/**
