@@ -113,19 +113,21 @@ class gapi
   public function requestReportData($report_id, $dimensions, $metrics, $sort_metric=null, $filter=null, $start_date=null, $end_date=null, $start_index=1, $max_results=30)
   {
     $parameters = array('ids'=>'ga:' . $report_id);
-    
-    if (is_array($dimensions))
-    {
-      $dimensions_string = '';
-      foreach ($dimensions as $dimension)
-      {
-        $dimensions_string .= ',ga:' . $dimension;
-      }
-      $parameters['dimensions'] = substr($dimensions_string,1);
-    }
-    else 
-    {
-      $parameters['dimensions'] = 'ga:'.$dimensions;
+
+    if ( NULL != $dimensions ) {
+        if (is_array($dimensions))
+        {
+          $dimensions_string = '';
+          foreach ($dimensions as $dimension)
+          {
+            $dimensions_string .= ',ga:' . $dimension;
+          }
+          $parameters['dimensions'] = substr($dimensions_string,1);
+        }
+        else
+        {
+          $parameters['dimensions'] = 'ga:'.$dimensions;
+        }
     }
 
     if (is_array($metrics))

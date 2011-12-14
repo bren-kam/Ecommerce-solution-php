@@ -55,9 +55,14 @@ class Analytics extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 		
+        // Call Google Analytics API
+        library( 'GAPI' );
+
+        $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
 		$this->ga_profile_id = (int) $ga_profile_id;
 		$this->date_start = dt::date( 'Y-m-d', time() - 2678400 ); // 30 days ago
 		$this->date_end = dt::date( 'Y-m-d', time() - 86400 ); // Yesterday
+
 	}
 	
 	/***** DASHBOARD *****/
@@ -103,8 +108,35 @@ class Analytics extends Base_Class {
 		// Make sure that we have a google analytics profile to work with
 		if ( empty( $this->ga_profile_id ) )
 			return false;
-		
-		// Get dates
+
+        // Declare variables
+        $totals = array();
+        list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, NULL, array( 'visitBounceRate', 'pageviews', 'visits', 'avgTimeOnSite', 'avgTimeOnPage', 'exitRate', 'pageviewsPerVisit', 'percentNewVisits' ), NULL, NULL, $date_start, $date_end, 1, 10000 );
+
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+
+            $totals = array(
+                'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+                , 'page_views' => $metrics['pageviews']
+                , 'visits' => $metrics['visits']
+                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
+                , 'time_on_page' => dt::sec_to_time( $metrics['avgTimeOnPage'] )
+                , 'exit_rate' => number_format( $metrics['exitRate'], 2 )
+                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
+                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
+            );
+        }
+
+        /**
+        // Get dates
 		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 		
 		$totals = $this->db->get_row( "SELECT ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate, SUM( `page_views` ) AS page_views, SUM( `visits` ) AS visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, SEC_TO_TIME( SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) ) AS time_on_page, ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 ) AS exit_rate, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site FROM `analytics_data` WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . $this->extra_where, ARRAY_A );
@@ -113,7 +145,7 @@ class Analytics extends Base_Class {
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get totals.', __LINE__, __METHOD__ );
 			return false;
-		}
+		}*/
 		
 		return $totals;
 	}
