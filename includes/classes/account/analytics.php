@@ -49,8 +49,10 @@ class Analytics extends Base_Class {
 
 	/**
 	 * Construct initializes data
+     *
+     * @param int $ga_profile_id
 	 */
-	public function __construct( $ga_profile_id = false ) {
+	public function __construct( $ga_profile_id = 0 ) {
 		// Need to load the parent constructor
 		if ( !parent::__construct() )
 			return false;
@@ -89,21 +91,24 @@ class Analytics extends Base_Class {
         $ga_dimensions = ( is_null( $ga_dimension ) ) ? NULL : array( $ga_dimension );
         $ga_metrics = ( is_null( $ga_metric ) ) ? NULL : array( $ga_metric );
 
-        // Get Data
+        // API Call
         $this->ga->requestReportData( $this->ga_profile_id, array('date'), $ga_metrics, array('date'), $ga_filter, $date_start, $date_end, 1, 10000 );
 
+        // Process results
         $results = $this->ga->getResults();
 
-        /**
-		$metric = $this->db->prepare( "SELECT $sql_select, ( UNIX_TIMESTAMP( `date` ) - 21600 ) * 1000 AS date FROM `analytics_data` WHERE `date` >= ? AND `date` <= ? AND `ga_profile_id` = ? " . $this->extra_where . " GROUP BY `date`", 'ssi', $date_start, $date_end, $this->ga_profile_id )->get_results( '', ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get metric by date.', __LINE__, __METHOD__ );
-			return false;
-		}*/
-		
-		return $this->pad_dates( ar::assign_key( $metric, 'date', true ), ( strtotime( $date_start ) - 21600 ) * 1000, ( strtotime( $date_end ) - 21600 ) * 1000 );
+        // Declare values
+        $values = array();
+
+        // Get the values
+        if ( is_array( $results ) )
+        foreach( $results as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+            $values[strtotime($dimensions['date']) . '000'] = $metrics[$ga_metric];
+        }
+
+        return $values;
 	}
 	
 	/**
@@ -144,18 +149,6 @@ class Analytics extends Base_Class {
                 , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
             );
         }
-
-        /**
-        // Get dates
-		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
-		
-		$totals = $this->db->get_row( "SELECT ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate, SUM( `page_views` ) AS page_views, SUM( `visits` ) AS visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, SEC_TO_TIME( SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) ) AS time_on_page, ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 ) AS exit_rate, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site FROM `analytics_data` WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . $this->extra_where, ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get totals.', __LINE__, __METHOD__ );
-			return false;
-		}*/
 		
 		return $totals;
 	}
@@ -171,18 +164,45 @@ class Analytics extends Base_Class {
 		// Make sure that we have a google analytics profile to work with
 		if ( empty( $this->ga_profile_id ) )
 			return false;
-		
-		// Get dates
-		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
-		
-		$traffic_sources_totals = $this->db->get_row( "SELECT SUM(`visits`) AS total, SUM( IF( 'organic' = `medium`, `visits`, 0 ) ) AS search_engines, SUM( IF( 'referral' = `medium`, `visits`, 0 ) ) AS referring, SUM( IF( '(direct)' = `source`, `visits`, 0 ) ) AS 'direct', SUM( IF( 'organic' <> `medium` AND 'referral' <> `medium` AND '(direct)' <> `source`, `visits`, 0 ) ) AS other FROM `analytics_data` WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id, ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get traffic sources totals.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
+
+        // Declare variables
+        $traffic_sources_totals = array();
+
+        list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, array('medium'), array( 'visits' ), NULL, NULL, $date_start, $date_end, 1, 10000 );
+
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+
+            $traffic_sources_totals['total'] += $metrics['visits'];
+
+            switch ( $dimensions['medium'] ) {
+                case 'email':
+                    $traffic_sources_totals['email'] = $metrics['visits'];
+                break;
+
+                case 'organic':
+                     $traffic_sources_totals['search_engines'] = $metrics['visits'];
+                break;
+
+                case 'referral':
+                     $traffic_sources_totals['referring'] = $metrics['visits'];
+                break;
+
+                case '(none)':
+                default:
+                     $traffic_sources_totals['direct'] = $metrics['visits'];
+                break;
+            }
+        }
+
 		return $traffic_sources_totals;
 	}
 	
@@ -199,7 +219,15 @@ class Analytics extends Base_Class {
 		// Make sure that we have a google analytics profile to work with
 		if ( empty( $this->ga_profile_id ) )
 			return false;
-		
+
+        // Declare variables
+        $traffic_sources_totals = array();
+
+        list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, array('pagePath'), array( 'visits' ), NULL, NULL, $date_start, $date_end, 1, 10000 );
+
 		// Limit
 		$limit = ( 0 == $limit ) ? '' : ' LIMIT ' . (int) $limit;
 		
@@ -239,10 +267,10 @@ class Analytics extends Base_Class {
 		);
 		
 		// If there is more
-		if ( $traffic_sources['other'] > 0 ) {
+		if ( $traffic_sources['email'] > 0 ) {
 			$colors[] = '#EDE500';
 			
-			$values[] = (int) $traffic_sources['other'];
+			$values[] = (int) $traffic_sources['email'];
 		}
 		
 		// Create the pie chart

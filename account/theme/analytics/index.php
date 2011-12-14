@@ -122,10 +122,10 @@ get_header();
 							<span class="label"><?php echo _('Search Engines'); ?></span><br />
 							<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
-						<?php if ( $traffic_sources['other'] > 0 ) { ?>
+						<?php if ( $traffic_sources['email'] > 0 ) { ?>
 						<p class="yellow-marker">
-							<span class="label"><?php echo _('Other'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['other'] ); ?> (<?php echo round( $traffic_sources['other'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+							<span class="label"><?php echo _('Campaigns'); ?></span><br />
+							<span class="data"><?php echo number_format( $traffic_sources['email'] ); ?> (<?php echo round( $traffic_sources['email'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
 						<?php } ?>
 					</div>
