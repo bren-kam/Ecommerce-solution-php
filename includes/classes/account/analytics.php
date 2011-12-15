@@ -88,11 +88,11 @@ class Analytics extends Base_Class {
 		// Determine what it's supposed to be
 		list( $ga_dimension, $ga_metric, $ga_filter ) = $this->metric_sql_calculation( $metric );
 
-        $ga_dimensions = ( is_null( $ga_dimension ) ) ? NULL : array( $ga_dimension );
+        $ga_dimensions = ( is_null( $ga_dimension ) ) ? array('date') : array( 'date', $ga_dimension );
         $ga_metrics = ( is_null( $ga_metric ) ) ? NULL : array( $ga_metric );
 
         // API Call
-        $this->ga->requestReportData( $this->ga_profile_id, array('date'), $ga_metrics, array('date'), $ga_filter, $date_start, $date_end, 1, 10000 );
+        $this->ga->requestReportData( $this->ga_profile_id, $ga_dimensions, $ga_metrics, array('date'), $ga_filter, $date_start, $date_end, 1, 10000 );
 
         // Process results
         $results = $this->ga->getResults();
@@ -221,26 +221,29 @@ class Analytics extends Base_Class {
 			return false;
 
         // Declare variables
-        $traffic_sources_totals = array();
+        $content_overview = array();
 
         list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array('pagePath'), array( 'visits' ), NULL, NULL, $date_start, $date_end, 1, 10000 );
+        $this->ga->requestReportData( $this->ga_profile_id, array('pagePath'), array( 'pageviews', 'avgTimeOnPage', 'visitBounceRate', 'exitRate' ), array( '-pageviews' ), NULL, $date_start, $date_end, 1, $limit );
 
-		// Limit
-		$limit = ( 0 == $limit ) ? '' : ' LIMIT ' . (int) $limit;
-		
-		// Get dates
-		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
-		
-		$content_overview = $this->db->get_results( "SELECT `page`, SUM( `page_views` ) AS page_views, SEC_TO_TIME( SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) ) AS time_on_page, ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate, ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 ) AS exit_rate FROM `analytics_data`  WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . " GROUP BY `page` ORDER BY `page_views` DESC $limit", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get content overview.', __LINE__, __METHOD__ );
-			return false;
-		}
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+
+            $content_overview[] = array(
+                'page' => $dimensions['pagePath']
+                , 'page_views' => $metrics['pageviews']
+                , 'time_on_page' => dt::sec_to_time( $metrics['avgTimeOnPage'] )
+                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+                , 'exit_rate' => number_format( $metrics['exitRate'], 2 )
+            );
+        }
 		
 		return $content_overview;
 	}
@@ -614,6 +617,7 @@ class Analytics extends Base_Class {
 			
 			case 'direct':
 				// $sql_select = "ROUND( SUM( IF( '(none)' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
+                $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==(none)';
 			break;
@@ -639,12 +643,14 @@ class Analytics extends Base_Class {
 			
 			case 'referring':
 				//$sql_select = "ROUND( SUM( IF( 'referral' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
+                $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==referral';
 			break;
 
 			case 'search_engines':
 				//$sql_select = "ROUND( SUM( IF( 'organic' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
+                $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==organic';
 			break;
