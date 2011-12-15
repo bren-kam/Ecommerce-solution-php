@@ -1,7 +1,24 @@
 // When the page has loaded
 jQuery(function($) {
 	decimal = false;
-	
+
+    // Load the datepicker
+    head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+        // Date Picker
+        $('#tDateStart, #tDateEnd').datepicker({
+            maxDate: -1
+            , dateFormat: 'M d, yy'
+            , altFormat: 'yy-mm-dd'
+            , onSelect: function( dateText, dp ) {
+                var dsObject = $('#tDateStart').datepicker('getDate'), ds = dsObject.getFullYear() + '-' + ( dsObject.getMonth() * 1 + 1 )  + '-' + dsObject.getDate();
+                var deObject = $('#tDateEnd').datepicker('getDate'), de = deObject.getFullYear() + '-' + ( deObject.getMonth() * 1 + 1 ) + '-' + deObject.getDate();
+
+                var url = insertParam( 'ds', ds );
+                document.location.search =  insertParam( 'de', de, url ).replace( /^&/, '' );
+            }
+        })
+    });
+
 	// Put the tooltip there
 	$('#dLargeGraph').bind("plothover", function( event, pos, item ) {
 		if ( item ) {
@@ -29,9 +46,6 @@ jQuery(function($) {
 			}
 			
 			switch ( name ) {
-				case 'Direct Traffic':
-				case 'Referring Sites':
-				case 'Search Engines':
 				case 'New Visits':
 				case 'Bounce Rate':
 				case 'Exit Rate':
@@ -78,6 +92,9 @@ jQuery(function($) {
 					}
 				break;
 				
+                case 'Direct Traffic':
+                case 'Referring Sites':
+                case 'Search Engines':
 				default:
 					percent = '';
 					time = false;
@@ -471,4 +488,34 @@ function format_time( time_in_seconds ) {
 		seconds = '0' + seconds;
 		
 	return hours + ':' + minutes + ':' + seconds;
+}
+
+/**
+ * Insert a parameter into the query string
+ * @param key
+ * @param value
+ */
+function insertParam(key, value)
+{
+    key = escape(key); value = escape(value);
+
+    var kvp = ( 2 == arguments.length ) ? document.location.search.substr(1).split('&') : arguments[2].split('&');
+
+    var i=kvp.length; var x; while(i--)
+    {
+        x = kvp[i].split('=');
+
+        if (x[0]==key)
+        {
+                x[1] = value;
+                kvp[i] = x.join('=');
+                break;
+        }
+    }
+
+    if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+
+    //this will reload the page, it's likely better to store this until finished
+    //document.location.search = kvp.join('&');
+    return kvp.join('&');
 }

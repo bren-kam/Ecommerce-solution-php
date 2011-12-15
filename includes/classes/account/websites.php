@@ -381,11 +381,11 @@ class Websites extends Base_Class {
 		}
 		
 		$new_settings = ar::assign_key( $settings_array, 'key', true );
-		
+
 		// @Fix should not loop queries
 		// Now make sure they exist, if not, create them, and then run again
 		foreach ( $settings as $s ) {
-			if ( !array_key_exists( $s, $new_settings ) ) {
+			if ( !is_array( $new_settings ) || !array_key_exists( $s, $new_settings ) ) {
 				$this->create_setting( $s );
 				$new_settings[$s] = '';
 			}

@@ -21,9 +21,10 @@ if ( empty( $page ) )
 	url::redirect('/analytics/content-overview/');
 
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'] );
+$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de']  );
 
-$a->extra_where = " AND `page` = '" . $a->db->escape( $page ) . "'";
+// Set global filter
+$a->set_ga_filter( "pagePath==$page" );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'page_views' );
@@ -50,6 +51,9 @@ $sparklines['exit_rate'] = $a->sparkline( 'exit_rate' );
 css( 'analytics' );
 javascript(  'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'analytics/dashboard' );
 
+// Load the jQuery UI CSS
+add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
+
 add_javascript_callback("$.plot($('#dLargeGraph'),[
 			{ label: '" . _('Page Views') . "', data: [$page_views_plotting], color: '#FFA900' }
 		],{
@@ -71,7 +75,11 @@ get_header();
 ?>
 
 <div id="content">
-	<h3><?php echo $date_start, ' - ', $date_end; ?></h3>
+	<div class="dates">
+        <input type="text" id="tDateStart" name="ds" class="tb" value="<?php echo $date_start; ?>" />
+        -
+        <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
+    </div>
 	<h1><?php echo _('Page:'), " $page"; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'traffic_content_overview', 'page' ); ?>
