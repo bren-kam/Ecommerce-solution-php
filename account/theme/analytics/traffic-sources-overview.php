@@ -16,7 +16,7 @@ if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'] );
+$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'visits' );
@@ -52,6 +52,9 @@ $top_keywords = $a->get_keywords();
 css( 'analytics' );
 javascript(  'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'JSON', 'analytics/dashboard' );
 
+// Load the jQuery UI CSS
+add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
+
 add_before_javascript('function open_flash_chart_data() { return JSON.stringify(' . $pie_chart . ');}');
 
 add_javascript_callback("$.plot($('#dLargeGraph'),[
@@ -77,7 +80,11 @@ get_header();
 ?>
 
 <div id="content">
-	<h3><?php echo $date_start, ' - ', $date_end; ?></h3>
+	<div class="dates">
+        <input type="text" id="tDateStart" name="ds" class="tb" value="<?php echo $date_start; ?>" />
+        -
+        <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
+    </div>
 	<h1><?php echo _('Traffic Sources Overview'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'traffic_sources_overview' ); ?>

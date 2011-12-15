@@ -24,35 +24,20 @@ class Analytics extends Base_Class {
 	 */
 	private $ga_profile_id;
 
-	/**
-	 * The Facebook Token
-	 * @var string
-	 */
-	private $fb_token;
-	
-	/**
-	 * The Facebook Page ID
-	 * @var int
-	 */
-	private $fb_page_id;
-
-	/**
-	 * Any extra where data
-	 * @fix this should be public -- The following pages modify this data that is directly going into the database:
-	 * 		analytics/keyword.php
-	 *		analytics/page.php
-	 *		analytics/source.php
-	 *		analytics/traffic-keywords.php
-	 * @var string
-	 */
-	public $extra_where = '';
+    /**
+     * Any extra filter
+     * @var string
+     */
+    private $ga_filter = NULL;
 
 	/**
 	 * Construct initializes data
      *
      * @param int $ga_profile_id
+     * @param string $date_start
+     * @param string $date_end
 	 */
-	public function __construct( $ga_profile_id = 0 ) {
+	public function __construct( $ga_profile_id = 0, $date_start = NULL, $date_end = NULL ) {
 		// Need to load the parent constructor
 		if ( !parent::__construct() )
 			return false;
@@ -60,13 +45,39 @@ class Analytics extends Base_Class {
         // Call Google Analytics API
         library( 'GAPI' );
 
-        $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
-		$this->ga_profile_id = (int) $ga_profile_id;
-		$this->date_start = dt::date( 'Y-m-d', time() - 2678400 ); // 30 days ago
-		$this->date_end = dt::date( 'Y-m-d', time() - 86400 ); // Yesterday
+        // See if they are using their own google analytics account or ours
+        $w = new Websites;
+        $settings = $w->get_settings( 'ga-username', 'ga-password' );
 
+        // Determine if ther username and password are empty (use our account) or not (use their account)
+        if ( !empty( $settings['ga-username'] ) && !empty( $settings['ga-password'] ) ) {
+            $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
+            $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
+
+            if ( !empty( $ga_username )  && !empty( $ga_password ) ) {
+                $this->ga = new GAPI( $ga_username, $ga_password );
+            } else {
+                $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
+            }
+        } else {
+            $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
+        }
+		$this->ga_profile_id = (int) $ga_profile_id;
+
+	    $this->date_start = ( empty( $date_start ) ) ? dt::date( 'Y-m-d', time() - 2678400 ) : dt::date( 'Y-m-d', strtotime( $date_start ) ); // 30 days ago
+		$this->date_end = ( empty( $date_end ) ) ? dt::date( 'Y-m-d', time() - 86400 ) : dt::date( 'Y-m-d', strtotime( $date_end ) ); // Yesterday
 	}
-	
+
+    /**
+     * Set's the GA Filter for use throughout everything else
+     *
+     * @param string $ga_filter
+     * @return void
+     */
+    public function set_ga_filter( $ga_filter ) {
+        $this->ga_filter = $ga_filter;
+    }
+
 	/***** DASHBOARD *****/
 	
 	/**
@@ -90,6 +101,10 @@ class Analytics extends Base_Class {
 
         $ga_dimensions = ( is_null( $ga_dimension ) ) ? array('date') : array( 'date', $ga_dimension );
         $ga_metrics = ( is_null( $ga_metric ) ) ? NULL : array( $ga_metric );
+
+        // Handle the GA Filter
+        if ( !is_null( $this->ga_filter ) )
+            $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
 
         // API Call
         $this->ga->requestReportData( $this->ga_profile_id, $ga_dimensions, $ga_metrics, array('date'), $ga_filter, $date_start, $date_end, 1, 10000 );
@@ -129,7 +144,7 @@ class Analytics extends Base_Class {
         list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, NULL, array( 'visitBounceRate', 'pageviews', 'visits', 'avgTimeOnSite', 'avgTimeOnPage', 'exitRate', 'pageviewsPerVisit', 'percentNewVisits' ), NULL, NULL, $date_start, $date_end, 1, 10000 );
+        $this->ga->requestReportData( $this->ga_profile_id, NULL, array( 'visitBounceRate', 'pageviews', 'visits', 'avgTimeOnSite', 'avgTimeOnPage', 'exitRate', 'pageviewsPerVisit', 'percentNewVisits' ), NULL, $this->ga_filter, $date_start, $date_end, 1, 10000 );
 
         // See if there were any results
         $results = $this->ga->getResults();
@@ -171,7 +186,7 @@ class Analytics extends Base_Class {
         list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array('medium'), array( 'visits' ), NULL, NULL, $date_start, $date_end, 1, 10000 );
+        $this->ga->requestReportData( $this->ga_profile_id, array('medium'), array( 'visits' ), NULL, $this->ga_filter, $date_start, $date_end, 1, 10000 );
 
         // See if there were any results
         $results = $this->ga->getResults();
@@ -220,13 +235,17 @@ class Analytics extends Base_Class {
 		if ( empty( $this->ga_profile_id ) )
 			return false;
 
+        // Make sure we can get any number we want
+        if ( 0 == $limit )
+            $limit = 10000;
+
         // Declare variables
         $content_overview = array();
 
         list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 
         // Get data
-        $this->ga->requestReportData( $this->ga_profile_id, array('pagePath'), array( 'pageviews', 'avgTimeOnPage', 'visitBounceRate', 'exitRate' ), array( '-pageviews' ), NULL, $date_start, $date_end, 1, $limit );
+        $this->ga->requestReportData( $this->ga_profile_id, array('pagePath'), array( 'pageviews', 'avgTimeOnPage', 'visitBounceRate', 'exitRate' ), array( '-pageviews' ), $this->ga_filter, $date_start, $date_end, 1, $limit );
 
         // See if there were any results
         $results = $this->ga->getResults();
@@ -312,22 +331,39 @@ class Analytics extends Base_Class {
 		// Make sure that we have a google analytics profile to work with
 		if ( empty( $this->ga_profile_id ) )
 			return false;
-		
-		// Limit
-		$limit = ( 0 == $limit ) ? '' : ' LIMIT ' . (int) $limit;
-		
-		// Get dates
-		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
-		
-		$traffic_sources = $this->db->get_results( "SELECT `source`, `medium`, SUM( `visits` ) AS visits, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate FROM `analytics_data`  WHERE `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . " GROUP BY `source` ORDER BY `visits` DESC $limit", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get traffic sources.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $traffic_sources;
+
+        // Make sure we can get any number we want
+        if ( 0 == $limit )
+            $limit = 10000;
+
+        // Declare variables
+        $traffic_sources = array();
+
+        list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, array( 'source', 'medium' ), array( 'visits', 'pageviewsPerVisit', 'avgTimeOnSite', 'percentNewVisits', 'visitBounceRate' ), array( '-visits' ), $this->ga_filter, $date_start, $date_end, 1, $limit );
+
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+
+            $traffic_sources[] = array(
+                'source' => $dimensions['source']
+                , 'medium' => $dimensions['medium']
+                , 'visits' => $metrics['visits']
+                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
+                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
+                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
+                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+            );
+        }
+
+        return $traffic_sources;
 	}
 	
 	/**
@@ -342,22 +378,45 @@ class Analytics extends Base_Class {
 		// Make sure that we have a google analytics profile to work with
 		if ( empty( $this->ga_profile_id ) )
 			return false;
-		
-		// Limit
-		$limit = ( 0 == $limit ) ? '' : ' LIMIT ' . (int) $limit;
-		
-		// Get dates
-		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
-		
-		$keywords = $this->db->get_results( "SELECT `keyword`, SUM( `visits` ) AS visits, ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 ) AS pages_by_visits, SEC_TO_TIME( SUM( `time_on_page` ) / SUM( `visits` ) ) AS time_on_site, ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 ) AS new_visits, ROUND( SUM( `bounces` ) / SUM( `entrances` ) * 100, 2 ) AS bounce_rate FROM `analytics_data`  WHERE `keyword` <> '(not set)' AND `date` >= '" . $this->db->escape( $date_start ) . "' AND `date` <= '" . $this->db->escape( $date_end ) . "' AND `ga_profile_id` = " . $this->ga_profile_id . " GROUP BY `keyword` ORDER BY `visits` DESC $limit", ARRAY_A );
-	
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get keywords.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $keywords;
+
+        // Make sure we can get any number we want
+        if ( 0 == $limit )
+            $limit = 10000;
+
+         // Declare variables
+        $keywords = array();
+
+        list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Set the GA Filter
+        $ga_filter = 'keyword!=(not set)';
+
+        // Add on global filter
+        if ( !is_null( $this->ga_filter ) )
+            $ga_filter .= ',' . $this->ga_filter;
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, array( 'keyword' ), array( 'visits', 'pageviewsPerVisit', 'avgTimeOnSite', 'percentNewVisits', 'visitBounceRate' ), array( '-visits' ), $ga_filter, $date_start, $date_end, 1, $limit );
+
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+
+            $keywords[] = array(
+                'keyword' => $dimensions['keyword']
+                , 'visits' => $metrics['visits']
+                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
+                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
+                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
+                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+            );
+        }
+
+        return $keywords;
 	}
 	
 	/***** SPARKLINES *****/
@@ -606,7 +665,7 @@ class Analytics extends Base_Class {
 	 */
 	private function metric_sql_calculation( $metric ) {
         // Initialize variables
-        $ga_metric = $ga_dimension = $ga_filter = NULL;
+        $ga_dimension = $ga_filter = NULL;
 
 		// Determine what it's supposed to be
 		switch ( $metric ) {
@@ -674,40 +733,6 @@ class Analytics extends Base_Class {
 	}
 	
 	/**
-	 * Pads an array with 0 values
-	 *
-	 * @param array $array (optional) the array where the key is a date
-	 * @param int $start_interval where to start the key filling in the array
-	 * @param int $end_interval where to end the key killing in the array
-	 * @return array
-	 */
-	private function pad_dates( $array, $start_interval, $end_interval ) {
-		if ( !is_array( $array ) )
-			return false;
-		
-		// Create an empty array with all the keys necessary
-		$date_padding = array_fill_keys( range( $start_interval, $end_interval, 86400000 ), 0 );
-		
-		// Merge the arrays
-		foreach ( $date_padding as $k => $v ) {
-			if ( array_key_exists( $k, $array ) ) {
-				$padded_array[$k] = $array[$k];
-				continue;
-			} elseif ( array_key_exists( $k - 3600000, $array ) ) {
-				$padded_array[$k] = $array[$k - 3600000];
-				continue;
-			} elseif ( array_key_exists( $k + 3600000, $array ) ) {
-				$padded_array[$k] = $array[$k + 3600000];
-				continue;
-			}
-			
-			$padded_array[$k] = 0;
-		}
-		
-		return $padded_array;
-	}
-	
-	/**
 	 * Gets the dates
 	 *
 	 * @param string $date_start (optional|)
@@ -732,6 +757,7 @@ class Analytics extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

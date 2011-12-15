@@ -55,6 +55,7 @@ img.sparkline{ margin-right: 10px; }
 .legend table { padding: 2px 3px 3px 2px; background: #FFFAF0 }
 
 #content h1 { width: 50%; float:left; }
-#content h3 { float:right; margin-right: 35px; font-size: 19px; font-weight: normal; text-align:right; }
+#content .dates { float:right; margin-right: 35px; }
+#content .dates input { width: 125px; font-size: 19px; font-weight: normal; }
 #content h1, #content h3 { line-height: 20px; margin-bottom:0; padding-bottom:0; }
 #ifClickOverlay{ margin-bottom: 20px; border: none }
