@@ -1,12 +1,12 @@
 <?php
 /** MySQL database name */
-define('DB_NAME', 'gsrsystem');
+define('DB_NAME', 'imaginer_system');
 
 /** MySQL database username */
-define('DB_USER', 'gsradmin');
+define('DB_USER', 'imaginer_admin');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'dxX9C87yAy');
+define('DB_PASSWORD', 'rbDxn6kkj2e4');
 
 /** MySQL hostname */
-define('DB_HOST', 'gsr.chdocfam1d6r.us-east-1.rds.amazonaws.com');
+define('DB_HOST', 'localhost');
