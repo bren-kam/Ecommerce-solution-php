@@ -43,6 +43,7 @@
 	-khtml-border-bottom-right-radius:4px;
 	border-bottom-right-radius:4px;
 }
+.tooltipHover .label strong { color: #fefeff }
 
 .view-report { font-size: 17px; font-weight: bold; }
 a.sparkline { margin: 1px; padding: 5px 2px 2px; display:block; width: 150px; }
