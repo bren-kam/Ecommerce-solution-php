@@ -126,7 +126,7 @@ jQuery(function($) {
 		'auto'      	: true,
 		'buttonImg' 	: 'http://admin.imagineretailer.com/images/buttons/attach.png',
 		'cancelImg' 	: 'http://admin.imagineretailer.com/images/icons/cancel.png',
-		'fileExt'		: '*.pdf;*.mov;*.wmv;*.flv;*.swf;*.f4v;*mp4;*.avi;*.mp3;*.aif;*.wma;*.wav;*.csv;*.doc;*.docx;*.rtf;*.xls;*.xlsx;*.wpd;*.txt;*.wps;*.pps,*.ppt,*.wks,*.bmp,*.gif;*.jpg;*.jpeg;*.png,*.psd;*.tif;*.zip;*.7z;*.rar;*.zipx;*.aiff;*.odt;',
+		'fileExt'		: '*.pdf;*.mov;*.wmv;*.flv;*.swf;*.f4v;*mp4;*.avi;*.mp3;*.aif;*.wma;*.wav;*.csv;*.doc;*.docx;*.rtf;*.xls;*.xlsx;*.wpd;*.txt;*.wps;*.pps,*.ppt,*.wks,*.bmp,*.gif;*.jpg;*.jpeg;*.png;*.psd;*.tif;*.zip;*.7z;*.rar;*.zipx;*.aiff;*.odt;',
 		'fileDesc'		: 'Attachments',
 		'multi'			: true,
 		'scriptData'	: { '_nonce' : $('#_ajax_upload_attachment').val(), 'wid' : $('#hWebsiteID').val(), 'uid' : $('#hUserID').val() },
