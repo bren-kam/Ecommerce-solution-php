@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 $selected = "social_media";
-$title = _('Posting | Email Marketing') . ' | ' . TITLE;
+$title = _('Posting') . ' | ' . _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
 get_header();
 ?>
 
