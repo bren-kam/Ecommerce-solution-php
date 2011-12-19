@@ -186,9 +186,11 @@ class Ashley extends Base_Class {
 				if( empty( $volume ) )
 					$volume = $product_information['volume'];
 			} else {
-				//echo 'wtf';exit;
 				$product_id = $this->p->create( 353 );
-				
+
+                // Make sure it's a unique slug
+                $slug = $this->unique_slug( $slug );
+
 				// Upload image if it's not blank
 				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
@@ -252,7 +254,44 @@ class Ashley extends Base_Class {
 			mail( 'david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
 		}
 	}
-	
+
+    /**
+     * Check to see if a Slug is already being used
+     *
+     * @param string $slug
+     * @return string
+     */
+    private function unique_slug( $slug ) {
+        $existing_slug = $this->db->get_var( "SELECT `slug` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` <> 'deleted' AND `slug` = '" . $this->db->escape( $slug ) . "'" );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to check slug.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // See if the slug already exists
+        if ( $slug == $existing_slug ) {
+            // Check to see if it has been incremented before
+            if ( preg_match( '/-([0-9]+)$/', $slug, $matches ) > 0 ) {
+                // The number to increment it by
+                $increment = $matches[1] * 1 + 1;
+
+                // Give it the new increment
+                $slug = preg_replace( '/-[0-9]+$/', "-$increment", $slug );
+
+                // Make sure it's unique
+                $slug = $this->unique_slug( $slug );
+            } else {
+                // It has not been incremented before, start with 2
+                $slug .= '-2';
+            }
+        }
+
+        // Return the unique slug
+        return $slug;
+    }
+
 	/**
 	 * Get Brand
 	 *

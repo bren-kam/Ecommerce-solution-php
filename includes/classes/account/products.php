@@ -1541,7 +1541,7 @@ class Products extends Base_Class {
 	 * @return int
 	 */
 	public function count_custom_products( $where ) {
-		$count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON ( b.category_id = c.category_id ) LEFT JOIN `brands` AS d ON ( a.brand_id = d.brand_id ) WHERE 1 $where GROUP BY a.`product_id`" );
+		$count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON ( b.category_id = c.category_id ) LEFT JOIN `brands` AS d ON ( a.brand_id = d.brand_id ) WHERE a.`publish_visibility` <> 'deleted' $where GROUP BY a.`product_id`" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

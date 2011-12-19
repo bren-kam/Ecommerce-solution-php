@@ -503,7 +503,8 @@ class Products extends Base_Class {
 		$website_with_products = array();
 		
 		// This all the websites with products
-		foreach ( $website_result_array as $row ) {
+		if ( is_array( $website_result_array ) )
+        foreach ( $website_result_array as $row ) {
 			$website_with_products[] = $row['website_id'];
 		}
 		

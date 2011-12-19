@@ -44,7 +44,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) { ?>
+		<?php if ( !isset( $about_us['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the About Us application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=233746136649331" title="<?php echo _('Online Platform - About Us'); ?>" target="_blank"><?php echo _('About Us'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
