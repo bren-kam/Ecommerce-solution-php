@@ -447,27 +447,30 @@ function adjustImageSizes(){
 	var productImages = $( '#dProductList img.product-image' ), productImagesLength = productImages.length, totalImages = 0;
 	
 	// Cycle through the images
-	productImages.each( function() {
-		// They may not be loaded yet -- make sure we get their final width
-		$(this).load(function() {
-			var height = $(this).height(), width = $(this).width(), newWidth = 150, newHeight = Math.round( ( height * newWidth ) / width );
-			
-			// Adjust Heights
-			if( newHeight > 100 ) {
-				newHeight = 100;
-				newWidth = Math.round( ( width * newHeight ) / height );
-			}
-			
-			$( '#sLoadingMsg' + $(this).attr('id').replace( 'pImage' , '' ) ).hide();
-			$(this).width( newWidth ).height( newHeight ).show();
-			
-			totalImages++;
-			
-			// On the last image, adjust the height
-			if( totalImages == productImagesLength )
-				adjustProductBoxesHeight();
-		});
-	});
+	productImages.error( function() {
+        totalImages++;
+
+        // On the last image, adjust the height
+        if( totalImages == productImagesLength )
+            adjustProductBoxesHeight();
+    }).load(function() {
+        var height = $(this).height(), width = $(this).width(), newWidth = 150, newHeight = Math.round( ( height * newWidth ) / width );
+
+        // Adjust Heights
+        if( newHeight > 100 ) {
+            newHeight = 100;
+            newWidth = Math.round( ( width * newHeight ) / height );
+        }
+
+        $( '#sLoadingMsg' + $(this).attr('id').replace( 'pImage' , '' ) ).hide();
+        $(this).width( newWidth ).height( newHeight ).show();
+
+        totalImages++;
+
+        // On the last image, adjust the height
+        if( totalImages == productImagesLength )
+            adjustProductBoxesHeight();
+    });
 }
 
 /**

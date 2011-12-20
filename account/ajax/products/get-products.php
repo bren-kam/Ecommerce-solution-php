@@ -66,6 +66,7 @@ $product_count = $p->get_website_products_count( $where );
             <option value="20">20</option>
             <option value="50">50</option>
             <option value="100">100</option>
+            <option value="0">All</option>
         </select>
     </div>
 </div>
@@ -115,6 +116,9 @@ if ( ( $page - 1 ) * $per_page + $per_page < $product_count ) {
 } else {
 	$total = $product_count;
 }
+
+if ( 0 == $total )
+    $total = $product_count;
 
 ?>
 

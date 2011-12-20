@@ -14,4 +14,5 @@
     <?php if ( isset( $posting ) ) { ?>
     	<a href="/social-media/facebook/posting/" title="<?php echo _('View Posts'); ?>" class="sub"><?php echo _('View'); ?></a>
 	<?php } ?>
+    <a href="/social-media/settings/" class="top" title="<?php echo _('Settings'); ?>"><?php echo _('Settings'); ?></a>
 </div>

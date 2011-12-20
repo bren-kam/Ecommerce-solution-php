@@ -8,6 +8,7 @@
 // Instantiate classes
 $s = new Social_Media();
 $dt = new Data_Table();
+$w = new Websites;
 
 // Set variables
 $dt->order_by( '`post`', '`status`', '`date_posted`' );
@@ -20,6 +21,7 @@ $dt->set_row_count( $s->count_posting_posts( $dt->get_where() ) );
 
 $confirm = _('Are you sure you want to cancel this post? This cannot be undone.');
 $delete_post_nonce = nonce::create( 'delete-post' );
+$timezone = $w->get_setting( 'timezone' );
 
 // Create output
 if ( is_array( $posts ) )
@@ -38,7 +40,8 @@ foreach ( $posts as $p ) {
         $status = _('Scheduled');
     }
 
-    $date = new DateTime( $p['date_posted'] );
+    $date = new DateTime();
+    $date->setTimestamp( $p['date_posted'] - $date->getOffset() + (  $timezone * 3600 ) );
 
  	$data[] = array(
 		format::limit_chars( $p['post'], 100 ) . $actions,
