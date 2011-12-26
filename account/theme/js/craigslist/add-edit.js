@@ -18,13 +18,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		select: function( event, ui ) {
 			$.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'pid' : ui.item.value }, ajaxResponse, 'json' );
 			
-			/*
-			if( '1' == $("#hPublishType").val() ) {
-				openEditorAndPreview();
-			} else {
-				getFirstTemplate();
-			}*/
-			
 			$('#hProductID').val( ui.item.value );
 			$('#tAutoComplete').val( ui.item.label );
 			
@@ -65,29 +58,49 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	
 	// Create the "paginating" functionality
 	$("#aNextTemplate").live( 'click', function(){
-		var templateNumber = parseInt( $('#hTemplateIndex').val() );
-		var numberOfTemplates = parseInt( $("#hTemplateCount").val() );
-		if( templateNumber >= numberOfTemplates) return;
-		$('#hTemplateIndex').attr( 'value', templateNumber + 1 );
-		$("#dAdPaging").html( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
-		loadTemplatePreview(1);
+		// Get the template numbers
+        var templateNumber = parseInt( $('#hTemplateIndex').val() ), numberOfTemplates = parseInt( $("#hTemplateCount").val() );
+
+        // If they've gone to far, do nothing
+        if ( templateNumber >= numberOfTemplates)
+            return;
+
+        // Assign new number
+		$('#hTemplateIndex').val( templateNumber + 1 );
+		$("#dAdPaging").text( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
+
+        // Load the template preview
+        loadTemplatePreview(1);
 	});
 	
-	$("#aPrevTemplate").live( 'click', function(){
+	$("#aPrevTemplate").live( 'click', function() {
+        // Get the template numbers
 		var templateNumber = parseInt( $('#hTemplateIndex').val() );
-		if( templateNumber <= 1) return;
-		$('#hTemplateIndex').val( templateNumber - 1 );
-		$("#dAdPaging").html( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
-		loadTemplatePreview(-1);
+
+         // If they've gone to far, do nothing
+		if ( templateNumber <= 1 )
+            return;
+
+         // Assign new number
+        $('#hTemplateIndex').val( templateNumber - 1 );
+		$("#dAdPaging").text( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
+
+        // Load the template preview
+        loadTemplatePreview(-1);
 	});
-				
+
+    // Go to publish screen
 	$('#aPublish, #aSelectTemplate').click( function() {
+        // Hide the narrow your search and show that they are publishing
 		$("#dNarrowSearch").hide();
-		$("#hPublishConfirm").val( 1 );	
+		$("#hPublishConfirm").val(1);
+
+        // Seeif there is a template
 		var template = $("#dPreviewTemplate").is(':visible');
 		
-		if( template ){
-			$("#dPreviewTemplate").hide();
+		if ( template ) {
+			// We don't want to see the preview anymore
+            $("#dPreviewTemplate").hide();
 			
 			var editorHTML = $("#hTemplateDescription").val(), iItemName = $("#hProductName").val(), iItemStoreName = $("#hStoreName").val(), iItemStoreLogo = $("#hStoreLogo").val(), iItemCategory = $("#hProductCategoryName").val();
 			var iItemBrand = $("#hProductBrandName").val(), iItemProductDescription = $("#hProductDescription").val(), iItemSpecs = '', iItemSKU = $("#hProductSKU").val();
@@ -95,16 +108,17 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			
 			// Set the text area, so it submits properly
 			$("#hCraigslistAdDescription").val( editorHTML );
-			
+
+            // Get the new content
 			editorHTML = editorHTML.replace( '[Product Name]', iItemName );
 			editorHTML = editorHTML.replace( '[Store Name]', iItemStoreName );
 			editorHTML = editorHTML.replace( '[Store Logo]', '<img src="' + storeURL + '/custom/uploads/images/' + iItemStoreLogo + '" alt="" />' );
 			editorHTML = editorHTML.replace( '[Category]', iItemCategory );
 			editorHTML = editorHTML.replace( '[Brand]', iItemBrand );
 			editorHTML = editorHTML.replace( '[Product Description]', iItemProductDescription );
-			editorHTML = editorHTML.replace( '[Product Specs]', iItemSpecs );
 			editorHTML = editorHTML.replace( '[SKU]', iItemSKU );
-			
+
+            // Create photos
 			var photos = new Array;
 			photos = document.getElementsByClassName( 'hiddenImage' );
 			
@@ -119,41 +133,62 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 					index++;
 				}
 			}
-			
+
+            // Update the title
 			$('#tCraigslistPublishTitle').val( $("#hTemplateTitle").val() );
+
+            // Get the textare filled with the right content
 			$("#taCraigslistPublish").html( htmlToText( editorHTML ) );
-			
+
+            // Show the new HTML
 			$("#dGenerateHTML").show();
 		} else {
-			$("#iPublishConfirm").attr("value", "1");
-			$("#dCreateAd, #dPreviewAd").hide();
-			
+            // Show that we are confirming
+			$("#hPublishConfirm").val(1);
+
+            // Hide the initial section
+            $("#dCreateAd, #dPreviewAd").hide();
+
+            // Refresh the preview
 			refreshPreview();
+
+            // Get the content
 			var content = $("#dCraigslistCustomPreview").html();
-			if( '' == content ){
+
+            // Make sure they entered something in
+			if( '' == content ) {
 				alert( "You haven't created ad text!" );
 				$("#dCreateAd, #dPreviewAd").show();
 				return false;
 			}
 			
-			// Set the text area, so it submits properly
+			// Set the hidden value, so it submits properly
 			$("#hCraigslistAdDescription").val( $("#taDescription").val() );
-			
+
+            // Change the title
 			$('#tCraigslistPublishTitle').val( $("#tTitle").val() );
+
+            // Change the textarea
 			$("#taCraigslistPublish").html( htmlToText( content ) );
-			
+
+            // Show the new HTML
 			$("#dGenerateHTML").show();
 		}
 	});
-	
+
+    // If they click create an ad, what do we do?
 	$("#aCreateAd").click( function() {
+        // Hide the preview template
 		$("#dPreviewTemplate").hide();
-		$("#iTemplateId").val( '-1' );
+		$("#hTemplateID").val('-1');
+
 		openEditorAndPreview();
 	});
-	
+
+    // Refresh the preview
 	$("#aRefresh").click( refreshPreview );
-	
+
+    // See if an ad is there to load
 	checkAdStatus();	
 });
 
@@ -161,18 +196,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
  * If there is an ad in the titlebar, load it using AJAX.
  */
 function checkAdStatus(){
-	craigslistAdId = parseInt( $('#hCraigslistAdId').val() );
-	if( craigslistAdId ) {
-		$.post(  '/ajax/craigslist/get/', { '_nonce' : $('#_nonce').val(), 'craigslist_ad_id' : craigslistAdId },
-		   function( result ) {
-				if( result['success'] ) {
-					$.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'pid' : result['results']['product_id'] }, ajaxResponse, 'json' );
+	craigslistAdID = parseInt( $('#hCraigslistAdID').val() );
 
-				} else {
-				}
-			}, 
-			'json' );
-	}
+	if( craigslistAdID )
+        $.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'caid' : craigslistAdID }, ajaxResponse, 'json' );
 }
 
 // Needs to be done at the end of the previous function
@@ -181,6 +208,7 @@ $.fn.determineTemplate = function() {
 		openEditorAndPreview();
 	} else {
 		getFirstTemplate();
+        openEditorAndPreview();
 	}
 }
 
@@ -210,7 +238,7 @@ $.fn.openEditorAndPreview = openEditorAndPreview;
  * Opens the editor and template area
  */
 function openTemplateSelector() {
-	$("#dAdPaging").html( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
+	$("#dAdPaging").text( $('#hTemplateIndex').val() + ' / ' + $("#hTemplateCount").val() );
 	$("#dNarrowSearch").hide();
 	$("#dPreviewTemplate").show();
 	
@@ -230,30 +258,20 @@ function loadTemplatePreview( direction ) {
  * Gets the next product in the lineup for sampling purposes
  */
 function refreshPreview() {
-	var productID = parseInt( $("#hProductID").val() );
-	var product_name = $("#hProductName").val();
-	var store_name = $("#hStoreName").val();
-	var store_logo = $("#hStoreLogo").val();
-	var storeURL = $('#hStoreURL').val();
-	var category = $("#hProductCategoryName").val();
-	var brand = $("#hProductBrandName").val();
-	var product_description = $("#hProductDescription").val();
-	var product_specs = ""; // $("").val();
-	
-	var sku = $("#hProductSKU").val();
-	
+	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
+	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val();
+
 	//get the contents of the tinyMCE editor and replace tags with actual stuff.
 	var newContent = CKEDITOR.instances.taDescription.getData();
-	newContent = newContent.replace( /\[Brand\]/gi, brand );
-	newContent = newContent.replace( /\[Product\ Name\]/gi, product_name );
-	newContent = newContent.replace( /\[Product\ Specs\]/g, product_specs );
-	newContent = newContent.replace( /\[Category\]/gi, category );
-	newContent = newContent.replace( /\[Store\ Name\]/gi, store_name );
-	newContent = newContent.replace( /\[Store\ Logo\]/gi, '<img src="' + storeURL + '/custom/uploads/images/' + store_logo + '" alt="" />' );
-	newContent = newContent.replace( /\[Product\ Description\]/gi, product_description );
-	newContent = newContent.replace( /\[SKU\]/gi, sku );
-	newContent = newContent.replace( /\[Photo\]/gi, '[Photo]' );
-	
+
+    newContent = newContent.replace( '[Product Name]', productName );
+    newContent = newContent.replace( '[Store Name]', storeName );
+    newContent = newContent.replace( '[Store Logo]', '<img src="' + storeURL + '/custom/uploads/images/' + storeLogo + '" alt="" />' );
+    newContent = newContent.replace( '[Category]', category );
+    newContent = newContent.replace( '[Brand]', brand );
+    newContent = newContent.replace( '[Product Description]', productDescription );
+    newContent = newContent.replace( '[SKU]', sku );
+
 	var photos = new Array;
 	photos = document.getElementsByClassName( 'hiddenImage' );
 	var photoHTML = '', index = 0;
@@ -280,4 +298,3 @@ function htmlToText( html ) {
 	html = html.replace( '>', '&gt;');
 	return html;
 }
-

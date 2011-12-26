@@ -23,6 +23,9 @@ if ( !$user ) {
 /* Paging */
 $limit = ( isset( $_GET['iDisplayStart'] ) ) ? intval( $_GET['iDisplayStart'] ) . ', ' . intval( $_GET['iDisplayLength'] ) : 1000;
 
+if ( '0' == $_GET['iDisplayLength'] )
+    $limit = 0;
+
 $order_by = '';
 
 /* Ordering */

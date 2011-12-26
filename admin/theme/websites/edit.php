@@ -318,6 +318,14 @@ get_header();
 							<?php echo _('Logo'); ?>:
 							<strong><?php echo $web['logo']; ?></strong>
 						</p>
+                        <p>
+                            <label for="tGAUsername"><?php echo _('Google Analytics Username'); ?>:</label>
+							<input type="text" name="tGAUsername" id="tGAUsername" value="<?php if ( !empty( $settings['ga-username'] ) ) echo security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+						</p>
+						<p>
+							<label for="tGAPassword"><?php echo _('Google Analytics Password'); ?>:</label>
+							<input type="text" name="tGAPassword" id="tGAPassword" value="<?php if ( !empty( $settings['ga-password'] ) ) echo security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+						</p>
 						<p>
 							<label for="tGAProfileID"><?php echo _('Google Analytics Profile ID'); ?>:</label>
 							<input type="text" name="tGAProfileID" id="tGAProfileID" value="<?php echo $web['ga_profile_id']; ?>" class="tb" />
@@ -333,14 +341,6 @@ get_header();
 						<p>
 							<label for="tWordPressPassword"><?php echo _('WordPress Password'); ?>:</label>
 							<input type="text" name="tWordPressPassword" id="tWordPressPassword" value="<?php if ( !empty( $web['wordpress_password'] ) ) echo security::decrypt( base64_decode( $web['wordpress_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
-						</p>
-                        <p>
-                            <label for="tGAUsername"><?php echo _('Google Analytics Username'); ?>:</label>
-							<input type="text" name="tGAUsername" id="tGAUsername" value="<?php if ( !empty( $settings['ga-username'] ) ) echo security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
-						</p>
-						<p>
-							<label for="tGAPassword"><?php echo _('Google Analytics Password'); ?>:</label>
-							<input type="text" name="tGAPassword" id="tGAPassword" value="<?php if ( !empty( $settings['ga-password'] ) ) echo security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
 						</p>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>

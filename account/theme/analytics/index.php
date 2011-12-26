@@ -16,7 +16,7 @@ if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'] );
+$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'visits' );
@@ -49,7 +49,10 @@ $sparklines['time_on_site'] = $a->sparkline( 'time_on_site' );
 $content_overview_pages = $a->get_content_overview();
 
 css( 'analytics' );
-javascript(  'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'JSON', 'analytics/dashboard' );
+javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'JSON', 'analytics/dashboard' );
+
+// Load the jQuery UI CSS
+add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
 add_before_javascript('function open_flash_chart_data() { return JSON.stringify(' . $pie_chart . ');}');
 
@@ -76,7 +79,11 @@ get_header();
 ?>
 
 <div id="content">
-	<h3><?php echo $date_start, ' - ', $date_end; ?></h3>
+	<div class="dates">
+        <input type="text" id="tDateStart" name="ds" class="tb" value="<?php echo $date_start; ?>" />
+        -
+        <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
+    </div>
 	<h1><?php echo _('Dashboard'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'dashboard' ); ?>
@@ -122,10 +129,10 @@ get_header();
 							<span class="label"><?php echo _('Search Engines'); ?></span><br />
 							<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
-						<?php if ( $traffic_sources['other'] > 0 ) { ?>
+						<?php if ( $traffic_sources['email'] > 0 ) { ?>
 						<p class="yellow-marker">
-							<span class="label"><?php echo _('Other'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['other'] ); ?> (<?php echo round( $traffic_sources['other'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
+							<span class="label"><?php echo _('Campaigns'); ?></span><br />
+							<span class="data"><?php echo number_format( $traffic_sources['email'] ); ?> (<?php echo round( $traffic_sources['email'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
 						</p>
 						<?php } ?>
 					</div>

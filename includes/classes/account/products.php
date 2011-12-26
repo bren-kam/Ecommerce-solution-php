@@ -407,9 +407,9 @@ class Products extends Base_Class {
 	public function get_product( $product_id ) {
 		// Type Juggling
 		$product_id = (int) $product_id;
-		
+
 		$product = $this->db->get_row( "SELECT a.`product_id`, a.`name`, a.`slug`, a.`description`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`, c.`name` AS category, e.`image`, f.`name` AS industry FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) INNER JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) WHERE a.`product_id` = $product_id AND e.`sequence` = 0", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get product.', __LINE__, __METHOD__ );
@@ -730,9 +730,14 @@ class Products extends Base_Class {
 
 		// Type Juggling
 		$website_id = (int) $user['website']['website_id'];
-		
-		$starting_product = ( $page - 1 ) * $limit;
-		
+
+        if ( 0 == $limit ) {
+            $sql_limit = '';
+        } else {
+            $starting_product = ( $page - 1 ) * $limit;
+            $sql_limit = "LIMIT $starting_product, $limit";
+        }
+
 		$sql = 'SELECT a.`product_id`,';
 		$sql .= 'a.`name`, a.`slug`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`,';
 		$sql .= 'c.`name` AS category, e.`image`, e.`swatch`, f.`price`, f.`alternate_price`, f.`alternate_price_name`,';
@@ -746,7 +751,7 @@ class Products extends Base_Class {
 		$sql .= 'LEFT JOIN `industries` AS g ON ( a.`industry_id` = g.`industry_id` ) ';
 		$sql .= "WHERE f.`active` = 1 AND f.`website_id` = $website_id AND ( e.`sequence` = 0 OR e.`sequence` IS NULL ) AND a.`publish_visibility` <> 'deleted' AND a.`date_created` <> '0000-00-00 00:00:00' ";
 		$sql .= $where;
-		$sql .= " GROUP BY a.`product_id` ORDER BY f.`sequence` ASC LIMIT $starting_product, $limit";
+		$sql .= " GROUP BY a.`product_id` ORDER BY f.`sequence` ASC $sql_limit";
 		
 		$products = $this->db->get_results( $sql, ARRAY_A );
 		
