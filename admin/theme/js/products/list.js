@@ -62,7 +62,7 @@ function postLoad( $ ) {
 		'sAjaxSource': '/ajax/products/list/',
 		'iDisplayLength' : 100,
 		"oLanguage": {
-			"sLengthMenu": 'Rows: <select><option value="100">100</option><option value="250">250</option><option value="500">500</option></select>',
+			"sLengthMenu": 'Rows: <select><option value="100">100</option><option value="250">250</option><option value="500">500</option><option value="0">All</option></select>',
 			"sInfo": "Records: _START_ - _END_ of _TOTAL_"
 		},
 		"fnServerData": function ( sSource, aoData, fnCallback ) {

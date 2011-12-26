@@ -22,7 +22,7 @@ class Social_Media extends Base_Class {
 	 */
 	public function get_posting_posts() {
 		// Get the posting posts
-		$posts = $this->db->get_results( "SELECT a.`sm_posting_post_id`, a.`access_token`, a.`post`, a.`link`, b.`fb_page_id` FROM `sm_posting_posts` AS a LEFT JOIN `sm_posting` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 0 AND NOW() > a.`date_posted`", ARRAY_A );
+		$posts = $this->db->get_results( "SELECT a.`sm_posting_post_id`, a.`access_token`, a.`post`, a.`link`, b.`fb_page_id`, d.`email` FROM `sm_posting_posts` AS a LEFT JOIN `sm_posting` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `websites` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( c.`user_id` = d.`user_id` ) WHERE a.`status` = 0 AND NOW() > a.`date_posted`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

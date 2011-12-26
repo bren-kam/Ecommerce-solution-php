@@ -730,9 +730,14 @@ class Products extends Base_Class {
 
 		// Type Juggling
 		$website_id = (int) $user['website']['website_id'];
-		
-		$starting_product = ( $page - 1 ) * $limit;
-		
+
+        if ( 0 == $limit ) {
+            $sql_limit = '';
+        } else {
+            $starting_product = ( $page - 1 ) * $limit;
+            $sql_limit = "LIMIT $starting_product, $limit";
+        }
+
 		$sql = 'SELECT a.`product_id`,';
 		$sql .= 'a.`name`, a.`slug`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`,';
 		$sql .= 'c.`name` AS category, e.`image`, e.`swatch`, f.`price`, f.`alternate_price`, f.`alternate_price_name`,';
@@ -746,7 +751,7 @@ class Products extends Base_Class {
 		$sql .= 'LEFT JOIN `industries` AS g ON ( a.`industry_id` = g.`industry_id` ) ';
 		$sql .= "WHERE f.`active` = 1 AND f.`website_id` = $website_id AND ( e.`sequence` = 0 OR e.`sequence` IS NULL ) AND a.`publish_visibility` <> 'deleted' AND a.`date_created` <> '0000-00-00 00:00:00' ";
 		$sql .= $where;
-		$sql .= " GROUP BY a.`product_id` ORDER BY f.`sequence` ASC LIMIT $starting_product, $limit";
+		$sql .= " GROUP BY a.`product_id` ORDER BY f.`sequence` ASC $sql_limit";
 		
 		$products = $this->db->get_results( $sql, ARRAY_A );
 		
