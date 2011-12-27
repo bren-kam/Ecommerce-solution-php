@@ -68,6 +68,8 @@ function postLoad( $ ) {
 		"fnServerData": function ( sSource, aoData, fnCallback ) {
 			// Set a global variable
 			serverCallback = fnCallback;
+
+            aoData.push({ name : 'cid', value : $('#sCategoryID').val() });
 			
 			// Get the data
 			$.ajax({
@@ -97,6 +99,11 @@ function postLoad( $ ) {
 			
 			listProducts.fnDraw();
 		}, 'json' );
+	});
+
+    // Create the functionality to narrow down by category
+	$('#sCategoryID').change( function() {
+		listProducts.dataTable().fnDraw();
 	});
 }
 
