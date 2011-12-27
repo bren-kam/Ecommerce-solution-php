@@ -105,6 +105,20 @@ if ( isset( $_SESSION['products']['search'] ) ) {
 	$where .= " AND ( $type LIKE '" . $p->db->escape( $_SESSION['products']['search'] ) . "%' )";
 }
 
+// Add categories
+if ( 0 != $_GET['cid'] ) {
+    $c = new Categories();
+    $categories = $c->get_sub_category_ids( $_GET['cid'] );
+    $categories[] = $_GET['cid'];
+
+    // Make sure they are all integers
+    foreach ( $categories as &$cat ) {
+        $cat = (int) $cat;
+    }
+    
+    $where .= ' AND b.`category_id` IN(' . implode( ',', $categories ) . ')';
+}
+
 // Get websites
 $products = $p->list_products( $where, $order_by, $limit );
 $product_count = $p->count_products( $where );

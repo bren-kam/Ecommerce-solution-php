@@ -11,9 +11,15 @@ global $user;
 if ( !$user )
 	login();
 
+// Instantiate Classes
+$c = new Categories();
+
+// Unset the session
 unset( $_SESSION['products'] );
 
+// Set variables
 $users = $u->get_product_users();
+$categories = $c->get_list();
 
 css( 'data-tables/TableTools.css', 'data-tables/ui.css', 'jquery.ui', 'products/list' );
 javascript( 'jquery', 'jquery.ui', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'jquery.tmp-val', 'products/list' );
@@ -78,6 +84,15 @@ get_header();
 									?>
 									<option value="<?php echo $u['user_id']; ?>"><?php echo $u['contact_name']; ?></option>
 									<?php } ?>
+								</select>
+							</td>
+						</tr>
+                        <tr>
+							<td><label for="sCategoryID"><?php echo _('Category'); ?>:</label></td>
+							<td>
+								<select id="sCategoryID">
+									<option value="0"><?php echo _('-- Select a Category --'); ?></option>
+									<?php echo $categories; ?>
 								</select>
 							</td>
 						</tr>

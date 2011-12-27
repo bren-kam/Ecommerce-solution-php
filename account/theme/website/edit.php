@@ -83,7 +83,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 			case 'products':
 				$pagemeta = array( 'top' => $_POST['sTop'] );
 
-                if ( $_POST['tTitle'] == 'Page Title....' ) $_POST['tTitle'] = '';
+                if ( $_POST['tTitle'] == _('Page Title...') ) $_POST['tTitle'] = '';
                     $pagemeta['page-title'] = $_POST['tTitle'];
 			break;
 		}
@@ -166,7 +166,7 @@ get_header();
 		?>
 		<form name="fEditPage" action="/website/edit/?wpid=<?php echo $website_page_id; ?>" method="post">
             <div id="dTitleContainer">
-                <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="Page Title..." />
+                <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="<?php echo _('Page Title...'); ?>" />
             </div>
             <div id="dPageSlug">
             	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['domain']; ?>/<span id="sPageSlug"><?php echo $page['slug']; ?></span><input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb hidden" value="<?php echo $page['slug']; ?>" />/</span>
