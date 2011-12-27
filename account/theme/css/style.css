@@ -167,6 +167,7 @@ h2.title { font-size: 19px; font-weight: bold; padding-bottom: 7px; }
 h2.title label { font-size: 19px }
 .image-border { padding: 1px; border: 1px solid #929292 }
 .top { vertical-align: top }
+.relative { position: relative; }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 

@@ -279,7 +279,7 @@ class Websites extends Base_Class {
 	}
 	
 	/**
-	 * List Authorized users
+	 * Count Pages
 	 *
 	 * @param string $where
 	 * @return array
