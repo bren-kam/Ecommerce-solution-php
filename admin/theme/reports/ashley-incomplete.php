@@ -32,12 +32,12 @@ $row = 3;
 foreach ( $products as $p ) {
 	// Make the title of each section bold
 	$pe->getActiveSheet()
-		->setCellValue( 'A' . $row, $w['sku'] )
-		->setCellValue( 'B' . $row, $w['link'] )
-		->setCellValue( 'C' . $row, $w['private'] )
-		->setCellValue( 'D' . $row, $w['categories'] )
-        ->setCellValue( 'E' . $row, $w['attributes'] )
-        ->setCellValue( 'F' . $row, $w['product_images'] );
+		->setCellValue( 'A' . $row, $p['sku'] )
+		->setCellValue( 'B' . $row, $p['link'] )
+		->setCellValue( 'C' . $row, $p['private'] )
+		->setCellValue( 'D' . $row, $p['categories'] )
+        ->setCellValue( 'E' . $row, $p['attributes'] )
+        ->setCellValue( 'F' . $row, $p['product_images'] );
 
 	$row++;
 }
@@ -49,7 +49,10 @@ $pe->getActiveSheet()->getColumnDimension('C')->setWidth(20);
 $pe->getActiveSheet()->getColumnDimension('D')->setWidth(20);
 $pe->getActiveSheet()->getColumnDimension('E')->setWidth(20);
 $pe->getActiveSheet()->getColumnDimension('F')->setWidth(20);
-$pe->getActiveSheet()->getStyle('A3:D' . ( count( $products ) + 2 ) )->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+
+$last_row = count( $products ) + 2;
+$pe->getActiveSheet()->getStyle('A3:D' . $last_row )->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+$pe->getActiveSheet()->getStyle('A3:A' . $last_row )->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment; filename="Ashley - Incomplete Products.xls"' );
