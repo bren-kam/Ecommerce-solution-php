@@ -21,7 +21,7 @@ $v->add_validation( 'tEmail', 'req', 'The "Email" field is required' );
 $v->add_validation( 'tEmail', 'email', 'The "Email" field must contain a valid email' );
 
 // Make sure it's a valid request
-if( nonce::verify( $_POST['_nonce'], 'sign-up' ) ) {
+if( '1' == $signed_request['page']['liked'] && nonce::verify( $_POST['_nonce'], 'sign-up' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
@@ -66,7 +66,7 @@ get_header('facebook/');
 	// Show the content
 	echo $tab['content'];
 	
-	if ( !$success ) {
+	if ( '1' == $signed_request['page']['liked'] && !$success ) {
 	?>
 		<form name="fSignUp" method="post" action="/facebook/share-and-save/tab/">
 		<table cellpadding="0" cellspacing="0">
