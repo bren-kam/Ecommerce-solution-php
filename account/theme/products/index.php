@@ -115,6 +115,9 @@ get_header();
 		<a href="javascript:;" class="button screen-selector selected" id="aPricingProductInformation" title="<?php echo _('Pricing/Product Information'); ?>"><?php echo _('Pricing/Product Information'); ?></a> 
 		<a href="javascript:;" class="button screen-selector" id="aProductOptions" title="<?php echo _('Product Options'); ?>"><?php echo _('Product Options'); ?></a> 
 		<a href="javascript:;" class="button screen-selector" id="aShoppingCart" title="<?php echo _('Shopping Cart'); ?>"><?php echo _('Shopping Cart'); ?></a>
+        <?php if ( $user['role'] >= 8 ) { ?>
+            <a href="javascript:;" rel="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=" class="button screen-selector" id="aMasterCatalog" title="<?php echo _('Master Catalog'); ?>" target="_blank"><?php echo _('Master Catalog'); ?></a>
+        <?php } ?>
 	</p>
 	<br />
 	<?php } ?>
