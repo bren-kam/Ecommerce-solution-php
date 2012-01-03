@@ -27,7 +27,7 @@ if ( is_array( $posts ) ) {
 		// http://developers.facebook.com/docs/reference/api/page/#posts
 		try {
             $fb->api( $p['fb_page_id'] . '/feed', 'POST', array( 'message' => $p['post'], 'link' => $p['link'] ) );
-        } catch ( Exception as $e ) {
+        } catch ( Exception $e ) {
             fn::mail( $p['email'], TITLE . ' - Unable to Post to Facebook', "We were unable to send the following post to Facebook:\n\n" . $p['post'] . "\n\nFor the following reason(s):\n\n" . $e->getMessage() . "\n\nTo fix this, please login to the dashboard, go to Social Media > Posting, then delete this post and recreate it following the rules above.\n\nHave a great day!" );
             continue;
         }

@@ -70,17 +70,22 @@ class Categories extends Base_Class {
 	 * @param int $category_id (optional|0)
 	 * @param int $parent_category (optional|0)
 	 * @param int $spacing (optional|0) number of spaces to put before a category
+     * @param bool $bottom_level_categories Whether bottom level categories should be included
 	 * @return string $str_categories
 	 */
-	public function get_list( $category_id = 0, $parent_category = 0, $spacing = 0 ) {
+	public function get_list( $category_id = 0, $parent_category = 0, $spacing = 0, $bottom_level_categories = true ) {
 		$str_categories = '';
 		
 		foreach ( $this->categories[$parent_category] as $c ) {
+            // If we don't have bottom level categories, skip them
+            if ( !$bottom_level_categories && ( !isset( $this->categories[$c['category_id']] ) || !is_array( $this->categories[$c['category_id']] ) ) )
+                continue;
+
 			$selected = ( $category_id == $c['category_id'] ) ? ' selected="selected"' : '';
 			$str_categories .= '<option value="' . $c['category_id'] . '"' . $selected . '>' . str_repeat( '&nbsp;', $spacing ) . $c['name'] . '</option>';
 			
 			if ( isset( $this->categories[$c['category_id']] ) && is_array( $this->categories[$c['category_id']] ) )
-				$str_categories .= $this->get_list( $category_id, $c['category_id'], $spacing + 5 );
+				$str_categories .= $this->get_list( $category_id, $c['category_id'], $spacing + 5, $bottom_level_categories );
 			
 		}
 		
@@ -180,7 +185,7 @@ class Categories extends Base_Class {
 	 *
 	 * @param int $category_id
 	 * @param array $parent_category_ids (optional)
-	 * @returns array
+	 * @return array
 	 */
 	public function get_parent_category_ids( $category_id, $parent_category_ids = array() ) {
 		$category = $this->categories_list[$category_id];
@@ -225,7 +230,7 @@ class Categories extends Base_Class {
 	 * Get Child Category
 	 *
 	 * @param int $id the fields
-	 * @returns array|bool
+	 * @return array|bool
 	 */
 	 public function get_child_categories( $id = 0 ) {
 		 $cat = array ();
@@ -236,7 +241,96 @@ class Categories extends Base_Class {
 		 
 		 return ( ( 0 == count ($cat) ) ? FALSE : $cat );
 	 }
-	 
+
+    /**
+	 * List Categories
+	 *
+	 * @param $variables array( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_categories( $variables ) {
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+
+		$categories = $this->db->get_results( "SELECT a.`category_id`, IF ( '' = a.`title`, b.`name`, a.`title` ) AS title, UNIX_TIMESTAMP( a.`date_updated` ) AS date_updated, b.`slug` FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+        
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $categories;
+	}
+
+	/**
+	 * Count Categories
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_categories( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( a.`category_id` ) FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE 1 $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $count;
+	}
+
+    /**
+     * Get Website Category
+     *
+     * @param int $category_id
+     * @return array
+     */
+    public function get_website_category( $category_id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $category_id = (int) $category_id;
+
+        $category = $this->db->get_row( "SELECT IF( '' = a.`title`, b.`name`, a.`title` ) AS title, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`top` FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` = $category_id", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website category.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $category;
+    }
+
+    /**
+     * Update Website Category
+     *
+     * @param int $category_id
+     * @param string $title
+     * @param string $content
+     * @param string $meta_title
+     * @param string $meta_description
+     * @param string $meta_keywords
+     * @param bool $top
+     * @return array
+     */
+    public function update_website_category( $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top ) {
+        global $user;
+
+        $this->db->update( 'website_categories', array( 'title' => $title, 'content' => $content, 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'top' => $top ), array( 'website_id' => $user['website']['website_id'], 'category_id' => $category_id ), 'sssssi', 'ii' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update website category.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
 	/**
 	 * Report an error
 	 *
@@ -245,6 +339,7 @@ class Categories extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

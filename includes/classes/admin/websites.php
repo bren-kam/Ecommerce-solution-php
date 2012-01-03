@@ -840,21 +840,14 @@ class Websites extends Base_Class {
 		
 		return $websites;
 	}
-	
+
 	/**
 	 * Updates all installed websites
 	 *
 	 * @param bool $live
+     * @return bool
 	 */
-	/**
-	 * Updates all installed websites
-	 *
-	 * @param bool $live
-	 */
-	/**
-	 * Updates all installed websites
-	 */
-	public function upgrade_websites( $live = 0 ) {
+	public function upgrade_websites( $live = false ) {
 		// Typecast
 		$live = (int) $live;
 
