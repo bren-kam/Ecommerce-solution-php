@@ -40,6 +40,24 @@ function postLoad( $ ) {
 		"aaSorting": [[0, 'asc']],
 		"sDom" : '<"top"Tlfr>t<"bottom"pi>'
 	});
+
+    // Delete a user
+	$('.delete-user').live( 'click', function() {
+		var userID = $(this).attr('id').replace( 'aDelete', '' );
+
+		if ( !confirm( "Are you sure you want to delete this user? This action cannot be undone." ) )
+			return;
+
+		$.post( '/ajax/users/delete/', { _nonce: $('#_ajax_delete_user').val(), 'uid': userID }, function( response ) {
+			// Handle any errors
+			if ( !response['result'] ) {
+				alert( response['error'] );
+				return;
+			}
+
+			listUsers.fnDraw();
+		}, 'json' );
+	});
 }
 
 /**
