@@ -869,6 +869,23 @@ class Products extends Base_Class {
 		return $websites;
 	}
 
+    /**
+     * Ashley - Incomplete Products
+     *
+     * @return array
+     */
+    public function ashley_incomplete_products() {
+        $products = $this->db->get_results( "SELECT a.`sku`, CONCAT( 'http://admin.greysuitretail.com/products/add-edit/?pid=', a.`product_id` ) AS link, IF ( 'private' = a.`publish_visibility`, 'Yes', 'No' ) AS private, IF ( b.`category_id` IS NOT NULL, 'Yes', 'No' ) AS categories,  IF ( c.`attribute_item_id` IS NOT NULL, 'Yes', 'No' ) AS attributes, IF ( d.`product_image_id` IS NOT NULL, 'Yes', 'No' ) AS product_images FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `attribute_item_relations` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_images` AS d ON ( a.`product_id` = d.`product_id` AND d.`sequence` = 0 ) WHERE a.`user_id_created` = 353 AND a.`publish_visibility` <> 'deleted' AND ( a.`publish_visibility` = 'private' OR b.`category_id` IS NULL OR c.`attribute_item_id` IS NULL OR d.`product_image_id` IS NULL )", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( "Failed to get Ashley's incomplete products.", __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $products;
+    }
+
 	/**
 	 * Report an error
 	 *

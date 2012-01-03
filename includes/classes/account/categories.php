@@ -294,7 +294,7 @@ class Categories extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $category_id = (int) $category_id;
 
-        $category = $this->db->get_row( "SELECT IF( '' = a.`title`, b.`name`, a.`title` ) AS title, a.`content`, a.`top` FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` = $category_id", ARRAY_A );
+        $category = $this->db->get_row( "SELECT IF( '' = a.`title`, b.`name`, a.`title` ) AS title, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`top` FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` = $category_id", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -311,13 +311,16 @@ class Categories extends Base_Class {
      * @param int $category_id
      * @param string $title
      * @param string $content
+     * @param string $meta_title
+     * @param string $meta_description
+     * @param string $meta_keywords
      * @param bool $top
      * @return array
      */
-    public function update_website_category( $category_id, $title, $content, $top ) {
+    public function update_website_category( $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top ) {
         global $user;
 
-        $this->db->update( 'website_categories', array( 'title' => $title, 'content' => $content, 'top' => $top ), array( 'website_id' => $user['website']['website_id'], 'category_id' => $category_id ), 'ssi', 'ii' );
+        $this->db->update( 'website_categories', array( 'title' => $title, 'content' => $content, 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'top' => $top ), array( 'website_id' => $user['website']['website_id'], 'category_id' => $category_id ), 'sssssi', 'ii' );
 
         // Handle any error
 		if ( $this->db->errno() ) {

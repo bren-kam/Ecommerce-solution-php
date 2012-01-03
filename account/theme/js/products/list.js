@@ -61,7 +61,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	// Edit the product
 	$('.edit-product').live( 'click' , function(){
 		var productID = $(this).parent().attr( 'id' ).replace( 'pProductAction' , '' );
-		
+
 		// Trigger a click to switch the screens
 		$('#aPricingProductInformation').click();
 		
@@ -207,6 +207,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			// Update list of coupons
 			updateCoupons();
 		}, 'json' );
+
+        // Change the Master Catalog
+        var aMasterCatalog = $('#aMasterCatalog');
+        aMasterCatalog.attr( 'href', aMasterCatalog.attr('rel') + productID );
 	});
 	
 	// The Shopping Cart Shipping radio buttons
