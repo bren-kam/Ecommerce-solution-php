@@ -41,9 +41,9 @@ if ( PROFILE ) {
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
-    error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
+    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 } else {
-    error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING );
+    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING );
 }
 
 
