@@ -1,4 +1,8 @@
 <div id="sidebar">
+	<?php 
+	$w = new Websites;
+	$facebook_url = $w->get_setting('facebook-url');
+	?>
 	<h2><?php echo _('Sidebar'); ?></h2>
 	<a href="/social-media/facebook/email-sign-up/" class="top" title="<?php echo _('Email Sign Up'); ?>"><?php echo _('Email Sign Up'); ?></a>
 	<a href="/social-media/facebook/fan-offer/" class="top" title="<?php echo _('Fan Offer'); ?>"><?php echo _('Fan Offer'); ?></a>
@@ -9,7 +13,9 @@
 	<a href="/social-media/facebook/about-us/" class="top" title="<?php echo _('About Us'); ?>"><?php echo _('About Us'); ?></a>
 	<a href="/social-media/facebook/products/" class="top" title="<?php echo _('Products'); ?>"><?php echo _('Products'); ?></a>
 	<a href="/social-media/facebook/current-ad/" class="top" title="<?php echo _('Current Ad'); ?>"><?php echo _('Current Ad'); ?></a>
-	<a href="/social-media/facebook/analytics/" class="top" title="<?php echo _('Analytics'); ?>"><?php echo _('Analytics'); ?></a>
+	<?php if ( !empty( $facebook_url ) ) { ?>
+	<a href="<?php echo $facebook_url; ?>" class="top" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
+	<?php } ?>
     <a href="/social-media/facebook/posting/post/" class="top" title="<?php echo _('Posting'); ?>"><?php echo _('Posting'); ?></a>
     <?php if ( isset( $posting ) ) { ?>
     	<a href="/social-media/facebook/posting/" title="<?php echo _('View Posts'); ?>" class="sub"><?php echo _('View'); ?></a>
