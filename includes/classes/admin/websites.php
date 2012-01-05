@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Handles all the account information
+ * Handles all the website information
  *
  * @package Imagine Retailer
  * @since 1.0
  */
-class Accounts extends Base_Class {
+class Websites extends Base_Class {
 	/**
 	 * Construct initializes data
 	 */
@@ -17,7 +17,7 @@ class Accounts extends Base_Class {
 	}
 	
 	/**
-	 * Create a account
+	 * Create a website
 	 *
 	 * @param int $user_id
 	 * @param int $os_user_id
@@ -28,7 +28,7 @@ class Accounts extends Base_Class {
 	 * @return int|bool
 	 */
     public function create( $user_id, $os_user_id, $domain, $subdomain, $title, $type ) {
-		$this->db->insert( 'websites', array(
+		$this->db->insert( 'websites', array( 
 			'user_id' => $user_id
 			, 'os_user_id' => $os_user_id
 			, 'domain' => $domain
@@ -40,7 +40,7 @@ class Accounts extends Base_Class {
 		
 		// Handle errors
 		if ( $this->db->errno() ) {
-			$this->err(  'Failed to create account.', __LINE__, __METHOD__ );
+			$this->err(  'Failed to create website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		

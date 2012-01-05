@@ -31,7 +31,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-account'
 	$errs = $v->validate();
 	
 	if ( empty( $errs ) ) {
-		$w = new Accounts;
+		$w = new Websites;
 		
 		$success = $w->create( $_POST['sUserID'], $_POST['sOSUserID'], $_POST['tDomain'], '', $_POST['tTitle'], $_POST['sType'] );
 	}

@@ -1,5 +1,5 @@
 /**
- * Websites Edit Page
+ * Accounts Edit Page
  */
 
 // When the page has loaded
@@ -13,32 +13,32 @@ jQuery( postLoad );
  * @param $ (jQuery shortcut)
  */
 function postLoad( $ ) {
-	// Add Another Website functionality - Trigger (Click)
-	$('#aContinueEditingWebsite').click( aContinueEditingWebsite );
+	// Add Another Account functionality - Trigger (Click)
+	$('#aContinueEditingAccount').click( aContinueEditingAccount );
 	
 	// Make the user email change.
 	$('#sUserID option').click( function() {
 		$('#tUserEmail').val( ( $(this).attr('email') ) );
 	});
 
-    // Cancel Website
-    $('#aCancelWebsite').click( function(e) {
+    // Cancel Account
+    $('#aCancelAccount').click( function(e) {
         e.preventDefault();
 
-        if ( !confirm( 'Are you sure you want to cancel this website? This cannot be undone.') )
+        if ( !confirm( 'Are you sure you want to cancel this account? This cannot be undone.') )
             return;
 
-        // Delete the website
+        // Delete the account
         window.location = $(this).attr('href');
     });
 }
 
 /**
- * aContinueEditingWebsite
+ * aContinueEditingAccount
  *
- * If someone wants to continue editing a website, they can click here
+ * If someone wants to continue editing an account, they can click here
  */
-function aContinueEditingWebsite() {
+function aContinueEditingAccount() {
 	$('#dSuccess').fadeOut( 'fast' );
 	
 	setTimeout( timeoutMainFormFadeIn, 250 );

@@ -1,6 +1,6 @@
 <?php
 /**
- * @page List Websites
+ * @page List Accounts
  * @package Imagine Retailer
  * @subpackage Admin
  */
@@ -64,17 +64,17 @@ $c = new Checklists;
 /* Filtering  */
 $where = '';
 
-// Live websites
-if ( isset( $_SESSION['websites']['state'] ) )
-	$where .= ' AND a.`live` = ' . $_SESSION['websites']['state'];
+// Live accounts
+if ( isset( $_SESSION['accounts']['state'] ) )
+	$where .= ' AND a.`live` = ' . $_SESSION['accounts']['state'];
 
-if ( isset( $_SESSION['websites']['search'] ) ) {
-	$where .= " AND ( a.`title` LIKE '" . $w->db->escape( $_SESSION['websites']['search'] ) . "%' OR " .
-					"a.`domain` LIKE '" . $w->db->escape( $_SESSION['websites']['search'] ) . "%' OR " .
-					"b.`contact_name` LIKE '" . $w->db->escape( $_SESSION['websites']['search'] ) . "%' )";
+if ( isset( $_SESSION['accounts']['search'] ) ) {
+	$where .= " AND ( a.`title` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' OR " .
+					"a.`domain` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' OR " .
+					"b.`contact_name` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' )";
 }
 
-// Get websites
+// Get accounts
 $websites = $w->list_websites( $where, $order_by, $limit );
 $websites_count = $w->count_websites( $where );
 
@@ -96,10 +96,10 @@ foreach ( $websites as $web ) {
 	$image = '<img src="/images/icons/companies/' . $web['company_id'] . '.gif" alt="" width="24" height="24" />';
 
 	$title = '<a href="http://' . $web['domain'] . '/" target="_blank"><strong title="' . $web['domain'] . ' - ' . $web['online_specialist'] . '">' . $web['title'] . '</strong></a><br />';
-	$title .= '<span class="web-actions" style="display: block"><a href="/websites/edit/?wid=' . $web['website_id'] . '" title="' . _('Edit') . ' ' . $web['title'] . '">' . _('Edit') . '</a> | ';
-	$title .= '<a href="/websites/control/?wid=' . $web['website_id'] . '" title="' . _('Control') . ' ' . $web['title'] . '" target="_blank">' . _('Control Website') . '</a> | ';
+	$title .= '<span class="web-actions" style="display: block"><a href="/accounts/edit/?wid=' . $web['website_id'] . '" title="' . _('Edit') . ' ' . $web['title'] . '">' . _('Edit') . '</a> | ';
+	$title .= '<a href="/accounts/control/?wid=' . $web['website_id'] . '" title="' . _('Control') . ' ' . $web['title'] . '" target="_blank">' . _('Control Account') . '</a> | ';
 	$title .= '<a href="/users/control/?uid=' . $web['user_id'] . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
-    $title .= '<a href="/websites/notes/?wid=' . $web['website_id'] . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
+    $title .= '<a href="/accounts/notes/?wid=' . $web['website_id'] . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
 	
 	if ( isset( $incomplete_checklists[$web['website_id']] ) )
 		$title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$web['website_id']] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';

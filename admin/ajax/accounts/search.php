@@ -16,14 +16,14 @@ if ( !$user ) {
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'search' ) ) {
 	if ( !$user ) {
-		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in search websites.') ) );
+		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in search accounts.') ) );
 		exit;
 	}
 	
-	$_SESSION['websites']['search'] = $_POST['s'];
+	$_SESSION['accounts']['search'] = $_POST['s'];
 	
 	// If there was an error, let them know
-	echo json_encode( array( 'result' => true, 'error' => _('An error occurred while trying to search the websites. Please refresh the page and try again.') ) );
+	echo json_encode( array( 'result' => true, 'error' => _('An error occurred while trying to search the accounts. Please refresh the page and try again.') ) );
 } else {
 	echo json_encode( array( 'result' => false, 'error' => _('A verification error occurred. Please refresh the page and try again.') ) );
 }

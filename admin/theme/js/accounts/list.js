@@ -1,5 +1,5 @@
 /**
- * Websites List Page
+ * Accounts List Page
  */
 
 // When the page has loaded
@@ -35,11 +35,11 @@ function postLoad( $ ) {
 	
 	// Initialize Data Tables
 	TableToolsInit.sSwfPath = "/media/flash/ZeroClipboard.swf";
-	listWebsites = $('#tListWebsites').dataTable({
+	listAccounts = $('#tListAccounts').dataTable({
 		'bProcessing': true,
 		'bServerSide': true,
 		'bAutoWidth': false,
-		'sAjaxSource': '/ajax/websites/list/',
+		'sAjaxSource': '/ajax/accounts/list/',
 		'iDisplayLength' : 100,
 		"oLanguage": {
 			"sLengthMenu": 'Rows: <select><option value="100">100</option><option value="250">250</option><option value="500">500</option></select>',
@@ -89,10 +89,10 @@ function trSubmitSearch() {
 /**
  * trSearchClick
  *
- * The function that performs the website search functionality
+ * The function that performs the account search functionality
  */
 function trSearchClick() {
-	$.post( '/ajax/websites/search/', { '_nonce' : $('#_ajax_search').val(), 's' : $('#tAutoComplete').val() }, ajaxSearchClick, 'json' );
+	$.post( '/ajax/accounts/search/', { '_nonce' : $('#_ajax_search').val(), 's' : $('#tAutoComplete').val() }, ajaxSearchClick, 'json' );
 }
 
 /**
@@ -111,7 +111,7 @@ function ajaxSearchClick( response ) {
 	}
 	
 	// The settings have been set, now have the table redraw itself
-	listWebsites.fnDraw();
+	listAccounts.fnDraw();
 }
 
 /**
@@ -130,11 +130,11 @@ function trResetSearchClick() {
 /**
  * trStateChange
  *
- * If you change the state of the websites you are looking for (All, Live, Staging) it will reload them
+ * If you change the state of the accounts you are looking for (All, Live, Staging) it will reload them
  */
 function trStateChange() {
 	// Change state ajax request
-	$.post( '/ajax/websites/change-state/', { '_nonce' : $('#_ajax_change_state').val(), 's' : $(this).val() }, ajaxStateChange, 'json' );
+	$.post( '/ajax/accounts/change-state/', { '_nonce' : $('#_ajax_change_state').val(), 's' : $(this).val() }, ajaxStateChange, 'json' );
 }
 
 /**
@@ -151,7 +151,7 @@ function ajaxStateChange( response ) {
 		return false;
 	}
 	
-	listWebsites.fnDraw();
+	listAccounts.fnDraw();
 }
 
 /**
@@ -178,11 +178,11 @@ function autocompleteSuccess( request, response ) {
 		}) );
 		
 		// If it was cached, return now
-		return;
+		return 0;
 	}
 	
 	// It was not cached, get data
-	$.post( '/ajax/websites/autocomplete/', { '_nonce' : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( data ) {
+	$.post( '/ajax/accounts/autocomplete/', { '_nonce' : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( data ) {
 		// Assign global cache the response data
 		cache[cacheType][request['term']] = data['objects'];
 		

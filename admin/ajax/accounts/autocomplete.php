@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Autocomplete Websites
+ * @page Autocomplete Accounts
  * @package Imagine Retailer
  * @subpackage Admin
  */
