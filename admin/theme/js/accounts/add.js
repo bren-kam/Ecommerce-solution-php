@@ -1,5 +1,5 @@
 /**
- * Websites Add Page
+ * Accounts Add Page
  */
 
 // When the page has loaded

@@ -1,5 +1,5 @@
 /**
- * Websites List Page
+ * Accounts List Page
  */
 
 // When the page has loaded
@@ -13,15 +13,33 @@ jQuery( postLoad );
  * @param $ (jQuery shortcut)
  */
 function postLoad( $ ) {
-	// cache = { 'domain' : {}, 'store_name' : {}, 'title' : {} };
+	cache = { 'domain' : {}, 'store_name' : {}, 'title' : {} };
+
+	// Create autocomplete
+	$('#tAutoComplete').autocomplete({
+		minLength: 1,
+		source: autocompleteSuccess
+	}).data( "autocomplete" )._renderItem = autocompleteRenderItem;
+	
+	// Submit Search - Trigger (Submit)
+	$('#fSubmitSearch').submit( trSubmitSearch );
+	
+	// Search functionality - Trigger (Click)
+	$('#aSearch').click( trSearchClick );
+	
+	// Reset Search - Trigger (Click)
+	$('#aResetSearch').click( trResetSearchClick );
+	
+	// State Change - Trigger (Change)
+	$('#sState').change( trStateChange );
 	
 	// Initialize Data Tables
 	TableToolsInit.sSwfPath = "/media/flash/ZeroClipboard.swf";
-	listWebsites = $('#tListWebsites').dataTable({
+	listAccounts = $('#tListAccounts').dataTable({
 		'bProcessing': true,
 		'bServerSide': true,
 		'bAutoWidth': false,
-		'sAjaxSource': '/ajax/websites/get-emails/',
+		'sAjaxSource': '/ajax/accounts/list/',
 		'iDisplayLength' : 100,
 		"oLanguage": {
 			"sLengthMenu": 'Rows: <select><option value="100">100</option><option value="250">250</option><option value="500">500</option></select>',
@@ -39,51 +57,8 @@ function postLoad( $ ) {
 				success: secureCallback
 			});
 		},
-		"aaSorting": [[0, 'asc']],
-		/*"sDom" : '<"top"Tlr>t<"bottom"pi>'*/
-		"sDom" : '<"top"r>t<"bottom">'
-	});
-	
-	// Create Email Button
-	$('#aCreateNew').live( 'click', function() {		
-		$("#dCreateEmailAddress").dialog( {
-			modal: true,
-			bgiframe: true,
-			height: 350,
-			width: 400,
-			draggable: false,
-			resizable: false,
-			title: 'Create Email Account'
-		});
-	});
-	
-	// Edit Email Button
-	$('.edit-email-address').live( 'click', function() {
-		var email_id = $( this ).attr('id');
-		email_id = email_id.replace( 'aEdit', '' );
-		
-		$("#iAddress").val( $( '#hAddress' + email_id ).val() );
-		$("#iPassword").attr( 'value', $( '#hPw' + email_id ).val() );
-		$("#iQuota").val( $( '#hQuota' + email_id ).val() );
-		$("#hEmailId").val( email_id );
-		
-		$("#dChangeEmailAddress").dialog( {
-			modal: true,
-			bgiframe: true,
-			height: 250,
-			width: 400,
-			draggable: false,
-			resizable: false,
-			title: 'Edit Email Account'
-		});
-	});
-		
-	$('#bSubmitEmailChanges').click( function() {
-		var id = $("#hEmailId").val();
-		if ( $("#iAddress").val() != $( '#hAddress' + id ).val() ) alert( "Changed Address!" );
-		if ( $("#iPassword").val() != $( '#hPw' + id ).val() ) alert( "Changed Password!" );
-		if ( $("#iQuota").val() != $( '#hQuota' + id ).val() ) alert( "Changed Quota!" );
-		$("#hEmailId").val( '' );
+		"aaSorting": [[1, 'asc']],
+		"sDom" : '<"top"Tlr>t<"bottom"pi>'
 	});
 }
 
@@ -114,10 +89,10 @@ function trSubmitSearch() {
 /**
  * trSearchClick
  *
- * The function that performs the website search functionality
+ * The function that performs the account search functionality
  */
 function trSearchClick() {
-	$.post( '/ajax/websites/search/', { '_nonce' : $('#_ajax_search').val(), 's' : $('#tAutoComplete').val() }, ajaxSearchClick, 'json' );
+	$.post( '/ajax/accounts/search/', { '_nonce' : $('#_ajax_search').val(), 's' : $('#tAutoComplete').val() }, ajaxSearchClick, 'json' );
 }
 
 /**
@@ -136,7 +111,7 @@ function ajaxSearchClick( response ) {
 	}
 	
 	// The settings have been set, now have the table redraw itself
-	listWebsites.fnDraw();
+	listAccounts.fnDraw();
 }
 
 /**
@@ -155,11 +130,11 @@ function trResetSearchClick() {
 /**
  * trStateChange
  *
- * If you change the state of the websites you are looking for (All, Live, Staging) it will reload them
+ * If you change the state of the accounts you are looking for (All, Live, Staging) it will reload them
  */
 function trStateChange() {
 	// Change state ajax request
-	$.post( '/ajax/websites/change-state/', { '_nonce' : $('#_ajax_change_state').val(), 's' : $(this).val() }, ajaxStateChange, 'json' );
+	$.post( '/ajax/accounts/change-state/', { '_nonce' : $('#_ajax_change_state').val(), 's' : $(this).val() }, ajaxStateChange, 'json' );
 }
 
 /**
@@ -176,7 +151,7 @@ function ajaxStateChange( response ) {
 		return false;
 	}
 	
-	listWebsites.fnDraw();
+	listAccounts.fnDraw();
 }
 
 /**
@@ -203,11 +178,11 @@ function autocompleteSuccess( request, response ) {
 		}) );
 		
 		// If it was cached, return now
-		return;
+		return 0;
 	}
 	
 	// It was not cached, get data
-	$.post( '/ajax/websites/autocomplete/', { '_nonce' : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( data ) {
+	$.post( '/ajax/accounts/autocomplete/', { '_nonce' : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( data ) {
 		// Assign global cache the response data
 		cache[cacheType][request['term']] = data['objects'];
 		

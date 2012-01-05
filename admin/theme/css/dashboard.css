@@ -3,8 +3,8 @@
 /*************/
 #nav-icons img{width:130px; height:112px; margin-bottom: 10px; background: url(/images/icons/dashboard.gif) 0 0 no-repeat}
 
-#websites img { background-position: 0 0; }
-#websites:hover img { background-position: 0 -128px }
+#accounts img { background-position: 0 0; }
+#accounts:hover img { background-position: 0 -128px }
 
 #products img { background-position: -125px 0; }
 #products:hover img { background-position: -125px -128px }

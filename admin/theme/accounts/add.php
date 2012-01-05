@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Add Website
+ * @page Add Account
  * @package Imagine Retailer
  */
 
@@ -13,10 +13,10 @@ if ( !$user )
 
 // If their permissions are too low....
 if ( $user['role'] < 7 )
-	url::redirect( '/websites/' );
+	url::redirect( '/accounts/' );
 
 $v = new Validator();
-$v->form_name = 'fAddWebsite';
+$v->form_name = 'fAddAccount';
 
 $v->add_validation( 'tDomain', 'req', _('The "Domain" field is required') );
 
@@ -27,7 +27,7 @@ $v->add_validation( 'sUserID', 'req', _('The "User" field is required') );
 // We are not successful in anything yet
 $success = false;
 
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-website' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-account' ) ) {
 	$errs = $v->validate();
 	
 	if ( empty( $errs ) ) {
@@ -37,18 +37,18 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-website'
 	}
 }
 		
-css( 'form', 'websites/add' );
-javascript( 'validator', 'jquery', 'websites/add' );
+css( 'form', 'accounts/add' );
+javascript( 'validator', 'jquery', 'accounts/add' );
 
-$selected = 'websites';
-$title = _('Add Website') . ' | ' . TITLE;
+$selected = 'accounts';
+$title = _('Add Account') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Add Website'); ?></h1>
+	<h1><?php echo _('Add Account'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'websites/' ); ?>
+	<?php get_sidebar( 'accounts/' ); ?>
 	<div id="subcontent">
 		<?php 
 		if ( !$success ) {
@@ -74,7 +74,7 @@ get_header();
 				echo "<p class='red'>$error_message</p>";
 			}
 			?>
-			<form action="/websites/add/" name="fAddWebsite" id="fAddWebsite" method="post">
+			<form action="/accounts/add/" name="fAddAccount" id="fAddAccount" method="post">
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td><label for="tDomain"><?php echo _('Domain'); ?>: <span class="red">*</span></label></td>
@@ -142,16 +142,16 @@ get_header();
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" class="button" value="<?php echo _('Add Website'); ?>" /></td>
+					<td><input type="submit" class="button" value="<?php echo _('Add Account'); ?>" /></td>
 				</tr>
-				<?php nonce::field( 'add-website' ); ?>
+				<?php nonce::field( 'add-account' ); ?>
 			</table>
 			</form>
 			<?php add_footer( $v->js_validation() ); ?>
 		</div>
 		<div id="dSuccess"<?php echo $success_class; ?>>
-			<p><?php echo _('Website has been successfully added!'); ?></p>
-			<p><?php echo _('Click here to <a href="/websites/" title="View Websites">view all websites</a> or <a href="#" id="aAddAnother" title="Add a Website">add another</a>.'); ?></p>
+			<p><?php echo _('Account has been successfully added!'); ?></p>
+			<p><?php echo _('Click here to <a href="/accounts/" title="View Accounts">view all accounts</a> or <a href="#" id="aAddAnother" title="Add an Account">add another</a>.'); ?></p>
 		</div>
 	</div>
 	<br /><br />

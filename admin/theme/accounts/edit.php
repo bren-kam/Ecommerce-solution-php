@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Edit Website
+ * @page Edit Account
  * @package Imagine Retailer
  */
 
@@ -17,23 +17,23 @@ $v = new Validator;
 
 $industries = $i->get_all();
 
-$v->form_name = 'fEditWebsite';
+$v->form_name = 'fEditAccount';
 
-$v->add_validation( 'tTitle', 'req', _('The "Website Title" field is required') );
-$v->add_validation( 'tDomain', 'req', _('The "Website Domain" field is required') );
-$v->add_validation( 'tTheme', 'req', _('The "Website Theme" field is required') );
+$v->add_validation( 'tTitle', 'req', _('The "Account Title" field is required') );
+$v->add_validation( 'tDomain', 'req', _('The "Account Domain" field is required') );
+$v->add_validation( 'tTheme', 'req', _('The "Account Theme" field is required') );
 
 $v->add_validation( 'tProducts', 'req', _('The "Products" field is required') );
 $v->add_validation( 'tProducts', 'num', _('The "Products" field must contain a number') );
 
-$v->add_validation( 'tType', 'req', _('The "Website Type" is required') );
+$v->add_validation( 'tType', 'req', _('The "Account Type" is required') );
 
 $v->add_validation( 'tGAProfileID', 'num', _('The "Google Analytics Profile ID" field must contain a number') );
 
 // Initialize variable
 $success = false;
 
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-website' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-account' ) ) {
 	$errs = $v->validate();
 	
 	if ( empty( $errs ) ) {
@@ -149,18 +149,18 @@ foreach ( $web as &$slot ){
 	$slot = stripslashes( $slot );
 }
 
-css( 'form', 'websites/edit' );
-javascript( 'validator', 'jquery', 'websites/edit' );
+css( 'form', 'accounts/edit' );
+javascript( 'validator', 'jquery', 'accounts/edit' );
 
-$selected = 'websites';
-$title = _('Edit Website') . ' | ' . TITLE;
+$selected = 'accounts';
+$title = _('Edit Account') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-    <h1><?php echo _('Edit Website'); ?></h1>
+    <h1><?php echo $web['title']; ?></h1>
 	<br clear="all" /><br />
-	<?php $sidebar_emails = true; get_sidebar( 'websites/' ); ?>
+	<?php $sidebar_emails = true; get_sidebar( 'accounts/' ); ?>
 	<div id="subcontent">
 		<?php 
 		if ( !isset( $success ) || !$success ) {
@@ -188,15 +188,15 @@ get_header();
 
             if ( 10 == $user['role'] ) {
 			?>
-                <p align="right"><a href="/websites/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelWebsite" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Website'); ?></a></p>
+                <p align="right"><a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a></p>
             <?php } ?>
-			<form action="/websites/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditWebsite">
+			<form action="/accounts/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditAccount">
 			<?php 
 			if ( '0' == $web['version'] )
-				echo '<p>', _('Website has not been installed. Please verify domain and FTP data below and'), ' <a href="/websites/install/?wid=', $web['website_id'], '" title="', _('Install Website'), '">', _('click here to install the website'), '</a>.</p>';
+				echo '<p>', _('Website has not been installed. Please verify domain and FTP data below and'), ' <a href="/accounts/install/?wid=', $web['website_id'], '" title="', _('Install Account'), '">', _('click here to install the account'), '</a>.</p>';
 			
 			if ( isset( $_GET['i'] ) )
-				echo ( '1' == $_GET['i'] ) ? '<p>' . _('The website was successfully installed!') . '</p>' : '<p>' . _('An error occurred while trying to install the website. Please check the error log for details.') . '</p>';
+				echo ( '1' == $_GET['i'] ) ? '<p>' . _('The website was successfully installed!') . '</p>' : '<p>' . _('An error occurred while trying to install the account. Please check the error log for details.') . '</p>';
 			?>
 			<table cellpadding="0" cellspacing="0" width="100%">
 				<tr>
@@ -366,14 +366,14 @@ get_header();
 			</table>
 			<br /><br />
 			<br />
-			<input type="submit" id="bSubmit" name="bSubmit" value="<?php echo _('Update Website Information'); ?>" class="button" />
-			<?php nonce::field( 'update-website' ); ?>
+			<input type="submit" id="bSubmit" name="bSubmit" value="<?php echo _('Save'); ?>" class="button" />
+			<?php nonce::field( 'update-account' ); ?>
 		</form>
 		<?php add_footer( $v->js_validation() ); ?>
 		</div>
 		<div id="dSuccess"<?php echo $success_class; ?>>
-			<p><?php echo _('Website has been successfully updated!'); ?></p>
-			<p><?php echo _('Click here to <a href="/websites/" title="View Websites">view all websites</a> or <a href="javascript:;" id="aContinueEditingWebsite" title="Continue Editing Website">continue editing website</a>.'); ?></p>
+			<p><?php echo _('Account has been successfully updated!'); ?></p>
+			<p><?php echo _('Click here to <a href="/accounts/" title="View Accounts">view all accounts</a> or <a href="javascript:;" id="aContinueEditingAccount" title="Continue Editing Account">continue editing account</a>.'); ?></p>
 			<br /><br />
 			<br /><br />
 			<br /><br />
