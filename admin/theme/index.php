@@ -27,7 +27,7 @@ get_header();
 	<br clear="all" />
 	<br /><br />
 	<div id="nav-icons">
-		<a href="/websites/" title="<?php echo _('Websites'); ?>" id="websites"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Websites'); ?>" /><br /><?php echo _('Websites'); ?></a>
+		<a href="/accounts/" title="<?php echo _('Accounts'); ?>" id="accounts"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Accounts'); ?>" /><br /><?php echo _('Accounts'); ?></a>
 		<a href="/products/" title="<?php echo _('Products'); ?>" id="products"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Products'); ?>" /><br /><?php echo _('Products'); ?></a>
 		<?php if ( $user['role'] >= 7 ) { ?>
         <a href="/users/" title="<?php echo _('Users'); ?>" id="users"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo _('Users'); ?>" /><br /><?php echo _('Users'); ?></a>
