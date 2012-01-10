@@ -60,7 +60,10 @@ get_header();
 		<?php add_footer( $v->js_validation() ); ?>
 		<br /><br />
 		<div id="dNotes">
-			<?php foreach ( $notes as $n ) { ?>
+			<?php
+			if ( is_array( $notes ) )
+			foreach ( $notes as $n ) {
+			?>
 			<div id="dNote<?php echo $n['website_note_id']; ?>" class="dNote">
 				<div class="title">
 					<strong><?php echo $n['contact_name']; ?></strong>

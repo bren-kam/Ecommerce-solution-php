@@ -11,6 +11,9 @@ global $user;
 if ( !$user )
 	login();
 
+$w = new Websites;
+$facebook_url = $w->get_setting('facebook-url');
+	
 css('social-media/facebook/main');
 $selected = "social_media";
 $title = _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
@@ -67,11 +70,13 @@ get_header();
 			<br />
 			<a href="/social-media/facebook/current-ad/" title="<?php echo _('Current Ad'); ?>"><?php echo _('Current Ad'); ?></a>
 		</p>
+		<?php if ( !empty( $facebook_url ) ) { ?>
 		<p class="sm">
-			<a href="/social-media/facebook/analytics/" title="<?php echo _('Analytics'); ?>"><img src="http://account.imagineretailer.com/images/social-media/facebook/analytics.jpg" width="75" height="75" alt="<?php echo _('Analytics'); ?>" /></a>
+			<a href="<?php echo $facebook_url; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><img src="http://account.imagineretailer.com/images/social-media/facebook/analytics.jpg" width="75" height="75" alt="<?php echo _('Analytics'); ?>" /></a>
 			<br />
-			<a href="/social-media/facebook/analytics/" title="<?php echo _('Analytics'); ?>"><?php echo _('Analytics'); ?></a>
+			<a href="<?php echo $facebook_url; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
 		</p>
+		<?php } ?>
 		<br clear="all" /><br />
 		<br /><br />
 		<br /><br />

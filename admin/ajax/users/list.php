@@ -103,9 +103,10 @@ foreach ( $users as $us ) {
 		break;
 	}
 	
-	// $aaData[] = array( '<a href="/users/edit/?uid=' . $us['user_id'] . '" title="' . $us['contact_name'] . '">' . $us['contact_name'] . '</a>', '<a href="mailto:' . $us['email'] . '" title="' . _('Email') . ' ' . $us['contact_name'] . '">' . $us['email'] . '</a>', $us['domain'], $role, dt::date( 'm-d-Y', $us['date_created'] ) );
-	$aaData[] = array( 
-		'<a href="/users/edit/?uid=' . $us['user_id'] . '" title="' . $us['contact_name'] . '">' . $us['contact_name'] . ' (' . _('Edit') . ')' . '</a>', 
+	$aaData[] = array(
+		$us['contact_name'] . '<div class="actions">' .
+            '<a href="/users/edit/?uid=' . $us['user_id'] . '" title="' . $us['contact_name'] . '">' . _('Edit') . '</a> | ' .
+            '<a href="javascript:;" id="aDelete' . $us['user_id'] . '" title="' . _('Delete User') . '" class="delete-user">' . _('Delete') . '</a></div>',
 		'<a href="mailto:' . $us['email'] . '" title="' . _('Email') . ' ' . $us['contact_name'] . '">' . $us['email'] . '</a>', 
 		$us['phone'], 
 		'<a href="http://' . $us['domain'] . '/" target="_blank">' . $us['domain'] . "</a>", 

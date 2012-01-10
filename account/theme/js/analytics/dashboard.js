@@ -22,7 +22,8 @@ jQuery(function($) {
 	// Put the tooltip there
 	$('#dLargeGraph').bind("plothover", function( event, pos, item ) {
 		if ( item ) {
-			var x = date( 'F j, Y', item.datapoint[0] / 1000 + 86400 ), y = item.datapoint[1];
+			// Changed 1/9/12 - Raffy said the tooltips were off by a day
+			var x = date( 'F j, Y', item.datapoint[0] / 1000 ), y = item.datapoint[1];
 			showTooltip(item.pageX, item.pageY, x, y, "tooltipHover");
 		} else {
 			$(".tooltipHover").remove();

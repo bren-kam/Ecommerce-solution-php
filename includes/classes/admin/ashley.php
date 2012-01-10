@@ -10,6 +10,8 @@ class Ashley extends Base_Class {
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
 	
+	private $images = array();
+	
 	/**
 	 * Creates new Database instance
 	 *
@@ -24,7 +26,6 @@ class Ashley extends Base_Class {
 		$this->curl = new curl();
 		$this->p = new Products();
 		$this->file = new Files();
-		
 	}
 
 	/**
@@ -57,61 +58,130 @@ class Ashley extends Base_Class {
 			
 			$file = $files[count($files)-1];
 		}
-		
+
+		$xml_reader = new XMLReader();
 		
 		// Grab the latest file
-		if( file_exists( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file ) ) {
-			$this->xml = simplexml_load_file( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file );
-		} else {
-			$this->xml = simplexml_load_string( $ftp->ftp_get_contents( $file ) );
+		if( !file_exists( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file ) )
+			$ftp->get( $file, '', '/home/imaginer/public_html/admin/media/downloads/ashley/' );
+		
+		///// About 20mbs of useage /////
+		
+		$xml_reader->open( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file );
+		
+		$j = -1;
+		
+		while( $xml_reader->read() ) {
+			switch ( $xml_reader->localName ) {
+				case 'item':
+					// Make sure we're not dealing with an end element
+					if( $xml_reader->nodeType == XMLReader::END_ELEMENT ) { 
+						$xml_reader->next();
+						continue;
+					}
+					
+					// Increment the item
+					$j++;
+					
+					// Set the dimensions
+					$dimensions = 0;
+					
+					// Create base for items
+					$items[$j] = array(
+						'status' => ( 'Discontinued' == trim( $xml_reader->getAttribute('itemStatus') ) ) ? 'discontinued' : 'in-stock'
+						, 'nodeType' => trim( $xml_reader->nodeType )
+						, 'group' => trim( $xml_reader->getAttribute('itemGroupCode') )
+						, 'image' => trim( $xml_reader->getAttribute('image') )
+						, 'brand_id' => $this->get_brand( trim( $xml_reader->getAttribute('retailSalesCategory') ) )
+						, 'specs' => ''
+						, 'weight' => 0
+						, 'volume' => 0
+					);
+					
+				break;
+				
+				// SKU
+				case 'itemIdentifier':
+					if ( !isset( $items[$j]['sku'] ) )
+						$items[$j]['sku'] = trim( $xml_reader->getAttribute('itemNumber') );
+				break;
+				
+				// Description
+				case 'itemDescription':
+					$items[$j]['description'] = trim( $xml_reader->getAttribute('itemFriendlyDescription') );
+				break;
+				
+				// We're in the item dimensions section
+				case 'itemDimensions':
+					$dimensions = 1;
+				break;
+				
+				// Specifications
+				case 'depth':
+					if ( $dimensions )
+						$items[$j]['specs'] = 'Depth`' . trim( $xml_reader->getAttribute('value') );
+				break;
+
+				// Specifications
+				case 'height':
+					if ( $dimensions )
+						$items[$j]['specs'] .= '`0|Height`' . trim( $xml_reader->getAttribute('value') );
+				break;
+
+				// Specifications
+				case 'length':
+					if ( $dimensions )
+						$items[$j]['specs'] .= '`1|Length`' . trim( $xml_reader->getAttribute('value') ) . '`2';
+					
+					$dimensions = 0;
+				break;
+				
+				// Weight
+				case 'weight':
+					$items[$j]['weight'] .= trim( $xml_reader->getAttribute('value') );
+				break;
+				
+				// Volumne
+				case 'volume':
+					$items[$j]['volume'] .= trim( $xml_reader->getAttribute('value') );
+				break;
+				
+				// Groups
+				case 'groupInformation':
+					$groups[$xml_reader->getAttribute('groupID')] = array(
+						'name' => trim( $xml_reader->getAttribute('groupName') )
+						, 'description' => trim( $xml_reader->getAttribute('groupDescription') )
+						, 'features' => trim( $xml_reader->getAttribute('groupFeatures') )
+					);
+				break;
+			}
 		}
 		
-		//if ( count( $this->xml->items->item ) > 1000 ) {
-		//	mail( 'kerry@studio98.com, rafferty@studio98.com', 'Ashley Feed', 'Full List -- skipped' );
-		//	return;
-		//}
+		$xml_reader->close();
+
 		
 		// Initalize variables
-		$groups = array();
-		$items = array();
 		$links = $products_string = '';
 		
-		// Generate group information
-		foreach( $this->xml->groups->groupInformation as $group ) {
-			$attributes = $group->attributes();
-			
-			$groups[trim( $attributes->groupID )] = array( 'name' => trim( $attributes->groupName ), 'description' => trim( $attributes->groupDescription ), 'features' => trim( $attributes->groupFeatures ) );
-		}
-		
+					
+		$products = $this->get_products();
+
 		$i = 0;
+		$skipped = 0;
 		
 		// Generate array of our items
-		foreach( $this->xml->items->item as $item ) {
-			$attributes = $item->attributes();
-			$item_description = $item->itemIdentification->itemDescription->attributes();
+		foreach( $items as $item ) {
+			$i++;
+			$item_description = $item['description'];
+			$sku = $item['sku'];
+			$product_status = $item['status'];
+			$product_specs = $item['specs'];
+			$weight = $item['weight'];
+			$volume = $item['volume'];
 			
-			// Start getting necessary fields G
-			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-			$product_status = ( 'Discontinued' == $attributes->itemStatus ) ? 'discontinued' : 'in-stock';
 			
-			if( isset( $item->itemIdentification->itemCharacteristics[0]->itemDimensions ) ) {
-				$dimensions = $item->itemIdentification->itemCharacteristics[0]->itemDimensions;
-				$product_specs = 'Depth`' . $dimensions->depth->attributes()->value . '`0|Height`' . $dimensions->height->attributes()->value . '`1|Length`' . $dimensions->length->attributes()->value . '`2';
-			} else {
-				$product_specs = '';
-			}
-			
-			if( isset( $item->itemIdentification->packageCharacteristics->packageDimensions ) ) {
-				$package_dimensions = $item->itemIdentification->packageCharacteristics->packageDimensions;
-				
-				$weight = ( isset( $package_dimensions->weight ) ) ? trim( $package_dimensions->weight->attributes()->value ) : 0;
-				$volume = ( isset( $package_dimensions->volume ) ) ? trim( $package_dimensions->volume->attributes()->value ) : 0;
-			} else {
-				$weight = $volume = 0;
-			}
-			
-			if( isset( $groups[trim( $attributes->itemGroupCode )] ) ) {
-				$group = $groups[trim( $attributes->itemGroupCode )];
+			if( isset( $groups[$item['group']] ) ) {
+				$group = $groups[$item['group']];
 			
 				$group_name = $group['name'] . ' - ';
 				$group_description = '<p>' . $group['description'] . '</p>';
@@ -120,36 +190,51 @@ class Ashley extends Base_Class {
 				$group_name = $group_description = $group_features = '';
 			}
 			
-			$item_friendly_description = trim( $item_description->itemFriendlyDescription );
+			$name = $group_name . $item['description'];
+			$slug = str_replace( '---', '-', format::slug( $name ) );
+			$description = format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
 			
-			$name = $group_name . $item_friendly_description;
-			$slug = str_replace( '---', '-', format::slug( $group_name . $item_friendly_description ) );
-			$description = format::autop( format::unautop( "<p>$item_friendly_description</p>{$group_description}{$group_features}" ) );
+			$brand_id = $item['brand_id'];
 			
-			$brand_id = $this->get_brand( trim( $attributes->retailSalesCategory ) );
+			$image = $item['image'];
 			
-			$image = trim( $attributes->image );
 			$images = array();
 			
+			////////////////////////////////////////////////
 			// Get/Create the product
-			if( $product_id = $this->get_product_id( $sku ) ) {
-				$product_information = $this->p->get( $product_id );
-				$product_images = $this->p->get_images( $product_id );
-				$product_images = $product_images[''];
+			if( array_key_exists( $sku, $products ) ) {
+				$identical = true;
+				
+				$product = $products[$sku];
+				$product_id = $product['product_id'];
+				
+				$product_images = explode( '|', $product['images'] );
 				
 				// Override data with existing data
-				if( empty( $name ) )
-					$name = $product_information['name'];
+				if( empty( $name ) ) {
+					$name = $product['name'];
+				} elseif ( $name != $product['name'] ) { 
+					$identical = false;
+				}
 				
-				if( empty( $slug ) )
-					$slug = $product_information['slug'];
+				if( empty( $slug ) ) {
+					$slug = $product['slug'];
+				} elseif ( $slug != $product['slug'] ) { 
+					$identical = false;
+				}
 				
-				if( empty( $description ) )
-					$description = text::auto_p( format::unautop( $product_information['description'] ) );
+				if( empty( $description ) ) {
+					$description = format::autop( format::unautop( $product['description'] ) );
+				} elseif ( $description != format::autop( format::unautop( $product['description'] ) ) ) { 
+					$identical = false;
+				}
 				
 				$images = $product_images;
 				
-				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+				
+				if ( 0 == count( $images ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+					mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image");
+					$identical = false;
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 					
 					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
@@ -159,32 +244,51 @@ class Ashley extends Base_Class {
 				$price = 0;//$product_information['price'];
 				$list_price = 0;//$product_information['list_price'];
 				
-				if( is_array( $product_information['product_specifications'] ) )
-				foreach( $product_information['product_specifications'] as $ps ) {
+				if( is_array( $product['product_specifications'] ) )
+				foreach( $product['product_specifications'] as $ps ) {
 					if( !empty( $product_specs ) )
 						$product_specs .= '|';
 					
 					$product_specs .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
 				}
 				
-				if( empty( $brand_id ) )
-					$brand_id = $product_information['brand_id'];
+				if( empty( $brand_id ) ) {
+					$brand_id = $product['brand_id'];
+				} elseif ( $brand_id != $product['brand_id'] ) { 
+					$identical = false;
+				}
 				
 				if( empty( $product_status ) ) {
-					$product_status = $product_information['product_status'];
+					$product_status = $product['status'];
 					$links['updated-product'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
 				} else {
 					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+					
+					if ( $product_status != $product['status'] )
+						$identical = false;
 				}
 				
-				$publish_visibility = $product_information['publish_visibility'];
-				$publish_date = $product_information['publish_date'];
+				$publish_visibility = $product['publish_visibility'];
+				$publish_date = $product['publish_date'];
 				
-				if( empty( $weight ) )
-					$weight = $product_information['weight'];
-
-				if( empty( $volume ) )
-					$volume = $product_information['volume'];
+				if( empty( $weight ) ) {
+					$weight = $product['weight'];
+				} elseif ( $weight != $product['weight'] ) { 
+					$identical = false;
+				}
+				
+				if( empty( $volume ) ) {
+					$volume = $product['volume'];
+				} elseif ( $volume != $product['volume'] ) { 
+					$identical = false;
+				}
+				
+				if ( $identical ) {
+					$skipped++;
+					$products_string .= $name . "\n";
+					continue;
+				}
+				// If everything is identical, we don't want to do anything
 			} else {
 				$product_id = $this->p->create( 353 );
 
@@ -192,7 +296,8 @@ class Ashley extends Base_Class {
                 $slug = $this->unique_slug( $slug );
 
 				// Upload image if it's not blank
-				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+					mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image");
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 					
 					if ( !in_array( $image_name, $images ) )
@@ -204,15 +309,30 @@ class Ashley extends Base_Class {
 				$publish_date = date_time::date( 'Y-m-d' );
 				
 				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+				
+				// Add images
+				$this->p->empty_product_images( $product_id );
+				
+				// Makes the images have the right sequence if they exist
+				if ( is_array( $images ) ) {
+					$j = 0;
+					
+					foreach ( $images as &$image ) {
+						$image .= "|$j";
+						$j++;
+					}
+				}
+				
+				$this->p->add_product_images( $images, $product_id );
 			}
 			
 			// Update the product
 			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
 			
 			// Add images
-			$this->p->empty_product_images( $product_id );
+			//$product_ids[] = (int) $product_id;
 			
-			// Makes the images have the right sequence if they exist
+			/* Makes the images have the right sequence if they exist
 			if ( is_array( $images ) ) {
 				$j = 0;
 				
@@ -222,19 +342,34 @@ class Ashley extends Base_Class {
 				}
 			}
 			
-			$this->p->add_product_images( $images, $product_id );
+			$this->commit_product_images( $images, $product_id );
+			*/
 			
 			$products_string .= $name . "\n";
 			
 			// We don't want to carry them around in the next loop
 			unset( $images );
 			
-			
-			//if ( 5 == $i )
-			//	exit;
+			if ( $i % 100 == 0 ) {
+				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
+				
+				foreach ( $links as $section => $link_array ) {
+					$message .= ucwords( str_replace( '-', ' ', $section ) ) . ": " . count( $link_array ) . "\n";
+				}
+				
+				$message .= "\n\nSkipped: " . $skipped;
+				
+				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
+			}
 			//$i++;
 			
 		}
+		
+		//fn::info( $this->images );
+		//$this->empty_product_images( $product_ids );
+		//$this->add_product_images();
+		
+		echo '|' . memory_get_peak_usage(true) . '-' . memory_get_usage(true);
 		
 		$headers = "From: noreply@greysuitretail.com" . "\r\n" .
 			"Reply-to: noreply@greysuitretail.com" . "\r\n" . 
@@ -255,6 +390,112 @@ class Ashley extends Base_Class {
 		}
 	}
 
+	/**
+	 * Get Products
+	 *
+	 * @return array
+	 */
+	public function get_products() {
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`user_id_created` = 353 GROUP BY a.`product_id`", ARRAY_A );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get products.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return ar::assign_key( $products, 'sku' );
+	}
+	
+	/**
+	 * Empty product images for a specific product ID
+	 *
+	 * @param array $product_id
+	 * @return bool
+	 */
+	public function empty_product_images( $product_ids ) {
+		// Add Images in bulk
+		$product_id_chunks = array_chunk( $product_ids, 500 );
+		
+		if ( !is_array( $product_id_chunks ) )
+			return true;
+		
+		foreach ( $product_id_chunks as $pids ) {
+			$this->db->query( 'DELETE FROM `product_images` WHERE `product_id` IN( ' . implode( ',', $pids ) . ')' );
+			
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to get delete product images.', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Commits a product image to a product
+	 *
+	 * @param array $images
+	 * @return bool
+	 */
+	public function commit_product_images( $images, $product_id ) {
+		// No images to work with
+		if ( !is_array( $images ) )
+			return true;
+		
+		// Typecast
+		$product_id = (int) $product_id;
+		
+		// Initiate values
+		$values = '';
+		
+		foreach ( $images as $key => $image ) {
+			// Putting the definition of $sequence down below (after the list() statement) made it actually not assign zero.  Putting it up here too.
+			$sequence = 0;
+			
+			if ( preg_match( '/^\//', $image ) == 1 )
+				$image = substr( $image, 1 );
+	
+			// Get it's sequence
+			if ( stristr( $image, '|' ) )
+				list( $image, $sequence ) = explode( '|', $image );
+				
+			// Give it a value if it was empty
+			if ( empty( $sequence ) )
+				$sequence = 0;
+			
+			$this->images[] = "( $product_id, '" . $this->db->escape( $image ) . "', " . (int) $sequence . ' )';
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Adds a product images in bulk
+	 *
+	 * @return bool
+	 */
+	public function add_product_images() {
+		// Add Images in bulk
+		$image_chunks = array_chunk( $this->images, 500 );
+		
+		if ( !is_array( $image_chunks ) )
+			return true;
+		
+		foreach ( $image_chunks as $images ) {
+			$this->db->query( 'INSERT INTO `product_images` ( `product_id`, `image`, `sequence` ) VALUES ' . implode( ',', $images ) );
+	
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to add product images.', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
     /**
      * Check to see if a Slug is already being used
      *
@@ -366,6 +607,9 @@ class Ashley extends Base_Class {
 	}
 	
 	/**
+	 * /
+	
+	/**
 	 * Upload image
 	 *
 	 * @param string $image_url
@@ -472,8 +716,8 @@ class Ashley extends Base_Class {
 	 * @return int Total time spent on the query, in seconds
 	 */
 	private function scratchy_time() {
-		return microtime( true ) - $this->time_start;
-	}
+		return microtime( true ) - $this->time_start;}
+
 	
 	/**
 	 * Report an error
@@ -483,6 +727,7 @@ class Ashley extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
