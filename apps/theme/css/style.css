@@ -100,6 +100,7 @@ input.button {
 .text-center { text-align:center; }
 .success, .success p { color: #090 }
 .alert, .error{ color: #F00; }
+.share-save { font-size: 22px; font-weight: bold; text-align:right }
 
 /* Form Styles */
 form td, form th, .form td, .form th { padding: 0 10px 7px 0; font-size: 14px }
