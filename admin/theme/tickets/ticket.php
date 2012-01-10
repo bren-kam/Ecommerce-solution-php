@@ -34,7 +34,7 @@ if ( 0 == $ticket['assigned_to_user_id'] )
 css( 'form', 'jquery.uploadify', 'tickets/ticket' );
 javascript( 'swfobject', 'validator', 'jquery', 'jquery.uploadify', 'jquery.autoresize', 'jquery.tmp-val', 'tickets/ticket' );
 
-$admin_users = $u->get_users( " AND `role` > 5 AND `status` = 1 AND '' <> `contact_name`" );
+$admin_users = $u->get_users( "AND `status` <> 0 AND `role` > 5 AND `status` = 1 AND '' <> `contact_name`" );
 
 $selected = 'tickets';
 $title = _('View Ticket | Admin') . ' | ' . TITLE;

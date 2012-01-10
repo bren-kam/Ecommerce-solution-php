@@ -29,6 +29,7 @@ get_header();
 	<?php get_sidebar( 'users/' ); ?>
 	<div id="subcontent">
         <div id="dUsersContainer">
+            <?php nonce::field( 'delete-user', '_ajax_delete_user' ); ?>
         	<table cellpadding="0" cellspacing="0" width="100%" id="tListUsers">
 				<thead>
 					<tr>
@@ -37,7 +38,6 @@ get_header();
 						<th width="14%"><?php echo _('Phone'); ?></th>
 						<th width="28%"><?php echo _('Websites'); ?></th>
 						<th width="10%"><?php echo _('Permission'); ?></th>
-						<!--<th width="14%"><?php echo _('Date Signed Up'); ?></th>-->
 					</tr>
 				</thead>
 				<tbody>

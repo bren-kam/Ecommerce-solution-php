@@ -70,8 +70,7 @@ class Users extends Base_Class {
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the users
-		// $users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, a.`work_phone`, a.`role`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
-		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id`, `phone` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id`, `phone` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -96,7 +95,7 @@ class Users extends Base_Class {
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the user count
-		$user_count = $this->db->get_var( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where" );
+		$user_count = $this->db->get_var( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -386,7 +385,26 @@ class Users extends Base_Class {
 		
 		return $users;
 	}
-	
+
+    /**
+	 * Deactivates a user
+	 *
+	 * @param int $user_id
+	 * @return bool
+	 */
+	public function delete( $user_id ) {
+        // Prepare the statement
+        $this->db->update( 'users', array( 'status' => 0 ), array( 'user_id' => $user_id ), 'i', 'i' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to deactivate user.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+		return true;
+	}
+
 	/**
 	 * Gets an inactive user by user_id
 	 *
