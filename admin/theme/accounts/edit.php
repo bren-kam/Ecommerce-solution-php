@@ -124,6 +124,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'advertising-url' => $_POST['tAdvertisingURL']
             , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY ) )
             , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
+            , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
+            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
 		) );
 	}
 }
@@ -140,6 +142,8 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'advertising-url'
     , 'ga-username'
     , 'ga-password'
+    , 'ashley-ftp-username'
+    , 'ashley-ftp-password'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -342,6 +346,14 @@ get_header();
 							<label for="tWordPressPassword"><?php echo _('WordPress Password'); ?>:</label>
 							<input type="text" name="tWordPressPassword" id="tWordPressPassword" value="<?php if ( !empty( $web['wordpress_password'] ) ) echo security::decrypt( base64_decode( $web['wordpress_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
 						</p>
+                        <p>
+                            <label for="tAshleyFTPUsername"><?php echo _('Ashley FTP Username'); ?>:</label>
+                            <input type="text" name="tAshleyFTPUsername" id="tAshleyFTPUsername" value="<?php if ( !empty( $settings['ashley-ftp-username'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
+                        <p>
+                            <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
+                            <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
