@@ -17,6 +17,7 @@ function postLoad( $ ) {
 	$('#checklist-sections').sortable({
 		items		: '.section',
 		cancel		: 'input',
+        cursor      : 'move',
 		placeholder	: 'section-placeholder',
 		forcePlaceholderSize : true
 	});
@@ -25,6 +26,7 @@ function postLoad( $ ) {
     $('.section').sortable({
 		items		: '.item',
 		cancel		: 'input',
+        cursor      : 'move',
 		placeholder	: 'item-placeholder',
 		forcePlaceholderSize : true
 	});

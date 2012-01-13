@@ -3,6 +3,7 @@
 /***********************/
 #checklist-section { position: relative; }
 .section { border: 1px solid transparent; position: relative; }
+.section:hover { background:  url(/images/icons/sort.png) 0 3px no-repeat; }
 .section-placeholder { border: 1px dashed #ccc; width: 565px; position: relative; margin-left: 21px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -18,7 +19,10 @@
 	vertical-align: middle;
     padding:  5px 0 5px 21px;
 	margin-bottom: 3px;
+
 }
+.item:hover { background:  url(/images/icons/sort.png) 0 8px no-repeat; }
+
 .item-placeholder { width: 565px; margin: 5px 0 5px 21px; border:  1px dashed #ccc;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
