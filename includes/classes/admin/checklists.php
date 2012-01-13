@@ -114,19 +114,68 @@ class Checklists extends Base_Class {
 	 * @return array
 	 */
 	public function get_checklist_items( $checklist_id ) {
-		$sections = $this->db->get_results( 'SELECT `checklist_item_id`, `section` FROM `checklist_items` GROUP BY `section` ORDER BY `sequence` ASC', ARRAY_A);
-		
-		// Handle any error
+        // Type Juggling
+        $checklist_id = (int) $checklist_id;
+
+		$checklist_items_array = $this->db->get_results( "SELECT a.`checklist_item_id` , a.`name` , a.`assigned_to` , a.`sequence` , b.`checked` , b.`checklist_website_item_id` , COUNT( c.`checklist_website_item_id` ) AS notes_count, d.`name` AS section FROM `checklist_items` AS a LEFT  JOIN `checklist_website_items` AS b ON ( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN `checklist_website_item_notes` AS c ON ( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) LEFT JOIN `checklist_sections` AS d ON ( a.`checklist_section_id` = d.`checklist_section_id` ) WHERE b.`checklist_id` = $checklist_id GROUP BY a.`checklist_section_id`, b.`checklist_website_item_id` ORDER BY a.`sequence` ASC", ARRAY_A );
+
+        // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get sections.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		foreach ( $sections as $s ) {
-			$arr[$s['section']] = $this->db->prepare( 'SELECT a.`checklist_item_id`, a.`name`, a.`assigned_to`, a.`sequence`, b.`checked`, b.`checklist_website_item_id`, c.`rcount` AS notes_count FROM `checklist_items` AS a INNER JOIN `checklist_website_items` AS b ON( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN ( SELECT COUNT(*) AS rcount, `checklist_website_item_id` FROM `checklist_website_item_notes` GROUP BY `checklist_website_item_id` ) AS c ON( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) WHERE b.`checklist_id` = ? AND a.`section` = ? ORDER BY a.`sequence` ASC', 'is', $checklist_id, $s['section'] )->get_results( '', ARRAY_A );
+
+        // Put all the items in the proper place
+        $checklist_items = array();
+
+        if ( is_array( $checklist_items_array ) )
+        foreach ( $checklist_items_array as $ci ) {
+            $checklist_items[$ci['section']][] = $ci;
+        }
+
+		return $checklist_items;
+	}
+
+    /**
+	 * Get Sections List
+	 *
+	 * @return array
+	 */
+	public function get_sections() {
+		$checklist_sections = $this->db->get_results( "SELECT `checklist_section_id`, `name` FROM `checklist_sections` ORDER BY `sequence` ASC", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
+			return false;
 		}
-		
-		return $arr;
+
+		return $checklist_sections;
+	}
+
+    /**
+	 * Get Items List
+	 *
+	 * @return array
+	 */
+	public function get_items() {
+		$checklist_items_array = $this->db->get_results( "SELECT `checklist_item_id`, `checklist_section_id`, `name`, `assigned_to` FROM `checklist_items` ORDER BY `sequence` ASC", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Put all the items in the proper place
+        $checklist_items = array();
+        
+        if ( is_array( $checklist_items_array ) )
+        foreach ( $checklist_items_array as $ci ) {
+            $checklist_items[$ci['checklist_section_id']][] = $ci;
+        }
+
+		return $checklist_items;
 	}
 	
 	/**
@@ -178,9 +227,16 @@ class Checklists extends Base_Class {
 	 */
 	public function update_item( $checklist_website_item_id, $state ){		
 		$state = ( $state == 'true' ) ? 1 : 0;
-		$this->db->query( sprintf( "UPDATE `checklist_website_items` SET `checked` = %d, `date_checked` = NOW() WHERE `checklist_website_item_id` = %d", $state, $checklist_website_item_id ) );
 
-		return ( mysql_errno() ) ? false : true;
+		$this->db->update( 'checklist_website_items', array( 'checked' => $state, 'date_checked' => dt::date('Y-m-d H:i:s') ), array( 'checklist_website_item_id' => $checklist_website_item_id ), 'is', 'i' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update website item.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return true;
 	}
 	
 	/**
@@ -227,6 +283,7 @@ class Checklists extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

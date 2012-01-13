@@ -1,0 +1,29 @@
+/***********************/
+/* Checklists - Manage */
+/***********************/
+#checklist-section { position: relative; }
+.section { border: 1px solid #fff; position: relative; }
+.section-placeholder { border: 1px dashed #ccc; width: 565px; position: relative; margin-left: 21px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.section-title { font-size: 18px; margin-left: 21px;line-height: 20px; width: 560px }
+.section-items { margin-top: 8px }
+.add-section-item { margin-left:  21px }
+
+.item {
+	display: block;
+	height: 22px;
+	vertical-align: middle;
+    padding:  5px 0 5px 21px;
+	margin-bottom: 3px;
+}
+.item-placeholder { width: 565px; margin: 5px 0 5px 21px; border:  1px dashed #ccc;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.item-description { width: 350px !important }
+.item-assigned-to { width: 200px !important }
