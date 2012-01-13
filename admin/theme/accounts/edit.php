@@ -190,7 +190,7 @@ get_header();
 				echo "<p class='red'>$error_message</p>";
 			}
 
-            if ( $user['role'] >= 8 ) {
+            if ( $user['role'] >= 7 ) {
             ?>
                 <p align="right">
                     <a href="javascript:;" id="aDeleteProducts" rel="<?php echo $_GET['wid']; ?>" title="<?php echo _('Delete Categories and Products'); ?>"><?php echo _('Delete Categories and Products'); ?></a> |

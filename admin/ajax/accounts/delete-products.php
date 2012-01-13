@@ -11,7 +11,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'delete-produ
 	}
 
     // Make sure they have permission to remove it
-    if ( $user['role'] < 8 ) {
+    if ( $user['role'] < 7 ) {
 		echo json_encode( array( 'result' => false, 'error' => _('You must be signed in to delete the categories and products from a website.') ) );
 		exit;
 	}
