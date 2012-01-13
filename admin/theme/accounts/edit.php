@@ -190,11 +190,13 @@ get_header();
 				echo "<p class='red'>$error_message</p>";
 			}
 
-            if ( 10 == $user['role'] ) {
-			?>
+            if ( $user['role'] >= 8 ) {
+            ?>
                 <p align="right">
-                    <a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a>
-                    <a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a>
+                    <a href="javascript:;" id="aDeleteProducts" rel="<?php echo $_GET['wid']; ?>" title="<?php echo _('Delete Categories and Products'); ?>"><?php echo _('Delete Categories and Products'); ?></a> |
+                    <?php if ( 10 == $user['role'] ) { ?>
+                        <a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a>
+                    <?php } ?>
                 </p>
             <?php } ?>
 			<form action="/accounts/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditAccount">
@@ -384,7 +386,10 @@ get_header();
 			<input type="submit" id="bSubmit" name="bSubmit" value="<?php echo _('Save'); ?>" class="button" />
 			<?php nonce::field( 'update-account' ); ?>
 		</form>
-		<?php add_footer( $v->js_validation() ); ?>
+		<?php
+            add_footer( $v->js_validation() );
+            nonce::field( 'delete-products', '_ajax_delete_products' );
+        ?>
 		</div>
 		<div id="dSuccess"<?php echo $success_class; ?>>
 			<p><?php echo _('Account has been successfully updated!'); ?></p>

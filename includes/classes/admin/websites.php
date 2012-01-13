@@ -692,6 +692,35 @@ class Websites extends Base_Class {
 
         return true;
 	}
+
+    /**
+	 * Deletes all the categories and products from a website
+	 *
+	 * @param int $website_id
+	 * @return bool
+	 */
+	public function delete_categories_and_products( $website_id ) {
+		// Typecast
+		$website_id = (int) $website_id;
+
+        $this->db->query( "DELETE FROM `website_categories` WHERE `website_id` = $website_id" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        $this->db->query( "DELETE FROM `website_products` WHERE `website_id` = $website_id" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to delete website products.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return true;
+	}
 	
 	/**
 	 * Update website version

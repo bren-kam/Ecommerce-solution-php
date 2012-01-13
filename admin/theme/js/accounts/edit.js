@@ -31,6 +31,36 @@ function postLoad( $ ) {
         // Delete the account
         window.location = $(this).attr('href');
     });
+
+    // Delete Category and Products
+    $('#aDeleteProducts').click( function(e) {
+        e.preventDefault();
+
+        // Get the paragraph
+        var p = $(this).parent();
+
+        if ( !confirm( 'Are you sure you want to delete ALL categories and products? This cannot be undone.') )
+            return;
+
+        $.post( '/ajax/accounts/delete-products/', { _nonce : $('#_ajax_delete_products').val(), wid: $(this).attr('rel') }, function ( response ) {
+            // Make sure there was no error
+            if ( !response['result'] ) {
+                alert( response['error'] );
+                return false;
+            }
+
+            // Remove any success message
+            $('#pSuccessMessage').remove();
+
+            // Show them success message
+            p.after('<p id="pSuccessMessage" class="success">The categories and products have been successfully removed.</p>');
+
+            // Remove the message after five seconds
+            setTimeout( function() {
+                $('#pSuccessMessage').remove();
+            }, 5000 );
+        }, 'json' );
+    });
 }
 
 /**
