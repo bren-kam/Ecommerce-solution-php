@@ -54,11 +54,12 @@ get_header();
                                     <input type="text" name="items[<?php echo $section['checklist_section_id']; ?>][<?php echo $item['checklist_item_id']; ?>][assigned_to]" class="tb item-assigned-to" value="<?php echo $item['assigned_to']; ?>" />
                                 </div>
                             <?php } ?>
-                            <a href="javascript:;" class="add-section-item" id="aAddSectionItem<?php echo $section['checklist_section_id']; ?>" title="<?php echo _('Add Item'); ?>">Add Item</a>
+                            <a href="javascript:;" class="add-section-item" id="aAddSectionItem<?php echo $section['checklist_section_id']; ?>" title="<?php echo _('Add Item'); ?>"><?php echo _('Add Item'); ?></a>
                             <br /><br />
                         </div>
                     </div>
                 <?php } ?>
+                <a href="javascript:;" id="aAddSection" title="<?php echo _('Add Section'); ?>"><?php echo _('Add Section'); ?></a>
             </div>
         </form>
 	</div>
