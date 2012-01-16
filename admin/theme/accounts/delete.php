@@ -18,5 +18,5 @@ if ( 10 == $user['role'] ) {
 }
 
 // Redirect to main website page
-url::redirect( '/websites/' );
+url::redirect( '/accounts/' );
 ?>

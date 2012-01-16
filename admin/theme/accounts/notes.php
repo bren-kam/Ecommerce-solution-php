@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Edit Website
+ * @page Edit Account
  * @package Imagine Retailer
  */
 
@@ -31,28 +31,28 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-note' ) 
 // Get the notes
 $notes = $w->get_notes( $_GET['wid'] );
 
-// Get website
+// Get account
 $website = $w->get_website( $_GET['wid'] );
 
 // Get CSS/JS
-css( 'websites/notes' );
-javascript( 'validator', 'jquery', 'websites/notes' );
+css( 'accounts/notes' );
+javascript( 'validator', 'jquery', 'accounts/notes' );
 
-$selected = 'websites';
-$title = _('Website Notes') . ' | ' . TITLE;
+$selected = 'accounts';
+$title = _('Account Notes') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
 	<h1><?php echo $website['title'], ' ', _('Notes'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'websites/' ); ?>
+	<?php get_sidebar( 'accounts/' ); ?>
 	<div id="subcontent">
 		<?php
 		nonce::field( 'delete-note', '_delete_note_nonce' );
 		nonce::field( 'update-note', '_update_note_nonce' );
 		?>
-		<form name="fNewNote" method="post" action="/websites/notes/?wid=<?php echo $_GET['wid']; ?>">
+		<form name="fNewNote" method="post" action="/accounts/notes/?wid=<?php echo $_GET['wid']; ?>">
 			<textarea name="taNoteContents" id="taNoteContents" cols="50" rows="3"></textarea><br />
 			<input type="submit" class="button" id="aAddNote" value="Add Note" />
 			<?php nonce::field( 'add-note' ); ?>

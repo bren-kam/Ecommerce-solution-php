@@ -18,5 +18,5 @@ $w = new Websites;
 
 $w->install( $_GET['wid'] );
 
-url::redirect( '/websites/edit/?wid=' . $_GET['wid'] );
+url::redirect( '/accounts/edit/?wid=' . $_GET['wid'] );
 ?>

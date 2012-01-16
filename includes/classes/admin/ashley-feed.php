@@ -26,6 +26,32 @@ class Ashley_Feed extends Base_Class {
 	}
 
 	/**
+     *  Get websites to run
+     *
+     * @return bool
+     */
+    public function run_all() {
+        $website_ids = $this->db->get_col( "SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-password' AND `value` <> ''" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website_ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Get the file if htere is one
+		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
+		
+        if ( is_array( $website_ids ) )
+        foreach( $website_ids as $wid ) {
+			echo "<h1>$wid</h1>";
+            $this->run( $wid, $file );
+        }
+
+        return true;
+    }
+
+	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
 	 * 
 	 * @param int $website_id
@@ -35,27 +61,30 @@ class Ashley_Feed extends Base_Class {
 	public function run( $website_id, $file = '' ) {
 		$this->timer_start();
 		
-		// $settings = $w->get_settings( 'ashley-username', 'ashley-password' );
-		$settings = array(
-			'username' => 'CE_900000-'
-			, 'password' => 'Nga$623'
-		);
+        // Get the settings
+		$settings = $this->w->get_settings( $website_id, array( 'ashley-ftp-username', 'ashley-ftp-password' ) );
+		
+		$username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
+		$password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
 		
 		// Initialize variables
-		$folder = str_replace( 'CE_', '', $settings['username'] );
+		$folder = str_replace( 'CE_', '', $username );
 		$products = $this->get_website_product_skus( $website_id );
+		
+		if ( !is_array( $products ) )
+			$products = array();
 		
 		$ftp = new FTP( 0, "/CustEDI/$folder/Outbound/", true );
 		ini_set( 'max_execution_time', 600 ); // 10 minutes
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
 		$start = time();
-		
-		
+
+
 		// Set login information
 		$ftp->host     = self::FTP_URL;
-		$ftp->username = $settings['username'];
-		$ftp->password = $settings['password'];
+		$ftp->username = $username;
+		$ftp->password = $password;
 		$ftp->port     = 21;
 		
 		// Connect
@@ -68,7 +97,7 @@ class Ashley_Feed extends Base_Class {
 			$file = $files[count($files)-1];
 		}
 		
-		$local_folder = '/home/imaginer/public_html/admin/media/downloads/ashley/' . $settings['username'] . '/';
+		$local_folder = "/home/imaginer/public_html/admin/media/downloads/ashley/$username/";
 		
 		if ( !file_exists( $local_folder ) )
 			mkdir( $local_folder, 0777 );
@@ -84,14 +113,12 @@ class Ashley_Feed extends Base_Class {
 		foreach( $this->xml->items->item as $item ) {
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
 			
-			if ( !array_key_exists( $sku, $products ) )
+			if ( !array_key_exists( $sku, $products ) ) {
 				$new_products[] = $sku;
+			}
 			
 			$skus[] = $sku;
 		}
-		
-		fn::info( $new_products );
-		exit;
 		
 		$remove_products = array();
 		
@@ -102,8 +129,6 @@ class Ashley_Feed extends Base_Class {
 		}
 		
 		echo '<p><strong>New Products:</strong> ' . count( $new_products ) . '</p>';
-		
-		fn::info( $new_products );
 		
 		// Add new products
 		$this->add_bulk( $website_id, $new_products );
@@ -161,10 +186,10 @@ class Ashley_Feed extends Base_Class {
 			foreach ( $product_skus as &$ps ) {
 				$ps = "'" . $this->db->escape( trim( $ps ) ) . "'";
 			}
-	
+			
 			// Turn it into a string
 			$product_skus = implode( ",", $product_skus );
-	
+			
 			// Get industries
 			$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $this->get_website_industries( $website_id ) ) );
 	
@@ -173,11 +198,11 @@ class Ashley_Feed extends Base_Class {
 	
 			// Type Juggling
 			$website_id = (int) $website_id;
-
+			
 			// Magical Query #1
 			// Insert website products
-			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
-
+			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, `product_id` FROM `products` WHERE `industry_id` IN($industries) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus ) ON DUPLICATE KEY UPDATE `active` = 1" );
+			
 			// Handle any error
 			if ( $this->db->errno() ) {
 				$this->err( 'Failed to dump website products.', __LINE__, __METHOD__ );
@@ -229,7 +254,7 @@ class Ashley_Feed extends Base_Class {
 	 * @param int $website_id
 	 * @return bool
 	 */
-	private function reorganize_categories( $website_id ) {
+	public function reorganize_categories( $website_id ) {
 		// Get category IDs
 		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1" );
 
@@ -264,6 +289,9 @@ class Ashley_Feed extends Base_Class {
 		// Find out what categories we need to add
 		if ( is_array( $category_ids ) )
 		foreach ( $category_ids as $cid ) {
+			if ( empty( $cid ) )
+				continue;
+			
 			// Start forming complete list of product categories
 			$product_category_ids[] = $cid;
 			
@@ -281,8 +309,8 @@ class Ashley_Feed extends Base_Class {
 				$product_category_ids[] = $pcid;
 				
 				// If the website does not already have it and it has not already been added
-				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) )
-					$new_category_ids[] = $cid;
+				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) )
+					$new_category_ids[] = $pcid;
 			}
 		}
 		
@@ -303,7 +331,7 @@ class Ashley_Feed extends Base_Class {
 		echo '<p><strong>New Categories:</strong> ' . count( $new_category_ids ) . '</p>';
 		
 		// Bulk add categories
-		$this->bulk_add_categories( $website_id, $new_category_ids );
+		$this->bulk_add_categories( $website_id, $new_category_ids, $c );
 		
 		echo '<p><strong>Old Categories:</strong> ' . count( $remove_category_ids ) . '</p>';
 		
@@ -318,9 +346,10 @@ class Ashley_Feed extends Base_Class {
 	 *
 	 * @param int $website_id
 	 * @param array $category_ids
+	 * @param object $c (Category)
 	 * @return bool
 	 */
-	private function bulk_add_categories( $website_id, $category_ids ) {
+	private function bulk_add_categories( $website_id, $category_ids, $c ) {
 		if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
 			return;
 		
@@ -328,27 +357,48 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// If there are any categories that need to be added
-		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = d.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
+		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website category images.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
 		// Create insert
 		$values = '';
 		$category_images = ar::assign_key( $category_images, 'category_id', true );
-
+		
 		foreach ( $category_ids as $cid ) {
+			// If we have an image, use it
+			if ( isset( $category_images[$cid] ) ) {
+				$image = $this->db->escape( $category_images[$cid] );
+			} else {
+				// If not, that means it is a parent category. Choose the first child category with an image, and use it
+				
+				// Get child categories
+				$child_categories = $c->get_child_categories( $cid );
+				
+				// Find the first available image
+				foreach ( $child_categories as $cc ) {
+					if ( isset( $category_images[$cc['category_id']] ) ) {
+						// Assign the image
+						$image = $this->db->escape( $category_images[$cc['category_id']] );
+						
+						// Don't need to loop any furhter
+						break;
+					}
+				}
+			}
+			
+			// Create the CSV
 			if ( !empty( $values ) )
 				$values .= ',';
-
-			// This image will be used for the parent categories as well
-			$image = $this->db->escape( $category_images[$cid] );
+			
+			// Create the values
 			$values .= "( $website_id, $cid, '$image' )";
 		}
-
+		
 		// Add the values
 		if ( !empty( $values ) ) {
 			$this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES $values ON DUPLICATE KEY UPDATE `category_id` = VALUES( `category_id` )" );

@@ -1,5 +1,5 @@
 /**
- * Websites Notes
+ * Accounts Notes
  */
 
 // When the page has loaded
@@ -40,7 +40,7 @@ function aEditNoteClick() {
 	if ( dNote.hasClass( 'editing' ) ) 
 		return false;
 	
-	dNote.html( '<br /><a href="#" class="update-note" title="Update">Update</a> | <a href="#" class="cancel-edit" title="Cancel">Cancel</a>' ).prepend( '<textarea id="taEditNote' + noteID + '" rows="3" cols="42">' + dNoteHTML + '</textarea><div class="hidden cancel-text">' + dNoteHTML +'</div>' ).addClass( 'editing' );
+	dNote.html( '<br /><a href="javascript:;" class="update-note" title="Update">Update</a> | <a href="#" class="cancel-edit" title="Cancel">Cancel</a>' ).prepend( '<textarea id="taEditNote' + noteID + '" rows="3" cols="42">' + dNoteHTML + '</textarea><div class="hidden cancel-text">' + dNoteHTML +'</div>' ).addClass( 'editing' );
 }
 
 /**
@@ -53,7 +53,7 @@ function aUpdateNoteClick() {
 	var noteID = $(this).parents('.dNote:first').attr('id').replace( 'dNote', '' );
 	
 	// AJAX update call
-	$.post( '/ajax/websites/update-note/', { '_nonce': $('#_update_note_nonce').val(), 'nid' : noteID, 't' : $( '#taEditNote' + noteID ).val() }, function( response ){
+	$.post( '/ajax/accounts/update-note/', { '_nonce': $('#_update_note_nonce').val(), 'nid' : noteID, 't' : $( '#taEditNote' + noteID ).val() }, function( response ){
 		// Handle any errors
 		if ( !response['result'] ) {
 			alert( response['error'] );
@@ -79,7 +79,7 @@ function aDeleteNoteClick() {
 	var noteID = $(this).parents('.dNote:first').attr('id').replace( 'dNote', '' );
 	
 	// Delete note
-	$.post( '/ajax/websites/delete-note/', { '_nonce': $('#_delete_note_nonce').val(), 'nid' : noteID }, function( response ) {
+	$.post( '/ajax/accounts/delete-note/', { '_nonce': $('#_delete_note_nonce').val(), 'nid' : noteID }, function( response ) {
 		// Handle any errors
 		if ( !response['result'] ) {
 			alert( response['error'] );

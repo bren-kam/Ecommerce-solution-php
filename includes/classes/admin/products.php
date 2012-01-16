@@ -572,7 +572,7 @@ class Products extends Base_Class {
 	public function list_products( $where, $order_by, $limit ) {
         $sql_limit = ( 0 === $limit ) ? '' : "LIMIT $limit";
 
-		$products = $this->db->get_results( "SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, a.`status`, DATE( a.`publish_date` ) AS publish_date, c.`name` AS category, e.`image`, e.`swatch` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) WHERE ( e.`sequence` = 0 OR e.`sequence` IS NULL ) $where GROUP BY a.`product_id` ORDER BY $order_by $sql_limit", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, a.`status`, DATE( a.`publish_date` ) AS publish_date, c.`name` AS category FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) WHERE 1 $where ORDER BY $order_by $sql_limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -592,7 +592,7 @@ class Products extends Base_Class {
 	public function count_products( $where ) {
 		// @Fix shouldn't need to do the count function
 		// Get the product count
-		$product_count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) WHERE ( e.`sequence` = 0 OR e.`sequence` IS NULL ) $where GROUP BY a.`product_id`" );
+		$product_count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) WHERE 1 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

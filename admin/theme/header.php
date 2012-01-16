@@ -44,7 +44,7 @@ if ( !empty( $selected ) )
 		<div id="nav-links">
 			<?php if ( $user ) { ?>
 			<a href="/" title="<?php echo _('Home'); ?>"<?php if ( isset( $home ) ) echo $home; ?>><?php echo _('Home'); ?></a>
-			<a href="/websites/" title="<?php echo _('Websites'); ?>"<?php if ( isset( $websites ) ) echo $websites; ?>><?php echo _('Websites'); ?></a>
+			<a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php if ( isset( $accounts ) ) echo $accounts; ?>><?php echo _('Accounts'); ?></a>
 			<a href="/products/" title="<?php echo _('Products'); ?>"<?php if ( isset( $products ) ) echo $products; ?>><?php echo _('Products'); ?></a>
 			<?php if ( $user['role'] >= 7 ) { ?>
             <a href="/users/" title="<?php echo _('Users'); ?>"<?php if ( isset( $users ) ) echo $users; ?>><?php echo _('Users'); ?></a>

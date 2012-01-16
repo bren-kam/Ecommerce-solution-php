@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Upgrade Websites
+ * @page Upgrade Accounts
  * @package Imagine Retailer
  */
 
@@ -51,5 +51,5 @@ foreach ( $website_ids as $website_id ) {
 		$start_date = date('Y-m-d', strtotime( $start_date ) + 86400 );
 	}
 	echo 'Site #' . $website_id . ' done...';
-	mail( 'tom@studio98.com', 'Analytics - Website# ' . $website_id . ' - COMPLETED!', 'Done!' );
+	mail( 'kerry@studio98.com', 'Analytics - Website# ' . $website_id . ' - COMPLETED!', 'Done!' );
 }
