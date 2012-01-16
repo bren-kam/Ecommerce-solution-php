@@ -124,6 +124,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'advertising-url' => $_POST['tAdvertisingURL']
             , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY ) )
             , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
+            , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
+            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
 		) );
 	}
 }
@@ -140,6 +142,8 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'advertising-url'
     , 'ga-username'
     , 'ga-password'
+    , 'ashley-ftp-username'
+    , 'ashley-ftp-password'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -186,9 +190,14 @@ get_header();
 				echo "<p class='red'>$error_message</p>";
 			}
 
-            if ( 10 == $user['role'] ) {
-			?>
-                <p align="right"><a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a></p>
+            if ( $user['role'] >= 7 ) {
+            ?>
+                <p align="right">
+                    <a href="javascript:;" id="aDeleteProducts" rel="<?php echo $_GET['wid']; ?>" title="<?php echo _('Delete Categories and Products'); ?>"><?php echo _('Delete Categories and Products'); ?></a> |
+                    <?php if ( 10 == $user['role'] ) { ?>
+                        <a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a>
+                    <?php } ?>
+                </p>
             <?php } ?>
 			<form action="/accounts/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditAccount">
 			<?php 
@@ -342,6 +351,14 @@ get_header();
 							<label for="tWordPressPassword"><?php echo _('WordPress Password'); ?>:</label>
 							<input type="text" name="tWordPressPassword" id="tWordPressPassword" value="<?php if ( !empty( $web['wordpress_password'] ) ) echo security::decrypt( base64_decode( $web['wordpress_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
 						</p>
+                        <p>
+                            <label for="tAshleyFTPUsername"><?php echo _('Ashley FTP Username'); ?>:</label>
+                            <input type="text" name="tAshleyFTPUsername" id="tAshleyFTPUsername" value="<?php if ( !empty( $settings['ashley-ftp-username'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
+                        <p>
+                            <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
+                            <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
@@ -369,7 +386,10 @@ get_header();
 			<input type="submit" id="bSubmit" name="bSubmit" value="<?php echo _('Save'); ?>" class="button" />
 			<?php nonce::field( 'update-account' ); ?>
 		</form>
-		<?php add_footer( $v->js_validation() ); ?>
+		<?php
+            add_footer( $v->js_validation() );
+            nonce::field( 'delete-products', '_ajax_delete_products' );
+        ?>
 		</div>
 		<div id="dSuccess"<?php echo $success_class; ?>>
 			<p><?php echo _('Account has been successfully updated!'); ?></p>

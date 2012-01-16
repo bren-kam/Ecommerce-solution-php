@@ -92,7 +92,7 @@ get_header();
 			</td>
 		</tr>
 		<tr>
-			<td><strong><?php echo _('Website'); ?>:</strong> <a href="http://<?php if ( !empty( $ticket['subdomain'] ) ) echo $ticket['subdomain'], '.'; echo $ticket['domain']; ?>/" title="<?php echo $ticket['website']; ?>" target="_blank"><?php echo $ticket['website']; ?></a> (<a href="/websites/control/?wid=<?php echo $ticket['website_id']; ?>" target="_blank" title="<?php echo _('Control'); ?>"><?php echo _('Control'); ?></a>)</td>
+			<td><strong><?php echo _('Website'); ?>:</strong> <a href="http://<?php if ( !empty( $ticket['subdomain'] ) ) echo $ticket['subdomain'], '.'; echo $ticket['domain']; ?>/" title="<?php echo $ticket['website']; ?>" target="_blank"><?php echo $ticket['website']; ?></a><?php if ( !empty( $ticket['website_id'] ) ) { ?> (<a href="/accounts/control/?wid=<?php echo $ticket['website_id']; ?>" target="_blank" title="<?php echo _('Control'); ?>"><?php echo _('Control'); ?></a><?php if ( 10 == $user['role'] ) { ?> | <a href="/accounts/edit/?wid=<?php echo $ticket['website_id']; ?>" target="_blank" title="<?php echo _('Edit'); ?>"><?php echo _('Edit'); ?></a><?php } ?>)<?php } ?></td>
 			<td><strong><?php echo _('OS'); ?>:</strong> <?php echo $ticket['browser_platform']; ?></td>
 			<td class="move">
 				<label for="sPriority"><?php echo _('Priority'); ?>:</label>

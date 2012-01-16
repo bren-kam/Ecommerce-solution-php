@@ -232,7 +232,7 @@ class Ashley extends Base_Class {
 				$images = $product_images;
 				
 				
-				if ( 0 == count( $images ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
 					mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image");
 					$identical = false;
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
@@ -350,7 +350,7 @@ class Ashley extends Base_Class {
 			// We don't want to carry them around in the next loop
 			unset( $images );
 			
-			if ( $i % 100 == 0 ) {
+			if ( $i % 1000 == 0 ) {
 				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
 				
 				foreach ( $links as $section => $link_array ) {

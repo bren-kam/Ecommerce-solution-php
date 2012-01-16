@@ -70,7 +70,7 @@ a img { border: none }
 #nav { position: relative; height: 33px; border-top: 1px solid #B0B0B0; border-bottom: 5px solid #222; padding: 0 20px; background: url(/images/slivers/navigation.png) 0 0 repeat-x }
 #nav-links { height:33px; width: 65%; position:relative; float:left }
 #nav-links a, #nav-links input.link { 
-	position: relative; top: 9px; border: 1px solid transparent; border-bottom: 0 !important; padding: 3px 9px 9px; color: #fff; font-size: 14px; font-weight: bold; background: transparent;
+	position: relative; top: 9px; border: 1px solid transparent; border-bottom: 0 !important; padding: 3px 5px 9px; color: #fff; font-size: 14px; font-weight: bold; background: transparent;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;

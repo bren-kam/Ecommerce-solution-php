@@ -250,7 +250,7 @@ class format extends Base_Class {
 		$pee = preg_replace( '!(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee) ;
 		
 		if ( $br ) {
-			$pee = preg_replace_callback( '/<(script|style).*?<\/\\1>/s', create_function( '$matches', 'return str_replace("\n", "<PreserveNewline />", $matches[0]);' ), $pee );
+			$pee = preg_replace_callback( '/<(script|style).*?<\/\\1>/s', 'self::preserve_new_lines' , $pee );
 			$pee = preg_replace( '|(?<!<br />)\s*\n|', "<br />\n", $pee ); // optionally make line breaks
 			$pee = str_replace( '<PreserveNewline />', "\n", $pee );
 		}
@@ -263,6 +263,16 @@ class format extends Base_Class {
 		$pee = preg_replace( "|\n</p>$|", '</p>', $pee );
 	
 		return $pee;
+	}
+	
+	/**
+	 * Prevent functions to be created in memory
+	 *
+	 * @param array $matches
+	 * @return string
+	 */
+	public static function preserve_new_lines( $matches ) {
+		return str_replace( "\n", "<PreserveNewline />", $matches[0] );
 	}
 	
 	/**

@@ -13,4 +13,5 @@ set_time_limit( 600 );
 $file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 
 $a = new Ashley_Feed();
-$a->run( 371, $file );
+//$a->run( 371, $file );
+$a->run_all();
