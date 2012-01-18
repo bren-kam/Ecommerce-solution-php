@@ -33,15 +33,54 @@ function postLoad( $ ) {
 
     // Make new sections
     $('#aAddSection').click( function() {
-        $(this).before('<div class="section"><input type="text" name="sections[]" class="section-title" tmpval="Section title..." /><br /><div class="section-items"><a href="javascript:;" class="add-section-item" title="Add Item">Add Item</a><br /><br /></div></div>' ).tmpval();
+        var a = $(this);
+
+        $.post( '/ajax/checklists/manage/create-section/', { _nonce : $('#_ajax_create_section').val() }, function ( response ) {
+            // Make sure there was no error
+            if ( !response['result'] ) {
+                alert( response['error'] );
+                return false;
+            }
+
+            a.before('<div class="section"><input type="text" name="sections[' + response['result'] + ']" class="section-title" tmpval="Section title..." /> <a href="javascript:;" class="remove-section hidden" title="Remove Section"><img src="/images/icons/x.png" width="15" height="17" alt="Remove Section" /></a><br /><div class="section-items"><a href="javascript:;" class="add-section-item" id="aAddSectionItem' + response['result'] + '" title="Add Item">Add Item</a><br /><br /></div></div>' ).tmpval();
+        }, 'json' );
     });
 
     // Make new items
     $('.add-section-item').live( 'click', function() {
         // Create new item
-        var sectionID = ( 'undefined' == typeof( $(this).attr('id') ) ) ? '' : $(this).attr('id').replace( 'aAddSectionItem', '' );
+        var a = $(this), sectionID = $(this).attr('id').replace( 'aAddSectionItem', '' );
 
-        $(this).before('<div class="item"><input type="text" name="items[' + sectionID + '][][description]" class="tb item-description" tmpval="Description..." value="" /> <input type="text" name="items[' + sectionID + '][][assigned_to]" class="tb item-assigned-to" tmpval="Assigned to..." value="" /></div>' ).tmpval();
+        $.post( '/ajax/checklists/manage/create-item/', { _nonce : $('#_ajax_create_item').val(), sid : sectionID }, function ( response ) {
+            // Make sure there was no error
+            if ( !response['result'] ) {
+                alert( response['error'] );
+                return false;
+            }
+
+            a.before('<div class="item"><input type="text" name="items[' + sectionID + '][' + response['result'] + '][name]" class="item-name" tmpval="Description..." value="" /> <input type="text" name="items[' + sectionID + '][' + response['result'] + '][assigned_to]" class="tb item-assigned-to" tmpval="Assigned to..." value="" /> <a href="javascript:;" class="remove-item hidden" title="Remove Item"><img src="/images/icons/x.png" width="15" height="17" alt="Remove Item" /></a></div>' ).tmpval();
+        }, 'json' );
+    });
+
+    // Remove items
+    $('.remove-item').live( 'click', function() {
+        if ( !confirm( 'Are you sure you want to remove this item? This cannot be undone.' ) )
+            return false;
+
+        $(this).parent().remove();
+    });
+
+    // Remove Section
+    $('.remove-section').live( 'click', function() {
+        if ( $(this).parent().find('div.section-items:first .item:first').is('div') ) {
+            alert('Please remove all items before deleting a section');
+            return;
+        }
+
+        if ( !confirm( 'Are you sure you want to remove this section? This cannot be undone.' ) )
+            return false;
+        
+        $(this).parent().remove();
     });
 }
 

@@ -22,6 +22,9 @@
 
 }
 .item:hover { background:  url(/images/icons/sort.png) 0 8px no-repeat; }
+.item:hover .remove-item, .section:hover .remove-section { display: inline !important }
+.remove-item { position: relative; top: 2px; }
+.remove-section { position: relative; top: 2px; left: 6px }
 
 .item-placeholder { width: 565px; margin: 5px 0 5px 21px; border:  1px dashed #ccc;
     -webkit-border-radius: 4px;
@@ -29,5 +32,5 @@
     border-radius: 4px;
 }
 
-.item-description { width: 350px !important }
+.item-name { width: 350px !important }
 .item-assigned-to { width: 200px !important }

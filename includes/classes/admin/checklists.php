@@ -15,7 +15,164 @@ class Checklists extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 	}
-	
+
+    /**
+     * Create a section that is set as inactive
+     *
+     * @return bool
+     */
+    public function create_section() {
+        $this->db->insert( 'checklist_sections', array( 'name' => '', 'sequence' => 0, 'status' => 0 ), 'sii' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create section.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Update the sections name and sequence
+     *
+     * @param array $sections
+     * @return bool
+     */
+    public function update_sections( $sections ) {
+        // Prepare statement
+		$statement = $this->db->prepare( "UPDATE `checklist_sections` SET `name` = ?, `sequence` = ? WHERE `checklist_section_id` = ?" );
+		$statement->bind_param( 'sii', $name, $sequence, $checklist_section_id );
+
+        $sequence = 0;
+
+        if ( is_array( $sections ) )
+		foreach ( $sections as $checklist_section_id => $name ) {
+			$statement->execute();
+
+			// Handle any error
+			if ( $statement->errno ) {
+				$this->db->m->error = $statement->error;
+				$this->err( 'Failed to update checklist sections', __LINE__, __METHOD__ );
+				return false;
+			}
+
+            // Update the sequence
+            $sequence++;
+		}
+
+        return true;
+    }
+
+    /**
+     * Removes a block of sections
+     *
+     * @param array $section_ids
+     * @return bool
+     */
+    public function remove_sections( $section_ids ) {
+        // Make sure it's an array
+        if ( !is_array( $section_ids ) || 0 == count( $section_ids ) )
+            return true;
+
+        // Type juggling for the array
+        foreach ( $section_ids as &$sid ) {
+            $sid = (int) $sid;
+        }
+
+        $this->db->query( 'UPDATE `checklist_sections` SET `status` = 0 WHERE `checklist_section_id` IN (' . implode( ',', $section_ids ) . ')' );
+
+         // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to remove checklist sections.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+     * Create an item that is set as inactive
+     *
+     * @param int $section_id
+     * @return bool
+     */
+    public function create_item( $section_id ) {
+        $this->db->insert( 'checklist_items', array( 'checklist_section_id' => $section_id, 'name' => '', 'assigned_to' => '', 'sequence' => 0, 'status' => 0 ), 'issii' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create item.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Update the items name, assigned-to and sequence
+     *
+     * @param array $items
+     * @return bool
+     */
+    public function update_items( $items ) {
+        // Prepare statement
+		$statement = $this->db->prepare( "UPDATE `checklist_items` SET `name` = ?, `assigned_to` = ?, `sequence` = ? WHERE `checklist_item_id` = ?" );
+		$statement->bind_param( 'ssii', $name, $assigned_to, $sequence, $checklist_item_id );
+
+        $sequence = 0;
+
+        if ( is_array( $items ) )
+		foreach ( $items as $item_array ) {
+            if ( is_array( $item_array ) )
+            foreach ( $item_array as $checklist_item_id => $item ) {
+                $name = $item['name'];
+                $assigned_to = $item['assigned_to'];
+
+                $statement->execute();
+
+                // Handle any error
+                if ( $statement->errno ) {
+                    $this->db->m->error = $statement->error;
+                    $this->err( 'Failed to update checklist items', __LINE__, __METHOD__ );
+                    return false;
+                }
+
+                // Update the sequence
+                $sequence++;
+            }
+		}
+
+        return true;
+    }
+
+    /**
+     * Removes a block of items
+     *
+     * @param array $item_ids
+     * @return bool
+     */
+    public function remove_items( $item_ids ) {
+        // Make sure it's an array
+        if ( !is_array( $item_ids ) || 0 == count( $item_ids ) )
+            return true;
+
+        // Type juggling for the array
+        foreach ( $item_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $this->db->query( 'UPDATE `checklist_items` SET `status` = 0 WHERE `checklist_item_id` IN (' . implode( ',', $item_ids ) . ')' );
+
+         // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to remove checklist items.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
 	/**
 	 * Get all information of the checklists
 	 *
@@ -117,7 +274,7 @@ class Checklists extends Base_Class {
         // Type Juggling
         $checklist_id = (int) $checklist_id;
 
-		$checklist_items_array = $this->db->get_results( "SELECT a.`checklist_item_id` , a.`name` , a.`assigned_to` , a.`sequence` , b.`checked` , b.`checklist_website_item_id` , COUNT( c.`checklist_website_item_id` ) AS notes_count, d.`name` AS section FROM `checklist_items` AS a LEFT  JOIN `checklist_website_items` AS b ON ( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN `checklist_website_item_notes` AS c ON ( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) LEFT JOIN `checklist_sections` AS d ON ( a.`checklist_section_id` = d.`checklist_section_id` ) WHERE b.`checklist_id` = $checklist_id GROUP BY a.`checklist_section_id`, b.`checklist_website_item_id` ORDER BY a.`sequence` ASC", ARRAY_A );
+		$checklist_items_array = $this->db->get_results( "SELECT a.`checklist_item_id` , a.`name` , a.`assigned_to` , a.`sequence` , b.`checked` , b.`checklist_website_item_id` , COUNT( c.`checklist_website_item_id` ) AS notes_count, d.`name` AS section FROM `checklist_items` AS a LEFT  JOIN `checklist_website_items` AS b ON ( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN `checklist_website_item_notes` AS c ON ( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) LEFT JOIN `checklist_sections` AS d ON ( a.`checklist_section_id` = d.`checklist_section_id` ) WHERE a.`status` = 1 AND b.`checklist_id` = $checklist_id AND d.`status` = 1 GROUP BY a.`checklist_section_id`, b.`checklist_website_item_id` ORDER BY a.`sequence` ASC", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -142,7 +299,7 @@ class Checklists extends Base_Class {
 	 * @return array
 	 */
 	public function get_sections() {
-		$checklist_sections = $this->db->get_results( "SELECT `checklist_section_id`, `name` FROM `checklist_sections` ORDER BY `sequence` ASC", ARRAY_A );
+		$checklist_sections = $this->db->get_results( "SELECT `checklist_section_id`, `name` FROM `checklist_sections` WHERE `status` = 1 ORDER BY `sequence` ASC", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -159,7 +316,7 @@ class Checklists extends Base_Class {
 	 * @return array
 	 */
 	public function get_items() {
-		$checklist_items_array = $this->db->get_results( "SELECT `checklist_item_id`, `checklist_section_id`, `name`, `assigned_to` FROM `checklist_items` ORDER BY `sequence` ASC", ARRAY_A );
+		$checklist_items_array = $this->db->get_results( "SELECT `checklist_item_id`, `checklist_section_id`, `name`, `assigned_to` FROM `checklist_items` WHERE `status` = 1 ORDER BY `sequence` ASC", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
