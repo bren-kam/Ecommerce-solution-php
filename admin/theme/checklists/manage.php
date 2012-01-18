@@ -75,7 +75,7 @@ get_header();
 	<div id="subcontent">
 
 		<br />
-        <form action="" method="POST" name="fChecklist">
+        <form action="" method="post" name="fChecklist">
             <div id="checklist-sections">
                 <?php
                     if ( is_array( $sections ) )

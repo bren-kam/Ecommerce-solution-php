@@ -4,7 +4,7 @@
 #checklist-section { position: relative; }
 .section { border: 1px solid transparent; position: relative; }
 .section:hover { background:  url(/images/icons/sort.png) 0 3px no-repeat; }
-.section-placeholder { border: 1px dashed #ccc; width: 565px; position: relative; margin-left: 21px;
+.section-placeholder { border: 1px dashed #ccc; width: 565px; position: relative; margin-left: 21px; height: 200px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
@@ -26,7 +26,7 @@
 .remove-item { position: relative; top: 2px; }
 .remove-section { position: relative; top: 2px; left: 6px }
 
-.item-placeholder { width: 565px; margin: 5px 0 5px 21px; border:  1px dashed #ccc;
+.item-placeholder { width: 565px; margin: 5px 0 5px 21px; border:  1px dashed #ccc; height: 22px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;

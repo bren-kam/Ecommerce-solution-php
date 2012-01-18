@@ -19,6 +19,7 @@ function postLoad( $ ) {
 		cancel		: 'input',
         cursor      : 'move',
 		placeholder	: 'section-placeholder',
+        forceHelperSize : true,
 		forcePlaceholderSize : true
 	});
 
@@ -79,7 +80,7 @@ function postLoad( $ ) {
 
         if ( !confirm( 'Are you sure you want to remove this section? This cannot be undone.' ) )
             return false;
-        
+
         $(this).parent().remove();
     });
 }
