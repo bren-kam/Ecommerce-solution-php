@@ -38,7 +38,7 @@ class Products extends Base_Class {
 	 * Add Products
 	 *
 	 * @param array $products
-	 * @return 
+	 * @return  bool
 	 */
 	public function add_products( array $products ) {
 		global $user;
