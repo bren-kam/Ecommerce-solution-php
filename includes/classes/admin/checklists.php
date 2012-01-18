@@ -41,7 +41,7 @@ class Checklists extends Base_Class {
      */
     public function update_sections( $sections ) {
         // Prepare statement
-		$statement = $this->db->prepare( "UPDATE `checklist_sections` SET `name` = ?, `sequence` = ? WHERE `checklist_section_id` = ?" );
+		$statement = $this->db->prepare( "UPDATE `checklist_sections` SET `name` = ?, `sequence` = ?, `status` = 1 WHERE `checklist_section_id` = ?" );
 		$statement->bind_param( 'sii', $name, $sequence, $checklist_section_id );
 
         $sequence = 0;
@@ -49,7 +49,7 @@ class Checklists extends Base_Class {
         if ( is_array( $sections ) )
 		foreach ( $sections as $checklist_section_id => $name ) {
 			$statement->execute();
-
+            echo $this->db->error;
 			// Handle any error
 			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
@@ -117,7 +117,7 @@ class Checklists extends Base_Class {
      */
     public function update_items( $items ) {
         // Prepare statement
-		$statement = $this->db->prepare( "UPDATE `checklist_items` SET `name` = ?, `assigned_to` = ?, `sequence` = ? WHERE `checklist_item_id` = ?" );
+		$statement = $this->db->prepare( "UPDATE `checklist_items` SET `name` = ?, `assigned_to` = ?, `sequence` = ?, `status` = 1 WHERE `checklist_item_id` = ?" );
 		$statement->bind_param( 'ssii', $name, $assigned_to, $sequence, $checklist_item_id );
 
         $sequence = 0;

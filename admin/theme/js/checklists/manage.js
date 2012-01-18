@@ -59,7 +59,7 @@ function postLoad( $ ) {
                 return false;
             }
 
-            a.before('<div class="item"><input type="text" name="items[' + sectionID + '][' + response['result'] + '][name]" class="item-name" tmpval="Description..." value="" /> <input type="text" name="items[' + sectionID + '][' + response['result'] + '][assigned_to]" class="tb item-assigned-to" tmpval="Assigned to..." value="" /> <a href="javascript:;" class="remove-item hidden" title="Remove Item"><img src="/images/icons/x.png" width="15" height="17" alt="Remove Item" /></a></div>' ).tmpval();
+            a.before('<div class="item"><input type="text" name="items[' + sectionID + '][' + response['result'] + '][name]" class="tb item-name" tmpval="Description..." value="" /> <input type="text" name="items[' + sectionID + '][' + response['result'] + '][assigned_to]" class="tb item-assigned-to" tmpval="Assigned to..." value="" /> <a href="javascript:;" class="remove-item hidden" title="Remove Item"><img src="/images/icons/x.png" width="15" height="17" alt="Remove Item" /></a></div>' ).tmpval();
         }, 'json' );
     });
 

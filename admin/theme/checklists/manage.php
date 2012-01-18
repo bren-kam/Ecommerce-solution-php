@@ -22,6 +22,8 @@ $c = new Checklists;
 $sections = $c->get_sections();
 $items = $c->get_items();
 
+$success = false;
+
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-checklist' ) ) {
     $remove_sections = $remove_items = array();
 
@@ -57,6 +59,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-check
     // Refetch variables
     $sections = $c->get_sections();
     $items = $c->get_items();
+
+    $success = true;
 }
 
 css( 'form', 'checklists/manage' );
@@ -73,7 +77,9 @@ get_header();
 	<?php get_sidebar( 'checklists/' ); ?> 
 	
 	<div id="subcontent">
-
+        <?php if ( $success ) { ?>
+            <p class="success" id="pSuccess"><?php echo _('The Master Checklist has been successfully updated!'); ?></p>
+        <?php } ?>
 		<br />
         <form action="" method="post" name="fChecklist">
             <div id="checklist-sections">
