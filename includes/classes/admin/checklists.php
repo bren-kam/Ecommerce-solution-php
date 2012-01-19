@@ -274,7 +274,7 @@ class Checklists extends Base_Class {
         // Type Juggling
         $checklist_id = (int) $checklist_id;
 
-		$checklist_items_array = $this->db->get_results( "SELECT a.`checklist_item_id` , a.`name` , a.`assigned_to` , a.`sequence` , b.`checked` , b.`checklist_website_item_id` , COUNT( c.`checklist_website_item_id` ) AS notes_count, d.`name` AS section FROM `checklist_items` AS a LEFT  JOIN `checklist_website_items` AS b ON ( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN `checklist_website_item_notes` AS c ON ( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) LEFT JOIN `checklist_sections` AS d ON ( a.`checklist_section_id` = d.`checklist_section_id` ) WHERE a.`status` = 1 AND b.`checklist_id` = $checklist_id AND d.`status` = 1 GROUP BY a.`checklist_section_id`, b.`checklist_website_item_id` ORDER BY a.`sequence` ASC", ARRAY_A );
+		$checklist_items_array = $this->db->get_results( "SELECT a.`checklist_item_id`, a.`name`, a.`assigned_to`, a.`sequence`, b.`checked`, b.`checklist_website_item_id`, COUNT( c.`checklist_website_item_id` ) AS notes_count, d.`name` AS section FROM `checklist_items` AS a LEFT  JOIN `checklist_website_items` AS b ON ( a.`checklist_item_id` = b.`checklist_item_id` ) LEFT JOIN `checklist_website_item_notes` AS c ON ( b.`checklist_website_item_id` = c.`checklist_website_item_id` ) LEFT JOIN `checklist_sections` AS d ON ( a.`checklist_section_id` = d.`checklist_section_id` ) WHERE a.`status` = 1 AND b.`checklist_id` = $checklist_id AND d.`status` = 1 GROUP BY a.`checklist_section_id`, b.`checklist_website_item_id` ORDER BY a.`sequence` ASC", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
