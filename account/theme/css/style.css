@@ -481,7 +481,7 @@ td.title strong { font-size: 20px }
 .expander { position: absolute; right: 0; bottom: 0; background: url(/images/icons/expand-contract.png) 0 0 no-repeat; width: 27px; height: 19px; }
 .expander.close { background: url(/images/icons/expand-contract.png) 0 -19px; no-repeat; }
 
-#tTicketSummary, #taTicket { width: 700px !important }
+#tTicketSummary, #taTicket { width: 450px !important }
 
 .uploadifyQueueItem {
 	font: 11px Verdana, Geneva, sans-serif;

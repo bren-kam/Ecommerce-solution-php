@@ -42,8 +42,9 @@ global $user;
                 <a href="javascript:;" class="expander open" rel="dChecklist" title="<?php echo _('Click to Expand'); ?>"><img src="/images/trans.gif" width="27" height="19" alt="" /></a>
             </h3>
             <div id="dChecklist" class="hidden">
-                <p><strong><?php echo $user['website']['title'], ' ', _('Checklist'); ?></strong></p>
-                <select name="sChecklistItems" id="sChecklistItems" multiple="multiple">
+                <p><strong><?php echo $user['website']['title']; ?></strong></p>
+                <p><?php echo _('Select the checklist items you want to mark as complete.'); ?></p>
+                <select name="sChecklistItems[]" id="sChecklistItems" multiple="multiple" title="<?php echo _('Hint: Hit Ctrl + Click to select multiple items'); ?>">
                 <?php
                 if( is_array( $checklist_items ) )
                 foreach ( $checklist_items as $section => $item_array ) {

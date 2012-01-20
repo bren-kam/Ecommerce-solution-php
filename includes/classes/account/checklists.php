@@ -44,6 +44,59 @@ class Checklists extends Base_Class {
 
 		return $checklist_items;
 	}
+
+    /**
+     * Complete checklist items in bulk
+     *
+     * @param int $ticket_id
+     * @param array $checklist_items
+     * @return bool
+     */
+    public function complete_items( $ticket_id, $checklist_items ) {
+        if ( !is_array( $checklist_items ) )
+            return true;
+
+        // Get the user
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $user_id = (int) $user['user_id'];
+        $ticket_id = (int) $ticket_id;
+
+        // Declare variables
+        $values = '';
+        $ticket_link = $this->db->escape( '<a href="/tickets/ticket/?tid=' . $ticket_id . '" title="/tickets/?tid=' . $ticket_id . '" target="_blank">Ticket #' . $ticket_id . '</a>' );
+
+        // Type juggle the array
+        foreach ( $checklist_items as &$ci ) {
+            $ci = (int) $ci;
+
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= "( $ci, '$ticket_link', $user_id, NOW() )";
+        }
+
+        $this->db->query( 'UPDATE `checklist_website_items` AS a LEFT JOIN `checklists` AS b ON ( a.`checklist_id` = b.`checklist_id` ) SET a.`checked` = 1 WHERE a.`checklist_website_item_id` IN(' . implode( ',', $checklist_items ) . ") AND b.`website_id` = $website_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to check checklist items.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Add notes
+        $this->db->query( "INSERT INTO `checklist_website_item_notes` ( `checklist_website_item_id`, `note`, `user_id`, `date_created` ) VALUES $values" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create checklist item notes.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
 	
 	/**
 	 * Report an error
