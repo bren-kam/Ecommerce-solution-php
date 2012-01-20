@@ -11,37 +11,6 @@ jQuery(function($) {
 	// Properly hide objects
 	$('.hidden').hide().removeClass('hidden');
 	
-	// Qtips
-	$('.tip').each( function() {
-		$(this).qtip({
-			style: {
-			  border: {
-				 width: 5,
-				 radius: 10
-			  },
-			  padding: 10, 
-			  textAlign: 'left',
-			  tip: true, // Give it a speech bubble tip with automatic corner detection
-			  name: 'green' // Style it according to the preset 'cream' style
-			},
-			position: {
-				corner: {
-					target: 'rightMiddle',
-					tooltip: 'leftMiddle'
-				},
-				adjust: {
-					x : 10,
-				}
-			},
-			content: {
-				text: $(this).next().html(),
-				prerender: true // Why won't you consistently work?!
-			},
-			show: 'mouseover',
-			hide: 'mouseout'
-		})
-	});
-	
 	// Trigger the dialog
 	$('#aTicket').click( function() {
 		var a = $(this);

@@ -31,13 +31,19 @@ if ( $user['role'] >= 7 && is_array( $_POST['sChecklistItems'] ) ) {
 }
 
 // Close the window
-jQuery('a.close:first')->click();
+jQuery('a.close:visible:first')->click();
 
 // Don't want the attachments coming up next time
 jQuery('#ticket-attachments')->empty();
 
 // Reset the two fields
 jQuery('#tTicketSummary, #taTicket')->val('')->blur();
+
+// Remove any selected items
+jQuery('#sChecklistItems option:checked')->remove();
+
+// Remove any empty sections
+jQuery('#sChecklistItems optgroup:not(:has(option))')->remove();
 
 // Add the jQuery
 $ajax->add_response( 'jquery', jQuery::getResponse() );

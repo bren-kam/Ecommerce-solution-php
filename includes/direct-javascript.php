@@ -23,7 +23,7 @@ header::send( array(
 
 // header_remove('Pragma'); Requires PHP 5.3
 
-$js_paths = array( INC_PATH, THEME_PATH );
+$js_paths = array( THEME_PATH, INC_PATH );
 
 if ( '/' == $js_file[0] )
 	$js_file = substr( $js_file, 1 );
