@@ -17,5 +17,5 @@ a:hover, #nav-icons a:hover, #footer a:hover, #sidebar a.sub:hover { color: #004
    -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #004459, 0 0 3px #d5d4d4;
 }
 
-#ticket { background-color: #004459 }
-#ticket:hover { background-color:#616268 }
+#ticket, #checklist { background-color: #004459 }
+#ticket:hover, #checklist:hover { background-color:#616268 }

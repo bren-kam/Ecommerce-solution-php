@@ -40,7 +40,8 @@ blockquote { line-height: 17px; font-size: 14px; }
 #ui-datepicker-div { display: none }
 
 /** Checklist */
-#checklist { position:fixed; right:0; top: 45%; width:29px; height:108px; background-color: #a5a5a5 }
-#checklist:hover { background-color:#8c8c8c }
-#aChecklist { display: block; width:26px; height:100px; padding: 4px 2px 4px 1px; background: url(http://account.imagineretailer.com/images/backgrounds/support.png) 0 4px no-repeat }
+#ticket { top: 40% !important }
+#checklist { position:fixed; left:0; top: 60%; width:29px; height:108px; background: #a5a5a5 }
+#checklist:hover { background:#8c8c8c }
+#aChecklist { display: block; width:26px; height:100px; padding: 4px 2px 4px 1px; background: url(/images/backgrounds/checklist.png) 0 4px no-repeat }
 #sChecklistItems { height: 150px; width: 450px }
