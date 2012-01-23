@@ -259,7 +259,7 @@ get_header();
 	</form>
 	<input type="hidden" id="dDialogHeight" value="<?php echo ( $user['website']['shopping_cart'] ) ? 500 : 350; ?>" />
     <div class="boxy-footer hidden">
-        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Close'); ?></a></p>
+        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Cancel'); ?></a></p>
         <p class="text-right col-2 float-right"><input type="submit" id="bSaveProduct" class="button" value="<?php echo _('Save'); ?>" /></div>
     </div>
 </div>
