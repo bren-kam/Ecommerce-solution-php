@@ -330,9 +330,7 @@ get_header();
 		<div id="dCurrentLink" class="hidden">
 			<p><strong><?php echo _('Current Link'); ?>:</strong></p>
 			<p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
-			<br />
 		</div>
-		<p align="right"><a href="javascript:;" class="button close" title="<?php echo _('Close'); ?>"><?php echo _('Close'); ?></a></p>
 	</div>
 	<br /><br />
 </div>

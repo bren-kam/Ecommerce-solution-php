@@ -255,7 +255,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	
 	// Make the tabs in Edit Product dialog work
 	$('#dEditProduct .screen-selector').click( function() {
-		if( $(this).hasClass('selected') )
+		if( $(this).hasClass('selected') || 'aMasterCatalog' == $(this).attr('id') )
 			return;
 		
 		var screen_selector = $(this).attr('id').replace( /^a/, '' );
@@ -350,6 +350,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	var dialog_height = $('#dDialogHeight').val();
 	if( 500 == dialog_height )
 		$('.screen').css( 'height', '340px' ); // Set screen heights
+
+    // Submit a form
+    $('#bSaveProduct').click( function() {
+        $('#fEditProduct').submit();
+    });
 });
 
 $.fn.lowerProductCount = function() {

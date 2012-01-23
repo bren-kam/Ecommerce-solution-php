@@ -185,4 +185,50 @@ get_header();
 	<br clear="all" />
 </div>
 
+<?php
+if ( !empty( $ticket['website_id'] ) && $user['role'] >= 7 ) {
+    $w = new Websites;
+
+    $website = $w->get_website( $ticket['website_id'] );
+    if ( 1 != $website['live'] ) {
+        $c = new Checklists;
+        $checklist_items = $c->get_checklist_items_by_website( $ticket['website_id'] );
+        ?>
+        <div id="checklist"><a href="javascript:;" id="aChecklist" title="<?php echo _('Checklist'); ?>"><img src="/images/trans.gif" width="26" height="100" alt="<?php echo _('Checklist'); ?>" /></a></div>
+        <div id="dChecklistPopup" class="hidden" title="<?php echo _('Update Checklist'); ?>">
+            <form action="/ajax/checklists/update/" id="fUpdateChecklist" method="post">
+                <p><?php echo _('Select the checklist items you want to mark as complete.'); ?></p>
+                <br />
+                <select name="sChecklistItems[]" id="sChecklistItems" multiple="multiple" title="<?php echo _('Hint: Hit Ctrl + Click to select multiple items'); ?>">
+                    <?php
+                    if( is_array( $checklist_items ) )
+                    foreach ( $checklist_items as $section => $item_array ) {
+                        $options = '';
+
+                        if ( is_array( $item_array ) )
+                        foreach( $item_array as $item ) {
+                            // We don't want to see checked items
+                            if ( 1 == $item['checked'] )
+                                continue;
+
+                            $options .= '<option value="' . $item['checklist_website_item_id'] . '">' . $item['name'] . '</option>';
+                        }
+
+                        if ( !empty( $options ) )
+                            echo '<optgroup label="', $section, '">', $options, '</optgroup>';
+                    }
+                    ?>
+                </select>
+                <br /><br />
+                <?php nonce::field( 'update-checklist', '_ajax_update_checklist' ); ?>
+                <input type="hidden" name="hTicketID" value="<?php echo $_GET['tid']; ?>" />
+                <input type="hidden" name="hWebsiteID" value="<?php echo $ticket['website_id']; ?>" />
+                <input type="submit" class="button" value="<?php echo _('Update Checklist'); ?>" />
+            </form>
+        </div>
+        <?php
+    }
+}
+?>
+
 <?php get_footer(); ?>

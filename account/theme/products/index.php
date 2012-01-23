@@ -109,26 +109,27 @@ get_header();
 
 <div id="dEditProduct" class="hidden">
 	<form name="fEditProduct" id="fEditProduct" action="/ajax/products/update-product/" method="post" ajax="1">
-	<br />
 	<?php if ( $user['website']['shopping_cart'] ) { ?>
-	<p>
-		<a href="javascript:;" class="button screen-selector selected" id="aPricingProductInformation" title="<?php echo _('Pricing/Product Information'); ?>"><?php echo _('Pricing/Product Information'); ?></a> 
-		<a href="javascript:;" class="button screen-selector" id="aProductOptions" title="<?php echo _('Product Options'); ?>"><?php echo _('Product Options'); ?></a> 
-		<a href="javascript:;" class="button screen-selector" id="aShoppingCart" title="<?php echo _('Shopping Cart'); ?>"><?php echo _('Shopping Cart'); ?></a>
-        <?php if ( $user['role'] >= 8 ) { ?>
-            <a href="javascript:;" rel="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=" class="button screen-selector" id="aMasterCatalog" title="<?php echo _('Master Catalog'); ?>" target="_blank"><?php echo _('Master Catalog'); ?></a>
-        <?php } ?>
-	</p>
-	<br />
+	<div id="dPopupTabs">
+        <p>
+            <a href="javascript:;" class="screen-selector selected" id="aPricingProductInformation" title="<?php echo _('Pricing/Product Information'); ?>"><?php echo _('Pricing/Product Information'); ?></a>
+            <a href="javascript:;" class="screen-selector" id="aProductOptions" title="<?php echo _('Product Options'); ?>"><?php echo _('Product Options'); ?></a>
+            <a href="javascript:;" class="screen-selector" id="aShoppingCart" title="<?php echo _('Shopping Cart'); ?>"><?php echo _('Shopping Cart'); ?></a>
+            <?php if ( $user['role'] >= 8 ) { ?>
+                <a href="javascript:;" rel="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=" class="screen-selector" id="aMasterCatalog" title="<?php echo _('Master Catalog'); ?>" target="_blank"><?php echo _('Master Catalog'); ?></a>
+            <?php } ?>
+        </p>
+    </div>
+    <br />
+    <br />
 	<?php } ?>
 	<div class="screen selected" id="dPricingProductInformation">
-		<h2><?php echo _('Pricing/Product Information'); ?></h2>
-		<br />
+        <br />
 		<table cellpadding="0" cellspacing="0" class="col-2 float-left">
-			<tr><td colspan="2"><strong><?php echo _('Pricing Information'); ?></strong></td></tr>
+			<tr><td colspan="2"><h4><?php echo _('Pricing Information'); ?></h4></td></tr>
 			<tr>
 				<td><label for="tPrice"><?php echo _('Price'); ?>:</label></td>
-				<td><input type="text" class="tb" name="tPrice" id="tPrice" /></td>
+                <td><input type="text" class="tb" name="tPrice" id="tPrice" /></td>
 			</tr>
 			<tr>
 				<td><label for="tPriceNote"><?php echo _('Price Note'); ?>:</label></td>
@@ -152,9 +153,9 @@ get_header();
 			</tr>
 		</table>
 		<table class="col-2 float-left">
-			<tr><td colspan="2"><strong><?php echo _('Product Information'); ?></strong></td></tr>
+			<tr><td colspan="2"><h4><?php echo _('Product Information'); ?></h4></td></tr>
 			<tr>
-				<td valign="top"><label for="taProductNote"><?php echo _('Product Note'); ?>:</label></td>
+				<td class="top"><label for="taProductNote"><?php echo _('Product Note'); ?>:</label></td>
 				<td><textarea name="taProductNote" id="taProductNote" cols="30" rows="2" style="width:205px"></textarea></td>
 			</tr>
 			<tr>
@@ -193,8 +194,7 @@ get_header();
 		</table>
 	</div>
 	<div class="screen hidden" id="dProductOptions">
-		<h2><?php echo _('Product Options'); ?></h2>
-		<br />
+        <br />
 		<div id="dProductOptionsList"></div>
 		<br />
 		<select id="sProductOptions">
@@ -203,8 +203,7 @@ get_header();
 		<a href="javascript:;" id="aAddProductOption" title="<?php echo _('Add Product Option'); ?>"><?php echo _('Add Product Option'); ?>...</a>
 	</div>
 	<div class="screen hidden" id="dShoppingCart">
-		<h2><?php echo _('Shopping Cart'); ?></h2>
-		<br />
+        <br />
 		<table cellpadding="0" cellspacing="0">
 			<tr>
 				<td><label for="tStoreSKU"><?php echo _('Store SKU'); ?></label></td>
@@ -254,16 +253,15 @@ get_header();
 			</tr>
 		</table>
 	</div>
-	<div class="float-right text-right">
-		<input type="submit" class="button" value="<?php echo _('Save'); ?>" />
-		<input type="button" class="button close" value="<?php echo _('Cancel'); ?>" />
-	</div>
-	<br clear="right" />
 
 	<input type="hidden" id="hProductID" name="hProductID" />
 	<?php nonce::field( 'update-product' , '_ajax_update_product' ); ?>
 	</form>
 	<input type="hidden" id="dDialogHeight" value="<?php echo ( $user['website']['shopping_cart'] ) ? 500 : 350; ?>" />
+    <div class="boxy-footer hidden">
+        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Cancel'); ?></a></p>
+        <p class="text-right col-2 float-right"><input type="submit" id="bSaveProduct" class="button" value="<?php echo _('Save'); ?>" /></div>
+    </div>
 </div>
 
 <?php get_footer(); ?>

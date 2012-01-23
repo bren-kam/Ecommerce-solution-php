@@ -306,17 +306,16 @@ Boxy.prototype = {
         this.getContent().remove();
         var footer = $('.boxy-footer', newContent).clone(true).css({display: 'block'});
 
-        if ( footer.is('div') ) {
-            $('.boxy-footer', this.boxy).remove();
-            this.getInner().append(newContent).after(footer);
-            this._setupDefaultBehaviours(footer);
-            this.options.behaviours.call(this, footer);
-        } else {
-            this.getInner().append(newContent);
-        }
+        if ( !footer.is('div') )
+            footer = $('<div class="boxy-footer"><p><a href="javascript:;" class="close float-right">Close</a></p></div>');
+
+        $('.boxy-footer', this.boxy).remove();
+        this.getInner().append(newContent).after(footer);
 
         this._setupDefaultBehaviours(newContent);
         this.options.behaviours.call(this, newContent);
+        this._setupDefaultBehaviours(footer);
+        this.options.behaviours.call(this, footer);
         return this;
     },
     
