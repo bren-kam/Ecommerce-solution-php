@@ -78,9 +78,9 @@ get_header();
 		</p>
 		<?php } ?>
         <p class="sm">
-            <a href="/social-media/facebook/posting/" title="<?php echo _('Posting'); ?>"><img src="/images/social-media/facebook/posting.jpg" width="75" height="75" alt="<?php echo _('Posting'); ?>" /></a>
+            <a href="/social-media/facebook/posting/post/" title="<?php echo _('Posting'); ?>"><img src="/images/social-media/facebook/posting.jpg" width="75" height="75" alt="<?php echo _('Posting'); ?>" /></a>
             <br />
-            <a href="/social-media/facebook/posting/" title="<?php echo _('Posting'); ?>"><?php echo _('Posting'); ?></a>
+            <a href="/social-media/facebook/posting/post/" title="<?php echo _('Posting'); ?>"><?php echo _('Posting'); ?></a>
         </p>
 		<br clear="all" /><br />
 		<br /><br />
