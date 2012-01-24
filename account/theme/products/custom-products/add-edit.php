@@ -152,7 +152,6 @@ get_header();
 		nonce::field( 'change-industry', '_ajax_change_industry' );
 		nonce::field( 'create-custom-product', '_ajax_create_custom_product' );
 		nonce::field( 'autocomplete-tags', '_ajax_autocomplete_tags' );
-        nonce:
 		?>
 		<form name="fAddEdit" id="fAddEdit" action="/products/custom-products/add-edit/?pid=<?php echo $product_id; ?>" method="post">
 		<div id="right-sidebar">

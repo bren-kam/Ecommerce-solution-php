@@ -19,9 +19,7 @@ $v = new Validator();
 $v->form_name = 'fAddAccount';
 
 $v->add_validation( 'tDomain', 'req', _('The "Domain" field is required') );
-
 $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
-
 $v->add_validation( 'sUserID', 'req', _('The "User" field is required') );
 
 // We are not successful in anything yet
@@ -48,7 +46,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Add Account'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'accounts/' ); ?>
+	<?php get_sidebar( 'accounts/', 'accounts' ); ?>
 	<div id="subcontent">
 		<?php 
 		if ( !$success ) {
