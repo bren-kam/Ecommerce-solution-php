@@ -118,7 +118,7 @@ class Tickets extends Base_Class {
 	 * @since 1.0.0
 	 *
 	 * @param int $ticket_id
-	 * @param int $status
+	 * @param int $priority
 	 * @return bool
 	 */
 	public function update_priority( $ticket_id, $priority ) {
@@ -245,24 +245,14 @@ class Tickets extends Base_Class {
 	 * @return array
 	 */
 	public function list_tickets( $limit, $where, $order_by ) {
-		global $mc;
-		
-		$tickets = $mc->get( "tickets::list_tickets > {$limit} > {$where} > {$order_by}" );
-		
-		if ( empty( $tickets ) ) {
-			// Get linked users
-			$tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`ticket_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by, d.`ticket_comment_id` DESC LIMIT $limit", ARRAY_A );
+        // Get linked tickets
+        $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`ticket_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by, d.`ticket_comment_id` DESC LIMIT $limit", ARRAY_A );
 
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			$mc->add( "tickets::list_tickets > {$limit} > {$where} > {$order_by}", $tickets, 7200 );
-		}
-		
-		return $tickets;
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
+            return false;
+        }
 	}
 	
 	/**
@@ -272,23 +262,15 @@ class Tickets extends Base_Class {
 	 * @return int
 	 */
 	public function count( $where ) {
-		global $mc;
-		
-		$count = $mc->get( 'tickets::count' );
-		
-		if ( empty( $count ) ) {
-			// Get linked tickets
-			$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to count tickets.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			$mc->add( 'tickets::count', $count, 7200 );
-		}
-		
+        // Get the ticket count
+        $count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to count tickets.', __LINE__, __METHOD__ );
+            return false;
+        }
+
 		return $count;
 	}
 	

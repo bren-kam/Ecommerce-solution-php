@@ -164,7 +164,7 @@ get_header();
 <div id="content">
     <h1><?php echo $web['title']; ?></h1>
 	<br clear="all" /><br />
-	<?php $sidebar_emails = true; get_sidebar( 'accounts/' ); ?>
+	<?php $sidebar_emails = true; get_sidebar( 'accounts/', 'accounts' ); ?>
 	<div id="subcontent">
 		<?php 
 		if ( !isset( $success ) || !$success ) {

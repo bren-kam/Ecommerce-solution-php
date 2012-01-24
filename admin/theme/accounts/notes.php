@@ -46,7 +46,7 @@ get_header();
 <div id="content">
 	<h1><?php echo $website['title'], ' ', _('Notes'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'accounts/' ); ?>
+	<?php get_sidebar( 'accounts/', 'accounts' ); ?>
 	<div id="subcontent">
 		<?php
 		nonce::field( 'delete-note', '_delete_note_nonce' );
