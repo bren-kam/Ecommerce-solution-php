@@ -19,8 +19,8 @@ $product_id = (int) $_POST['pid'];
 $ajax->ok( $p->get_custom_product( $product_id ), _('You do not have permission to remove a product image from this product') );
 
 // Declare variables
-$image = $_POST['i'];
 $industry = $p->get_industry( $product_id );
+$image = str_replace( 'http://' . $industry . '.retailcatalog.us/', '', $_POST['i'] );
 
 // Delete images from amazon S3
 $f->delete_image( "products/$product_id/$image", $industry );
