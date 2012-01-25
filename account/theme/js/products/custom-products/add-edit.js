@@ -362,7 +362,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		parent.remove();
 
 		// AJAX remove image
-		$.post( '/ajax/products/remove-image/', { _nonce: $('#_ajax_remove_image').val(), pid : $('#hProductID').val(), i : parent.find('img:first').attr('src') }, ajaxResponse, 'json' );
+		$.post( '/ajax/products/custom-products/remove-image/', { _nonce: $('#_ajax_remove_image').val(), pid : $('#hProductID').val(), i : parent.find('img:first').attr('src') }, ajaxResponse, 'json' );
 
 		// Update sequence
 		updateImageSequence();
