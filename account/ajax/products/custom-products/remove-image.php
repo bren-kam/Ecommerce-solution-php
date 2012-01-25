@@ -20,7 +20,7 @@ $ajax->ok( $p->get_custom_product( $product_id ), _('You do not have permission 
 
 // Declare variables
 $industry = $p->get_industry( $product_id );
-$image = str_replace( 'http://' . $industry . '.retailcatalog.us/', '', $_POST['i'] );
+$image = basename( $_POST['i'] );
 
 // Delete images from amazon S3
 $f->delete_image( "products/$product_id/$image", $industry );
