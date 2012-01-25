@@ -5,28 +5,30 @@
  */
  
  // Create new AJAX
-$ajax = new AJAX( $_GET['_nonce'], 'remove-image' );
+$ajax = new AJAX( $_POST['_nonce'], 'remove-image' );
 $ajax->ok( $user, _('You must be signed in to remove a product image.') );
 
 // Instantiate class
 $p = new Products;
 $f = new Files;
 
-$industry = $p->get_industry( $_GET['pid'] );
+// Type Juggling
+$product_id = (int) $_POST['pid'];
 
-$f->delete_image( 'products/' . $product_id . '/' . $_GET['i'], $industry );
-$f->delete_image( 'products/' . $product_id . '/thumbnail/' . $_GET['i'], $industry );
-$f->delete_image( 'products/' . $product_id . '/large/' . $_GET['i'], $industry );
+// Make sure it's a valid custom product
+$ajax->ok( $p->get_custom_product( $product_id ), _('You do not have permission to remove a product image from this product') );
 
-// Delete image
-$ajax->ok( $p->remove_image( $_GET['i'], $_GET['pid'] ), _('An error occurred while trying to remove your product image. Please refresh the page and try again.') );
+// Declare variables
+$image = $_POST['i'];
+$industry = $p->get_industry( $product_id );
 
-jQuery('#dProductImage_' . $_GET['i'])
-	->remove()
-	->updateImageSequence();
+// Delete images from amazon S3
+$f->delete_image( "products/$product_id/$image", $industry );
+$f->delete_image( "products/$product_id/thumbnail/$image", $industry );
+$f->delete_image( "products/$product_id/thumbnail/large/$image", $industry );
 
-// Add the response
-$ajax->add_response( 'jquery', jQuery::getResponse() );
+// Delete image from database
+$ajax->ok( $p->remove_image( $image, $product_id ), _('An error occurred while trying to remove your product image. Please refresh the page and try again.') );
 
 // Send response
 $ajax->respond();
