@@ -36,7 +36,7 @@ get_header();
 						<th width="23%" class="center"><?php echo _('Name'); ?></th>
 						<th width="25%"><?php echo _('Email'); ?></th>
 						<th width="14%"><?php echo _('Phone'); ?></th>
-						<th width="28%"><?php echo _('Websites'); ?></th>
+						<th width="28%"><?php echo _('Website'); ?></th>
 						<th width="10%"><?php echo _('Permission'); ?></th>
 					</tr>
 				</thead>

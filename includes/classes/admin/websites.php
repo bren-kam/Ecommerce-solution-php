@@ -187,7 +187,7 @@ class Websites extends Base_Class {
 		// Get the websites
 		// $websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		// Original version ^, version below omits counting because it's difficult to get a 100% accurate count
-		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND a.`status` = 1 AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND a.`status` = 1 AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		foreach ( $websites as &$website ){
 			$website_id = $website['website_id'];
@@ -281,7 +281,26 @@ class Websites extends Base_Class {
 		
 		return $results;
 	}
-	
+
+    /**
+	 * Gets the data for an autocomplete marketing specialists request
+	 *
+	 * @param string $query
+	 * @return bool
+	 */
+	public function autocomplete_marketing_specialists( $query ) {
+		// Get results
+		$results = $this->db->prepare( "SELECT `user_id` AS object_id, `contact_name` AS marketing_specialist FROM `users` WHERE `role` = 6 AND `contact_name` LIKE ? AND `status` = 1 ORDER BY `contact_name`", 's', $query . '%' )->get_results( '', ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get autocomplete marketing specialists entries.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $results;
+	}
+
 	/**
 	 * Gets a websites FTP data and unencrypts it
 	 *
@@ -839,27 +858,58 @@ class Websites extends Base_Class {
 					
 					case 'online_specialist':
 						$where .= ' AND ( a.`os_user_id` IN( ';
-						
+
 						$online_specialist_where = '';
-						
+
 						foreach ( $type_array as $object_id => $value ) {
 							if ( !empty( $online_specialist_where ) )
 								$online_specialist_where .= ',';
-							
+
 							$online_specialist_where .= (int) $object_id;
 						}
-						
+
 						$where .= "$online_specialist_where ) )";
 					break;
+
+                    case 'marketing_specialist':
+                        $where .= ' AND ( b.`role` = 6 AND b.`user_id` IN( ';
+
+                        $marketing_specialist_where = '';
+
+                        foreach ( $type_array as $object_id => $value ) {
+                            if ( !empty( $marketing_specialist_where ) )
+                                $marketing_specialist_where .= ',';
+
+                            $marketing_specialist_where .= (int) $object_id;
+                        }
+
+                        $where .= "$marketing_specialist_where ) )";
+                    break;
+
+
+                    case 'billing_state':
+                        $where .= ' AND b.`billing_state` IN( ';
+
+                        $state_where = '';
+                        
+                        foreach ( $type_array as $object_id => $value ) {
+                            if ( !empty( $state_where ) )
+                                $state_where .= ',';
+
+                            $state_where .= "'" . $this->db->escape( $object_id ) . "'";
+                        }
+
+                        $where .= "$state_where )";
+					break;
 				}
-			}
+            }
 			
 			if ( $user['role'] < 8 ) $where .= " AND b.`company_id` = " . $user['company_id'] . " ";
 			$_SESSION['reports']['where'] = $where;
 		}
 		
 		// Title, Company, #of products, Date Signed Up
-		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

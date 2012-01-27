@@ -37,16 +37,12 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 			case 1:
 				$field = 'a.`title`';
 			break;
-			
+
 			case 2:
-				$field = 'b.`store_name`';
-			break;
-			
-			case 3:
 				$field = 'b.`contact_name`';
 			break;
 			
-			case 4:
+			case 3:
 				$field = 'used_products';
 			break;
 		}
@@ -95,7 +91,13 @@ if ( is_array( $websites ) )
 foreach ( $websites as $web ) {
 	$image = '<img src="/images/icons/companies/' . $web['company_id'] . '.gif" alt="" width="24" height="24" />';
 
-	$title = '<a href="http://' . $web['domain'] . '/" target="_blank"><strong title="' . $web['domain'] . ' - ' . $web['online_specialist'] . '">' . $web['title'] . '</strong></a><br />';
+    // Get the store name if necessary
+    $store_name = ( $web['title'] == $web['store_name'] ) ? '' : ' (' . $web['store_name'] . ')';
+
+    // Get the phone
+    $contact_title = ( empty( $web['phone'] ) ) ? _('No Phone') : $web['phone'];
+
+	$title = '<a href="http://' . $web['domain'] . '/" target="_blank"><strong title="' . $web['domain'] . ' - ' . $web['online_specialist'] . '">' . $web['title'] . $store_name . '</strong></a><br />';
 	$title .= '<span class="web-actions" style="display: block"><a href="/accounts/edit/?wid=' . $web['website_id'] . '" title="' . _('Edit') . ' ' . $web['title'] . '">' . _('Edit') . '</a> | ';
 	$title .= '<a href="/accounts/control/?wid=' . $web['website_id'] . '" title="' . _('Control') . ' ' . $web['title'] . '" target="_blank">' . _('Control Account') . '</a> | ';
 	$title .= '<a href="/users/control/?uid=' . $web['user_id'] . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
@@ -105,7 +107,8 @@ foreach ( $websites as $web ) {
 		$title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$web['website_id']] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
 	
 	$title .= '</span>';
-	$aaData[] = array( $image, $title, $web['store_name'], '<a href="/users/edit/?uid=' . $web['user_id'] . '" title="' . _('Edit User') . '">' . $web['contact_name'] . '</a>', $web['used_products'] . '/' . $web['products'] );
+
+	$aaData[] = array( $image, $title, '<a href="/users/edit/?uid=' . $web['user_id'] . '" title="' . $contact_title . '">' . $web['contact_name'] . '</a>', $web['used_products'] . '/' . $web['products'] );
 }
 
 echo json_encode( array( 

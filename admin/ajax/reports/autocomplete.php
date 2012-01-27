@@ -19,12 +19,28 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete
 
 			$results = $w->autocomplete_online_specialists( $_POST['term'] );
 		break;
-		
+
+        case 'marketing_specialist':
+            $w = new Websites;
+
+            $results = $w->autocomplete_marketing_specialists( $_POST['term'] );
+        break;
+
 		case 'company':
 			$c = new Companies;
 			
 			$results = $c->autocomplete( $_POST['term'] );
 		break;
+
+        case 'billing_state':
+            $results = $u->autocomplete( $_POST['term'], 'billing_state' );
+
+            if ( is_array( $results ) )
+            foreach ( $results as &$r ) {
+                // Adjust for autocomplete
+                $r['object_id'] = $r['billing_state'];
+            }
+        break;
 	}
 	
 	// Needs to return an array, even if nothing was gotten

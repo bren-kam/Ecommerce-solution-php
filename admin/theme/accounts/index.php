@@ -73,8 +73,7 @@ get_header();
 			<thead>
 				<tr>
 					<th width="4%">&nbsp;</th>
-					<th width="35%"><?php echo _('Account'); ?></th>
-					<th width="20%"><?php echo _('Store Name'); ?></th>
+					<th width="55%"><?php echo _('Account'); ?></th>
 					<th width="18%"><?php echo _('User Name' ); ?></th>
 					<th width="13%"><?php echo _('Products'); ?></th>
 				</tr>
