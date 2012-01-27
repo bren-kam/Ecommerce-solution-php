@@ -12,7 +12,7 @@ class Pre_Data {
 	 * @param int $website_id
 	 * @return string
 	 */
-	public function pages_sql( $website_id ) {
+	public static function pages_sql( $website_id ) {
 		return str_replace( '[website_id]', sprintf( '%d', $website_id ), "INSERT INTO `website_pages` ( `website_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `status`, `date_created` ) VALUES 
 ( [website_id], 'about-us', 'About Us', '&lt;h2&gt;&lt;img class=&quot;alignright&quot; title=&quot;Family shot&quot; src=&quot;http://www.concurringopinions.com/archives/images/family.jpg&quot; alt=&quot;&quot; width=&quot;189&quot; height=&quot;164&quot; style=&quot;float:right; padding-left:10px; padding-bottom:10px;&quot; /&gt;We&#039;ll Make Your House�A Home!&lt;/h2&gt; &lt;p&gt;ABC Home Furnishings family has been in business for over 30 years in Big Town, Louisiana. We originally started as Waterbed Sleep Shoppe and in 1988 we diversified our product line to carry a wide selection of bedroom, living room, and dining room furniture, in our beautifully decorated 33,000 square foot showroom.&lt;/p&gt; &lt;p&gt;We carry some of the most recognized names in furniture and mattresses: Ashley, Berkline, Broyhill, Coaster, and Sealy Mattresses.&lt;/p&gt; &lt;p&gt;Our family buyers continue to always search for the best buys and values in the furniture market. We shop during four international shows each year. Making certain to always find products coming from around the world. Today&#039;s fine furniture is built in The United States, Indonesia, South America, Canada, and China.&lt;/p&gt; &lt;p&gt;Count on us for:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;Family service&lt;/li&gt; &lt;li&gt;Fast and friendly delivery&lt;/li&gt; &lt;li&gt;Great customer service&lt;/li&gt; &lt;li&gt;Knowledgeable and trained sales people&lt;/li&gt; &lt;li&gt;Guaranteed low prices on brand name furniture&lt;/li&gt; &lt;/ul&gt;', '', '', '', 1, NOW()),
 ( [website_id], 'contact-us', 'Contact Us', '&lt;p&gt;We love to hear from you! Please call, click or come on over.&lt;/p&gt;', '', '', '', 1, NOW()),
@@ -24,13 +24,13 @@ class Pre_Data {
 ( [website_id], 'brands', 'Broducts', '', '', '', '', 1, NOW())" );
 	}
 
-		/**
+	/**
 	 * Returns all the sql for static attachments
 	 *
-	 * @param int $website_id
+	 * @param int $website_page_id
 	 * @return string
 	 */
-	public function attachments_sql( $website_page_id ) {
+	public static function attachments_sql( $website_page_id ) {
 		return str_replace( '[website_page_id]', sprintf( '%d', $website_page_id ), "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value`, `sequence`, `status` ) VALUES 
 ( [website_page_id], 'search', '', 1, 1 ),
 ( [website_page_id], 'video', '', 4, 1 ),
