@@ -128,6 +128,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
+            , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
 		) );
 	}
 }
@@ -146,6 +147,7 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ga-password'
     , 'ashley-ftp-username'
     , 'ashley-ftp-password'
+    , 'social-media-add-ons'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -289,7 +291,34 @@ get_header();
 						<p><input type="checkbox" name="cbSEO" id="cbSEO" value="1" class="cb"<?php if ( $web['seo'] ) echo 'checked="checked"'; ?> /> <label for="cbSEO"><?php echo _('SEO'); ?></label></p>
 						<p><input type="checkbox" name="cbRoomPlanner" id="cbRoomPlanner" value="1" class="cb"<?php if ( $web['room_planner'] ) echo ' checked="checked"'; ?> /> <label for="cbRoomPlanner"><?php echo _('Room Planner'); ?></label></p>
 						<p><input type="checkbox" name="cbCraigslist" id="cbCraigslist" value="1" class="cb"<?php if ( $web['craigslist'] ) echo ' checked="checked"'; ?> /> <label for="cbCraigslist"><?php echo _('Craigslist'); ?></label></p>
-						<p><input type="checkbox" name="cbSocialMedia" id="cbSocialMedia" value="1" class="cb"<?php if ( $web['social_media'] ) echo ' checked="checked"'; ?> /> <label for="cbSocialMedia"><?php echo _('Social Media'); ?></label></p>
+						<p>
+                            <input type="checkbox" name="cbSocialMedia" id="cbSocialMedia" value="1" class="cb"<?php if ( $web['social_media'] ) echo ' checked="checked"'; ?> /> <label for="cbSocialMedia"><?php echo _('Social Media'); ?></label>
+                            <div id="dSocialMedia"<?php if ( !$web['social_media'] ) echo ' class="hidden"'; ?>>
+                                <select name="sSocialMedia[]" id="sSocialMedia" multiple="multiple" class="multiple">
+                                    <?php 
+                                    $social_media_add_ons = array(
+                                        'email-sign-up' => _('Email Sign Up')
+                                        , 'fan-offer' => _('Fan Offer')
+                                        , 'sweepstakes' => _('Sweepstakes')
+                                        , 'share-and-save' => _('Share and Save')
+                                        , 'facebook-site' => _('Facebook Site')
+                                        , 'contact-us' => _('Contact Us')
+                                        , 'about-us' => _('About Us')
+                                        , 'products' => _('Products')
+                                        , 'current-ad' => _('Current Ad')
+                                        , 'posting' => _('Posting')
+                                    );
+
+                                    $website_social_media_add_ons = @unserialize( $settings['social-media-add-ons'] );
+                                    
+                                    foreach ( $social_media_add_ons as $value => $name ) {
+                                        $selected = ( is_array( $website_social_media_add_ons ) && in_array( $value, $website_social_media_add_ons ) ) ? ' selected="selected"' : '';
+                                    ?>
+                                        <option value="<?php echo $value; ?>"<?php echo $selected; ?>><?php echo $name; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </p>
 						<p><input type="checkbox" name="cbDomainRegistration" id="cbDomainRegistration" value="1" class="cb"<?php if ( $web['domain_registration'] ) echo ' checked="checked"'; ?> /> <label for="cbDomainRegistration"><?php echo _('Domain Registration'); ?></label></p>
 						<p><input type="checkbox" name="cbAdditionalEmail" id="cbAdditionalEmail" value="1" class="cb"<?php if ( $web['additional_email_addresses'] ) echo ' checked="checked"'; ?> /> <label for="cbAdditionalEmail"><?php echo _('Additional Email Addresses'); ?></label></p>
 					</td>

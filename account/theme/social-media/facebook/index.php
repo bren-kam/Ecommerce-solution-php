@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 $w = new Websites;
-$facebook_url = $w->get_setting('facebook-url');
+$settings = $w->get_settings( 'facebook-url', 'social-media-add-ons' );
 	
 css('social-media/facebook/main');
 $selected = "social_media";
@@ -25,63 +25,43 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
+        <?php
+        $social_media_add_ons = array(
+            'email-sign-up' => _('Email Sign Up')
+            , 'fan-offer' => _('Fan Offer')
+            , 'sweepstakes' => _('Sweepstakes')
+            , 'share-and-save' => _('Share and Save')
+            , 'facebook-site' => _('Facebook Site')
+            , 'contact-us' => _('Contact Us')
+            , 'about-us' => _('About Us')
+            , 'products' => _('Products')
+            , 'current-ad' => _('Current Ad')
+            , 'posting' => _('Posting')
+        );
+
+        $website_social_media_add_ons = @unserialize( $settings['social-media-add-ons'] );
+
+        foreach ( $social_media_add_ons as $url => $name ) {
+            if ( !is_array( $website_social_media_add_ons ) || !in_array( $url, $website_social_media_add_ons ) )
+                continue;
+
+            ?>
+            <p class="sm">
+                <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $url; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>
+                <br />
+                <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><?php echo $name; ?></a>
+            </p>
+            <?php
+        }
+
+        if ( !empty( $settings['facebook_url'] ) ) {
+        ?>
 		<p class="sm">
-			<a href="/social-media/facebook/email-sign-up/" title="<?php echo _('Email Sign Up'); ?>"><img src="/images/social-media/facebook/email-sign-up.jpg" width="75" height="75" alt="<?php echo _('Email Sign Up'); ?>" /></a>
+			<a href="<?php echo $settings['facebook_url']; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><img src="/images/social-media/facebook/analytics.jpg" width="75" height="75" alt="<?php echo _('Analytics'); ?>" /></a>
 			<br />
-			<a href="/social-media/facebook/email-sign-up/" title="<?php echo _('Email Sign Up'); ?>"><?php echo _('Email Sign Up'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/fan-offer/" title="<?php echo _('Fan Offer'); ?>"><img src="/images/social-media/facebook/fan-offer.jpg" width="75" height="75" alt="<?php echo _('Fan Offer'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/fan-offer/" title="<?php echo _('Fan Offer'); ?>"><?php echo _('Fan Offer'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/sweepstakes/" title="<?php echo _('Sweepstakes'); ?>"><img src="/images/social-media/facebook/sweepstakes.jpg" width="75" height="75" alt="<?php echo _('Sweepstakes'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/sweepstakes/" title="<?php echo _('Sweepstakes'); ?>"><?php echo _('Sweepstakes'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/share-and-save/" title="<?php echo _('Share and Save'); ?>"><img src="/images/social-media/facebook/share-and-save.jpg" width="75" height="75" alt="<?php echo _('Share and Save'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/share-and-save/" title="<?php echo _('Share and Save'); ?>"><?php echo _('Share and Save'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/facebook-site/" title="<?php echo _('Fan Offer'); ?>"><img src="/images/social-media/facebook/facebook-site.jpg" width="75" height="75" alt="<?php echo _('Facebook Site'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/facebook-site/" title="<?php echo _('Facebook Site'); ?>"><?php echo _('Facebook Site'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/contact-us/" title="<?php echo _('Contact Us'); ?>"><img src="/images/social-media/facebook/contact-us.jpg" width="75" height="75" alt="<?php echo _('Contact Us'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/contact-us/" title="<?php echo _('Contact Us'); ?>"><?php echo _('Contact Us'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/about-us/" title="<?php echo _('About Us'); ?>"><img src="/images/social-media/facebook/about-us.jpg" width="75" height="75" alt="<?php echo _('About Us'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/about-us/" title="<?php echo _('About Us'); ?>"><?php echo _('About Us'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/products/" title="<?php echo _('Products'); ?>"><img src="/images/social-media/facebook/products.jpg" width="75" height="75" alt="<?php echo _('Products'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/products/" title="<?php echo _('Products'); ?>"><?php echo _('Products'); ?></a>
-		</p>
-		<p class="sm">
-			<a href="/social-media/facebook/current-ad/" title="<?php echo _('Current Ad'); ?>"><img src="/images/social-media/facebook/current-ad.jpg" width="75" height="75" alt="<?php echo _('Current Ad'); ?>" /></a>
-			<br />
-			<a href="/social-media/facebook/current-ad/" title="<?php echo _('Current Ad'); ?>"><?php echo _('Current Ad'); ?></a>
-		</p>
-		<?php if ( !empty( $facebook_url ) ) { ?>
-		<p class="sm">
-			<a href="<?php echo $facebook_url; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><img src="/images/social-media/facebook/analytics.jpg" width="75" height="75" alt="<?php echo _('Analytics'); ?>" /></a>
-			<br />
-			<a href="<?php echo $facebook_url; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
+			<a href="<?php echo $settings['facebook_url']; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
 		</p>
 		<?php } ?>
-        <p class="sm">
-            <a href="/social-media/facebook/posting/post/" title="<?php echo _('Posting'); ?>"><img src="/images/social-media/facebook/posting.jpg" width="75" height="75" alt="<?php echo _('Posting'); ?>" /></a>
-            <br />
-            <a href="/social-media/facebook/posting/post/" title="<?php echo _('Posting'); ?>"><?php echo _('Posting'); ?></a>
-        </p>
 		<br clear="all" /><br />
 		<br /><br />
 		<br /><br />

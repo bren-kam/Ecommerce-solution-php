@@ -10,3 +10,5 @@ label { margin:0; padding:0 0 5px 0 }
 input.cb { position: relative; bottom: 2px; }
 select, .tb { width: 200px !important }
 .read-only { color:#888; }
+
+#sSocialMedia { width: 168px !important }

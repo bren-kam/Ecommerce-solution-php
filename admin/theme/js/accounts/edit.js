@@ -88,6 +88,26 @@ function postLoad( $ ) {
 		if( !$(this).val().length )
 			$(this).val( $(this).attr('tmpval') ).addClass('tmpval');
 	});
+
+    // Make the social media work
+    $('#cbSocialMedia').click( function() {
+        if( $(this).is(':checked') ) {
+            // Show the Social Media Options
+            $('#dSocialMedia').show();
+        } else {
+            // Hide Social media Options
+            $('#dSocialMedia').hide();
+        }
+    });
+
+    // Make the social media work
+    $('#sSocialMedia').change( function() {
+        if ( $(this).find('option:checked').is('option') )
+            return;
+
+        $('#cbSocialMedia').attr( 'checked' , false );
+        $('#dSocialMedia').hide();
+    });
 }
 
 /**
