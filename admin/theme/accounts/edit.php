@@ -45,6 +45,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 			'domain' => $_POST['tDomain'],
 			'subdomain' => $_POST['tSubDomain'],
 			'title' => stripslashes( $_POST['tTitle'] ),
+            'plan_name' => stripslashes( $_POST['tPlanName'] ),
+            'plan_description' => stripslashes( $_POST['tPlanDescription'] ),
 			'theme' => $_POST['tTheme'],
 			'phone' => $_POST['tPhone'],
 			'products' => $_POST['tProducts'],
@@ -69,7 +71,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iisssssiisiiiiiiiiiiissi';
+		$fields_safety = 'iisssssssiisiiiiiiiiiiissi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -381,7 +383,13 @@ get_header();
 					<td>&nbsp;</td>
 				</tr>
 			</table>
-			<br /><br />
+            <br /><br />
+            <h2><?php echo $web['company'], ' ', _('Plan'); ?></h2>
+			<p><label for="tPlanName"><?php echo _('Plan Name'); ?></label></p>
+            <p><input type="text" class="tb" name="tPlanName" id="tPlanName" tmpval="<?php echo _('Plan Name...'); ?>" value="<?php echo $web['plan_name']; ?>" /></p>
+            <p><label for="tPlanDescription"><?php echo _('Plan Description'); ?></label></p>
+            <p><textarea name="tPlanDescription" id="tPlanDescription" rows="5" cols="50" tmpval="<?php echo _('Plan Description...'); ?>"><?php echo $web['plan_description']; ?></textarea></p>
+            <br /><br />
 			<br />
 			<input type="submit" id="bSubmit" name="bSubmit" value="<?php echo _('Save'); ?>" class="button" />
 			<?php nonce::field( 'update-account' ); ?>
