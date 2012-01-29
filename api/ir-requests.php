@@ -321,14 +321,16 @@ class IRR {
 		}
 
         // If they had social media, add all the plugins, they get update this later
-        $this->db->insert( 'website_settings', array( 'website_id' => $website_id, 'key' => 'social-media-add-ons', 'value' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}' ), 'iss' );
+        if ( '1' == $website['social_media'] ) {
+            $this->db->insert( 'website_settings', array( 'website_id' => $website_id, 'key' => 'social-media-add-ons', 'value' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}' ), 'iss' );
 
-		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to create website settings', "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-			exit;
-		}
+            // If there was a MySQL error
+            if( mysql_errno() ) {
+                $this->err( 'Failed to create website settings', "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+                $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                exit;
+            }
+        }
 
 		// Everything was successful
 		$this->add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
