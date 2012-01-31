@@ -40,7 +40,7 @@ class Users extends Base_Class {
 				$user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
 				
 				// If they're not an admin but in an admin section, send them to the login screen
-				if ( $user['role'] <= 5 && ADMIN ) {
+				if ( $user['role'] <= 6 && ADMIN ) {
 					$this->logout();
 					login();
 				}
@@ -70,7 +70,7 @@ class Users extends Base_Class {
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the users
-		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id`, `phone` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 AND b.`status` = 1 $where GROUP BY a.`user_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -342,23 +342,15 @@ class Users extends Base_Class {
 	 * @return object|bool $user (object) if user is logged in, false if not logged in.
 	 */
 	public function get_user( $user_id ) {
-		global $mc;
-		
-		$user = $mc->get( 'get_user > ' . $user_id );
-		
-		if ( empty( $user ) ) {
-			// Prepare the statement
-			$user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `work_phone`, `cell_phone`, `billing_first_name`, `billing_last_name`, `billing_address1`, `billing_city`, `billing_state`, `billing_zip`, `products`, `role`, `status`, `date_created` FROM `users` WHERE `user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get user.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			$mc->add( 'get_user > ' . $user_id, $user, 7200 );
-		}
-		
+        // Prepare the statement
+        $user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `work_phone`, `cell_phone`, `billing_first_name`, `billing_last_name`, `billing_address1`, `billing_city`, `billing_state`, `billing_zip`, `products`, `role`, `status`, `date_created` FROM `users` WHERE `user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get user.', __LINE__, __METHOD__ );
+            return false;
+        }
+
 		return $user;
 	}
 	

@@ -158,6 +158,48 @@ jQuery(function($) {
 			parent.remove();
 		}, 'json' );
 	});
+
+    // Trigger the dialog
+	$('#aChecklist').click( function() {
+		var a = $(this);
+
+		if( a.hasClass('loaded') ) {
+			new Boxy( $('#dChecklistPopup'), {
+				title : a.attr('title')
+			});
+
+			return;
+		}
+
+		a.addClass('loaded');
+
+		// If exists, and they want to cache it use it
+		new Boxy( $('#dChecklistPopup'), {
+			title : a.attr('title')
+		});
+
+		// Add the Form first
+		$('#fUpdateChecklist').addClass('ajax').ajaxForm({
+			dataType		: 'json',
+			success			: function( response ) {
+				// Test for success
+				if( !response['result'] ) {
+					alert( response['error'] );
+					return false;
+				}
+
+				// Close the window
+				$('a.close:visible:first').click();
+
+                // Remove any selected items
+                $('#sChecklistItems option:checked').remove();
+                
+                // Remove any empty sections
+                $('#sChecklistItems optgroup:not(:has(option))').remove();
+
+			}
+		});
+	});
 });
 
 /**

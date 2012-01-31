@@ -1,18 +1,18 @@
 <div id="dContactUs">
 	<h3><?php echo _('Locations'); ?>:</h3>
-	
+
 	<div id="dContactUsList">
 		<?php
 		nonce::field( 'set-pagemeta', '_ajax_set_pagemeta' );
 		if ( !empty( $contacts ) ) {
 			$i = 0;
 			$addresses = unserialize( $contacts );
-			
+
 			if ( is_array( $addresses ) )
 			foreach ( $addresses as $contact ) {
 				if ( !isset( $contact['fax'] ) )
 					$contact['fax'] = '';
-				
+
 				$i++;
 			?>
 			<div class="contact" id="dContact<?php echo $i; ?>">
@@ -25,7 +25,7 @@
 					<span class="phone"><?php echo $contact['phone']; ?></span><br />
 					<span class="fax"><?php echo $contact['fax']; ?></span><br />
 				</div>
-				
+
 				<div style="float:right">
 					<span class="email"><?php echo $contact['email']; ?></span><br />
 					<span class="website"><?php echo $contact['website']; ?></span>
@@ -48,7 +48,7 @@
 	</div>
 	<br clear="all" /><br />
 	<br />
-	
+
 	<h3><?php echo _('Add Location'); ?></h3>
 	<table cellpadding="0" cellspacing="0" class="form">
 		<tr>
@@ -145,10 +145,10 @@
 			<td><label for="taEditStoreHours"><?php echo _('Store Hours'); ?>:</label></td>
 			<td><textarea id="taEditStoreHours" cols="30" rows="3" tabindex="15"></textarea></td>
 		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td><a href="javascript:;" id="aSaveAddress" title="<?php echo _('Save Address'); ?>" tabindex="20" class="button"><?php echo _('Save Address'); ?></a> <a href="javascript:;" class="close" title="<?php echo _('Cancel'); ?>"><?php echo _('Cancel'); ?></a></td>
-		</tr>
 	</table>
-	<input type="hidden" id="hContactID" /> 
+	<input type="hidden" id="hContactID" />
+    <div class="boxy-footer hidden">
+        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Cancel'); ?></a></p>
+        <p class="text-right col-2 float-right"><a href="javascript:;" id="aSaveAddress" title="<?php echo _('Save Address'); ?>" tabindex="20" class="button"><?php echo _('Save Address'); ?></a></p>
+    </div>
 </div>

@@ -64,4 +64,21 @@ jQuery(function(){
 			});
 		});
 	});
+
+    // Submit a form
+    $('#bCreateTicket').click( function() {
+        $('#fCreateTicket').submit();
+    });
+
+    // Expandercontractor
+    $('#dTicketPopup .expander').click( function() {
+        if ( $(this).hasClass('open') ) {
+            $(this).removeClass('open').addClass('close');
+
+            $('#' + $(this).attr('rel')).show();
+        } else {
+            $(this).removeClass('close').addClass('open');
+            $('#' + $(this).attr('rel')).hide();
+        }
+    });
 });

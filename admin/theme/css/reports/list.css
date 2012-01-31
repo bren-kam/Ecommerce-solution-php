@@ -10,3 +10,7 @@
 
 td, th { padding: 0 10px 7px 0 }
 th { font-weight: bold; font-size: 18px }
+
+#tAutoComplete { border: 1px solid #AFAFAF }
+.ui-autocomplete { width:245px }
+.ui-menu-item a { width: 235px; display: block; padding: 2px 5px; }

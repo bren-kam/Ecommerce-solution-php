@@ -13,7 +13,7 @@ if ( !$user )
 
 $category_id = (int) $_GET['cid'];
 
-// Send to website listing page
+// Send to website listing category
 if ( empty( $category_id ) )
 	url::redirect('/website/categories/');
 
@@ -36,8 +36,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-categor
     if ( _('Category Title...') == $_POST['tTitle'] )
         $_POST['tTitle'] = '';
 
+    // We don't want to submit that as it will override the default category
+    if ( _('Category Title...') == $_POST['tTitle'] )
+        $_POST['tTitle'] = '';
     // Update the category
-    $success = $c->update_website_category( $category_id, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $_POST['rPosition'] );
+    $success = $c->update_website_category( $category_id, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['tSlug'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $_POST['rPosition'] );
 
     // Get new category
     $category = $c->get_website_category( $category_id );
@@ -66,10 +69,18 @@ get_header();
 		if ( isset( $errs ) )
 			echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fEditPage" action="/website/edit-category/?cid=<?php echo $category_id; ?>" method="post">
+		<form name="fEditCategory" action="/website/edit-category/?cid=<?php echo $category_id; ?>" method="post">
             <div id="dTitleContainer">
                 <input name="tTitle" id="tTitle" class="tb" value="<?php echo $category['title']; ?>" tmpval="<?php echo _('Category Title...'); ?>" />
             </div>
+            <?php /*
+            <div id="dCategorySlug">
+            	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['domain']; ?>/<span id="sCategorySlug"><?php echo $category['slug']; ?></span><input type="text" name="tCategorySlug" id="tCategorySlug" maxlength="50" class="tb hidden" value="<?php echo $category['slug']; ?>" />/</span>
+                &nbsp;
+                <a href="javascript:;" id="aCancelCategorySlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
+                <a href="javascript:;" id="aEditCategorySlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
+                <a href="javascript:;" id="aSaveCategorySlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
+            </div>*/ ?>
             <br />
             <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $category['content']; ?></textarea>
             <p><a href="javascript:;" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p>
@@ -130,9 +141,7 @@ get_header();
 			<div id="dCurrentLink" class="hidden">
 				<p><strong><?php echo _('Current Link'); ?>:</strong></p>
 				<p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
-				<br />
 			</div>
-			<p align="right"><a href="javascript:;" class="button close" title="<?php echo _('Close'); ?>"><?php echo _('Close'); ?></a></p>
 		</div>
 		<?php nonce::field( 'upload-file', '_ajax_upload_file' ); ?>
         <input type="hidden" id="hWebsiteID" value="<?php echo $user['website']['website_id']; ?>" />

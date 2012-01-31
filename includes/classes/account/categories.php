@@ -294,7 +294,7 @@ class Categories extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $category_id = (int) $category_id;
 
-        $category = $this->db->get_row( "SELECT IF( '' = a.`title`, b.`name`, a.`title` ) AS title, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`top` FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` = $category_id", ARRAY_A );
+        $category = $this->db->get_row( "SELECT IF( '' = a.`title`, b.`name`, a.`title` ) AS title, IF( '' = a.`slug`, b.`slug`, a.`slug` ) AS slug, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`top` FROM `website_categories` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` = $category_id", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {

@@ -66,15 +66,17 @@ class Products extends Base_Class {
 				
 				// If the category didn't have it, get the image url and store it for the future
 				if ( 0 == $image_width || 0 == $image_height ) {
-					list( $image_width, $image_height ) = getimagesize( $cat['image_url'] );
+					list( $image_width, $image_height ) = @getimagesize( $cat['image_url'] );
 					
-					// Store it in the database
-					$this->db->insert( 'website_image_dimensions', array( 'website_id' => $tab_data['website_id'], 'image_url' => $cat['image_url'], 'width' => $image_width, 'height' => $image_height, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isiis' );
-				
-					// Handle any error
-					if ( $this->db->errno() ) {
-						$this->err( 'Failed to insert website image dimensions.', __LINE__, __METHOD__ );
-						return false;
+					if ( $image_width && $image_height ) {
+						// Store it in the database
+						$this->db->insert( 'website_image_dimensions', array( 'website_id' => $tab_data['website_id'], 'image_url' => $cat['image_url'], 'width' => $image_width, 'height' => $image_height, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isiis' );
+					
+						// Handle any error
+						if ( $this->db->errno() ) {
+							$this->err( 'Failed to insert website image dimensions.', __LINE__, __METHOD__ );
+							return false;
+						}
 					}
 				}
 				
@@ -157,6 +159,7 @@ class Products extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

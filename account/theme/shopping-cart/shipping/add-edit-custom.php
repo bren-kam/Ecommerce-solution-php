@@ -32,10 +32,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cus
 	if ( empty( $errs ) ) {
 		if ( '' != $_POST['hID'] ) {
 			$success = $sc->update_shipping_method( $_POST['hID'], $_POST['tName'], $_POST['sMethod'], $_POST['tAmount'] );
-			$success *= $sc->update_shipping_zip_codes( $_POST['hID'], $_POST['tZip'] );
+			$success *= $sc->update_shipping_zip_codes( $_POST['hID'], explode( "\n", $_POST['taZips'] ) );
 		} else {
 			$website_shipping_method_id = $sc->add_shipping_method( 'custom', $_POST['tName'], $_POST['sMethod'], $_POST['tAmount'] );
-			$success = $sc->update_shipping_zip_codes( $shipping_method_id, $_POST['tZip'] );
+			$success = $sc->update_shipping_zip_codes( $website_shipping_method_id, explode( "\n", $_POST['taZips'] ) );
 		}
 		
 		// If we were successful
@@ -67,10 +67,8 @@ foreach ( $methods as $m ) {
 
 
 // Get zip codes
-if ( $website_shipping_method_id || !empty( $_POST['tZip'] ) )
-	$zips = ( $website_shipping_method_id ) ? $sc->get_shipping_zip_codes( $website_shipping_method_id ) : $_POST['tZip'];
-
-javascript( 'shopping-cart/shipping/add-edit-custom' );
+if ( $website_shipping_method_id || !empty( $_POST['taZips'] ) )
+	$zips = ( $website_shipping_method_id ) ? $sc->get_shipping_zip_codes( $website_shipping_method_id ) : explode( "\n", $_POST['taZip'] );
 
 $sub_title = ( $website_shipping_method_id ) ? _('Edit Custom') : _('Add Custom');
 $title = $sub_title . ' ' . _('Shipping Method') . ' | ' . _('Shopping Cart') . ' | ' . TITLE;
@@ -91,12 +89,12 @@ get_header();
             <table class="form">
                 <tr>
                     <td><label for="tName"><?php echo _('Name: '); ?></label></td>
-                    <td><input name="tName" tmpval="<?php echo _('Method Name'); ?>..." class="tb" maxlength="25" type="text" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $name; ?>" /></td>
+                    <td><input name="tName" id="tName" tmpval="<?php echo _('Method Name'); ?>..." class="tb" maxlength="25" type="text" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $name; ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="sMethod"><?php echo _('Method: '); ?></label></td>
                     <td>
-                        <select name="sMethod" class="tb" value="<?php echo ( !$success && isset( $_POST['sMethod'] ) ) ? $_POST['sMethod'] : $method; ?>">
+                        <select name="sMethod" id="sMethod" class="tb" value="<?php echo ( !$success && isset( $_POST['sMethod'] ) ) ? $_POST['sMethod'] : $method; ?>">
                             <option value="">-- <?php echo _('Select a Method'); ?> --</option>
                             <option value="Flat Rate"<?php if ( 'Flat Rate' == $method ) echo ' selected="selected"'; ?>><?php echo _('Flat Rate'); ?></option>
                             <option value="Percentage"<?php if ( 'Percentage' == $method ) echo ' selected="selected"'; ?>><?php echo _('Percentage'); ?></option>
@@ -104,28 +102,12 @@ get_header();
                     </td>
                 </tr>
                 <tr>
-					<td><label for="tAmount"/><?php echo _('Amount: '); ?></td>
-					<td><input name="tAmount" tmpval="<?php echo _('Enter Amount'); ?>..." class="tb" type="text" value="<?php echo ( !$success && isset( $_POST['tAmount'] ) ) ? $_POST['tAmount'] : $amount; ?>" /></td>
+					<td><label for="tAmount"><?php echo _('Amount: '); ?>:</label></td>
+					<td><input name="tAmount" id="tAmount" tmpval="<?php echo _('Enter Amount'); ?>..." class="tb" type="text" value="<?php echo ( !$success && isset( $_POST['tAmount'] ) ) ? $_POST['tAmount'] : $amount; ?>" /></td>
 				</tr>
                 <tr>
-                	<td><label><?php echo _('Zip Codes'); ?>:</label></td>
-                    <td>
-                    	<?php 
-						if ( isset( $zips ) && is_array( $zips ) ) {
-						foreach ( $zips as $zip ) {
-						?>
-                        <span id="sZip<?php echo $zip; ?>">
-                        	<input type="text" class="tb" maxlength="5" name="tZip[]" value="<?php echo $zip; ?>"/>&nbsp;
-                            <a href="javascript:;" id="aDeleteZip<?php echo $zip; ?>" class="delete-zip" title="<?php echo _('Delete Zip'); ?>">
-                            	<img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" />
-							</a>
-                            <br />
-						</span>
-						<?php } ?>
-                        <br id="brInsertZipAbove" />
-						<?php } ?>
-                        <input type="text" class="tb" maxlength="5" id="tAddNewZip" tmpval="<?php echo _('New Zip...'); ?>"/> <a href="javascript:;" class="button" id="aAddNewZip"><?php echo _('Add Zip'); ?></a>
-                    </td>
+                	<td class="top"><label for="taZips"><?php echo _('Zip Codes'); ?>:</label></td>
+                    <td><textarea name="taZips" id="taZips" rows="10" cols="50"><?php if ( isset( $zips ) ) echo implode( "\n", $zips ); ?></textarea></td>
                 </tr>
 			</table>
             <br /><br />

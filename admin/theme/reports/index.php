@@ -49,11 +49,13 @@ get_header();
 							<select id="sType">
 								<option value="brand"><?php echo _('Brand'); ?></option>
 								<option value="online_specialist"><?php echo _('Online Specialist'); ?></option>
+                                <option value="marketing_specialist"><?php echo _('Marketing Specialist'); ?></option>
 								<option value="company"><?php echo _('Company'); ?></option>
+                                <option value="billing_state"><?php echo _('State'); ?></option>
 							</select>
 						</td>
 						<td>
-							<input type="text" id="tSearch" class="tb" value="<?php echo _('Enter search here...'); ?>" style="width:100%" />
+							<input type="text" id="tSearch" class="tb" tmpval="<?php echo _('Enter search here...'); ?>" style="width:100%" />
 							<br />
 							<div id="dCriteria"></div>
 						</td>

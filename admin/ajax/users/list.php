@@ -79,23 +79,27 @@ if ( is_array( $users ) )
 foreach ( $users as $us ) {
 	switch ( $us['role'] ) {
 		case 1: 
-			$role = 'Basic User';
+			$role = _('Basic User');
 		break;
 		
 		case 5:
-			$role = 'Basic Account';
+			$role = _('Basic Account');
 		break;
 		
+        case 6:
+            $role = _('Marketing Specialist');
+        break;
+
 		case 7:
-			$role = 'Online Specialist';
+			$role = _('Online Specialist');
 		break;
 		
 		case 8:
-			$role = 'Admin';
+			$role = _('Admin');
 		break;
 		
 		case 10:
-			$role = 'Super Admin';
+			$role = _('Super Admin');
 		break;
 		
 		default:
