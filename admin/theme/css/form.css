@@ -14,3 +14,4 @@ input.tb, select {
 }
 .cb { position: relative; top: 3px; }
 select { height:23px; width:267px }
+select.multiple { height: 150px }

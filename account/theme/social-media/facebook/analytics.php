@@ -11,6 +11,13 @@ global $user;
 if ( !$user )
 	login();
 
+// Make sure they have access to this page
+$w = new Websites;
+$social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
+
+if ( !is_array( $social_media_add_ons ) || !in_array( 'analytics', $social_media_add_ons ) )
+    url::redirect('/social-media/facebook/');
+
 // Instantiate Classes
 $sm = new Social_Media;
 

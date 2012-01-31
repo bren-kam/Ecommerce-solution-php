@@ -88,7 +88,7 @@ if ( !empty( $selected ) )
 			<?php 
 			if ( $user && $user['website'] ) {
 				?> 
-				<a href="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>/" title="<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>" target="_blank"><?php echo '<span class="highlight">', _('Site:'), '</span> ', ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?></a>
+				<a href="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>/" title="<?php echo $user['website']['title']; ?>" target="_blank"><?php echo '<span class="highlight">', _('Site:'), '</span> ', $user['website']['title']; ?></a>
 				<?php if ( count( $user['websites'] ) > 1 ) { ?>
 				<span class="highlight">(</span> <a href="/dialogs/change-website/#dChangeWebsite" title="<?php echo _('Change Active Site'); ?>" rel="dialog"><?php echo _('Change'); ?></a> <span class="highlight">)</span>
 				<?php

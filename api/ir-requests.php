@@ -28,6 +28,7 @@ class IRR {
 		'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.',
 		'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.',
 		'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.',
+        'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.',
 		'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.',
 		'failed-update-user-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.',
 		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
@@ -36,6 +37,7 @@ class IRR {
 		'success-create-order' => 'Create Order succeeded!',
 		'success-create-user' => 'Create User succeeded!',
 		'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.',
+        'success-update-social-media' => 'Update Social Media succeeded!',
 		'success-update-user' => 'Update User succeeded!',
 		'success-update-user-arb-subscription' => 'Update User ARB Subscription succeeded!'
 	);
@@ -49,6 +51,7 @@ class IRR {
 		'create_order',
 		'create_user',
 		'create_website',
+        'update-social-media',
 		'update_user',
 		'update_user_arb_subscription'
 	);
@@ -275,13 +278,13 @@ class IRR {
 	 */
 	private function create_website() {
 		// Gets parameters and errors out if something is missing
-		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'type', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'domain_registration', 'additional_email_addresses', 'products' );
+		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'domain_registration', 'additional_email_addresses', 'products' );
 		$website['status'] = 1;
         $website['date_created'] = date_time::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, array( '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%d', '%d', '%s' ) );
-		
+		$this->db->insert( 'websites', $website, array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%d', '%d', '%s' ) );
+
 		// If there was a MySQL error
 		if( mysql_errno() ) {
 			$this->err( 'Failed to create website', "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
@@ -316,12 +319,88 @@ class IRR {
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
-		
+
+        // If they had social media, add all the plugins, they get update this later
+        if ( '1' == $website['social_media'] ) {
+            $this->db->insert( 'website_settings', array( 'website_id' => $website_id, 'key' => 'social-media-add-ons', 'value' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}' ), 'iss' );
+
+            // If there was a MySQL error
+            if( mysql_errno() ) {
+                $this->err( 'Failed to create website settings', "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+                $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                exit;
+            }
+        }
+
 		// Everything was successful
 		$this->add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
 	}
-	
+
+    /**
+	 * Update Social Media
+	 *
+	 * @param int $website_id
+	 * @param array $social_media_add_ons
+	 */
+	private function update_social_media() {
+		// Gets parameters and errors out if something is missing
+		$personal_information = $this->get_parameters( 'website_id', 'website_social_media_add_ons' );
+
+        // Make sure we can edit this website
+        $this->verify_website( $website_id );
+
+        if ( !is_array( $website_social_media_add_ons ) ) {
+            $this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
+            exit;
+        }
+
+        // Master list of social media add ons
+        $social_media_add_ons = array(
+            'email-sign-up'
+            , 'fan-offer'
+            , 'sweepstakes'
+            , 'share-and-save'
+            , 'facebook-site'
+            , 'contact-us'
+            , 'about-us'
+            , 'products'
+            , 'current-ad'
+            , 'posting'
+        );
+
+        // Make sure we only have valid arguments
+        foreach ( $website_social_media_add_ons as &$value ) {
+            if ( !in_array( $value, $social_media_add_ons ) )
+                unset( $value );
+        }
+
+        // Check again to make sure it is an array
+        if ( !is_array( $website_social_media_add_ons ) ) {
+            $this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
+            exit;
+        }
+
+        // Type Juggling
+        $website_id = (int) $website_id;
+
+        // Make the variable
+        $db_website_social_media_add_ons = $this->db->escape( serialize( $website_social_media_add_ons ) );
+
+        // Insert/update website settings
+        $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( $website_id, 'social-media-add-ons', '$db_website_social_media_add_ons' ) ON DUPLICATE KEY UPDATE `value` = '$db_website_social_media_add_ons'" );
+
+        // If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->err( 'Failed to update website settings', "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+			$this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
+			exit;
+		}
+
+		$this->add_response( array( 'success' => true, 'message' => 'success-update-social-media' ) );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
+	}
+
 	/**
 	 * Update User
 	 *
@@ -398,8 +477,34 @@ class IRR {
 	/***********************/
 	/* END: IR API Methods */
 	/***********************/
-	
-		
+
+    /**
+     * Check to make sure a website belongs to the company
+     *
+     * @param int $website_id
+\     */
+    private function verify_website( $website_id ) {
+        // Type Juggling
+        $website_id = (int) $website_id;
+        $company_id = (int) $this->company_id;
+
+        // See if we can grab the website ID
+        $verify_website_id = $this->db->get_var( "SELECT a.`website_id` FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id`) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id AND c.`company_id` = $company_id" );
+
+        // If there was a MySQL error
+        if( mysql_errno() ) {
+			$this->err( 'Failed to verify website', "Could not verify Website ID: $website_id to Company ID: $company_id", __LINE__, __METHOD__ );
+			$this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
+			exit;
+		}
+
+        // Verify that it exists
+        if ( !$verify_website_id ) {
+            $this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
+            exit;
+        }
+    }
+
 	/**
 	 * Checks to see if a user exists
 	 *
