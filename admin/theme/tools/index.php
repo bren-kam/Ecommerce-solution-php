@@ -21,7 +21,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'tools/' ); ?>
 	<div id="subcontent">
-        <p><?php echo _('Please use the tools below to speed up website building. Go go team!'); ?></p>
+        <p><?php echo _('Please use the tools below to speed up website building. Go go, team!'); ?></p>
         <ul>
             <li><a href="/tools/bad-excel/" title="<?php echo _('Bad Excel'); ?>"><?php echo _('Bad Excel'); ?></a></li>
             <li><a href="/tools/extract-zip-codes/" title="<?php echo _('Extract Zip Codes'); ?>"><?php echo _('Extract Zip Codes'); ?></a></li>
