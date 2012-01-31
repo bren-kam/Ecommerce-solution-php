@@ -38,20 +38,34 @@ class Users extends Base_Class {
             // Get website
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
 
+            // Don't send them into an infinite loop if you can avoid it
+            if ( !is_array( $user['websites'] ) || 0 == count( $user['websites'] ) ) {
+                $this->logout();
+                url::redirect('/');
+            }
+            
             if ( !isset( $_COOKIE['wid'] ) ) {
-                $user['website'] = current( $user['websites'] );
+                $user['website'] = '';
                 set_cookie( 'wid', $user['website']['website_id'], 172800 ); // 2 days
             } elseif ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
                 $w = new Websites;
 
                 $user['website'] = $w->get_website( $_COOKIE['wid'] );
             } else {
-                $user['website'] = ( isset( $user['websites'][$_COOKIE['wid']] ) ) ? $user['websites'][$_COOKIE['wid']] : current( $user['websites'] );
+                $user['website'] = ( isset( $user['websites'][$_COOKIE['wid']] ) ) ? $user['websites'][$_COOKIE['wid']] : '';
             }
 
             // They must have a website
-            if ( empty( $user['website'] ) )
-                url::redirect('/');
+            if ( empty( $user['website'] ) ) {
+                // Need to get the website ID
+                $website = current( $user['websites'] );
+
+                // Set the cookie so everything can load
+                set_cookie( 'wid', $website['website_id'], 172800 ); // 2 days
+
+                // Ask them to select a website
+                url::redirect('/select-website/');
+            }
 		}
 	}
 	

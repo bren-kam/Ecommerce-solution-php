@@ -56,6 +56,7 @@ h1 { float:left; font-size:30px; color: #404040; }
 h2 { font-size:22px; color: #404040; }
 h3 { font-size: 18px; color: #404040; }
 textarea { font-family:Arial, Helvetica, sans-serif; color:#63656B; font-size:14px; }
+li { padding-bottom: 7px }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }
