@@ -61,7 +61,7 @@ $.extend(Boxy, {
         show:                   true,           // show dialog immediately?
         modal:                  true,          // make dialog modal?
         fixed:                  true,           // use fixed positioning, if supported? absolute positioning used otherwise
-        closeText:              '[close]',      // text to use for default close link
+        closeText:              '<img src="/images/icons/x-grey.png" width="13" height="13" alt="Close" />',      // text to use for default close link
         unloadOnHide:           false,          // should this dialog be removed from the DOM after being hidden?
         clickToFront:           false,          // bring dialog to foreground on any click (not just titlebar)?
         behaviours:             Boxy.EF,        // function used to apply behaviours to all content embedded in dialog.
@@ -304,7 +304,17 @@ Boxy.prototype = {
         newContent = $(newContent).css({display: 'block'}).addClass('boxy-content');
         if (this.options.clone) newContent = newContent.clone(true);
         this.getContent().remove();
-        this.getInner().append(newContent);
+        var footer = $('.boxy-footer', newContent).clone(true).css({display: 'block'});
+
+        if ( footer.is('div') ) {
+            $('.boxy-footer', this.boxy).remove();
+            this.getInner().append(newContent).after(footer);
+            this._setupDefaultBehaviours(footer);
+            this.options.behaviours.call(this, footer);
+        } else {
+            this.getInner().append(newContent);
+        }
+
         this._setupDefaultBehaviours(newContent);
         this.options.behaviours.call(this, newContent);
         return this;

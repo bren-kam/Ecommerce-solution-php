@@ -27,15 +27,64 @@ global $user;
 		<br />
 		<textarea name="taTicket" id="taTicket" rows="5" cols="50" style="width:360px" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
 		<br /><br />
-		<div id="ticket-attachments"></div>
 		<input type="hidden" name="hTicketID" id="hTicketID" value="0" />
-		<?php nonce::field( 'create-ticket', '_ajax_create_ticket' ); ?>
-		<p class="col-2 float-right text-right"><input type="submit" class="button" value="<?php echo _('Create Ticket'); ?>" /></p>
-	</form>
-	<p class="col-2 float-left"><input type="file" id="fTicketUpload" class="hidden" /></p>
+        <?php
+        nonce::field( 'create-ticket', '_ajax_create_ticket' );
+
+        // Only show checklists if the user is an online specialist and if hte website is not live
+        if ( $user['role'] >= 7 && 1 != $user['website']['live'] ) {
+            $c = new Checklists;
+            $checklist_items = $c->get( $user['website']['website_id'] );
+            ?>
+            <!-- Checklist Section -->
+            <h3 class="section">
+                <?php echo _('Checklist'); ?>
+                <a href="javascript:;" class="expander open" rel="dChecklist" title="<?php echo _('Click to Expand'); ?>"><img src="/images/trans.gif" width="27" height="19" alt="" /></a>
+            </h3>
+            <div id="dChecklist" class="hidden">
+                <p><strong><?php echo $user['website']['title']; ?></strong></p>
+                <p><?php echo _('Select the checklist items you want to mark as complete.'); ?></p>
+                <select name="sChecklistItems[]" id="sChecklistItems" multiple="multiple" title="<?php echo _('Hint: Hit Ctrl + Click to select multiple items'); ?>">
+                <?php
+                if( is_array( $checklist_items ) )
+                foreach ( $checklist_items as $section => $item_array ) {
+                    $options = '';
+
+                    if ( is_array( $item_array ) )
+                    foreach( $item_array as $item ) {
+                        // We don't want to see checked items
+                        if ( 1 == $item['checked'] )
+                            continue;
+
+                        $options .= '<option value="' . $item['checklist_website_item_id'] . '">' . $item['name'] . '</option>';
+                    }
+
+                    if ( !empty( $options ) )
+                        echo '<optgroup label="', $section, '">', $options, '</optgroup>';
+                }
+                ?>
+                </select>
+            </div>
+            <br /><br />
+        <?php } ?>
+
+        <!-- Attachment Section -->
+        <h3 class="section">
+            <?php echo _('Attachment'); ?>
+            <a href="javascript:;" class="expander open" rel="dTicketAttachment" title="<?php echo _('Click to Expand'); ?>"><img src="/images/trans.gif" width="27" height="19" alt="" /></a>
+        </h3>
+        <div id="dTicketAttachment" class="hidden">
+            <p><input type="file" id="fTicketUpload" class="hidden" /></p>
+            <div id="ticket-attachments"></div>
+        </div>
+    </form>
 	<input type="hidden" id="hTicketWebsiteID" value="<?php echo $user['website']['website_id']; ?>" />
 	<input type="hidden" id="hUserID" value="<?php echo $user['user_id']; ?>" />
 	<?php nonce::field( 'ticket-upload', '_ajax_ticket_upload' ); ?>
+    <div class="boxy-footer hidden">
+        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Close'); ?></a></p>
+        <p class="text-right col-2 float-right"><input type="submit" class="button" id="bCreateTicket" value="<?php echo _('Create Ticket'); ?>" /></p>
+    </div>
 </div>
 
 <!-- End: Footer -->

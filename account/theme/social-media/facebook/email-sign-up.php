@@ -11,6 +11,13 @@ global $user;
 if ( !$user )
 	login();
 
+// Make sure they have access to this page
+$w = new Websites;
+$social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
+
+if ( !is_array( $social_media_add_ons ) || !in_array( 'email-sign-up', $social_media_add_ons ) )
+    url::redirect('/social-media/facebook/');
+
 // Instantiate Classes
 $sm = new Social_Media;
 $e = new Email_Marketing;
@@ -157,9 +164,7 @@ get_header();
                 <div id="dCurrentLink" class="hidden">
                     <p><strong><?php echo _('Current Link'); ?>:</strong></p>
                     <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
-                    <br />
                 </div>
-                <p align="right"><a href="javascript:;" class="button close" title="<?php echo _('Close'); ?>"><?php echo _('Close'); ?></a></p>
             </div>
             <?php nonce::field( 'upload-file', '_ajax_upload_file' ); ?>
             <input type="hidden" id="hWebsiteID" value="<?php echo $user['website']['website_id']; ?>" />

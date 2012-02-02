@@ -39,12 +39,16 @@ class Tickets extends Base_Class {
 			$this->err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+        $ticket_id = $this->db->insert_id;
+
 		// Get the assigned to user
 		$assigned_to_user = $u->get_user( $assigned_to_user_id );
 		
 		// Send an email
-		return fn::mail( $assigned_to_user['email'], 'New ' . stripslashes( $user['website']['title'] ) . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\nSummary: $summary\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $this->db->insert_id );
+		fn::mail( $assigned_to_user['email'], 'New ' . stripslashes( $user['website']['title'] ) . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\nSummary: $summary\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=$ticket_id" );
+
+        return $ticket_id;
 	}
 	
 	/**

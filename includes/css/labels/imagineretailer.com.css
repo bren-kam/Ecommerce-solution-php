@@ -8,7 +8,7 @@ a:hover, #nav-icons a:hover, #footer a:hover, #sidebar a.sub:hover { color: #F79
 
 #description { color: #F89B01 }
 
-.button { 
+.button {
 	background-color: #ffb005;
 	border: 1px solid #F79D04;
 	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
@@ -17,5 +17,5 @@ a:hover, #nav-icons a:hover, #footer a:hover, #sidebar a.sub:hover { color: #F79
    -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
 }
 
-#ticket { background-color: #f79d04 }
-#ticket:hover { background-color:#616268 }
+#ticket, #checklist { background-color: #f79d04 }
+#ticket:hover, #checklist:hover { background-color:#616268 }

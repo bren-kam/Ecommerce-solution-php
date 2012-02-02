@@ -38,7 +38,22 @@
 }
 
 /** Edit Product dialog **/
+#dEditProduct .boxy-content { position: relative; }
+#fEditProduct { width: 853px !important }
+#dPopupTabs { position: absolute; left: 0; top: 51px; background: #E5E5E5; border-bottom: 1px solid #CCCCCC; height: 37px; width: 863px; padding-left: 20px; }
+.screen-selector { border: 1px solid #ccc; border-bottom: 0 !important; background:  url(/images/slivers/grey-tab.png) 0 0 repeat-x; color: #BFBFBF; font-size: 15px; font-weight: bold; padding:  5px 11px; position: relative; top: 14px;
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-top-right-radius: 3px;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-topright: 3px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+.screen-selector.selected, .screen-selector:hover { color: #999; }
 #dEditProduct .price{ width:50px; }
+
+#dEditProduct { color: #333 }
+#dEditProduct h4 { color: #999; font-size: 18px; font-weight: normal; padding-bottom: 2px }
 
 .coupon, .coupon-placeholder { padding: 5px 0 3px; margin: 5px 0; border: 1px solid; height: 17px; width:100%; }
 .coupon .coupon-name { margin-left: 5px; }
