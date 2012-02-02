@@ -1,4 +1,4 @@
-// When the page has loaded
+// When the category has loaded
 jQuery(function($) {
 	// Make the Meta Data expandable
 	$('#aMetaData').click( function() {
@@ -53,4 +53,62 @@ jQuery(function($) {
 		script    	: '/ajax/website/page/upload-file/',
 		uploader  	: '/media/flash/uploadify.swf'
 	});
+
+    /********** Category Link  *********
+	// Trigger the check to make sure the slug is available
+    $('#tTitle').change( function() {
+		if ( $(this).attr('tmpval') == $(this).val() || '' == $(this).val().replace(/\s/g, '') ) {
+			$('#dCategorySlug, #pCategorySlugError').hide();
+			return;
+		}
+
+		// Get slugs
+		var categorySlug = $(this).val().slug(), sCategorySlug = $('#sCategorySlug');
+
+		// Makes sure it only changes the name when you first write the title
+		if ( '' == sCategorySlug.text() ) {
+			// Assign the slugs
+			sCategorySlug.text( categorySlug );
+			$('#tCategorySlug').val( categorySlug );
+		}
+
+		// Show the text
+		$('#dCategorySlug').show();
+	});
+
+	// The "Edit" slug button
+	$('#aEditCategorySlug').click( function() {
+		// Hide the slug
+		$('#sCategorySlug, #aEditCategorySlug').hide();
+
+		// Show the other buttons
+		$('#tCategorySlug, #aSaveCategorySlug, #aCancelCategorySlug').show();
+	});
+
+	// The "Save" slug button
+	$('#aSaveCategorySlug').click( function() {
+		var categorySlug = $('#tCategorySlug').val().slug();
+
+		// Assign the slugs
+		$('#sCategorySlug').text( categorySlug );
+		$('#tCategorySlug').val( categorySlug );
+
+		// Hide the buttons
+		$('#tCategorySlug, #aSaveCategorySlug, #aCancelCategorySlug').hide();
+
+		// Show the slug
+		$('#sCategorySlug, #aEditCategorySlug').show();
+	});
+
+	// The "Cancel" slug link
+	$('#aCancelCategorySlug').click( function() {
+		// Assign the slugs
+		$('#tCategorySlug').val( $('#sCategorySlug').text() );
+
+		// Hide the buttons
+		$('#tCategorySlug, #aSaveCategorySlug, #aCancelCategorySlug').hide();
+
+		// Show the slug
+		$('#sCategorySlug, #aEditCategorySlug').show();
+	});*/
 });

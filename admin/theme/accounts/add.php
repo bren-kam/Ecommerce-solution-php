@@ -18,7 +18,6 @@ if ( $user['role'] < 7 )
 $v = new Validator();
 $v->form_name = 'fAddAccount';
 
-$v->add_validation( 'tDomain', 'req', _('The "Domain" field is required') );
 $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
 $v->add_validation( 'sUserID', 'req', _('The "User" field is required') );
 
@@ -74,10 +73,6 @@ get_header();
 			?>
 			<form action="/accounts/add/" name="fAddAccount" id="fAddAccount" method="post">
 			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td><label for="tDomain"><?php echo _('Domain'); ?>: <span class="red">*</span></label></td>
-					<td><input type="text" name="tDomain" id="tDomain" maxlength="130" value="<?php if ( !$success && isset( $_POST['tDomain'] ) ) echo $_POST['tDomain']; ?>" class="tb" /></td>
-				</tr>
 				<?php /*<tr>
 					<td><label for="tSubDomain"><?php echo _('Sub Domain'); ?>: <span class="red">*</span></label></td>
 					<td><input type="text" name="tSubDomain" id="tSubDomain" maxlength="130" value="<?php if ( !$success && isset( $_POST['tSubDomain'] ) ) echo $_POST['tSubDomain']; ?>" class="tb" /></td>
@@ -86,6 +81,10 @@ get_header();
 					<td><label for="tTitle"><?php echo _('Title'); ?>: <span class="red">*</span></label></td>
 					<td><input type="text" name="tTitle" id="tTitle" maxlength="80" value="<?php if ( !$success && isset( $_POST['tTitle'] ) ) echo $_POST['tTitle']; ?>" class="tb" /></td>
 				</tr>
+                <tr>
+                    <td><label for="tDomain"><?php echo _('Domain'); ?>:</label></td>
+                    <td><input type="text" name="tDomain" id="tDomain" maxlength="130" value="<?php if ( !$success && isset( $_POST['tDomain'] ) ) echo $_POST['tDomain']; ?>" class="tb" /></td>
+                </tr>
 				<tr>
 					<td><label for="sUserID"><?php echo _('User'); ?>: <span class="red">*</span></label></td>
 					<td>

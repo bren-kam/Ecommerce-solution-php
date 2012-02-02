@@ -123,7 +123,7 @@ get_header();
     <br />
     <br />
 	<?php } ?>
-	<div class="screen selected" id="dPricingProductInformation">
+    <div class="screen selected" id="dPricingProductInformation">
         <br />
 		<table cellpadding="0" cellspacing="0" class="col-2 float-left">
 			<tr><td colspan="2"><h4><?php echo _('Pricing Information'); ?></h4></td></tr>
@@ -257,7 +257,7 @@ get_header();
 	<input type="hidden" id="hProductID" name="hProductID" />
 	<?php nonce::field( 'update-product' , '_ajax_update_product' ); ?>
 	</form>
-	<input type="hidden" id="dDialogHeight" value="<?php echo ( $user['website']['shopping_cart'] ) ? 500 : 350; ?>" />
+	<input type="hidden" id="dDialogHeight" value="500" />
     <div class="boxy-footer hidden">
         <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Cancel'); ?></a></p>
         <p class="text-right col-2 float-right"><input type="submit" id="bSaveProduct" class="button" value="<?php echo _('Save'); ?>" /></div>

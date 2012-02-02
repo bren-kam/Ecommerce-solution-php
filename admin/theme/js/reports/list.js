@@ -13,11 +13,35 @@ jQuery( postLoad );
  * @param $ (jQuery shortcut)
  */
 function postLoad( $ ) {
-	criteria = { 'brand' : {}, 'online_specialist' : {}, 'company' : {}, 'checkboxes' : {} };
-	cache = { 'brand' : {}, 'online_specialist' : {}, 'company' : {} };
+	criteria = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'checkboxes' : {} };
+	cache = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {} };
 	
-	// Create tmp values
-	$('#tSearch').tmpVal( '#929292', '#000' );
+	// Temporary Values
+	$('input[tmpval],textarea[tmpval]').each( function() {
+		/**
+		 * Sequence of actions:
+		 *		1) Set the value to the temporary value (needed for page refreshes
+		 *		2) Add the 'tmpval' class which will change it's color
+		 * 		3) Set the focus function to empty the value under the right conditions and remove the 'tmpval' class
+		 *		4) Set the blur function to fill the value with the temporary value and add the 'tmpval' class
+		 */
+		$(this).focus( function() {
+			// If the value is equal to the temporary value when they focus, empty it
+			if( $(this).val() == $(this).attr('tmpval') )
+				$(this).val('').removeClass('tmpval');
+		}).blur( function() {
+			// Set the variables so they don't have to be grabbed twice
+			var value = $(this).val(), tmpValue = $(this).attr('tmpval');
+
+			// Fill in with the temporary value if it's empty or if it matches the temporary value
+			if( 0 == value.length || value == tmpValue )
+				$(this).val( tmpValue ).addClass('tmpval');
+		});
+
+		// If there is no value, set it to the correct value
+		if( !$(this).val().length )
+			$(this).val( $(this).attr('tmpval') ).addClass('tmpval');
+	});
 	
 	// Create autocomplete
 	$('#tSearch').autocomplete({

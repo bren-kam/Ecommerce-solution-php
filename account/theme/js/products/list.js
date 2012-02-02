@@ -101,10 +101,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			
 			// Show the dialog as the first screen is ready
 			new Boxy( $('#dEditProduct'), {
-				width: 760,
-				height: $('#dDialogHeight').val(),
 				title : 'Edit Product'
-
 			});
 			
 			// Product Options

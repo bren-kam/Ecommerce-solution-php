@@ -37,6 +37,9 @@ $v->add_validation( 'pPassword|pConfirmPassword', 'match', _('The "Password" and
 
 $v->add_validation( 'tContactName', 'req', _('The "Contact Name" field is required') );
 
+$v->add_validation( 'tWorkPhone', 'phone', _('The "Work" field must contain a valid phone number') );
+$v->add_validation( 'tCellPhone', 'phone', _('The "Contact Name" field must contain a valid phone number') );
+
 $v->add_validation( 'tBillingZip', 'zip', _('The "Zip" field must contain a valid zip code') );
 
 // Add it to the footer
@@ -146,6 +149,14 @@ get_header();
 					<td><input type="text" name="tContactName" id="tContactName" maxlength="80" value="<?php echo ( empty( $_POST['tContactName'] ) ) ? $us['contact_name'] : $_POST['tContactName']; ?>" class="tb" /></td>
 				</tr>
 				<tr>
+					<td><label for="tWorkPhone"><?php echo _('Work Phone'); ?>:</label></td>
+					<td><input type="text" name="tWorkPhone" id="tWorkPhone" maxlength="80" value="<?php echo ( empty( $_POST['tWorkPhone'] ) ) ? $us['work_phone'] : $_POST['tWorkPhone']; ?>" class="tb" /></td>
+				</tr>
+				<tr>
+					<td><label for="tCellPhone"><?php echo _('Cell Phone'); ?>:</label></td>
+					<td><input type="text" name="tCellPhone" id="tCellPhone" maxlength="80" value="<?php echo ( empty( $_POST['tCellPhone'] ) ) ? $us['cell_phone'] : $_POST['tCellPhone']; ?>" class="tb" /></td>
+				</tr>
+				<tr>
 					<td><label for="tStoreName"><?php echo _('Store Name'); ?>:</label></td>
 					<td><input type="text" name="tStoreName" id="tStoreName" maxlength="80" value="<?php echo ( empty( $_POST['tStoreName'] ) ) ? $us['store_name'] : $_POST['tStoreName']; ?>" class="tb" /></td>
 				</tr>
@@ -176,7 +187,7 @@ get_header();
 						<select name="sRole" id="sRole">
 							<?php
 							$max_role = ( $user['role'] <= 10 ) ? $user['role'] : 5;
-							$roles = array( 1 => 'Basic User', 5 => 'Basic Account', 7 => 'Online Specialist', 8 => 'Admin', 10 => 'Super Admin' );
+							$roles = array( 1 => _('Basic User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Online Specialist'), 8 => _('Admin'), 10 => _('Super Admin') );
 							$selected_role_number = ( empty( $_POST['sRole'] ) ) ? $us['role'] : $_POST['sRole'];
 							
 							for ( $i = 1; $i <= $max_role; $i++ ) { 

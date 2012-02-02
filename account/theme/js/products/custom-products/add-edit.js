@@ -342,7 +342,32 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	});
 
 	var tName = $('#tName');
-	
+
+    // Remove product images
+	$('.remove-product-image').live( 'click', function() {
+		// Make sure they want to remove it
+		if ( !confirm( 'Are you sure you want to remove this image? This cannot be undone.' ) )
+			return false;
+
+		parent = $(this).parents('.product-image:first');
+
+		// Remove hidden value
+		// $( '#' + $(this).attr('extra') ).remove();
+		var field = $(this).attr('extra');
+		$( '#' + field.replace( /[\/\.]/g, '' ) ).remove();
+		if ( ( $( '.hidden-value' ) ).length <= 0 )
+			$( "#fAddEdit" ).after( '<input type="hidden" name="hProductImages" id="hProductImages-tmp" />' );
+
+		// Remove image
+		parent.remove();
+
+		// AJAX remove image
+		$.post( '/ajax/products/custom-products/remove-image/', { _nonce: $('#_ajax_remove_image').val(), pid : $('#hProductID').val(), i : parent.find('img:first').attr('src') }, ajaxResponse, 'json' );
+
+		// Update sequence
+		updateImageSequence();
+	});
+
 	/********** Page Load  **********/
 	// If you refresh the page, make sure you check the product name
 	if ( tName.attr('tmpval') != tName.val() ) {
