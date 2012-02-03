@@ -217,6 +217,42 @@ class Email_Marketing extends Base_Class {
 		
 		return $count;
 	}
+
+    /**
+	 * Export subscribers
+	 *
+	 * @param int $email_list_id
+	 * @return array
+	 */
+	public function export_subscribers( $email_list_id = 0 ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $email_list_id = (int) $email_list_id;
+
+        if ( 0 == $email_list_id ) {
+            // Grab all subscribers
+		    $subscribers = $this->db->get_results( "SELECT `name`, `email`, `phone` FROM `emails` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `email` ASC", ARRAY_A );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
+                return false;
+            }
+        } else {
+            // Grab the subscribers for a specific email list
+		    $subscribers = $this->db->get_results( "SELECT a.`name`, a.`email`, a.`phone` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND b.`email_list_id` = $email_list_id ORDER BY a.`email` ASC", ARRAY_A );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
+                return false;
+            }
+        }
+
+		return $subscribers;
+	}
 	
 	/**
 	 * Get Email
