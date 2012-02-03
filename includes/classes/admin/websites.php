@@ -509,7 +509,8 @@ class Websites extends Base_Class {
 			$ftp_data = $this->get_ftp_data( $website_id );
 			
 			if ( $ftp_data ) {
-				if ( mysql_errno() )
+				/*
+                if ( mysql_errno() )
 					return false;
 				
 				// Create website industry
@@ -633,7 +634,7 @@ class Websites extends Base_Class {
 				if ( $this->db->errno() ) {
 					$this->err( 'Failed to insert website settings.', __LINE__, __METHOD__ );
 					return false;
-				}
+				}*/
 				
 				// Create default email list
 				$email_list_result = $this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
