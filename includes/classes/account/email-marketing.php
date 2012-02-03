@@ -242,7 +242,7 @@ class Email_Marketing extends Base_Class {
             }
         } else {
             // Grab the subscribers for a specific email list
-		    $subscribers = $this->db->get_results( "SELECT a.`name`, a.`email`, a.`phone` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND b.`email_list_id` = $email_list_id ORDER BY a.`email` ASC", ARRAY_A );
+		    $subscribers = $this->db->get_results( "SELECT a.`name`, a.`email`, a.`phone` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND b.`email_list_id` = $email_list_id GROUP BY a.`email_id` ORDER BY a.`email` ASC", ARRAY_A );
 
             // Handle any error
             if ( $this->db->errno() ) {
