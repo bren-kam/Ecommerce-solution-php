@@ -14,11 +14,10 @@ class Mobile_Marketing extends Base_Class {
 		// Need to load the parent constructor
 		if ( !parent::__construct() )
 			return false;
-
-        library('avid-m')
 	}
 	
 	/***** DASHBOARD *****/
+    
 	/**
 	 * Dashboard Messages
 	 * 
@@ -808,21 +807,24 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Get an email list
+	 * Get an mobile list
 	 *
-	 * @param int $email_list_id
+	 * @param int $mobile_list_id
 	 * @return array
 	 */
-	public function get_email_list( $email_list_id ) {
-		$email_list = $this->db->get_row( 'SELECT `email_list_id`, `name`, `description` FROM `email_lists` WHERE `email_list_id` = ' . $email_list_id, ARRAY_A );
+	public function get_mobile_list( $mobile_list_id ) {
+        // Type Juggling
+        $mobile_list_id = (int) $mobile_list_id;
+
+		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email list.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email_list;
+		return $mobile_list;
 	}
 	
 	/**
@@ -831,7 +833,7 @@ class Mobile_Marketing extends Base_Class {
 	 * @param bool $count
 	 * @return array
 	 */
-	public function get_email_lists( $count = false ) {
+	public function get_mobile_lists( $count = false ) {
 		global $user;
 		
 		if ( $count ) { 
@@ -850,63 +852,56 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Create email list
+	 * Create mobile list
 	 *
 	 * @param string $name
-	 * @param string $description
 	 * @return int
 	 */
-	public function create_email_list( $name, $description ) {
+	public function create_mobile_list( $name ) {
 		global $user;
-		
-		$this->db->insert( 'email_lists', array( 'name' => $name, 'description' => $description, 'website_id' => $user['website']['website_id'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'ssis' );
+
+        // Get setting
+        $w = new Websites;
+        $customer_id = $w->get_setting( 'avid-mobile-customer-id' );
+
+        if ( !$customer_id )
+            return false;
+
+        // Create the group on their end
+		library('avid-mobile-api');
+        $am_groups = Avid_Mobile_API::groups( $customer_id );
+
+        // Creat the group and get the ID
+        $am_group_id = $am_groups->create_group( $name );
+
+        // Create the list on our end
+		$this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siis' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email list.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to create mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		// Add MailChimp List Interest Group
-		if ( '0' != $user['website']['mc_list_id'] ) {
-			$mc = $this->mailchimp_instance();
-			
-			$mc->listInterestGroupAdd( $user['website']['mc_list_id'], $name );
-			
-			// Handle any error, but don't stop
-			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Create Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nName: $name\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-		}
-		
+
 		return $this->db->insert_id;
 	}
 	
 	/**
-	 * Update email list
+	 * Update mobile list
 	 *
-	 * @param int $email_list_id
+	 * @param int $mobile_list_id
 	 * @param string $name
-	 * @param string $description
 	 * @return int
 	 */
-	public function update_email_list( $email_list_id, $name, $description ) {
+	public function update_mobile_list( $mobile_list_id, $name ) {
 		global $user;
-		
-		// Update MailChimp List Interest Group
-		if ( '0' != $user['website']['mc_list_id'] ) {
-			// Get original
-			$el = $this->get_email_list( $email_list_id );
-			
-			$mc = $this->mailchimp_instance();
-			
-			$mc->listInterestGroupUpdate( $user['website']['mc_list_id'], $el['name'], $name );
-			
-			// Handle any error, but don't stop
-			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Update Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nOld Name: " . $el['name'] . "\nNew Name: $name\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-		}
-		
-		$this->db->update( 'email_lists', array( 'name' => $name, 'description' => $description ), array( 'email_list_id' => $email_list_id, 'website_id' => $website_id ), 'ss', 'ii' );
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+        // @avid
+
+		$this->db->update( 'mobile_lists', array( 'name' => $name, 'description' => $description ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $website_id ), 'ss', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -959,33 +954,25 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Add a new email message
 	 *
-	 * @param int $email_template_id
-	 * @param string $subject
 	 * @param string $message
-	 * @param string $type
-	 * @param string $date_sent
-	 * @param array $email_list_ids
-	 * @param array $message_meta
-	 * @return bool
+     * @param string $date_sent
+     * @param bool $future
+	 * @return int
 	 */
-	public function add_email_message( $email_template_id, $subject, $message, $type, $date_sent, $email_list_ids, $message_meta ) {
-		global $user;
-		
-		$this->db->insert( 'email_messages', array( 'website_id' => $user['website']['website_id'], 'email_template_id' => $email_template_id, 'subject' => $subject, 'message' => $message, 'type' => $type, 'date_sent' => $date_sent, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisssss' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add email message.', __LINE__, __METHOD__ );
+	public function create_message( $message, $date_sent, $future ) {
+        global $user;
+
+        // @avid
+		// Create the posting post
+        $this->db->insert( 'mobile_messages', array( 'website_id' => $user['website']['website_id'], 'message' => $message, 'date_sent' => $date_sent, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isss' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to create the mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		$email_message_id = $this->db->insert_id;
-		
-		// Add other data
-		$this->add_message_email_lists( $email_message_id, $email_list_ids );
-		$this->add_message_meta( $email_message_id, $message_meta );
-		
-		return $email_message_id;
+
+		return $this->db->insert_id;
 	}
 	
 	/**
@@ -1457,20 +1444,14 @@ class Mobile_Marketing extends Base_Class {
 	 * Create autoresponder
 	 *
 	 * @param string $name
-	 * @param string $subject
 	 * @param string $message
-	 * @param bool $current_offer
-	 * @param int $email_list_id
+	 * @param int $mobile_list_id
 	 * @return int
 	 */
-	public function create_autoresponder( $name, $subject, $message, $current_offer, $email_list_id ) {
+	public function create_autoresponder( $name, $message, $mobile_list_id ) {
 		global $user;
 		
-		// There needs to be some value
-		if ( NULL == $current_offer )
-			$current_offer = 0;
-		
-		$this->db->insert( 'email_autoresponders', array( 'website_id' => $user['website']['website_id'], 'email_list_id' => $email_list_id, 'name' => $name, 'subject' => $subject, 'message' => $message, 'current_offer' => $current_offer, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisssis' );
+		$this->db->insert( 'mobile_autoresponders', array( 'website_id' => $user['website']['website_id'], 'mobile_list_id' => $mobile_list_id, 'name' => $name, 'message' => $message, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1484,22 +1465,16 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Update autoresponder
 	 *
-	 * @param int $email_autoresponder_id
-	 * @param string $name
-	 * @param string $subject
+	 * @param int $mobile_autoresponder_id
+     * @param string $name
 	 * @param string $message
-	 * @param bool $current_offer
-	 * @param int $email_list_id
+	 * @param int $mobile_list_id
 	 * @return bool
 	 */
-	public function update_autoresponder( $email_autoresponder_id, $name, $subject, $message, $current_offer, $email_list_id ) {
+	public function update_autoresponder( $mobile_autoresponder_id, $name, $message, $mobile_list_id ) {
 		global $user;
 		
-		// There needs to be some value
-		if ( NULL == $current_offer )
-			$current_offer = 0;
-
-		$this->db->update( 'email_autoresponders', array( 'email_list_id' => $email_list_id, 'name' => $name, 'subject' => $subject, 'message' => $message, 'current_offer' => $current_offer ), array( 'email_autoresponder_id' => $email_autoresponder_id, 'website_id' => $user['website']['website_id'] ), 'isssi', 'ii' );
+		$this->db->update( 'mobile_autoresponders', array( 'mobile_list_id' => $mobile_list_id, 'name' => $name, 'message' => $message ), array( 'mobile_autoresponder_id' => $mobile_autoresponder_id, 'website_id' => $user['website']['website_id'] ), 'iss', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1511,35 +1486,43 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Get available autoresponder email lists
+	 * Get available autoresponder mobile lists
 	 * 
-	 * @param int $email_autoresponder_id
+	 * @param int $mobile_autoresponder_id
 	 * @return array 
 	 */
-	public function get_autoresponder_email_lists( $email_autoresponder_id ) {
+	public function get_autoresponder_mobile_lists( $mobile_autoresponder_id ) {
 		global $user;
-		
-		$email_lists = $this->db->prepare( 'SELECT a.`email_list_id`, a.`category_id`, a.`name` FROM `email_lists`AS a LEFT JOIN `email_autoresponders` AS b ON ( a.`website_id` = b.`website_id` AND a.`email_list_id` = b.`email_list_id` ) WHERE a.`website_id` = ? AND a.`category_id` <> 0 AND ( b.`email_list_id` IS NULL OR b.`email_list_id` = ? ) GROUP BY a.`email_list_id` ORDER BY a.`name`', 'ii', $user['website']['website_id'], $email_autoresponder_id )->get_results( '', ARRAY_A );
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
+
+		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`mobile_keyword_id`, a.`name` FROM `mobile_lists`AS a LEFT JOIN `mobile_autoresponders` AS b ON ( a.`website_id` = b.`website_id` AND a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` <> 0 AND ( b.`mobile_list_id` IS NULL OR b.`mobile_list_id` = $mobile_autoresponder_id ) GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email_lists;
+		return $mobile_lists;
 	}
 	
 	/**
-	 * Delet autoresponder
+	 * Delete autoresponder
 	 *
-	 * @param int $email_autoresponder_id
+	 * @param int $mobile_autoresponder_id
 	 * @return bool
 	 */
-	 public function delete_autoresponder( $email_autoresponder_id ) {
+	 public function delete_autoresponder( $mobile_autoresponder_id ) {
 		global $user;
-		 
-		$this->db->prepare( 'DELETE FROM `email_autoresponders` WHERE `email_autoresponder_id` = ? AND `website_id` = ?', 'ii', $email_autoresponder_id, $user['website']['website_id'] )->query('');
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
+
+		$this->db->query( "DELETE FROM `mobile_autoresponders` WHERE `mobile_autoresponder_id` = $mobile_autoresponder_id AND `website_id` = $website_id" );
 		 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1549,259 +1532,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		return true;
 	}
-	
-	/**
-	 * Sends a test autoresponder to an email
-	 *
-	 * @param string $email
-	 * @param string $subject
-	 * @param string $message
-	 * @param bool $current_offer
-	 * @return bool
-	 */
-	public function test_autoresponder( $email, $subject, $message, $current_offer ) {
-		global $user;
-		
-		$settings = $this->get_settings();
-		
-		$from = ( empty( $settings['from_email'] ) ) ? $settings['from_name'] . '<noreply@' . $user['website']['domain'] . '>' : $settings['from_name'] . $settings['from_email'];
-		
-		// Check if we need to append the current offer
-		if ( $current_offer ) {
-			// Get the page id
-			$w = new Websites;
-			$wa = new Website_Attachments;
 
-			$page = $w->get_page_by_slug( 'current-offer' );
-			
-			// Get the coupon attachment
-			$coupon = $wa->get_by_name( $page['website_page_id'], 'coupon' );
-
-			// If there is a coupon
-			if ( $coupon )
-				$message .= '<br /><br /><img src="http://' . $user['website']['domain'] . $coupon['value'] . '" alt="Coupon" />';
-		}
-		
-		// Put the message in the template
-		$message = $this->get_template( $subject, $message );
-		
-		// To send HTML mail, the Content-type header must be set
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-		$headers .= "From: $from\r\n";
-		
-		return mail( $email, $subject, html_entity_decode( $message ), $headers );
-	}
-	
-	/***** TEMPLATES *****/
-	
-	/**
-	 * Gets a template and fills in the variables
-	 *
-	 * @param string $subject
-	 * @param message $message
-	 * @return string
-	 */
-	private function get_template( $subject, $message, $email_template_id = 0, $meta = '' ) {
-		global $user;
-		
-		// Construct where
-		if ( 0 != $email_template_id )
-			$where = ' AND a.`email_template_id` = ' . (int) $email_template_id;
-		
-		// @Fix this should be grabbing by a website
-		// Grab template
-		$email_template = $this->db->get_row( "SELECT a.`template`, a.`type`, b.`object_id`, b.`type` AS assoc_type FROM `email_templates` AS a LEFT JOIN `email_template_associations` AS b ON ( a.`email_template_id` = b.`email_template_id` ) WHERE 1 $where LIMIT 1", ARRAY_A );
-		
-		// Format
-		$message = format::autop( $message );
-		
-		// Email Variables
-		$this->email_variables( &$message, &$subject );
-		
-		// Make sure that if it's not an offer email and its supposed to be associated
-		// with a website, and it's not, that it returns false;
-		if ( $email_template['type'] != 'offer' && $email_template['type'] != 'default' && $email_template['assoc_type'] == 'website' && $email_template['object_id'] <> $user['website']['website_id'] )
-			return false;
-		
-		switch ( $email_template['type'] ) {
-			case 'offer':
-				// Instantiate classes
-				$c = new Categories;
-				$pr = new Products;
-				
-				$products_html = '';
-				
-				// Get settings
-				$view_product_image = $this->get_setting( 'view-product-button' );
-				$options = $this->get_template_options( $email_template_id );
-				
-				// Go through meta data
-				foreach ( $meta as $offer_type => $m ) {
-					list( $type, $value, $price ) = explode( '|', $m );
-					
-					if ( 'text' == $type ) {
-						// Straight text -- put it in
-						$$offer_type = $options['product_text'] . $value . '</p>';
-					} else {
-						// Get product
-						$p = $pr->get_product( $value );
-						
-						// Get the product link
-						$product_link = $c->category_url( $p['category_id'] ) . $p['slug'] . '/';
-						
-						// Get the image and prices
-						$product_image = 'http://' . $p['industry'] . '.retailcatalog.us/products/' . $p['product_id'] . '/' . $p['image'];
-						$price = ( '0' == $price ) ? '' : '<small>Price $' . number_format( $price, 2 ) . '</small>';
-						
-						// Figure out the size of the image
-						list( $image_width, $image_height ) = @getimagesize( $product_image );
-						
-						if ( empty( $image_width ) )
-							$image_width = 1;
-						
-						list( $image_width, $image_height ) = image::proportions( $image_width, $image_height, 144, 144 );
-						$height_padding = ( 144 - $image_height ) / 2;
-						$width_padding = ( 144 - $image_width ) / 2;
-						
-						// Put in the HTML
-						$$offer_type = $options['product_image'] . '
-							<a href="' . $product_link . '" title="' . $p['name'] . '" style="padding:0; width:144px; display:block; margin:0 auto;"><img src="' . $product_image . '" alt="' . $p['name'] . '" width="' . $image_width . '" height="' . $image_height . '" style="background:#fff; padding:' . $height_padding . 'px ' . $width_padding . 'px" border="0" /></a></div>' . $options['product_text'] . '
-						<a href="' . $product_link . '" title="' . $p['name'] . '" style="font-size:16px; font-weight:bold; color:#' . $options['link_color'] . '; text-decoration:none; padding-top: 7px">' . $p['name'] . "</a><br />$price</p>";
-					}
-				}
-				
-				$html_message = str_replace( array( '[subject]', '[message]', '[offer_1]', '[offer_2]' ), array( $subject, $message, $offer_1, $offer_2 ), $email_template['template'] );
-			break;
-			
-			case 'product':
-				// Instantiate class
-				$c = new Categories;
-				$pr = new Products;
-				
-				// Get settings
-				$settings = $this->get_settings();
-				$view_product_image = $this->get_setting( 'view-product-button' );
-				
-				// Set variables
-				$products_html = '';
-				$i = 0;
-				$open = false;
-				$new_meta = array();
-				
-				// Set meta
-				foreach ( $meta as $p ) {
-					$new_meta[$p['order']] = $p;
-				}
-				
-				// Sort by key
-				ksort( $new_meta );
-				
-				// Get data
-				foreach ( $new_meta as $p ) {
-					$i++;
-					
-					// Every third product
-					if ( 1 == $i % 3 ) {
-						$products_html .= '<tr>';
-						$open = true;
-					}
-					
-					// Set default colors
-					$price_color = ( empty( $settings['product-price-color'] ) ) ? '548557' : $settings['product-price-color'];
-					$product_color = ( empty( $settings['product-color'] ) ) ? '78174c' : $settings['product-color'];
-					
-					// Get product link
-					$product_link = $c->category_url( $p['category_id'] ) . $p['slug'] . '/';
-					
-					// Form image
-					$product_image = 'http://' . $pr->get_industry( $p['product_id'] ) . '.retailcatalog.us/products/' . $p['product_id'] . '/' . $p['image'];
-					$price = ( '0' == $p['price'] ) ? '' : 'Price <span style="color:#' . $product_color . '">$' . $p['price'] . '</span><br />';
-					
-					// Get image size
-					list( $image_width, $image_height ) = @getimagesize( $product_image );
-					
-					if ( empty( $image_width ) )
-						$image_width = 1;
-					
-					list( $image_width, $image_height ) = image::proportions( $image_width, $image_height, 144, 144 );
-					$height_padding = ( 144 - $image_height ) / 2;
-					$width_padding = ( 144 - $image_width ) / 2;
-					
-					// Set the products HTML
-					$products_html .= '
-						<td width="33%" style="text-align:center;font-size:14px; line-height:24px; font-weight:bold;" valign="top">
-							<div>
-								<a href="' . $product_link . '" title="' . $p['name'] . '" style="padding:0 7px 7px 0; width:144px; display:block; margin:0 auto;"><img src="' . $product_image . '" alt="' . $p['name'] . '" width="' . $image_width . '" height="' . $image_height . '" style="background:#fff; padding:' . $height_padding . 'px ' . $width_padding . 'px" border="0" /></a>
-							</div>
-							<a href="' . $product_link . '" title="' . $p['name'] . '" style="font-size:16px; font-weight:bold; color:#' . $price_color . '; text-decoration:none;">' . $p['name'] . '</a><br />' . $price . '
-							<a href="' . $product_link . '" title="View Product"><img src="' . $view_product_image . '" alt="View Product" border="0" /></a>
-						</td>';
-					
-					// Close every third product
-					if ( 0 == $i % 3 ) {
-						$products_html .= '</tr>';
-						$open = false;
-					}
-				}
-				
-				// If it's still open, close it
-				if ( $open )
-					$products_html .= '</tr>';
-				
-				$html_message = str_replace( array( '[subject]', '[message]', '[products]' ), array( $subject, $message, $products_html ), $email_template['template'] );
-			break;
-			
-			default:
-				// Just do a normal message
-				$html_message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), $email_template['template'] );
-			break;
-		}
-		
-		return $html_message;
-	}
-	
-	/**
-	 * Replaces variable names in an email with actual values
-	 *
-	 * Receives any amount of variables and changes their values
-	 */
-	private function email_variables() {
-		if ( func_num_args() <= 0 )
-			return false;
-		
-		global $user;
-		
-		// Define list of variables
-		$variables = array( '[website_title]' );
-		
-		$replacements = array( $user['website']['title'] );
-		
-		$args = func_get_args();
-		
-		foreach ( $args as $arg ) {
-			$arg = str_replace( $variables, $replacements, $arg );
-		}
-	}
-	
-	/**
-	 * Gets all the options associated with a template
-	 *
-	 * @param int $email_template_id
-	 * @return array|bool
-	 */
-	private function get_template_options( $email_template_id ) {
-		$options = $this->db->get_results( 'SELECT `key`, `value` FROM `email_template_options` WHERE `email_template_id` = ' . (int) $email_template_id, ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get template options.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return ar::assign_key( $options, 'key', true );
-	}
-	
 	/***** EMAIL SETTINGS *****/
 	
 	/**
@@ -1892,17 +1623,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		return $this->mc;
 	}
-	
-	/**
-	 * Synchronize email lists
-	 * 
-	 * @return bool
-	 */
-	public function synchronize_email_list() {
-		$this->remove_bad_emails();
-		$this->update_email_lists();
-	}
-	
+
 	/**
 	 * Removes unsubscribes
 	 *

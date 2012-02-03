@@ -11,21 +11,25 @@ global $user;
 if ( !$user )
 	login();
 
-$selected = "email_marketing";
-$title = _('Autoresponders | Email Marketing') . ' | ' . TITLE;
+// Secure the section
+if ( !$user['website']['mobile-marketing'] )
+    url::redirect('/');
+
+$selected = "mobile_marketing";
+$title = _('Autoresponders') . ' | ' . _('Email Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
 	<h1><?php echo _('Autoresponders'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'autoresponders' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'autoresponders' ); ?>
 	<div id="subcontent">
-		<table cellpadding="0" cellspacing="0" width="100%" perPage="100,250,500" ajax="/ajax/email-marketing/autoresponders/list/">
+		<table cellpadding="0" cellspacing="0" width="100%" perPage="100,250,500" ajax="/ajax/mobile-marketing/autoresponders/list/">
 			<thead>
 				<tr>
 					<th width="50%" sort="1"><?php echo _('Name'); ?></th>
-					<th width="50%"><?php echo _('Subject'); ?></th>
+					<th width="50%"><?php echo _('Date Created'); ?></th>
 				</tr>
 			</thead>
 			<tbody>

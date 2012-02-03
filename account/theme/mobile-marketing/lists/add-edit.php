@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Add Edit Email Lists
+ * @page Add Edit Mobile Lists
  * @package Imagine Retailer
  */
 
@@ -11,17 +11,17 @@ global $user;
 if ( !$user )
 	login();
 
-// Redirect to main section if they don't have email marketing
-if ( !$user['website']['email_marketing'] )
-	url::redirect('/email-marketing/subscribers/');
+// Secure the section
+if ( !$user['website']['mobile-marketing'] )
+    url::redirect('/');
 
-$e = new Email_Marketing;
+$m = new Mobile_Marketing;
 
-// Get the email id if there is one
-$email_list_id = ( isset( $_GET['elid'] ) ) ? $_GET['elid'] : false;
+// Get the mobile id if there is one
+$mobile_list_id = ( isset( $_GET['mlid'] ) ) ? $_GET['mlid'] : false;
 
 $v = new Validator();
-$v->form_name = 'fAddEditEmailList';
+$v->form_name = 'fAddEditMobileList';
 $v->add_validation( 'tName', 'req' , 'The "Name" field is required' );
 
 // Add validation
@@ -31,77 +31,69 @@ add_footer( $v->js_validation() );
 $success = false;
 
 // Make sure it's a valid request
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-email-list' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-mobile-list' ) ) {
 	$errs = $v->validate();
-	
-	if ( NULL == $_POST['taDescription'] ) 
-		$_POST['taDescription'] = '';
 	
 	// if there are no errors
 	if ( empty( $errs ) ) {
-		if ( $email_list_id ) {
-			// Update email list
-			$success = $e->update_email_list( $email_list_id, $_POST['tName'], $_POST['taDescription'] );
+		if ( $mobile_list_id ) {
+			// Update mobile list
+			$success = $m->update_mobile_list( $mobile_list_id, $_POST['tName'] );
 		} else {
-			// Create email list
-			$success = $e->create_email_list( $_POST['tName'], $_POST['taDescription'] );
+			// Create mobile list
+			$success = $m->create_mobile_list( $_POST['tName'] );
 		}
 	}
 }
 
-// Get the email list if necessary
-if ( $email_list_id ) {
-	$email_list = $e->get_email_list( $email_list_id );
+// Get the mobile list if necessary
+if ( $mobile_list_id ) {
+	$mobile_list = $m->get_mobile_list( $mobile_list_id );
 } else {
-	$email_list = array(
+	$mobile_list = array(
 		'name' => ''
-		, 'description' => ''
 	);
 }
 
-$selected = "email_marketing";
-$sub_title = ( $email_list_id ) ? _('Edit Email List') : _('Add Email List');
-$title = "$sub_title | " . _('Email Lists') . ' | ' . TITLE;
+$selected = "mobile_marketing";
+$sub_title = ( $mobile_list_id ) ? _('Edit Mobile List') : _('Add Mobile List');
+$title = "$sub_title | " . _('Mobile Lists') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
 	<h1><?php echo $sub_title; ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'email_lists', 'add_edit_email_lists' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'mobile_lists', 'add_edit_mobile_lists' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
 		<div class="success">
-			<p><?php echo ( $email_list_id ) ? _('Your email list has been updated successfully!') : _('Your email list has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/email-marketing/email-lists/" title="', _('Email Lists'), '">', _('view your email lists'), '</a>.'; ?></p>
+			<p><?php echo ( $mobile_list_id ) ? _('Your mobile list has been updated successfully!') : _('Your mobile list has been added successfully!'); ?></p>
+			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/mobile-lists/" title="', _('Mobile Lists'), '">', _('view your mobile lists'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}
 		
 		// Allow them to edit the entry they just created
-		if ( $success && !$email_list_id )
-			$email_list_id = $success;
+		if ( $success && !$mobile_list_id )
+			$mobile_list_id = $success;
 		
 		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fAddEditEmailList" action="/email-marketing/email-lists/add-edit/<?php if ( $email_list_id ) echo "?elid=$email_list_id"; ?>" method="post">
+		<form name="fAddEditMobileList" action="/mobile-marketing/mobile-lists/add-edit/<?php if ( $mobile_list_id ) echo "?mlid=$mobile_list_id"; ?>" method="post">
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $email_list['name']; ?>" /></td>
-				</tr>
-				<tr>
-					<td valign="top"><label for="taDescription"><?php echo _('Description'); ?>:</label></td>
-					<td><textarea name="taDescription" id="taDescription" cols="35" rows="6"><?php echo ( !$success && isset( $_POST['taDescription'] ) ) ? $_POST['taDescription'] : $email_list['description']; ?></textarea></td>
+					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $mobile_list['name']; ?>" /></td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" class="button" value="<?php echo ( $email_list_id ) ? _('Update Email List') : _('Add Email List'); ?>" /></td>
+					<td><input type="submit" class="button" value="<?php echo ( $mobile_list_id ) ? _('Update Mobile List') : _('Add Mobile List'); ?>" /></td>
 				</tr>
 			</table>
-			<?php nonce::field('add-edit-email-list'); ?>
+			<?php nonce::field('add-edit-mobile-list'); ?>
 		</form>
 		<br /><br />
 	</div>

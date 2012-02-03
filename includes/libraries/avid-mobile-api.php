@@ -77,9 +77,9 @@ class Avid_Mobile_API {
         library('avid-mobile/keywords');
 
         if ( isset( $this ) ) {
-            $this->keywords = new AV_Keywords();
+            $this->keywords = new AM_Keywords();
         } else {
-            return new AV_Keywords( $customer_id );
+            return new AM_Keywords( $customer_id );
         }
     }
 
@@ -89,14 +89,14 @@ class Avid_Mobile_API {
      * @param int $customer_id optional
      * @return mixed
      */
-    public static function keywords( $customer_id = NULL ) {
+    public static function members( $customer_id = NULL ) {
         // Load the library
         library('avid-mobile/members');
 
         if ( isset( $this ) ) {
-            $this->members = new AV_Members();
+            $this->members = new AM_Members();
         } else {
-            return new AV_Members( $customer_id );
+            return new AM_Members( $customer_id );
         }
     }
 
@@ -111,9 +111,9 @@ class Avid_Mobile_API {
         library('avid-mobile/groups');
 
         if ( isset( $this ) ) {
-            $this->groups = new AV_Groups();
+            $this->groups = new AM_Groups();
         } else {
-            return new AV_Groups( $customer_id );
+            return new AM_Groups( $customer_id );
         }
     }
 
@@ -128,9 +128,9 @@ class Avid_Mobile_API {
         library('avid-mobile/optouts');
 
         if ( isset( $this ) ) {
-            $this->optouts = new AV_Optouts();
+            $this->optouts = new AM_Optouts();
         } else {
-            return new AV_Optouts( $customer_id );
+            return new AM_Optouts( $customer_id );
         }
     }
 
