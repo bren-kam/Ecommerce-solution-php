@@ -1,16 +1,16 @@
 <?php
 /**
- * @page Delete Email List
+ * @page Unsubscribe subscribe
  * @package Imagine Retailer
  */
 
 // Create new AJAX
-$ajax = new AJAX( $_GET['_nonce'], 'unsubscribe-email' );
-$ajax->ok( $user, _('You must be signed in to unsubscribe a user.') );
+$ajax = new AJAX( $_GET['_nonce'], 'unsubscribe-subscriber' );
+$ajax->ok( $user, _('You must be signed in to unsubscribe a subscriber.') );
 
 // Instantiate class
-$e = new Email_Marketing();
-$ajax->ok( $e->unsubscribe( $_GET['eid'], $_GET['e'] ), _('An error occurred while trying to unsubscribe this email.') );
+$m = new Mobile_Marketing();
+$ajax->ok( $m->unsubscribe( $_GET['msid'] ), _('An error occurred while trying to unsubscribe this subscriber.') );
 
 // Redraw the table
 jQuery('.dt:first')->dataTable()->fnDraw();

@@ -1,36 +1,37 @@
 <?php
 /**
- * @page List Email Lists
- * @package Imagine Retailer
+ * @page List Mobile Lists
+ * @package Grey Suit Apps
  * @subpackage Account
  */
 
 // Instantiate classes
-$e = new Email_Marketing;
+$e = new Mobile_Marketing;
 $dt = new Data_Table();
 
 // Set variables
-$dt->order_by( 'a.`name`', 'a.`description`', 'date_created' );
-$dt->add_where( " AND a.`website_id` = " . $user['website']['website_id'] );
-$dt->search( array( 'a.`name`' => false, 'a.`description`' => true ) );
+$dt->order_by( 'a.`name`', 'date_created' );
+$dt->add_where( " AND a.`website_id` = " . (int) $user['website']['website_id'] );
+$dt->search( array( 'a.`name`' => false ) );
 
-// Get messages
-$email_lists = $e->list_email_lists( $dt->get_variables() );
+// Get lists
+$mobile_lists = $e->list_mobile_lists( $dt->get_variables() );
 
-$dt->set_row_count( $e->count_email_lists( $dt->get_where() ) );
+$dt->set_row_count( $e->count_mobile_lists( $dt->get_where() ) );
 
-$confirm = _('Are you sure you want to delete this email list? This cannot be undone.');
-$delete_email_list_nonce = nonce::create( 'delete-email-list' );
+$confirm = _('Are you sure you want to delete this mobile list? This cannot be undone.');
+$delete_mobile_list_nonce = nonce::create( 'delete-mobile-list' );
 
 // Create output
-if ( is_array( $email_lists ) )
-foreach ( $email_lists as $el ) {
-	$data[] = array( 
-		$el['name'] . ' (' . $el['count'] . ')<br /><div class="actions"><a href="/email-marketing/subscribers/?elid=' . $el['email_list_id'] . '" title="' . _('View Subscribers') . '">' . _('View Subscribers') . '</a> | 
-						<a href="/email-marketing/email-lists/add-edit/?elid=' . $el['email_list_id'] . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | 
-						<a href="/ajax/email-marketing/email-lists/delete/?elid=' . $el['email_list_id'] . '&amp;_nonce=' . $delete_email_list_nonce . '" title="' . _('Delete Email List') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>',
-		format::limit_chars( $el['description'], 32, '...' ),
-		dt::date( 'F jS, Y g:i a', $el['date_created'] )
+if ( is_array( $mobile_lists ) )
+foreach ( $mobile_lists as $ml ) {
+    $date = new DateTime( $ml['date_created'] );
+
+	$data[] = array(
+		$ml['name'] . ' (' . $ml['count'] . ')<br /><div class="actions"><a href="/mobile-marketing/subscribers/?mlid=' . $ml['mobile_list_id'] . '" title="' . _('View Subscribers') . '">' . _('View Subscribers') . '</a> |
+						<a href="/mobile-marketing/mobile-lists/add-edit/?elid=' . $ml['mobile_list_id'] . '" title="' . _('Edit') . '">' . _('Edit') . '</a> |
+						<a href="/ajax/mobile-marketing/mobile-lists/delete/?elid=' . $ml['mobile_list_id'] . '&amp;_nonce=' . $delete_mobile_list_nonce . '" title="' . _('Delete Mobile List') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>',
+		$date->format( 'F jS, Y' )
 	);
 }
 

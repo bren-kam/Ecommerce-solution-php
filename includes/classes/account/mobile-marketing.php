@@ -158,7 +158,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_unsubscribed` ) ) AS date FROM `emails` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`mobile_subscriber_id`, a.`phone`, IF( 1 = a.`status`, a.`date_created`, a.`date_unsubscribed` ) AS date FROM `mobile_subscribers` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -176,11 +176,11 @@ class Mobile_Marketing extends Base_Class {
 	 * @return array
 	 */
 	public function count_subscribers( $where ) {
-		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`email_id` ) FROM `emails` AS a WHERE 1 $where" );
+		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`mobile_subscriber_id` ) FROM `mobile_subscribers` AS a WHERE 1 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email subscribers.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -188,16 +188,16 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * List Subscribers by email list id
+	 * List Subscribers by mobile list id
 	 *
 	 * @param array( $where, $order_by, $limit )
 	 * @return array
 	 */
-	public function list_subscribers_by_email_list_id( $variables ) {
+	public function list_subscribers_by_mobile_list_id( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_unsubscribed` ) ) AS date FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`mobile_subscriber_id`, a.`phone`, IF( 1 = a.`status`, a.`date_created`, a.`date_unsubscribed` ) AS date FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -209,17 +209,17 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Count Subscribers by email list id
+	 * Count Subscribers by mobile list id
 	 *
 	 * @param string $where
 	 * @return array
 	 */
-	public function count_subscribers_by_email_list_id( $where ) {
-		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`email_id` ) FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE 1 $where" );
+	public function count_subscribers_by_mobile_list_id( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`mobile_subscriber_id` ) FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) WHERE 1 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email subscribers.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -279,53 +279,36 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Unsubscribes a single email_id
-	 * @param int $email_id
-	 * @param string $email
+	 * Unsubscribes a single mobile_subscriber
+     *
+	 * @param int $mobile_subscriber_id
 	 * @return bool
 	 */
-	public function unsubscribe( $email_id, $email ){
-		// Make sure email is safe
-		if ( !filter_var( $email, FILTER_VALIDATE_EMAIL ) ) 
-			return false;
-		
+	public function unsubscribe( $mobile_subscriber_id ){
 		global $user;
-		
-		// First, get mailchimp and unsubscribe the email - that way, emails that fail to unsubscribe they aren't deleted from our DB
-		$mc = $this->mailchimp_instance();
-		$success = $mc->listUnsubscribe( $user['website']['mc_list_id'], $email );
-		
-		// @Fix - we are assuming that they are not on the list if it failed. If we start getting people complaining saying that they 
-		// unsubscribed but it didn't work, then we need to fix this.
-			// @Fix - A check needs to be done to see if it was added
-			//if( !$success ) 
-				//return false;
 
-        // @Fix this isn't being used
-		// Get list_id for this email
-		$email_lists = $this->db->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = " . (int) $email_id );
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $mobile_subscriber_id = (int) $mobile_subscriber_id;
+
+		// First, get avoid mobile and unsubscribe
+		// @avid
+
+		// Remove subscriber from lists
+		$this->db->query( "DELETE a.* FROM `mobile_associations` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_subscriber_id` = $mobile_subscriber_id AND b.`website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Remove email from lists
-		$this->db->query( 'DELETE FROM `email_associations` WHERE `email_id` = ' . (int) $email_id . ' AND `email_list_id` IN ( SELECT `email_list_id` FROM `email_lists` WHERE `website_id` = ' . (int) $user['website']['website_id'] . ' )' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to remove email from list.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to remove subscriber from list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// Set the email's status to "unsubscribed"
-		$this->db->update( 'emails', array( 'status' => 0 ), array( 'email_id' => $email_id ), 'i', 'i' );
+		$this->db->update( 'mobile_subscribers', array( 'status' => 0 ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to unsubscribe email.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to unsubscribe subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 				
@@ -353,7 +336,7 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Update an email subscription
+	 * Update a mobile subscription
 	 *
 	 * @param int $mobile_subscriber_id
 	 * @param string $phone
@@ -466,43 +449,42 @@ class Mobile_Marketing extends Base_Class {
 	/***** MOBILE LISTS *****/
 	
 	/**
-	 * Get the email lists associated with a website
+	 * Get the mobile lists associated with a website
 	 *
 	 * @param array( $where, $order_by, $limit )
 	 * @return array
 	 */
-	public function list_email_lists( $variables ) {
+	public function list_mobile_lists( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$email_lists = $this->db->get_results( "SELECT a.`email_list_id`, a.`name`, a.`description`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, COUNT( DISTINCT b.`email_id`) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id`) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`email_list_id` $order_by LIMIT $limit", ARRAY_A );
+		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`date_created` ), COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list email messages.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email_lists;
+		return $mobile_lists;
 	}
 	
 	/**
-	 * Count the email lists associated with a website
+	 * Count the mobile lists associated with a website
 	 *
 	 * @param string $where
 	 * @return array
 	 */
-	public function count_email_lists( $where ) {
-		$count = $this->db->get_col( "SELECT a.`email_list_id`, a.`name`, a.`description`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, COUNT( DISTINCT b.`email_id`) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id`) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`email_list_id`" );
+	public function count_mobile_lists( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`mobile_list_id` ) FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email lists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to count mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		// @Fix -- shouldn't have to use PHP's count
-		return count( $count );
+		return $count;
 	}
 	
 	/**
@@ -612,43 +594,34 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Delete email list
+	 * Delete Mobile list
 	 *
-	 * @param int $email_list_id
+	 * @param int $mobile_list_id
 	 * @return bool
 	 */
-	public function delete_email_list( $email_list_id ) {
+	public function delete_email_list( $mobile_list_id ) {
 		global $user;
 		
-		// Delete MailChimp List Interest Group
-		if ( '0' != $user['website']['mc_list_id'] ) {
-			// Get the list
-			$el = $this->get_email_list( $email_list_id );
-			
-			// Get the Mailchimp Instance
-			$mc = $this->mailchimp_instance();
-			
-			// Delete list gruop
-			$mc->listInterestGroupDel( $user['website']['mc_list_id'], $el['name'] );
-			
-			// Handle any error, but don't stop
-			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Delete Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-		}
-		
-		// Delete email list
-		$this->db->prepare( 'DELETE FROM `email_lists` WHERE `email_list_id` = ? AND `website_id` = ?', 'ii', $email_list_id, $user['website']['website_id'] )->query('');
+		// Delete Avoid Mobile Group
+        // @avid
+
+        // Type Juggling
+        $mobile_list_id = (int) $mobile_list_id;
+        $website_id = (int) $user['website']['website_id'];
+
+		// Delete mobile list
+		$this->db->prepare( "DELETE FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email list.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to delete mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return true;
 	}
 	
-	/***** EMAIL MESSAGES *****/
+	/***** MOBILE MESSAGES *****/
 	
 	/**
 	 * Add a new email message
@@ -873,48 +846,38 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * List Email messages
+	 * List Mobile Messages
 	 *
 	 * @param array( $where, $order_by, $limit )
 	 * @return array
 	 */
-	public function list_email_messages( $variables ) {
+	public function list_messages( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$messages = $this->db->get_results( "SELECT `email_message_id`, `mc_campaign_id`, `subject`, `status`, UNIX_TIMESTAMP( `date_sent` ) - 18000 AS date_sent FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `summary`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list email messages.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
 			return false;
-		}
-		
-		// @Fix should be done in query
-		// Modify the timezone
-		if ( is_array( $messages ) ) {
-			$timezone = $this->get_setting( 'timezone' );
-			
-			foreach ( $messages as &$m ) {
-				$m['date_sent'] -= $timezone * 3600;
-			}
 		}
 		
 		return $messages;
 	}
 	
 	/**
-	 * Count Email messages
+	 * Count Mobile Messages
 	 *
 	 * @param string $where
 	 * @return array
 	 */
-	public function count_email_messages( $where ) {
-		$count = $this->db->get_var( "SELECT `email_message_id`, `mc_campaign_id`, `subject`, `status`, UNIX_TIMESTAMP( `date_sent` ) - 18000 AS date_sent FROM `email_messages` WHERE 1 $where" );
+	public function count_messages( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( `mobile_message_id` ) FROM `mobile_messages` WHERE 1 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email messages.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to count mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -922,134 +885,70 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Get Email Messages (for listing)
+	 * Get a message
 	 *
-	 * @param int $email_message_id
+	 * @param int $mobile_message_id
 	 * @param bool $extra (optional|true)
 	 * @return array
 	 */
-	public function get_email_message( $email_message_id, $extra = true ) {
+	public function get_message( $mobile_message_id, $extra = true ) {
 		global $user;
 		
 		// Type Juggling
-		$email_message_id = (int) $email_message_id;
+		$mobile_message_id = (int) $mobile_message_id;
 		$website_id = (int) $user['website']['website_id'];
 		
-		$message = $this->db->get_row( "SELECT `email_message_id`, `email_template_id`, `mc_campaign_id`, `subject`, `message`, `type`, `status`, `date_sent` FROM `email_messages` WHERE `email_message_id` = $email_message_id AND `website_id` = $website_id", ARRAY_A );
+		$message = $this->db->get_row( "SELECT `mobile_message_id`, `am_blast_id`, `message`, `status`, `date_sent` FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id AND `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email message.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		if ( $extra && $message ) {
-			// Get the email lists
-			$email_lists = $this->db->get_results( "SELECT a.`email_list_id`, b.`name` FROM `email_message_associations` AS a INNER JOIN `email_lists` AS b ON ( a.`email_list_id` = b.`email_list_id` ) WHERE a.`email_message_id` = $email_message_id AND b.`website_id` = $website_id", ARRAY_A );
+			// Get the mobile lists
+			$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, b.`name` FROM `mobile_message_associations` AS a INNER JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_message_id` = $mobile_message_id AND b.`website_id` = $website_id", ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+				$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 				return false;
 			}
 			
 			// Give it to the message
-			$message['email_lists'] = ar::assign_key( $email_lists, 'email_list_id', true );
-			
-			if ( 'product' == $message['type'] ) {
-				// If it's a product email, get all the products
-				$meta_data = $this->db->get_col( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id" );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->err( 'Failed to get product email meta data (product_ids).', __LINE__, __METHOD__ );
-					return false;
-				}
-				
-				// Start off the product ids
-				$product_ids = '';
-				
-				if ( is_array( $meta_data ) )
-				foreach ( $meta_data as $md ) {
-					// Get variables
-					$product_array = unserialize( html_entity_decode( $md, ENT_QUOTES, 'UTF-8' ) );
-					$message['meta'][$product_array['product_id']]['price'] = $product_array['price'];
-					$message['meta'][$product_array['product_id']]['order'] = $product_array['order'];
-					
-					if ( !empty( $product_ids ) )
-						$product_ids .= ',';
-					
-					// Create list of product ids
-					$product_ids .= $product_array['product_id'];
-				}
-				
-				// Causes an error otherwise
-				if ( empty( $product_ids ) ) {
-					$message['meta'] = array();
-				} else {
-					$p = new Products;
-					
-					// Get products
-					$products = $p->get_products( " AND a.`product_id` IN ($product_ids)" );
-					
-					// Put the data in the meta
-					foreach ( $products as $product ) {
-						$message['meta'][$product['product_id']] = array_merge( $message['meta'][$product['product_id']], $product );
-					}
-				}
-			} else {
-				// Get all the offer data
-				$meta_data = $this->db->get_results( "SELECT `type`, `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id", ARRAY_A );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->err( 'Failed to get offer email meta data.', __LINE__, __METHOD__ );
-					return false;
-				}
-				
-				$message['meta'] = ar::assign_key( $meta_data, 'type', true );
-				
-				if ( !isset( $message['meta'] ) )
-					$message['meta'] = array();
-			}
+			$message['mobile_lists'] = ar::assign_key( $mobile_lists, 'mobile_list_id', true );
 		}
 		
 		return $message;
 	}
 	
 	/**
-	 * Deletes an email message
+	 * Deletes a message
 	 *
-	 * @param int $email_message_id
+	 * @param int $mobile_message_id
 	 * @return bool
 	 */
-	public function delete_email_message( $email_message_id ) {
+	public function delete_message( $mobile_message_id ) {
 		global $user;
 		
-		// Typecast
-		$email_message_id = (int) $email_message_id;
+		// Type Juggling
+		$mobile_message_id = (int) $mobile_message_id;
+        $website_id = (int) $user['website']['website_id'];
 		
 		// Get the message
-		$message = $this->get_email_message( $email_message_id, false );
-		
-		if ( 0 != $message['mc_campaign_id'] ) {
-			// Get Mailchimp
-			$mc = $this->mailchimp_instance();
-			
-			// Delete the campaign
-			$mc->campaignDelete( $message['mc_campaign_id'] );
-			
-			// Simply note the error, don't stop
-			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Delete Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCampaign ID: " . $message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+		$message = $this->get_message( $mobile_message_id, false );
+
+        // @Avid
+		if ( 0 != $message['am_blast_id'] ) {
 		}
-		
+
 		// Delete the email message
-		$this->db->prepare( 'DELETE FROM `email_messages` WHERE `email_message_id` = ? AND `website_id` = ?', 'ii', $email_message_id, $user['website']['website_id'] )->query('');
+		$this->db->prepare( "DELETE FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id AND `website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to delete mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1058,20 +957,11 @@ class Mobile_Marketing extends Base_Class {
 			return true;
 		
 		// Delete email message associations
-		$this->db->query( "DELETE FROM `email_message_associations` WHERE `email_message_id` = $email_message_id" );
+		$this->db->query( "DELETE FROM `mobile_message_associations` WHERE `mobile_message_id` = $mobile_message_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message associations.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Delete email message meat
-		$this->db->query( "DELETE FROM `email_message_meta` WHERE `email_message_id` = $email_message_id" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message meta.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to delete mobile message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1090,7 +980,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$autoresponders = $this->db->get_results( "SELECT `email_autoresponder_id`, `name`, `subject`, `default` FROM `email_autoresponders` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$autoresponders = $this->db->get_results( "SELECT `mobile_autoresponder_id`, `name`, `default`, `date_created` FROM `mobile_autoresponders` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1108,7 +998,7 @@ class Mobile_Marketing extends Base_Class {
 	 * @return array
 	 */
 	public function count_autoresponders( $where ) {
-		$count = $this->db->get_var( "SELECT COUNT( `email_autoresponder_id` ) FROM `email_autoresponders` WHERE 1 $where" );
+		$count = $this->db->get_var( "SELECT COUNT( `mobile_autoresponder_id` ) FROM `mobile_autoresponders` WHERE 1 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1122,13 +1012,13 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Get an autoresponder
 	 * 
-	 * @param int $email_autoresponder_id
+	 * @param int $mobile_autoresponder_id
 	 * @return array 
 	 */
-	public function get_autoresponder( $email_autoresponder_id ) {
+	public function get_autoresponder( $mobile_autoresponder_id ) {
 		global $user;
 		
-		$autoresponder = $this->db->prepare( 'SELECT a.`email_autoresponder_id`, a.`email_list_id`, a.`name`, a.`subject`, a.`message`, a.`default`, a.`current_offer`, b.`name` AS email_list FROM `email_autoresponders` AS a LEFT JOIN `email_lists` AS b ON ( a.`email_list_id` = b.`email_list_id` ) WHERE a.`email_autoresponder_id` = ? AND a.`website_id` = ?', 'ii', $email_autoresponder_id, $user['website']['website_id'] )->get_row( '', ARRAY_A );
+		$autoresponder = $this->db->prepare( 'SELECT a.`mobile_autoresponder_id`, a.`mobile_list_id`, a.`name`, a.`message`, a.`default`, b.`name` AS email_list FROM `mobile_autoresponders` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_autoresponder_id` = ? AND a.`website_id` = ?', 'ii', $email_autoresponder_id, $user['website']['website_id'] )->get_row( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
