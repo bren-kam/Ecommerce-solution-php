@@ -28,10 +28,9 @@ $v->add_validation( 'pPassword|pVerifyPassword', 'match', _('The Password fields
 $v->add_validation( 'tBillingZip', 'zip', _('The "Billing Information - Zip Code" field must contain a valid zip code' ) );
 $v->add_validation( 'tShippingZip', 'zip', _('The "Shipping Information - Zip Code" field must contain a valid zip code' ) );
 
-$data = $_POST;
 $success = false;
 
-if( !empty( $data ) ) {
+if( !empty( $_POST ) ) {
 	
 	if( !$sc->check_email( $user['website']['website_id'], $_POST['tEmail'] ) ) 
 		$errs[] = _('Please choose an available email address');

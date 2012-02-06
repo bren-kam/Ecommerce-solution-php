@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Email Marketing
+ * @page Mobile Marketing
  * @package Imagine Retailer
  */
 
@@ -12,24 +12,24 @@ if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if ( !$user['website']['email_marketing'] )
-	url::redirect('/email-marketing/subscribers/');
+if ( !$user['website']['mobile_marketing'] )
+	url::redirect('/');
 
 // Instantiate Classes
-$e = new Email_Marketing;
+$m = new Mobile_Marketing;
 
 // Get data
-$emails = $e->dashboard_messages( $user['website']['website_id'] );
-$subscribers = $e->dashboard_subscribers( $user['website']['website_id'] );
+$messages = $m->dashboard_messages();
+$subscribers = $m->dashboard_subscribers();
 
-if ( is_array( $emails ) ) {
+if ( is_array( $subscribers ) ) {
 	$a = new Analytics;
 	
 	// Get the analytics data
-	$email = $a->get_email( $emails[0]['mc_campaign_id'] );
+	//$email = $a->get_email( $emails[0]['mc_campaign_id'] );
 	
 } else {
-	$email = array(
+	$message = array(
 		'emails_sent' => 0,
 		'opens' => 0,
 		'clicks' => 0,
@@ -40,44 +40,39 @@ if ( is_array( $emails ) ) {
 	);
 }
 
-$bar_chart = $e->bar_chart( $email );
+//$bar_chart = $e->bar_chart( $email );
 
-javascript( 'swfobject', 'JSON' );
-
-add_before_javascript('function open_flash_chart_data() { return JSON.stringify(' . $bar_chart . ');}');
-add_javascript_callback( 'swfobject.embedSWF("/media/flash/open-flash-chart.swf", "dEmailStatistics", "787", "387", "9.0.0", "", null, { wmode:"transparent" } );');
-
-$selected = "email_marketing";
-$title = _('Email Marketing') . ' | ' . TITLE;
+$selected = "mobile_marketing";
+$title = _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Email Marketing Dashboard'); ?></h1>
+	<h1><?php echo _('Mobile Marketing Dashboard'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'dashboard' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'dashboard' ); ?>
 	<div id="subcontent">
-		<?php if ( $emails[0] ) { ?>
-		<p><strong><?php echo _('Latest email:'); ?></strong> <?php echo $emails[0]['subject']; ?></p>
+		<?php if ( $messages[0] ) { ?>
+		<p><strong><?php echo _('Latest email:'); ?></strong> <?php echo format::limit_chars( $messages[0]['message'], 50 ); ?></p>
 		<?php } else { ?>
-		<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
+		<p><?php echo _('You have not yet sent out a message.'); ?> <a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
 		<?php } ?>
 		<div id="dEmailStatistics"></div>
 		<br clear="all" />
 		<br />
 		<div class="col-2 float-left">
 			<div class="info-box">
-				<p class="info-box-title"><?php echo _('Emails Sent'); ?></p>
+				<p class="info-box-title"><?php echo _('Messages Sent'); ?></p>
 				<div class="info-box-content">
 				<?php 
-				if ( is_array( $emails ) ) {
-					foreach ( $emails as $em ) {
+				if ( is_array( $messages ) ) {
+					foreach ( $messages as $em ) {
 					?>
-						<p><a href="/analytics/email/?mcid=<?php echo $em['mc_campaign_id']; ?>" title="<?php echo $em['subject']; ?>"><?php echo $em['subject']; ?></a></p>
+						<p><a href="/analytics/mobile/?mmid=<?php echo $em['mobile_message_id']; ?>" title="<?php echo $em['subject']; ?>"><?php echo $em['subject']; ?></a></p>
 					<?php } ?>
-					<p align="right"><a href="/email-marketing/emails/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
+					<p align="right"><a href="/mobile-marketing/messages/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
 				<?php } else { ?>
-					<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
+					<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
 				<?php } ?>
 				</div>
 			</div>
@@ -90,10 +85,10 @@ get_header();
 					if ( is_array( $subscribers ) ) { 
 						foreach ( $subscribers as $s ) {
 						?>
-						<p><?php echo $s['email']; ?></p>
+						<p><?php echo $s['phone']; ?></p>
 						<?php } ?>
 						<br />
-						<p align="right"><a href="/email-marketing/subscribers/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
+						<p align="right"><a href="/mobile-marketing/subscribers/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
 					<?php } else { ?>
 						<p><?php echo _('You do not yet have any subscribers.'); ?></p>
 					<?php } ?>

@@ -57,6 +57,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
  			'product_catalog' => $_POST['cbProductCatalog'],
 			'blog' => $_POST['cbBlog'],
 			'email_marketing' => $_POST['cbEmailMarketing'],
+            'mobile_marketing' => $_POST['cbMobileMarketing'],
 			'shopping_cart' => $_POST['cbShoppingCart'],
 			'seo' => $_POST['cbSEO'],
 			'room_planner' => $_POST['cbRoomPlanner'],
@@ -71,7 +72,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iisssssssiisiiiiiiiiiiissi';
+		$fields_safety = 'iisssssssiisiiiiiiiiiiiissi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -287,6 +288,7 @@ get_header();
 						<p><input type="checkbox" name="cbLimitedProducts" id="cbLimitedProducts" value="1" class="cb"<?php if ( '1' == $settings['limited-products'] ) echo ' checked="checked"'; ?> /> <label for="cbLimitedProducts"><?php echo _('Limited Products'); ?></label></p>
 						<p><input type="checkbox" name="cbBlog" id="cbBlog" value="1" class="cb"<?php if ( $web['blog'] ) echo ' checked="checked"'; ?> /> <label for="cbBlog"><?php echo _('Blog'); ?></label></p>
 						<p><input type="checkbox" name="cbEmailMarketing" id="cbEmailMarketing" value="1" class="cb"<?php if ( $web['email_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label></p>
+                        <p><input type="checkbox" name="cbMobileMarketing" id="cbMobileMarketing" value="1" class="cb"<?php if ( $web['mobile_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbMobileMarketing"><?php echo _('Mobile Marketing'); ?></label></p>
 						<p><input type="checkbox" name="cbShoppingCart" id="cbShoppingCart" value="1" class="cb"<?php if ( $web['shopping_cart'] ) echo ' checked="checked"'; ?> /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label></p>
 						<p><input type="checkbox" name="cbSEO" id="cbSEO" value="1" class="cb"<?php if ( $web['seo'] ) echo 'checked="checked"'; ?> /> <label for="cbSEO"><?php echo _('SEO'); ?></label></p>
 						<p><input type="checkbox" name="cbRoomPlanner" id="cbRoomPlanner" value="1" class="cb"<?php if ( $web['room_planner'] ) echo ' checked="checked"'; ?> /> <label for="cbRoomPlanner"><?php echo _('Room Planner'); ?></label></p>

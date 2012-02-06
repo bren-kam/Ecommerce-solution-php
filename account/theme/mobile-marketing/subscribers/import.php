@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Import Subscribers
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -12,31 +12,31 @@ if ( !$user )
 	login();
 
 // Instantiate Class
-$e = new Email_Marketing;
+$m = new Mobile_Marketing;
 
-$email_lists = $e->get_email_lists();
+$mobile_lists = $m->get_mobile_lists();
 
 // Initialize variable
 $completed = false;
 
-if ( isset( $_POST['_complete_nonce'] ) && nonce::verify( $_POST['_complete_nonce'], 'import-subscribers' ) && !empty( $_POST['hEmailLists'] ) )
-	$completed = $e->complete_import( explode( '|', $_POST['hEmailLists'] ) );
+if ( isset( $_POST['_complete_nonce'] ) && nonce::verify( $_POST['_complete_nonce'], 'import-subscribers' ) && !empty( $_POST['hMobileLists'] ) )
+	$completed = $m->complete_import( explode( '|', $_POST['hMobileLists'] ) );
 
 css( 'jquery.uploadify' );
-javascript( 'swfobject', 'jquery.uploadify', 'email-marketing/subscribers/import' );
+javascript( 'swfobject', 'jquery.uploadify', 'mobile-marketing/subscribers/import' );
 
-$selected = "email_marketing";
-$title = _('Import Subscribers | Email Marketing') . ' | ' . TITLE;
+$selected = "mobile_marketing";
+$title = _('Import Subscribers') . ' | ' . _('Email Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
 	<h1><?php echo _('Import Subscribers'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'subscribers', 'import_subscribers' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'subscribers', 'import_subscribers' ); ?>
 	<div id="subcontent">
 	<?php if ( $completed ) { ?>
-	<p><?php echo _('Your emails have been imported successfully!'); ?></p>
+	<p><?php echo _('Your subscribers have been imported successfully!'); ?></p>
 	<?php } else { ?>
 	<div id="dUploadedSubscribers" class="hidden">
 		<p><?php echo _('Please verify the first email addresses below are correct:'); ?></p>

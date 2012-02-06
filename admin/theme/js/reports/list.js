@@ -150,7 +150,7 @@ function autocompleteSuccess( request, response ) {
 		}) );
 		
 		// If it was cached, return now
-		return;
+		return false;
 	}
 	
 	// It was not cached, get data

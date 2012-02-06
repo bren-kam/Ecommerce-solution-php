@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Add Edit Subscriber
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -11,16 +11,14 @@ global $user;
 if ( !$user )
 	login();
 
-$e = new Email_Marketing;
+$m = new Mobile_Marketing;
 
-// Get the email id if there is one
-$email_id = ( isset( $_GET['eid'] ) ) ? $_GET['eid'] : false;
+// Get the mobile subscriber id if there is one
+$mobile_subscriber_id = ( isset( $_GET['msid'] ) ) ? $_GET['msid'] : false;
 
 $v = new Validator();
-$v->form_name = 'fAddEditEmail';
-$v->add_validation( 'tEmail', 'req' , 'The "Email" field is required' );
-$v->add_validation( 'tEmail', 'email' , 'The "Email" field must contain a valid email' );
-
+$v->form_name = 'fAddEditSubscriber';
+$v->add_validation( 'tPhone', 'req' , 'The "Phone" field is required' );
 $v->add_validation( 'tPhone', 'phone' , 'The "Phone" field may only contain a valid phone number' );
 
 // Add validation
@@ -30,113 +28,98 @@ add_footer( $v->js_validation() );
 $success = false;
 
 // Make sure it's a valid request
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-email' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-subscriber' ) ) {
 	$errs = $v->validate();
 	
 	// if there are no errors
 	if ( empty( $errs ) ) {
-		if ( $email_id ) {
-			// Update email
-			$success = $e->update_email_lists_subscription( $email_id, $_POST['cbEmailLists'] ) && $e->update_email( $email_id, $_POST['tEmail'], $_POST['tName'], $_POST['tPhone'] );
+		if ( $mobile_subscriber_id ) {
+			// Update subscriber
+			$success = $m->update_mobile_lists_subscription( $mobile_subscriber_id, $_POST['cbMobileLists'] ) && $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'] );
 		} else {
-			// Add email
-			if ( $em = $e->email_exists( $_POST['tEmail'] ) && '2' == $em['status'] ) {
-				$errs .= _('This email has been unsubscribed by the user.') . '<br />';
+			// Add subscriber
+			if ( $subscriber = $m->subscriber_exists( $_POST['tPhone'] ) && '2' == $subscriber['status'] ) {
+				$errs .= _('This subscriber has been unsubscribed by the user.') . '<br />';
 				$success = false;
-			} else if ( $email && '1' == $email['status'] ) {
-				$success = $e->update_email_lists_subscription( $email_id, $_POST['cbEmailLists'] ) && $e->update_email( $email_id, $_POST['tEmail'], $_POST['tName'], $_POST['tPhone'] );
-				
-				if ( !$success )
-					$errs .= _('An error occurred while adding email address.') . '<br />';
 			} else {
-				$success = $e->create_email( $_POST['tEmail'], $_POST['tName'], $_POST['tPhone'] );
+				$success = $m->create_subscriber( $_POST['tPhone'] );
 				
 				if ( !$success ) {
-					$errs .= _('An error occurred while adding email address.') . '<br />';
+					$errs .= _('An error occurred while adding subscriber.') . '<br />';
 				} else {
-					$success = $e->update_email_lists_subscription( $success, $_POST['cbEmailLists'] );
+					$success = $m->update_mobile_lists_subscription( $success, $_POST['cbMobileLists'] );
 					
 					if ( !$success )
-						$errs .= _('An error occurred while adding email address.') . '<br />';
+						$errs .= _('An error occurred while adding subscriber.') . '<br />';
 				}
 			}
 		}
 	}
 }
 
-// Get email lists
-$email_lists = $e->get_email_lists();
+// Get mobile lists
+$mobile_lists = $m->get_mobile_lists();
 
-// Get the email if necessary
-if ( $email_id ) {
-	$email = $e->get_email( $email_id );
+// Get the subscriber if necessary
+if ( $mobile_subscriber_id ) {
+	$subscriber = $m->get_subscriber( $mobile_subscriber_id );
 } else {
 	// Initialize variable
-	$email = array(
+	$subscriber = array(
 		'name' => ''
-		, 'email' => ''
-		, 'phone' => ''
-		, 'email_lists' => ''
+		, 'mobile_lists' => ''
 	);
 }
 
-$selected = "email_marketing";
-$sub_title = ( $email_id ) ? _('Edit Email') : _('Add Email');
-$title = "$sub_title | " . _('Email Subscribers') . ' | ' . TITLE;
+$selected = "mobile_marketing";
+$sub_title = ( $mobile_subscriber_id ) ? _('Edit Subscriber') : _('Add Subscriber');
+$title = "$sub_title | " . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
 	<h1><?php echo $sub_title; ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'subscribers', 'add_edit_email_subscribers' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'subscribers', 'add_edit_mobile_subscribers' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
 		<div class="success">
-			<p><?php echo ( $email_id ) ? _('Your email has been updated successfully!') : _('Your email has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/email-marketing/subscribers/" title="', _('Subscribers'), '">', _('view your subscribers'), '</a>.'; ?></p>
+			<p><?php echo ( $mobile_subscriber_id ) ? _('Your subscriber has been updated successfully!') : _('Your subscriber has been added successfully!'); ?></p>
+			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/subscribers/" title="', _('Subscribers'), '">', _('view your subscribers'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}
 		
 		// Allow them to edit the entry they just created
-		if ( $success && !$email_id )
-			$email_id = $success;
+		if ( $success && !$mobile_subscriber_id )
+			$mobile_subscriber_id = $success;
 		
 		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fAddEditEmail" action="/email-marketing/subscribers/add-edit/<?php if ( $email_id ) echo "?eid=$email_id"; ?>" method="post">
-			<?php nonce::field( 'add-edit-email' ); ?>
+		<form name="fAddEditSubscriber" action="/mobile-marketing/subscribers/add-edit/<?php if ( $mobile_subscriber_id ) echo "?msid=$mobile_subscriber_id"; ?>" method="post">
+			<?php nonce::field( 'add-edit-subscriber' ); ?>
 			<table cellpadding="0" cellspacing="0">
 				<tr><td colspan="2" class="title"><strong><?php echo _('Basic Information'); ?></strong></td></tr>
 				<tr>
-					<td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $email['name']; ?>" /></td>
-				</tr>
-				<tr>
-					<td><label for="tEmail"><?php echo _('Email'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tEmail" id="tEmail" maxlength="200" value="<?php echo ( !$success && isset( $_POST['tEmail'] ) ) ? $_POST['tEmail'] : $email['email']; ?>" /></td>
-				</tr>
-				<tr>
 					<td><label for="tPhone"><?php echo _('Phone'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tPhone" id="tPhone" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tPhone'] ) ) ? $_POST['tPhone'] : $email['phone']; ?>" /></td>
+					<td><input type="text" class="tb" name="tPhone" id="tPhone" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tPhone'] ) ) ? $_POST['tPhone'] : $subscriber['phone']; ?>" /></td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
-				<tr><td colspan="2" class="title"><strong><?php echo _('Email List Subscriptions'); ?></strong></td></tr>
+				<tr><td colspan="2" class="title"><strong><?php echo _('Mobile List Subscriptions'); ?></strong></td></tr>
 				<tr>
 					<td>
 					<p>
 						<?php 
-						$selected_email_lists = ( !$success && isset( $_POST['cbEmailLists'] ) ) ? $_POST['cbEmaiLists'] : $email['email_lists'];
+						$selected_mobile_lists = ( !$success && isset( $_POST['cbMobileLists'] ) ) ? $_POST['cbMobileLists'] : $subscriber['mobile_lists'];
 						
-						if ( !is_array( $selected_email_lists ) )
-							$selected_email_lists = array();
+						if ( !is_array( $selected_mobile_lists ) )
+							$selected_mobile_lists = array();
 						
-						foreach ( $email_lists as $el ) {
-							$checked = ( in_array( $el['email_list_id'], $selected_email_lists ) ) ? ' checked="checked"' : '';
+						foreach ( $mobile_lists as $ml ) {
+							$checked = ( in_array( $ml['mobile_list_id'], $selected_mobile_lists ) ) ? ' checked="checked"' : '';
 						?>
-						<input type="checkbox" class="cb" name="cbEmailLists[]" id="cbEmailList<?php echo $el['email_list_id']; ?>" value="<?php echo $el['email_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbEmailList<?php echo $el['email_list_id']; ?>"><?php echo $el['name']; ?></label>
+						<input type="checkbox" class="cb" name="cbMobileLists[]" id="cbMobileList<?php echo $ml['mobile_list_id']; ?>" value="<?php echo $ml['mobile_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbMobileList<?php echo $ml['mobile_list_id']; ?>"><?php echo $ml['name']; ?></label>
 						<br />
 						<?php } ?>
 					</p>
@@ -145,7 +128,7 @@ get_header();
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" class="button" value="<?php echo ( $email_id ) ? _('Update Email') : _('Add Email'); ?>" /></td>
+					<td><input type="submit" class="button" value="<?php echo ( $mobile_subscriber_id ) ? _('Update Subscriber') : _('Add Subscriber'); ?>" /></td>
 				</tr>
 			</table>
 		</form>

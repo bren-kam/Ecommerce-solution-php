@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 // Redirect to main section if they don't have email marketing
-if ( !$user['website']['mobilel_marketing'] )
+if ( !$user['website']['mobile_marketing'] )
 	url::redirect('/');
 
 // Instantiate Classes
@@ -26,6 +26,9 @@ $timezone = $w->get_setting( 'timezone' );
 // Figure out what the time is
 $now = new DateTime;
 $now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
+
+// Initialize variable
+$success = false;
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'mobile-message' ) ) {
 	$date_posted = $_POST['tDate'];
@@ -58,8 +61,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'mobile-messa
 
 }
 
-css( 'jquery.uploadify', 'jquery.timepicker' );
-javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/posting' );
+css( 'jquery.timepicker' );
+javascript( 'mammoth', 'jquery.timepicker', 'mobile-marketing/messages/posting' );
 
 // Load the jQuery UI CSS
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
@@ -70,59 +73,45 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Posting'); ?></h1>
+	<h1><?php echo _('Create Message'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'social-media/', 'posting' ); ?>
+	<?php get_sidebar( 'mobile-marketing/' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $posting['fb_user_id'] ) { ?>
-			<h2 class="title"><?php echo _('Step 1: Go to the Posting application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Posting'); ?></a> <?php echo _('application page'); ?>.</p>
-			<br /><br />
 
-			<h2 class="title"><?php echo _('Step 2: Connect the application with your dashboard account'); ?></h2>
-			<p><?php echo _('Copy the connection key listed below and paste into the Facebook app.'); ?></p>
-			<p><?php echo _('Facebook Connection Key'); ?>: <?php echo $posting['key']; ?></p>
-			<p><strong><?php echo _('NOTE'); ?></strong>: <?php echo _('You may see a request for permissions. If this is the case, you first need to Allow Permissions to the application before you will be able to move on.'); ?></p>
-			<br /><br />
+        <?php if ( $success ) { ?>
+            <p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>
+        <?php } ?>
 
-		<?php } else { ?>
-			<h2 class="title"><?php echo _('Post To Your Pages'); ?></h2>
-			<?php if ( $success ) { ?>
-				<p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>
-			<?php
-			}
-
-			if ( is_array( $pages ) ) { ?>
-				<form action="" method="post" name="fFBPost">
-					<table>
-						<tr>
-							<td><strong><?php echo _('Page'); ?>:</strong></td>
-							<td><?php echo $pages[$posting['fb_page_id']]['name']; ?></td>
-						</tr>
-						<tr>
-							<td class="top"><label for="taPost"><?php echo _('Post'); ?>:</label></td>
-							<td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
-						</tr>
-						<tr>
-							<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? $now->format('Y-m-d') : $date; ?>" maxlength="10" /></td>
-							<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i a') : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
-						</tr>
-						<tr><td colspan="2">&nbsp;</td></tr>
-						<tr>
-							<td>&nbsp;</td>
-							<td><input type="submit" class="button" value="<?php echo _('Post to Facebook'); ?>" /></td>
-						</tr>
-					</table>
-					<?php nonce::field('fb-post'); ?>
-				</form>
-			<?php } else { ?>
-				<p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
-			<?php
-			}
-		}
-		?>
+        <form action="" method="post" name="fMobileMessage">
+            <table>
+                <tr>
+                    <td class="top"><label for="taMessage"><?php echo _('Message'); ?>:</label></td>
+                    <td><textarea name="taMessage" id="taMessage" rows="5" cols="50"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="top"><label for="sMobileLists"><?php echo _('Lists'); ?>:</label></td>
+                    <td>
+                        <select name="sMobileLists" id="sMobileLists">
+                            <?php
+                                $lists = $m->get_mobile_lists()
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
+                    <td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? $now->format('Y-m-d') : $date; ?>" maxlength="10" /></td>
+                    <td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
+                    <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i a') : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+                </tr>
+                <tr><td colspan="2">&nbsp;</td></tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><input type="submit" class="button" value="<?php echo _('Post to Facebook'); ?>" /></td>
+                </tr>
+            </table>
+            <?php nonce::field('fb-post'); ?>
+        </form>
 	</div>
 	<br /><br />
 </div>

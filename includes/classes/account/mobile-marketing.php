@@ -20,12 +20,16 @@ class Mobile_Marketing extends Base_Class {
     
 	/**
 	 * Dashboard Messages
-	 * 
-	 * @param int $website_id
+	 *
 	 * @return array
 	 */
-	public function dashboard_messages( $website_id ) {
-		$emails = $this->db->prepare( 'SELECT `mc_campaign_id`, `subject` FROM `email_messages` WHERE `website_id` = ? AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5', 'i', $website_id )->get_results( '', ARRAY_A );
+	public function dashboard_messages() {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+		$messages = $this->db->prepare( "SELECT `mobile_message_id`, `message` FROM `mobile_messages` WHERE `website_id` = $website_id AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -33,17 +37,21 @@ class Mobile_Marketing extends Base_Class {
 			return false;
 		}
 		
-		return $emails;
+		return $messages;
 	}
 	
 	/**
 	 * Dashboard Subscribers
 	 * 
-	 * @param int $website_id
 	 * @return array
 	 */
-	public function dashboard_subscribers( $website_id ) {
-		$subscribers = $this->db->prepare( 'SELECT `email` FROM `emails` WHERE `website_id` = ? AND `status` = 1 ORDER BY `date_created` DESC LIMIT 5', 'i', $website_id )->get_results( '', ARRAY_A );
+	public function dashboard_subscribers() {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+		$subscribers = $this->db->prepare( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -219,52 +227,55 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Get Email
+	 * Get Subscriber
 	 *
-	 * @param int $email_id
+	 * @param int $mobile_subscriber_id
 	 * @return array
 	 */
-	public function get_email( $email_id ) {
+	public function get_subscriber( $mobile_subscriber_id ) {
 		global $user;
 		
 		// Typecast
-		$email_id = (int) $email_id;
+		$mobile_subscriber_id = (int) $mobile_subscriber_id;
 		
-		$email = $this->db->get_row( 'SELECT `name`, `email`, `phone` FROM `emails` WHERE `email_id` = ' . $email_id, ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		$email['email_lists'] = $this->db->get_col( 'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = ' . $email_id );
+		$subscriber = $this->db->get_row( "SELECT `phone` FROM `mobile_subscribers` WHERE `mobile_subscriber_id` = $mobile_subscriber_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get subscriber.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Get lists that this subscriber is subscribed to
+		$subscriber['mobile_lists'] = $this->db->get_col( "SELECT `mobile_list_id` FROM `mobile_associations` WHERE `mobile_subscriber_id` = $mobile_subscriber_id" );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email;
+		return $subscriber;
 	}
 	
 	/**
-	 * Checks an email already exits
+	 * Checks if a subscriber already exits
 	 * 
-	 * @param string $email 
+	 * @param string $phone
 	 * @return array
 	 */
-	public function email_exists( $email ){
-		$email = $this->db->prepare( 'SELECT a.`email_id`, a.`status` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) RIGHT JOIN `email_lists` AS c ON ( b.`email_list_id` = c.`email_list_id` ) WHERE a.`email` = ? AND c.`website_id` = ?', 'si', $email, $user['website']['website_id'] )->get_var('');
+	public function subscriber_exists( $phone ) {
+        global $user;
+
+		$phone = $this->db->prepare( 'SELECT a.`mobile_subscriber_id`, a.`status` FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) LEFT JOIN `mobile_lists` AS c ON ( b.`mobile_list_id` = c.`mobile_list_id` ) WHERE a.`phone` = ? AND c.`website_id` = ?', 'si', $phone, $user['website']['website_id'] )->get_row( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if email exists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to check if phone exists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email;
+		return $phone;
 	}
 	
 	/**
@@ -322,21 +333,19 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Create
+	 * Create Subscriber
 	 *
-	 * @param string $email
-	 * @param string $name
 	 * @param string $phone
 	 * @return int
 	 */
-	public function create_email( $email, $name, $phone ) {
+	public function create_subscriber( $phone ) {
 		global $user;
 		
-		$this->db->insert( 'emails', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'email' => $email, 'phone' => $phone, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssis' );
+		$this->db->insert( 'mobile_subscribers', array( 'website_id' => $user['website']['website_id'], 'phone' => $phone, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isis' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to create subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -346,18 +355,16 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Update an email subscription
 	 *
-	 * @param int $email_id
-	 * @param string $email
-	 * @param string $name
+	 * @param int $mobile_subscriber_id
 	 * @param string $phone
 	 * @return bool
 	 */
-	public function update_email( $email_id, $email, $name, $phone ) {
-		$this->db->update( 'emails', array( 'name' => $name, 'email' => $email, 'phone' => $phone ), array( 'email_id' => $email_id ), 'sss', 'i' );
+	public function update_subscriber( $mobile_subscriber_id, $phone ) {
+		$this->db->update( 'mobile_subscribers', array( 'phone' => $phone ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 's', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to update mobile.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -365,40 +372,40 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Update email list subscriptions
+	 * Update mobile list subscriptions
 	 * 
-	 * @param int $email_id
-	 * @param array $email_lists 
+	 * @param int $mobile_subscriber_id
+	 * @param array $mobile_lists
 	 * @return bool
 	 */
-	public function update_email_lists_subscription( $email_id, $email_lists ) {
+	public function update_mobile_lists_subscription( $mobile_subscriber_id, $mobile_lists ) {
 		// Typecast
-		$email_id = (int) $email_id;
+		$mobile_subscriber_id = (int) $mobile_subscriber_id;
 		
-		$this->db->query( "DELETE FROM `email_associations` WHERE `email_id` = $email_id" );
+		$this->db->query( "DELETE FROM `mobile_associations` WHERE `mobile_subscriber_id` = $mobile_subscriber_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email associations.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to delete mobile associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// Add new values if they exist
-		if ( is_array( $email_lists ) ) {
+		if ( is_array( $mobile_lists ) ) {
 			$values = '';
 			
-			foreach ( $email_lists as $el ){
+			foreach ( $mobile_lists as $ml ){
 				if ( !empty( $values ) )
 					$values .= ',';
 				
-				$values .= "( $email_id, " . (int) $el . ')';
+				$values .= "( $mobile_subscriber_id, " . (int) $ml . ')';
 			}
 			
-			$this->db->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` )  VALUES $values" );
+			$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id` )  VALUES $values" );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to insert email associations.', __LINE__, __METHOD__ );
+				$this->err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -460,19 +467,19 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Copies imported emails to email lists
 	 * 
-	 * @param array $email_lists
+	 * @param array $mobile_lists
 	 * @return bool
 	 */
-	public function complete_import( $email_lists ) {
+	public function complete_import( $mobile_lists ) {
 		global $user;
 		
 		// Typecast
-		$user['website']['website_id'] = (int) $user['website']['website_id'];
+		$website_id = (int) $user['website']['website_id'];
 		
 		// @Fix remove the subquery
 		// @Fix need a way to remove these subscribers
 		// Transfer new emails to emails table
-		$this->db->query( 'INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = ' . $user['website']['website_id'] . ' AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = ' . $user['website']['website_id'] . ' )' );
+		$this->db->query( "INSERT INTO `mobile_subscribers` ( `website_id`, `phone`, `date_created` ) SELECT a.`website_id`, a.`phone`, NOW() FROM `mobile_import_subscribers` AS a LEFT JOIN `mobile_subscribers` AS b ON ( a.`phone` = b.`phone` AND b.`website_id` = $website_id ) WHERE a.`website_id` = $website_id AND b.`mobile_subscriber_id` IS NULL" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -482,36 +489,40 @@ class Mobile_Marketing extends Base_Class {
 		
 		
 		// Add the associations for each list
-		foreach ( $email_lists as $el_id ) {
-			$this->db->query( 'INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) SELECT a.`email_id`, ' . (int) $el_id . ' FROM `emails` AS a INNER JOIN `email_import_emails` AS b ON ( a.`email` = b.`email` ) WHERE a.`website_id` = ' . $user['website']['website_id'] );
+		foreach ( $mobile_lists as $ml_id ) {
+            $ml_id = (int) $ml_id;
+			$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id` ) SELECT a.`mobile_subscriber_id`, $ml_id FROM `mobile_subscribers` AS a INNER JOIN `mobile_import_subscribers` AS b ON ( a.`phone` = b.`phone` ) WHERE a.`website_id` = $website_id" );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to add email assocations.', __LINE__, __METHOD__ );
+				$this->err( 'Failed to add mobile assocations.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
 		
 		// Delete the imported emails
-		$this->delete_imported_emails();
+		$this->delete_imported_subscribers();
 		
 		return true;
 	}
 	
 	/**
-	 * Delete imported emails
+	 * Delete imported subscribers
 	 *
 	 * @return bool
 	 */
-	private function delete_imported_emails() {
+	private function delete_imported_subscribers() {
 		global $user;
-		
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
 		// Delete all previous emails in the table for this website
-		$this->db->query( 'DELETE FROM `email_import_emails` WHERE `website_id` = ' . (int) $user['website']['website_id'] );
+		$this->db->query( "DELETE FROM `mobile_import_subscribers` WHERE `website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete imported emails.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to delete imported subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -828,7 +839,7 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Get email lists
+	 * Get mobile lists
 	 *
 	 * @param bool $count
 	 * @return array
@@ -837,18 +848,18 @@ class Mobile_Marketing extends Base_Class {
 		global $user;
 		
 		if ( $count ) { 
-			$email_lists = $this->db->prepare( 'SELECT a.`email_list_id`, a.`category_id`, a.`name`, COUNT( DISTINCT b.`email_id` ) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id` ) WHERE a.`website_id` = ? AND c.`status` = 1 GROUP BY a.`email_list_id` ORDER BY a.`name`', 'i', $user['website']['website_id'] )->get_results( '', ARRAY_A );
+			$mobile_lists = $this->db->prepare( 'SELECT a.`mobile_list_id`, a.`category_id`, a.`name`, COUNT( DISTINCT b.`email_id` ) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id` ) WHERE a.`website_id` = ? AND c.`status` = 1 GROUP BY a.`email_list_id` ORDER BY a.`name`', 'i', $user['website']['website_id'] )->get_results( '', ARRAY_A );
 		} else {
-			$email_lists = $this->db->prepare( 'SELECT `email_list_id`, `category_id`, `name` FROM `email_lists` WHERE `website_id` = ? ORDER BY `name`', 'i', $user['website']['website_id'] )->get_results( '', ARRAY_A );
+			$mobile_lists = $this->db->prepare( 'SELECT `mobile_list_id`, `category_id`, `name` FROM `email_lists` WHERE `website_id` = ? ORDER BY `name`', 'i', $user['website']['website_id'] )->get_results( '', ARRAY_A );
 		}
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email_lists;
+		return $mobile_lists;
 	}
 	
 	/**
@@ -1576,7 +1587,7 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Sets email settings
+	 * Sets mobile settings
 	 *
 	 * @param array $settings
 	 * @return bool
@@ -1591,14 +1602,14 @@ class Mobile_Marketing extends Base_Class {
 			if ( !empty( $values ) )
 				$values .= ',';
 			
-			$values .= '(' . $user['website']['website_id'] . ", '" . $this->db->escape( $k ) . "', '" . $this->db->escape( $v ) . "')"; 
+			$values .= '(' . (int) $user['website']['website_id'] . ", '" . $this->db->escape( $k ) . "', '" . $this->db->escape( $v ) . "')";
 		}
 		
-		$this->db->query( "INSERT INTO `email_settings` ( `website_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)" );
+		$this->db->query( "INSERT INTO `mobile_settings` ( `website_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update all the email settings', __LINE__, __METHOD__ );
+			$this->err( 'Failed to update all the mobile settings', __LINE__, __METHOD__ );
 			return false;
 		}
 		

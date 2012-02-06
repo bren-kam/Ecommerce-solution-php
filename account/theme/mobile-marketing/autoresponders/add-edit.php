@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 // Secure the section
-if ( !$user['website']['mobile-marketing'] )
+if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
 // Get Mobile Marketing

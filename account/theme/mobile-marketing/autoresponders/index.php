@@ -12,11 +12,11 @@ if ( !$user )
 	login();
 
 // Secure the section
-if ( !$user['website']['mobile-marketing'] )
+if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
 $selected = "mobile_marketing";
-$title = _('Autoresponders') . ' | ' . _('Email Marketing') . ' | ' . TITLE;
+$title = _('Autoresponders') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 

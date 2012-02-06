@@ -13,7 +13,7 @@ if ( !$user )
 
 // Redirect to main section if they don't have mobile marketing
 // Secure the section
-if ( !$user['website']['mobile-marketing'] )
+if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
 $selected = "mobile_marketing";
