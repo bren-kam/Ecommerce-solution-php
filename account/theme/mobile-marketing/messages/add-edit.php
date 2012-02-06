@@ -20,6 +20,9 @@ $m = new Mobile_Marketing;
 $v = new Validator;
 $w = new Websites;
 
+// Get the mobile message id if there is one
+$mobile_message_id = ( isset( $_GET['mmid'] ) ) ? $_GET['mmid'] : false;
+
 // Get variables
 $timezone = $w->get_setting( 'timezone' );
 
@@ -56,9 +59,24 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'mobile-messa
     // Do we future date?
     $future = time() >= $new_date_posted->getTimestamp();
 
-    // Create message
-    $success = $m->create_message( $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $future );
+    if ( $mobile_message_id ) {
+        // Update message
+        $success = $m->update_message( $mobile_message_id, $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $_POST['cbMobileLists'], $future );
+    } else {
+        // Create message
+        $success = $m->create_message( $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $_POST['cbMobileLists'], $future );
+    }
+}
 
+// Get the subscriber if necessary
+if ( $mobile_message_id ) {
+	$message = $m->get_message( $mobile_message_id );
+} else {
+	// Initialize variable
+	$message = array(
+		'message' => ''
+		, 'mobile_lists' => ''
+	);
 }
 
 css( 'jquery.timepicker' );
@@ -89,13 +107,18 @@ get_header();
                     <td><textarea name="taMessage" id="taMessage" rows="5" cols="50"></textarea></td>
                 </tr>
                 <tr>
-                    <td class="top"><label for="sMobileLists"><?php echo _('Lists'); ?>:</label></td>
+                    <td class="top"><label><?php echo _('Lists'); ?>:</label></td>
                     <td>
-                        <select name="sMobileLists" id="sMobileLists">
-                            <?php
-                                $lists = $m->get_mobile_lists()
-                            ?>
-                        </select>
+                        <?php
+                            $mobile_lists = $m->get_mobile_lists();
+
+                            if ( is_array( $mobile_lists ) )
+                            foreach ( $mobile_lists as $ml ) {
+                                ?>
+                                <input type="checkbox" class="cb" name="cbMobileLists[]" id="cbMobileList<?php echo $ml['mobile_list_id']; ?>" value="<?php echo $ml['mobile_list_id']; ?>" /> <label for="cbMobileList<?php echo $ml['mobile_list_id']; ?>"><?php echo $ml['name']; ?></label>
+                                <?php
+                            }
+                        ?>
                     </td>
                 </tr>
                 <tr>

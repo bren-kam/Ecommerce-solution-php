@@ -29,7 +29,7 @@ class Mobile_Marketing extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-		$messages = $this->db->prepare( "SELECT `mobile_message_id`, `message` FROM `mobile_messages` WHERE `website_id` = $website_id AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `message` FROM `mobile_messages` WHERE `website_id` = $website_id AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -51,7 +51,7 @@ class Mobile_Marketing extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-		$subscribers = $this->db->prepare( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -60,90 +60,6 @@ class Mobile_Marketing extends Base_Class {
 		}
 		
 		return $subscribers;
-	}
-	
-	/**
-	 * Bar Chart data
-	 *
-	 * @param array $email
-	 * @return string (json encoded)
-	 */
-	public function bar_chart( $email ) {
-		$max = max( array(
-			(int) $email['emails_sent'],
-			(int) $email['opens'],
-			(int) $email['clicks'],
-			(int) $email['forwards'],
-			$email['soft_bounces'] + $email['hard_bounces'],
-			(int) $email['unsubscribes']
-		) );
-		
-		// Create the bar chart
-		$bar_chart = array(
-			'elements' => array( 
-				array(
-					'type' => 'bar_glass',
-					'colour' => '#FFA900',
-					'on-show' => array( 
-						'type' => 'grow-up',
-						'cascade' => 1,
-						'delay' => 0.5
-					),
-					'values' => array(
-						array( 
-							'top' => (int) $email['emails_sent'],
-							'tip' => '#val# Emails Sent'
-						),
-						array( 
-							  'top' => (int) $email['opens'],
-							  'tip' => '#val# Opens'
-						),
-						array( 
-							  'top' => (int) $email['clicks'],
-							  'tip' => '#val# Clicks'
-						),
-						array( 
-							  'top' => (int) $email['forwards'],
-							  'tip' => '#val# Forwards'
-						),
-						array(
-							  'top' => $email['soft_bounces'] + $email['hard_bounces'],
-							  'tip' => '#val# Bounces'
-						),
-						array(
-							  'top' => (int) $email['unsubscribes'],
-							  'tip' => '#val# Unsubscribes'
-						)
-					),
-					'tip' => '#val#'
-				)
-			),
-			'x_axis' => array(
-				'labels' => array( 
-					'labels' => array(
-						'Emails Sent',
-						'Opens',
-						'Clicks',
-						'Forwards',
-						'Bounces',
-						'Unsubscribes'
-					),
-					'colour' => '#545454'
-				),
-				'colour' => '#545454',
-				'grid-colour' => '#D9D9D9'
-			),
-			'y_axis' => array(
-				'min' => 0,
-				'max' => $max,
-				'steps' => ceil( $max / 6 ),
-				'colour' => '#545454',
-				'grid-colour' => '#D9D9D9'
-			),
-			'bg_colour' => '#FFFFFF'
-		);
-		
-		return json_encode( $bar_chart );
 	}
 	
 	/***** SUBSCRIBERS *****/
@@ -303,7 +219,7 @@ class Mobile_Marketing extends Base_Class {
 			return false;
 		}
 		
-		// Set the email's status to "unsubscribed"
+		// Set the subscriber's status to "unsubscribed"
 		$this->db->update( 'mobile_subscribers', array( 'status' => 0 ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i', 'i' );
 		
 		// Handle any error
@@ -420,7 +336,7 @@ class Mobile_Marketing extends Base_Class {
         // Declare values
         $values = array();
 
-		// Create string to insert new emails
+		// Create string to insert new phone numbers
 		foreach ( $phone_numbers as $phone ) {
 			// Make sure they haven't been unsubscribed
 			if ( in_array( $phone, $unsubscribed_subscribers ) )
@@ -516,11 +432,14 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function get_mobile_lists( $count = false ) {
 		global $user;
-		
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        
 		if ( $count ) { 
-			$mobile_lists = $this->db->prepare( 'SELECT a.`mobile_list_id`, a.`category_id`, a.`name`, COUNT( DISTINCT b.`email_id` ) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id` ) WHERE a.`website_id` = ? AND c.`status` = 1 GROUP BY a.`email_list_id` ORDER BY a.`name`', 'i', $user['website']['website_id'] )->get_results( '', ARRAY_A );
+			$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`am_group_id`, a.`name`, COUNT( DISTINCT b.`mobile_subscription_id` ) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE a.`website_id` = $website_id AND c.`status` = 1 GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
 		} else {
-			$mobile_lists = $this->db->prepare( 'SELECT `mobile_list_id`, `category_id`, `name` FROM `email_lists` WHERE `website_id` = ? ORDER BY `name`', 'i', $user['website']['website_id'] )->get_results( '', ARRAY_A );
+			$mobile_lists = $this->db->get_results( "SELECT `mobile_list_id`, `am_group_id`, `name` FROM `mobile_lists` WHERE `website_id` = $website_id ORDER BY `name`", ARRAY_A );
 		}
 		
 		// Handle any error
@@ -586,7 +505,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email list.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to update mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -599,7 +518,7 @@ class Mobile_Marketing extends Base_Class {
 	 * @param int $mobile_list_id
 	 * @return bool
 	 */
-	public function delete_email_list( $mobile_list_id ) {
+	public function delete_mobile_list( $mobile_list_id ) {
 		global $user;
 		
 		// Delete Avoid Mobile Group
@@ -610,7 +529,7 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
 		// Delete mobile list
-		$this->db->prepare( "DELETE FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id" );
+		$this->db->query( "DELETE FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -624,14 +543,14 @@ class Mobile_Marketing extends Base_Class {
 	/***** MOBILE MESSAGES *****/
 	
 	/**
-	 * Add a new email message
+	 * Add a new message
 	 *
 	 * @param string $message
      * @param string $date_sent
      * @param bool $future
 	 * @return int
 	 */
-	public function create_message( $message, $date_sent, $future ) {
+	public function create_message( $message, $date_sent, $mobile_list_ids, $future ) {
         global $user;
 
         // @avid
@@ -648,198 +567,83 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Update an email message
+	 * Update a message
 	 *
-	 * @Fix instead of calling all the mailchimp specifics, it should check to see which need to update, then update them
-	 *
-	 * @param int $email_message_id
-	 * @param int $email_template_id
-	 * @param string $subject
+	 * @param int $mobile_message_id
 	 * @param string $message
-	 * @param string $type
 	 * @param string $date_sent
-	 * @param array $email_list_ids
-	 * @param array $message_meta
+	 * @param array $mobile_list_ids
+     * @param bool $future
 	 * @return bool
 	 */
-	public function update_email_message( $email_message_id, $email_template_id, $subject, $message, $type, $date_sent, $email_list_ids, $message_meta ) {
+	public function update_message( $mobile_message_id, $message, $date_sent, $mobile_list_ids, $future ) {
 		global $user;
-		
+
+        // If it's not future we need to send it now
+        // @avid
+
 		// Add other date
-		$this->add_message_email_lists( $email_message_id, $email_list_ids );
-		$this->add_message_meta( $email_message_id, $message_meta );
-		
-		$this->db->update( 'email_messages', array( 'email_template_id' => $email_template_id, 'subject' => $subject, 'message' => $message, 'type' => $type, 'date_sent' => $date_sent ), array( 'website_id' => $user['website']['website_id'], 'email_message_id' => $email_message_id ), 'issss', 'ii' );
+		$this->add_message_lists( $mobile_message_id, $mobile_list_ids );
+
+		$this->db->update( 'mobile_messages', array( 'message' => $message, 'date_sent' => $date_sent ), array( 'website_id' => $user['website']['website_id'], 'mobile_message_id' => $mobile_message_id ), 'ss', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email message.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to update mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		// Update the campaign
-		$email_message = $this->get_email_message( $email_message_id );
+		$message = $this->get_message( $mobile_message_id );
 		
 		// If they don't have a campaign created -- don't do anything
-		if ( 0 == $email_message['mc_campaign_id'] )
+		if ( 0 == $message['am_blast_id'] )
 			return true;
 		
-		// Put the message in the template
-		$mc = $this->mailchimp_instance();
-	
-		$segmentation_options = array( 
-			'match' => 'any', 
-			'conditions' => array( 
-				array( 
-					  'field' => 'interests', 
-					  'op' => 'one', 
-					  'value' => implode( ',', $email_message['email_lists'] ) 
-				)
-			)
-		);
-		
-		// Do segment test to make sure it would work
-		if ( !$mc->campaignSegmentTest( $user['website']['mc_list_id'], $segmentation_options ) ) {
-			$this->err( "MailChimp: Unable to Segment Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Update campaign
-		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'segment_opts', $segmentation_options );
-		
-		// Handle any error
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Failed to Update Campaign - Segmentation Options\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		}
-
-		// Update Subject
-		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'subject', $subject );
-		
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - Subject\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		}
-
-		// Update Message
-		$html_message = $this->get_template( $email_message['subject'], $email_message['message'], $email_message['email_template_id'], $email_message['meta'] );
-		
-		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'content', array( 'html' => $html_message ) );
-		
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - Message\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		}
-
-		// Update From Email
-		$settings = $this->get_settings();
-		$from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $user['website']['domain'] : $settings['from_email'];
-
-		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'from_email', $from_email );
-		
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - From Email\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		}
-
-		// Update From Name
-		$from_name = ( empty( $settings['from_name'] ) ) ? $user['website']['title'] : $settings['from_name'];
-		
-		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'from_name', $from_name );
-		
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - From Email\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		}
+		// @avid update
 		
 		return true;
 	}
 	
 	/**
-	 * Adds email list id associations to an email message
+	 * Adds mobile list id associations to a message
 	 *
-	 * @param int $email_message_id
-	 * @param array $email_list_ids
+	 * @param int $mobile_message_id
+	 * @param array $mobile_list_ids
 	 * @return bool
 	 */
-	private function add_message_email_lists( $email_message_id, $email_list_ids ) {
+	private function add_message_lists( $mobile_message_id, $mobile_list_ids ) {
 		global $user;
 		
-		// Type juggling
-		$email_message_id = (int) $email_message_id;
+		// Type Juggling
+		$mobile_message_id = (int) $mobile_message_id;
+        $website_id = (int) $user['website']['website_id'];
 		
 		// Delete any existing ones
-		$this->db->query( "DELETE a.* FROM `email_message_associations` AS a LEFT JOIN `email_messages` AS b ON ( a.`email_message_id` = b.`email_message_id` ) WHERE a.`email_message_id` = $email_message_id AND b.`website_id` = " . (int) $user['website']['website_id'] );
+		$this->db->query( "DELETE a.* FROM `mobile_message_associations` AS a LEFT JOIN `mobile_messages` AS b ON ( a.`mobile_message_id` = b.`mobile_message_id` ) WHERE a.`mobile_message_id` = $mobile_message_id AND b.`website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message assocations.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to delete message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		$values = '';
 		
-		if ( is_array( $email_list_ids ) )
-		foreach ( $email_list_ids as $el_id ) {
+		if ( is_array( $mobile_list_ids ) )
+		foreach ( $mobile_list_ids as $ml_id ) {
 			if ( !empty( $values ) )
 				$values .= ',';
 		
-			$values .= "( $email_message_id," . (int) $el_id . ' )';
+			$values .= "( $mobile_message_id," . (int) $ml_id . ' )';
 		}
 		
-		$this->db->query( "INSERT INTO `email_message_associations` ( `email_message_id`, `email_list_id` ) VALUES $values" );
+		$this->db->query( "INSERT INTO `mobile_message_associations` ( `mobile_message_id`, `mobile_list_id` ) VALUES $values" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email message assocations.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to create mobile message associations.', __LINE__, __METHOD__ );
 			return false;
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Adds email message meta to an email message
-	 *
-	 * @param int $email_message_id
-	 * @param array $message_meta
-	 * @return bool
-	 */
-	private function add_message_meta( $email_message_id, $message_meta ) {
-		global $user;
-		
-		// Type Juggle
-		$email_message_id = (int) $email_message_id;
-		
-		// @Fix why is 'type' in this table? If it wasn't there a simple INSERT ... ON DUPLICATE KEY could be done instead of both of these queries
-		// Delete any existing message meta
-		$this->db->query( "DELETE a.* FROM `email_message_meta` AS a LEFT JOIN `email_messages` AS b ON ( a.`email_message_id` = b.`email_message_id` ) WHERE a.`email_message_id` = $email_message_id AND b.`website_id` = " . (int) $user['website']['website_id'] );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete message meta.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Create values to insert
-		$values = '';
-		
-		foreach ( $message_meta as $mm ) {
-			if ( !empty( $values ) )
-				$values .= ',';
-			
-			$values .= "( $email_message_id, '" . $this->db->escape( $mm[0] ) . "', '" . $this->db->escape( $mm[1] ) . "' )";
-		}
-		
-		// Insert new meta
-		if ( !empty( $values ) ) {
-			$this->db->query( "INSERT INTO `email_message_meta` ( `email_message_id`, `type`, `value` ) VALUES $values" );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create message meta.', __LINE__, __METHOD__ );
-				return false;
-			}
 		}
 		
 		return true;
@@ -943,8 +747,8 @@ class Mobile_Marketing extends Base_Class {
 		if ( 0 != $message['am_blast_id'] ) {
 		}
 
-		// Delete the email message
-		$this->db->prepare( "DELETE FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id AND `website_id` = $website_id" );
+		// Delete the mobile message
+		$this->db->query( "DELETE FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id AND `website_id` = $website_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -956,7 +760,7 @@ class Mobile_Marketing extends Base_Class {
 		if ( !$this->db->rows_affected )
 			return true;
 		
-		// Delete email message associations
+		// Delete mobile message associations
 		$this->db->query( "DELETE FROM `mobile_message_associations` WHERE `mobile_message_id` = $mobile_message_id" );
 		
 		// Handle any error
@@ -1017,8 +821,12 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function get_autoresponder( $mobile_autoresponder_id ) {
 		global $user;
-		
-		$autoresponder = $this->db->prepare( 'SELECT a.`mobile_autoresponder_id`, a.`mobile_list_id`, a.`name`, a.`message`, a.`default`, b.`name` AS email_list FROM `mobile_autoresponders` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_autoresponder_id` = ? AND a.`website_id` = ?', 'ii', $email_autoresponder_id, $user['website']['website_id'] )->get_row( '', ARRAY_A );
+
+        // Type Juggling
+        $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
+        $website_id = (int) $user['website']['website_id'];
+
+		$autoresponder = $this->db->get_row( "SELECT a.`mobile_autoresponder_id`, a.`mobile_list_id`, a.`name`, a.`message`, a.`default`, b.`name` AS mobile_list FROM `mobile_autoresponders` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_autoresponder_id` = $mobile_autoresponder_id AND a.`website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1125,19 +933,22 @@ class Mobile_Marketing extends Base_Class {
 	/***** EMAIL SETTINGS *****/
 	
 	/**
-	 * Get email settings
+	 * Get mobile settings
 	 *
 	 * @return array
 	 */
 	public function get_settings() {
 		global $user;
-		
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
 		// Get settings
-		$settings = $this->db->get_results( 'SELECT `key`, `value` FROM `email_settings` WHERE `website_id` = ' . $user['website']['website_id'], ARRAY_A );
+		$settings = $this->db->get_results( "SELECT `key`, `value` FROM `mobile_settings` WHERE `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email settings.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get mobile settings.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1145,19 +956,19 @@ class Mobile_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Get Email Setting
+	 * Get Mobile Setting
 	 *
 	 * @param string $key
 	 * @return string
 	 */
 	public function get_setting( $key ) {
 		global $user;
-		
-		$value = $this->db->prepare( 'SELECT `value` FROM `email_settings` WHERE `key` = ? AND `website_id` = ?', 'si', $key, $user['website']['website_id'] )->get_var('');
+
+		$value = $this->db->prepare( 'SELECT `value` FROM `mobile_settings` WHERE `key` = ? AND `website_id` = ?', 'si', $key, $user['website']['website_id'] )->get_var('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email setting.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get mobile setting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1218,195 +1029,26 @@ class Mobile_Marketing extends Base_Class {
 	 *
 	 * @return bool
 	 */
-	private function remove_bad_emails() {
-		global $user;
-		
-		// Make sure they have a mailchimp list id to work off
-		if ( !$user['website']['mc_list_id'] )
-			return false;
-		
-		// Typecast
-		$website_id = (int) $user['website']['website_id'];
-		
-		// Get mailchimp
-		$mc = $this->mailchimp_instance();
-		
-		// Get the unsubscribers
-		$unsubscribers = $mc->listMembers( $user['website']['mc_list_id'], 'unsubscribed', dt::date( 'Y-m-d H:i:s', time() - 86700 ), 0, 15000 );
-		
-		// Error Handling
-		if ( $this->mc->errorCode )
-			$this->err( "MailChimp: Unable to get Unsubscribed Members\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nMembers returned: " . count( $unsubscribers ), __LINE__, __METHOD__ );
-		
-		$emails = '';
-				
-		if ( is_array( $unsubscribers ) )
-		foreach ( $unsubscribers as $unsub ) {
-			if ( !empty( $emails ) )
-				$emails .= ',';
-			
-			$emails .= "'" . $this->db->escape( $unsub['email'] ) . "'";
-		}
-		
-		// Mark the users as unsubscribed
-		if ( !empty( $emails ) ) {
-			$this->db->query( "UPDATE `emails` SET `status` = 0 WHERE `website_id` = $website_id AND `email` IN ($emails)" );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to mark users as unsubscribed', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-		
-		// Get the cleaned
-		$cleaned = $this->mc->listMembers( $user['website']['mc_list_id'], 'cleaned', dt::date( 'Y-m-d H:i:s', time() - 86700 ), 0, 10000 );
-		
-		// Error Handling
-		if ( $this->mc->errorCode )
-			$this->err( "MailChimp: Unable to get Cleaned Members\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $this->mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nMembers returned: " . count( $cleaned ), __LINE__, __METHOD__ );
-		
-		$emails = '';
-		
-		if ( is_array( $cleaned ) )
-		foreach ( $cleaned as $clean ) {
-			if ( !empty( $emails ) )
-				$emails .= ',';
-			
-			$emails .= "'" . $this->db->escape( $clean['email'] ) . "'";
-		}
-		
-		// Mark the users as cleaned
-		if ( !empty( $emails ) ) {
-			$this->db->query( "UPDATE `emails` SET `status` = 2 WHERE `website_id` = $website_id AND `email` IN ($emails)" );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to mark users as cleaned', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
+	private function _remove_bad_subscribers() {
+		// @avid
 		
 		return true;
 	}
 	
 	/**
-	 * Updates email lists
+	 * Updates mobile lists
 	 *
 	 * @return bool
 	 */
-	private function update_email_lists() {
+	private function update_mobile_lists() {
 		global $user;
 		
-		// Typecast
-		$website_id = (int) $user['website']['website_id'];
-		
-		$email_results = $this->db->get_results( "SELECT a.`email`, a.`email_id`, a.`name`, a.`phone`, GROUP_CONCAT( c.`name` ) AS interests FROM `emails` AS a INNER JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) INNER JOIN `email_lists` AS c ON ( b.`email_list_id` = c.`email_list_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND ( a.`date_synced` = '0000-00-00 00:00:00' OR a.`timestamp` > a.`date_synced` ) AND a.`email` <> 'test@test.com' GROUP BY a.`email`", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails that need to be syncd', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// If there isn't anything, continue
-		if ( !$email_results || 0 == count( $email_results ) ) 
-			return true;
-		
-		// Create array
-		$email_lists = array();
-		
-		// We know an array exists or we would have aborted above
-		foreach ( $email_results as $er ) {
-			$emails[$er['email_id']] = array( 
-				'EMAIL' => $er['email'],
-				'EMAIL_TYPE' => 'html',
-				'FNAME' => $er['name'],
-				'INTERESTS' => $er['interests']
-			);
-			
-			$email_interests = ( isset( $email_interests ) ) ? array_merge( $email_interests, explode( ',', $er['interests'] ) ) : explode( ',', $er['interests'] );
-		}
-		
-		// Create array to hold email ids
-		$synced_email_ids = array();
-		
-		// Get the unique interests
-		$interests = array_unique( $email_interests );
-		
-		// Get Mailchimp
-		$mc = $this->mailchimp_instance();
-		
-		$groups_result = $mc->listInterestGroups( $user['website']['mc_list_id'] );
-		
-		// Error Handling
-		if ( $mc->errorCode )
-			$this->err( "MailChimp: Unable to get Interest Groups\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
-		
-		if ( !isset( $groups_result['groups'] ) )
-			$groups_result['groups'] = array();
 
-		foreach ( $interests as $i ) {
-			if ( !in_array( $i, $groups_result['groups'] ) ) {
-				$mc->listInterestGroupAdd( $user['website']['mc_list_id'], $i );
-				
-				// Error Handling
-				if ( $mc->errorCode )
-					$this->err( "MailChimp: Unable to add Interest Group\n\nList_id: " . $user['website']['mc_list_id'] . "\nInterest Group: $i\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
-			}
-		}
-		
-		// list_id, batch of emails, require double optin, update existing users, replace interests
-		$vals = $mc->listBatchSubscribe( $user['website']['mc_list_id'], $emails, false, true, true );
-		
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Batch Subscribe\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nEmails:\n" . fn::info( $emails, false ) . fn::info( $email_results, false ), __LINE__, __METHOD__, false );
-		} else {
-			// Handle errors if there were any
-			if ( $vals['error_count'] > 0 ) {
-				$errors = '';
-				
-				foreach ( $vals['errors'] as $val ) {
-					$errors .= "Email: " . $val['row']['EMAIL'] . "\nCode: " . $val['code'] . "\nError Message: " . $val['message'] . "\n\n";
-				}
-				
-				$this->err( "MailChimp: \n\nList_id: " . $user['website']['mc_list_id'] . "\n" . $vals['error_count'] . ' out of ' . $vals['error_count'] + $vals['success_count'] . ' emails were unabled to be subscribed' . "\n\n$errors", __LINE__, __METHOD__, false );
-			}
-			
-			$synced_email_ids = array_keys( $emails );
-		}
-		
-		// Set all the emails that were updated to say they were updated
-		if ( count( $synced_email_ids ) > 1 ) {
-			// Update meails to make them synced
-			$this->db->query( 'UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN (' . implode( ',', $synced_email_ids ) . ')' );
-																										  
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to sync emails', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
+        //avid
 		
 		return true;
 	}
-	
-	/**
-	 * Decodes HTML Entities in all email templates.
-	 */
-	public function decode_templates() {
-		return;
-		
-		$where = "`type` = 'default'";
-		$templates = $this->db->get_results( "SELECT `email_template_id`, `template` FROM `email_templates` WHERE $where", ARRAY_A );
-		
-		foreach ( $templates as &$t ) {
-			if ( stristr( $t['template'], '&lt;!DOCTY' ) ) {
-				$new_template = htmlspecialchars_decode( $t['template'] );
-				$this->db->query( "UPDATE `email_templates` SET `template` = '$new_template' WHERE `email_template_id` = " . $t['email_template_id'] );
-			}
-		}
-	}
+
 	
 	/**
 	 * Report an error
@@ -1416,6 +1058,8 @@ class Mobile_Marketing extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @param bool $debug
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '', $debug = true ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method, $debug );
