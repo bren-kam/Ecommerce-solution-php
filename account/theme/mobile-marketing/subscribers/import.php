@@ -31,7 +31,7 @@ css( 'jquery.uploadify' );
 javascript( 'swfobject', 'jquery.uploadify', 'mobile-marketing/subscribers/import' );
 
 $selected = "mobile_marketing";
-$title = _('Import Subscribers') . ' | ' . _('Email Marketing') . ' | ' . TITLE;
+$title = _('Import Subscribers') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 

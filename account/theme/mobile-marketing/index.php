@@ -11,7 +11,7 @@ global $user;
 if ( !$user )
 	login();
 
-// Redirect to main section if they don't have email marketing
+// Redirect to main section if they don't have mobile marketing
 if ( !$user['website']['mobile_marketing'] )
 	url::redirect('/');
 
@@ -26,11 +26,10 @@ if ( is_array( $subscribers ) ) {
 	$a = new Analytics;
 	
 	// Get the analytics data
-	//$email = $a->get_email( $emails[0]['mc_campaign_id'] );
+	//$message = $a->get_message( $messages['am_blast_id'] );
 	
 } else {
 	$message = array(
-		'emails_sent' => 0,
 		'opens' => 0,
 		'clicks' => 0,
 		'forwards' => 0,
@@ -40,7 +39,7 @@ if ( is_array( $subscribers ) ) {
 	);
 }
 
-//$bar_chart = $e->bar_chart( $email );
+//$bar_chart = $e->bar_chart( $message );
 
 $selected = "mobile_marketing";
 $title = _('Mobile Marketing') . ' | ' . TITLE;
@@ -53,11 +52,11 @@ get_header();
 	<?php get_sidebar( 'mobile-marketing/', 'dashboard' ); ?>
 	<div id="subcontent">
 		<?php if ( $messages[0] ) { ?>
-		<p><strong><?php echo _('Latest email:'); ?></strong> <?php echo format::limit_chars( $messages[0]['message'], 50 ); ?></p>
+		<p><strong><?php echo _('Latest message:'); ?></strong> <?php echo format::limit_chars( $messages[0]['message'], 50 ); ?></p>
 		<?php } else { ?>
 		<p><?php echo _('You have not yet sent out a message.'); ?> <a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
 		<?php } ?>
-		<div id="dEmailStatistics"></div>
+		<div id="dMessageStatistics"></div>
 		<br clear="all" />
 		<br />
 		<div class="col-2 float-left">
@@ -72,7 +71,7 @@ get_header();
 					<?php } ?>
 					<p align="right"><a href="/mobile-marketing/messages/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
 				<?php } else { ?>
-					<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
+					<p><?php echo _('You have not yet sent out a message.'); ?> <a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
 				<?php } ?>
 				</div>
 			</div>

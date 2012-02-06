@@ -11,7 +11,7 @@ global $user;
 if ( !$user )
 	login();
 
-// Redirect to main section if they don't have email marketing
+// Redirect to main section if they don't have mobile marketing
 if ( !$user['website']['mobile_marketing'] )
 	url::redirect('/');
 
@@ -46,7 +46,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-setting
 $settings = array_merge( $empty_settings, $m->get_settings() );
 
 $selected = "mobile_marketing";
-$title = _('Settings') . ' | ' . _('Email Marketing') . ' | ' . TITLE;
+$title = _('Settings') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 

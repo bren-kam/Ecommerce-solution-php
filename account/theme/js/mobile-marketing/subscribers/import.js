@@ -1,5 +1,5 @@
 jQuery( function() {
-	// Change the email lists
+	// Change the mobile lists
 	$('#dDefault input.cb').change( updateMobileLists );
 	
 	// To start off with
@@ -8,7 +8,7 @@ jQuery( function() {
 
 
 /**
- * Update email lists function
+ * Update mobile lists function
  */
 function updateMobileLists() {
 	var mobileLists = '';

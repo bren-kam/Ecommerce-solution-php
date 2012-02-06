@@ -22,7 +22,7 @@ $dt->search( array( 'a.`phone`' => false ) );
 if ( isset( $_GET['mlid'] ) ) {
 	$dt->add_where( " AND b.`mobile_list_id` = " . (int) $_GET['mlid'] );
 
-	// Get subscribers by email list id
+	// Get subscribers by mobile list id
 	$subscribers = $e->list_subscribers_by_mobile_list_id( $dt->get_variables() );
 	$dt->set_row_count( $e->count_subscribers_by_mobile_list_id( $dt->get_where() ) );
 } else {
@@ -43,7 +43,7 @@ $data = array();
 // Create output
 if ( is_array( $subscribers ) )
 foreach ( $subscribers as $s ) {
-	$actions = ( $status ) ? ' | <a href="/ajax/mobile-marketing/subscribers/unsubscribe/?msid=' . $s['mobile_subscriber_id'] . '&amp;_nonce=' . $unsubscribe_subscriber_nonce . '"  title="' . _('Unsubscribe Email') . '" ajax="1" confirm="' . $confirm . '">' . _('Unsubscribe') . '</a>' : '';
+	$actions = ( $status ) ? ' | <a href="/ajax/mobile-marketing/subscribers/unsubscribe/?msid=' . $s['mobile_subscriber_id'] . '&amp;_nonce=' . $unsubscribe_subscriber_nonce . '"  title="' . _('Unsubscribe') . '" ajax="1" confirm="' . $confirm . '">' . _('Unsubscribe') . '</a>' : '';
     $date = new DateTime( $s['date'] );
 
 	$data[] = array( 

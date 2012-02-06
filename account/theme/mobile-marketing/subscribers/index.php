@@ -23,7 +23,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Subscribers'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'subscribers' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'subscribers' ); ?>
 	<div id="subcontent">
 		<table ajax="/ajax/mobile-marketing/subscribers/list/?s=1<?php if ( isset( $_GET['mlid'] ) ) echo '&mlid=' . $_GET['mlid']; ?>" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>

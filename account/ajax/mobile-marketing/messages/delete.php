@@ -12,7 +12,7 @@ $ajax->ok( $user, _('You must be signed in to delete a mobile message.') );
 $m = new Mobile_Marketing();
 
 // Delete user
-$ajax->ok( $m->delete_message( $_GET['emid'] ), _('An error occurred while trying to delete your email message. Please refresh the page and try again.') );
+$ajax->ok( $m->delete_message( $_GET['mmid'] ), _('An error occurred while trying to delete your mobile message. Please refresh the page and try again.') );
 
 // Redraw the table
 jQuery('.dt:first')->dataTable()->fnDraw();

@@ -11,7 +11,7 @@ global $user;
 if ( !$user )
 	login();
 
-// Redirect to main section if they don't have email marketing
+// Redirect to main section if they don't have mobile marketing
 if ( !$user['website']['mobile_marketing'] )
 	url::redirect('/');
 

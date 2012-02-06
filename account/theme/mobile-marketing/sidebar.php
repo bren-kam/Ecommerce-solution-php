@@ -4,7 +4,7 @@
 	
 	<a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>" class="top<?php if ( isset( $send_message ) ) echo ' selected'; ?>"><?php echo _('Send Message'); ?></a>
 	<?php if ( isset( $send_message ) ) { ?>
-		<a href="/mobile-marketing/messages/" title="<?php echo _('View Emails'); ?>" class="sub<?php if ( isset( $messages ) ) echo ' selected'; ?>"><?php echo _('View'); ?></a>
+		<a href="/mobile-marketing/messages/" title="<?php echo _('View Messages'); ?>" class="sub<?php if ( isset( $messages ) ) echo ' selected'; ?>"><?php echo _('View'); ?></a>
 	<?php } ?>
 	
 	<a href="/mobile-marketing/subscribers/" title="<?php echo _('Subscribers'); ?>" class="top<?php if ( isset( $subscribers ) ) echo ' selected'; ?>"><?php echo _('Subscribers'); ?></a>
@@ -15,7 +15,7 @@
 		<a href="/mobile-marketing/subscribers/import/" title="<?php echo _('Import Subscribers'); ?>" class="sub<?php if ( isset( $import_subscribers ) ) echo ' selected'; ?>"><?php echo _('Import'); ?></a>
 	<?php } ?>
 	
-	<a href="/mobile-marketing/mobile-lists/" title="<?php echo _('Mobile Lists'); ?>" class="top<?php if ( isset( $mobile_lists ) ) echo ' selected'; ?>"><?php echo _('Email Lists'); ?></a>
+	<a href="/mobile-marketing/mobile-lists/" title="<?php echo _('Mobile Lists'); ?>" class="top<?php if ( isset( $mobile_lists ) ) echo ' selected'; ?>"><?php echo _('Mobile Lists'); ?></a>
 	<?php if ( isset( $mobile_lists ) ) { ?>
 		<a href="/mobile-marketing/mobile-lists/add-edit/" title="<?php echo _('Add Mobile List'); ?>" class="sub<?php if ( isset( $add_edit_mobile_list ) ) echo ' selected'; ?>"><?php echo _('>Add'); ?></a>
 	<?php } ?>

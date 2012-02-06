@@ -40,10 +40,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-aut
 	// if there are no errors
 	if ( empty( $errs ) ) {
 		if ( $mobile_autoresponder_id ) {
-			// Update email list
+			// Update mobile list
 			$success = $m->update_autoresponder( $mobile_autoresponder_id, $_POST['tName'], $_POST['taMessage'],$_POST['rbMobileListID'] );
 		} else {
-			// Create email list
+			// Create mobile list
 			$success = $m->create_autoresponder( $_POST['tName'], $_POST['taMessage'], $_POST['rbMobileListID'] );
 		}
 	}
