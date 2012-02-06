@@ -68,7 +68,7 @@ a img { border: none }
 #links { position: absolute; top: 44px; right: 20px; font-weight: bold }
 
 #nav { position: relative; height: 33px; border-top: 1px solid #B0B0B0; border-bottom: 5px solid #222; padding: 0 20px; background: url(/images/slivers/navigation.png) 0 0 repeat-x }
-#nav-links { height:33px; width: 65%; position:relative; float:left }
+#nav-links { height:33px; width: 100%; position:relative; float:left }
 #nav-links a { 
 	position: relative; top: 9px; border: 1px solid transparent; border-bottom: 0 !important; padding: 3px 9px 9px; color: #8C8C8C; font-size: 14px; font-weight: bold;
 	-webkit-border-top-left-radius: 5px;

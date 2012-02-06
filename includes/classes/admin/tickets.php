@@ -253,6 +253,8 @@ class Tickets extends Base_Class {
             $this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
             return false;
         }
+
+        return $tickets;
 	}
 	
 	/**

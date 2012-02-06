@@ -1440,7 +1440,7 @@ class Products extends Base_Class {
 			$where = " AND `" . $this->db->escape( $field ) . "` LIKE '%" . $this->db->escape( $query ) . "%'";
 		}
 		
-		$suggestions = $this->db->get_results( "SELECT DISTINCT b.`product_id` AS value, b.`$field` AS name FROM `website_products` AS a INNER JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_industries` as c ON ( b.`industry_id` = c.`industry_id` ) WHERE b.`publish_visibility` = 'public' AND a.`website_id` = $website_id AND a.`active` = 1 AND c.`website_id` = $website_id $where ORDER BY `$field` LIMIT 10", ARRAY_A );
+        $suggestions = $this->db->get_results( "SELECT DISTINCT b.`product_id` AS value, b.`$field` AS name FROM `website_products` AS a INNER JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `website_industries` as c ON ( b.`industry_id` = c.`industry_id` ) WHERE b.`publish_visibility` = 'public' AND a.`website_id` = $website_id AND a.`active` = 1 AND a.`website_id` = $website_id $where ORDER BY `$field` LIMIT 10", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

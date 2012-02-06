@@ -22,6 +22,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'login' ) ) {
 	if ( empty( $errs ) ) {
 		global $u;
 		if ( $u->login( $_POST['tEmail'], $_POST['tPassword'], ( ( 'yes' == $_POST['cbRememberMe'] ) ? true : false ) ) ) {
+
 			url::redirect( '/' );
 		} else {
 			$errs = _('Your email and password do not match. Please try again.');
