@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Unsubscribed
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -11,23 +11,25 @@ global $user;
 if ( !$user )
 	login();
 
+// Secure the section
+if ( !$user['website']['mobile-marketing'] )
+    url::redirect('/');
+
 $selected = "subscribers";
-$title = _('Email Lists') . ' | ' . TITLE;
+$title = _('Mobile Lists') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Email Lists'); ?></h1>
+	<h1><?php echo _('Unsubscribed'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'email-marketing/', 'subscribers' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'subscribers' ); ?>
 	<div id="subcontent">
-		<table ajax="/ajax/email-marketing/subscribers/list/?s=0<?php if ( isset( $_GET['elid'] ) ) echo '&elid=' . $_GET['elid']; ?>" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
+		<table ajax="/ajax/mobile-marketing/subscribers/list/?s=0<?php if ( isset( $_GET['mlid'] ) ) echo '&mlid=' . $_GET['mlid']; ?>" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>
 				<tr>
-					<th width="30%" sort="1"><?php echo _('Email'); ?></th>
-					<th width="30%"><?php echo _('Name'); ?></th>
-					<th width="20%"><?php echo _('Phone'); ?></th>
-					<th width="20%"><?php echo _('Date Unsubscribed'); ?></th>
+					<th width="70%" sort="1"><?php echo _('Phone'); ?></th>
+					<th width="30%"><?php echo _('Date Unsubscribed'); ?></th>
 				</tr>
 			</thead>
 			<tbody>

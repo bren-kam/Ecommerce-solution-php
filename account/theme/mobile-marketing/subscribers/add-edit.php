@@ -11,6 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
+// Secure the section
+if ( !$user['website']['mobile-marketing'] )
+    url::redirect('/');
+
 $m = new Mobile_Marketing;
 
 // Get the mobile subscriber id if there is one

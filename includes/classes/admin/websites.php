@@ -917,8 +917,8 @@ class Websites extends Base_Class {
 		}
 		
 		// Title, Company, #of products, Date Signed Up
-		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
-		
+		$websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website report.', __LINE__, __METHOD__ );
