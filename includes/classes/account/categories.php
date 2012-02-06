@@ -310,6 +310,7 @@ class Categories extends Base_Class {
      *
      * @param int $category_id
      * @param string $title
+     * @param string $slug
      * @param string $content
      * @param string $meta_title
      * @param string $meta_description
@@ -317,7 +318,7 @@ class Categories extends Base_Class {
      * @param bool $top
      * @return array
      */
-    public function update_website_category( $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top ) {
+    public function update_website_category( $category_id, $title, $slug, $content, $meta_title, $meta_description, $meta_keywords, $top ) {
         global $user;
 
         $this->db->update( 'website_categories', array( 'title' => $title, 'content' => $content, 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'top' => $top ), array( 'website_id' => $user['website']['website_id'], 'category_id' => $category_id ), 'sssssi', 'ii' );

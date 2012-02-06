@@ -92,7 +92,7 @@ foreach ( $websites as $web ) {
 	$image = '<img src="/images/icons/companies/' . $web['company_id'] . '.gif" alt="" width="24" height="24" />';
 
     // Get the store name if necessary
-    $store_name = ( $web['title'] == $web['store_name'] ) ? '' : ' (' . $web['store_name'] . ')';
+    $store_name = ( $web['title'] == $web['store_name'] || empty( $web['store_name'] ) ) ? '' : ' (' . $web['store_name'] . ')';
 
     // Get the phone
     $contact_title = ( empty( $web['phone'] ) ) ? _('No Phone') : $web['phone'];

@@ -541,7 +541,7 @@ class Websites extends Base_Class {
 				
 				// Get data for SSH
 				$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
-				$svn['repo_url'] = 'https://svn.codespaces.com/imagineretailer/system';
+				$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
 				
 				// System version
 				$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
@@ -936,7 +936,7 @@ class Websites extends Base_Class {
 		);
 
 		$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r --no-auth-cache';
-		$svn['repo_url'] = 'https://svn.codespaces.com/imagineretailer/system';
+		$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
 

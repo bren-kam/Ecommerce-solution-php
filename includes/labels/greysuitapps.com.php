@@ -9,6 +9,6 @@
  */
 
 define( 'TITLE', 'Grey Suit Apps' );
-define( 'LOGO_WIDTH', 85 );w
+define( 'LOGO_WIDTH', 85 );
 define( 'LOGO_HEIGHT', 86 );
 define( 'COMPANY_ID', 8 );

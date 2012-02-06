@@ -50,7 +50,7 @@ class format extends Base_Class {
 	 */
 	public static function limit_words( $str, $limit = 100, $end_char = NULL ) {
 		$limit = (int) $limit;
-		$end_char = ( NULL === $end_char ) ? '&#8230;' : $end_char;
+		$end_char = ( NULL === $end_char ) ? '...' : $end_char;
 
 		if ( '' === trim( $str ) )
 			return $str;
@@ -74,9 +74,9 @@ class format extends Base_Class {
 	 * @param boolean $preserve_words (optional) enable or disable the preservation of words while limiting
 	 * @return string
 	 */
-	public static function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = FALSE ) {
-		$end_char = ( NULL === $end_char ) ? '&#8230;' : $end_char;
-
+	public static function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = TRUE ) {
+		$end_char = ( NULL === $end_char ) ? '...' : $end_char;
+		
 		$limit = (int) $limit;
 
 		if ( '' === trim($str) || mb_strlen( $str ) <= $limit )
