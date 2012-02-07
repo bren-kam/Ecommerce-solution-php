@@ -130,6 +130,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
+            , 'avid-mobile-customer-id' => $_POST['tAvidMobileCustomerID']
 		) );
 	}
 }
@@ -149,6 +150,7 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ashley-ftp-username'
     , 'ashley-ftp-password'
     , 'social-media-add-ons'
+    , 'avid-mobile-customer-id'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -403,6 +405,10 @@ get_header();
 						<p>
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>
 							<input type="text" name="tMCListID" id="tMCListID" value="<?php echo $web['mc_list_id']; ?>" class="tb" />
+						</p>
+                        <p>
+							<label for="tAvidMobileCustomerID"><?php echo _('Avid Mobile Client ID'); ?>:</label>
+							<input type="text" name="tAvidMobileCustomerID" id="tAvidMobileCustomerID" value="<?php if ( isset( $settings['avid-mobile-customer-id'] ) ) echo $settings['avid-mobile-customer-id']; ?>" class="tb" />
 						</p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 
