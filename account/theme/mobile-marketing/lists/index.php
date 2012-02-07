@@ -26,7 +26,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'mobile-marketing/', 'mobile_lists' ); ?>
 	<div id="subcontent">
-		<table ajax="/ajax/mobile-marketing/mobile-lists/list/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
+		<table ajax="/ajax/mobile-marketing/lists/list/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>
 				<tr>
 					<th width="70%" sort="1"><?php echo _('Name'); ?></th>

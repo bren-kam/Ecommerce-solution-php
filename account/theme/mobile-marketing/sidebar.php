@@ -15,9 +15,9 @@
 		<a href="/mobile-marketing/subscribers/import/" title="<?php echo _('Import Subscribers'); ?>" class="sub<?php if ( isset( $import_subscribers ) ) echo ' selected'; ?>"><?php echo _('Import'); ?></a>
 	<?php } ?>
 	
-	<a href="/mobile-marketing/mobile-lists/" title="<?php echo _('Mobile Lists'); ?>" class="top<?php if ( isset( $mobile_lists ) ) echo ' selected'; ?>"><?php echo _('Mobile Lists'); ?></a>
+	<a href="/mobile-marketing/lists/" title="<?php echo _('Mobile Lists'); ?>" class="top<?php if ( isset( $mobile_lists ) ) echo ' selected'; ?>"><?php echo _('Mobile Lists'); ?></a>
 	<?php if ( isset( $mobile_lists ) ) { ?>
-		<a href="/mobile-marketing/mobile-lists/add-edit/" title="<?php echo _('Add Mobile List'); ?>" class="sub<?php if ( isset( $add_edit_mobile_list ) ) echo ' selected'; ?>"><?php echo _('>Add'); ?></a>
+		<a href="/mobile-marketing/lists/add-edit/" title="<?php echo _('Add Mobile List'); ?>" class="sub<?php if ( isset( $add_edit_mobile_list ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 	
 	<a href="/mobile-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>

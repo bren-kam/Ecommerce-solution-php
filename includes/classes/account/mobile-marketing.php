@@ -374,7 +374,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`date_created` ), COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
+		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
