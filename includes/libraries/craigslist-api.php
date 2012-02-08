@@ -10,32 +10,65 @@ class Craigslist_API {
 	/**
 	 * Constant paths to include files
 	 */
-	const URL_API = 'http://plugcp.primusconcepts.com/greysuit/analytics/';
-	const DEBUG = false;
+	const URL_API = 'http://plugcp.primusconcepts.com/greysuit/';
+	const DEBUG = true;
 
     /**
      * A few variables that will determine the basic status
      */
-    private $website_id = 0;
+    private $reseller_id = 0;
+    private $key = '';
     private $start_date = '';
     private $end_date = '';
+    private $request;
+    private $raw_response;
+    private $response;
 
 	/**
 	 * Construct class will initiate and run everything
      *
-     * @param int $website_id
+     * @param int $reseller_id
+     * @param string $key
 	 */
-	public function __construct( $website_id ) {
+	public function __construct( $reseller_id, $key ) {
 		// Do we need to debug
 		if ( self::DEBUG )
 			error_reporting( E_ALL );
 
-        $this->website_id = $website_id;
+        $this->reseller_id = $reseller_id;
+        $this->key = $key;
 	}
 	
 	/*********************************/
 	/* Start: Craigslist API Methods */
 	/*********************************/	
+
+    /**
+     * Add Customer
+     *
+     * @param string $name
+     * @return int (customer ID)
+     */
+    public function add_customer( $name ) {
+        // Add customer
+        $response = $this->_execute( 'addcustomer', compact( 'name' ) );
+
+        return $response['customer_id'];
+    }
+
+    /**
+     * Add Market
+     *
+     * @param int $customer_id
+     * @param string $name
+     * @return bool
+     */
+    public function add_market( $customer_id, $name ) {
+        // Add customer
+        $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name' ) );
+
+        return $response['customer_id'];
+    }
 
     /**
      * Set the date range
@@ -48,25 +81,56 @@ class Craigslist_API {
         $this->end_date = $end_date;
     }
 
+    /**
+     * Get Last API Request
+     *
+     * @return bool
+     */
+    public function get_request() {
+        return $this->request;
+    }
+
 	/**
-	 * List Companies
-	 *
-	 * Returns an array of companies including their company_ids, names and images
+	 * Get API Response
 	 *
 	 * @return bool
 	 */
-	public function list_companies() {
-		// Execute the command
-		$response = $this->execute( 'list_companies' );
-		
-		// Return the graphs if successful
-		return ( $this->success ) ? $response->companies : false;
+	public function get_raw_response() {
+		return $this->raw_response;
 	}
+
+    /**
+     * Get API Response
+     *
+     * @return bool
+     */
+    public function get_response() {
+        return $this->response;
+    }
 	
 	/*******************************/
-	/* END: Statistics API Methods */
+	/* END: Craigslist API Methods */
 	/*******************************/
 
+    /**
+     * Build Query
+     *
+     * @param string $method
+     * @param array $arguments
+     * @return string
+     */
+    private function _build_query( $method, $arguments ) {
+        $query = self::URL_API . "$method/";
+
+        $arguments['reseller_id'] = $this->reseller_id;
+        $arguments['apikey'] = $this->key;
+
+        foreach( $arguments as $key => $value ) {
+            $query .= "$key/$value/";
+        }
+
+        return $query;
+    }
 	/**
 	 * This sends sends the actual call to the API Server and parses the response
 	 *
@@ -74,32 +138,43 @@ class Craigslist_API {
 	 *
 	 * @param string $method The method being called
 	 * @param array $params (optional|array) an array of the parameters to be sent
+     * @return mixed
 	 */
-	private function execute( $method, $params = array() ) {
-		if ( empty( $this->api_key ) ) {
-			$this->error = 'Cannot send request without an API Key.';
-			$this->success = false;
-		}
-		
-		$post_vars = http_build_query( array_merge( array( 'auth_key' => $this->api_key, 'method' => $method ), $params ) );
-		
+	private function _execute( $method, $params = array() ) {
+        // Make sure they have an API key
+		if ( empty( $this->api_key ) )
+			return false
+
+        // Build the argument
+		$this->request = $this->_build_query( $method, $params );
+
+        // Create CURL object
 		$ch = curl_init();
-		curl_setopt( $ch, CURLOPT_URL, self::URL_API );
-		//curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 20 );
-		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_vars );
-		curl_setopt( $ch, CURLOPT_POST, 1 );
-		
-		$this->response = json_decode( curl_exec( $ch ) );
+
+        // Set CURL options
+		curl_setopt( $ch, CURLOPT_URL, $this->request );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+
+        // Do the call and get the raw response
+        $this->raw_response = curl_exec( $ch );
+
+        // It's supposed to be in JSON, so grab that if it exists
+		$this->response = json_decode( $this->raw_response );
+
+        // Close the curl object
 		curl_close($ch);
-		
-		if ( $this->response->success )
-			$this->success = true;
-		
-		$this->message = $this->response->message;
-		
+
+        // Debugging info
+        if ( self::DEBUG ) {
+            echo "<h1>Request</h1>\n" . $this->request . "\n<hr />\n";
+            echo "<h1>Raw Response</h1>\n" . $this->raw_response . "\n<hr />\n";
+            echo "<h1>Response</h1>\n" . $this->response;
+        }
+
+        // Return the JSON response
 		return $this->response;
 	}
 }
