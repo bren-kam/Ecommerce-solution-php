@@ -23,6 +23,7 @@ class Craigslist_API {
     private $request;
     private $raw_response;
     private $response;
+    private $post;
 
 	/**
 	 * Construct class will initiate and run everything
@@ -53,7 +54,7 @@ class Craigslist_API {
         // Add customer
         $response = $this->_execute( 'addcustomer', compact( 'name' ) );
 
-        return $response['customer_id'];
+        return $response->customer_id;
     }
 
     /**
@@ -67,7 +68,7 @@ class Craigslist_API {
         // Add customer
         $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name' ) );
 
-        return $response['customer_id'];
+        return $response->customer_id;
     }
 
     /**
@@ -112,25 +113,6 @@ class Craigslist_API {
 	/* END: Craigslist API Methods */
 	/*******************************/
 
-    /**
-     * Build Query
-     *
-     * @param string $method
-     * @param array $arguments
-     * @return string
-     */
-    private function _build_query( $method, $arguments ) {
-        $query = self::URL_API . "$method/";
-
-        $arguments['reseller_id'] = $this->reseller_id;
-        $arguments['apikey'] = $this->key;
-
-        foreach( $arguments as $key => $value ) {
-            $query .= "$key/$value/";
-        }
-
-        return $query;
-    }
 	/**
 	 * This sends sends the actual call to the API Server and parses the response
 	 *
@@ -142,21 +124,23 @@ class Craigslist_API {
 	 */
 	private function _execute( $method, $params = array() ) {
         // Make sure they have an API key
-		if ( empty( $this->api_key ) )
-			return false
+		if ( empty( $this->key ) )
+			return false;
 
-        // Build the argument
-		$this->request = $this->_build_query( $method, $params );
+        $post_vars = http_build_query( array( 'data' => json_encode( $params ) ) );
 
-        // Create CURL object
-		$ch = curl_init();
+        // Set variables
+        $this->request = self::URL_API . $method . '/reseller_id/' . $this->reseller_id . '/apikey/' . $this->key . '/';
+        $this->post = $post_vars;
 
-        // Set CURL options
-		curl_setopt( $ch, CURLOPT_URL, $this->request );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
-        curl_setopt( $ch, CURLOPT_TIMEOUT, 30);
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_URL, $this->request );
+        //curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+        curl_setopt( $ch, CURLOPT_TIMEOUT, 20 );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->post );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
 
         // Do the call and get the raw response
         $this->raw_response = curl_exec( $ch );
@@ -169,9 +153,9 @@ class Craigslist_API {
 
         // Debugging info
         if ( self::DEBUG ) {
-            echo "<h1>Request</h1>\n" . $this->request . "\n<hr />\n";
+            echo "<h1>Request</h1>\n" . $this->request . "\n<br />\n<h2>Post Variables</h2>\n" . var_export( $this->post, true ) . "<hr />\n";
             echo "<h1>Raw Response</h1>\n" . $this->raw_response . "\n<hr />\n";
-            echo "<h1>Response</h1>\n" . $this->response;
+            echo "<h1>Response</h1>\n" . var_export( $this->response, true );
         }
 
         // Return the JSON response
