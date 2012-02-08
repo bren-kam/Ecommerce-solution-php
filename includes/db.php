@@ -9,4 +9,4 @@ define('DB_USER', 'imaginer_admin');
 define('DB_PASSWORD', 'rbDxn6kkj2e4');
 
 /** MySQL hostname */
-define('DB_HOST', '199.47.222.115');
+define('DB_HOST', 'localhost');
