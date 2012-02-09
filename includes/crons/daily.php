@@ -1,5 +1,5 @@
 <?php
-$mysqli =  mysqli_connect( 'localhost', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
+$mysqli =  mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
 
 // Update automatic statistics
 require( '/home/develop4/public_html/includes/libraries/statistics-api.php' );
