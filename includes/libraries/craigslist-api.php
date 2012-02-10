@@ -45,6 +45,34 @@ class Craigslist_API {
 	/*********************************/	
 
     /**
+     * Get Customers
+     *
+     * @return array
+     *  customer_id => (int)
+     *  name => (string)
+     *  markets => ( array(
+     *      customer_id => (int)
+     *      name => (string)
+     *      markets => array(
+     *          market_id => (int)
+     *          name => string
+     *          legacyname => string
+     *          replace => array(
+     *              0 => array(
+     *                  key => (string)
+     *                  value => (string)
+     *          )
+     *      )
+     *  )
+     */
+    public function get_customers() {
+        // Add customer
+        $response = $this->_execute( 'getcustomers' );
+        fn::info( $response );
+        return $response;
+    }
+
+    /**
      * Add Customer
      *
      * @param string $name
