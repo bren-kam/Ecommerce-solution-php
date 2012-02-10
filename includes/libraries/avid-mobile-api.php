@@ -11,8 +11,8 @@ class Avid_Mobile_API {
 	 * Constant paths to include files
 	 */
 	const URL_API = 'https://login.avidmobile.com/MCSOAP2.1/MarketingCenter2-1.php?wsdl';
-    const USERNAME = '';
-    const PASSWORD = '';
+    const USERNAME = 'kerry@greysuitretail.com';
+    const PASSWORD = '88692e6d9';
 	const DEBUG = false;
 
     /**
@@ -57,7 +57,7 @@ class Avid_Mobile_API {
 
         // Load Avid mobile SOAP Client
         library( 'MCSOAPClient' );
-
+        echo 'jer?';exit;
         // Setup API
         $this->api = new AvidMobileSOAPClient( self::URL_API, self::USERNAME, self::PASSWORD, $customer_id );
 	}
@@ -70,17 +70,16 @@ class Avid_Mobile_API {
      * Instantiate Keywords class
      *
      * @param int $customer_id optional
-     * @return mixed
+     * @return object
      */
-    public static function keywords( $customer_id = NULL ) {
+    public function keywords( $customer_id = NULL ) {
         // Load the library
         library('avid-mobile/keywords');
 
-        if ( isset( $this ) ) {
-            $this->keywords = new AM_Keywords();
-        } else {
-            return new AM_Keywords( $customer_id );
-        }
+        // Instantiate class
+        $this->keywords = new AM_Keywords();
+
+        return $this->keywords;
     }
 
     /**

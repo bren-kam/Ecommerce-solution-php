@@ -123,7 +123,7 @@ get_header();
                 </tr>
                 <tr>
                     <td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-                    <td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? $now->format('Y-m-d') : $date; ?>" maxlength="10" /></td>
+                    <td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date_posted ) ) ? $now->format('m/d/Y') : $date_posted; ?>" maxlength="10" /></td>
                     <td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
                     <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i a') : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
                 </tr>

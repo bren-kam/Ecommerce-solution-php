@@ -11,15 +11,13 @@ class Craigslist_API {
 	 * Constant paths to include files
 	 */
 	const URL_API = 'http://plugcp.primusconcepts.com/greysuit/';
-	const DEBUG = true;
+	const DEBUG = false;
 
     /**
      * A few variables that will determine the basic status
      */
     private $reseller_id = 0;
     private $key = '';
-    private $start_date = '';
-    private $end_date = '';
     private $request;
     private $raw_response;
     private $response;
@@ -55,8 +53,8 @@ class Craigslist_API {
      *      name => (string)
      *      markets => array(
      *          market_id => (int)
-     *          name => string
-     *          legacyname => string
+     *          name => (string)
+     *          legacyname => (string)
      *          replace => array(
      *              0 => array(
      *                  key => (string)
@@ -68,7 +66,7 @@ class Craigslist_API {
     public function get_customers() {
         // Add customer
         $response = $this->_execute( 'getcustomers' );
-        fn::info( $response );
+
         return $response;
     }
 
@@ -100,15 +98,40 @@ class Craigslist_API {
     }
 
     /**
-     * Set the date range
+     * Get Stats
      *
-     * @param string $start_date
-     * @param string $end_date
+     * @param string $date_start
+     * @param string $date_end (optional)
+     * @return array
+     *  0 => ( array(
+     *      customer_id => (int)
+     *      market_id => (int)
+     *      tags => array(
+     *          0 => array(
+     *            tag_id => (int)
+     *              unique => (int)
+     *              views => (int)
+     *              posts => (int)
+     *          )
+     *      )
+     *  )
      */
-    public function set_date_range( $start_date, $end_date ) {
-        $this->start_date = $start_date;
-        $this->end_date = $end_date;
+    public function get_stats( $date_start, $date_end = NULL ) {
+        // Just get the stats for a day
+        if ( is_null( $date_end ) )
+            $date_end = $date_start;
+
+        // Add customer
+        $response = $this->_execute( 'dailystats', compact( 'date_start', 'date_end' ) );
+
+        return $response;
     }
+
+    /*************************/
+    /* Start: Public Methods */
+    /*************************/
+
+    /****
 
     /**
      * Get Last API Request
@@ -136,10 +159,10 @@ class Craigslist_API {
     public function get_response() {
         return $this->response;
     }
-	
-	/*******************************/
-	/* END: Craigslist API Methods */
-	/*******************************/
+
+    /**************************/
+    /* Start: Private Methods */
+    /**************************/
 
 	/**
 	 * This sends sends the actual call to the API Server and parses the response
