@@ -155,7 +155,7 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// Get Products
-		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id` = 0", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 0", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

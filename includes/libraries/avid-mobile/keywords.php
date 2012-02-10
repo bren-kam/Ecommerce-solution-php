@@ -6,14 +6,16 @@
  *
  * @version 1.0.0
  */
+library('avid-mobile-api');
+
 class AM_Keywords extends Avid_Mobile_API {
      /**
 	 * Construct class will initiate and run everything
 	 *
 	 * @param int $customer_id
 	 */
-	public function __construct( $customer_id = NULL ) {
-        if ( !is_null( $customer_id ) && !parent::__construct( $customer_id ) )
+	public function __construct( $customer_id ) {
+        if ( !parent::__construct( $customer_id ) )
             return false;
 	}
 

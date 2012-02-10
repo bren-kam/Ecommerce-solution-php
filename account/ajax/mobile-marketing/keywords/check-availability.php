@@ -15,7 +15,7 @@ if ( $m->check_keyword_availability( $_POST['k'] ) ) {
     jQuery('#sAvailable')->removeClass('error')->addClass('success')->text('Keyword is available!');
     jQuery('#hKeywordAvailable')->val(1);
 } else {
-    jQuery('#sAvailable')->removeClass('success').addClass('error')->text('Keyword is unavailable!');
+    jQuery('#sAvailable')->removeClass('success')->addClass('error')->text('Keyword is unavailable!');
     jQuery('#hKeywordAvailable')->val(0);
 }
 

@@ -8,9 +8,8 @@
   //php PEAR SOAP
   //http://pear.php.net
 
-
 //Your php PEAR SOAP client library
-set_include_path("/usr/local/cpanel/base/horde/pear" . PATH_SEPARATOR . get_include_path());
+set_include_path("/usr/local/cpanel/base/horde/pear/php/");
 require_once('SOAP/Client.php');
 
 class AvidMobileSOAPClient
