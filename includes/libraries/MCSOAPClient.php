@@ -10,7 +10,7 @@
 
 
 //Your php PEAR SOAP client library
-set_include_path("pear" . PATH_SEPARATOR . get_include_path());
+set_include_path("/usr/local/cpanel/base/horde/pear" . PATH_SEPARATOR . get_include_path());
 require_once('SOAP/Client.php');
 
 class AvidMobileSOAPClient
