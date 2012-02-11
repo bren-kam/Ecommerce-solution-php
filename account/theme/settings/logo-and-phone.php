@@ -32,7 +32,7 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Top'); ?></h1>
+	<h1><?php echo _('Logo &amp; Phone'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'settings/', 'logo' ); ?>
 	<div id="subcontent">
