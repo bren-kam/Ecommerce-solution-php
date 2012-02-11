@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Website - Upload Logo
+ * @page Settings - Upload Logo
  * @package Imagine Retailer
  * @subpackage Account
  */

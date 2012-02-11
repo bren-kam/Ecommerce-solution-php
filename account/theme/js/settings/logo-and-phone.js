@@ -14,7 +14,7 @@ jQuery(function($) {
 				ajaxResponse( $.parseJSON( response ) );
 			},
 			sizeLimit	: 6291456,// (6mb) In bytes? Really?
-			script    	: '/ajax/website/upload-logo/',
+			script    	: '/ajax/settings/upload-logo/',
 			uploader  	: '/media/flash/uploadify.swf'
 		});
 	});

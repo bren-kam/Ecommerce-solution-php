@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Website - Top
+ * @page Website - Logo
  * @package Imagine Retailer
  */
 
@@ -18,33 +18,33 @@ if ( !empty( $user['website']['logo'] ) )
 $success = false;
 
 // Make sure it's a valid request
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'top-section' ) ) {
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'logo-and-phone-section' ) ) {
 	$w = new Websites;
 	$success = $w->update( array( 'phone' => $_POST['tPhone'] ), 's' );
 }
 
 css( 'jquery.uploadify' );
-javascript( 'swfobject', 'jquery.uploadify', 'website/top');
+javascript( 'swfobject', 'jquery.uploadify', 'settings/logo-and-phone');
 
-$selected = "website";
-$title = _('Top | Website ') . ' | ' . TITLE;
+$selected = "settings";
+$title = _('Logo & Phone') . ' | ' . _('Settings') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
 	<h1><?php echo _('Top'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'website/', 'top' ); ?>
+	<?php get_sidebar( 'settings/', 'logo' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
-		<p class="success"><?php echo _('The "Top" section has been updated successfully!'); ?></p>
+		<p class="success"><?php echo _('The "Logo &amp; Phone" section has been updated successfully!'); ?></p>
 		<?php 
 		}
 		
 		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fTop" action="/website/top/" method="post">
+		<form name="fTop" action="/settings/logo-and-phone/" method="post">
 			<input type="hidden" id="hWebsiteID" value="<?php echo $user['website']['website_id']; ?>" />
 			<table cellpadding="0" cellspacing="0" class="form">
 				<tr>
@@ -71,7 +71,7 @@ get_header();
 			</table>
 			<?php
 			nonce::field( 'upload-logo', '_ajax_upload_logo' );
-			nonce::field( 'top-section' );
+			nonce::field( 'logo-and-phone-section' );
 			?>
 		</form>
 		<br /><br />
