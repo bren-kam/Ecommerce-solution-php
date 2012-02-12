@@ -7,7 +7,7 @@
  * $cache - Cache
  */
 
-define( 'PROFILE', '1' == $_GET['profile'] );
+define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 
 /** Define LIVE if the website is live */
 define( 'LIVE', false );
