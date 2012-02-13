@@ -1,6 +1,6 @@
 <?php
 /**
- * @page View Ticket
+ * @page View Reach
  * @package Real Statistics
  */
 
@@ -22,8 +22,8 @@ $reach = $reaches->get( $_GET['rid'] );
 
 // TODO integrate ACL stuff
 // Don't want them to see this if they don't have the right role
-//if ( $user['role'] < $ticket['role'] && $user['user_id'] != $ticket['user_id'] )
-//	url::redirect( '/tickets/' );
+//if ( $user['role'] < $reach['role'] && $user['user_id'] != $reach['user_id'] )
+//	url::redirect( '/reachs/' );
 
 $ru = $u->get_user( $reach['user_id'] );
 $comments = $rc->get( $_GET['rid'] );
@@ -33,8 +33,8 @@ $comments = $rc->get( $_GET['rid'] );
 	$reach['assigned_to_user_id'] = $reach->update_assigned_to( $_GET['rid'], $user['user_id'] );
  */
 
-//css( 'form', 'jquery.uploadify', 'tickets/ticket' );
-javascript( 'mammoth' );
+css( 'reaches/reach' );
+javascript( 'mammoth', 'reaches/reach' );
 
 $assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
 
@@ -46,18 +46,13 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Reach Detail'); ?></h1>
 	<br clear="all" /><br />
-	<input type="hidden" id="hTicketID" value="<?php echo $_GET['rid']; ?>" />
+	<input type="hidden" id="hReachID" value="<?php echo $_GET['rid']; ?>" />
 	<input type="hidden" id="hWebsiteID" value="<?php echo $reach['website_id']; ?>" />
 	<input type="hidden" id="hUserID" value="<?php echo $user['user_id']; ?>" />
 	<?php 
-		nonce::field( 'update-ticket-status' );
-		nonce::field( 'add-comment', '_ajax_add_comment' );
-		nonce::field( 'delete-comment', '_ajax_delete_comment' );
-		nonce::field( 'update-assigned-to', '_ajax_update_assigned_to' );
-		nonce::field( 'update-priority', '_ajax_update_priority' );
-		nonce::field( 'update-date-due', '_ajax_update_date_due' );
-		nonce::field( 'upload-attachment', '_ajax_upload_attachment' );
-		nonce::field( 'remove-attachment', '_ajax_remove_attachment' );
+		nonce::field( 'update-status', '_ajax-update-status');
+		nonce::field( 'update-assigned-to', '_ajax-update-assigned-to' );
+		nonce::field( 'update-priority', '_ajax-update-priority' );
 	?>
 	<div class="float-left">
 		<p>
@@ -136,20 +131,20 @@ get_header();
 	</div>
 			
 	<br /><hr />
-	<div id="dTicketComments">
+	<div id="dReachComments">
 		<div class="shading"></div>
 		<form action="/ajax/reaches/add-comment/" method="POST" ajax="1">
 			<?php nonce::field( 'add-comment', '_nonce' ); ?>
 			<input type="hidden" name="rid" value="<?php echo $reach['website_reach_id']; ?>" />
 			<input type="h"
-			<div id="dTATicketCommentsWrapper"><textarea id="taReachComment" name="taReachComment" cols="5" rows="3" tmpVal="<?php echo _('Write a comment...'); ?>"></textarea></div>
+			<div id="dTAReachCommentsWrapper"><textarea id="taReachComment" name="taReachComment" cols="5" rows="3" tmpVal="<?php echo _('Write a comment...'); ?>"></textarea></div>
 			<input type="submit" id="aAddComment" class="button" title="<?php echo _('Add Comment'); ?>" value="<?php echo _('Add Comment'); ?>" />
 			<div id="dPrivate">
 				<input type="checkbox" id="cbPrivate" name="cbPrivate" value="1" /> <label for="cbPrivate"><?php echo _('Private'); ?></label>
 			</div>
 		</form>
 		
-		<div class="divider" id="dTicketCommentsDivider"></div>
+		<div class="divider" id="dReachCommentsDivider"></div>
 		<div id="dComments">
 		<?php
 		if ( is_array( $comments ) )
@@ -157,18 +152,21 @@ get_header();
 			if ( $user['user_id'] == $reach['user_id'] && '1' == $c['private'] )
 				continue;
 		?>
-		<div class="comment" id="dComment<?php echo $c['ticket_comment_id']; ?>">
+		<div class="comment" id="dComment<?php echo $c['reach_comment_id']; ?>">
 			<p class="name">
 				<?php if ( '1' == $c['private'] ) { ?>
-				<img src="/images/icons/tickets/lock.gif" width="11" height="15"0 alt="<?php echo _('Private'); ?>" class="private" />
+				<img src="/images/icons/reaches/lock.gif" width="11" height="15"0 alt="<?php echo _('Private'); ?>" class="private" />
 				<?php
 				}
 				
 				echo $c['name'];
 				?>
 				<span class="date"><?php echo dt::date( 'm/d/Y g:ia', $c['date'] ); ?></span>
-				
-				<a href="javascript:;" class="delete-comment" title="<?php echo _('Delete Feedback Comment'); ?>"><img src="/images/icons/x.png" alt="X" width="16" height="16" /></a>
+				<?php if ( $user['user_id'] == $c['user_id'] ): ?>
+					<a ajax="1" href="/ajax/reaches/delete-comment/?_nonce=<?php echo nonce::create( 'delete-comment' ); ?>&rcid=<?php echo $c['website_reach_comment_id']; ?>" class="delete-comment" title="<?php echo _('Delete Feedback Comment'); ?>">
+						<img src="/images/icons/x.png" alt="X" width="16" height="16" />
+					</a>
+				<?php endif; ?>
 			</p>
 			<p class="message"><?php echo $c['comment']; ?></p>
 			<div class="attachments">

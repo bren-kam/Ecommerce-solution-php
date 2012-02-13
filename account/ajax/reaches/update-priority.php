@@ -4,13 +4,14 @@
  * @package Imagine Retailer
  */
  
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-priority' ) ) {
-	$t = new Tickets;
-	
-	$result = $t->update_priority( $_POST['tid'], $_POST['p'] );
-	
-	// If there was an error, let them know
-	echo json_encode( array( 'result' => $result, 'error' => _("An error occurred while trying to update the ticket's priority. Please refresh the page and try again.") ) );
-} else {
-	echo json_encode( array( 'result' => false, 'error' => _('A verification error occurred. Please refresh the page and try again.') ) );
-}
+$ajax = new AJAX( $_GET['_nonce'], 'update-priority' );
+$ajax->ok( $user, _('You must be signed in to update a reach.') );
+$ajax->ok( $user['role'] >= 1, _('You do not have permission to update this reach.') );
+
+// create class
+$r = new Reaches;
+
+// do it to it
+$ajax->ok( $r->update_priority( $_GET['rid'], $_GET['val'] ), _('There was an error updating reach priority') );
+
+$ajax->respond();

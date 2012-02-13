@@ -168,7 +168,7 @@ class Reach_Comments extends Base_Class {
 			return false;
 		}*/
 		
-		$this->db->query( 'DELETE FROM `reach_comments` WHERE `reach_comment_id` = ' . (int) $reach_comment_id );
+		$this->db->query( 'DELETE FROM `website_reach_comments` WHERE `website_reach_comment_id` = ' . (int) $reach_comment_id );
 		
 		// If there was an error
 		if ( $this->db->errno() ) {

@@ -124,7 +124,7 @@ class Reaches extends Base_Class {
 	public function update_priority( $reach_id, $priority ) {
 		global $user;
 		
-		$this->db->update( 'reaches', array( 'priority' => $priority ), array( 'reach_id' => $reach_id ), 'i', 'i' );
+		$this->db->update( 'website_reaches', array( 'priority' => $priority ), array( 'website_reach_id' => $reach_id ), 'i', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -147,7 +147,7 @@ class Reaches extends Base_Class {
 	public function update_status( $reach_id, $status ) {
 		global $user;
 		
-		$this->db->update( 'reaches', array( 'status' => $status ), array( 'reach_id' => $reach_id ), 'i', 'i' );
+		$this->db->update( 'website_reaches', array( 'status' => $status ), array( 'website_reach_id' => $reach_id ), 'i', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -170,7 +170,7 @@ class Reaches extends Base_Class {
 	public function update_assigned_to( $reach_id, $assigned_to_user_id ) {
 		global $user;
 		
-		$this->db->update( 'reaches', array( 'assigned_to_user_id' => $assigned_to_user_id ), array( 'reach_id' => $reach_id ), 'i', 'i' );
+		$this->db->update( 'website_reaches', array( 'assigned_to_user_id' => $assigned_to_user_id ), array( 'website_reach_id' => $reach_id ), 'i', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -212,7 +212,7 @@ class Reaches extends Base_Class {
 	 */
 	public function get( $reach_id ) {
 		// Get linked users
-		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`,  a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `users` AS b ON ( a.`website_user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
+		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `users` AS b ON ( a.`website_user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
