@@ -35,22 +35,19 @@ class Users extends Base_Class {
 
 		if ( !empty( $this->encrypted_email ) ) {
             global $user;
-
+			
             $user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
-
+			
             // Get website
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
-
+			
             // Don't send them into an infinite loop if you can avoid it
             if ( ( !is_array( $user['websites'] ) || 0 == count( $user['websites'] ) ) && !isset( $_COOKIE['wid'] ) ) {
                 $this->logout();
                 url::redirect('/');
             }
 
-            if ( !isset( $_COOKIE['wid'] ) ) {
-                $user['website'] = '';
-                set_cookie( 'wid', $user['website']['website_id'], 172800 ); // 2 days
-            } elseif ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
+            if ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
                 $w = new Websites;
 
                 $user['website'] = $w->get_website( $_COOKIE['wid'] );
@@ -231,8 +228,8 @@ class Users extends Base_Class {
 
 		if ( $role > 1 ) {
 			// @Fix should `phone` and `logo` be removed and put in the websites:get_website function (meaning theme/website/top needs to change)
-			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
-			
+			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
+
 			// Handle any error
 			if ( $this->db->errno() ) {
 				$this->err( 'Failed to predetermine website.', __LINE__, __METHOD__ );
@@ -240,8 +237,8 @@ class Users extends Base_Class {
 			}
 		} else {
 			// @Fix -- look off `products` or `product_catalog`
-			$websites = $this->db->get_results( "SELECT a.`website_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`product_catalog`, a.`link_brands`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`live`, a.`type`, a.`pages`, ( b.`products` * a.`products` * a.`product_catalog` ) AS products, a.`ga_profile_id`, b.`blog`, b.`email_marketing`, b.`mobile_marketing`, b.`shopping_cart` FROM `websites` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`user_id` = $user_id AND `status` = 1", ARRAY_A );
-			
+			$websites = $this->db->get_results( "SELECT a.`website_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`product_catalog`, a.`link_brands`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`live`, a.`type`, a.`pages`, ( b.`products` * a.`products` * a.`product_catalog` ) AS products, a.`ga_profile_id`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `websites` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`user_id` = $user_id AND `status` = 1", ARRAY_A );
+
 			// Handle any error
 			if ( $this->db->errno() ) {
 				$this->err( 'Failed to predetermine authorized user website.', __LINE__, __METHOD__ );
@@ -368,7 +365,6 @@ class Users extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
-     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

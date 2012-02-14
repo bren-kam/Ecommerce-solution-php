@@ -25,7 +25,7 @@ class data extends Base_Class {
 	 *
 	 * @param bool $display whether or not to return or echo the values
 	 * @param string $select_value if value matches key in state array, will select that option
-	 * @return nothing|array
+	 * @return array
 	 */
 	public static function states( $display = true, $select_value = '' ) {
 		$states = array(
@@ -92,9 +92,9 @@ class data extends Base_Class {
 			}
 	
 			echo $state_options;
-		} else {
-			return $states;
 		}
+
+        return $states;
 	}
 	
 	/**
@@ -104,7 +104,7 @@ class data extends Base_Class {
 	 *
 	 * @param bool $display whether or not to return or echo the values
 	 * @param string $select_value if value matches key in state array, will select that option
-	 * @return nothing|array
+	 * @return array
 	 */
 	public static function countries( $display = true, $select_value = '' ) {
 		$countries = array(
@@ -359,9 +359,9 @@ class data extends Base_Class {
 			}
 	
 			echo $country_options;
-		} else {
-			return $countries;
 		}
+
+		return $countries;
 	}
 	
 	/**
@@ -372,7 +372,7 @@ class data extends Base_Class {
 	 * @param bool $display whether or not to return or echo the values
 	 * @param string $select_value if value matches key in state array, will select that option
 	 * @param string $gateway_list which list to grab the credit cards from
-	 * @return nothing|array
+	 * @return array
 	 */
 	public static function credit_cards( $display = true, $select_value = '', $gateway_list = 'AIM' ) {
 		// Authorize.net AIM gateway_list
@@ -384,15 +384,17 @@ class data extends Base_Class {
 		);
 		
 		if ( $display ) {
+            $cc_options = '';
+
 			foreach ( $cc[$gateway_list] as $k => $v ) {
 				$selected = ( $select_value == $k ) ? ' selected="selected"' : '';
 				$cc_options .= "<option value='$k'$selected>$v</option>\n";
 			}
 	
 			echo $cc_options;
-		} else {
-			return $cc[$gateway_list];
 		}
+
+		return $cc[$gateway_list];
 	}
 	
 	/**
@@ -404,7 +406,7 @@ class data extends Base_Class {
 	 * @param string $select_value if value matches key in state array, will select that option
 	 * @param string $key_format the format of the months ( 'num', 'abbr', 'full' )
 	 * @param string $value_format the format of the months ( 'num', 'abbr', 'full' )
-	 * @return nothing|array
+	 * @return array
 	 */
 	public static function days( $display = true, $select_value = '', $key_format = 'abbr', $value_format = 'full' ) {
 		$days['num'] = array( '1', '2', '3', '4', '5', '6', '7' );
@@ -414,15 +416,17 @@ class data extends Base_Class {
 		$a_days = array_combine( $days[$key_format], $days[$value_format] );
 		
 		if ( $display ) {
+            $days_options = '';
+
 			foreach ( $a_days as $k => $v ) {
 				$selected = ( $select_value == $k ) ? ' selected="selected"' : '';
 				$days_options .= "<option value='$k'$selected>$v</option>\n";
 			}
 	
 			echo $days_options;
-		} else {
-			return $a_days;
-		} 
+		}
+
+        return $a_days;
 	}
 	
 	/**
@@ -434,7 +438,7 @@ class data extends Base_Class {
 	 * @param string $select_value if value matches key in state array, will select that option
 	 * @param string $key_format the format of the months ( 'num', 'abbr', 'full' )
 	 * @param string $value_format the format of the months ( 'num', 'abbr', 'full' )
-	 * @return nothing|array
+	 * @return array
 	 */
 	public static function months( $display = true, $select_value = '', $key_format = 'abbr', $value_format = 'full' ) {
 		$months['num'] = array( '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12' );
@@ -444,15 +448,17 @@ class data extends Base_Class {
 		$a_months = array_combine( $months[$key_format], $months[$value_format] );
 		
 		if ( $display ) {
+            $months_options = '';
+
 			foreach ( $a_months as $k => $v ) {
 				$selected = ( $select_value == $k ) ? ' selected="selected"' : '';
 				$months_options .= "<option value='$k'$selected>$v</option>\n";
 			}
 	
 			echo $months_options;
-		} else {
-			return $a_months;
 		}
+
+		return $a_months;
 	}
 	
 	/**
@@ -463,7 +469,7 @@ class data extends Base_Class {
 	 * @param bool $display whether or not to return or echo the values
 	 * @param string $select_value if value matches key in state array, will select that option
 	 * @param int $amount the amount of years from the present
-	 * @return nothing|array
+	 * @return array
 	 */
 	public static function years( $display = true, $select_value = '', $amount = 10 ) {
 		global $s98_cache;
@@ -478,15 +484,17 @@ class data extends Base_Class {
 		$ending_year = $year + $amount;
 		
 		if ( $display ) {
+            $year_options = '';
+
 			for ( $i = $year; $i <= $ending_year; $i++ ) {
 				$selected = ( $select_value == $i ) ? ' selected="selected"' : '';
 				$year_options .= "<option value='$i'$selected>$i</option>\n";
 			}
 	
 			echo $year_options;
-		} else {
-			return range( $year, $ending_year );
 		}
+
+        return range( $year, $ending_year );
 	}
 	
 	/**

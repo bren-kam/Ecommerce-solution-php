@@ -7,6 +7,11 @@
  * @since 1.0
  */
 class Mobile_Marketing extends Base_Class {
+    /**
+     * Avid Mobile Customer ID
+     */
+    private $am_customer_id;
+
 	/**
 	 * Construct initializes data
 	 */
@@ -361,9 +366,274 @@ class Mobile_Marketing extends Base_Class {
 		
 		return true;
 	}
-	
+
+    /***** KEYWORDS *****/
+
+    /**
+     * Get the mobile keywords  associated with a website
+     *
+     * @param array( $where, $order_by, $limit )
+     * @return array
+     */
+    public function list_keywords( $variables ) {
+        // Get the variables
+        list( $where, $order_by, $limit ) = $variables;
+
+        $keywords = $this->db->get_results( "SELECT `mobile_keyword_id`, `name`, `keyword`, `date_started` FROM `mobile_keywords` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to list keywords.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $keywords;
+    }
+
+    /**
+     * Count the keywords associated with a website
+     *
+     * @param string $where
+     * @return array
+     */
+    public function count_keywords( $where ) {
+        $count = $this->db->get_var( "SELECT COUNT(`mobile_keyword_id`) FROM `mobile_keywords` WHERE 1 $where" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to count keywords.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $count;
+    }
+
+    /**
+     * Create keyword
+     *
+     * @param string $name
+     * @param string $keyword
+     * @param string $response
+     * @param string $date_started
+     * @param string $timezone
+     * @return array
+     */
+    public function create_keyword( $name, $keyword, $response, $date_started, $timezone ) {
+        global $user;
+
+        // We need to add it to avid mobile
+        $am_customer_id = $this->_get_am_customer_id();
+
+        if ( !$am_customer_id )
+            return false;
+
+        // Load the library
+        library('avid-mobile-api');
+
+        // Get the Keywords part
+        $am_keywords = Avid_Mobile_API::keywords( $am_customer_id );
+
+        // Create the keyword
+        $am_keyword_campaign_id = $am_keywords->create( $name, $keyword, $response, $date_started, $timezone );
+
+        if ( !$am_keyword_campaign_id )
+            return false;
+
+        // Add the keyword to our database
+        $this->db->create( 'mobile_keywords', array(
+            'am_keyword_campaign_id' => $am_keyword_campaign_id
+            , 'website_id' => $user['website']['website_id']
+            , 'name' => $name
+            , 'keyword' => $keyword
+            , 'response' => $response
+            , 'date_started' => $date_started
+            , 'timezone' => $timezone
+            , 'date_created' => dt::date('Y-m-d H:i:s')
+        ), 'iissssss' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to create keyword.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Update keyword
+     *
+     * @param int $mobile_keyword_id
+     * @param string $name
+     * @param string $keyword
+     * @param string $response
+     * @param string $date_started
+     * @param string $timezone
+     * @return array
+     */
+    public function update_keyword( $mobile_keyword_id, $name, $keyword, $response, $date_started, $timezone ) {
+        global $user;
+
+        // We need to add it to avid mobile
+        $am_customer_id = $this->_get_am_customer_id();
+
+        if ( !$am_customer_id )
+            return false;
+
+        // Load the library
+        library('avid-mobile-api');
+
+        // Get the Keywords part
+        $am_keywords = Avid_Mobile_API::keywords( $am_customer_id );
+
+        // First, get keyword, update it, then update our own
+        $am_keyword_campaign_id = $this->get_am_keyword_campaign_id( $mobile_keyword_id );
+
+        // Delete the keywords
+        if( !$am_keywords->update( $am_keyword_campaign_id, $name, $keyword, $response, $date_started, $timezone ) )
+            return false;
+
+        // Add the keyword to our database
+        $this->db->update( 'mobile_keywords', array(
+            'name' => $name
+            , 'keyword' => $keyword
+            , 'response' => $response
+            , 'date_started' => $date_started
+            , 'timezone' => $timezone
+        ), array(
+              'mobile_keyword_id' => $mobile_keyword_id
+            , 'website_id' => $user['website']['website_id']
+
+        ), 'sssss', 'ii' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to update keyword.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get a keyword
+     *
+     * @param int $mobile_keyword_id
+     * @return array
+     */
+    public function get_keyword( $mobile_keyword_id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $mobile_keyword_id = (int) $mobile_keyword_id;
+
+        $keyword = $this->db->get_row( "SELECT `mobile_keyword_id`, `name`, `keyword`, `date_started`, `timezone` FROM `mobile_keywords` WHERE `mobile_keyword_id` = $mobile_keyword_id AND `website_id` = $website_id", ARRAY_A );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get keyword.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $keyword;
+    }
+
+    /**
+     * Delete Keyword
+     *
+     * @param int $mobile_keyword_id
+     * @return bool
+     */
+    public function delete_keyword( $mobile_keyword_id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $mobile_keyword_id = (int) $mobile_keyword_id;
+
+        // First, get keyword, delete it, then delete our own
+        $am_keyword_campaign_id = $this->get_am_keyword_campaign_id( $mobile_keyword_id );
+
+        if ( $am_keyword_campaign_id ) {
+            $am_customer_id = $this->_get_am_customer_id();
+
+            // They need to have a customer ID
+            if ( !$am_customer_id )
+                return false;
+
+            // Load the library
+            library('avid-mobile-api');
+
+            // Get the Keywords part
+            $am_keywords = Avid_Mobile_API::keywords( $am_customer_id );
+
+            // Delete the keywords
+            if ( !$am_keywords->delete( $am_keyword_campaign_id ) )
+                return false;
+        }
+
+        // Remove keyword
+        $this->db->query( "DELETE FROM `mobile_keywords` WHERE `mobile_keyword_id` = $mobile_keyword_id AND `website_id` = $website_id" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to delete keyword.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get Avid Mobile Keyword Campaign ID
+     *
+     * @param $mobile_keyword_id
+     * @return string
+     */
+    public function get_am_keyword_campaign_id( $mobile_keyword_id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $mobile_keyword_id = (int) $mobile_keyword_id;
+
+        $am_keyword_campaign_id = $this->db->get_var( "SELECT `am_keyword_campaign_id` FROM `mobile_keywords` WHERE `mobile_keyword_id` = $mobile_keyword_id AND `website_id` = $website_id" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to am_keyword_campaign_id.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $am_keyword_campaign_id;
+    }
+
+    /**
+     * Check keyword availability
+     *
+     * @param string $keyword
+     * @return bool
+     */
+    public function check_keyword_availability( $keyword ) {
+        $am_customer_id = $this->_get_am_customer_id();
+
+        // They need to have a customer ID
+        if ( !$am_customer_id )
+            return false;
+
+        // Load the library
+        library('avid-mobile/keywords');
+
+        // Get the Keywords part
+        $am_keywords = new AM_Keywords( $am_customer_id );
+		
+		// See if its available
+		return $am_keywords->available( $keyword );
+    }
+
 	/***** MOBILE LISTS *****/
-	
+
 	/**
 	 * Get the mobile lists associated with a website
 	 *
@@ -373,18 +643,18 @@ class Mobile_Marketing extends Base_Class {
 	public function list_mobile_lists( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
-		
+
 		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $mobile_lists;
 	}
-	
+
 	/**
 	 * Count the mobile lists associated with a website
 	 *
@@ -393,16 +663,16 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function count_mobile_lists( $where ) {
 		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`mobile_list_id` ) FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $count;
 	}
-	
+
 	/**
 	 * Get an mobile list
 	 *
@@ -410,20 +680,23 @@ class Mobile_Marketing extends Base_Class {
 	 * @return array
 	 */
 	public function get_mobile_list( $mobile_list_id ) {
+        global $user;
+
         // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
         $mobile_list_id = (int) $mobile_list_id;
 
-		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id", ARRAY_A );
-		
+		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $mobile_list;
 	}
-	
+
 	/**
 	 * Get mobile lists
 	 *
@@ -435,22 +708,22 @@ class Mobile_Marketing extends Base_Class {
 
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
-        
-		if ( $count ) { 
+
+		if ( $count ) {
 			$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`am_group_id`, a.`name`, COUNT( DISTINCT b.`mobile_subscription_id` ) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE a.`website_id` = $website_id AND c.`status` = 1 GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
 		} else {
 			$mobile_lists = $this->db->get_results( "SELECT `mobile_list_id`, `am_group_id`, `name` FROM `mobile_lists` WHERE `website_id` = $website_id ORDER BY `name`", ARRAY_A );
 		}
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $mobile_lists;
 	}
-	
+
 	/**
 	 * Create mobile list
 	 *
@@ -476,7 +749,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Create the list on our end
 		$this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siis' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create mobile list.', __LINE__, __METHOD__ );
@@ -485,7 +758,7 @@ class Mobile_Marketing extends Base_Class {
 
 		return $this->db->insert_id;
 	}
-	
+
 	/**
 	 * Update mobile list
 	 *
@@ -502,16 +775,16 @@ class Mobile_Marketing extends Base_Class {
         // @avid
 
 		$this->db->update( 'mobile_lists', array( 'name' => $name, 'description' => $description ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $website_id ), 'ss', 'ii' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Delete Mobile list
 	 *
@@ -520,7 +793,7 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function delete_mobile_list( $mobile_list_id ) {
 		global $user;
-		
+
 		// Delete Avoid Mobile Group
         // @avid
 
@@ -530,18 +803,18 @@ class Mobile_Marketing extends Base_Class {
 
 		// Delete mobile list
 		$this->db->query( "DELETE FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/***** MOBILE MESSAGES *****/
-	
+
 	/**
 	 * Add a new message
 	 *
@@ -565,7 +838,7 @@ class Mobile_Marketing extends Base_Class {
 
 		return $this->db->insert_id;
 	}
-	
+
 	/**
 	 * Update a message
 	 *
@@ -586,25 +859,25 @@ class Mobile_Marketing extends Base_Class {
 		$this->add_message_lists( $mobile_message_id, $mobile_list_ids );
 
 		$this->db->update( 'mobile_messages', array( 'message' => $message, 'date_sent' => $date_sent ), array( 'website_id' => $user['website']['website_id'], 'mobile_message_id' => $mobile_message_id ), 'ss', 'ii' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		// Update the campaign
 		$message = $this->get_message( $mobile_message_id );
-		
+
 		// If they don't have a campaign created -- don't do anything
 		if ( 0 == $message['am_blast_id'] )
 			return true;
-		
+
 		// @avid update
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Adds mobile list id associations to a message
 	 *
@@ -614,30 +887,30 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	private function add_message_lists( $mobile_message_id, $mobile_list_ids ) {
 		global $user;
-		
+
 		// Type Juggling
 		$mobile_message_id = (int) $mobile_message_id;
         $website_id = (int) $user['website']['website_id'];
-		
+
 		// Delete any existing ones
 		$this->db->query( "DELETE a.* FROM `mobile_message_associations` AS a LEFT JOIN `mobile_messages` AS b ON ( a.`mobile_message_id` = b.`mobile_message_id` ) WHERE a.`mobile_message_id` = $mobile_message_id AND b.`website_id` = $website_id" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		$values = '';
-		
+
 		if ( is_array( $mobile_list_ids ) )
 		foreach ( $mobile_list_ids as $ml_id ) {
 			if ( !empty( $values ) )
 				$values .= ',';
-		
+
 			$values .= "( $mobile_message_id," . (int) $ml_id . ' )';
 		}
-		
+
 		$this->db->query( "INSERT INTO `mobile_message_associations` ( `mobile_message_id`, `mobile_list_id` ) VALUES $values" );
 
 		// Handle any error
@@ -645,10 +918,10 @@ class Mobile_Marketing extends Base_Class {
 			$this->err( 'Failed to create mobile message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * List Mobile Messages
 	 *
@@ -658,18 +931,18 @@ class Mobile_Marketing extends Base_Class {
 	public function list_messages( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
-		
+
 		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `summary`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $messages;
 	}
-	
+
 	/**
 	 * Count Mobile Messages
 	 *
@@ -678,16 +951,16 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function count_messages( $where ) {
 		$count = $this->db->get_var( "SELECT COUNT( `mobile_message_id` ) FROM `mobile_messages` WHERE 1 $where" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $count;
 	}
-	
+
 	/**
 	 * Get a message
 	 *
@@ -697,36 +970,36 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function get_message( $mobile_message_id, $extra = true ) {
 		global $user;
-		
+
 		// Type Juggling
 		$mobile_message_id = (int) $mobile_message_id;
 		$website_id = (int) $user['website']['website_id'];
-		
+
 		$message = $this->db->get_row( "SELECT `mobile_message_id`, `am_blast_id`, `message`, `status`, `date_sent` FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id AND `website_id` = $website_id", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		if ( $extra && $message ) {
 			// Get the mobile lists
 			$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, b.`name` FROM `mobile_message_associations` AS a INNER JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_message_id` = $mobile_message_id AND b.`website_id` = $website_id", ARRAY_A );
-			
+
 			// Handle any error
 			if ( $this->db->errno() ) {
 				$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 				return false;
 			}
-			
+
 			// Give it to the message
 			$message['mobile_lists'] = ar::assign_key( $mobile_lists, 'mobile_list_id', true );
 		}
-		
+
 		return $message;
 	}
-	
+
 	/**
 	 * Deletes a message
 	 *
@@ -735,11 +1008,11 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function delete_message( $mobile_message_id ) {
 		global $user;
-		
+
 		// Type Juggling
 		$mobile_message_id = (int) $mobile_message_id;
         $website_id = (int) $user['website']['website_id'];
-		
+
 		// Get the message
 		$message = $this->get_message( $mobile_message_id, false );
 
@@ -749,31 +1022,31 @@ class Mobile_Marketing extends Base_Class {
 
 		// Delete the mobile message
 		$this->db->query( "DELETE FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id AND `website_id` = $website_id" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		// If a message did not get deleted
 		if ( !$this->db->rows_affected )
 			return true;
-		
+
 		// Delete mobile message associations
 		$this->db->query( "DELETE FROM `mobile_message_associations` WHERE `mobile_message_id` = $mobile_message_id" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete mobile message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/***** AUTORESPONDERS *****/
-	
+
 	/**
 	 * List autoresponders
 	 *
@@ -783,18 +1056,18 @@ class Mobile_Marketing extends Base_Class {
 	public function list_autoresponders( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
-		
+
 		$autoresponders = $this->db->get_results( "SELECT `mobile_autoresponder_id`, `name`, `default`, `date_created` FROM `mobile_autoresponders` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list autoresponders.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $autoresponders;
 	}
-	
+
 	/**
 	 * Count autoresponders
 	 *
@@ -803,21 +1076,21 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function count_autoresponders( $where ) {
 		$count = $this->db->get_var( "SELECT COUNT( `mobile_autoresponder_id` ) FROM `mobile_autoresponders` WHERE 1 $where" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to count autoresponders.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $count;
 	}
-	
+
 	/**
 	 * Get an autoresponder
-	 * 
+	 *
 	 * @param int $mobile_autoresponder_id
-	 * @return array 
+	 * @return array
 	 */
 	public function get_autoresponder( $mobile_autoresponder_id ) {
 		global $user;
@@ -827,16 +1100,16 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
 		$autoresponder = $this->db->get_row( "SELECT a.`mobile_autoresponder_id`, a.`mobile_list_id`, a.`name`, a.`message`, a.`default`, b.`name` AS mobile_list FROM `mobile_autoresponders` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_autoresponder_id` = $mobile_autoresponder_id AND a.`website_id` = $website_id", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $autoresponder;
 	}
-		
+
 	/**
 	 * Create autoresponder
 	 *
@@ -847,18 +1120,18 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function create_autoresponder( $name, $message, $mobile_list_id ) {
 		global $user;
-		
+
 		$this->db->insert( 'mobile_autoresponders', array( 'website_id' => $user['website']['website_id'], 'mobile_list_id' => $mobile_list_id, 'name' => $name, 'message' => $message, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisss' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $this->db->insert_id;
 	}
-	
+
 	/**
 	 * Update autoresponder
 	 *
@@ -870,23 +1143,23 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function update_autoresponder( $mobile_autoresponder_id, $name, $message, $mobile_list_id ) {
 		global $user;
-		
+
 		$this->db->update( 'mobile_autoresponders', array( 'mobile_list_id' => $mobile_list_id, 'name' => $name, 'message' => $message ), array( 'mobile_autoresponder_id' => $mobile_autoresponder_id, 'website_id' => $user['website']['website_id'] ), 'iss', 'ii' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Get available autoresponder mobile lists
-	 * 
+	 *
 	 * @param int $mobile_autoresponder_id
-	 * @return array 
+	 * @return array
 	 */
 	public function get_autoresponder_mobile_lists( $mobile_autoresponder_id ) {
 		global $user;
@@ -896,16 +1169,16 @@ class Mobile_Marketing extends Base_Class {
         $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
 
 		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`mobile_keyword_id`, a.`name` FROM `mobile_lists`AS a LEFT JOIN `mobile_autoresponders` AS b ON ( a.`website_id` = b.`website_id` AND a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` <> 0 AND ( b.`mobile_list_id` IS NULL OR b.`mobile_list_id` = $mobile_autoresponder_id ) GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $mobile_lists;
 	}
-	
+
 	/**
 	 * Delete autoresponder
 	 *
@@ -920,18 +1193,18 @@ class Mobile_Marketing extends Base_Class {
         $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
 
 		$this->db->query( "DELETE FROM `mobile_autoresponders` WHERE `mobile_autoresponder_id` = $mobile_autoresponder_id AND `website_id` = $website_id" );
-		 
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	/***** EMAIL SETTINGS *****/
-	
+
 	/**
 	 * Get mobile settings
 	 *
@@ -945,7 +1218,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Get settings
 		$settings = $this->db->get_results( "SELECT `key`, `value` FROM `mobile_settings` WHERE `website_id` = $website_id", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get mobile settings.', __LINE__, __METHOD__ );
@@ -954,7 +1227,7 @@ class Mobile_Marketing extends Base_Class {
 
 		return ( $settings ) ? ar::assign_key( $settings, 'key', true ) : array();
 	}
-	
+
 	/**
 	 * Get Mobile Setting
 	 *
@@ -965,16 +1238,16 @@ class Mobile_Marketing extends Base_Class {
 		global $user;
 
 		$value = $this->db->prepare( 'SELECT `value` FROM `mobile_settings` WHERE `key` = ? AND `website_id` = ?', 'si', $key, $user['website']['website_id'] )->get_var('');
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get mobile setting.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $value;
 	}
-	
+
 	/**
 	 * Sets mobile settings
 	 *
@@ -983,71 +1256,45 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function set_settings( $settings ) {
 		global $user;
-		
+
 		$values = '';
-		
+
 		// Make the settings safe for SQL
 		foreach ( $settings as $k => $v ) {
 			if ( !empty( $values ) )
 				$values .= ',';
-			
+
 			$values .= '(' . (int) $user['website']['website_id'] . ", '" . $this->db->escape( $k ) . "', '" . $this->db->escape( $v ) . "')";
 		}
-		
+
 		$this->db->query( "INSERT INTO `mobile_settings` ( `website_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update all the mobile settings', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/***** OTHER FUNCTIONS *****/
-	
-	/**
-	 * Initiate MailChimp
-	 *
-	 * @return pointer
-	 */
-	private function mailchimp_instance() {
-		// If it's set, use it
-		if ( isset( $this->mc ) )
-			return $this->mc;
-		
-		// Include the library and instantiate it
-		library( 'MCAPI' );
-		$this->mc = new MCAPI( config::key('mc-api') );
-		
-		return $this->mc;
-	}
 
-	/**
-	 * Removes unsubscribes
-	 *
-	 * @return bool
-	 */
-	private function _remove_bad_subscribers() {
-		// @avid
-		
-		return true;
-	}
-	
-	/**
-	 * Updates mobile lists
-	 *
-	 * @return bool
-	 */
-	private function update_mobile_lists() {
-		global $user;
-		
+    /**
+     * Get the Avid Mobile Customer ID
+     *
+     * @return string
+     */
+    private function _get_am_customer_id() {
+        if ( !$this->am_customer_id ) {
+            // Now we need to get the site's mobile ID
+            $w = new Websites();
 
-        //avid
-		
-		return true;
-	}
+            $this->am_customer_id = $w->get_setting( 'avid-mobile-customer-id' );
+        }
+
+        return $this->am_customer_id;
+    }
 
 	
 	/**

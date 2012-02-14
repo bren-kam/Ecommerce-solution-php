@@ -24,7 +24,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Craigslist Templates'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'craigslist/' ); ?>
+	<?php get_sidebar( 'craigslist/', 'templates' ); ?>
 	<div id="subcontent">
 		<?php
 		if ( isset( $_GET['m'] ) )

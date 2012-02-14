@@ -96,7 +96,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Craigslist Ad Template'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'craigslist/' ); ?>
+	<?php get_sidebar( 'craigslist/', 'templates' ); ?>
 	<div id="subcontent">
 		<?php
 		nonce::field( 'create-craigslist', '_ajax_create_craigslist' );
@@ -124,17 +124,16 @@ get_header();
 				<h2><?php echo _('Syntax Tags'); ?></h2>
 				<div class="box-content">
                	  <p style="line-height:18px;">
-                    [Product Name] <br/>
-                    [Store Name] <br/>
-                    [Store Logo] <br/>
-                    [Category] <br/>
-                    [Brand] <br/>
-                    [Product Description] <br/>
-                    [Product Specs] <br/>
-                    [Photo]<br/>
-                    <!--[Attributes]<br/>--> 
-                    [SKU] 
-    				</p>                
+                    [<?php echo _('Product Name'); ?>]<br />
+                    [<?php echo _('Store Name'); ?>]<br />
+                    [<?php echo _('Store Logo'); ?>]<br />
+                    [<?php echo _('Category'); ?>]<br />
+                    [<?php echo _('Brand'); ?>]<br />
+                    [<?php echo _('Product Description'); ?>]<br />
+                    [<?php echo _('Product Specs'); ?>]<br />
+                    [<?php echo _('SKU'); ?>]<br />
+                    [<?php echo _('Photo'); ?>]<br />
+    				</p>
 					<br clear="all" />
 				</div>
 			</div>
@@ -152,7 +151,7 @@ get_header();
 		<div class="page-content">
 			<?php 
 			if ( isset( $errs ) )
-				echo "<p class='red'>$errs</p>";
+				echo "<p class='red'>$errs</p><br />";
 			?>
 			<input type="hidden" id="hCraigslistID" name="hCraigslistID" value="<?php echo ( isset( $template['craigslist_template_id'] ) ) ? $template['craigslist_template_id'] : ''; ?>" />
 			<div id="dTitleContainer"><input type="text" name="tTitle" id="tTitle" title="<?php echo _('Ad Title'); ?>" value="<?php echo ( isset( $template['title'] ) ) ? str_replace( '"', '&quot;', $template['title'] ) : _('Ad Title'); ?>" maxlength="200" /></div>

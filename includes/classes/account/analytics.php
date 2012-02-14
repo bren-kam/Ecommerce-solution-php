@@ -546,10 +546,8 @@ class Analytics extends Base_Class {
 		$s = $mc->campaignStats( $mc_campaign_id );
 		
 		// Handle errors
-		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Campaign Statistics\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
+		if ( $mc->errorCode )
 			return false;
-		}
 		
 		// Update the analytics
 		$this->update_analytics( $mc_campaign_id, $s );

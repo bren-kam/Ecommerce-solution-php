@@ -26,6 +26,7 @@ $v = new Validator();
 $v->form_name = 'fAddEditAutoresponder';
 $v->add_validation( 'tName', 'req' , _('The "Name" field is required') );
 $v->add_validation( 'taMessage', 'req', _('The "Message" field is required') );
+$v->add_validation( 'taMessage', 'maxlen=140', _('The "Message" field may only contain up to 140 characters') );
 
 // Add validation
 add_footer( $v->js_validation() );
@@ -63,7 +64,8 @@ if ( $mobile_autoresponder_id ) {
 
 $mobile_lists = $m->get_autoresponder_mobile_lists( isset( $autoresponder['mobile_list_id'] ) ? $autoresponder['mobile_list_id'] : 0 );
 
-javascript( 'mammoth', 'mobile-marketing/autoresponders/add-edit' );
+javascript( 'mobile-marketing/textareas' );
+css('mobile-marketing/main');
 
 $selected = "mobile_marketing";
 $sub_title = ( $mobile_autoresponder_id ) ? _('Edit Autoresponder') : _('Add Autoresponder');
@@ -125,10 +127,11 @@ get_header();
 						?>
 					</td>
 				</tr>
+                <tr>
+                    <td><label for="taMessage"><?php echo _('Message'); ?>:</label></td>
+                    <td class="top counter"><textarea name="taMessage" id="taMessage" cols="50" rows="5"><?php echo ( !$success && isset( $_POST['taMessage'] ) ) ? $_POST['taMessage'] : $autoresponder['message']; ?></textarea></td>
+                </tr>
 			</table>
-			<br />
-			<textarea name="taMessage" id="taMessage" cols="50" rows="5"><?php echo ( !$success && isset( $_POST['taMessage'] ) ) ? $_POST['taMessage'] : $autoresponder['message']; ?></textarea>
-			<br />
 
 			<br />
 			<p><input type="submit" class="button" value="<?php echo ( $mobile_autoresponder_id ) ? _('Update Autresponder') : _('Add Autoresponder'); ?>" /></p>
