@@ -93,7 +93,7 @@ $cache = &$s98_cache; // Setting up a point to all cache functions
 require_once INC_PATH . 'labels/' . DOMAIN . '.php';
 
 /** Routing */
-require_once ABS_PATH . 'routing.php';
+require_once OPERATING_PATH . 'routing.php' ;
 
 
 if ( PROFILE ) {

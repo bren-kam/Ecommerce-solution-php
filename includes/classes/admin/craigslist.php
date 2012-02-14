@@ -148,7 +148,7 @@ class Craigslist extends Base_Class {
 		}
 		
 		return $craigslist_count;
-	}
+    }
 
 	/**
 	 * Gets the data for an autocomplete request
@@ -176,6 +176,7 @@ class Craigslist extends Base_Class {
 	 * Gets random data for creating a preview
 	 * 
 	 * @param int $category_id
+     * @param bool $bottom
 	 * @return array $results
 	 */
 	public function get_preview_data( $category_id, $bottom ) {
@@ -229,7 +230,259 @@ class Craigslist extends Base_Class {
 		
 		return $results;
 	}
-	
+
+    /***** HEADLINES *****/
+
+    /**
+     * Get Craigslist Headline
+     *
+     * @param int $craigslist_headline_id
+     * @return array
+     */
+    public function get_headline( $craigslist_headline_id ) {
+        // Type Juggling
+        $craigslist_headline_id = (int) $craigslist_headline_id;
+
+        $headline = $this->db->get_row( "SELECT `craigslist_headline_id`, `category_id`, `headline` FROM `craigslist_headlines` WHERE `craigslist_headline_id` = $craigslist_headline_id", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get headline.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $headline;
+    }
+
+    /**
+     * Create Craigslist Headline
+     *
+     * @param int $category_id
+     * @param string $headline
+     * @return int
+     */
+    public function create_headline( $category_id, $headline ) {
+        $this->db->insert( 'craigslist_headlines', array( 'category_id' => $category_id, 'headline' => $headline, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create headline.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Delete a Craigslist Headline
+     *
+     * @param int $craigslist_headline_id
+     * @return bool
+     */
+    public function delete_headline( $craigslist_headline_id ) {
+        // Type Juggling
+        $craigslist_headline_id = (int) $craigslist_headline_id;
+
+        // Delete the market
+        $this->db->query( "DELETE FROM `craigslist_headlines` WHERE `craigslist_headline_id` = $craigslist_headline_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to delete craigslist headline.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+     * Update Craigslist Headlines
+     *
+     * @param int $craigslist_headline_id
+     * @param int $category_id
+     * @param string $headline
+     * @return bool
+     */
+    public function update_headline( $craigslist_headline_id, $category_id, $headline ) {
+        $this->db->update( 'craigslist_headlines', array( 'category_id' => $category_id, 'headline' => $headline ), array( 'craigslist_headline_id' => $craigslist_headline_id ), 'is', 'i' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update headline.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+	 * List Craigslist Headlines
+	 *
+	 * @param string $where
+	 * @param string $order_by
+	 * @param string $limit
+	 * @return array
+	 */
+	public function list_craigslist_headlines( $where, $order_by, $limit ) {
+		// Get the headlines
+		$headlines = $this->db->get_results( "SELECT a.`craigslist_headline_id`, a.`headline`, a.`date_created`, b.`name` AS category FROM `craigslist_headlines` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list craigslist headlines.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $headlines;
+	}
+
+    /**
+	 * Count the craigslist headlines
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_craigslist_headlines( $where ) {
+		// Get the craigslist market count
+		$headline_count = $this->db->get_var( "SELECT COUNT( a.`craigslist_headline_id` ) FROM `craigslist_headlines` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE 1 $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count craigslist headlines.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $headline_count;
+	}
+
+    /***** MARKETS *****/
+
+    /**
+     * Get Craigslist Market
+     *
+     * @param int $craigslist_market_id
+     * @return array
+     */
+    public function get_market( $craigslist_market_id ) {
+        // Type Juggling
+        $craigslist_market_id = (int) $craigslist_market_id;
+
+        $market = $this->db->get_row( "SELECT `craigslist_market_id`, `state`, `city`, `area` FROM `craigslist_markets` WHERE `craigslist_market_id` = $craigslist_market_id", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get market.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $market;
+    }
+
+    /**
+     * Create Craigslist Market
+     *
+     * @param string $state
+     * @param string $city
+     * @param string $area
+     * @return int
+     */
+    public function create_market( $state, $city, $area ) {
+        $this->db->insert( 'craigslist_markets', array( 'state' => $state, 'city' => $city, 'area' => $area, 'date_created' => dt::date('Y-m-d H:i:s') ), 'ssss' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create market.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Update Craigslist Market
+     *
+     * @param int $craigslist_market_id
+     * @param string $state
+     * @param string $city
+     * @param string $area
+     * @return bool
+     */
+    public function update_market( $craigslist_market_id, $state, $city, $area ) {
+        $this->db->update( 'craigslist_markets', array( 'state' => $state, 'city' => $city, 'area' => $area ), array( 'craigslist_market_id' => $craigslist_market_id ), 'sss', 'i' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update market.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+     * Delete a Craigslist Market
+     *
+     * @param int $craigslist_market_id
+     * @return bool
+     */
+    public function delete_market( $craigslist_market_id ) {
+        // Type Juggling
+        $craigslist_market_id = (int) $craigslist_market_id;
+
+        // Delete the market
+        $this->db->query( "DELETE FROM `craigslist_markets` WHERE `craigslist_market_id` = $craigslist_market_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to delete craigslist market.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+	 * List Craigslist Markets
+	 *
+	 * @param string $where
+	 * @param string $order_by
+	 * @param string $limit
+	 * @return array
+	 */
+	public function list_craigslist_markets( $where, $order_by, $limit ) {
+		// Get the markets
+		$markets = $this->db->get_results( "SELECT `craigslist_market_id`, CONCAT( IF( '' <> `area`, CONCAT( `area`, ' - ', `city` ), `city` ), ', ', `state` )	AS market, `date_created` FROM `craigslist_markets` WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list craigslist markets.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $markets;
+	}
+
+    /**
+	 * Count the craigslist markets
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_craigslist_markets( $where ) {
+		// Get the craigslist market count
+		$market_count = $this->db->get_var( "SELECT COUNT(`craigslist_market_id`) FROM `craigslist_markets` WHERE 1 $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count craigslist markets.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $market_count;
+	}
+
+    /***** OTHER *****/
+
 	/**
 	 * Report an error
 	 *
@@ -238,6 +491,7 @@ class Craigslist extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
