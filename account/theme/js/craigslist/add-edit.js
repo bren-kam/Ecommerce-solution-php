@@ -41,7 +41,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			}
 			
 			// It was not cached, get data
-			$.post( '/ajax/products/autocomplete/', { '_nonce' : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'], 'owned' : 1 }, function( autocompleteResponse ) {
+			$.post( '/ajax/products/autocomplete/', { '_nonce' : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( autocompleteResponse ) {
 				// Assign global cache the response data
 				cache[cacheType][request['term']] = autocompleteResponse['suggestions'];
 				

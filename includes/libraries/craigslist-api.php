@@ -127,6 +127,24 @@ class Craigslist_API {
         return $response;
     }
 
+    /**
+     * Get Tags
+     *
+     * @param array $tag_ids
+     * @return array
+     *  0 => ( array(
+     *      id => (int)
+     *      type => (enum:category, item)
+     *      name => (string)
+     *  )
+     */
+    public function get_tags( array $tag_ids ) {
+        // Add customer
+        $response = $this->_execute( 'gettags', $tag_ids );
+
+        return $response;
+    }
+
     /*************************/
     /* Start: Public Methods */
     /*************************/
@@ -158,6 +176,15 @@ class Craigslist_API {
      */
     public function get_response() {
         return $this->response;
+    }
+
+    /**
+     * Get API Post
+     *
+     * @return bool
+     */
+    public function get_post() {
+        return $this->post;
     }
 
     /**************************/
