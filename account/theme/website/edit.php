@@ -76,7 +76,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 			break;
 			
 			case 'current-offer':
-				$pagemeta = array( 'email' => $_POST['tEmail'], 'display-coupon' => $_POST['cbDisplayCoupon'] );
+				$pagemeta = array(
+                    'email' => $_POST['tEmail']
+                    , 'display-coupon' => $_POST['cbDisplayCoupon']
+                    , 'email-coupon' => ( isset( $_POST['cbEmailCoupon'] ) ) ? 'yes' : 'no'
+                );
 			break;
 			
 			case 'financing':
@@ -118,7 +122,7 @@ switch ( $page['slug'] ) {
 		javascript( 'website/pages/current-offer' );
 		$coupon = $wa->get_by_name( $website_page_id, 'coupon' );
 		
-		$metadata = $w->get_pagemeta_by_key( $website_page_id, 'email', 'display-coupon' );
+		$metadata = $w->get_pagemeta_by_key( $website_page_id, 'email', 'display-coupon', 'email-coupon' );
 	break;
 	
 	case 'financing':

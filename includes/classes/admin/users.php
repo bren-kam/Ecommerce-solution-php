@@ -70,7 +70,7 @@ class Users extends Base_Class {
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the users
-		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 AND b.`status` = 1 $where GROUP BY a.`user_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 AND ( b.`status` = 1 OR b.`status` IS NULL ) $where GROUP BY a.`user_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

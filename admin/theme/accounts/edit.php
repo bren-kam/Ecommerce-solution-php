@@ -57,6 +57,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
  			'product_catalog' => $_POST['cbProductCatalog'],
 			'blog' => $_POST['cbBlog'],
 			'email_marketing' => $_POST['cbEmailMarketing'],
+            'mobile_marketing' => $_POST['cbMobileMarketing'],
 			'shopping_cart' => $_POST['cbShoppingCart'],
 			'seo' => $_POST['cbSEO'],
 			'room_planner' => $_POST['cbRoomPlanner'],
@@ -71,7 +72,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iisssssssiisiiiiiiiiiiissi';
+		$fields_safety = 'iisssssssiisiiiiiiiiiiiissi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -129,6 +130,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
+            , 'avid-mobile-customer-id' => $_POST['tAvidMobileCustomerID']
 		) );
 	}
 }
@@ -148,6 +150,7 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ashley-ftp-username'
     , 'ashley-ftp-password'
     , 'social-media-add-ons'
+    , 'avid-mobile-customer-id'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -287,6 +290,7 @@ get_header();
 						<p><input type="checkbox" name="cbLimitedProducts" id="cbLimitedProducts" value="1" class="cb"<?php if ( '1' == $settings['limited-products'] ) echo ' checked="checked"'; ?> /> <label for="cbLimitedProducts"><?php echo _('Limited Products'); ?></label></p>
 						<p><input type="checkbox" name="cbBlog" id="cbBlog" value="1" class="cb"<?php if ( $web['blog'] ) echo ' checked="checked"'; ?> /> <label for="cbBlog"><?php echo _('Blog'); ?></label></p>
 						<p><input type="checkbox" name="cbEmailMarketing" id="cbEmailMarketing" value="1" class="cb"<?php if ( $web['email_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label></p>
+                        <p><input type="checkbox" name="cbMobileMarketing" id="cbMobileMarketing" value="1" class="cb"<?php if ( $web['mobile_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbMobileMarketing"><?php echo _('Mobile Marketing'); ?></label></p>
 						<p><input type="checkbox" name="cbShoppingCart" id="cbShoppingCart" value="1" class="cb"<?php if ( $web['shopping_cart'] ) echo ' checked="checked"'; ?> /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label></p>
 						<p><input type="checkbox" name="cbSEO" id="cbSEO" value="1" class="cb"<?php if ( $web['seo'] ) echo 'checked="checked"'; ?> /> <label for="cbSEO"><?php echo _('SEO'); ?></label></p>
 						<p><input type="checkbox" name="cbRoomPlanner" id="cbRoomPlanner" value="1" class="cb"<?php if ( $web['room_planner'] ) echo ' checked="checked"'; ?> /> <label for="cbRoomPlanner"><?php echo _('Room Planner'); ?></label></p>
@@ -401,6 +405,10 @@ get_header();
 						<p>
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>
 							<input type="text" name="tMCListID" id="tMCListID" value="<?php echo $web['mc_list_id']; ?>" class="tb" />
+						</p>
+                        <p>
+							<label for="tAvidMobileCustomerID"><?php echo _('Avid Mobile Client ID'); ?>:</label>
+							<input type="text" name="tAvidMobileCustomerID" id="tAvidMobileCustomerID" value="<?php if ( isset( $settings['avid-mobile-customer-id'] ) ) echo $settings['avid-mobile-customer-id']; ?>" class="tb" />
 						</p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 

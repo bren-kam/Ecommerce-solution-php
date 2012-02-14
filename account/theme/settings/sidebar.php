@@ -7,4 +7,5 @@
 	?>
 	<a href="/settings/authorized-users/" title="<?php echo _('Authorized Users'); ?>" class="top"><?php echo _('Authorized Users'); ?></a>
 	<?php } ?>
+    <a href="/settings/logo-and-phone/" class="top" title="<?php echo _('Logo &amp; Phone'); ?>"><?php echo _('Logo &amp; Phone'); ?></a>
 </div>

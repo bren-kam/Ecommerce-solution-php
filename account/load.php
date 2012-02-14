@@ -7,10 +7,10 @@
  * $cache - Cache
  */
 
-//define( 'PROFILE', ( 'true' == $_GET['profile'] ) ? true : false );
+define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 
 /** Define LIVE if the website is live */
-define( 'LIVE', false );
+define( 'LIVE', true );
 
 /** Let other parts of the system know this is not the admin section */
 define( 'ADMIN', false );
@@ -30,14 +30,14 @@ define( 'INC_PATH', ABS_PATH . 'includes/' );
 /** Define THEME_PATH as the place with all the pages */
 define( 'THEME_PATH', ABS_PATH . 'account/theme/' );
 
-/*
+
 if ( PROFILE ) {
 	// Enable XHProf (profiler)
-	require('/home/develop4/xhprof_lib/utils/xhprof_lib.php');
-	require('/home/develop4/xhprof_lib/utils/xhprof_runs.php');
+	require '/home/imaginer/xhprof_lib/utils/xhprof_lib.php';
+	require '/home/imaginer/xhprof_lib/utils/xhprof_runs.php';
 	xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 }
-*/
+
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
@@ -91,7 +91,7 @@ require_once INC_PATH . 'labels/' . DOMAIN . '.php';
 /** Routing */
 require_once OPERATING_PATH . 'routing.php' ;
 
-/*
+
 if ( PROFILE ) {
 	// End XHProf and save query
 	$profiler_namespace = 'account.imagineretailer.com';  // namespace for your application
@@ -102,4 +102,4 @@ if ( PROFILE ) {
 	// url to the XHProf UI libraries (change the host name and path)
 	$profiler_url = sprintf('http://account.imagineretailer.com/xhprof_html/index.php?run=%s&source=%s', $run_id, $profiler_namespace);
 	echo '<a href="'. $profiler_url .'" target="_blank">Profiler output</a>';
-}*/
+}
