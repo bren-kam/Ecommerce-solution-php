@@ -516,6 +516,26 @@ class Websites extends Base_Class {
 		
 		return true;
 	}
+
+    /**
+	 * Deletes the website image dimensions for a URL
+	 *
+	 * @param string $url
+	 * @return bool
+	 */
+	public function delete_image_dimensions( $url ) {
+        global $user;
+
+		$this->db->prepare( 'DELETE FROM `website_image_dimensions` WHERE `website_id` = ? AND `image_url` = ?', 'is', $user['website']['website_id'], $url )->query('');
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to delete website image dimensions.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return true;
+	}
 	
 	/**
 	 * Report an error

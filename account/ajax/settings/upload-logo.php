@@ -47,6 +47,9 @@ $ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred
 if ( is_file( $image_path ) )
     unlink( $image_path );
 
+// Delete the dimensions of the old logo
+$w->delete_image_dimensions( $user['website']['logo'] );
+
 // Update the top section
 $w->update( array( 'logo' => $upload_url ), 's' );
 
