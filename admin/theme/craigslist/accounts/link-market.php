@@ -115,7 +115,7 @@ get_header();
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td><input type="submit" class="button" value="<?php _('Link Market'); ?>" /></td>
+                    <td><input type="submit" class="button" value="<?php echo _('Link Market'); ?>" /></td>
                 </tr>
 		    </table>
             <?php nonce::field('link-market'); ?>
