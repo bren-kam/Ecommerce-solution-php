@@ -84,6 +84,27 @@ class Craigslist extends Base_Class {
 		
 		return $results;
 	}
+
+    /**
+	 * Gets a random headline
+	 *
+	 * @param int $category_id
+	 * @return string
+	 */
+	public function get_random_headline( $category_id ) {
+        // Type Juggling
+        $category_id = (int) $category_id;
+
+		$headlines = $this->db->get_col( "SELECT `headline` FROM `craigslist_headlines` WHERE `category_id` = $category_id`" );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist headline.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $headlines[rand( 0, count( $headlines ) )];
+	}
 	
 	/**
 	 * Count the number of templates for a particular category
