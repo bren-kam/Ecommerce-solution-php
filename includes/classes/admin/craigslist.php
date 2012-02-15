@@ -384,7 +384,7 @@ class Craigslist extends Base_Class {
      * @return array
      */
     public function get_unlinked_accounts() {
-        $accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title` FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) WHERE a.`status` = 1 AND b.`website_id` IS NULL", ARRAY_A );
+        $accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title` FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) WHERE a.`status` = 1 AND a.`craigslist` = 1 AND b.`website_id` IS NULL", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {

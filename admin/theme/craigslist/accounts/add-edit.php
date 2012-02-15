@@ -63,7 +63,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-acc
 
 // Get everything
 if ( $website_id || $success ) {
-	$account = ( !$website_id && $success ) ? $craigslist->get_account( $website['website_id'] ) : $w->get_account( $website_id );
+	$account = ( !$website_id && $success ) ? $craigslist->get_account( $website['website_id'] ) : $craigslist->get_account( $website_id );
 } else {
     // Need to get the accounts
     $accounts = $craigslist->get_unlinked_accounts();
