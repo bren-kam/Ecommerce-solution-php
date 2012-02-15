@@ -114,7 +114,7 @@ get_header();
             <br /><br />
             <br /><br />
         <?php } else { ?>
-		<form name="fAddEditAccount" id="fAddEditAccount" action="/craigslist/markets/add-edit/<?php if ( $website_id ) echo "?wid=$website_id"; ?>" method="post">
+		<form name="fAddEditAccount" id="fAddEditAccount" action="/craigslist/accounts/add-edit/<?php if ( $website_id ) echo "?wid=$website_id"; ?>" method="post">
 		    <table cellpadding="0" cellspacing="0">
                 <?php if ( !$website_id ) { ?>
                 <tr>
