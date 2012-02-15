@@ -1,5 +1,5 @@
 /**
- * Craigslist - Markets List Page
+ * Craigslist - Accounts List Page
  */
 
 // When the page has loaded
@@ -15,11 +15,11 @@ jQuery( postLoad );
 function postLoad( $ ) {
 	// Initialize Data Tables
 	TableToolsInit.sSwfPath = "/media/flash/ZeroClipboard.swf";
-	listCraigslistMarkets = $('#tListCraigslistMarkets').dataTable({
+	$('#tListCraigslistAccounts').dataTable({
 		'bProcessing': true,
 		'bServerSide': true,
 		'bAutoWidth': false,
-		'sAjaxSource': '/ajax/craigslist/markets/list/',
+		'sAjaxSource': '/ajax/craigslist/accounts/list/',
 		'iDisplayLength' : 30,
 		"oLanguage": {
 			"sLengthMenu": '<select><option value="30">30</option><option value="50">50</option><option value="100">100</option></select>',
@@ -39,24 +39,6 @@ function postLoad( $ ) {
 		},
 		"aaSorting": [[0, 'asc']],
 		"sDom" : '<"top"Tlr>t<"bottom"pi>'
-	});
-	
-	// Delete a craigslist market
-	$('.delete-market').live( 'click', function() {
-		var craigslistMarketID = $(this).attr('id').replace( 'aDelete', '' );
-		
-		if ( !confirm( "Are you sure you want to delete this market? This action cannot be undone." ) )
-			return;
-		
-		$.post( '/ajax/craigslist/markets/delete/', { '_nonce': $('#_ajax_delete_craigslist_market').val(), 'cmid': craigslistMarketID }, function( response ) {
-			// Handle any errors
-			if ( !response['result'] ) {
-				alert( response['error'] );
-				return;
-			}
-			
-			listCraigslistMarkets.fnDraw();
-		}, 'json' );
 	});
 }
 

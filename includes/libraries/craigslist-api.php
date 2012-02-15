@@ -94,7 +94,7 @@ class Craigslist_API {
         // Add customer
         $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name' ) );
 
-        return $response->customer_id;
+        return $response->market_id;
     }
 
     /**

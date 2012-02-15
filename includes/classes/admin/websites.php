@@ -1100,6 +1100,25 @@ class Websites extends Base_Class {
 		
 		return $settings;
 	}
+
+    /**
+	 * Get Website Setting
+	 *
+     * @param int $website_id
+	 * @param string $key
+	 * @return string
+	 */
+	public function get_setting( $website_id, $key ) {
+		$value = $this->db->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = ? AND `key` = ?', 'is', $website_id, $key )->get_var('');
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website setting.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $value;
+	}
 	
 	/**
 	 * Deletes the website image dimensions for a URL

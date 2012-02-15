@@ -102,7 +102,7 @@ class Analytics extends Base_Class {
         library( 'craigslist-api' );
 
         // Create API object
-        $craigslist = new Craigslist_API( 2, 'uCYS6jfM6XbyBfZJ' );
+        $craigslist = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
 
         // Get the stats
         $stats = $craigslist->get_stats( $date );
