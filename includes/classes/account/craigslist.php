@@ -95,7 +95,7 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $category_id = (int) $category_id;
 
-		$headlines = $this->db->get_col( "SELECT `headline` FROM `craigslist_headlines` WHERE `category_id` = $category_id`" );
+		$headlines = $this->db->get_col( "SELECT `headline` FROM `craigslist_headlines` WHERE `category_id` = $category_id" );
 
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -103,7 +103,10 @@ class Craigslist extends Base_Class {
 			return false;
 		}
 
-		return $headlines[rand( 0, count( $headlines ) )];
+        // Get a random headline
+        $headline = $headlines[rand( 0, count( $headlines ) - 1 )];
+
+		return ( isset( $headline ) ) ? $headline : '';
 	}
 	
 	/**

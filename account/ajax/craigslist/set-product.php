@@ -34,7 +34,7 @@ $ajax->ok( $images = $p->get_product_image_urls( $product_id ), _('Failed to get
 jQuery('#hProductDescription')->val( $product['description'] );
 jQuery('#hProductName')->val( $product['name'] );
 jQuery('#hProductCategoryID')->val( $product['category_id'] );
-jQuery('#aRandomHeadline')->attr( 'href', jQuery('#aRandomHeadline')->attr('href')->replace( '/cid=([0-9]*)?/', 'cid=' . $product['category_id'] ) );
+jQuery('#aRandomHeadline')->attr( 'href', '/ajax/craigslist/get-random-headline/?_nonce=' . nonce::create('random-headline') . '&cid=' . $product['category_id'] );
 jQuery('#hProductID')->val( $product['product_id'] );
 jQuery('#hProductCategoryName')->val( $product['category'] );
 jQuery('#hProductSKU')->val( $product['sku'] );

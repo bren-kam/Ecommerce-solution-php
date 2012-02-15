@@ -76,20 +76,7 @@ foreach ( $accounts as $a ) {
 	$title .= '<a href="/craigslist/accounts/link-market/?wid=' . $a['website_id'] . '" title="' . _('Link Market') . '">' . _('Link Market') . '</a>';
 	$title .= '</div>';
 
-    $markets = '';
-
-    if ( !empty( $a['markets'] ) ) {
-        $markets_array = unserialize( $a['markets'] );
-
-        foreach( $markets_array as $ma ) {
-            if ( !empty( $markets ) )
-                $markets .= "<br />";
-
-            $markets .= $ma['name'];
-        }
-    }
-
-	$aaData[] = array( $title, $a['plan'], $markets );
+	$aaData[] = array( $title, $a['plan'], $a['markets'] );
 }
 
 echo json_encode( array( 

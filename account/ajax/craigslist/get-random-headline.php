@@ -4,7 +4,7 @@
  * @package Imagine Retailer
  * @subpackage Account
  */
-$ajax = new AJAX( $_GET['_nonce'], 'ramdom-headline' );
+$ajax = new AJAX( $_GET['_nonce'], 'random-headline' );
 $ajax->ok( $user, _('You must be signed in to get a random title.') );
 
 // Instantiate Class
