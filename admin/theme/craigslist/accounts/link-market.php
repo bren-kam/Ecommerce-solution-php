@@ -88,7 +88,7 @@ get_header();
             echo "<p class='red'>$errs</p><br />";
         ?>
         <p><?php echo _('At this point in time you cannot modify or edit a market once added. Please add carefully. If you have trouble, please submit a ticket.'); ?></p>
-		<form name="fLinkMarket" id="fLinkMarket" action="/craigslist/markets/link-market/<?php echo "?wid=$website_id"; ?>" method="post">
+		<form name="fLinkMarket" id="fLinkMarket" action="/craigslist/accounts/link-market/<?php echo "?wid=$website_id"; ?>" method="post">
 		    <table cellpadding="0" cellspacing="0">
                 <tr>
                     <td><label><?php echo _('Account'); ?>:</label></td>
