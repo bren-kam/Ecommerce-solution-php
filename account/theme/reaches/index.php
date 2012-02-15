@@ -14,11 +14,8 @@ if ( !$user )
 //$_SESSION['tickets']['status'] = '0';
 //$_SESSION['tickets']['assigned-to'] = '0';
 
-//css( 'tickets/list', 'data-tables/TableTools.css', 'data-tables/ui.css' );
-//javascript( 'jquery', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'tickets/list' );
-
-//$admin_users = $u->get_users( " AND `role` > 5 AND `status` = 1 AND '' <> `contact_name`" );
-
+//css( 'reaches/index' );
+//javascript( 'reaches/index' );
 
 $selected = 'reaches';
 $title = _('Reaches') . ' | ' . TITLE;
@@ -33,23 +30,14 @@ get_header();
 	nonce::field( 'change-assigned-to', '_ajax_change_assigned_to' );
 	?>
 	<div id="dListTickets">
-	<select id="sStatuses">
-		<option value="0"><?php echo _('Open'); ?></option>
-		<option value="1"><?php echo _('Closed'); ?></option>
-	</select>
-	<select id="sAssignedTo">
-		<option value="0"><?php echo _('All'); ?></option>
-		<option value="-1"><?php echo _('Peers'); ?></option>
-		<?php foreach ( $admin_users as $au ) { ?>
-		<option value="<?php echo $au['user_id']; ?>"><?php echo $au['contact_name']; ?></option>
-		<?php } ?>
-	</select>
+
 	<table ajax="/ajax/reaches/list/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%" id="tListTickets">
 		<thead>
 			<tr>
 				<th width="15%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-				<th width="18%"><?php echo _('Website'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-				<th width="15%"><?php echo _('Assigned To'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
+				<th width="18%"><?php echo _('Assigned To'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
+				<th width="15%"><?php echo _('Status'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
+				<th width="15%"><?php echo _('Priority'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
 				<th width="8%"><?php echo _('Created'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
 			</tr>
 		</thead>

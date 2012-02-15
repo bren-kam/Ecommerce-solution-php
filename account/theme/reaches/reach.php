@@ -18,7 +18,8 @@ if ( empty( $_GET['rid'] ) )
 $reaches = new Reaches();
 $rc = new Reach_Comments();
 
-$reach = $reaches->get( $_GET['rid'] );
+// Get reach, with meta
+$reach = $reaches->get( $_GET['rid'], true );
 
 // TODO integrate ACL stuff
 // Don't want them to see this if they don't have the right role
@@ -33,10 +34,11 @@ $comments = $rc->get( $_GET['rid'] );
 	$reach['assigned_to_user_id'] = $reach->update_assigned_to( $_GET['rid'], $user['user_id'] );
  */
 
+$assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND role >=1 AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
+ 
 css( 'reaches/reach' );
 javascript( 'mammoth', 'reaches/reach' );
 
-$assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
 
 $selected = 'reaches';
 $title = _('View Reach | Account') . ' | ' . TITLE;
@@ -54,81 +56,90 @@ get_header();
 		nonce::field( 'update-assigned-to', '_ajax-update-assigned-to' );
 		nonce::field( 'update-priority', '_ajax-update-priority' );
 	?>
-	<div class="float-left">
-		<p>
-			<strong><?php echo _('Name'); ?>:</strong> <?php echo $reach['name']; ?>
-		</p>
-		<p>
-			<strong><?php echo _('Website'); ?>:</strong> 
-			<a href="http://<?php if ( !empty( $reach['subdomain'] ) ) echo $reach['subdomain'], '.'; echo $reach['domain']; ?>/" title="<?php echo $reach['website']; ?>" target="_blank"><?php echo $reach['website']; ?></a><?php if ( !empty( $reach['website_id'] ) ) { ?> <?php } ?>
-		</p>
+	<div class="reach-col float-left">
+		<table>
+			<tr>
+				<td><strong><?php echo _('Name'); ?>:</strong></td>
+				<td><?php echo $reach['name']; ?></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<strong><?php echo _('Info'); ?>:</strong><br/>
+					<p>
+					<?php if( $reach['meta'] ) foreach ( $reach['meta'] as $key => $value ): ?>
+						<ul>
+							<li><?php echo $key; ?>: <?php echo $value; ?></li>
+						</ul>
+					<?php endforeach; ?>
+					</p>
+				</td>
+			</tr>		
+		</table>
 	</div>
-	<div class="float-left">
-		<p>
-			<label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label>
-			<select id="sAssignedTo" class="dd" style="width: 150px">
-			<?php
-				foreach ( $assignable_users as $au ) {
-					$selected = ( $reach['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
-					
-					echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
-				}
-			?>
-			</select>
-		</p>
-		
-		<p>
-			<label for="sPriority"><?php echo _('Priority'); ?>:</label>
-			<select id="sPriority" class="dd" style="width: 150px">
-			<?php
-				$priorities = array( 
-					0 => _('Normal'),
-					1 => _('High'),
-					2 => _('Urgent')
-				);
-				
-				foreach ( $priorities as $pn => $p ) {
-					$selected = ( $reach['priority'] == $pn ) ? ' selected="selected"' : '';
-					
-					echo '<option value="' . $pn . '"' . $selected . '>' . $p . "</option>\n";
-				}
-			?>
-		</p>
-		</select>
+	<div class="reach-col float-left">
+		<table>
+			<tr>
+				<td><label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label></td>
+				<td>
+					<select id="sAssignedTo" class="dd" style="width: 150px">
+					<?php
+						foreach ( $assignable_users as $au ) {
+							$selected = ( $reach['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
+							
+							echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
+						}
+					?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="sPriority"><?php echo _('Priority'); ?>:</label></td>
+				<td>
+					<select id="sPriority" class="dd" style="width: 150px">
+					<?php
+						$priorities = array( 
+							0 => _('Normal'),
+							1 => _('High'),
+							2 => _('Urgent')
+						);
+						
+						foreach ( $priorities as $pn => $p ) {
+							$selected = ( $reach['priority'] == $pn ) ? ' selected="selected"' : '';
+							
+							echo '<option value="' . $pn . '"' . $selected . '>' . $p . "</option>\n";
+						}
+					?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><label for="sStatus"><?php echo _('Status'); ?>:</label></td>
+				<td>
+					<select id="sStatus" class="dd" style="width: 150px">
+					<?php
+						$statuses = array( 
+							0 => _('Open'),
+							1 => _('Closed')
+						);
+						
+						foreach ( $statuses as $sn => $s ) {
+							$selected = ( $reach['status'] == $sn ) ? ' selected="selected"' : '';
+							
+							echo '<option value="' . $sn . '"' . $selected . '>' . $s . "</option>\n";
+						}
+					?>
+					</select>
+				</td>
+			</tr>
+		</table>
 	</div>
-	<div class="float-left">
 	
-		<label for="sStatus"><?php echo _('Status'); ?>:</label>
-		<select id="sStatus" class="dd" style="width: 150px">
-		<?php
-			$statuses = array( 
-				0 => _('Open'),
-				1 => _('Closed')
-			);
-			
-			foreach ( $statuses as $sn => $s ) {
-				$selected = ( $reach['status'] == $sn ) ? ' selected="selected"' : '';
-				
-				echo '<option value="' . $sn . '"' . $selected . '>' . $s . "</option>\n";
-			}
-		?>
-		</select>
-	</div>
 	<div class="clr"></div>
-	
 	
 	<h2><?php echo _('Message'); ?></h2>
 	<blockquote>
 		<?php echo $reach['message']; ?>
 	</blockquote>
-	<div class="attachments">
-	<?php
-	if ( isset( $reach['attachments'] ) && is_array( $reach['attachments'] ) )
-	foreach ( $reach['attachments'] as $ta ) {
-	?>
-	<a href="<?php echo $ta['link']; ?>" target="_blank" title="<?php echo _('Download'), ' ', $ta['name']; ?>"><?php echo $ta['name']; ?></a>
-	<?php } ?>
-	</div>
 			
 	<br /><hr />
 	<div id="dReachComments">
@@ -136,7 +147,6 @@ get_header();
 		<form action="/ajax/reaches/add-comment/" method="POST" ajax="1">
 			<?php nonce::field( 'add-comment', '_nonce' ); ?>
 			<input type="hidden" name="rid" value="<?php echo $reach['website_reach_id']; ?>" />
-			<input type="h"
 			<div id="dTAReachCommentsWrapper"><textarea id="taReachComment" name="taReachComment" cols="5" rows="3" tmpVal="<?php echo _('Write a comment...'); ?>"></textarea></div>
 			<input type="submit" id="aAddComment" class="button" title="<?php echo _('Add Comment'); ?>" value="<?php echo _('Add Comment'); ?>" />
 			<div id="dPrivate">
@@ -152,7 +162,7 @@ get_header();
 			if ( $user['user_id'] == $reach['user_id'] && '1' == $c['private'] )
 				continue;
 		?>
-		<div class="comment" id="dComment<?php echo $c['reach_comment_id']; ?>">
+		<div class="comment" id="dComment<?php echo $c['website_reach_comment_id']; ?>">
 			<p class="name">
 				<?php if ( '1' == $c['private'] ) { ?>
 				<img src="/images/icons/reaches/lock.gif" width="11" height="15"0 alt="<?php echo _('Private'); ?>" class="private" />
@@ -169,14 +179,6 @@ get_header();
 				<?php endif; ?>
 			</p>
 			<p class="message"><?php echo $c['comment']; ?></p>
-			<div class="attachments">
-			<?php
-			if ( is_array( $c['attachments'] ) )
-			foreach ( $c['attachments'] as $ca ) {
-			?>
-			<a href="<?php echo $ca['link']; ?>" target="_blank" title="<?php echo _('Download'), ' ', $ca['name']; ?>"><?php echo $ca['name']; ?></a>
-			<?php } ?>
-			</div>
 			<br clear="left" />
 		</div>
 		<?php } ?>

@@ -25,24 +25,38 @@ if ( !$user ) {
 $r = new Reaches;
 $dt = new Data_Table();
 
+// Role based settings
+$role = ( $user['role'] < 5 && $user['role'] >= 1 ) ? " AND a.`status` = 0 AND a.`waiting` = 1 " : "";
+
 // Set variables
-$dt->order_by( 'a.`date_updated`', 'a.`date_created`', 'a.`website_id`' );
-$dt->add_where( " AND a.`website_id` = " . $user['website']['website_id'] );
+$dt->order_by( '`name`', '`assigned_to`', 'a.`status`', 'a.`priority`', 'a.`date_created`' );
+$dt->add_where( " AND a.`website_id` = " . $user['website']['website_id'] . $role );
 $dt->search( array( '`message`' => false ) );
 
 $reaches = $r->list_reaches( $dt->get_variables() );
 $dt->set_row_count( $r->count_reaches( $dt->get_where() ) );
 
 /* set up the data */
+$priorities = array( 
+	0 => _('Normal'),
+	1 => _('High'),
+	2 => _('Urgent')
+);
+
+$statuses = array( 
+	0 => _('Open'),
+	1 => _('Closed')
+);
+
 $data = array();
 
 foreach ( $reaches as $reach ) {
 	$data[] = array(
-		'<a href="/reaches/reach/?rid=' . $reach['website_reach_id'] . '">' .$reach['name'] . '</a>',
-		$reach['website'],
-		$reach['assigned_to'],
-		$reach['date_created']
-		
+		'<a href="/reaches/reach/?rid=' . $reach['website_reach_id'] . '">' .$reach['name'] . '</a>'
+		, $reach['assigned_to']
+		, $statuses[ (int) $reach['status'] ]
+		, $priorities[ (int) $reach['priority'] ]
+		, dt::date( 'm/d/Y g:ia', $reach['date_created'] ) 
 	);
 	
 }

@@ -16,4 +16,10 @@ $comment = $rc->get_single( $_GET['rcid'] );
 $ajax->ok( $comment['user_id'] == $user['user_id'], _('You must be logged in as this user to delete his or her comment.') );
 $ajax->ok( $result = $rc->delete( $_GET['rcid'] ) );
 
+// Remove comment from list
+jQuery( "#dComment" . $_GET['rcid'] )
+	->remove();
+	
+$ajax->add_response( 'jquery', jQuery::getResponse() );
+
 $ajax->respond();

@@ -180,6 +180,32 @@ class Reaches extends Base_Class {
 		
 		return (int) $assigned_to_user_id;
 	}
+	
+	/**
+	 * Update reach waiting
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $reach_id
+	 * @param int $waiting
+	 * @return bool
+	 */
+	public function update_waiting( $reach_id, $waiting ) {
+		global $user;
+		
+		//Type cast
+		$waiting = (int) $waiting;
+		
+		$this->db->update( 'website_reaches', array( 'waiting' => $waiting ), array( 'website_reach_id' => $reach_id ), 'i', 'i' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
 
 	/**
 	 * Update date due
@@ -210,9 +236,10 @@ class Reaches extends Base_Class {
 	 * @param int $reach_id
 	 * @return array
 	 */
-	public function get( $reach_id ) {
-		// Get linked users
-		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `users` AS b ON ( a.`website_user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
+	public function get( $reach_id, $meta = false ) {
+	
+		
+		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', b.`billing_last_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -220,17 +247,18 @@ class Reaches extends Base_Class {
 			return false;
 		}
 		
-		// Get attachments if there are any
-		/* $attachments = $this->db->get_col( 'SELECT a.`key` FROM `reach_uploads` AS a LEFT JOIN `reach_links` AS b ON ( a.`reach_upload_id` = b.`reach_upload_id` ) WHERE b.`website_reach_id` = ' . (int) $reach_id );
-		
-		foreach ( $attachments as $link ) {
-			$reach['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', format::file_name( $link ) ) ) );
-		} */
-		
-		// If there was an error
-		if ( $this->db->errno() ) {
-			$this->err( "Failed to get reach attachments.", __LINE__, __METHOD__ );
-			return false;
+		// Get meta if there is any
+		if( $meta ) {
+			
+			// This will be expanded in the future as the meta is further developed
+			$reach['meta'] = $this->db->get_results( "SELECT a.`key`, a.`value` FROM `website_reach_meta` AS a WHERE a.`website_reach_id` = {$reach['website_reach_id']};", ARRAY_A );
+			$reach['meta'] = ar::assign_key( $reach['meta'], 'key', true);
+			
+			// If there was an error
+			if ( $this->db->errno() ) {
+				$this->err( "Failed to get reach meta.", __LINE__, __METHOD__ );
+				return false;
+			}
 		}
 
 		return $reach;
@@ -249,8 +277,10 @@ class Reaches extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
+		$order_by = ( !$order_by ) ? "ORDER BY website_reach_id DESC" : $order_by;
+		
         // Get linked reaches
-        $reaches = $this->db->get_results( "SELECT a.`website_reach_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`website_reach_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `website_reaches` AS a LEFT JOIN `users` AS b ON ( a.`website_user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `website_reach_comment_id`, `website_reach_id`, `user_id` FROM `website_reach_comments` ORDER BY `website_reach_comment_id` DESC ) AS d ON ( a.`website_reach_id` = d.`website_reach_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`website_reach_id` $order_by, d.`website_reach_comment_id` DESC LIMIT $limit", ARRAY_A );
+        $reaches = $this->db->get_results( "SELECT a.`website_reach_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', b.`billing_last_name` ) AS name, b.`email`, IF( 1 = a.`status` OR d.`website_reach_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `website_reach_comment_id`, `website_reach_id`, `user_id` FROM `website_reach_comments` ORDER BY `website_reach_comment_id` DESC ) AS d ON ( a.`website_reach_id` = d.`website_reach_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`website_reach_id` $order_by, d.`website_reach_comment_id` DESC LIMIT $limit", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
