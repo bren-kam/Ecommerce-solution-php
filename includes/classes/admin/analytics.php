@@ -118,16 +118,17 @@ class Analytics extends Base_Class {
         foreach ( $stats as $s ) {
             $date = $this->db->escape( $s->date );
             $website_id = (int) $craigslist_website_ids[$s->customer_id];
+            $craigslist_market_id = (int) $markets[$s->market_id];
 
             // Add Marketing
-            $values[] = "( $website_id, " . (int) $markets[$s->market_id] . ", 'market', " . (int) $s->overall->unique . ', ' . (int) $s->overall->views . ', ' . $s->overall->posts . ", '" . $date . "' )";
+            $values[] = "( $website_id, $craigslist_market_id, 0, " . (int) $s->overall->unique . ', ' . (int) $s->overall->views . ', ' . $s->overall->posts . ", '" . $date . "' )";
 
             if ( is_array( $s->tags ) )
             foreach ( $s->tags as $t ) {
                 $tag_ids[] = $t->tag_id;
 
                 // Add Marketing
-                $values[] = "( $website_id, " . (int) $t->tag_id . ", 'tag', " . (int) $t->unique . ', ' . (int) $t->views . ', ' . $t->posts . ", '" . $date . "' )";
+                $values[] = "( $website_id, $craigslist_market_id, " . (int) $t->tag_id . ", " . (int) $t->unique . ', ' . (int) $t->views . ', ' . $t->posts . ", '" . $date . "' )";
             }
         }
 
@@ -143,7 +144,6 @@ class Analytics extends Base_Class {
                 return false;
             }
         }
-
 
         // Get tags
         $tags = $craigslist->get_tags( $tag_ids );
