@@ -624,10 +624,10 @@ class Mobile_Marketing extends Base_Class {
 
         // Load the library
         library('avid-mobile/keywords');
-
+        
         // Get the Keywords part
         $am_keywords = new AM_Keywords( $am_customer_id );
-		
+
 		// See if its available
 		return $am_keywords->available( $keyword );
     }

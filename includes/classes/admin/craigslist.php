@@ -468,15 +468,15 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-        $market_links = $this->db->get_col( "SELECT a.`craigslist_market_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
+        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get market.', __LINE__, __METHOD__ );
 			return false;
 		}
-
-        return ( $market_links ) ? $market_links : array();
+		
+        return ( $market_links ) ? ar::assign_key( $market_links, 'craigslist_market_id', true ) : array();
     }
 
     /**

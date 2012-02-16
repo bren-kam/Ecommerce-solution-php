@@ -88,11 +88,15 @@ class Craigslist_API {
      *
      * @param int $customer_id
      * @param string $name
+     * @param array $replace (optional)
      * @return bool
      */
-    public function add_market( $customer_id, $name ) {
+    public function add_market( $customer_id, $name, $replace = array() ) {
+        // Setup the arguments correctly
+        $replace = $this->_arguments( $replace );
+
         // Add customer
-        $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name' ) );
+        $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );
 
         return $response->market_id;
     }
@@ -190,6 +194,31 @@ class Craigslist_API {
     /**************************/
     /* Start: Private Methods */
     /**************************/
+
+    /**
+	 * Forms the arguments array
+	 *
+	 * @access private
+	 *
+     * @param array $values
+     * @return mixed
+	 */
+	private function _arguments( array $values ) {
+        // Format the arguments
+        $arguments = array();
+
+        // Loop through the values
+        foreach ( $values as $key => $value ) {
+            // Only want actual values, or else we can skip it
+            if ( empty( $value ) )
+                continue;
+
+            $arguments[] = array( 'key' => $key, 'value' => $value );
+        }
+
+        // Return the arguments
+        return $arguments;
+	}
 
 	/**
 	 * This sends sends the actual call to the API Server and parses the response

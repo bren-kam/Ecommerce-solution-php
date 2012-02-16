@@ -17,12 +17,13 @@ if ( !isset( $_GET['wid'] ) )
 
 // Instantiate classes
 $c = new Craigslist;
+$w = new Websites;
 
 $website_id = (int) $_GET['wid'];
 $account = $c->get_account( $website_id );
 $market_links = $c->get_market_links( $website_id );
 $markets = $c->get_markets();
-
+$addresses = $w->get_pagemeta_by_key( $website_id, 'addresses' );
 
 if ( !$account['craigslist_customer_id'] )
     url::redirect('/craigslist/accounts/');
@@ -54,7 +55,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
 
         // Get the market id
         $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market'] );
-
+		
         // Link it in our database
         if ( $market_id )
             $success = $c->link_market( $account['website_id'], $_POST['sMarketID'], $market_id );
@@ -88,11 +89,26 @@ get_header();
             echo "<p class='red'>$errs</p><br />";
         ?>
         <p><?php echo _('At this point in time you cannot modify or edit a market once added. Please add carefully. If you have trouble, please submit a ticket.'); ?></p>
+		<br />
 		<form name="fLinkMarket" id="fLinkMarket" action="/craigslist/accounts/link-market/<?php echo "?wid=$website_id"; ?>" method="post">
 		    <table cellpadding="0" cellspacing="0">
                 <tr>
                     <td><label><?php echo _('Account'); ?>:</label></td>
                     <td><?php echo $account['title']; ?></td>
+                </tr>
+				<tr>
+                    <td><label><?php echo _('Linked Markets'); ?>:</label></td>
+                    <td>
+						<?php 
+						if ( is_array( $market_links ) ) {
+							foreach ( $market_links as $ml ) {
+								echo "<p>$ml</p>";
+							}
+						} else {
+							echo '<p>', _('You have not linked any markets yet.'), '</p>';
+						}
+						?>
+					</td>
                 </tr>
                 <tr>
                     <td><label for="sMarketID"><?php echo _('Market'); ?>:</label></td>
@@ -104,13 +120,17 @@ get_header();
 
                             if ( is_array( $markets ) )
                             foreach ( $markets as $m ) {
-                                if ( in_array( $m['craigslist_market_id'], $market_links ) )
+                                if ( array_key_exists( $m['craigslist_market_id'], $market_links ) )
                                     continue;
                             ?>
                                 <option value="<?php echo $m['craigslist_market_id']; ?>"><?php echo $m['market']; ?></option>
                             <?php } ?>
                         </select>
                     </td>
+                </tr>
+                <tr><td colspan="2"><strong><?php echo _('Location Information'); ?></strong></td></tr>
+                <tr>
+                    <td></td>
                 </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>

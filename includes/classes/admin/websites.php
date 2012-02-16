@@ -141,6 +141,49 @@ class Websites extends Base_Class {
 		
 		return $website;
 	}
+
+    /**
+	 * Gets a metadata for a page
+	 *
+	 * @param int $website_id
+	 * @param string $key_1, $key_2, $key_3, etc.
+	 * @return array
+	 */
+	public function get_pagemeta_by_key( $website_id ) {
+		// Get the arguments
+		$arguments = func_get_args();
+
+		// Needs to have at least two arguments
+		if ( count( $arguments ) <= 1 )
+			return false;
+
+		// Typecast
+		$website_id = (int) array_shift( $arguments );
+
+		// Get keys, escape them and turn them into comma separated values
+		array_walk( $arguments, array( $this->db, 'escape' ) );
+		$keys = "'" . implode( "', '", $arguments ) . "'";
+
+		// Get the meta data
+		$metadata = $this->db->get_results( "SELECT `key`, `value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) WHERE a.`key` IN ($keys) AND b.`website_id` = $website_id", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get metadata.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Set the array
+		$new_metadata = array_fill_keys( $arguments, '' );
+
+		// Decrypt any meta data
+		if ( is_array( $metadata ) )
+		foreach ( $metadata as $md ) {
+			$new_metadata[$md['key']] = html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' );
+		}
+
+		return ( 1 == count( $new_metadata ) ) ? array_shift( $new_metadata ) : $new_metadata;
+	}
 	
 	/**
 	 * Get User Websites
