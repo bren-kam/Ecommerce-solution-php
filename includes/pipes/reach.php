@@ -26,8 +26,9 @@ $mysqli->query( "INSERT INTO `website_reach_comments` ( `website_reach_id`, `web
 // Set Reach as waiting
 $mysqli->query( "UPDATE `website_reaches` SET `waiting` = 1 WHERE `website_reach_id` = " . (int) $reach_id );
 
-// Get the email of the admin user assigned to their reach
-$result = $mysqli->query( 'SELECT a.`email`, b.`message` FROM `users` AS a LEFT JOIN `website_reaches` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) WHERE b.`website_reach_id` = ' . $reach_id );
+// Get the email of the admin user assigned to their ticket, and the original ticket
+$result = $mysqli->query( 'SELECT a.`email`, b.`message`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `website_reaches` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE b.`website_reach_id` = ' . $reach_id );
+
 
 // Get the row
 $row = $result->fetch_assoc();
