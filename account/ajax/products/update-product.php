@@ -50,7 +50,10 @@ if ( $user['website']['shopping_cart'] ) {
 		'warranty_length' => $_POST['tWarrantyLength'],
 		'display_inventory' => ( isset( $_POST['cbDisplayInventory'] ) ) ? 1 : 0,
 		'on_sale' => ( isset( $_POST['cbOnSale'] ) ) ? 1 : 0,
-		'status' => $_POST['sStatus']
+		'status' => $_POST['sStatus'],
+        'meta_title' => strip_tags( $_POST['tMetaTitle'] ),
+		'meta_description' => strip_tags( $_POST['tMetaDescription'] ),
+		'meta_keywords' => strip_tags( $_POST['tMetaKeywords'] )
 	);
 	
 	$coupons = false;
