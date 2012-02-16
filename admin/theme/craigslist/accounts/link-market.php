@@ -23,7 +23,7 @@ $website_id = (int) $_GET['wid'];
 $account = $c->get_account( $website_id );
 $market_links = $c->get_market_links( $website_id );
 $markets = $c->get_markets();
-$addresses = $w->get_pagemeta_by_key( $website_id, 'addresses' );
+$addresses = @unserialize( $w->get_pagemeta_by_key( $website_id, 'addresses' ) );
 
 if ( !$account['craigslist_customer_id'] )
     url::redirect('/craigslist/accounts/');
@@ -46,15 +46,55 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
     if ( empty( $errs ) ) {
         // Get the craigslist market
         $craigslist_market = $c->get_market( $_POST['sMarketID'] );
+		$website = $w->get_website( $website_id );
 
         // Load the library
         library( 'craigslist-api' );
 
         // Create API object
         $craigslist_api = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
-
+		
+		// Create as many locations as we can, up to 10;
+		if ( is_array( $addresses ) )
+		foreach ( $addresses as $addr ) {
+			$locations[] = $addr['city'] . ', ' . $addr['state'];
+		}
+		
+		$locations[] = $craigslist_market['market'];
+		
+		if ( !empty( $craigslist_market['area'] ) )
+			$locations[] = $craigslist_market['city'] . ', ' . $craigslist_market['state'];
+		
+		$locations[] = $craigslist_market['city'];
+		$locations[] = $craigslist_market['city'] . ' Area';
+		
+		// Finalize the locations to 10 at the max
+		$locations = array_slice( array_unique( $locations ), 0, 10 );
+		
+		// Add the store link
+		if ( 1 == $website['pages'] && !empty( $website['domain'] ) ) {
+			$url = 'http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $website['domain'] . '/';
+			$store['storelink'] = $url;
+		}
+		
+		// See if they have a remote logo
+		$remote_logo = stristr( $website['logo'], 'http' );
+		
+		// Add a store logo if they have one
+		if ( !empty( $website['logo'] ) && ( $remote_logo || isset( $url ) ) ) {
+			$logo = ( $remote_logo ) ? $website['logo'] :  "{$url}custom/uploads/images/" . $website['logo'];
+			$store['storelogo'] = $logo;
+		}
+		
+		// Set the store name -- everyone should have one of these
+		$store['storename'] = $website['title'];
+		
+		// Set the phone if they have one
+		if ( !empty( $website['phone'] ) )
+			$store['storephone'] = $website['phone'];
+		
         // Get the market id
-        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market'] );
+        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market'], $locations, $store );
 		
         // Link it in our database
         if ( $market_id )
@@ -127,10 +167,6 @@ get_header();
                             <?php } ?>
                         </select>
                     </td>
-                </tr>
-                <tr><td colspan="2"><strong><?php echo _('Location Information'); ?></strong></td></tr>
-                <tr>
-                    <td></td>
                 </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>

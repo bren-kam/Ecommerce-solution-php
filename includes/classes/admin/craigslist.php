@@ -480,6 +480,23 @@ class Craigslist extends Base_Class {
     }
 
     /**
+     * Get All Craigslist Market Links
+     *
+     * @return array
+     */
+    public function get_all_market_links() {
+        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, a.`market_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`status` = 1", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get market.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return ( $market_links ) ? ar::assign_key( $market_links, 'market_id', true ) : array();
+    }
+
+    /**
      * Get Craigslist Markets
      *
      * @return array
