@@ -23,12 +23,13 @@ $priorities = array(
 
 $new_user = $u->get_user( (int) $_GET['val'] );
 
-$message = 'Hello ' . $new_user['first_name'] . ",\n\n";
-$message .= 'You have been assigned Ticket #' . $_GET['tid'] . ". To view it, follow the link below:\n\n";
-$message .= 'http://admin.' . DOMAIN . '/tickets/ticket/?tid=' . $_GET['tid'] . "\n\n";
+$message = 'Hello ' . $new_user['contact_name'] . ",\n\n";
+$message .= 'You have been assigned ' . $r->_get_friendly_type( $reach['meta']['type'] ) . ' #' . $_GET['rid'] . ". To view it, follow the link below:\n\n";
+$message .= 'http://account.' . DOMAIN . '/reaches/reach/?rid=' . $_GET['rid'] . "\n\n";
 $message .= 'Priority: ' . $priorities[$rb['priority']] . "\n\n";
 $message .= "Sincerely,\n" . TITLE . " Team";
 
-// TODO fn::mail( $new_user['email'], 'You have been assigned Ticket #' . $_GET['tid'] . ' (' . $priorities[$tb['priority']] . ') - ' . $tb['summary'], $message, TITLE . ' <noreply@' . DOMAIN . '>' );
+//fn::mail( $new_user['email'], 'You have been assigned ' . $r->_get_friendly_type( $reach['meta']['type'] ) . ' #' . $_GET['rid'] . ' (' . $priorities[$rb['priority']] . ') - ', $message, TITLE . ' <noreply@' . DOMAIN . '>' );
+echo $new_user['email'], 'You have been assigned ' . $r->_get_friendly_type( $reach['meta']['type'] ) . ' #' . $_GET['rid'] . ' (' . $priorities[$rb['priority']] . ') - ', $message, TITLE . ' <noreply@' . DOMAIN . '>';
 
 $ajax->respond();

@@ -239,7 +239,7 @@ class Reaches extends Base_Class {
 	public function get( $reach_id, $meta = false ) {
 	
 		
-		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', b.`billing_last_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
+		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', IF( b.`billing_last_name`,  b.`billing_last_name`, '' ) ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -280,7 +280,7 @@ class Reaches extends Base_Class {
 		$order_by = ( !$order_by ) ? "ORDER BY website_reach_id DESC" : $order_by;
 		
         // Get linked reaches
-        $reaches = $this->db->get_results( "SELECT a.`website_reach_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', b.`billing_last_name` ) AS name, b.`email`, IF( 1 = a.`status` OR d.`website_reach_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `website_reach_comment_id`, `website_reach_id`, `user_id` FROM `website_reach_comments` ORDER BY `website_reach_comment_id` DESC ) AS d ON ( a.`website_reach_id` = d.`website_reach_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`website_reach_id` $order_by, d.`website_reach_comment_id` DESC LIMIT $limit", ARRAY_A );
+        $reaches = $this->db->get_results( "SELECT a.`website_reach_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', IF( b.`billing_last_name`,  b.`billing_last_name`, '' ) ) AS name, b.`email`, IF( 1 = a.`status` OR d.`website_reach_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `website_reach_comment_id`, `website_reach_id`, `user_id` FROM `website_reach_comments` ORDER BY `website_reach_comment_id` DESC ) AS d ON ( a.`website_reach_id` = d.`website_reach_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`website_reach_id` $order_by, d.`website_reach_comment_id` DESC LIMIT $limit", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -309,6 +309,50 @@ class Reaches extends Base_Class {
 
 		return $count;
 	}
+	
+	/**
+	 * Convenience methods
+	 * 
+	 * Formats data for templates.  Contains some minor templating logic.
+	 * 
+	 */
+	
+	/**
+	 * Returns a reach type meta in a human readable format
+	 */
+	public function _get_friendly_type( $type ) {
+		$out = null;
+		switch( $type ) {
+			case 'quote':
+				$out = _('Quote');
+				break;
+			default:
+				$out = _('Reach');
+				break;
+		}
+		
+		return $out;
+	}
+	
+	/**
+	 * Returns all reach meta in a useful format
+	 */
+	public function _get_friendly_info( $meta ) {
+		$out = array();
+		
+		switch( $meta['type'] ) {
+			case 'quote':
+				$link = $meta['product-link'];
+				$out['Product'] = '<a href="' . $link . '" title="' . $meta['product-name'] . '">' . $meta['product-name'] . '</a>';
+				$out['SKU'] = '<a href="' . $link . '" title="' . $meta['product-sku'] . '">' . $meta['product-sku'] . '</a>';
+				break;
+			default:
+				break;
+		}
+		
+		return $out;
+	}
+	
 	
 	/**
 	 * Email overdue reaches

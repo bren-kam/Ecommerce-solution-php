@@ -13,7 +13,7 @@ $r = new Reaches;
 $rc = new Reach_Comments;
 	
 // Get reach information
-$reach = $r->get( $_POST['rid'] );
+$reach = $r->get( $_POST['rid'], true );
 	
 // Define variables
 $content = stripslashes( $_POST['taReachComment'] );
@@ -28,8 +28,7 @@ $ajax->ok( $result, _('There was an error adding your comment.') );
 // If it's public, send an email to the client, update waiting
 if ( !$private ) {
 	$ajax->ok( $r->update_waiting( $_POST['rid'], 0 ), _('There was an error updating reach.') );
-	// TODO fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\nSupport Issue\n" . $ticket['message'], TICKET . ' <support@' . DOMAIN . '>' );
-
+	fn::mail( $reach['email'], $r->_get_friendly_type( $reach['meta']['type'] ) . ' #' . $_POST['rid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\n" . $r->_get_friendly_type( $reach['meta']['type'] ) . "\n" . $reach['message'], $user['website']['title'] . ' <support@' . DOMAIN . '>', $user['website']['title'] . ' <reaches@imagineretailer.com>' );
 }	
 
 $reach_comment = $rc->get_single( $result );
@@ -40,11 +39,11 @@ if ( $reach['assigned_to_user_id'] != $user['user_id'] ) {
 	// Get the user
 	$assigned_to_user = $u->get_user( $reach['assigned_to_user_id'] );
 	
-	// TODO Send email
-	//fn::mail( $assigned_to_user['email'], 'New Comment on Ticket #' . $_POST['tid'] . ' - ' . $ticket['summary'], $user['contact_name'] . ' has posted a new comment on Ticket #' . $_POST['tid'] . ".\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $_POST['tid'], TITLE . ' <support@' . DOMAIN . '>' );
+	// Send email
+	fn::mail( $assigned_to_user['email'], 'New Comment on ' . $r->_get_friendly_type( $reach['meta']['type'] ) . ' #' . $_POST['rid'], $user['contact_name'] . ' has posted a new comment on ' . $r->_get_friendly_type( $reach['meta']['type'] ) . ' #' . $_POST['rid'] . ".\n\nhttp://account." . DOMAIN . "/reaches/reach/?rid=" . $_POST['rid'],  $user['website']['title'] . ' <support@' . DOMAIN . '>', $user['website']['title'] . ' <reaches@imagineretailer.com>' );
 }
 
-// TODO add comment to page via jQuery
+// Add Comment to page via jQuery
 
 $out_comment = "";
 
@@ -74,6 +73,8 @@ jQuery( "#dComments" )
 jQuery("#taReachComment")
 	->val('')
 	->blur();
+	
+// Send response
 	
 $ajax->add_response( 'jquery', jQuery::getResponse() );
 $ajax->respond();

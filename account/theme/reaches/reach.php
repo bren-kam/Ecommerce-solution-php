@@ -20,6 +20,7 @@ $rc = new Reach_Comments();
 
 // Get reach, with meta
 $reach = $reaches->get( $_GET['rid'], true );
+$reach_info = $reaches->_get_friendly_info( $reach['meta'] );
 
 // TODO integrate ACL stuff
 // Don't want them to see this if they don't have the right role
@@ -46,7 +47,7 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Reach Detail'); ?></h1>
+	<h1><?php echo $reaches->_get_friendly_type( $reach['meta']['type'] ) . _(' #') . $reach['website_reach_id']; ?></h1>
 	<br clear="all" /><br />
 	<input type="hidden" id="hReachID" value="<?php echo $_GET['rid']; ?>" />
 	<input type="hidden" id="hWebsiteID" value="<?php echo $reach['website_id']; ?>" />
@@ -64,9 +65,8 @@ get_header();
 			</tr>
 			<tr>
 				<td colspan="2">
-					<strong><?php echo _('Info'); ?>:</strong><br/>
 					<p>
-					<?php if( $reach['meta'] ) foreach ( $reach['meta'] as $key => $value ): ?>
+					<?php if( $reach_info ) foreach ( $reach_info as $key => $value ): ?>
 						<ul>
 							<li><?php echo $key; ?>: <?php echo $value; ?></li>
 						</ul>
