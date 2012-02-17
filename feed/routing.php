@@ -136,7 +136,7 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 			
 			// This is a normal page
 			require theme_inc( SLUG . '/index' );
-		} elseif( stristr( SUBDOMAIN, 'api' ) && 'requests' == SLUG ) {
+		} elseif( stristr( SUBDOMAIN, 'feed' ) && 'requests' == SLUG ) {
 			// Handle the API requests
 			$api = new Feed_API();
 		} else {

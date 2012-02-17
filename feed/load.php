@@ -14,16 +14,16 @@ define( 'LIVE', false );
 define( 'ADMIN', false );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', str_replace( '/api', '/', $_SERVER['DOCUMENT_ROOT'] ) );
+define( 'ABS_PATH', str_replace( '/feed', '/', $_SERVER['DOCUMENT_ROOT'] ) );
 
 /** Define OPERATING_PATH as the main directory to get things from */
-define( 'OPERATING_PATH', ABS_PATH . 'api/' );
+define( 'OPERATING_PATH', ABS_PATH . 'feed/' );
 
 /** Define INC_PATH as the includes directory */
 define( 'INC_PATH', ABS_PATH . 'includes/' );
 
 /** Define THEME_PATH as the place with all the pages */
-define( 'THEME_PATH', ABS_PATH . 'api/theme/' );
+define( 'THEME_PATH', ABS_PATH . 'feed/theme/' );
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
@@ -34,7 +34,7 @@ if ( defined('E_RECOVERABLE_ERROR') ) {
 
 
 /** Include Studio98 framework */
-require ABS_PATH . 's98lib/init.php' );
+require ABS_PATH . 's98lib/init.php';
 
 /** Load Cookie Definitions */
 // Used to guarantee unique hash cookies
@@ -60,7 +60,6 @@ define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replac
 $mc = new Memcache_Wrapper;
 $t = new Template();
 $u = new Users();
-$n = new Notifications();
 
 // We don't want to redeclare it
 if( !isset( $s98_cache ) )

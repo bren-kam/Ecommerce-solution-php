@@ -20,7 +20,7 @@ class Feed_API extends Base_Class {
 		'failed-to-get-feed' => 'Failed to get feed. Please report this to a system administrator.',
 		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
 		'ssl-required' => 'You must make the call to the secured version of our website.',
-		'success-add-order-item' => 'Add Order Item succeeded!',
+		'success-get-feed' => 'Get Feed succeeded!',
 	);
 	
 	/**
@@ -49,20 +49,30 @@ class Feed_API extends Base_Class {
 	);
 	private $logged = false;
 	private $error = false;
-	
+    private $xml;
+    private $data;
+
 	/**
 	 * Construct class will initiate and run everything
 	 *
 	 * This class simply needs to be initiated for it run to the data on $_POST variables
 	 */
 	public function __construct() {
+        // Need to load the parent constructor
+		if ( !parent::__construct() )
+			return false;
+
 		// Do we need to debug
 		if( self::DEBUG )
 			error_reporting( E_ALL );
+
+        $this->xml = new DOMDocument('1.0');
+        $this->data = $this->xml->createElement('data');
+        $this->xml->appendChild( $this->data );
 		
 		// Load everything that needs to be loaded
 		$this->statuses['init'] = true;
-		
+
 		// Authenticate & load company id
 		$this->_authenticate();
 		
@@ -84,16 +94,19 @@ class Feed_API extends Base_Class {
 			$this->error_message = 'There was no authentication key';
 			exit;
 		}
-			
-		$this->company_id = $this->db->get_var( $this->db->prepare( "SELECT a.`company_id` FROM `api_keys` AS a LEFT JOIN `api_settings` AS b ON ( a.`api_key_id` = b.`api_key_id` ) WHERE a.`status` = 1 AND a.`key` = %s AND b.`key` = 'feed' AND b.`value` = 1", $_POST['auth_key'] ) );
-		
+
+        // Securing
+        $auth_key = $this->db->escape( $_POST['auth_key'] );
+
+		$this->company_id = $this->db->get_var( "SELECT a.`company_id` FROM `api_keys` AS a LEFT JOIN `api_settings` AS b ON ( a.`api_key_id` = b.`api_key_id` ) WHERE a.`status` = 1 AND a.`key` = '$auth_key' AND b.`key` = 'feed' AND b.`value` = 1");
+
 		// If there was a MySQL error
 		if( mysql_errno() ) {
 			$this->_err( 'Failed to process authentication', 'Could not retrieve company id', __LINE__, __METHOD__ );
 			$this->_add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
 			exit;
 		}
-		
+
 		// If failed to grab any company id
 		if( !$this->company_id ) {
 			$this->_add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
@@ -117,7 +130,7 @@ class Feed_API extends Base_Class {
 			$this->statuses['method_called'] = true;
 			
 			$class_name = 'IRR';
-			call_user_func( array( 'IRR', $_POST['method'] ) );
+			call_user_func( array( 'Feed_API', $_POST['method'] ) );
 		} else {
 			$this->_add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
 			
@@ -137,7 +150,7 @@ class Feed_API extends Base_Class {
 	 * @return bool
 	 */
 	private function get_feed() {
-		$products = $this->db->get_results( "SELECT `product_id`, `brand_id`, `industry_id`, `slug`, `description`, `status`, `sku`, `weight`, `volume`, `product_specifications`, `publish_visibility`, `publish_date`, `date_created`, `timestamp` FROM `products` WHERE `publish_visibility` <> 'deleted' ", ARRAY_A );
+		$products = $this->db->get_results( "SELECT `product_id`, `brand_id`, `industry_id`, `slug`, `description`, `status`, `sku`, `weight`, `volume`, `product_specifications`, `publish_visibility`, `publish_date`, `date_created`, `timestamp` FROM `products` WHERE `publish_visibility` <> 'deleted' LIMIT 10", ARRAY_A );
 
 		// If there was a MySQL error
 		if( mysql_errno() ) {
@@ -146,7 +159,51 @@ class Feed_API extends Base_Class {
 			exit;
 		}
 
-		$this->_add_response( array( 'success' => true, 'message' => 'success-update-user-arb-subscription' ) );
+        $xml_products = $this->xml->createElement( 'products' );
+        $this->data->appendChild( $xml_products );
+
+        foreach ( $products as $p ) {
+            $p['product_specifications'] = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES ) );
+
+            $product = $this->xml->createElement('product');
+            $xml_products->appendChild( $product );
+
+            foreach ( $p as $k => $v ) {
+                if ( is_array( $v ) ) {
+                    $array_element = $this->xml->createElement( $k );
+                    $product->appendChild( $array_element );
+
+                    switch ( $k ) {
+                        case 'product_specifications':
+                            foreach ( $v as $key => $value ) {
+                                $ps = $this->xml->createElement( 'specification' );
+                                $array_element->appendChild( $ps );
+
+                                $array_key = $this->xml->createElement( 'key' );
+                                $ps->appendChild( $array_key );
+
+                                $array_key_value = $this->xml->createTextNode( $value[0] );
+                                $array_key->appendChild( $array_key_value );
+
+                                $array_value = $this->xml->createElement( 'value' );
+                                $ps->appendChild( $array_key );
+
+                                $array_value_value = $this->xml->createTextNode( $value[1] );
+                                $array_value->appendChild( $array_value_value );
+                            }
+                        break;
+                    }
+                } else {
+                    $element = $this->xml->createElement($k);
+                    $product->appendChild( $element );
+
+                    $text = $this->xml->createTextNode( $v );
+                    $element->appendChild( $text );
+                }
+            }
+        }
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-feed' ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
 	}
 	
@@ -228,9 +285,9 @@ class Feed_API extends Base_Class {
 		// Set before hand so that a loop isn't caught in the destructor
 		if( $set_logged )
 			$this->logged = true;
-		
+
 		// If it fails to insert, send an email with the information
-		if( !$this->db->insert( 'api_log', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => date_time::date('Y-m-d H:i:s') ), array( '%d', '%s', '%s', '%s', '%d', '%s' ) ) ) {
+		if( !$this->db->insert( 'api_log', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssis' ) ) {
 			$this->_err( 'Failed to add entry to log', "Type: $type\nMessage:\n$message", __LINE__, __METHOD__ );
 			
 			// Let the client know that something broke
@@ -280,17 +337,26 @@ class Feed_API extends Base_Class {
 			foreach( $this->statuses as $status => $value ) {
 				// Set the message status name
 				$message_status = ucwords( str_replace( '_', ' ', $status ) );
-				
+
 				$message .= ( $this->statuses[$status] ) ? "$message_status: True" : "$message_status: False";
 				$message .= "\n";
 			}
-			
+
 			$this->_log( 'error', 'Error: ' . $this->error_message . "\n\n" . rtrim( $message, "\n" ), false );
 		} else {
 			$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 		}
-		
-		// Respond in JSON
-		echo json_encode( $this->response );
+
+        if ( is_array( $this->response ) )
+        foreach ( $this->response as $k => $v ) {
+            $element = $this->xml->createElement( $k );
+            $this->data->appendChild( $element );
+
+            $text = $this->xml->createTextNode( $v );
+            $element->appendChild( $text );
+        }
+
+		// Respond in XML
+		echo $this->xml->saveXML();
 	}
 }
