@@ -46,11 +46,88 @@ class GSR_API_Feed {
 		// Execute the command
 		$response = $this->_execute( 'get_feed' );
 
-        echo $this->raw_response;
 		// Return the user id successful
 		return ( $this->success ) ? $response : false;
 	}
-	
+
+    /**
+	 * Get Products
+	 *
+	 * @return array
+	 */
+	public function get_products() {
+		// Execute the command
+		$response = $this->_execute( 'get_products' );
+
+		// Return the user id successful
+		return ( $this->success ) ? $response : false;
+	}
+
+    /**
+	 * Get Categories
+	 *
+	 * @return array
+	 */
+	public function get_categories() {
+		// Execute the command
+		$response = $this->_execute( 'get_categories' );
+
+		// Return the user id successful
+		return ( $this->success ) ? $response : false;
+	}
+
+	/**
+	 * Get Brands
+	 *
+	 * @return array
+	 */
+	public function get_brands() {
+		// Execute the command
+		$response = $this->_execute( 'get_brands' );
+
+		// Return the user id successful
+		return ( $this->success ) ? $response : false;
+	}
+
+    /**
+	 * Get Industries
+	 *
+	 * @return array
+	 */
+	public function get_industries() {
+		// Execute the command
+		$response = $this->_execute( 'get_industries' );
+
+		// Return the user id successful
+		return ( $this->success ) ? $response : false;
+	}
+
+    /**
+	 * Get Attributes
+	 *
+	 * @return array
+	 */
+	public function get_attributes() {
+		// Execute the command
+		$response = $this->_execute( 'get_attributes' );
+
+		// Return the user id successful
+		return ( $this->success ) ? $response : false;
+	}
+
+    /**
+	 * Get Product Groups
+	 *
+	 * @return array
+	 */
+	public function get_product_groups() {
+		// Execute the command
+		$response = $this->_execute( 'get_product_groups' );
+
+		// Return the user id successful
+		return ( $this->success ) ? $response : false;
+	}
+
 	/****************************/
 	/* END: IR Feed API Methods */
 	/****************************/
@@ -81,8 +158,17 @@ class GSR_API_Feed {
 		curl_setopt( $ch, CURLOPT_POST, 1 );
 
         $this->raw_response = curl_exec( $ch );
+        $this->response = json_decode( $this->raw_response );
+        //echo $this->raw_response;
+        if ( !is_object( $this->response ) ) {
+            //echo $this->raw_response . 'here';
+        } else {
+            //print_r( $this->raw_response );
+        }
 
-        $this->response = @simplexml_load_string( $this->raw_response );
+        //echo count( $this->response->products );
+        //echo $this->raw_response;
+        //$this->response = @simplexml_load_string( $this->raw_response );
         curl_close($ch);
 
 		if( $this->response->success )

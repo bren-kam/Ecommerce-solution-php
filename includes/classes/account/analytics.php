@@ -450,7 +450,9 @@ class Analytics extends Base_Class {
 		switch ( $type ) {
             default:
             case 'market':
-                $values = $this->db->prepare( "SELECT SUM( `$metric` ) AS '$metric', DATE( `date` ) AS date FROM `analytics_craigslist` WHERE `website_id` = $website_id AND `craigslist_tag_id` = 0 AND `date` >= ? AND `date` < ? GROUP BY `date`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
+                $where = ( $craigslist_market_id ) ? " AND `craigslist_market_id` = $craigslist_market_id" : '';
+
+                $values = $this->db->prepare( "SELECT SUM( `$metric` ) AS '$metric', DATE( `date` ) AS date FROM `analytics_craigslist` WHERE `website_id` = $website_id AND `craigslist_tag_id` = 0 AND `date` >= ? AND `date` < ? $where GROUP BY `date`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
 
                 // Handle any error
                 if ( $this->db->errno() ) {
@@ -505,7 +507,9 @@ class Analytics extends Base_Class {
 		switch ( $type ) {
             default:
             case 'market':
-                $totals = $this->db->prepare( "SELECT SUM( `unique` ) AS 'unique', SUM( `views` ) AS views, SUM( `posts` ) AS posts FROM `analytics_craigslist` WHERE `website_id` = $website_id AND `craigslist_tag_id` = 0 AND `date` >= ? AND `date` < ?", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
+                $where = ( $craigslist_market_id ) ? " AND `craigslist_market_id` = $craigslist_market_id" : '';
+
+                $totals = $this->db->prepare( "SELECT SUM( `unique` ) AS 'unique', SUM( `views` ) AS views, SUM( `posts` ) AS posts FROM `analytics_craigslist` WHERE `website_id` = $website_id AND `craigslist_tag_id` = 0 AND `date` >= ? AND `date` < ? $where", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
 
                 // Handle any error
                 if ( $this->db->errno() ) {
@@ -560,7 +564,9 @@ class Analytics extends Base_Class {
         switch ( $type ) {
             default:
             case 'market':
-                $markets = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts, b.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_tag_id` = 0 AND a.`date` >= ? AND a.`date` < ? GROUP BY b.`craigslist_market_id`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
+                $where = ( $craigslist_market_id ) ? " AND `craigslist_market_id` = $craigslist_market_id" : '';
+
+                $markets = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts, b.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_tag_id` = 0 AND a.`date` >= ? AND a.`date` < ? $where GROUP BY b.`craigslist_market_id`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
 
                 // Handle any error
                 if ( $this->db->errno() ) {

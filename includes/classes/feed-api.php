@@ -18,9 +18,17 @@ class Feed_API extends Base_Class {
 	private $messages = array(
 		'error' => 'An unknown error has occured. This has been reported to the Database Administrator. Please try again later.',
 		'failed-to-get-feed' => 'Failed to get feed. Please report this to a system administrator.',
+		'failed-to-get-categories' => 'Failed to get feed. Please report this to a system administrator.',
+		'failed-to-get-brands' => 'Failed to get feed. Please report this to a system administrator.',
+		'failed-to-get-industries' => 'Failed to get industries. Please report this to a system administrator.',
+		'failed-to-get-product-groups' => 'Failed to get product groups. Please report this to a system administrator.',
 		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
 		'ssl-required' => 'You must make the call to the secured version of our website.',
 		'success-get-feed' => 'Get Feed succeeded!',
+		'success-get-categories' => 'Get Categories succeeded!',
+		'success-get-industries' => 'Get Industries succeeded!',
+		'success-get-brands' => 'Get Brands succeeded!',
+		'success-get-product-groups' => 'Get Product Groups succeeded!'
 	);
 	
 	/**
@@ -29,6 +37,12 @@ class Feed_API extends Base_Class {
 	 */
 	private $methods = array(
 		'get_feed'
+        , 'get_products'
+        , 'get_categories'
+        , 'get_attributes'
+        , 'get_brands'
+        , 'get_industries'
+        , 'get_product_groups'
 	);
 	
 	/**
@@ -62,13 +76,15 @@ class Feed_API extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 
+        ini_set( 'memory_limit', '512M' );
+
 		// Do we need to debug
 		if( self::DEBUG )
 			error_reporting( E_ALL );
 
-        $this->xml = new DOMDocument('1.0');
-        $this->data = $this->xml->createElement('data');
-        $this->xml->appendChild( $this->data );
+        //$this->xml = new DOMDocument('1.0');
+        //$this->data = $this->xml->createElement('data');
+        //$this->xml->appendChild( $this->data );
 		
 		// Load everything that needs to be loaded
 		$this->statuses['init'] = true;
@@ -150,7 +166,9 @@ class Feed_API extends Base_Class {
 	 * @return bool
 	 */
 	private function get_feed() {
-		$products = $this->db->get_results( "SELECT `product_id`, `brand_id`, `industry_id`, `slug`, `description`, `status`, `sku`, `weight`, `volume`, `product_specifications`, `publish_visibility`, `publish_date`, `date_created`, `timestamp` FROM `products` WHERE `publish_visibility` <> 'deleted' LIMIT 10", ARRAY_A );
+        return $this->get_products();
+
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, a.`date_created`, a.`timestamp` FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`publish_visibility` <> 'deleted' GROUP BY a.`product_id` LIMIT 10", ARRAY_A );
 
 		// If there was a MySQL error
 		if( mysql_errno() ) {
@@ -159,54 +177,209 @@ class Feed_API extends Base_Class {
 			exit;
 		}
 
-        $xml_products = $this->xml->createElement( 'products' );
-        $this->data->appendChild( $xml_products );
+//        $xml_products = $this->xml->createElement( 'products' );
+//        $this->data->appendChild( $xml_products );
+//
+//        foreach ( $products as $p ) {
+//            $p['product_specifications'] = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES ) );
+//
+//            $product = $this->xml->createElement('product');
+//            $xml_products->appendChild( $product );
+//
+//            foreach ( $p as $k => $v ) {
+//                if ( is_array( $v ) ) {
+//                    $array_element = $this->xml->createElement( $k );
+//                    $product->appendChild( $array_element );
+//
+//                    switch ( $k ) {
+//                        case 'product_specifications':
+//                            foreach ( $v as $key => $value ) {
+//                                $ps = $this->xml->createElement( 'specification' );
+//                                $array_element->appendChild( $ps );
+//
+//                                $array_key = $this->xml->createElement( 'key' );
+//                                $ps->appendChild( $array_key );
+//
+//                                $array_key_value = $this->xml->createTextNode( $value[0] );
+//                                $array_key->appendChild( $array_key_value );
+//
+//                                $array_value = $this->xml->createElement( 'value' );
+//                                $ps->appendChild( $array_key );
+//
+//                                $array_value_value = $this->xml->createTextNode( $value[1] );
+//                                $array_value->appendChild( $array_value_value );
+//                            }
+//                        break;
+//                    }
+//                } else {
+//                    $element = $this->xml->createElement($k);
+//                    $product->appendChild( $element );
+//
+//                    $text = $this->xml->createTextNode( $v );
+//                    $element->appendChild( $text );
+//                }
+//            }
+//        }
 
-        foreach ( $products as $p ) {
-            $p['product_specifications'] = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES ) );
-
-            $product = $this->xml->createElement('product');
-            $xml_products->appendChild( $product );
-
-            foreach ( $p as $k => $v ) {
-                if ( is_array( $v ) ) {
-                    $array_element = $this->xml->createElement( $k );
-                    $product->appendChild( $array_element );
-
-                    switch ( $k ) {
-                        case 'product_specifications':
-                            foreach ( $v as $key => $value ) {
-                                $ps = $this->xml->createElement( 'specification' );
-                                $array_element->appendChild( $ps );
-
-                                $array_key = $this->xml->createElement( 'key' );
-                                $ps->appendChild( $array_key );
-
-                                $array_key_value = $this->xml->createTextNode( $value[0] );
-                                $array_key->appendChild( $array_key_value );
-
-                                $array_value = $this->xml->createElement( 'value' );
-                                $ps->appendChild( $array_key );
-
-                                $array_value_value = $this->xml->createTextNode( $value[1] );
-                                $array_value->appendChild( $array_value_value );
-                            }
-                        break;
-                    }
-                } else {
-                    $element = $this->xml->createElement($k);
-                    $product->appendChild( $element );
-
-                    $text = $this->xml->createTextNode( $v );
-                    $element->appendChild( $text );
-                }
-            }
-        }
-
-        $this->_add_response( array( 'success' => true, 'message' => 'success-get-feed' ) );
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-feed', 'products' => $products ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
 	}
-	
+
+    /**
+	 * Get Products
+	 *
+	 * @return bool
+	 */
+	private function get_products() {
+    	$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, a.`date_created`, a.`timestamp`, b.`name` AS industry, GROUP_CONCAT( DISTINCT c.`category_id` ) AS categories, GROUP_CONCAT( DISTINCT d.`image` ) AS images, GROUP_CONCAT( DISTINCT e.`attribute_item_id` ) AS attributes, GROUP_CONCAT( DISTINCT f.`product_group_id` ) AS product_groups FROM `products` AS a LEFT JOIN `industries` AS b ON ( a.`industry_id` = b.`industry_id` ) LEFT JOIN `product_categories` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_images` AS d ON ( a.`product_id` = d.`product_id` ) LEFT JOIN `attribute_item_relations` AS e ON ( a.`product_id` = e.`product_id` ) LEFT JOIN `product_group_relations` AS f ON ( a.`product_id` = f.`product_id` ) WHERE a.`publish_visibility` <> 'deleted' GROUP BY a.`product_id` LIMIT 10", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Feed', "Failed to get feed", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-feed' ) );
+			exit;
+		}
+
+
+        foreach ( $products as &$p ) {
+            $p['product_specifications'] = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES ) );
+
+            if ( empty( $p['categories'] ) ) {
+                unset( $p['categories'] );
+            } else {
+                $p['categories'] = explode( ',', $p['categories'] );
+            }
+
+            if ( empty( $p['images'] ) ) {
+                unset( $p['images'] );
+            } else {
+                $p['images'] = explode( ',', $p['images'] );
+            }
+
+            if ( empty( $p['attributes'] ) ) {
+                unset( $p['attributes'] );
+            } else {
+                $p['attributes'] = explode( ',', $p['attributes'] );
+            }
+
+            if ( empty( $p['product_groups'] ) ) {
+                unset( $p['product_groups'] );
+            } else {
+                $p['product_groups'] = explode( ',', $p['product_groups'] );
+            }
+
+            if ( is_array( $p['images'] ) )
+            foreach( $p['images'] as &$i ) {
+                $i = 'http://' . $p['industry'] . '.retailcatalog.us/products/' . $p['product_id'] . '/large/' . $i;
+            }
+
+            unset( $p['industry'] );
+        }
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-products', 'products' => $products ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
+	}
+
+    /**
+     * Get Brands
+     */
+    private function get_brands() {
+		$brands = $this->db->get_results( "SELECT * FROM `brands`", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Brands', "Failed to get brands", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-brands' ) );
+			exit;
+		}
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-brands', 'brands' => $brands ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+	}
+
+	/**
+     * Get Categories
+     */
+    private function get_categories() {
+		$categories = $this->db->get_results( "SELECT * FROM `categories`", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Categories', "Failed to get categories", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-categories' ) );
+			exit;
+		}
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-categories', 'categories' => $categories ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+	}
+
+	/**
+     * Get Industries
+     */
+    private function get_industries() {
+		$industries = $this->db->get_results( "SELECT * FROM `industries`", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Industries', "Failed to get industries", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-industries' ) );
+			exit;
+		}
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-industries', 'industries' => $industries ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+	}
+
+    /**
+     * Get Attributes
+     */
+    private function get_attributes() {
+		$attributes = $this->db->get_results( "SELECT * FROM `attributes`", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Attributes', "Failed to get attributes", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-attributes' ) );
+			exit;
+		}
+
+        $attribute_items = $this->db->get_results( "SELECT * FROM `attribute_items`", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Attributes Items', "Failed to get attributes items", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-attributes' ) );
+			exit;
+		}
+
+        $attributes = ar::assign_key( $attributes, 'attribute_id' );
+
+        foreach ( $attribute_items as $ai ) {
+            $attributes[$ai['attribute_id']]['items'][] = $ai;
+        }
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-attributes', 'attributes' => array_values( $attributes ) ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+	}
+
+    /**
+     * Get Product Groups
+     */
+    private function get_product_groups() {
+		$product_groups = $this->db->get_results( "SELECT * FROM `product_groups`", ARRAY_A );
+
+		// If there was a MySQL error
+		if( mysql_errno() ) {
+			$this->_err( 'Failed to Get Product Groups', "Failed to get product groups", __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-to-get-product-groups' ) );
+			exit;
+		}
+
+        $this->_add_response( array( 'success' => true, 'message' => 'success-get-product-groups', 'product_groups' => $product_groups ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+	}
+
 	/******************************/
 	/* START: IR Feed API Methods */
 	/******************************/
@@ -347,16 +520,17 @@ class Feed_API extends Base_Class {
 			$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 		}
 
-        if ( is_array( $this->response ) )
+        /*if ( is_array( $this->response ) )
         foreach ( $this->response as $k => $v ) {
             $element = $this->xml->createElement( $k );
             $this->data->appendChild( $element );
 
             $text = $this->xml->createTextNode( $v );
             $element->appendChild( $text );
-        }
+        }*/
 
 		// Respond in XML
-		echo $this->xml->saveXML();
+		//$this->xml->saveXML();
+        echo json_encode( $this->response );
 	}
 }
