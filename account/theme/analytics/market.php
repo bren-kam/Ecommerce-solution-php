@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Analytics
+ * @page Craigslist - Analytics Markets
  * @package Imagine Retailer
  */
 
@@ -15,12 +15,23 @@ if ( !$user )
 if ( !$user['website']['live'] )
 	url::redirect('/');
 
+// Get the market ID
+$craigslist_market_id = (int) $_GET['cmid'];
+
+// Make sure they have a market ID
+if( !$craigslist_market_id )
+    url::redirect('/analytics/craigslist/');
+
 // Instantiate class
+$c = new Craigslist();
 $a = new Analytics( NULL, $_GET['ds'], $_GET['de'] );
 
+// Get the market
+$market = $c->get_craigslist_market( $craigslist_market_id );
+
 // Main Analytics
-$records = $a->get_craigslist_metric_by_date( 'market', 'views' );
-$total = $a->get_craigslist_totals( 'market' );
+$records = $a->get_craigslist_metric_by_date( 'market', 'views', $craigslist_market_id );
+$total = $a->get_craigslist_totals( 'market', $craigslist_market_id );
 
 $views_plotting_array = array();
 
@@ -66,7 +77,7 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 ");
 
 $selected = "analytics";
-$title = _('Craigslist') . ' | ' . _('Analytics') . ' | ' . TITLE;
+$title = $market['market'] . ' | ' . _('Craigslist') . ' | ' . _('Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -76,7 +87,7 @@ get_header();
         -
         <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
     </div>
-	<h1><?php echo _('Craigslist'); ?></h1>
+	<h1><?php echo $market['market']; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'craigslist' ); ?>
 	<div id="subcontent">
@@ -84,7 +95,7 @@ get_header();
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />
 		<div class="info-box col-1">
-			<p class="info-box-title"><?php echo _('Craigslist'); ?></p>
+			<p class="info-box-title"><?php echo $market['market']; ?></p>
 			<div class="info-box-content">
 				<table cellpadding="0" cellspacing="0" width="100%" id="sparklines">
 					<tr>
@@ -101,8 +112,32 @@ get_header();
 			</div>
 		</div>
 		<br clear="both" /><br />
-        <div class="info-box">
-            <p class="info-box-title"><?php echo _('Markets'); ?></p>
+        <div class="info-box col-2 float-left">
+            <p class="info-box-title"><?php echo _('Categories'); ?></p>
+            <div class="info-box-content">
+                <table cellpadding="0" cellspacing="0" width="100%" class="form">
+                    <tr>
+                        <th width="40%"><strong><?php echo _('Markets'); ?></strong></th>
+                        <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
+                        <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
+                        <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>
+                    </tr>
+                    <?php
+                    if ( is_array( $markets ) )
+                    foreach ( $markets as $market ) {
+                    ?>
+                    <tr>
+                        <td><a href="/analytics/market/?cmid=<?php echo $market['craigslist_market_id']; ?>" title="<?php echo $market['market']; ?>"><?php echo $market['market']; ?></a></td>
+                        <td class="text-right"><?php echo number_format( $market['views'] ); ?></td>
+                        <td class="text-right"><?php echo number_format( $market['unique'] ); ?></td>
+                        <td class="text-right"><?php echo number_format( $market['posts'] ); ?></td>
+                    </tr>
+                    <?php } ?>
+                </table>
+            </div>
+        </div>
+        <div class="info-box col-2 float-left">
+            <p class="info-box-title"><?php echo _('Products'); ?></p>
             <div class="info-box-content">
                 <table cellpadding="0" cellspacing="0" width="100%" class="form">
                     <tr>

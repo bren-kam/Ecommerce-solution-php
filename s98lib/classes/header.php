@@ -16,6 +16,8 @@ class header extends Base_Class {
 	 */
 	public static $content_types = array (
 		'json' => 'application/json'
+        , 'text' => 'text/plain'
+        , 'xml' => 'text/xml'
 	);
 	
 	/**

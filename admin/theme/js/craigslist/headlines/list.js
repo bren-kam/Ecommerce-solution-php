@@ -20,7 +20,7 @@ function postLoad( $ ) {
 		'bServerSide': true,
 		'bAutoWidth': false,
 		'sAjaxSource': '/ajax/craigslist/headlines/list/',
-		'iDisplayLength' : 100,
+		'iDisplayLength' : 30,
 		"oLanguage": {
 			"sLengthMenu": '<select><option value="30">30</option><option value="50">50</option><option value="100">100</option></select>',
 			"sInfo": "Records: _START_ - _END_ of _TOTAL_"
@@ -37,7 +37,7 @@ function postLoad( $ ) {
 				success: secureCallback
 			});
 		},
-		"aaSorting": [[1, 'asc']],
+		"aaSorting": [[0, 'asc']],
 		"sDom" : '<"top"Tlr>t<"bottom"pi>'
 	});
 	

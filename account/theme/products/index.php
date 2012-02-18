@@ -196,13 +196,14 @@ get_header();
 		</table>
 	</div>
 	<div class="screen hidden" id="dProductOptions">
-        <br />
-		<div id="dProductOptionsList"></div>
 		<br />
 		<select id="sProductOptions">
 			<option value="">-- <?php echo _('Select a Product Option'); ?> --</option>
 		</select>
 		<a href="javascript:;" id="aAddProductOption" title="<?php echo _('Add Product Option'); ?>"><?php echo _('Add Product Option'); ?>...</a>
+        <br /><br />
+		<div id="dProductOptionsList"></div>
+        <br />
 	</div>
 	<div class="screen hidden" id="dShoppingCart">
         <br />

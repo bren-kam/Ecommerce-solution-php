@@ -86,7 +86,7 @@ class Analytics extends Base_Class {
      * @param string $date
 	 * @return bool
 	 */
-	public function add_craigslist_stats( $date ) {
+	public function add_craigslist_stats( $date, $date_end = NULL ) {
         $craigslist_website_ids = $this->db->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", ARRAY_A );
 
          // Handle any error
@@ -98,14 +98,19 @@ class Analytics extends Base_Class {
          // Get the customer > website id link
         $craigslist_website_ids = ar::assign_key( $craigslist_website_ids, 'value', true );
 
-         // Load the library
+        // Get markets
+        $c = new Craigslist();
+
+        $markets = $c->get_all_market_links();
+
+        // Load the library
         library( 'craigslist-api' );
 
         // Create API object
-        $craigslist = new Craigslist_API( 2, 'uCYS6jfM6XbyBfZJ' );
+        $craigslist = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
 
         // Get the stats
-        $stats = $craigslist->get_stats( $date );
+        $stats = $craigslist->get_stats( $date, $date_end );
 
         // Initialize variables
         $values = $tag_ids = array();
@@ -113,16 +118,17 @@ class Analytics extends Base_Class {
         foreach ( $stats as $s ) {
             $date = $this->db->escape( $s->date );
             $website_id = (int) $craigslist_website_ids[$s->customer_id];
+            $craigslist_market_id = (int) $markets[$s->market_id];
 
             // Add Marketing
-            $values[] = "( $website_id, " . (int) $s->market_id . ", 'market', " . (int) $s->overall->unique . ', ' . (int) $s->overall->views . ', ' . $s->overall->posts . ", '" . $date . "' )";
+            $values[] = "( $website_id, $craigslist_market_id, 0, " . (int) $s->overall->unique . ', ' . (int) $s->overall->views . ', ' . $s->overall->posts . ", '" . $date . "' )";
 
             if ( is_array( $s->tags ) )
             foreach ( $s->tags as $t ) {
                 $tag_ids[] = $t->tag_id;
 
                 // Add Marketing
-                $values[] = "( $website_id, " . (int) $t->tag_id . ", 'tag', " . (int) $t->unique . ', ' . (int) $t->views . ', ' . $t->posts . ", '" . $date . "' )";
+                $values[] = "( $website_id, $craigslist_market_id, " . (int) $t->tag_id . ", " . (int) $t->unique . ', ' . (int) $t->views . ', ' . $t->posts . ", '" . $date . "' )";
             }
         }
 
@@ -138,7 +144,6 @@ class Analytics extends Base_Class {
                 return false;
             }
         }
-
 
         // Get tags
         $tags = $craigslist->get_tags( $tag_ids );

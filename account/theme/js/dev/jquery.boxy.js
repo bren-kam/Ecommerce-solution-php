@@ -301,7 +301,7 @@ Boxy.prototype = {
     
     // Replace dialog content
     setContent: function(newContent) {
-        newContent = $(newContent).css({display: 'block'}).addClass('boxy-content');
+        newContent = $(newContent).css({display: 'block'}).addClass('boxy-content').append('<br clear="all" />');
         if (this.options.clone) newContent = newContent.clone(true);
         this.getContent().remove();
         var footer = $('.boxy-footer', newContent).clone(true).css({display: 'block'});
