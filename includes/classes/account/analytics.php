@@ -41,28 +41,31 @@ class Analytics extends Base_Class {
 		// Need to load the parent constructor
 		if ( !parent::__construct() )
 			return false;
-		
-        // Call Google Analytics API
-        library( 'GAPI' );
 
-        // See if they are using their own google analytics account or ours
-        $w = new Websites;
-        $settings = $w->get_settings( 'ga-username', 'ga-password' );
+        // Only call if necessary
+        if ( NULL != $ga_profile_id ) {
+            // Call Google Analytics API
+            library( 'GAPI' );
 
-        // Determine if ther username and password are empty (use our account) or not (use their account)
-        if ( !empty( $settings['ga-username'] ) && !empty( $settings['ga-password'] ) ) {
-            $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
-            $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
+            // See if they are using their own google analytics account or ours
+            $w = new Websites;
+            $settings = $w->get_settings( 'ga-username', 'ga-password' );
 
-            if ( !empty( $ga_username )  && !empty( $ga_password ) ) {
-                $this->ga = new GAPI( $ga_username, $ga_password );
+            // Determine if ther username and password are empty (use our account) or not (use their account)
+            if ( !empty( $settings['ga-username'] ) && !empty( $settings['ga-password'] ) ) {
+                $ga_username = security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY );
+                $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
+
+                if ( !empty( $ga_username )  && !empty( $ga_password ) ) {
+                    $this->ga = new GAPI( $ga_username, $ga_password );
+                } else {
+                    $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
+                }
             } else {
                 $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
             }
-        } else {
-            $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
+            $this->ga_profile_id = (int) $ga_profile_id;
         }
-		$this->ga_profile_id = (int) $ga_profile_id;
 
 	    $this->date_start = ( empty( $date_start ) ) ? dt::date( 'Y-m-d', time() - 2678400 ) : dt::date( 'Y-m-d', strtotime( $date_start ) ); // 30 days ago
 		$this->date_end = ( empty( $date_end ) ) ? dt::date( 'Y-m-d', time() - 86400 ) : dt::date( 'Y-m-d', strtotime( $date_end ) ); // Yesterday
@@ -418,6 +421,183 @@ class Analytics extends Base_Class {
 
         return $keywords;
 	}
+
+    /**** CRAIGSLIST *****/
+
+    /**
+	 * Gets the amount of (metric) by date
+	 *
+     * @param string $type
+	 * @param string $metric a dimension to grab data about ( visits, page views )
+     * @param int $craigslist_market_id (optional)
+	 * @param string $date_start (optional|)
+	 * @param string $date_end (optional|)
+	 * @return array
+	 */
+	public function get_craigslist_metric_by_date( $type, $metric, $craigslist_market_id = 0, $date_start = '', $date_end = '' ) {
+        global $user;
+
+		// Get dates
+		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $craigslist_market_id = (int) $craigslist_market_id;
+
+        // DB Safe
+        $metric = $this->db->escape( $metric );
+
+		switch ( $type ) {
+            default:
+            case 'market':
+                $where = ( $craigslist_market_id ) ? " AND `craigslist_market_id` = $craigslist_market_id" : '';
+
+                $values = $this->db->prepare( "SELECT SUM( `$metric` ) AS '$metric', DATE( `date` ) AS date FROM `analytics_craigslist` WHERE `website_id` = $website_id AND `craigslist_tag_id` = 0 AND `date` >= ? AND `date` < ? $where GROUP BY `date`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+
+            case 'category':
+                $values = $this->db->prepare( "SELECT SUM( a.`$metric` ) AS '$metric', DATE( a.`date` ) AS date FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_market_id` = $craigslist_market_id AND a.`craigslist_tag_id` <> 0 AND b.`type` = 'category' AND a.`date` >= ? AND a.`date` < ? GROUP BY a.`date`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+
+            case 'product';
+                $values = $this->db->prepare( "SELECT SUM( a.`$metric` ) AS '$metric', DATE( a.`date` ) AS date FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_market_id` = $craigslist_market_id AND a.`craigslist_tag_id` <> 0 AND b.`type` = 'product' AND a.`date` >= ? AND a.`date` < ? GROUP BY a.`date`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+        }
+
+        return ar::assign_key( $values, 'date', true );
+	}
+
+	/**
+	 * Craigslist - Gets the total amounts for a date range
+	 *
+     * @param string $type
+     * @param int $craigslist_market_id (optional)
+	 * @param string $date_start (optional|)
+	 * @param string $date_end (optional|)
+	 * @return array
+	 */
+	public function get_craigslist_totals( $type, $craigslist_market_id = 0, $date_start = '', $date_end = '' ) {
+        global $user;
+
+		// Get dates
+		list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $craigslist_market_id = (int) $craigslist_market_id;
+
+		switch ( $type ) {
+            default:
+            case 'market':
+                $where = ( $craigslist_market_id ) ? " AND `craigslist_market_id` = $craigslist_market_id" : '';
+
+                $totals = $this->db->prepare( "SELECT SUM( `unique` ) AS 'unique', SUM( `views` ) AS views, SUM( `posts` ) AS posts FROM `analytics_craigslist` WHERE `website_id` = $website_id AND `craigslist_tag_id` = 0 AND `date` >= ? AND `date` < ? $where", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+
+            case 'category':
+                $totals = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_market_id` = $craigslist_market_id AND a.`craigslist_tag_id` <> 0 AND b.`type` = 'category' AND a.`date` >= ? AND a.`date` < ?", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+
+            case 'product';
+                $totals = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_market_id` = $craigslist_market_id AND a.`craigslist_tag_id` <> 0 AND b.`type` = 'product' AND a.`date` >= ? AND a.`date` < ?", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+        }
+
+        return $totals;
+	}
+
+    /**
+	 * Craigslist - Gets an overview
+	 *
+     * @param string $type
+     * @param int $craigslist_market_id (optional)
+	 * @param string $date_start (optional|)
+	 * @param string $date_end (optional|)
+	 * @param int $limit
+	 * @return array
+	 */
+	public function get_craigslist_overview( $type, $craigslist_market_id = 0, $date_start = '', $date_end = '', $limit = 5 ) {
+        global $user;
+
+        list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $craigslist_market_id = (int) $craigslist_market_id;
+
+        switch ( $type ) {
+            default:
+            case 'market':
+                $where = ( $craigslist_market_id ) ? " AND `craigslist_market_id` = $craigslist_market_id" : '';
+
+                $markets = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts, b.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_tag_id` = 0 AND a.`date` >= ? AND a.`date` < ? $where GROUP BY b.`craigslist_market_id`", 'ss', $date_start, $date_end )->get_results( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+
+            case 'category':
+                $markets = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_market_id` = $craigslist_market_id AND a.`craigslist_tag_id` <> 0 AND b.`type` = 'category' AND a.`date` >= ? AND a.`date` < ?", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+
+            case 'product';
+                $markets = $this->db->prepare( "SELECT SUM( a.`unique` ) AS 'unique', SUM( a.`views` ) AS views, SUM( a.`posts` ) AS posts FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`website_id` = $website_id AND a.`craigslist_market_id` = $craigslist_market_id AND a.`craigslist_tag_id` <> 0 AND b.`type` = 'product' AND a.`date` >= ? AND a.`date` < ?", 'ss', $date_start, $date_end )->get_row( '', ARRAY_A );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+        }
+
+		return $markets;
+	}
 	
 	/***** SPARKLINES *****/
 	
@@ -435,6 +615,20 @@ class Analytics extends Base_Class {
 			return false;
 		
 		return $this->create_sparkline( $this->get_metric_by_date( $metric, $date_start, $date_end ) );
+	}
+
+    /**
+	 * Craigslist - Gets the array for a sparkline
+	 *
+     * @param string $type
+	 * @param string $metric
+     * @param int $craigslist_market_id (optional)
+	 * @param string $date_start (optional|)
+	 * @param string $date_end (optional|)
+	 * @return array
+	 */
+	public function craigslist_sparkline( $type, $metric, $craigslist_market_id = 0, $date_start = '', $date_end = '' ) {
+		return $this->create_sparkline( $this->get_craigslist_metric_by_date( $type, $metric, $craigslist_market_id, $date_start, $date_end ) );
 	}
 	
 	/**

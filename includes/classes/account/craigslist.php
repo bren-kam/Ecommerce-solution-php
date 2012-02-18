@@ -84,6 +84,30 @@ class Craigslist extends Base_Class {
 		
 		return $results;
 	}
+
+    /**
+	 * Gets a random headline
+	 *
+	 * @param int $category_id
+	 * @return string
+	 */
+	public function get_random_headline( $category_id ) {
+        // Type Juggling
+        $category_id = (int) $category_id;
+
+		$headlines = $this->db->get_col( "SELECT `headline` FROM `craigslist_headlines` WHERE `category_id` = $category_id" );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist headline.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Get a random headline
+        $headline = $headlines[rand( 0, count( $headlines ) - 1 )];
+
+		return ( isset( $headline ) ) ? $headline : '';
+	}
 	
 	/**
 	 * Count the number of templates for a particular category
@@ -292,6 +316,30 @@ class Craigslist extends Base_Class {
         }
 
         return $craigslist_ads;
+    }
+
+    /**
+     * Get Craigslist Market
+     *
+     * @param int $craigslist_market_id
+     * @return array
+     */
+    public function get_craigslist_market( $craigslist_market_id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $craigslist_market_id = (int) $craigslist_market_id;
+
+        $market = $this->db->get_row( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`craigslist_market_id` = $craigslist_market_id AND b.`website_id` = $website_id", ARRAY_A );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get Craigslist Market.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $market;
     }
 	
 	/**
