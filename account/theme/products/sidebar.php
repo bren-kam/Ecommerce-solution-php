@@ -29,6 +29,7 @@ $brands_name = ( $high_impact ) ? _('Brands') : _('Top Brands');
 	}
 	?>
 	
+	<a href="/reaches/" title="<?php echo _('Reaches'); ?>" class="top"><?php echo _('Reaches'); ?></a>
 	<a href="/products/custom-products/" title="<?php echo _('Custom Products'); ?>" class="top"><?php echo _('Custom Products'); ?></a>
 	<?php if ( isset( $custom_products ) ) { ?>
 		<a href="/products/custom-products/" title="<?php echo _('View'); ?>" class="sub"><?php echo _('View'); ?></a>
