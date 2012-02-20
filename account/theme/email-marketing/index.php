@@ -21,14 +21,22 @@ $e = new Email_Marketing;
 // Get data
 $emails = $e->dashboard_messages( $user['website']['website_id'] );
 $subscribers = $e->dashboard_subscribers( $user['website']['website_id'] );
+$email = false;
+$email_count = count( $emails );
+$i = 0;
+$errors = '';
 
 if ( is_array( $emails ) ) {
 	$a = new Analytics;
 	
 	// Get the analytics data
-	$email = $a->get_email( $emails[0]['mc_campaign_id'] );
-	
-} else {
+	while ( $i < $email_count && !$email = $a->get_email( $emails[$i]['mc_campaign_id'] ) ) {
+		$errors .= '<p class="error">' . _('An error occurred while trying to get your email') . ', "' . $emails[$i]['subject'] . '". ' . _('Please contact an online specialist for assistance.') . '</p>';
+		$i++;
+	}
+}
+
+if ( !$email ) {
 	$email = array(
 		'emails_sent' => 0,
 		'opens' => 0,
@@ -57,10 +65,15 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'dashboard' ); ?>
 	<div id="subcontent">
-		<?php if ( $emails[0] ) { ?>
-		<p><strong><?php echo _('Latest email:'); ?></strong> <?php echo $emails[0]['subject']; ?></p>
-		<?php } else { ?>
-		<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
+		<?php
+		if ( !empty( $errors ) )
+			echo $errors;
+		
+		if ( $email ) { 
+			?>
+			<p><strong><?php echo _('Latest email:'); ?></strong> <?php echo $email['subject']; ?></p>
+		<?php } elseif( 0 == $email_count ) { ?>
+			<p><?php echo _('You have not yet sent out an email.'); ?> <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
 		<?php } ?>
 		<div id="dEmailStatistics"></div>
 		<br clear="all" />

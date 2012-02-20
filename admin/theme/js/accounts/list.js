@@ -42,7 +42,7 @@ function postLoad( $ ) {
 		'sAjaxSource': '/ajax/accounts/list/',
 		'iDisplayLength' : 100,
 		"oLanguage": {
-			"sLengthMenu": 'Rows: <select><option value="100">100</option><option value="250">250</option><option value="500">500</option></select>',
+			"sLengthMenu": '<select><option value="100">100</option><option value="250">250</option><option value="500">500</option></select>',
 			"sInfo": "Records: _START_ - _END_ of _TOTAL_"
 		},
 		"fnServerData": function ( sSource, aoData, fnCallback ) {

@@ -16,24 +16,21 @@ if ( !$user['website']['live'] )
 	url::redirect('/');
 
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
+$a = new Analytics( NULL, $_GET['ds'], $_GET['de'] );
 
 // Main Analytics
-$records = $a->get_metric_by_date( 'visits' );
-$total = $a->get_totals();
-$traffic_sources = $a->get_traffic_sources_totals();
-$visits_plotting_array = array();
+$records = $a->get_craigslist_metric_by_date( 'market', 'views' );
+$total = $a->get_craigslist_totals( 'market' );
 
-// Pie Chart
-$pie_chart = $a->pie_chart( $traffic_sources );
+$views_plotting_array = array();
 
 // Visits plotting
 if ( is_array( $records ) )
 foreach ( $records as $r_date => $r_value ) {
-	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+	$views_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
 
-$visits_plotting = implode( ',', $visits_plotting_array );
+$views_plotting = implode( ',', $views_plotting_array );
 
 // Get the dates
 $dates = $a->dates();
@@ -41,23 +38,20 @@ $date_start = date( 'M j, Y', strtotime( $dates[0] ) );
 $date_end = date( 'M j, Y', strtotime( $dates[1] ) );
 
 // Sparklines
-$sparklines['visits'] = $a->create_sparkline( $records );
-$sparklines['page_views'] = $a->sparkline( 'page_views' );
-$sparklines['bounce_rate'] = $a->sparkline( 'bounce_rate' );
-$sparklines['time_on_site'] = $a->sparkline( 'time_on_site' );
+$sparklines['views'] = $a->create_sparkline( $records );
+$sparklines['unique'] = $a->craigslist_sparkline( 'market', 'unique' );
+$sparklines['posts'] = $a->craigslist_sparkline( 'market', 'posts' );
 
-$content_overview_pages = $a->get_content_overview();
+$markets = $a->get_craigslist_overview( 'market' );
 
 css( 'analytics' );
-javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'swfobject', 'JSON', 'analytics/dashboard' );
+javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'analytics/craigslist-dashboard' );
 
 // Load the jQuery UI CSS
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
-add_before_javascript('function open_flash_chart_data() { return JSON.stringify(' . $pie_chart . ');}');
-
 add_javascript_callback("$.plot($('#dLargeGraph'),[
-			{ label: 'Visits', data: [$visits_plotting], color: '#FFA900' }
+			{ label: 'Visits', data: [$views_plotting], color: '#FFA900' }
 		],{
 			lines: { show: true, fill: true },
 			points: { show: true },
@@ -68,13 +62,11 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 			yaxis: { min: 0 }
 	});
 	
-	active_graph = 'Visits', percent = '', time = false;
-	
-	swfobject.embedSWF('/media/flash/open-flash-chart.swf', 'dTrafficSources', '200', '200', '9.0.0', '', null, { wmode:'transparent' } );
+	active_graph = 'Views', percent = '', time = false;
 ");
 
 $selected = "analytics";
-$title = _('Analytics') . ' | ' . TITLE;
+$title = _('Craigslist') . ' | ' . _('Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -84,90 +76,55 @@ get_header();
         -
         <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
     </div>
-	<h1><?php echo _('Dashboard'); ?></h1>
+	<h1><?php echo _('Craigslist'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'analytics/', 'dashboard' ); ?>
+	<?php get_sidebar( 'analytics/', 'craigslist' ); ?>
 	<div id="subcontent">
-		<?php nonce::field( 'get-graph', '_ajax_get_graph'); ?>
+		<?php nonce::field( 'get-craigslist-graph', '_ajax_get_craigslist_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />
 		<div class="info-box col-1">
-			<p class="info-box-title"><?php echo _('Site Usage'); ?></p>
+			<p class="info-box-title"><?php echo _('Craigslist'); ?></p>
 			<div class="info-box-content">
 				<table cellpadding="0" cellspacing="0" width="100%" id="sparklines">
 					<tr>
-						<td width="15%"><a href="#visits" class="sparkline" title="<?php echo _('Visits Sparkline'); ?>"><img src="<?php echo $sparklines['visits']; ?>" width="150" height="36" alt="<?php echo _('Visits Sparkline'); ?>" /></a></td>
-						<td width="35%"><span class="data"><?php echo number_format( $total['visits'] ); ?></span> <span class="label"><?php echo _('Visits'); ?></span></td>
-						<td width="15%"><a href="#bounce_rate" class="sparkline" title="<?php echo _('Bounce Rate Sparkline'); ?>"><img src="<?php echo $sparklines['bounce_rate']; ?>" width="150" height="36" alt="<?php echo _('Bounce Rate Sparkline'); ?>" /></a></td>
-						<td width="35%"><span class="data"><?php echo number_format( $total['bounce_rate'], 2 ); ?>%</span> <span class="label"><?php echo _('Bounce Rate'); ?></span></td>
+						<td width="15%"><a href="#views" rel="market" class="sparkline" title="<?php echo _('Views Sparkline'); ?>"><img src="<?php echo $sparklines['views']; ?>" width="150" height="36" alt="<?php echo _('Views Sparkline'); ?>" /></a></td>
+						<td width="35%"><span class="data"><?php echo number_format( $total['views'] ); ?></span> <span class="label"><?php echo _('Views'); ?></span></td>
+						<td width="15%"><a href="#unique" rel="market" class="sparkline" title="<?php echo _('Unique Views Sparkline'); ?>"><img src="<?php echo $sparklines['unique']; ?>" width="150" height="36" alt="<?php echo _('Unique Views'); ?>" /></a></td>
+						<td width="35%"><span class="data"><?php echo number_format( $total['unique'] ); ?></span> <span class="label"><?php echo _('Unique Views'); ?></span></td>
 					</tr>
 					<tr>
-						<td><a href="#page_views" class="sparkline" title="<?php echo _('Page Views Sparkline'); ?>"><img src="<?php echo $sparklines['page_views']; ?>" width="150" height="36" alt="<?php echo _('Page Views Sparkline'); ?>" /></a></td>
-						<td><span class="data"><?php echo number_format( $total['page_views'] ); ?></span> <span class="label"><?php echo _('Page Views'); ?></span></td>
-						<td><a href="#time_on_site" class="sparkline" title="<?php echo _('Avg. Time On Site Sparkline'); ?>"><img src="<?php echo $sparklines['time_on_site']; ?>" width="150" height="36" alt="<?php echo _('Avg. Time On Site Sparkline'); ?>" /></a></td>
-						<td><span class="data"><?php echo $total['time_on_site']; ?></span> <span class="label"><?php echo _('Avg. Time on Site'); ?></span></td>
+						<td><a href="#posts" rel="market" class="sparkline" title="<?php echo _('Posts Sparkline'); ?>"><img src="<?php echo $sparklines['posts']; ?>" width="150" height="36" alt="<?php echo _('Posts Sparkline'); ?>" /></a></td>
+						<td><span class="data"><?php echo number_format( $total['posts'] ); ?></span> <span class="label"><?php echo _('Posts'); ?></span></td>
 					</tr>
 				</table>
 			</div>
 		</div>
 		<br clear="both" /><br />
-		<div class="col-2 float-left">
-			<div class="info-box">
-				<p class="info-box-title"><?php echo _('Traffic Sources Overview'); ?></p>
-				<div class="info-box-content">
-					<div class="pie-chart-container" style="width:190px; right:0; left: 30px;"><div id="dTrafficSources"></div></div>
-					<div id="dTrafficSourcesData">
-						<p class="blue-marker">
-							<span class="label"><?php echo _('Direct Traffic'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['direct'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['direct'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
-						</p>
-						<p class="green-marker">
-							<span class="label"><?php echo _('Referring Sites'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['referring'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['referring'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
-						</p>
-						<p class="orange-marker">
-							<span class="label"><?php echo _('Search Engines'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['search_engines'] ); ?> (<?php echo ( 0 == $traffic_sources['total'] ) ? '0' : round( $traffic_sources['search_engines'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
-						</p>
-						<?php if ( $traffic_sources['email'] > 0 ) { ?>
-						<p class="yellow-marker">
-							<span class="label"><?php echo _('Campaigns'); ?></span><br />
-							<span class="data"><?php echo number_format( $traffic_sources['email'] ); ?> (<?php echo round( $traffic_sources['email'] / $traffic_sources['total'] * 100, 2 ); ?>%)</span>
-						</p>
-						<?php } ?>
-					</div>
-					<br clear="left" />
-					<p align="right";><a href="/analytics/traffic-sources-overview/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="gray"><?php echo _('Report'); ?></span></a></p>
-				</div>
-			</div>
-		</div>
-		<div class="col-2 float-left">
-			<div class="info-box">
-				<p class="info-box-title"><?php echo _('Content Overview'); ?></p>
-				<div class="info-box-content">
-					<table cellpadding="0" cellspacing="0" width="100%" class="form">
-						<tr>
-							<th width="40%"><strong><?php echo _('Pages'); ?></strong></th>
-							<th align="right"><strong><?php echo _('Page Views'); ?></strong></th>
-							<th align="right"><strong><?php echo _('% Page Views'); ?></strong></th>
-						</tr>
-						<?php 
-						if ( is_array( $content_overview_pages ) )
-						foreach ( $content_overview_pages as $top ) {
-						?>
-						<tr>
-							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
-							<td align="right"><?php echo number_format( $top['page_views'] ); ?></td>
-							<td align="right"><?php echo round( $top['page_views'] / $total['page_views'] * 100, 2 ); ?>%</td>
-						</tr>
-						<?php } ?>
-					</table>
-					<br />
-					<p align="right"><a href="/analytics/content-overview/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
-				</div>
-			</div>
-		</div>
-		
+        <div class="info-box">
+            <p class="info-box-title"><?php echo _('Markets'); ?></p>
+            <div class="info-box-content">
+                <table cellpadding="0" cellspacing="0" width="100%" class="form">
+                    <tr>
+                        <th width="40%"><strong><?php echo _('Markets'); ?></strong></th>
+                        <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
+                        <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
+                        <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>
+                    </tr>
+                    <?php
+                    if ( is_array( $markets ) )
+                    foreach ( $markets as $market ) {
+                    ?>
+                    <tr>
+                        <td><a href="/analytics/market/?cmid=<?php echo $market['craigslist_market_id']; ?>" title="<?php echo $market['market']; ?>"><?php echo $market['market']; ?></a></td>
+                        <td class="text-right"><?php echo number_format( $market['views'] ); ?></td>
+                        <td class="text-right"><?php echo number_format( $market['unique'] ); ?></td>
+                        <td class="text-right"><?php echo number_format( $market['posts'] ); ?></td>
+                    </tr>
+                    <?php } ?>
+                </table>
+            </div>
+        </div>
 		<br clear="left" /><br />
 	</div>
 	<br /><br />

@@ -35,22 +35,19 @@ class Users extends Base_Class {
 
 		if ( !empty( $this->encrypted_email ) ) {
             global $user;
-
+			
             $user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
-
+			
             // Get website
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
-		
+
             // Don't send them into an infinite loop if you can avoid it
             if ( ( !is_array( $user['websites'] ) || 0 == count( $user['websites'] ) ) && !isset( $_COOKIE['wid'] ) ) {
                 $this->logout();
                 url::redirect('/');
             }
 
-            if ( !isset( $_COOKIE['wid'] ) ) {
-                $user['website'] = '';
-                set_cookie( 'wid', $user['website']['website_id'], 172800 ); // 2 days
-            } elseif ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
+            if ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
                 $w = new Websites;
 
                 $user['website'] = $w->get_website( $_COOKIE['wid'] );

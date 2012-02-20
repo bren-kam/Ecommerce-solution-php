@@ -61,14 +61,20 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 			default:
 				// This gets rid of any initial or ending /
 				$smart_slug_parts = implode( '/', $slug_parts );
-				
+
+
 				// Find out if it's just a sub folder of something
 				if ( is_file( THEME_PATH . $smart_slug_parts . '.php' ) ) {
 					$type = 'page';
 					
 					// This is a normal page
 					require_once( theme_inc( $smart_slug_parts ) );
-				} else {
+				}  elseif ( is_file( THEME_PATH . $smart_slug_parts . '/index.php' ) ) {
+					$type = 'page';
+
+					// This is a normal page
+					require( theme_inc( $smart_slug_parts . '/index' ) );
+				}else {
 					$type = '404';
 					
 					// This page was not found

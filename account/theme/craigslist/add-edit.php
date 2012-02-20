@@ -121,7 +121,7 @@ get_header();
                 <h2><?php echo _('Create and Preview Ad'); ?></h2>
                 <br />
                 <label for="tTitle"><?php echo _('Ad Title'); ?>:</label>
-                <input type="text" class="tb" name="tTitle" id="tTitle" value="<?php if ( isset( $ad ) ) echo $ad['title']; ?>" />
+                <input type="text" class="tb" name="tTitle" id="tTitle" value="<?php if ( isset( $ad ) ) echo $ad['title']; ?>" /> <a href="javascript:;" id="aRandomHeadline" title="<?php echo _('Random Title'); ?>" ajax="1"><?php echo _('Random Title'); ?></a>
                 <br /><br />
                 <textarea name="taDescription" id="taDescription" rte="1"><?php if ( $ad ) echo $ad['text']; ?></textarea>
                 <p>

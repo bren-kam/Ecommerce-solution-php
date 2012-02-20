@@ -16,7 +16,7 @@ if ( !$user['website']['email_marketing'] )
 	url::redirect('/email-marketing/subscribers/');
 
 $selected = "email_marketing";
-$title = _('Emails | Email Marketing') . ' | ' . TITLE;
+$title = _('Emails') . ' | ' . _('Email Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 

@@ -8,8 +8,7 @@
         <a href="/website/add-page/" class="sub<?php if ( isset( $add_page ) ) echo ' selected'; ?>" title="<?php echo _('Add Page'); ?>"><?php echo _('Add'); ?></a>
     <?php } ?>
 
-    <a href="/website/top/" class="top" title="<?php echo _('Top Section'); ?>"><?php echo _('Top Section'); ?></a>
-	<a href="/website/website-sidebar/" class="top" title="<?php echo _('Sidebar'); ?>"><?php echo _('Sidebar'); ?></a>
+    <a href="/website/website-sidebar/" class="top" title="<?php echo _('Sidebar'); ?>"><?php echo _('Sidebar'); ?></a>
 	<a href="/website/banners/" class="top" title="<?php echo _('Banners'); ?>"><?php echo _('Banners'); ?></a>
 	<a href="/website/sale/" class="top" title="<?php echo _('Sale Page'); ?>"><?php echo _('Sale'); ?></a>
 	<a href="/website/room-planner/" class="top" title="<?php echo _('Room Planner'); ?>"><?php echo _('Room Planner'); ?></a>

@@ -79,7 +79,7 @@ if ( is_array( $users ) )
 foreach ( $users as $us ) {
 	switch ( $us['role'] ) {
 		case 1: 
-			$role = _('Basic User');
+			$role = _('Authorized User');
 		break;
 		
 		case 5:

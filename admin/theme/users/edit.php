@@ -187,7 +187,7 @@ get_header();
 						<select name="sRole" id="sRole">
 							<?php
 							$max_role = ( $user['role'] <= 10 ) ? $user['role'] : 5;
-							$roles = array( 1 => _('Basic User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Online Specialist'), 8 => _('Admin'), 10 => _('Super Admin') );
+							$roles = array( 1 => _('Authorized User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Online Specialist'), 8 => _('Admin'), 10 => _('Super Admin') );
 							$selected_role_number = ( empty( $_POST['sRole'] ) ) ? $us['role'] : $_POST['sRole'];
 							
 							for ( $i = 1; $i <= $max_role; $i++ ) { 

@@ -131,7 +131,7 @@ class Websites extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-		$website = $this->db->get_row( "SELECT a.`website_id`, a.`os_user_id`, a.`user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`website_id`, a.`os_user_id`, a.`user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -140,6 +140,49 @@ class Websites extends Base_Class {
 		}
 		
 		return $website;
+	}
+
+    /**
+	 * Gets a metadata for a page
+	 *
+	 * @param int $website_id
+	 * @param string $key_1, $key_2, $key_3, etc.
+	 * @return array
+	 */
+	public function get_pagemeta_by_key( $website_id ) {
+		// Get the arguments
+		$arguments = func_get_args();
+
+		// Needs to have at least two arguments
+		if ( count( $arguments ) <= 1 )
+			return false;
+
+		// Typecast
+		$website_id = (int) array_shift( $arguments );
+
+		// Get keys, escape them and turn them into comma separated values
+		array_walk( $arguments, array( $this->db, 'escape' ) );
+		$keys = "'" . implode( "', '", $arguments ) . "'";
+
+		// Get the meta data
+		$metadata = $this->db->get_results( "SELECT `key`, `value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) WHERE a.`key` IN ($keys) AND b.`website_id` = $website_id", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get metadata.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Set the array
+		$new_metadata = array_fill_keys( $arguments, '' );
+
+		// Decrypt any meta data
+		if ( is_array( $metadata ) )
+		foreach ( $metadata as $md ) {
+			$new_metadata[$md['key']] = html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' );
+		}
+
+		return ( 1 == count( $new_metadata ) ) ? array_shift( $new_metadata ) : $new_metadata;
 	}
 	
 	/**
@@ -819,7 +862,11 @@ class Websites extends Base_Class {
 								case 'email-marketing':
 									$where .= ' AND a.`email_marketing` = 1';
 								break;
-								
+
+                                case 'mobile-marketing':
+                                    $where .= ' AND a.`mobile_marketing` = 1';
+                                break;
+
 								case 'product-catalog':
 									$where .= ' AND a.`product_catalog` = 1';
 								break;
@@ -827,7 +874,11 @@ class Websites extends Base_Class {
 								case 'room-planner':
 									$where .= ' AND a.`room_planner` = 1';
 								break;
-								
+
+                                case 'craigslist':
+                                    $where .= ' AND a.`craigslist` = 1';
+                                break;
+
 								case 'seo':
 									$where .= ' AND a.`seo` = 1';
 								break;
@@ -909,8 +960,8 @@ class Websites extends Base_Class {
 		}
 		
 		// Title, Company, #of products, Date Signed Up
-		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
-		
+		$websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website report.', __LINE__, __METHOD__ );
@@ -1091,6 +1142,25 @@ class Websites extends Base_Class {
 		}
 		
 		return $settings;
+	}
+
+    /**
+	 * Get Website Setting
+	 *
+     * @param int $website_id
+	 * @param string $key
+	 * @return string
+	 */
+	public function get_setting( $website_id, $key ) {
+		$value = $this->db->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = ? AND `key` = ?', 'is', $website_id, $key )->get_var('');
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website setting.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $value;
 	}
 	
 	/**

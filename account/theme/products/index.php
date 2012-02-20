@@ -109,20 +109,22 @@ get_header();
 
 <div id="dEditProduct" class="hidden">
 	<form name="fEditProduct" id="fEditProduct" action="/ajax/products/update-product/" method="post" ajax="1">
-	<?php if ( $user['website']['shopping_cart'] ) { ?>
 	<div id="dPopupTabs">
         <p>
             <a href="javascript:;" class="screen-selector selected" id="aPricingProductInformation" title="<?php echo _('Pricing/Product Information'); ?>"><?php echo _('Pricing/Product Information'); ?></a>
             <a href="javascript:;" class="screen-selector" id="aProductOptions" title="<?php echo _('Product Options'); ?>"><?php echo _('Product Options'); ?></a>
-            <a href="javascript:;" class="screen-selector" id="aShoppingCart" title="<?php echo _('Shopping Cart'); ?>"><?php echo _('Shopping Cart'); ?></a>
-            <?php if ( $user['role'] >= 8 ) { ?>
-                <a href="javascript:;" rel="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=" class="screen-selector" id="aMasterCatalog" title="<?php echo _('Master Catalog'); ?>" target="_blank"><?php echo _('Master Catalog'); ?></a>
-            <?php } ?>
+            <?php if ( $user['website']['shopping_cart'] ) { ?>
+                <a href="javascript:;" class="screen-selector" id="aShoppingCart" title="<?php echo _('Shopping Cart'); ?>"><?php echo _('Shopping Cart'); ?></a>
+                <?php if ( $user['role'] >= 8 ) { ?>
+                    <a href="javascript:;" rel="http://<?php echo str_replace( 'account', 'admin', SUBDOMAIN ), '.', DOMAIN; ?>/products/add-edit/?pid=" class="screen-selector" id="aMasterCatalog" title="<?php echo _('Master Catalog'); ?>" target="_blank"><?php echo _('Master Catalog'); ?></a>
+                <?php
+                }
+            }
+            ?>
         </p>
     </div>
     <br />
     <br />
-	<?php } ?>
     <div class="screen selected" id="dPricingProductInformation">
         <br />
 		<table cellpadding="0" cellspacing="0" class="col-2 float-left">
@@ -194,13 +196,14 @@ get_header();
 		</table>
 	</div>
 	<div class="screen hidden" id="dProductOptions">
-        <br />
-		<div id="dProductOptionsList"></div>
 		<br />
 		<select id="sProductOptions">
 			<option value="">-- <?php echo _('Select a Product Option'); ?> --</option>
 		</select>
 		<a href="javascript:;" id="aAddProductOption" title="<?php echo _('Add Product Option'); ?>"><?php echo _('Add Product Option'); ?>...</a>
+        <br /><br />
+		<div id="dProductOptionsList"></div>
+        <br />
 	</div>
 	<div class="screen hidden" id="dShoppingCart">
         <br />

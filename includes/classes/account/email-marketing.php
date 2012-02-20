@@ -286,21 +286,23 @@ class Email_Marketing extends Base_Class {
 	}
 	
 	/**
-	 * Checks an email already exits
+	 * Checks to see if a subscriber already exits
 	 * 
-	 * @param string $email 
+	 * @param string $phone
 	 * @return array
 	 */
-	public function email_exists( $email ){
-		$email = $this->db->prepare( 'SELECT a.`email_id`, a.`status` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) RIGHT JOIN `email_lists` AS c ON ( b.`email_list_id` = c.`email_list_id` ) WHERE a.`email` = ? AND c.`website_id` = ?', 'si', $email, $user['website']['website_id'] )->get_var('');
+	public function subscriber_exists( $phone ) {
+        global $user;
+
+		$subscriber = $this->db->prepare( 'SELECT a.`mobile_subscriber_id` FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) RIGHT JOIN `mobile_lists` AS c ON ( b.`mobile_list_id` = c.`mobile_list_id` ) WHERE a.`phone` = ? AND c.`website_id` = ?', 'si', $phone, $user['website']['website_id'] )->get_var('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if email exists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to check if a subscriber exists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return $email;
+		return $subscriber;
 	}
 	
 	/**

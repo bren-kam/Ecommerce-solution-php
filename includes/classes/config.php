@@ -18,7 +18,10 @@ class Config {
 		'aws-secret-key'			=> 'Ge1sAIQlT3wN3GWMBrHGX9nxn5Mui+31NKpliJ1x',
 		'aws-bucket-domain'			=> '.retailcatalog.us',
 		// MailChimp
-		'mc-api'					=> '54c6400139c4f457efb941516f903b98-us1'
+		'mc-api'					=> '54c6400139c4f457efb941516f903b98-us1',
+		// Craigslist
+		'craigslist-gsr-id'			=> 2,
+		'craigslist-gsr-key'		=> 'uCYS6jfM6XbyBfZJ'
 	);
 		
 	/**

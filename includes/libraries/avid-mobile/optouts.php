@@ -6,7 +6,7 @@
  *
  * @version 1.0.0
  */
-class AV_Optouts extends Avid_Mobile_API {
+class AM_Optouts extends Avid_Mobile_API {
      /**
 	 * Construct class will initiate and run everything
 	 *
