@@ -130,6 +130,7 @@ class Craigslist extends Base_Class {
 	 *
 	 * @param string $where
 	 * @return array
+
 	 */
 	public function count_craigslist( $where ) {		
 		if ( isset( $where ) && $where ) {
@@ -637,6 +638,39 @@ class Craigslist extends Base_Class {
 		return $market_count;
 	}
 
+    /***** TAGS ****/
+
+    /**
+     * Add Tags
+     *
+     * @param array $tags
+     * @return bool
+     */
+    public function add_tags( $tags ) {
+        $values = array();
+
+        if ( is_array( $tags ) || is_object( $tags ) )
+        foreach ( $tags as $object_id => $tag ) {
+            $type = ( 'item' == $tag->type ) ? 'product' : 'category';
+            $values[] = '( ' . (int) $tag->id . ", " . (int) $object_id . ", '$type' )";
+        }
+
+       // Add at up to 500 at a time
+        $value_chunks = array_chunk( $values, 500 );
+
+        foreach ( $value_chunks as $vc ) {
+            $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `object_id`, `type` ) VALUES " . implode( ',', $vc ) . " ON DUPLICATE KEY UPDATE `type` = VALUES(`type`)" );
+			
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
+                return false;
+            }
+        }
+		
+        return true;
+    }
+    
     /***** OTHER *****/
 
 	/**

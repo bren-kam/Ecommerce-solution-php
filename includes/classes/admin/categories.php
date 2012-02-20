@@ -331,7 +331,16 @@ class Categories extends Base_Class {
 		}
 		
 		return $sub_category_ids;
-	} 	
+	}
+	
+	/**
+	 * Get All Categories
+	 *
+	 * @return array
+	 */
+	public function get_all() {
+		return $this->categories_list;
+	}
 	
 	/**
 	 * Report an error

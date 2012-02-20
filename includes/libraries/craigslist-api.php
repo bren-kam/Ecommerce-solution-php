@@ -104,19 +104,14 @@ class Craigslist_API {
     /**
      * Add Market
      *
-     * @param int $customer_id
-     * @param string $name
-     * @param array $replace (optional)
+     * @param array $tags
      * @return bool
      */
-    public function add_tags( $customer_id, $name, $replace = array() ) {
-        // Setup the arguments correctly
-        $replace = $this->_arguments( $replace );
-
+    public function add_tags( $tags ) {
         // Add customer
-        $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );
+        $response = $this->_execute( 'addtags', $tags );
 
-        return $response->market_id;
+        return $response;
     }
 
     /**
@@ -269,7 +264,7 @@ class Craigslist_API {
 
         // Do the call and get the raw response
         $this->raw_response = curl_exec( $ch );
-
+		
         // It's supposed to be in JSON, so grab that if it exists
 		$this->response = json_decode( $this->raw_response );
 
