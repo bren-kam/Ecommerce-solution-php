@@ -17,24 +17,21 @@ if ( !$user['website']['live'] )
 
 // Get the variables
 $craigslist_market_id = (int) $_GET['cmid'];
-$category_id = (int) $_GET['cid'];
 
 // Make sure they have a market ID
-if( !$craigslist_market_id || !$category_id )
+if( !$craigslist_market_id )
     url::redirect('/analytics/craigslist/');
 
 // Instantiate class
 $craigslist = new Craigslist();
-$c = new Categories();
 $a = new Analytics( NULL, $_GET['ds'], $_GET['de'] );
 
 // Get the variables
 $market = $craigslist->get_craigslist_market( $craigslist_market_id );
-$category = $c->get( $category_id );
 
 // Get the analytics
-$records = $a->get_craigslist_metric_by_date( 'category', 'views', $craigslist_market_id, $category_id );
-$total = $a->get_craigslist_totals( 'category', $craigslist_market_id, $category_id );
+$records = $a->get_craigslist_metric_by_date( 'category', 'views', $craigslist_market_id );
+$total = $a->get_craigslist_totals( 'category', $craigslist_market_id );
 
 $views_plotting_array = array();
 
@@ -53,8 +50,10 @@ $date_end = date( 'M j, Y', strtotime( $dates[1] ) );
 
 // Sparklines
 $sparklines['views'] = $a->create_sparkline( $records );
-$sparklines['unique'] = $a->craigslist_sparkline( 'category', 'unique', $craigslist_market_id, $category_id );
-$sparklines['posts'] = $a->craigslist_sparkline( 'category', 'posts', $craigslist_market_id, $category_id );
+$sparklines['unique'] = $a->craigslist_sparkline( 'category', 'unique', $craigslist_market_id );
+$sparklines['posts'] = $a->craigslist_sparkline( 'category', 'posts', $craigslist_market_id );
+
+$categories = $a->get_craigslist_overview( 'categories', $craigslist_market_id, '', '', 0 );
 
 css( 'analytics' );
 javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'analytics/craigslist-dashboard' );
@@ -78,7 +77,7 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 ");
 
 $selected = "analytics";
-$title = $category['name'] . ' | ' . $market['market'] . ' | ' . _('Craigslist') . ' | ' . _('Analytics') . ' | ' . TITLE;
+$title = _('Categories') . ' | ' . $market['market'] . ' | ' . _('Craigslist') . ' | ' . _('Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -88,17 +87,16 @@ get_header();
         -
         <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
     </div>
-	<h1><?php echo $market['market'], ' - ', $category['name']; ?></h1>
+	<h1><?php echo $market['market'], ' - ', _('Categories'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'craigslist' ); ?>
 	<div id="subcontent">
         <input type="hidden" id="hCraigslistMarketID" value="<?php echo $craigslist_market_id; ?>" />
-        <input type="hidden" id="hObjectID" value="<?php echo $category_id; ?>" />
 		<?php nonce::field( 'get-craigslist-graph', '_ajax_get_craigslist_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />
 		<div class="info-box col-1">
-			<p class="info-box-title"><?php echo $market['market'], ' - ', $category['name']; ?></p>
+			<p class="info-box-title"><?php echo $market['market'], ' - ', _('Categories'); ?></p>
 			<div class="info-box-content">
 				<table cellpadding="0" cellspacing="0" width="100%" id="sparklines">
 					<tr>
@@ -115,6 +113,38 @@ get_header();
 			</div>
 		</div>
 		<br clear="both" /><br />
+        <div class="info-box">
+            <p class="info-box-title"><?php echo _('Categories'); ?></p>
+            <div class="info-box-content">
+                <br /><br />
+				<br /><br />
+                <table cellpadding="0" cellspacing="0" width="100%" class="dt" perPage="30,50,100">
+                    <thead>
+                        <tr>
+                            <th width="40%" sort="1 desc"><?php echo _('Category'); ?></th>
+                            <th class="text-right" column="formatted-num"><?php echo _('Views'); ?></th>
+                            <th class="text-right" column="formatted-num"><?php echo _('Unique Views'); ?></th>
+                            <th class="text-right" column="formatted-num"><?php echo _('Posts'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if ( is_array( $categories ) )
+                        foreach ( $categories as $category ) {
+                        ?>
+                        <tr>
+                            <td><a href="/analytics/craigslist/category/?cmid=<?php echo $craigslist_market_id; ?>&amp;cid=<?php echo $category['category_id']; ?>" title="<?php echo $category['category']; ?>"><?php echo $category['category']; ?></a></td>
+                            <td class="text-right"><?php echo number_format( $category['views'] ); ?></td>
+                            <td class="text-right"><?php echo number_format( $category['unique'] ); ?></td>
+                            <td class="text-right"><?php echo number_format( $category['posts'] ); ?></td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+                <br />
+            </div>
+        </div>
+        <br clear="left" /><br />
 	</div>
 	<br /><br />
 </div>

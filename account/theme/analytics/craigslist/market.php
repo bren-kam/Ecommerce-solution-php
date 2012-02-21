@@ -130,7 +130,7 @@ get_header();
                         foreach ( $categories as $category ) {
                         ?>
                         <tr>
-                            <td><a href="/analytics/craigslist-category/?cmid=<?php echo $craigslist_market_id; ?>&amp;cid=<?php echo $category['category_id']; ?>" title="<?php echo $category['category']; ?>"><?php echo $category['category']; ?></a></td>
+                            <td><a href="/analytics/craigslist/category/?cmid=<?php echo $craigslist_market_id; ?>&amp;cid=<?php echo $category['category_id']; ?>" title="<?php echo $category['category']; ?>"><?php echo $category['category']; ?></a></td>
                             <td class="text-right"><?php echo number_format( $category['views'] ); ?></td>
                             <td class="text-right"><?php echo number_format( $category['unique'] ); ?></td>
                             <td class="text-right"><?php echo number_format( $category['posts'] ); ?></td>
@@ -138,7 +138,7 @@ get_header();
                         <?php } ?>
                     </table>
                     <br />
-					<p align="right"><a href="/analytics/craigslist-categories/?cmid=<?php echo $craigslist_market_id; ?>" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
+					<p align="right"><a href="/analytics/craigslist/categories/?cmid=<?php echo $craigslist_market_id; ?>" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
 				</div>
             </div>
         </div>
@@ -158,7 +158,7 @@ get_header();
                         foreach ( $products as $product ) {
                         ?>
                         <tr>
-                            <td><a href="/analytics/craigslist-product/?cmid=<?php echo $craigslist_market_id; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo $product['product']; ?>"><?php echo $product['product']; ?></a></td>
+                            <td><a href="/analytics/craigslist/product/?cmid=<?php echo $craigslist_market_id; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo $product['product']; ?>"><?php echo $product['product']; ?></a></td>
                             <td class="text-right"><?php echo number_format( $product['views'] ); ?></td>
                             <td class="text-right"><?php echo number_format( $product['unique'] ); ?></td>
                             <td class="text-right"><?php echo number_format( $product['posts'] ); ?></td>
@@ -166,7 +166,7 @@ get_header();
                         <?php } ?>
                     </table>
                     <br />
-					<p align="right"><a href="/analytics/craigslist-products/?cmid=<?php echo $craigslist_market_id; ?>" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
+					<p align="right"><a href="/analytics/craigslist/products/?cmid=<?php echo $craigslist_market_id; ?>" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
 				</div>
             </div>
         </div>

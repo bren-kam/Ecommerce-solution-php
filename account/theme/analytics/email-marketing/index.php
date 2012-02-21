@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Analytics - Email marketing
+ * @page Analytics - Email Marketing
  * @package Imagine Retailer
  */
 
@@ -19,7 +19,7 @@ $a = new Analytics;
 $emails = $a->get_emails();
 
 $selected = "analytics";
-$title = _('Email Marketing | Analytics') . ' | ' . TITLE;
+$title = _('Email Marketing') . ' | ' . _('Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -44,7 +44,7 @@ get_header();
 				$last_updated = dt::date( 'F jS, Y \a\t g:i a', $e['last_updated'] );
 			?>
 				<tr>
-					<td><a href="/analytics/email/?mcid=<?php echo $e['mc_campaign_id']; ?>" title="<?php echo $e['subject']; ?>"><?php echo $e['subject']; ?></a></td>
+					<td><a href="/analytics/email-marketing/email/?mcid=<?php echo $e['mc_campaign_id']; ?>" title="<?php echo $e['subject']; ?>"><?php echo $e['subject']; ?></a></td>
 					<td class="text-right" title="<?php echo $last_updated; ?>"><?php echo $e['emails_sent']; ?></td>
 					<td class="text-right" title="<?php echo $last_updated; ?>"><?php echo $e['opens']; ?></td>
 					<td class="text-right" title="<?php echo $last_updated; ?>"><?php echo $e['clicks']; ?></td>

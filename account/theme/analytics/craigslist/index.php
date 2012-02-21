@@ -116,7 +116,7 @@ get_header();
                     foreach ( $markets as $market ) {
                     ?>
                     <tr>
-                        <td><a href="/analytics/market/?cmid=<?php echo $market['craigslist_market_id']; ?>" title="<?php echo $market['market']; ?>"><?php echo $market['market']; ?></a></td>
+                        <td><a href="/analytics/craigslist/market/?cmid=<?php echo $market['craigslist_market_id']; ?>" title="<?php echo $market['market']; ?>"><?php echo $market['market']; ?></a></td>
                         <td class="text-right"><?php echo number_format( $market['views'] ); ?></td>
                         <td class="text-right"><?php echo number_format( $market['unique'] ); ?></td>
                         <td class="text-right"><?php echo number_format( $market['posts'] ); ?></td>

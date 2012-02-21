@@ -569,7 +569,7 @@ class Analytics extends Base_Class {
 
         list( $date_start, $date_end ) = $this->dates( $date_start, $date_end );
 
-        $limit = ( is_int( $limit ) ) ? " LIMIT $limit" : '';
+        $limit = ( is_int( $limit ) && $limit > 0 ) ? " LIMIT $limit" : '';
 
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
