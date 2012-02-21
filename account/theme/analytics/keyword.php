@@ -24,7 +24,8 @@ if ( empty( $keyword ) )
 $a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
 
 // Set global filter
-$a->set_ga_filter( "keyword==$keyword" );
+$filter = "keyword==$keyword";
+$a->set_ga_filter( $filter );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'visits' );
@@ -85,6 +86,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'traffic_sources_overview', 'keyword' ); ?>
 	<div id="subcontent">
+        <input type="hidden" id="hFilter" value="<?php echo $filter; ?>" />
 		<?php nonce::field( 'get-graph', '_ajax_get_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />

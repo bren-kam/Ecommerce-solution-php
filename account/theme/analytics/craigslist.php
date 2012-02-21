@@ -42,7 +42,7 @@ $sparklines['views'] = $a->create_sparkline( $records );
 $sparklines['unique'] = $a->craigslist_sparkline( 'market', 'unique' );
 $sparklines['posts'] = $a->craigslist_sparkline( 'market', 'posts' );
 
-$markets = $a->get_craigslist_overview( 'market' );
+$markets = $a->get_craigslist_overview( 'markets' );
 
 css( 'analytics' );
 javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'analytics/craigslist-dashboard' );
@@ -106,7 +106,7 @@ get_header();
             <div class="info-box-content">
                 <table cellpadding="0" cellspacing="0" width="100%" class="form">
                     <tr>
-                        <th width="40%"><strong><?php echo _('Markets'); ?></strong></th>
+                        <th width="40%"><strong><?php echo _('Market'); ?></strong></th>
                         <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
                         <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
                         <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>

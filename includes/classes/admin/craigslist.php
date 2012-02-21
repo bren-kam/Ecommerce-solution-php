@@ -647,15 +647,19 @@ class Craigslist extends Base_Class {
      * @return bool
      */
     public function add_tags( $tags ) {
-        $values = array();
+        $values = $product_skus = $craigslist_tags = array();
 
         if ( is_array( $tags ) || is_object( $tags ) )
         foreach ( $tags as $object_id => $tag ) {
-            $type = ( 'item' == $tag->type ) ? 'product' : 'category';
-            $values[] = '( ' . (int) $tag->id . ", " . (int) $object_id . ", '$type' )";
+            if ( 'item' == $tag->type ) {
+                $product_skus[] = $this->db->escape( $tag->name );
+                $craigslist_tags[$tag->id] = $tag->name;
+            } else {
+                $values[] = '( ' . (int) $tag->id . ", " . (int) $object_id . ", 'category' )";
+            }
         }
 
-       // Add at up to 500 at a time
+        // Add at up to 500 at a time
         $value_chunks = array_chunk( $values, 500 );
 
         foreach ( $value_chunks as $vc ) {
@@ -665,6 +669,41 @@ class Craigslist extends Base_Class {
             if ( $this->db->errno() ) {
                 $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
                 return false;
+            }
+        }
+
+        // Now Product SKUs
+        if ( is_array( $product_skus ) ) {
+            $product_ids = $this->db->get_results( "SELECT `product_id`, `sku` FROM `products` WHERE `publish_visibility` = 'public' AND `sku` IN ( '" . implode( "', '", $product_skus ) . "' ) GROUP BY `product_id`", ARRAY_A );
+
+             // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to get product ids.', __LINE__, __METHOD__ );
+                return false;
+            }
+
+            $product_ids = ar::assign_key( $product_ids, 'sku', true );
+
+            $values = array();
+
+            if ( is_array( $product_ids ) ) {
+                foreach ( $craigslist_tags as $craigslist_tag_id => $sku ) {
+                    $values[] = '( ' . (int) $craigslist_tag_id . ", " . (int) $product_ids[$sku] . ", 'product' )";
+                }
+
+
+                // Add at up to 500 at a time
+                $value_chunks = array_chunk( $values, 500 );
+
+                foreach ( $value_chunks as $vc ) {
+                    $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `object_id`, `type` ) VALUES " . implode( ',', $vc ) . " ON DUPLICATE KEY UPDATE `object_id` = VALUES(`object_id`), `type` = VALUES( `type` )" );
+
+                    // Handle any error
+                    if ( $this->db->errno() ) {
+                        $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
+                        return false;
+                    }
+                }
             }
         }
 		

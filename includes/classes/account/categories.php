@@ -61,7 +61,17 @@ class Categories extends Base_Class {
 
 		$this->categories = $parent_categories;
 	}
-	
+
+    /**
+     * Get Category
+     *
+     * @param int $category_id
+     * @return array
+     */
+    public function get( $category_id ) {
+        return $this->categories_list[$category_id];
+    }
+
 	/**
 	 * Get List
 	 *

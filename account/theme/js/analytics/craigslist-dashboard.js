@@ -32,9 +32,15 @@ jQuery(function($) {
 	
 	$('a.sparkline').click( function(e) {
 		e.preventDefault();
-		var name = $(this).attr('title').replace( ' Sparkline', '' );
-		
-		$.post( '/ajax/analytics/get-craigslist-graph/', { _nonce: $("#_ajax_get_craigslist_graph").val(), t : $(this).attr('rel'), metric: $(this).attr('href').replace('#',''), extra: $('#hExtra').val() }, function( plots ) {
+		var name = $(this).attr('title').replace( ' Sparkline', '' ), craigslistMarketID = $('#hCraigslistMarketID'), objectID = $('#hObjectID');
+
+        if ( 'undefined' != craigslistMarketID )
+            craigslistMarketID = craigslistMarketID.val();
+
+        if ( 'undefined' != objectID )
+            objectID = objectID.val();
+
+		$.post( '/ajax/analytics/get-craigslist-graph/', { _nonce: $("#_ajax_get_craigslist_graph").val(), t : $(this).attr('rel'), metric: $(this).attr('href').replace('#',''), cmid : craigslistMarketID, oid : objectID }, function( plots ) {
 			active_graph = name;
 			graphOptions = {
 				lines: { show: true, fill: true },

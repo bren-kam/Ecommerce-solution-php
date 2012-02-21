@@ -35,7 +35,7 @@ $total = $a->get_craigslist_totals( 'market', $craigslist_market_id );
 
 $views_plotting_array = array();
 
-// Visits plotting
+// Views plotting
 if ( is_array( $records ) )
 foreach ( $records as $r_date => $r_value ) {
 	$views_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
@@ -50,10 +50,11 @@ $date_end = date( 'M j, Y', strtotime( $dates[1] ) );
 
 // Sparklines
 $sparklines['views'] = $a->create_sparkline( $records );
-$sparklines['unique'] = $a->craigslist_sparkline( 'market', 'unique' );
-$sparklines['posts'] = $a->craigslist_sparkline( 'market', 'posts' );
+$sparklines['unique'] = $a->craigslist_sparkline( 'market', 'unique', $craigslist_market_id );
+$sparklines['posts'] = $a->craigslist_sparkline( 'market', 'posts', $craigslist_market_id );
 
-$markets = $a->get_craigslist_overview( 'market' );
+$categories = $a->get_craigslist_overview( 'categories', $craigslist_market_id );
+$products = $a->get_craigslist_overview( 'products', $craigslist_market_id );
 
 css( 'analytics' );
 javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'analytics/craigslist-dashboard' );
@@ -62,7 +63,7 @@ javascript( 'jquery.flot/jquery.flot', 'jquery.flot/excanvas', 'analytics/craigs
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
 add_javascript_callback("$.plot($('#dLargeGraph'),[
-			{ label: 'Visits', data: [$views_plotting], color: '#FFA900' }
+			{ label: 'Views', data: [$views_plotting], color: '#FFA900' }
 		],{
 			lines: { show: true, fill: true },
 			points: { show: true },
@@ -91,6 +92,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'craigslist' ); ?>
 	<div id="subcontent">
+        <input type="hidden" id="hCraigslistMarketID" value="<?php echo $craigslist_market_id; ?>" />
 		<?php nonce::field( 'get-craigslist-graph', '_ajax_get_craigslist_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />
@@ -112,52 +114,60 @@ get_header();
 			</div>
 		</div>
 		<br clear="both" /><br />
-        <div class="info-box col-2 float-left">
-            <p class="info-box-title"><?php echo _('Categories'); ?></p>
-            <div class="info-box-content">
-                <table cellpadding="0" cellspacing="0" width="100%" class="form">
-                    <tr>
-                        <th width="40%"><strong><?php echo _('Markets'); ?></strong></th>
-                        <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
-                        <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
-                        <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>
-                    </tr>
-                    <?php
-                    if ( is_array( $markets ) )
-                    foreach ( $markets as $market ) {
-                    ?>
-                    <tr>
-                        <td><a href="/analytics/market/?cmid=<?php echo $market['craigslist_market_id']; ?>" title="<?php echo $market['market']; ?>"><?php echo $market['market']; ?></a></td>
-                        <td class="text-right"><?php echo number_format( $market['views'] ); ?></td>
-                        <td class="text-right"><?php echo number_format( $market['unique'] ); ?></td>
-                        <td class="text-right"><?php echo number_format( $market['posts'] ); ?></td>
-                    </tr>
-                    <?php } ?>
-                </table>
+        <div class="col-2 float-left">
+            <div class="info-box">
+                <p class="info-box-title"><?php echo _('Categories'); ?></p>
+                <div class="info-box-content">
+                    <table cellpadding="0" cellspacing="0" width="100%" class="form">
+                        <tr>
+                            <th width="40%"><strong><?php echo _('Category'); ?></strong></th>
+                            <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
+                            <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
+                            <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>
+                        </tr>
+                        <?php
+                        if ( is_array( $categories ) )
+                        foreach ( $categories as $category ) {
+                        ?>
+                        <tr>
+                            <td><a href="/analytics/craigslist-category/?cmid=<?php echo $craigslist_market_id; ?>&amp;cid=<?php echo $category['category_id']; ?>" title="<?php echo $category['category']; ?>"><?php echo $category['category']; ?></a></td>
+                            <td class="text-right"><?php echo number_format( $category['views'] ); ?></td>
+                            <td class="text-right"><?php echo number_format( $category['unique'] ); ?></td>
+                            <td class="text-right"><?php echo number_format( $category['posts'] ); ?></td>
+                        </tr>
+                        <?php } ?>
+                    </table>
+                    <br />
+					<p align="right"><a href="/analytics/craigslist-categories/?cmid=<?php echo $craigslist_market_id; ?>" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
+				</div>
             </div>
         </div>
-        <div class="info-box col-2 float-left">
-            <p class="info-box-title"><?php echo _('Products'); ?></p>
-            <div class="info-box-content">
-                <table cellpadding="0" cellspacing="0" width="100%" class="form">
-                    <tr>
-                        <th width="40%"><strong><?php echo _('Markets'); ?></strong></th>
-                        <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
-                        <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
-                        <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>
-                    </tr>
-                    <?php
-                    if ( is_array( $markets ) )
-                    foreach ( $markets as $market ) {
-                    ?>
-                    <tr>
-                        <td><a href="/analytics/market/?cmid=<?php echo $market['craigslist_market_id']; ?>" title="<?php echo $market['market']; ?>"><?php echo $market['market']; ?></a></td>
-                        <td class="text-right"><?php echo number_format( $market['views'] ); ?></td>
-                        <td class="text-right"><?php echo number_format( $market['unique'] ); ?></td>
-                        <td class="text-right"><?php echo number_format( $market['posts'] ); ?></td>
-                    </tr>
-                    <?php } ?>
-                </table>
+        <div class="col-2 float-left">
+            <div class="info-box">
+                <p class="info-box-title"><?php echo _('Products'); ?></p>
+                <div class="info-box-content">
+                    <table cellpadding="0" cellspacing="0" width="100%" class="form">
+                        <tr>
+                            <th width="40%"><strong><?php echo _('Product'); ?></strong></th>
+                            <th class="text-right"><strong><?php echo _('Views'); ?></strong></th>
+                            <th class="text-right"><strong><?php echo _('Unique Views'); ?></strong></th>
+                            <th class="text-right"><strong><?php echo _('Posts'); ?></strong></th>
+                        </tr>
+                        <?php
+                        if ( is_array( $products ) )
+                        foreach ( $products as $product ) {
+                        ?>
+                        <tr>
+                            <td><a href="/analytics/craigslist-product/?cmid=<?php echo $craigslist_market_id; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo $product['product']; ?>"><?php echo $product['product']; ?></a></td>
+                            <td class="text-right"><?php echo number_format( $product['views'] ); ?></td>
+                            <td class="text-right"><?php echo number_format( $product['unique'] ); ?></td>
+                            <td class="text-right"><?php echo number_format( $product['posts'] ); ?></td>
+                        </tr>
+                        <?php } ?>
+                    </table>
+                    <br />
+					<p align="right"><a href="/analytics/craigslist-products/?cmid=<?php echo $craigslist_market_id; ?>" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
+				</div>
             </div>
         </div>
 		<br clear="left" /><br />

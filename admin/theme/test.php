@@ -11,9 +11,13 @@ library('craigslist-api');
 
 $craigslist = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
 
-$c = new Categories();
+//$tags = $craigslist->get_tags( $tags );
+
+//$c = new Categories();
 $craigs = new Craigslist();
-$categories = $c->get_all();
+
+
+/*$categories = $c->get_all();
 
 $new_tags = array();
 
@@ -25,7 +29,7 @@ foreach ( $categories as $category ) {
 $tags = $craigslist->add_tags( $new_tags );
 
 fn::info( $tags );
-
+*/
 $craigs->add_tags( $tags );
 
 
