@@ -709,6 +709,43 @@ class Craigslist extends Base_Class {
 		
         return true;
     }
+
+    /**
+     * Update Tags
+     *
+     * @return bool
+     */
+    public function update_tags() {
+        // Get tags that need to be updated
+        $tag_ids = $this->db->get_col( "SELECT a.`craigslist_tag_id` FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`date` > DATE_SUB( a.`date`, INTERVAL DAYS 30 ) AND b.`craigslist_tag_id` IS NULL" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get unliked craigslist tags.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        // Create API object
+        $craigslist = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
+
+        // Get the tag responses
+        $craigslist_tags = $craigslist->get_tags( $tag_ids );
+
+        // Get the tags
+        $tags = array();
+
+        // Form the correct array of tags
+        if ( is_array( $craigslist_tags ) )
+        foreach ( $craigslist_tags as $ct ) {
+            if ( 'item' != $ct->type )
+                continue;
+
+            $tags = $ct;
+        }
+
+        // Add the tags
+        return ( 0 == count( $tags ) ) ? true : $this->add_tags( $tags );
+    }
     
     /***** OTHER *****/
 

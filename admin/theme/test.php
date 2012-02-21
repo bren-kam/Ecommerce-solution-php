@@ -1,11 +1,11 @@
 <?php
-//$a = new Analytics;
+$a = new Analytics;
 
 // Get the date from today
 //$date = new DateTime();
 //$date->sub( new DateInterval('P0D') );
 
-//$a->add_craigslist_stats( $date->format( 'Y-m-d' ) );
+$a->add_craigslist_stats( $date->format( 'Y-m-d' ) );
 
 library('craigslist-api');
 

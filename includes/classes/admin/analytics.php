@@ -86,7 +86,7 @@ class Analytics extends Base_Class {
      * @param string $date
 	 * @return bool
 	 */
-	public function add_craigslist_stats( $date, $date_end = NULL ) {
+	public function update_craigslist_stats( $date, $date_end = NULL ) {
         $craigslist_website_ids = $this->db->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", ARRAY_A );
 
          // Handle any error
