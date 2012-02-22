@@ -10,7 +10,7 @@ class Mobile_Marketing extends Base_Class {
     /**
      * Avid Mobile Customer ID
      */
-    private $am_customer_id;
+    private $settings;
 
 	/**
 	 * Construct initializes data
@@ -616,7 +616,7 @@ class Mobile_Marketing extends Base_Class {
      * @return bool
      */
     public function check_keyword_availability( $keyword ) {
-        $am_customer_id = $this->_get_am_customer_id();
+        list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
 
         // They need to have a customer ID
         if ( !$am_customer_id )
@@ -626,7 +626,7 @@ class Mobile_Marketing extends Base_Class {
         library('avid-mobile/keywords');
         
         // Get the Keywords part
-        $am_keywords = new AM_Keywords( $am_customer_id );
+        $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
 
 		// See if its available
 		return $am_keywords->available( $keyword );
@@ -1285,15 +1285,15 @@ class Mobile_Marketing extends Base_Class {
      *
      * @return string
      */
-    private function _get_am_customer_id() {
-        if ( !$this->am_customer_id ) {
+    private function _get_am_credentials() {
+        if ( !$this->settings ) {
             // Now we need to get the site's mobile ID
             $w = new Websites();
 
-            $this->am_customer_id = $w->get_setting( 'avid-mobile-customer-id' );
+            $this->settings = $w->get_settings( 'avid-mobile-customer-id', 'avid-mobile-username', 'avid-mobile-password' );
         }
 
-        return $this->am_customer_id;
+        return array( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
     }
 
 	
