@@ -32,7 +32,7 @@ $f = new Files;
 $user['website'] = $w->get_website( $_POST['wid'] );
 
 // Resize the logo
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, 'logo', 350, 150 ), _('An error occurred while trying to upload your logo. Please refresh the page and try again.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, 'logo', 700, 200 ), _('An error occurred while trying to upload your logo. Please refresh the page and try again.') );
 
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $image_path, $image_name, $user['website']['website_id'], 'logo/' ), _('An error occurred while trying to upload your logo to the website. Please refresh the page and try again') );

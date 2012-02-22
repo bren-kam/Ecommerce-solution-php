@@ -104,7 +104,7 @@ get_header();
 									<option value="brands"><?php echo _('Brands'); ?></option>
 								</select>
 							</td>
-							<td valign="top"><input type="text" name="tAutoComplete" id="tAutoComplete" value="<?php echo _('Enter Search...'); ?>" style="height:17px; padding: 1px 0 0 2px; width: 100%;" /></td>
+							<td valign="top"><input type="text" name="tAutoComplete" id="tAutoComplete" tmpval="<?php echo _('Enter Search...'); ?>" style="height:17px; padding: 1px 0 0 2px; width: 100%;" /></td>
 						</tr>
 						<tr><td colspan="2" style="padding-top:7px; text-align:right"><a href="javascript:;" id="aResetSearch" title="<?php echo _('Reset Search'); ?>" style="margin-right:14px"><?php echo _('Reset Search'); ?></a> <a href="javascript:;" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td></tr>
 					</table>
