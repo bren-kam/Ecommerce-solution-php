@@ -11,7 +11,11 @@
 // If it's the home page
 if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) {
 	$type = 'home';
-	require_once( theme_inc( 'index' ) );
+    
+    // Set the transaction name
+    $transaction_name = theme_inc( 'index' );
+    
+	require $transaction_name;
 } else {
 	// We know it's not the home page, continue
 	
@@ -39,41 +43,79 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 			case 'ajax':
 				$type = 'ajax';
 				
+				// Get jQuery library
+				library('jQuery');
+				
 				// Form the ajax file
 				$combined_slug_parts = array_shift( $slug_parts );
 				$ajax_file = implode( '/', $slug_parts );
 				
-				$ajax_path = OPERATING_PATH . "ajax/$ajax_file.php";
+                // Set the transaction name
+				$ajax_path = $transaction_name = OPERATING_PATH . "ajax/$ajax_file.php";
 				
 				if ( is_file( $ajax_path ) ) {
-					require_once( $ajax_path );
+					require $ajax_path;
+				} else {
+					$type = '404';
+				
+					// This page was not found
+					header::http_status( 404 );
+                    
+                    // Set the transaction name
+					$transaction_name = theme_inc( '404' );
+                    
+					// The page they are looking for can't be found
+					require $transaction_name;
+				}
+			break;
+
+			case 'dialogs':
+				$type = 'dialog';
+				
+				// Form the ajax file
+				$combined_slug_parts = array_shift( $slug_parts );
+				$dialog_file = implode( '/', $slug_parts );
+				
+                // Set the transaction name
+				$dialog_path = $transaction_name = OPERATING_PATH . "dialogs/$dialog_file.php";
+				
+				if ( is_file( $dialog_path ) ) {
+					require $dialog_path;
 				} else {
 					$type = '404';
 				
 					// This page was not found
 					header::http_status( 404 );
 						
+					// Set the transaction name
+					$transaction_name = theme_inc( '404' );
+                    
 					// The page they are looking for can't be found
-					require_once( theme_inc( '404' ) );
+					require $transaction_name;
 				}
 			break;
 			
 			default:
 				// This gets rid of any initial or ending /
 				$smart_slug_parts = implode( '/', $slug_parts );
-
-
+				
 				// Find out if it's just a sub folder of something
 				if ( is_file( THEME_PATH . $smart_slug_parts . '.php' ) ) {
 					$type = 'page';
 					
+                    // Set the transaction name
+                    $transaction_name = theme_inc( $smart_slug_parts );
+                    
 					// This is a normal page
-					require_once( theme_inc( $smart_slug_parts ) );
+					require $transaction_name;
 				}  elseif ( is_file( THEME_PATH . $smart_slug_parts . '/index.php' ) ) {
 					$type = 'page';
-
+					
+                    // Set the transaction name
+                    $transaction_name = theme_inc( $smart_slug_parts . '/index' );
+                    
 					// This is a normal page
-					require( theme_inc( $smart_slug_parts . '/index' ) );
+					require $transaction_name;
 				}else {
 					$type = '404';
 					
@@ -83,9 +125,12 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 					// Stop from potential infinite loops
 					if ( 1 == preg_match( '/images?/', $_SERVER['REQUEST_URI'] ) )
 						exit;
-						
+					
+                    // Set the transaction name
+                    $transaction_name = theme_inc( '404' );
+                    
 					// The page they are looking for can't be found
-					require_once( theme_inc( '404' ) );
+					require $transaction_name;
 				}
 			break;
 		}
@@ -95,32 +140,35 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 		
 		if ( 'css' == SLUG ) {
 			$type = 'css';
-			inc( 'css' );
+            
+            // Set the transaction name
+			$transaction_name = inc( 'css' );
 		} elseif ( 'js' == SLUG ) {
 			$type = 'js';
-			inc( 'javascript' );
-		} elseif ( in_array( SLUG, array( 'order-details', 'billing-information', 'review-order', 'process-payment', 'sign-in', 'sign-out', 'view-order' ) ) ) {
-			$type = 'shopping_cart';
+            
+			// Set the transaction name
+			$transaction_name = inc( 'javascript' );
+		} elseif ( 'js2' == SLUG ) {
+			$type = 'js';
 			
-			// Review order is the same page as billing information
-			$shopping_cart_page = ( 'review-order' == SLUG ) ? 'billing-information' : SLUG;
-			
-			// They are performing a search
-			inc( 'shopping-cart' );
-			require_once( theme_inc( 'shopping-cart/' . $shopping_cart_page ) );
+			// Set the transaction name
+			$transaction_name = inc( 'direct-javascript' );
 		} elseif ( is_file( THEME_PATH . SLUG . '.php' ) ) {
 			$type = 'page';
 			
+            // Set the transaction name
+            $transaction_name = theme_inc( SLUG );
+            
 			// This is a normal page
-			require_once( theme_inc( SLUG ) );
+			require $transaction_name;
 		} elseif ( is_file( THEME_PATH . SLUG . '/index.php' ) ) {
 			$type = 'page';
 			
+            // Set the transaction name
+            $transaction_name = theme_inc( SLUG . '/index' );
+            
 			// This is a normal page
-			require_once( theme_inc( SLUG . '/index' ) );
-		} elseif ( 'api' == SUBDOMAIN && 'requests' == SLUG ) {
-			// Handle the API requests
-			$api = new API();
+			require $transaction_name;
 		} else {
 			$type = '404';
 			
@@ -131,9 +179,14 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 			if ( 1 == preg_match( '/images?/', $_SERVER['REQUEST_URI'] ) )
 				exit;
 			
-			// The page they are looking for can't be found
-			require_once( theme_inc( '404' ) );
+			// Set the transaction name
+            $transaction_name = theme_inc( '404' );
+            
+            // The page they are looking for can't be found
+            require $transaction_name;
 		}
 	}
 }
 
+if ( extension_loaded( 'newrelic' ) )
+    newrelic_name_transaction( $transaction_name );

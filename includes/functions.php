@@ -79,12 +79,8 @@ function theme_inc( $file, $require = false ) {
 	$file_path = THEME_PATH . $file . '.php';
 	
 	if ( file_exists( $file_path ) ) {
-		if ( $require ) {
-			if ( extension_loaded( 'newrelic' ) )
-                newrelic_name_transaction( $file );
-
+		if ( $require )
             require $file_path;
-        }
 
 		return $file_path;
 	}
