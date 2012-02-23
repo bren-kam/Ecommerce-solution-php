@@ -1,17 +1,24 @@
 <?php
 /**
- * @page Bot - Ashley
+ * @page Bot - Individual Ashley Feed
  * @package Imagine Retailer
  */
 
-error_reporting(E_ALL);
-ini_set( 'max_execution_time', 600 ); // 10 minutes
-ini_set( 'memory_limit', '512M' );
-set_time_limit( 600 );
+// Get current user
+global $user;
 
+// If user is not logged in
+if ( !$user )
+	login();
 
-$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
+$website_id = ( isset( $_GET['wid'] ) ) ? $_GET['wid'] : NULL;
+
+// Redirect to main accountpage
+if ( !$user )
+    url::redirect( '/accounts/' );
 
 $a = new Ashley_Feed();
-//$a->run( 371, $file );
-$a->run_all();
+$a->run( $website_id );
+
+if ( !$user )
+    url::redirect( "/accounts/edit/?wid=$website_id" );

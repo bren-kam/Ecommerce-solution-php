@@ -199,8 +199,8 @@ class Validator {
 		$cmd = $descriptor_array[0];
 		
 		// If it exists, set it
-		if ( isset( $descripor_array[1] ) )
-			$command_value = $descripor_array[1];
+		if ( isset( $descriptor_array[1] ) )
+			$command_value = $descriptor_array[1];
 		
 		$t = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		

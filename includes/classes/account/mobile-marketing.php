@@ -421,17 +421,17 @@ class Mobile_Marketing extends Base_Class {
     public function create_keyword( $name, $keyword, $response, $date_started, $timezone ) {
         global $user;
 
-        // We need to add it to avid mobile
-        $am_customer_id = $this->_get_am_customer_id();
+        list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
 
+        // They need to have a customer ID
         if ( !$am_customer_id )
             return false;
 
         // Load the library
-        library('avid-mobile-api');
+        library('avid-mobile/keywords');
 
         // Get the Keywords part
-        $am_keywords = Avid_Mobile_API::keywords( $am_customer_id );
+        $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
 
         // Create the keyword
         $am_keyword_campaign_id = $am_keywords->create( $name, $keyword, $response, $date_started, $timezone );
@@ -440,7 +440,7 @@ class Mobile_Marketing extends Base_Class {
             return false;
 
         // Add the keyword to our database
-        $this->db->create( 'mobile_keywords', array(
+        $this->db->insert( 'mobile_keywords', array(
             'am_keyword_campaign_id' => $am_keyword_campaign_id
             , 'website_id' => $user['website']['website_id']
             , 'name' => $name
@@ -474,17 +474,17 @@ class Mobile_Marketing extends Base_Class {
     public function update_keyword( $mobile_keyword_id, $name, $keyword, $response, $date_started, $timezone ) {
         global $user;
 
-        // We need to add it to avid mobile
-        $am_customer_id = $this->_get_am_customer_id();
+        list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
 
+        // They need to have a customer ID
         if ( !$am_customer_id )
             return false;
 
         // Load the library
-        library('avid-mobile-api');
+        library('avid-mobile/keywords');
 
         // Get the Keywords part
-        $am_keywords = Avid_Mobile_API::keywords( $am_customer_id );
+        $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
 
         // First, get keyword, update it, then update our own
         $am_keyword_campaign_id = $this->get_am_keyword_campaign_id( $mobile_keyword_id );
@@ -528,7 +528,7 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $mobile_keyword_id = (int) $mobile_keyword_id;
 
-        $keyword = $this->db->get_row( "SELECT `mobile_keyword_id`, `name`, `keyword`, `date_started`, `timezone` FROM `mobile_keywords` WHERE `mobile_keyword_id` = $mobile_keyword_id AND `website_id` = $website_id", ARRAY_A );
+        $keyword = $this->db->get_row( "SELECT `mobile_keyword_id`, `name`, `keyword`, `response`, `date_started`, `timezone` FROM `mobile_keywords` WHERE `mobile_keyword_id` = $mobile_keyword_id AND `website_id` = $website_id", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -556,17 +556,17 @@ class Mobile_Marketing extends Base_Class {
         $am_keyword_campaign_id = $this->get_am_keyword_campaign_id( $mobile_keyword_id );
 
         if ( $am_keyword_campaign_id ) {
-            $am_customer_id = $this->_get_am_customer_id();
+           list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
 
-            // They need to have a customer ID
-            if ( !$am_customer_id )
-                return false;
-
-            // Load the library
-            library('avid-mobile-api');
-
-            // Get the Keywords part
-            $am_keywords = Avid_Mobile_API::keywords( $am_customer_id );
+			// They need to have a customer ID
+			if ( !$am_customer_id )
+				return false;
+	
+			// Load the library
+			library('avid-mobile/keywords');
+	
+			// Get the Keywords part
+			$am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
 
             // Delete the keywords
             if ( !$am_keywords->delete( $am_keyword_campaign_id ) )
@@ -617,17 +617,17 @@ class Mobile_Marketing extends Base_Class {
      */
     public function check_keyword_availability( $keyword ) {
         list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
-
+		
         // They need to have a customer ID
         if ( !$am_customer_id )
             return false;
-
+		
         // Load the library
         library('avid-mobile/keywords');
         
         // Get the Keywords part
         $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
-
+		
 		// See if its available
 		return $am_keywords->available( $keyword );
     }
@@ -1291,6 +1291,8 @@ class Mobile_Marketing extends Base_Class {
             $w = new Websites();
 
             $this->settings = $w->get_settings( 'avid-mobile-customer-id', 'avid-mobile-username', 'avid-mobile-password' );
+            $this->settings['avid-mobile-username'] = security::decrypt( base64_decode( $this->settings['avid-mobile-username'] ), ENCRYPTION_KEY );
+            $this->settings['avid-mobile-password'] = security::decrypt( base64_decode( $this->settings['avid-mobile-password'] ), ENCRYPTION_KEY );
         }
 
         return array( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );

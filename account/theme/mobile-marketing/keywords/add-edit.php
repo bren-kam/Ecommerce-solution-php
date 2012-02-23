@@ -53,18 +53,23 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-key
 	
 	// if there are no errors
 	if ( empty( $errs ) ) {
+		$date_started_array = explode( '/', $_POST['tDateStarted'] );
+		$date_started = $date_started_array[2] . '-' . $date_started_array[0] . '-' . $date_started_array[1];
+		
 		if ( $mobile_keyword_id ) {
 			// Update subscriber
-			$success = $m->create_keyword( $_POST['tName'], $_POST['tKeyword'], $_POST['taResponse'], $_POST['tDateStarted'], $_POST['sTimezone'] );
+    		$success = $m->update_keyword( $mobile_keyword_id, $_POST['tName'], $_POST['tKeyword'], $_POST['taResponse'], $date_started, $_POST['sTimezone'] );
 		} else {
-    		$success = $m->update_keyword( $mobile_keyword_id, $_POST['tName'], $_POST['tKeyword'], $_POST['taResponse'], $_POST['tDateStarted'], $_POST['sTimezone'] );
+			// Create Subscriber
+			$success = $m->create_keyword( $_POST['tName'], $_POST['tKeyword'], $_POST['taResponse'], $date_started, $_POST['sTimezone'] );
 		}
 	}
 }
 
 // Get the subscriber if necessary
-if ( $mobile_keyword_id ) {
-	$keyword = $m->get_keyword( $mobile_keyword_id );
+if ( $mobile_keyword_id || $success ) {
+	$keyword = ( !$mobile_keyword_id && $success ) ? $m->get_keyword( $success ) : $m->get_keyword( $mobile_keyword_id );
+	$now = new DateTime( $keyword['date_started'] );
 } else {
 	// Initialize variable
 	$keyword = array(
@@ -125,7 +130,7 @@ get_header();
                         <input type="text" class="tb" name="tKeyword" id="tKeyword" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tKeyword'] ) ) ? $_POST['tKeyword'] : $keyword['keyword']; ?>" />
                         <br />
                         <p><a href="javascript:;" id="aCheckKeywordAvailability" title="<?php echo _('Check Keyword Availability'); ?>"><?php echo _('Check Availability'); ?></a> <span id="sAvailable"></span></span></p>
-                        <input type="hidden" name="hKeywordAvailable" id="hKeywordAvailable" value="0" />
+                        <input type="hidden" name="hKeywordAvailable" id="hKeywordAvailable" value="<?php echo ( $mobile_keyword_id ) ? '1' : '0'; ?>" />
                     </td>
 				</tr>
 				<tr>
@@ -134,7 +139,7 @@ get_header();
 				</tr>
 				<tr>
                     <td><label for="tDateStarted"><?php echo _('Campaign Start Date'); ?>:</label></td>
-                    <td><input type="text" class="tb" name="tDateStarted" id="tDateStarted" value="<?php echo ( !$success && isset( $_POST['tDateStarted'] ) ) ? $now->format('m/d/Y') : $_POST['tDateStarted']; ?>" maxlength="10" /></td>
+                    <td><input type="text" class="tb" name="tDateStarted" id="tDateStarted" value="<?php echo ( !$success && isset( $_POST['tDateStarted'] ) ) ? $_POST['tDateStarted'] : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
                 </tr>
                 <tr>
                     <td><label for="sTimeZone"><?php echo _('Timezone'); ?></label>:</td>

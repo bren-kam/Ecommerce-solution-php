@@ -398,6 +398,10 @@ get_header();
                             <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
                             <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
                         </p>
+                        <?php if ( !empty( $settings['ashley-ftp-password'] ) ) { ?>
+                        <p><a href="/bots/ashley-feed/?wid=<?php echo $_GET['wid']; ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
+                        <br />
+                        <?php } ?>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
