@@ -27,11 +27,14 @@ define( 'THEME_PATH', ABS_PATH . 'feed/theme/' );
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
-    error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
+    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 } else {
-    error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING );
+    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING );
 }
 
+/** Error Handler */
+if ( extension_loaded('newrelic') )
+    set_error_handler( 'newrelic_notice_error' );
 
 /** Include Studio98 framework */
 require ABS_PATH . 's98lib/init.php';

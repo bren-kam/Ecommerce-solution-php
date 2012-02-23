@@ -1,4 +1,7 @@
 <?php
+// Set it as a background job
+newrelic_background_job();
+
 $mysqli =  mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
 
 // Update automatic statistics

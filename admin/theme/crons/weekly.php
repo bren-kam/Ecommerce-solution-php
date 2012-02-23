@@ -4,6 +4,9 @@
  * @package Imagine Retailer
  */
 
+// Set it as a background job
+newrelic_background_job();
+
 $a = new Ashley_Feed();
 $a->run_all();
 ?>
