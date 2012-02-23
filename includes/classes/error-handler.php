@@ -31,85 +31,85 @@ class Error_Handler extends Base_Class {
 		// Don't want errors from offsets
 		if ( '/issues/issue/' == $_SERVER['REDIRECT_URL'] )
 			return;
-		
+
 		switch ( $number ) {
 			case E_ERROR:
 				$priority = 3;
 			break;
-			
+
 			case E_WARNING:
 				$priority = 2;
 			break;
-			
+
 			case E_PARSE:
 				$priority = 3;
 			break;
-			
+
 			case E_NOTICE:
 				$priority = 1;
 			break;
-			
+
 			case E_CORE_ERROR:
 				$priority = 3;
 			break;
-			
+
 			case E_CORE_WARNING:
 				$priority = 2;
 			break;
-			
+
 			case E_COMPILE_ERROR:
 				$priority = 3;
 			break;
-			
+
 			case E_COMPILE_WARNING:
 				$priority = 2;
 			break;
-			
+
 			case E_USER_ERROR:
 				$priority = 3;
 			break;
-			
+
 			case E_USER_WARNING:
 				$priority = 2;
 			break;
-			
+
 			case E_USER_NOTICE:
 				$priority = 1;
 			break;
-			
+
 			case E_STRICT:
 				$priority = 1;
 			break;
-			
+
 			case E_RECOVERABLE_ERROR:
 				$priority = 3;
 			break;
-			
+
 			case E_DEPRECATED:
 				$priority = 2;
 			break;
-			
+
 			case E_USER_DEPRECATED:
 				$priority = 2;
 			break;
-			
+
 			default:
 				$priority = 2;
 			break;
 		}
-		
+
 		// Create the issue key
 		$issue_key = md5( $message . $file . $line );
-		
+
 		// Create the issue
 		if ( !$this->issue( $issue_key, $priority, $number, $message, $file, $line, $context, debug_backtrace() ) )
 			return false;
-		
+
 		// Create the error
 		if ( !$this->error( $issue_key ) )
 			exit;
-		
-		
+
+
 		return true;
 	}
 	
