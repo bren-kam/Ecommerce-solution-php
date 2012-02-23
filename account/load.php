@@ -38,7 +38,6 @@ if ( PROFILE ) {
 	xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 }
 
-
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
     error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
@@ -46,7 +45,9 @@ if ( defined('E_RECOVERABLE_ERROR') ) {
     error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING );
 }
 
-
+/** Error Handler */
+if ( extension_loaded('newrelic') )
+    set_error_handler( 'newrelic_notice_error' );
 
 /** Include Studio98 library */
 require_once ABS_PATH . 's98lib/init.php';
@@ -56,9 +57,6 @@ require_once INC_PATH . 'functions.php';
 
 /** Load classes */
 require_once INC_PATH . 'classes.php';
-
-/** Error Handler */
-//$e = new Error_Handler();
 
 /** Dynamic definitions */
 define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );

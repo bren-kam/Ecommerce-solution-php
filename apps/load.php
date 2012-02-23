@@ -41,14 +41,15 @@ define( 'INC_PATH', '/home/imaginer/public_html/includes/' );
 define( 'THEME_PATH', '/home/imaginer/public_html/apps/theme/' );
 
 // Show us the errors
-if( !DEBUG ) {
-	if ( defined('E_RECOVERABLE_ERROR') ) {
-		error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
-	} else {
-		error_reporting( E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING );
-	}
+if ( defined('E_RECOVERABLE_ERROR') ) {
+    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
+} else {
+    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING );
 }
 
+/** Error Handler */
+if ( extension_loaded('newrelic') )
+    set_error_handler( 'newrelic_notice_error' );
 
 /** Include Studio98 library */
 require_once( ABS_PATH . 's98lib/init.php' );
