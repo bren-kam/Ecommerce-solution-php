@@ -7,7 +7,7 @@
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-status' ) ) {
 	// Change the session value
 	if ( empty( $_POST['s'] ) ) {
-		unset( $_SESSION['tickets']['status'] );
+		$_SESSION['tickets']['status'] = '0';
 	} else {
 		$_SESSION['tickets']['status'] = (int) $_POST['s'];
 	}
