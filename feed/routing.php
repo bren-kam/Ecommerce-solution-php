@@ -189,4 +189,4 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
 }
 
 if ( extension_loaded( 'newrelic' ) )
-    newrelic_name_transaction( $transaction_name );
+    newrelic_name_transaction( str_replace( ABS_PATH, '', $transaction_name ) );
