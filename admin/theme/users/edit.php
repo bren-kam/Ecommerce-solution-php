@@ -250,7 +250,7 @@ get_header();
 				<h2><?php echo _('Websites'); ?></h2>
 				<?php
 				foreach ( $websites as $w ) { ?>
-				<p><a href="/websites/edit/?wid=<?php echo $w['website_id']; ?>" title="<?php echo $w['title']; ?>"><?php echo $w['title']; ?> - <?php echo $w['domain']; ?></a> &ndash; <a href="/websites/control/?wid=<?php echo $w['website_id']; ?>" title="<?php echo _('Control'), ' ', $w['title']; ?>" target="_blank"><?php echo _('Control Website'); ?></a></p>
+				<p><a href="/accounts/edit/?wid=<?php echo $w['website_id']; ?>" title="<?php echo $w['title']; ?>"><?php echo $w['title']; ?> - <?php echo $w['domain']; ?></a> &ndash; <a href="/websites/control/?wid=<?php echo $w['website_id']; ?>" title="<?php echo _('Control'), ' ', $w['title']; ?>" target="_blank"><?php echo _('Control Website'); ?></a></p>
 				<?php
 				}
 			}
