@@ -131,6 +131,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
             , 'avid-mobile-customer-id' => $_POST['tAvidMobileCustomerID']
+            , 'avid-mobile-username' => ( empty( $_POST['tAvidMobileUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobileUsername'], ENCRYPTION_KEY ) )
+            , 'avid-mobile-password' => ( empty( $_POST['tAvidMobilePassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobilePassword'], ENCRYPTION_KEY ) )
 		) );
 	}
 }
@@ -151,6 +153,8 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ashley-ftp-password'
     , 'social-media-add-ons'
     , 'avid-mobile-customer-id'
+    , 'avid-mobile-username'
+    , 'avid-mobile-password'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -394,6 +398,10 @@ get_header();
                             <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
                             <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
                         </p>
+                        <?php if ( !empty( $settings['ashley-ftp-password'] ) ) { ?>
+                        <p><a href="/bots/ashley-feed/?wid=<?php echo $_GET['wid']; ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
+                        <br />
+                        <?php } ?>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
@@ -410,6 +418,14 @@ get_header();
 							<label for="tAvidMobileCustomerID"><?php echo _('Avid Mobile Client ID'); ?>:</label>
 							<input type="text" name="tAvidMobileCustomerID" id="tAvidMobileCustomerID" value="<?php if ( isset( $settings['avid-mobile-customer-id'] ) ) echo $settings['avid-mobile-customer-id']; ?>" class="tb" />
 						</p>
+                        <p>
+                            <label for="tAvidMobileUsername"><?php echo _('Avid Mobile Username'); ?>:</label>
+                            <input type="text" name="tAvidMobileUsername" id="tAvidMobileUsername" value="<?php if ( !empty( $settings['avid-mobile-username'] ) ) echo security::decrypt( base64_decode( $settings['avid-mobile-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
+                        <p>
+                            <label for="tAvidMobilePassword"><?php echo _('Avid Mobile Password'); ?>:</label>
+                            <input type="text" name="tAvidMobilePassword" id="tAvidMobilePassword" value="<?php if ( !empty( $settings['avid-mobile-password'] ) ) echo security::decrypt( base64_decode( $settings['avid-mobile-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 
                             <label for="cbLive" class="inline"><?php echo _('Max image size for custom products:'); ?></label>&nbsp;

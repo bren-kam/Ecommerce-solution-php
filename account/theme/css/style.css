@@ -170,6 +170,7 @@ h2.title label { font-size: 19px }
 .image-border { padding: 1px; border: 1px solid #929292 }
 .top { vertical-align: top }
 .relative { position: relative; }
+.clr { clear: both; }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 
@@ -520,3 +521,6 @@ td.title strong { font-size: 20px }
 
 /** Date Picker is glitching, need to hide this **/
 #ui-datepicker-div { display: none }
+
+/** Media Manager **/
+#ulUploadFile { height: 250px; overflow: auto; padding-right: 5px }

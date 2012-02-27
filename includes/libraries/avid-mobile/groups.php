@@ -8,6 +8,12 @@
  */
 class AM_Groups extends Avid_Mobile_API {
     /**
+     * Group Constants
+     */
+    const GROUP_STATIC = 'STATIC';
+    const GROUP_DYNAMIC = 'DYNAMIC';
+
+    /**
 	 * Construct class will initiate and run everything
 	 *
 	 * @param int $customer_id

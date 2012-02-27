@@ -35,7 +35,7 @@ class url extends Base_Class {
 	 *
 	 * @param string $url the url
 	 * @param bool $subdomains whether to include subdomains or not
-	 * @returns string
+	 * @return string
 	 */
 	public static function domain( $url, $subdomains = true ) {
 		// Define variables

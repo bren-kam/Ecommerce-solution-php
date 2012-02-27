@@ -15,9 +15,6 @@ jQuery( postLoad );
 function postLoad( $ ) {
 	cache = { 'sku' : {}, 'products' : {}, 'brands' : {} };
 	
-	// Create tmp values
-	$('#tAutoComplete').tmpVal( '#929292', '#000' );
-	
 	// Create autocomplete
 	$('#tAutoComplete').autocomplete({
 		minLength: 1,
@@ -186,9 +183,6 @@ function ajaxSearchClick( response ) {
 function trResetSearchClick() {
 	// Refresh page
 	window.location.reload();
-	
-	// Do a quick change to refresh what's in the search box (will happen before the page refreshes)
-	$('#tAutoComplete').val( $('#tAutoComplete').attr('tmpval') ).css( 'color', '#929292' );
 }
 
 /**

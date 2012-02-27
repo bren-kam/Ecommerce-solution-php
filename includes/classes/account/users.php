@@ -40,7 +40,7 @@ class Users extends Base_Class {
 			
             // Get website
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
-			
+
             // Don't send them into an infinite loop if you can avoid it
             if ( ( !is_array( $user['websites'] ) || 0 == count( $user['websites'] ) ) && !isset( $_COOKIE['wid'] ) ) {
                 $this->logout();
@@ -331,6 +331,33 @@ class Users extends Base_Class {
 
 		return $user;
 	}
+	
+	
+	
+	/**
+	 * Gets a bunch of users
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function get_website_users( $where = '' ) {
+		global $user;
+		
+		// Make sure they can only see what they're supposed to
+		if ( $user['role'] < 8 )
+			$where .= ' AND `company_id` = ' . $user['company_id'];
+		
+		$users = $this->db->get_results( "SELECT a.`user_id`, a.`contact_name`, a.`email`, a.`role` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON a.`user_id` = b.`user_id` WHERE 1 $where ORDER BY `contact_name`", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get users.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return $users;
+	}
+	
 
 	/**
 	 * Gets a user by their email address

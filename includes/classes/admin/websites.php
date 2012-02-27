@@ -217,13 +217,17 @@ class Websites extends Base_Class {
 	public function list_websites( $where, $order_by, $limit ) {
 		global $user;
 		
-		// If they are below 8, that means they are a partner
-		if ( $user['role'] < 8 )
-			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
-		
+        if ( 251 == $user['user_id'] ) {
+            $where = ( empty( $where ) ) ? ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )' : $where . ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )';
+        } else {
+            // If they are below 8, that means they are a partner
+            if ( $user['role'] < 8 )
+                $where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
+        }
+
 		// What other sites we might need to omit
 		$omit_sites = ( $user['role'] < 8 ) ? ', 96, 114, 115, 116' : '';
-		
+
 		// Form the where
 		$where = ( empty( $where ) ) ? "WHERE a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" : "WHERE 1 $where AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )";
 				
@@ -257,9 +261,13 @@ class Websites extends Base_Class {
 	public function count_websites( $where ) {
 		global $user;
 		
-		// If they are below 8, that means they are a partner
-		if ( $user['role'] < 8 )
-			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
+        if ( 251 == $user['user_id'] ) {
+            $where = ( empty( $where ) ) ? ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )' : $where . ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )';
+        } else {
+            // If they are below 8, that means they are a partner
+            if ( $user['role'] < 8 )
+                $where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
+        }
 		
 		// What other sites we might need to omit
 		$omit_sites = ( $user['role'] < 8 ) ? ', 96, 114, 115, 116' : '';

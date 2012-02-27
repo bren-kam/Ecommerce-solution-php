@@ -130,6 +130,7 @@ class Craigslist extends Base_Class {
 	 *
 	 * @param string $where
 	 * @return array
+
 	 */
 	public function count_craigslist( $where ) {		
 		if ( isset( $where ) && $where ) {
@@ -637,6 +638,115 @@ class Craigslist extends Base_Class {
 		return $market_count;
 	}
 
+    /***** TAGS ****/
+
+    /**
+     * Add Tags
+     *
+     * @param array $tags
+     * @return bool
+     */
+    public function add_tags( $tags ) {
+        $values = $product_skus = $craigslist_tags = array();
+
+        if ( is_array( $tags ) || is_object( $tags ) )
+        foreach ( $tags as $object_id => $tag ) {
+            if ( 'item' == $tag->type ) {
+                $product_skus[] = $this->db->escape( $tag->name );
+                $craigslist_tags[$tag->id] = $tag->name;
+            } else {
+                $values[] = '( ' . (int) $tag->id . ", " . (int) $object_id . ", 'category' )";
+            }
+        }
+
+        // Add at up to 500 at a time
+        $value_chunks = array_chunk( $values, 500 );
+
+        foreach ( $value_chunks as $vc ) {
+            $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `object_id`, `type` ) VALUES " . implode( ',', $vc ) . " ON DUPLICATE KEY UPDATE `type` = VALUES(`type`)" );
+			
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
+                return false;
+            }
+        }
+
+        // Now Product SKUs
+        if ( is_array( $product_skus ) ) {
+            $product_ids = $this->db->get_results( "SELECT `product_id`, `sku` FROM `products` WHERE `publish_visibility` = 'public' AND `sku` IN ( '" . implode( "', '", $product_skus ) . "' ) GROUP BY `product_id`", ARRAY_A );
+
+             // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to get product ids.', __LINE__, __METHOD__ );
+                return false;
+            }
+
+            $product_ids = ar::assign_key( $product_ids, 'sku', true );
+
+            $values = array();
+
+            if ( is_array( $product_ids ) ) {
+                foreach ( $craigslist_tags as $craigslist_tag_id => $sku ) {
+                    $values[] = '( ' . (int) $craigslist_tag_id . ", " . (int) $product_ids[$sku] . ", 'product' )";
+                }
+
+
+                // Add at up to 500 at a time
+                $value_chunks = array_chunk( $values, 500 );
+
+                foreach ( $value_chunks as $vc ) {
+                    $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `object_id`, `type` ) VALUES " . implode( ',', $vc ) . " ON DUPLICATE KEY UPDATE `object_id` = VALUES(`object_id`), `type` = VALUES( `type` )" );
+
+                    // Handle any error
+                    if ( $this->db->errno() ) {
+                        $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
+                        return false;
+                    }
+                }
+            }
+        }
+		
+        return true;
+    }
+
+    /**
+     * Update Tags
+     *
+     * @return bool
+     */
+    public function update_tags() {
+        // Get tags that need to be updated
+        $tag_ids = $this->db->get_col( "SELECT a.`craigslist_tag_id` FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`date` > DATE_SUB( a.`date`, INTERVAL DAYS 30 ) AND b.`craigslist_tag_id` IS NULL" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get unliked craigslist tags.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        // Create API object
+        $craigslist = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
+
+        // Get the tag responses
+        $craigslist_tags = $craigslist->get_tags( $tag_ids );
+
+        // Get the tags
+        $tags = array();
+
+        // Form the correct array of tags
+        if ( is_array( $craigslist_tags ) )
+        foreach ( $craigslist_tags as $ct ) {
+            if ( 'item' != $ct->type )
+                continue;
+
+            $tags = $ct;
+        }
+
+        // Add the tags
+        return ( 0 == count( $tags ) ) ? true : $this->add_tags( $tags );
+    }
+    
     /***** OTHER *****/
 
 	/**

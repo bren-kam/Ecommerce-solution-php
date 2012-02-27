@@ -11,8 +11,6 @@ class Avid_Mobile_API {
 	 * Constant paths to include files
 	 */
 	const URL_API = 'https://login.avidmobile.com/MCSOAP2.1/MarketingCenter2-1.php?wsdl';
-    const USERNAME = 'gsrmadmin';
-    const PASSWORD = '6mN7RTpx0';
 	const DEBUG = false;
 
     /**
@@ -20,12 +18,6 @@ class Avid_Mobile_API {
      */
     const OPERATION_PUT = 'Put';
     const OPERATION_GET = 'Get';
-
-    /**
-     * Group Constants
-     */
-    const GROUP_STATIC = 'STATIC';
-    const GROUP_DYNAMIC = 'DYNAMIC';
 
 	/**
 	 * A few variables that will determine the basic status
@@ -47,10 +39,12 @@ class Avid_Mobile_API {
 
 	/**
 	 * Construct class will initiate and run everything
-	 *
-	 * @param int $customer_id
+     *
+     * @param int $customer_id
+	 * @param string $username
+	 * @param string $password
 	 */
-	public function __construct( $customer_id ) {
+	public function __construct( $customer_id, $username, $password ) {
 		// Do we need to debug
 		if ( self::DEBUG )
 			error_reporting( E_ALL );
@@ -59,7 +53,7 @@ class Avid_Mobile_API {
 		library( 'MCSOAPClient' );
 		
 		// Setup API
-		$this->api = new AvidMobileSOAPClient( self::URL_API, self::USERNAME, self::PASSWORD, $customer_id );
+		$this->api = new AvidMobileSOAPClient( self::URL_API, $username, $password, $customer_id );
 	}
 
     /**
@@ -150,7 +144,6 @@ class Avid_Mobile_API {
         // Do the request
 		$response = $this->api->DoWebService( $operation, $this->api->CreateWebServiceParams( $method, $arguments ) );
 		
-		fn::info( $response );
         if ( self::OPERATION_PUT == $operation || !isset( $response->Status ) ) {
             // Mark the response
             $this->error_code = $response->ErrorCode;

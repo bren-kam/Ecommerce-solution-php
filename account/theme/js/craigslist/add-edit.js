@@ -106,13 +106,15 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			var iItemBrand = $("#hProductBrandName").val(), iItemProductDescription = $("#hProductDescription").val(), iItemSpecs = '', iItemSKU = $("#hProductSKU").val();
 			var storeURL = $('#hStoreURL').val();
 			
+			iItemStoreLogo = ( iItemStoreLogo.search( /http:/i ) > -1 ) ? iItemStoreLogo : storeURL + '/custom/uploads/images/' + iItemStoreLogo;
+			
 			// Set the text area, so it submits properly
 			$("#hCraigslistAdDescription").val( editorHTML );
 
             // Get the new content
 			editorHTML = editorHTML.replace( '[Product Name]', iItemName );
 			editorHTML = editorHTML.replace( '[Store Name]', iItemStoreName );
-			editorHTML = editorHTML.replace( '[Store Logo]', '<img src="' + storeURL + '/custom/uploads/images/' + iItemStoreLogo + '" alt="" />' );
+			editorHTML = editorHTML.replace( '[Store Logo]', '<img src="' + iItemStoreLogo + '" alt="" />' );
 			editorHTML = editorHTML.replace( '[Category]', iItemCategory );
 			editorHTML = editorHTML.replace( '[Brand]', iItemBrand );
 			editorHTML = editorHTML.replace( '[Product Description]', iItemProductDescription );
@@ -261,12 +263,14 @@ function refreshPreview() {
 	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
 	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val();
 
+	storeLogo = ( storeLogo.search( /http:/i ) > -1 ) ? storeLogo : storeURL + '/custom/uploads/images/' + storeLogo;
+
 	//get the contents of the tinyMCE editor and replace tags with actual stuff.
 	var newContent = CKEDITOR.instances.taDescription.getData();
 
     newContent = newContent.replace( '[Product Name]', productName );
     newContent = newContent.replace( '[Store Name]', storeName );
-    newContent = newContent.replace( '[Store Logo]', '<img src="' + storeURL + '/custom/uploads/images/' + storeLogo + '" alt="" />' );
+    newContent = newContent.replace( '[Store Logo]', '<img src="' + storeLogo + '" alt="" />' );
     newContent = newContent.replace( '[Category]', category );
     newContent = newContent.replace( '[Brand]', brand );
     newContent = newContent.replace( '[Product Description]', productDescription );

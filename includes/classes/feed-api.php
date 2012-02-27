@@ -24,7 +24,7 @@ class Feed_API extends Base_Class {
 		'failed-to-get-product-groups' => 'Failed to get product groups. Please report this to a system administrator.',
 		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
 		'ssl-required' => 'You must make the call to the secured version of our website.',
-		'success-get-feed' => 'Get Feed succeeded!',
+		'success-get-products' => 'Get Products succeeded!',
 		'success-get-categories' => 'Get Categories succeeded!',
 		'success-get-industries' => 'Get Industries succeeded!',
 		'success-get-brands' => 'Get Brands succeeded!',
@@ -190,7 +190,7 @@ class Feed_API extends Base_Class {
 			exit;
 		}
 
-
+		if ( is_array( $products ) )
         foreach ( $products as &$p ) {
             $p['product_specifications'] = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES ) );
 
@@ -225,7 +225,10 @@ class Feed_API extends Base_Class {
 
             unset( $p['industry'] );
         }
-
+		
+		if ( !is_array( $products ) )
+			$products = array();
+		
         $this->_add_response( array( 'success' => true, 'message' => 'success-get-products', 'products' => $products ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
 	}
@@ -251,7 +254,7 @@ class Feed_API extends Base_Class {
      * Get Categories
      */
     private function get_categories() {
-		$categories = $this->db->get_results( "SELECT * FROM `categories`", ARRAY_A );
+		$categories = $this->db->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug`, `sequence`, `date_updated` FROM `categories`", ARRAY_A );
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
@@ -285,7 +288,7 @@ class Feed_API extends Base_Class {
      * Get Attributes
      */
     private function get_attributes() {
-		$attributes = $this->db->get_results( "SELECT * FROM `attributes`", ARRAY_A );
+		$attributes = $this->db->get_results( "SELECT a.*, GROUP_CONCAT( b.`category_id` ) AS categories FROM `attributes` AS a LEFT JOIN `attribute_relations` AS b ON ( a.`attribute_id` = b.`attribute_id` ) GROUP BY a.`attribute_id`", ARRAY_A );
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
@@ -308,6 +311,15 @@ class Feed_API extends Base_Class {
         foreach ( $attribute_items as $ai ) {
             $attributes[$ai['attribute_id']]['items'][] = $ai;
         }
+		
+		// We need to properly break up the category IDs
+		foreach ( $attributes as &$a ) {
+			if ( empty( $a['categories'] ) ) {
+				unset( $a['categories'] );
+			} else {
+				$a['categories'] = explode( ',', $a['categories'] );
+			}
+		}
 
         $this->_add_response( array( 'success' => true, 'message' => 'success-get-attributes', 'attributes' => array_values( $attributes ) ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
