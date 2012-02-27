@@ -75,7 +75,7 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 ");
 
 $selected = "analytics";
-$title = _('Traffic Sources Overview | Analytics') . ' | ' . TITLE;
+$title = _('Traffic Sources Overview') . ' | ' . _('Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -148,7 +148,7 @@ get_header();
 						foreach ( $top_traffic_sources as $tts ) { 
 						?>
 						<tr>
-							<td><a href="/analytics/source/?s=<?php echo urlencode( $tts['source'] ); ?>" title="<?php echo $tts['source'], ' / ', $tts['medium']; ?>"><?php echo $tts['source']; ?></a></td>
+							<td><a href="/analytics/traffic-sources/source/?s=<?php echo urlencode( $tts['source'] ); ?>" title="<?php echo $tts['source'], ' / ', $tts['medium']; ?>"><?php echo $tts['source']; ?></a></td>
 							<td class="text-right"><?php echo number_format( $tts['visits'] ); ?></td>
 							<td class="text-right"><?php echo $tts['new_visits']; ?>%</td>
 						</tr>
@@ -174,14 +174,14 @@ get_header();
 						foreach ( $top_keywords as $tk ) {
 						?>
 						<tr>
-							<td><a href="/analytics/keyword/?k=<?php echo urlencode( $tk['keyword'] ); ?>" title="<?php echo $tk['keyword']; ?>"><?php echo $tk['keyword']; ?></a></td>
+							<td><a href="/analytics/traffic-sources/keyword/?k=<?php echo urlencode( $tk['keyword'] ); ?>" title="<?php echo $tk['keyword']; ?>"><?php echo $tk['keyword']; ?></a></td>
 							<td class="text-right"><?php echo number_format( $tk['visits'] ); ?></td>
 							<td class="text-right"><?php echo $tk['new_visits']; ?>%</td>
 						</tr>
 						<?php } ?>
 					</table>
 					<br />
-					<p align="right"><a href="/analytics/traffic-keywords/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
+					<p align="right"><a href="/analytics/traffic-sources/keywords/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
 				</div>
 			</div>
 		</div>

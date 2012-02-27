@@ -9,13 +9,15 @@
 library('avid-mobile-api');
 
 class AM_Keywords extends Avid_Mobile_API {
-     /**
+    /**
 	 * Construct class will initiate and run everything
 	 *
 	 * @param int $customer_id
+	 * @param string $username
+	 * @param string $password
 	 */
-	public function __construct( $customer_id ) {
-        if ( !parent::__construct( $customer_id ) )
+	public function __construct( $customer_id, $username, $password ) {
+        if ( !parent::__construct( $customer_id, $username, $password ) )
             return false;
 	}
 

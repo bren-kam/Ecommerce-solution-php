@@ -24,7 +24,8 @@ if ( empty( $page ) )
 $a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de']  );
 
 // Set global filter
-$a->set_ga_filter( "pagePath==$page" );
+$filter = "pagePath==$page";
+$a->set_ga_filter( $filter );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'page_views' );
@@ -84,6 +85,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'analytics/', 'traffic_content_overview', 'page' ); ?>
 	<div id="subcontent">
+        <input type="hidden" id="hFilter" value="<?php echo $filter; ?>" />
 		<?php nonce::field( 'get-graph', '_ajax_get_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />

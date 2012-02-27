@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Analytics - Traffic Sources
+ * @page Analytics - Source
  * @package Imagine Retailer
  */
 
@@ -15,19 +15,23 @@ if ( !$user )
 if ( !$user['website']['live'] )
 	url::redirect('/');
 
+$source = $_GET['s'];
+
+if ( empty( $source ) )
+	url::redirect('/analytics/traffic-sources/');
+
 // Instantiate class
 $a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
+
+// Set global filter
+$filter = "source==$source";
+$a->set_ga_filter( $filter );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'visits' );
 $total = array_merge( $a->get_traffic_sources_totals(), $a->get_totals() );
-$traffic_sources = $a->get_traffic_sources( '', '', 0 );
-
-// Initialize Variable
-$visits_plotting_array = array();
 
 // Visits plotting
-if ( is_array( $records ) )
 foreach ( $records as $r_date => $r_value ) {
 	$visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
 }
@@ -68,7 +72,7 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 ");
 
 $selected = "analytics";
-$title = _('Traffic Sources | Analytics') . ' | ' . TITLE;
+$title = _('Source Details | Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -78,15 +82,16 @@ get_header();
         -
         <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
     </div>
-	<h1><?php echo _('Traffic Sources'); ?></h1>
+	<h1><?php echo _('Source:'), " $source"; ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'analytics/', 'traffic_sources_overview', 'traffic_sources' ); ?>
+	<?php get_sidebar( 'analytics/', 'traffic_sources_overview', 'source' ); ?>
 	<div id="subcontent">
+        <input type="hidden" id="hFilter" value="<?php echo $filter; ?>" />
 		<?php nonce::field( 'get-graph', '_ajax_get_graph'); ?>
 		<div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
 		<br />
 		<div class="info-box col-1">
-			<p class="info-box-title"><?php echo _('Traffic Source Totals'); ?></p>
+			<p class="info-box-title"><?php echo _('Source Totals'); ?></p>
 			<div class="info-box-content">
 				<table cellpadding="0" cellspacing="0" width="100%" id="sparklines">
 					<tr>
@@ -109,42 +114,6 @@ get_header();
 			</div>
 		</div>
 		<br clear="both" /><br />
-		<div class="info-box col-1">
-			<p class="info-box-title"><?php echo _('Traffic Sources'); ?></p>
-			<div class="info-box-content">
-				<br /><br />
-				<br /><br />
-				<table cellpadding="0" cellspacing="0" width="100%" class="dt" perPage="30,50,100">
-					<thead>
-						<tr>
-							<th><?php echo _('Source/Medium'); ?></th>
-							<th class="text-right" sort="1 desc" column="formatted-num"><?php echo _('Visits'); ?></th>
-							<th class="text-right" column="formatted-num"><?php echo _('Pages/Visit'); ?></th>
-							<th class="text-right"><?php echo _('Avg. Time on Site'); ?></th>
-							<th class="text-right" column="formatted-num"><?php echo _('% New Visits'); ?></th>
-							<th class="text-right" column="formatted-num"><?php echo _('Bounce Rate'); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php 
-					if ( is_array( $traffic_sources ) )
-					foreach ( $traffic_sources as $ts ) {
-					?>
-					<tr>
-						<td><a href="/analytics/source/?s=<?php echo urlencode( $ts['source'] ); ?>" title="<?php echo $ts['source'], ' / ', $ts['medium']; ?>"><?php echo $ts['source'], ' / ', $ts['medium']; ?></a></td>
-						<td class="text-right"><?php echo number_format( $ts['visits'] ); ?></td>
-						<td class="text-right"><?php echo number_format( $ts['pages_by_visits'], 2 ); ?></td>
-						<td class="text-right"><?php echo $ts['time_on_site']; ?></td>
-						<td class="text-right"><?php echo $ts['new_visits']; ?>%</td>
-						<td class="text-right last"><?php echo $ts['bounce_rate']; ?>%</td>
-					</tr>
-					<?php } ?>
-					</tbody>
-				</table>
-				<br />
-			</div>
-		</div>
-		<br clear="left" /><br />
 	</div>
 	<br /><br />
 </div>

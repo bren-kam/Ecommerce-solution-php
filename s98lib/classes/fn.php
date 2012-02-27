@@ -20,9 +20,9 @@ class fn extends Base_Class {
 	 * 
 	 * @since 1.0
 	 *
-	 * @param unknown $object the object to get information about
+	 * @param mixed $object the object to get information about
 	 * @param bool $echo (optional) whether to echo the information or not
-	 * @return |array
+	 * @return array
 	 */
 	public static function info( $object, $echo = true ) {
 		// For Imagine Retailer specifically
@@ -55,6 +55,8 @@ class fn extends Base_Class {
 	public static function mail( $to, $subject, $message, $from = '', $reply_to = '', $text = true ) {
 		// Find out if they passes a string or array, if they passed an array parse it
 		if ( is_array( $to ) ) {
+            $to_addresses = '';
+
 			foreach ( $to as $name => $email_address ) {
 				$to_addresses .= ",$name <$email_address>";
 			}
@@ -107,7 +109,8 @@ class fn extends Base_Class {
 	 * The following code was ported in part from JQuery v1.3.1
 	 *
 	 * @access public
-	 * @returns array
+     *
+	 * @return array
 	 */
 	public static function browser() {
 		// Uses caching

@@ -521,3 +521,6 @@ td.title strong { font-size: 20px }
 
 /** Date Picker is glitching, need to hide this **/
 #ui-datepicker-div { display: none }
+
+/** Media Manager **/
+#ulUploadFile { height: 250px; overflow: auto; padding-right: 5px }

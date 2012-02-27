@@ -37,7 +37,7 @@ add_before_javascript('function open_flash_chart_data() { return JSON.stringify(
 add_javascript_callback( 'swfobject.embedSWF("/media/flash/open-flash-chart.swf", "dEmailStatistics", "787", "387", "9.0.0", "", null, { wmode:"transparent" } );');
 
 $selected = "analytics";
-$title = _('Email | Analytics') . ' | ' . TITLE;
+$title = _('Email') . ' | ' . _('Analytics') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -92,7 +92,7 @@ get_header();
 			<br /><br />
 		</div>
 		<div id="dClickOverlay" class="hidden stat-screen">
-			<iframe src="/analytics/click-overlay-html/?mcid=<?php echo $email['mc_campaign_id']; ?>" name="ifClickOverlay" id="ifClickOverlay" width="783" height="100"></iframe>
+			<iframe src="/analytics/email-marketing/click-overlay-html/?mcid=<?php echo $email['mc_campaign_id']; ?>" name="ifClickOverlay" id="ifClickOverlay" width="783" height="100"></iframe>
 		</div>
 	</div>
 	<br /><br />

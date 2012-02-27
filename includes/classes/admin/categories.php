@@ -93,9 +93,9 @@ class Categories extends Base_Class {
 	/**
 	 * Update Category sequences
 	 *
-	 * @param $parent_category_id
-	 * @param $sequence  is the new sequence to be assigned
-	 * @return nothing
+	 * @param int $parent_category_id
+	 * @param array $categories is the new sequence to be assigned
+	 * @return bool
 	 */
 	 public function update_sequence( $parent_category_id, $categories ) {
 		// Starting with 0 for a sequence
@@ -157,6 +157,8 @@ class Categories extends Base_Class {
 	
 	/**
 	 * Load Category Data
+     *
+     * @return bool
 	 */
 	public function load_categories() {
 		// @Fix -- the database does not need page_title, met_description and meta_keywords	
@@ -350,6 +352,7 @@ class Categories extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

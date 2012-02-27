@@ -59,7 +59,7 @@ function module( $file ) {
 	$file_path = INC_PATH . 'modules/' . $file . '.php';
 	
 	if ( file_exists( $file_path ) ) {
-		require( $file_path );
+		require $file_path;
 		return true;
 	}
 	
@@ -80,8 +80,8 @@ function theme_inc( $file, $require = false ) {
 	
 	if ( file_exists( $file_path ) ) {
 		if ( $require )
-			require( $file_path );
-		
+            require $file_path;
+
 		return $file_path;
 	}
 	
