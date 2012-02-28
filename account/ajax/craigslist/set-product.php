@@ -52,7 +52,7 @@ foreach ( $images as $i ) {
 
 jQuery('#dProductPhotos')
 	->html( $image_html )
-	->determineTemplate(); // Needs to determine template
+	->openEditorAndPreview(); // Needs to determine template
 			  
 // Add response
 $ajax->add_response( 'jquery', jQuery::getResponse() );

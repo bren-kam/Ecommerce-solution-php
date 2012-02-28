@@ -36,7 +36,7 @@ get_header();
             , 'about-us' => _('About Us')
             , 'products' => _('Products')
             , 'current-ad' => _('Current Ad')
-            , 'posting' => _('Posting')
+            , 'posting/post' => _('Posting')
         );
 
         $website_social_media_add_ons = @unserialize( $settings['social-media-add-ons'] );

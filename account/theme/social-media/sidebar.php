@@ -1,24 +1,47 @@
 <div id="sidebar">
 	<?php 
 	$w = new Websites;
-	$facebook_url = $w->get_setting('facebook-url');
+	$settings = $w->get_settings( 'facebook-url', 'social-media-add-ons' );
 	?>
 	<h2><?php echo _('Sidebar'); ?></h2>
-	<a href="/social-media/facebook/email-sign-up/" class="top" title="<?php echo _('Email Sign Up'); ?>"><?php echo _('Email Sign Up'); ?></a>
-	<a href="/social-media/facebook/fan-offer/" class="top" title="<?php echo _('Fan Offer'); ?>"><?php echo _('Fan Offer'); ?></a>
-	<a href="/social-media/facebook/sweepstakes/" class="top" title="<?php echo _('Sweepstakes'); ?>"><?php echo _('Sweepstakes'); ?></a>
-	<a href="/social-media/facebook/share-and-save/" class="top" title="<?php echo _('Share and Save'); ?>"><?php echo _('Share and Save'); ?></a>
-	<a href="/social-media/facebook/facebook-site/" class="top" title="<?php echo _('Facebook Site'); ?>"><?php echo _('Facebook Site'); ?></a>
-	<a href="/social-media/facebook/contact-us/" class="top" title="<?php echo _('Contact Us'); ?>"><?php echo _('Contact Us'); ?></a>
-	<a href="/social-media/facebook/about-us/" class="top" title="<?php echo _('About Us'); ?>"><?php echo _('About Us'); ?></a>
-	<a href="/social-media/facebook/products/" class="top" title="<?php echo _('Products'); ?>"><?php echo _('Products'); ?></a>
-	<a href="/social-media/facebook/current-ad/" class="top" title="<?php echo _('Current Ad'); ?>"><?php echo _('Current Ad'); ?></a>
-	<?php if ( !empty( $facebook_url ) ) { ?>
-	<a href="<?php echo $facebook_url; ?>" class="top" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
-	<?php } ?>
-    <a href="/social-media/facebook/posting/post/" class="top" title="<?php echo _('Posting'); ?>"><?php echo _('Posting'); ?></a>
-    <?php if ( isset( $posting ) ) { ?>
-    	<a href="/social-media/facebook/posting/" title="<?php echo _('View Posts'); ?>" class="sub"><?php echo _('View'); ?></a>
+    <?php
+    $social_media_add_ons = array(
+        'email-sign-up' => _('Email Sign Up')
+        , 'fan-offer' => _('Fan Offer')
+        , 'sweepstakes' => _('Sweepstakes')
+        , 'share-and-save' => _('Share and Save')
+        , 'facebook-site' => _('Facebook Site')
+        , 'contact-us' => _('Contact Us')
+        , 'about-us' => _('About Us')
+        , 'products' => _('Products')
+        , 'current-ad' => _('Current Ad')
+        , 'posting' => _('Posting')
+    );
+
+    $website_social_media_add_ons = @unserialize( $settings['social-media-add-ons'] );
+
+    foreach ( $social_media_add_ons as $url => $name ) {
+        if ( !is_array( $website_social_media_add_ons ) || !in_array( $url, $website_social_media_add_ons ) )
+            continue;
+
+            switch ( $url ) {
+                case 'posting':
+                    $url .= '/post';
+                break;
+
+                default:breka;
+            }
+        ?>
+        <a href="/social-media/facebook/<?php echo $url; ?>/" class="top" title="<?php echo $name; ?>"><?php echo $name; ?></a>
+        <?php if ( 'posting/post' == $url && isset( $posting ) ) { ?>
+            <a href="/social-media/facebook/posting/" title="<?php echo _('View Posts'); ?>" class="sub"><?php echo _('View'); ?></a>
+        <?php
+        }
+    }
+    ?>
+
+	<?php if ( !empty( $settings['facebook-url'] ) ) { ?>
+	<a href="<?php echo $settings['facebook-url']; ?>" class="top" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
 	<?php } ?>
     <a href="/social-media/settings/" class="top" title="<?php echo _('Settings'); ?>"><?php echo _('Settings'); ?></a>
 </div>

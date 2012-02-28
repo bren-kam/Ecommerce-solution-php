@@ -27,7 +27,7 @@ $industry = $p->get_industry( $product_id );
 
 // Assign the max image size
 if ( !$max_image_size || 0 == $max_image_size )
-    $max_image_size = 500;
+    $max_image_size = 700;
 
 // Remove spaces
 $industry = str_replace( ' ', '', $industry );
@@ -36,6 +36,7 @@ $ajax->ok( !empty( $industry ), _('You must select an industry before uploading 
 
 $f->upload_image( $_FILES["Filedata"], $new_image_name, 320, 320, $industry, 'products/' . $product_id . '/', false, true );
 $f->upload_image( $_FILES["Filedata"], $new_image_name, 46, 46, $industry, 'products/' . $product_id . '/thumbnail/', false, true );
+$f->upload_image( $_FILES["Filedata"], $new_image_name, 200, 200, $industry, 'products/' . $product_id . '/small/', false, true );
 $f->upload_image( $_FILES["Filedata"], $new_image_name, $max_image_size, $max_image_size, $industry, 'products/' . $product_id . '/large/', false, true);
 
 $image = '<div class="product-image" id="dProductImage_' . $new_image_name . '">';

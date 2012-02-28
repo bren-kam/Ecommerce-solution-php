@@ -22,12 +22,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
 
     if ( empty ( $_POST['hCraigslistAdID'] ) ) {
         // Create ad
-        $result = $c->create( $_POST['hTemplateID'], $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
+        $result = $c->create( $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
 
         url::redirect('/craigslist/?m=1');
     } else {
         // Update Ad
-        $result = $c->update( $_POST['hCraigslistAdID'], $_POST['hTemplateID'], $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
+        $result = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $user['website']['website_id'], $_POST['sChooseDays'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['hCraigslistAdDescription'] ), 1, $publish );
 
         url::redirect('/craigslist/?m=2');
     }
@@ -70,18 +70,11 @@ get_header();
 			<input id="hStoreLogo" type="hidden" value="" />
 			<input id="hPublishType" type="hidden" value="<?php echo ( $ad ) ? 1 : 0; ?>" />
 			<input id="hPublishConfirm" type="hidden" value="<?php if ( $publish ) echo '1'; ?>" />
-			<input id="hTemplateID" name="hTemplateID" type="hidden" value="0" />
-			<input id="hTemplateTitle" type="hidden" value="" />
-			<input id="hTemplateIndex" type="hidden" value="1" />
-			<input id="hTemplateCount" type="hidden" value="" />
-			<input id="hTemplateDescription" type="hidden" value="" />
 
 			<div id="dNarrowSearch">
 				<?php 
 				nonce::field( 'products-autocomplete', '_ajax_autocomplete' ); 
 				nonce::field( 'set-product', '_ajax_set_product' );
-				nonce::field( 'get-category-template-count', '_ajax_get_category_template_count' );
-				nonce::field( 'get-template', '_ajax_get_template' );
 				?>
 				<h2><?php echo _('Select Product');?></h2>
                 <select id="sAutoComplete">
@@ -91,31 +84,8 @@ get_header();
 				<input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" value="<?php if ( $ad ) echo $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
 				<br /><br />
             </div>
-    		
-            <div id="dItemDescription" class="hidden"></div>
-            
+
             <div id="dProductPhotos" class="hidden"></div>
-            
-            <div id="dPreviewTemplate" class="hidden">
-                <h2><?php echo _('Select a Template'); ?></h2>
-                
-                <table width="100%">
-					<tr>
-						<td width="15"><a id="aPrevTemplate" title="previous" href="javascript:;">&lt;</a></td>
-						<td width="40"><span id="dAdPaging"></span></td>
-						<td width="15"><a id="aNextTemplate" title="next" href="javascript:;">&gt;</a></td>
-						<td></td>
-						<td width="250" align="right">
-							<a href="javascript:;" class="button" id="aSelectTemplate" title="<?php echo _('Select Ad Template'); ?>"><?php echo _('Select'); ?></a>
-							<?php echo _('or'); ?> <a href="javascript:;" id="aCreateAd" title="<?php echo _('Create Your Own'); ?>"><?php echo _('Create your own'); ?></a>
-						</td>
-					</tr>
-				</table>
-                            
-                <div id="dCraigslistPreview"></div>
-                <br />
-				<br /><br />
-            </div>
             
 			<div id="dCreateAd" <?php if ( !$ad ) echo ' class="hidden"'; ?>>
                 <h2><?php echo _('Create and Preview Ad'); ?></h2>
@@ -138,8 +108,7 @@ get_header();
                     <!--[Attributes]-->
                 </p>
                 <br />
-                <a href="javascript:;" class="button" id="aPublish" title="<?php echo _('Publish'); ?>"><?php echo _('Publish'); ?></a>
-                <a href="/craigslist/" id="aCancel" title="<?php echo _('Cancel'); ?>"><?php echo _('Cancel'); ?></a>
+                <input type="submit" class="button" value="<?php echo _('Save'); ?>" />
 				<br /><br />
 				<br />
             </div>
@@ -150,39 +119,9 @@ get_header();
                     (<?php echo _('Click "Refresh" above to preview your ad'); ?>)
                 </div>
                 <br />
+                <a href="javascript:;" class="button" id="aPublish" title="<?php echo _('Publish'); ?>"><?php echo _('Publish'); ?></a>
             </div>
 			
-            <div id="dGenerateHTML"<?php if ( !$publish ) echo ' class="hidden"'; ?>>
-                <h2><?php echo _('Paste this code into Craigslist'); ?>:</h2>
-				<br />
-                <label for="tCraigslistPublishTitle"><?php echo _('Ad Title'); ?>:</label>
-                <input type="text" class="tb" id="tCraigslistPublishTitle" />
-                <br /><br />
-				<textarea cols="50" rows="20" id="taCraigslistPublish"></textarea>
-                <br /><br />
-                <table cellpadding="0" cellspacing="0">
-					<tr>
-						<td width="120">
-							<?php echo _('Ad Duration'); ?>:
-							<select id="sChooseDays" name="sChooseDays" >
-								<option value="-1">----</option>
-								<option value="3">3 <?php echo _('Days'); ?></option>
-								<option value="5">5 <?php echo _('Days'); ?></option>
-								<option value="7">1 <?php echo _('Week'); ?></option>
-								<option value="14">2 <?php echo _('Weeks'); ?></option>
-								<option value="21">3 <?php echo _('Weeks'); ?></option>
-								<option value="28">1 <?php echo _('Month'); ?></option>
-							</select>
-						</td>
-						<td></td>
-					</tr>
-					<tr><td colspan="2">&nbsp;</td></tr>
-					<tr>
-						<td><?php echo _('Click here to confirm ad is published.'); ?></td>
-						<td><input type="submit" class="button" value="<?php echo _('Confirm'); ?>" /></td>
-					</tr>
-				</table>
-            </div>
             <?php nonce::field('add-edit-craigslist'); ?>
     	</form>
 		<br /><br />

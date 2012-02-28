@@ -163,7 +163,7 @@ input.button {
 .text-center { text-align:center; }
 .success, .success p { color: #090 }
 .yellow, .warning { color: #FFCF40 }
-.alert, .error{ color: #F00; }
+.alert, .error, .red{ color: #F00; }
 .padding-bottom { padding-bottom: 7px }
 h2.title { font-size: 19px; font-weight: bold; padding-bottom: 7px; }
 h2.title label { font-size: 19px }
