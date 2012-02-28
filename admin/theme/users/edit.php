@@ -53,19 +53,21 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user'
 	
 	if ( empty( $errs ) ) {
 		$information = array(
-			'company_id'			=> $_POST['sCompany'], 
-			'email'					=> $_POST['tEmail'],
-			'contact_name'			=> $_POST['tContactName'], 
-			'store_name'			=> $_POST['tStoreName'], 
-			'billing_first_name' 	=> $_POST['tBillingFirstName'],
-			'billing_last_name' 	=> $_POST['tBillingLastName'],
-			'billing_address1' 		=> $_POST['tBillingAddress'],
-			'billing_city' 			=> $_POST['tBillingCity'],
-			'billing_state'		 	=> $_POST['sBillingState'],
-			'billing_zip'		 	=> $_POST['tBillingZip'],
-			'products'				=> $_POST['tProducts'],
-			'role'					=> ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] ),
-			'status'				=> $_POST['sStatus']
+			'company_id'			=> $_POST['sCompany']
+			, 'email'				=> $_POST['tEmail']
+			, 'contact_name'		=> $_POST['tContactName']
+            , 'work_phone'          => $_POST['tWorkPhone']
+			, 'cell_phone'          => $_POST['tCellPhone']
+			, 'store_name'			=> $_POST['tStoreName']
+			, 'billing_first_name' 	=> $_POST['tBillingFirstName']
+			, 'billing_last_name' 	=> $_POST['tBillingLastName']
+			, 'billing_address1' 		=> $_POST['tBillingAddress']
+			, 'billing_city' 			=> $_POST['tBillingCity']
+			, 'billing_state'		 	=> $_POST['sBillingState']
+			, 'billing_zip'		 	=> $_POST['tBillingZip']
+			, 'products'				=> $_POST['tProducts']
+			, 'role'					=> ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] )
+			, 'status'				=> $_POST['sStatus']
 		);
 		
 		if ( !empty( $_POST['pPassword'] ) )

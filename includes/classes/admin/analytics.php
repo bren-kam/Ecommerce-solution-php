@@ -145,29 +145,8 @@ class Analytics extends Base_Class {
             }
         }
 
-        // Get tags
-        $tags = $craigslist->get_tags( $tag_ids );
-
-        $values = array();
-
-        if ( is_array( $tags ) )
-        foreach ( $tags as $tag ) {
-            $type = ( 'item' == $tag->type ) ? 'product' : 'category';
-            $values[] = '( ' . (int) $tag->id . ", '$type', '" . $this->db->escape( $tag->name ) . "' )";
-        }
-
-       // Add at up to 500 at a time
-        $value_chunks = array_chunk( $values, 500 );
-
-        foreach ( $value_chunks as $vc ) {
-            $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `type`, `value` ) VALUES " . implode( ',', $vc ) . " ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)" );
-
-            // Handle any error
-            if ( $this->db->errno() ) {
-                $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
-                return false;
-            }
-        }
+        // Report unknown tags
+        $c->report_unknown_tags( $tag_ids );
 
         return true;
 	}
