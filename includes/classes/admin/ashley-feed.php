@@ -106,6 +106,11 @@ class Ashley_Feed extends Base_Class {
 		if( file_exists( $local_folder . $file ) ) {
 			$this->xml = simplexml_load_file( $local_folder . $file );
 		} else {
+		    $count_spaces = 0; 
+            while($count_spaces < 500) { 
+              print('          '); 
+              $count_spaces++; 
+            } 
 			$this->xml = simplexml_load_string( $ftp->ftp_get_contents( $file ) );
 		}
 		

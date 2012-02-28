@@ -110,96 +110,30 @@ class Craigslist extends Base_Class {
 	}
 	
 	/**
-	 * Count the number of templates for a particular category
-	 *
-	 * @param int $category_id
-	 * @return int number of ads.
-	 */
-	public function count_templates_for_category( $category_id ){
-		$results = $this->db->prepare( "SELECT COUNT( DISTINCT `craigslist_template_id`) FROM `craigslist_templates` WHERE `category_id` = ? AND `publish_visibility` = 'visible'", 'i', $category_id )->get_var( '' );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $results;
-	}
-	
-	/**
-	 * Gets a single craigslist ad templates
-	 *
-	 * @param int $category_id
-	 * @param int $direction
-	 * @param int $template_index
-	 * @return string
-	 */
-	public function get_template( $category_id, $direction, $template_index ) {
-		// Type Juggling
-		$category_id = (int) $category_id;
-		$direction = (int) $direction;
-		$template_index = (int) $template_index;
-		
-		$limit = ' LIMIT ' . ( $template_index - 1 ) . ', 1';
-		/*
-		switch ( $direction ) {
-			default:
-			case 1:
-				$where = " a.`craigslist_template_id` > $template_id";
-				$order = ' ASC';
-			break;
-			
-			case -1:
-				$where = " a.`craigslist_template_id` < $template_id";
-				$order = ' DESC';
-			break;
-			
-			
-				$where = " a.`craigslist_template_id` = $start";
-				$order = ' ASC';
-			break;
-		}
-		*/
-		
-		$template = $this->db->get_row( "SELECT a.`craigslist_template_id`, a.`title`, a.`description`, a.`category_id`, b.`name` AS `category_name` FROM `craigslist_templates` AS a LEFT JOIN `categories` AS b ON (a.`category_id` = b.`category_id`) WHERE a.`category_id` = $category_id AND a.`publish_visibility` = 'visible' ORDER BY a.`craigslist_template_id` ASC" . $limit, ARRAY_A );
-		
-		// Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $template;
-	}
-	
-	/**
 	 * Creates a new Craigslist ad
 	 *
-	 * @param int $craigslist_template_id
 	 * @param int $product_id
 	 * @param int $website_id
 	 * @param int $duration
 	 * @param string $title
-	 * @param string $description
+	 * @param string $text
 	 * @param int $active
 	 * @param bool $publish
 	 * @return int craigslist_ad_id
 	 */
-	public function create( $craigslist_template_id, $product_id, $website_id, $duration, $title, $text, $active, $publish ){ 
-		// echo $craigslist_template_id, ' : ', $product_id, ' : ', $website_id, ' : ', $duration, ' : ', $title, ' : ', $text, ' : ', $active, ' : ', $publish, ' : '; exit;
-		$date = ( $publish ) ? date( "Y-m=d H:i:s", time() ) : "0";
-		$result = $this->db->insert( 'craigslist_ads', 
-						  array( 'craigslist_template_id' => $craigslist_template_id, 
-								 'product_id' => $product_id,
-								 'website_id' => $website_id,
-								 'duration' => $duration,
-								 'title' => $title,
-								 'text' => $text,
-								 'active' => $active,
-								 'date_created' => date( "Y-m=d H:i:s", time() ),
-								 'date_posted' => $date ),
-						  'iiiississ' );
+	public function create( $product_id, $website_id, $duration, $title, $text, $active, $publish ) {
+
+        $date = ( $publish ) ? date( "Y-m-d H:i:s", time() ) : "0";
+		$result = $this->db->insert( 'craigslist_ads', array(
+            'product_id' => $product_id,
+            'website_id' => $website_id,
+            'duration' => $duration,
+            'title' => $title,
+            'text' => $text,
+            'active' => $active,
+            'date_created' => date( "Y-m-d H:i:s", time() ),
+            'date_posted' => $date
+        ), 'iiississ' );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -235,7 +169,7 @@ class Craigslist extends Base_Class {
 	 * @return bool false if couldn't delete
 	 */
 	public function copy( $craigslist_ad_id ) {
-		$ad = $this->db->prepare( "SELECT `craigslist_template_id`, `product_id`, `website_id`, `title`, `text`, `craigslist_city_id`, `craigslist_category_id`, `craigslist_district_id` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ?", 'i', $craigslist_ad_id )->get_row('', ARRAY_A);
+		$ad = $this->db->prepare( "SELECT `product_id`, `website_id`, `title`, `text`, `craigslist_city_id`, `craigslist_category_id`, `craigslist_district_id` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ?", 'i', $craigslist_ad_id )->get_row('', ARRAY_A);
 
         // Handle any error
 		if( $this->db->errno() ) {
@@ -243,7 +177,7 @@ class Craigslist extends Base_Class {
 			return false;
 		}
 
-        $this->db->insert( 'craigslist_ads', array( 'craigslist_template_id' => $ad['craigslist_template_id'], 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m-d H:i:s", time() ) ), 'iiissiiis' );
+        $this->db->insert( 'craigslist_ads', array( 'product_id' => $ad['product_id'], 'website_id' => $ad['website_id'], 'title' => $ad['title'], 'text' => $ad['text'], 'craigslist_city_id' => $ad['craigslist_city_id'], 'craigslist_category_id' => $ad['craigslist_category_id'], 'craigslist_district_id' => $ad['craigslist_district_id'], 'date_created' => date( "Y-m-d H:i:s", time() ) ), 'iissiiis' );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -257,29 +191,27 @@ class Craigslist extends Base_Class {
 	 * Updates an existing Craigslist ad
 	 *
 	 * @param int $craigslist_ad_id
-	 * @param int $craigslist_template_id
 	 * @param int $product_id
 	 * @param int $website_id
 	 * @param int $duration
 	 * @param string $title
-	 * @param string $description
+	 * @param string $text
 	 * @param int $active
 	 * @param bool $publish
 	 * @return int craigslist_ad_id
 	 */
-	public function update( $craigslist_ad_id, $craigslist_template_id, $product_id, $website_id, $duration, $title, $text, $active, $publish ){		
-		$date = ( $publish ) ? date( "Y-m=d H:i:s", time() ) : "0";
-		$result = $this->db->update( 'craigslist_ads', 
-						  array( 'craigslist_template_id' => $craigslist_template_id, 
-								 'product_id' => $product_id,
-								 'website_id' => $website_id,
-								 'duration' => $duration,
-								 'title' => $title,
-								 'text' => $text,
-								 'active' => $active,
-								 'date_updated' => date( "Y-m=d H:i:s", time() ),
-								 'date_posted' => $date ),
-			array( 'craigslist_ad_id' => $craigslist_ad_id ), 'iiiississ', 'i' );
+	public function update( $craigslist_ad_id, $product_id, $website_id, $duration, $title, $text, $active, $publish ){
+		$date = ( $publish ) ? date( "Y-m-d H:i:s", time() ) : "0";
+		$result = $this->db->update( 'craigslist_ads', array(
+            'product_id' => $product_id,
+            'website_id' => $website_id,
+            'duration' => $duration,
+            'title' => $title,
+            'text' => $text,
+            'active' => $active,
+            'date_updated' => date( "Y-m-d H:i:s", time() ),
+            'date_posted' => $date
+        ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'iiississ', 'i' );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
