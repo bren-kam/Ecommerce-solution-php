@@ -804,7 +804,7 @@ class Social_Media extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$posts = $this->db->get_results( "SELECT `sm_posting_post_id`, `post`, `status`, UNIX_TIMESTAMP( `date_posted` ) AS date_posted FROM `sm_posting_posts` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$posts = $this->db->get_results( "SELECT `sm_posting_post_id`, `post`, `error`, `status`, UNIX_TIMESTAMP( `date_posted` ) AS date_posted FROM `sm_posting_posts` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

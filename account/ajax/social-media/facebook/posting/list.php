@@ -26,25 +26,36 @@ $timezone = $w->get_setting( 'timezone' );
 // Create output
 if ( is_array( $posts ) )
 foreach ( $posts as $p ) {
-    // Determine what to do based off the status
-    if ( 1 == $p['status'] ) {
-        $actions = '';
-
-        $status = _('Posted');
-    } else {
-        $actions = '<br />
-        <div class="actions">
-            <a href="/ajax/social-media/facebook/posting/delete/?sppid=' . $p['sm_posting_post_id'] . '&amp;_nonce=' . $delete_post_nonce . '" title="' . _('Delete Post') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>
-        </div>';
-
-        $status = _('Scheduled');
-    }
+	// Set the actions
+    $actions = '<br />
+	<div class="actions">
+		<a href="/ajax/social-media/facebook/posting/delete/?sppid=' . $p['sm_posting_post_id'] . '&amp;_nonce=' . $delete_post_nonce . '" title="' . _('Delete Post') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>
+	</div>';
+	
+	// Determine what to do based off the status
+	switch ( $p['status'] ) {
+		case -1:
+			$status = _('Error');
+			
+			$p['post'] .= '<br /><br /><span class="error">' . $p['error'] . '</span>';
+		break;
+		
+		case 0:
+			$status = _('Scheduled');
+		break;
+		
+		case 1:
+			$actions = '';
+	
+			$status = _('Posted');
+		break;
+	}
 
     $date = new DateTime();
     $date->setTimestamp( $p['date_posted'] - $date->getOffset() + (  $timezone * 3600 ) );
 
  	$data[] = array(
-		format::limit_chars( $p['post'], 100 ) . $actions,
+		$p['post'] . $actions,
 		$status,
          $date->format( 'F jS, Y g:i a' )
 	);
