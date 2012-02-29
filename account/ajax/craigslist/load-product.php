@@ -5,8 +5,8 @@
  * @subpackage Account
  */
 
-$ajax = new AJAX( $_POST['_nonce'], 'set-product' );
-$ajax->ok( $user, _('You must be signed in to set a craigslist product.') );
+$ajax = new AJAX( $_POST['_nonce'], 'load-product' );
+$ajax->ok( $user, _('You must be signed in to load a craigslist product.') );
 
 // Instantiate class
 $p = new Products;

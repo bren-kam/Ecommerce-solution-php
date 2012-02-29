@@ -16,9 +16,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$('#tAutoComplete').autocomplete({
 		minLength: 1,
 		select: function( event, ui ) {
-			$.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'pid' : ui.item.value }, ajaxResponse, 'json' );
-			
-			$('#hProductID').val( ui.item.value );
+            loadProduct( ui.item.value );
 			$('#tAutoComplete').val( ui.item.label );
 			
 			return false;
@@ -67,25 +65,23 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 
     // Post this ad to the Craigslist API
     $('#aPostAd').click( function() {
+        // Say we want to post it
         $('#hPostAd').val('1');
+
+        // Submit the form
+        $('#fAddCraigslistTemplate').submit();
     });
 
     // Refresh the preview
 	$("#aRefresh").click( refreshPreview );
 
-    // See if an ad is there to load
-	checkAdStatus();	
+    var productID = $('#hProductID').val();
+    if ( '' != productID ) {
+        loadProduct( productID, function() {
+            setTimeout( refreshPreview, 1000 );
+        });
+    }
 });
-
-/**
- * If there is an ad in the titlebar, load it using AJAX.
- */
-function checkAdStatus(){
-	craigslistAdID = parseInt( $('#hCraigslistAdID').val() );
-
-	if( craigslistAdID )
-        $.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'caid' : craigslistAdID }, ajaxResponse, 'json' );
-}
 
 /**
  *  Opens the editor area.
@@ -96,6 +92,20 @@ function openEditorAndPreview() {
 }
 
 $.fn.openEditorAndPreview = openEditorAndPreview;
+
+/**
+ * Load Product Information
+ *
+ * var productID
+ * var callback
+ */
+function loadProduct( productID ) {
+    $.post( '/ajax/craigslist/load-product/', { _nonce : $('#_ajax_load_product').val(), 'pid' : productID }, ajaxResponse, 'json' );
+
+    // Call a call back if there is one
+    if ( 'function' == typeof( arguments[1] ) )
+        arguments[1]();
+}
 
 /**
  * Gets the next product in the lineup for sampling purposes
@@ -131,4 +141,5 @@ function refreshPreview() {
 	}
 	
 	$("#dCraigslistCustomPreview").html( newContent );
+    $('#hCraigslistPost').val( newContent );
 }

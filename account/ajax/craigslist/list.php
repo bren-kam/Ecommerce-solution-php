@@ -27,14 +27,24 @@ $data = array();
 // Create output
 if ( is_array( $craigslist_ads ) )
 foreach ( $craigslist_ads as $ad ) {
-    $status = ( '0000-00-00 00:00:00' == $ad['date_posted'] ) ? _('Waiting Approval') : _('Posted');
+    if ( '0000-00-00 00:00:00' == $ad['date_posted'] ) {
+        $status = _('Waiting Approval');
+
+        // Set the links
+        $links = '<a href="/craigslist/add-edit/?caid=' . $ad['craigslist_ad_id'] . '" title="' . _('Edit') . '">' . _('Edit / Post') . '</a> | ';
+    } else {
+        $status = _('Posted');
+
+        // Set the links
+        $links = '';
+    }
 
     // Get the date
     $date = new DateTime( $ad['date_created'] );
 
 	$data[] = array(
         $ad['title'] . '<br />
-        <div class="actions">' .
+        <div class="actions">' . $links .
             '<a href="/ajax/craigslist/copy/?caid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $copy_craigslist_ad_nonce . '" title="' . _('Copy Craiglist Ad') . '" ajax="1">' . _('Copy') . '</a> |
             <a href="/ajax/craigslist/delete/?caid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $delete_craigslist_ad_nonce . '" title="' . _('Delete Craiglist Ad') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a>
         </div>'
