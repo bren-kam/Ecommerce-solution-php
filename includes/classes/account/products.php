@@ -536,11 +536,15 @@ class Products extends Base_Class {
 	 * @param int $product_id
 	 * @return array
 	 */
-	 public function get_website_product( $product_id ) {
+	public function get_website_product( $product_id ) {
 		global $user;
-		
-		$website_product = $this->db->get_row( 'SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, c.`name` AS category, e.`image`, f.`name` AS industry, g.`price` FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) INNER JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) LEFT JOIN `website_products` AS g ON ( a.`product_id` = b.`product_id` ) WHERE e.`sequence` = 0 AND g.`status` = 1 AND a.`product_id` = ' . (int) $product_id . ' AND g.`website_id` = ' . (int) $user['website']['website_id'], ARRAY_A );
-		
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $product_id = (int) $product_id;
+
+		$website_product = $this->db->get_row( "SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, c.`name` AS category, e.`image`, f.`name` AS industry, g.`price` FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) LEFT JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) LEFT JOIN `website_products` AS g ON ( a.`product_id` = g.`product_id` ) WHERE e.`sequence` = 0 AND g.`status` = 1 AND a.`product_id` = $product_id AND g.`website_id` = $website_id", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website product.', __LINE__, __METHOD__ );

@@ -32,7 +32,7 @@ foreach ( $messages as $m ) {
 		$actions = '<a href="/email-marketing/emails/send/?emid=' . $m['email_message_id'] . '" title="' . _('Edit Message') . '">' . _('Edit') . '</a> | ';
 		$actions .= '<a href="/ajax/email-marketing/emails/delete/?emid=' . $m['email_message_id'] . '&amp;_nonce=' . $delete_email_message_nonce . '" title="' . _('Delete Email Message') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 	} else {
-		$actions = '<a href="/analytics/email/?mcid=' . $m['mc_campaign_id'] . '" title="' . _('View Analytics') . '">' . _('Analytics') . '</a>';
+		$actions = '<a href="/analytics/email-marketing/email/?mcid=' . $m['mc_campaign_id'] . '" title="' . _('View Analytics') . '">' . _('Analytics') . '</a>';
 	}
 	
 	$data[] = array( 

@@ -65,6 +65,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		openEditorAndPreview();
 	});
 
+    // Post this ad to the Craigslist API
+    $('#aPostAd').click( function() {
+        $('#hPostAd').val('1');
+    });
+
     // Refresh the preview
 	$("#aRefresh").click( refreshPreview );
 
@@ -112,29 +117,18 @@ function refreshPreview() {
     newContent = newContent.replace( '[Product Description]', productDescription );
     newContent = newContent.replace( '[SKU]', sku );
 
-	var photos = new Array;
-	photos = document.getElementsByClassName( 'hiddenImage' );
-	var photoHTML = '', index = 0;
+	var photos = document.getElementsByClassName( 'hiddenImage' ), photoHTML = '', index = 0;
 	
 	if ( photos.length ) {
 		while ( newContent.indexOf( '[Photo]' ) >= 0 ) {
 			if ( index >= photos.length ) 
 				index = 0;
 			
-			photoHTML = '<img src="' + photos[index]['src'] + '" />';
+			photoHTML = '<img src="' + photos[index]['src'] + '" width="320" height="320" />';
 			newContent = newContent.replace( "[Photo]", photoHTML );
 			index++;
 		}
 	}
 	
 	$("#dCraigslistCustomPreview").html( newContent );
-}
-
-/*
- * Replace all instances of < and > with htmlspecialchars, making HTML viewable as plain text.
- */
-function htmlToText( html ) {
-	html = html.replace( '<', '&lt;');
-	html = html.replace( '>', '&gt;');
-	return html;
 }
