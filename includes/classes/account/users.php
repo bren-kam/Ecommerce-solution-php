@@ -27,10 +27,10 @@ class Users extends Base_Class {
 			return false;
 
 		// Find out if the user has a cookie set, if so, sign him or her in
-		if ( isset( $_COOKIE[SECURE_AUTH_COOKIE] ) ) {
-			$this->encrypted_email = $_COOKIE[SECURE_AUTH_COOKIE];
-		} elseif ( isset( $_COOKIE[AUTH_COOKIE] ) ) {
-			$this->encrypted_email = $_COOKIE[AUTH_COOKIE];
+		if ( get_cookie( SECURE_AUTH_COOKIE ) ) {
+			$this->encrypted_email = get_cookie( SECURE_AUTH_COOKIE );
+		} elseif ( get_cookie( AUTH_COOKIE ) ) {
+			$this->encrypted_email = get_cookie( AUTH_COOKIE );
 		}
 
 		if ( !empty( $this->encrypted_email ) ) {
@@ -42,17 +42,17 @@ class Users extends Base_Class {
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
 
             // Don't send them into an infinite loop if you can avoid it
-            if ( ( !is_array( $user['websites'] ) || 0 == count( $user['websites'] ) ) && !isset( $_COOKIE['wid'] ) ) {
+            if ( ( !is_array( $user['websites'] ) || 0 == count( $user['websites'] ) ) && !get_cookie('wid') ) {
                 $this->logout();
                 url::redirect('/');
             }
 
-            if ( isset( $_COOKIE['action'] ) && 'bypass' == security::decrypt( base64_decode( $_COOKIE['action'] ), ENCRYPTION_KEY ) ) {
+            if ( get_cookie('action') && 'bypass' == security::decrypt( base64_decode( get_cookie('action') ), ENCRYPTION_KEY ) ) {
                 $w = new Websites;
 
-                $user['website'] = $w->get_website( $_COOKIE['wid'] );
+                $user['website'] = $w->get_website( get_cookie('wid') );
             } else {
-                $user['website'] = ( isset( $user['websites'][$_COOKIE['wid']] ) ) ? $user['websites'][$_COOKIE['wid']] : '';
+                $user['website'] = ( isset( $user['websites'][get_cookie('wid')] ) ) ? $user['websites'][get_cookie('wid')] : '';
             }
 
             // They must have a website

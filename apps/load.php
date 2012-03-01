@@ -55,6 +55,10 @@ if ( extension_loaded('newrelic') )
 require_once( ABS_PATH . 's98lib/init.php' );
 
 /** Load Cookie Definitions */
+
+// Create a cookie abbreviation
+define( 'COOKIE_ABBR', 'gsr_' );
+
 // Used to guarantee unique hash cookies
 define( 'COOKIE_HASH', md5( 'http://apps.imagineretailer.com/' ) );
 

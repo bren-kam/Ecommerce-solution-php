@@ -65,6 +65,10 @@ define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( 
 define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], true ) ) : str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_HOST'], true ) ) );
 
 /** Load Cookie Definitions */
+
+// Create a cookie abbreviation
+define( 'COOKIE_ABBR', 'gsr_' );
+
 // Used to guarantee unique hash cookies
 define( 'COOKIE_HASH', md5( 'http://www.' . DOMAIN . '.com/' ) );
 

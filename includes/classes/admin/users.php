@@ -24,10 +24,10 @@ class Users extends Base_Class {
 			return false;
 		
 		// Find out if the user has a cookie set, if so, sign him or her in
-		if ( isset( $_COOKIE[SECURE_AUTH_COOKIE] ) ) {
-			$this->encrypted_email = $_COOKIE[SECURE_AUTH_COOKIE];
-		} elseif ( isset( $_COOKIE[AUTH_COOKIE] ) ) {
-			$this->encrypted_email = $_COOKIE[AUTH_COOKIE];
+		if ( get_cookie( SECURE_AUTH_COOKIE ) ) {
+			$this->encrypted_email = get_cookie( SECURE_AUTH_COOKIE );
+		} elseif ( get_cookie( AUTH_COOKIE ) ) {
+			$this->encrypted_email = get_cookie( AUTH_COOKIE );
 		}
 		
 		if ( !empty( $this->encrypted_email ) ) {
