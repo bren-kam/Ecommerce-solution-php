@@ -35,9 +35,9 @@ class Users extends Base_Class {
 
 		if ( !empty( $this->encrypted_email ) ) {
             global $user;
-			
+
             $user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
-			
+
             // Get website
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
 

@@ -50,13 +50,13 @@ if ( extension_loaded('newrelic') )
     set_error_handler( 'newrelic_notice_error' );
 
 /** Include Studio98 library */
-require_once ABS_PATH . 's98lib/init.php';
+require ABS_PATH . 's98lib/init.php';
 
 /** Load global functions */
-require_once INC_PATH . 'functions.php';
+require INC_PATH . 'functions.php';
 
 /** Load classes */
-require_once INC_PATH . 'classes.php';
+require INC_PATH . 'classes.php';
 
 /** Dynamic definitions */
 define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );
@@ -88,10 +88,10 @@ if ( !isset( $s98_cache ) )
 $cache = &$s98_cache; // Setting up a point to all cache functions
 
 /** Including the label information */
-require_once INC_PATH . 'labels/' . DOMAIN . '.php';
+require INC_PATH . 'labels/' . DOMAIN . '.php';
 
 /** Routing */
-require_once OPERATING_PATH . 'routing.php' ;
+require OPERATING_PATH . 'routing.php' ;
 
 
 if ( PROFILE ) {
