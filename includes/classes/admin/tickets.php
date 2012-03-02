@@ -246,7 +246,7 @@ class Tickets extends Base_Class {
 	 */
 	public function list_tickets( $limit, $where, $order_by ) {
         // Get linked tickets
-        $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, IF( 1 = a.`status` OR d.`ticket_comment_id` IS NOT NULL AND d.`user_id` = a.`assigned_to_user_id`, 0, 1 ) AS waiting, e.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by, d.`ticket_comment_id` DESC LIMIT $limit", ARRAY_A );
+        $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, d.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -265,7 +265,7 @@ class Tickets extends Base_Class {
 	 */
 	public function count( $where ) {
         // Get the ticket count
-        $count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN ( SELECT `ticket_comment_id`, `ticket_id`, `user_id` FROM `ticket_comments` ORDER BY `ticket_comment_id` DESC ) AS d ON ( a.`ticket_id` = d.`ticket_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
+        $count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`ticket_id`) FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE 1" . $where );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -339,6 +339,7 @@ class Tickets extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

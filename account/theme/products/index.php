@@ -135,7 +135,7 @@ get_header();
 			</tr>
 			<tr>
 				<td><label for="tPriceNote"><?php echo _('Price Note'); ?>:</label></td>
-				<td><input type="text" class="tb" name="tPriceNote" id="tPriceNote" maxlength="20" /></td>
+				<td><input type="text" class="tb" name="tPriceNote" id="tPriceNote" maxlength="40" /></td>
 			</tr>
 			<tr>
 				<td><label for="tAlternatePrice"><?php echo _('Alternate Price'); ?>:</label></td>

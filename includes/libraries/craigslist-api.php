@@ -105,7 +105,7 @@ class Craigslist_API {
      * Add Market
      *
      * @param array $tags
-     * @return bool
+     * @return object
      */
     public function add_tags( $tags ) {
         // Add customer

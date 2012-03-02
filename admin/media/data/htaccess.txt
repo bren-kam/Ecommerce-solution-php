@@ -2,18 +2,12 @@ Options +FollowSymLinks -Indexes
 RewriteEngine on
 RewriteBase /
 
-# RewriteCond %{HTTP_HOST} ^174.120.210.110
-# RewriteRule (.*) http://www.[domain]/$1 [R=301,L]
-
-# RewriteCond %{HTTP_HOST} ^[domain] [NC] 
-# RewriteRule ^(.*)$ http://www.[domain]/$1 [L,R=301]
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 
-php_value auto_prepend_file [document_root]/s98_fw/compression/begin_gzip.php
-php_value auto_append_file [document_root]/s98_fw/compression/end_gzip.php
+php_value auto_prepend_file /gsr/platform/s98_fw/compression/begin_gzip.php
+php_value auto_append_file /gsr/platform/s98_fw/compression/end_gzip.php
 
 # 1 YEAR
 <FilesMatch '\.(ico|pdf|flv)$'>

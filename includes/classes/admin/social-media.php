@@ -22,7 +22,7 @@ class Social_Media extends Base_Class {
 	 */
 	public function get_posting_posts() {
 		// Get the posting posts
-		$posts = $this->db->get_results( "SELECT a.`sm_posting_post_id`, a.`access_token`, a.`post`, a.`link`, b.`fb_page_id`, d.`email` FROM `sm_posting_posts` AS a LEFT JOIN `sm_posting` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `websites` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( c.`os_user_id` = d.`user_id` ) WHERE a.`status` = 0 AND NOW() > a.`date_posted`", ARRAY_A );
+		$posts = $this->db->get_results( "SELECT a.`sm_posting_post_id`, a.`access_token`, a.`post`, a.`link`, b.`fb_page_id`, c.`website_id`, c.`title` AS account, d.`email`, f.`name` AS company, f.`domain` FROM `sm_posting_posts` AS a LEFT JOIN `sm_posting` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `websites` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( c.`os_user_id` = d.`user_id` ) LEFT JOIN `users` AS e ON ( c.`user_id` = e.`user_id` ) LEFT JOIN `companies` AS f ON ( e.`company_id` = f.`company_id` ) WHERE a.`status` = 0 AND NOW() > a.`date_posted`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -40,7 +40,7 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function complete_posting_posts( $sm_posting_post_ids ) {
-		if ( !is_array( $sm_posting_post_ids ) )
+		if ( !is_array( $sm_posting_post_ids ) || 0 == count( $sm_posting_post_ids ) )
 			return false;
 		
 		// Make sure they are all integers
@@ -54,6 +54,35 @@ class Social_Media extends Base_Class {
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to complete the posting posts.', __LINE__, __METHOD__ );
 			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Mark Posting Post Errors
+	 *
+	 * @param array $sm_error_ids
+	 * @return bool
+	 */
+	public function mark_posting_post_errors( $sm_error_ids ) {
+		if ( !is_array( $sm_error_ids ) || 0 == count( $sm_error_ids ) )
+			return false;
+		
+		// Prepare statement
+		$statement = $this->db->prepare( 'UPDATE `sm_posting_posts` SET `status` = -1, `error` = ? WHERE `sm_posting_post_id` = ?' );
+		$statement->bind_param( 'ss', $error_message, $sm_posting_post_id );
+		
+		// Make sure they are all integers
+		foreach ( $sm_error_ids as $sm_posting_post_id => $error_message ) {
+			$statement->execute();
+			
+			// Handle any error
+			if ( $statement->errno ) {
+				$this->db->m->error = $statement->error;
+				$this->err( "Failed to update posting post's error.", __LINE__, __METHOD__ );
+				return false;
+			}
 		}
 		
 		return true;

@@ -42,7 +42,7 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 			break;
 
 			case 2:
-				$field = 'e.`title`';
+				$field = '`title`';
 			break;
 			
 			case 3:
@@ -69,7 +69,7 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 $where = ( '0' == $_SESSION['tickets']['assigned-to'] ) ? ' AND ( ' . $user['role'] . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $user['user_id'] . ' )' : ' AND ' . $user['role'] . ' >= COALESCE( c.`role`, 7 )';
 if ( $_GET['sSearch'] != "" ) {
 	$where .= " AND ( b.`contact_name` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
-					"e.`title` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
+					"`title` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
 					"a.`summary` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' )";
 }
 
@@ -103,7 +103,7 @@ foreach ( $tickets as $ticket ) {
 	}
 	
 	$date_due = ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : dt::date( 'm/d/Y', $ticket['date_due'] );
-	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'] . '|' . $ticket['waiting'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ), $date_due );
+	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ), $date_due );
 }
 
 echo json_encode( array( 

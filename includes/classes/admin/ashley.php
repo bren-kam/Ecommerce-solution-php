@@ -171,6 +171,8 @@ class Ashley extends Base_Class {
 		
 		// Generate array of our items
 		foreach( $items as $item ) {
+			echo '                    ';
+			
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
@@ -187,7 +189,8 @@ class Ashley extends Base_Class {
 				$group_description = '<p>' . $group['description'] . '</p>';
 				$group_features = '<p>' . $group['features'] . '</p>';
 			} else {
-				$group_name = $group_description = $group_features = '';
+                fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
+                continue;
 			}
 			
 			$name = $group_name . $item['description'];
@@ -219,7 +222,8 @@ class Ashley extends Base_Class {
 				
 				if( empty( $slug ) ) {
 					$slug = $product['slug'];
-				} elseif ( $slug != $product['slug'] ) { 
+				} elseif ( $slug != $product['slug'] ) {
+					$slug = $this->unique_slug( $slug );
 					$identical = false;
 				}
 				
@@ -632,10 +636,9 @@ class Ashley extends Base_Class {
 		
 		fclose( $fp );
 		
-		$this->file->upload_image( $image, $new_image_name, 320, 320, 'furniture', 'products/' . $product_id . '/', false, true );
-		$this->file->upload_image( $image, $new_image_name, 46, 46, 'furniture', 'products/' . $product_id  . '/thumbnail/', false, true );
-		$this->file->upload_image( $image, $new_image_name, 200, 200, 'furniture', 'products/' . $product_id . '/small/', false, true );
-		$this->file->upload_image( $image, $new_image_name, 700, 700, 'furniture', 'products/' . $product_id . '/large/', false, true );
+		$this->file->upload_image( $image, $new_image_name, 320, 320, 'furniture', 'products/' . $product_id . '/' );
+		$this->file->upload_image( $image, $new_image_name, 46, 46, 'furniture', 'products/' . $product_id  . '/thumbnail/' );
+		$this->file->upload_image( $image, $new_image_name, 500, 500, 'furniture', 'products/' . $product_id . '/large/' );
 		
 		if( file_exists( $image['tmp_name'] ) )
 			@unlink( $image['tmp_name'] );

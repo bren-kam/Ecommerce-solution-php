@@ -16,9 +16,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$('#tAutoComplete').autocomplete({
 		minLength: 1,
 		select: function( event, ui ) {
-			$.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'pid' : ui.item.value }, ajaxResponse, 'json' );
-			
-			$('#hProductID').val( ui.item.value );
+            loadProduct( ui.item.value );
 			$('#tAutoComplete').val( ui.item.label );
 			
 			return false;
@@ -65,22 +63,25 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		openEditorAndPreview();
 	});
 
+    // Post this ad to the Craigslist API
+    $('#aPostAd').click( function() {
+        // Say we want to post it
+        $('#hPostAd').val('1');
+
+        // Submit the form
+        $('#fAddCraigslistTemplate').submit();
+    });
+
     // Refresh the preview
 	$("#aRefresh").click( refreshPreview );
 
-    // See if an ad is there to load
-	checkAdStatus();	
+    var productID = $('#hProductID').val();
+    if ( '' != productID ) {
+        loadProduct( productID, function() {
+            setTimeout( refreshPreview, 1000 );
+        });
+    }
 });
-
-/**
- * If there is an ad in the titlebar, load it using AJAX.
- */
-function checkAdStatus(){
-	craigslistAdID = parseInt( $('#hCraigslistAdID').val() );
-
-	if( craigslistAdID )
-        $.post( '/ajax/craigslist/set-product/', { '_nonce' : $('#_ajax_set_product').val(), 'caid' : craigslistAdID }, ajaxResponse, 'json' );
-}
 
 /**
  *  Opens the editor area.
@@ -91,6 +92,20 @@ function openEditorAndPreview() {
 }
 
 $.fn.openEditorAndPreview = openEditorAndPreview;
+
+/**
+ * Load Product Information
+ *
+ * var productID
+ * var callback
+ */
+function loadProduct( productID ) {
+    $.post( '/ajax/craigslist/load-product/', { _nonce : $('#_ajax_load_product').val(), 'pid' : productID }, ajaxResponse, 'json' );
+
+    // Call a call back if there is one
+    if ( 'function' == typeof( arguments[1] ) )
+        arguments[1]();
+}
 
 /**
  * Gets the next product in the lineup for sampling purposes
@@ -112,29 +127,19 @@ function refreshPreview() {
     newContent = newContent.replace( '[Product Description]', productDescription );
     newContent = newContent.replace( '[SKU]', sku );
 
-	var photos = new Array;
-	photos = document.getElementsByClassName( 'hiddenImage' );
-	var photoHTML = '', index = 0;
+	var photos = document.getElementsByClassName( 'hiddenImage' ), photoHTML = '', index = 0;
 	
 	if ( photos.length ) {
 		while ( newContent.indexOf( '[Photo]' ) >= 0 ) {
 			if ( index >= photos.length ) 
 				index = 0;
 			
-			photoHTML = '<img src="' + photos[index]['src'] + '" />';
+			photoHTML = '<img src="' + photos[index]['src'] + '" width="320" height="320" />';
 			newContent = newContent.replace( "[Photo]", photoHTML );
 			index++;
 		}
 	}
 	
 	$("#dCraigslistCustomPreview").html( newContent );
-}
-
-/*
- * Replace all instances of < and > with htmlspecialchars, making HTML viewable as plain text.
- */
-function htmlToText( html ) {
-	html = html.replace( '<', '&lt;');
-	html = html.replace( '>', '&gt;');
-	return html;
+    $('#hCraigslistPost').val( newContent );
 }

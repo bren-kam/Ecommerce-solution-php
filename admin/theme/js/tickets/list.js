@@ -28,18 +28,8 @@ function postLoad( $ ) {
 		"aaSorting": [[3, 'asc'],[2, 'asc'],[5, 'asc']],
 		"sDom" : '<"top"lfr>t<"bottom"pi>',
 		'fnRowCallback' : function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-			// Get the waiting variable
-			var td = $('td:eq(1)', nRow), data = td.html().split( '|' );
-			
 			// Give the priority td its own class
 			$('td:eq(3)', nRow).addClass('priority');
-			
-			// Add the waiting class if its waiting
-			if ( '1' == data[1] ) 
-				$(nRow).addClass( 'waiting' );
-			
-			// Get rid of the number
-			td.html( data[0] );
 			
 			// Make the last column have the class "last"
 			$('td:last', nRow).addClass('last');
