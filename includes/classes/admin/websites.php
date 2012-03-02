@@ -611,8 +611,7 @@ class Websites extends Base_Class {
 				
 				// Update config & .htaccess file
 				$document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
-				ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/{$subdomain}.htaccess" );
-				
+
 				ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/{$subdomain}config.php" );
 				ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
 				
