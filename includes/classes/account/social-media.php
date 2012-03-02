@@ -847,7 +847,7 @@ class Social_Media extends Base_Class {
         $sm_posting_post_id = (int) $sm_posting_post_id;
 
         // Delete the post
-        $this->db->query( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `website_id` = $website_id AND `status` = 0" );
+        $this->db->query( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `website_id` = $website_id AND `status` <> 1" );
 
         // Handle any error
 		if ( $this->db->errno() ) {
