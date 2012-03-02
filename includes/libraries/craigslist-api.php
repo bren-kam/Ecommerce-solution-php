@@ -105,13 +105,32 @@ class Craigslist_API {
      * Add Market
      *
      * @param array $tags
-     * @return bool
+     * @return object
      */
     public function add_tags( $tags ) {
         // Add customer
         $response = $this->_execute( 'addtags', $tags );
 
         return $response;
+    }
+
+    /**
+     * Add Post
+     *
+     * @param int $market_id
+     * @param array $tags
+     * @param string $product_url
+     * @param string $image_url
+     * @param float $price
+     * @param array $header
+     * @param string $body
+     * @return bool
+     */
+    public function add_ad_product( $market_id, $tags, $product_url, $image_url, $price, $header, $body ) {
+        // Add customer
+        $response = $this->_execute( 'addadproduct', array( compact( 'market_id', 'tags', 'product_url', 'image_url', 'price', 'header', 'body' ) ) );
+
+        return ( 'SUCCESS' == $response[0]->status ) ? true : false;
     }
 
     /**

@@ -153,7 +153,7 @@ class Products extends Base_Class {
 				'publish_visibility' => $publish_visibility,
 				'publish_date' => $publish_date,
 				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 353 ),
-			), array( 'product_id' => $product_id ), 'iisssssdddisssi', 'i' );
+			), array( 'product_id' => $product_id ), 'iisssssddddsssi', 'i' );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

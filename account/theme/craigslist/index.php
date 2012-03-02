@@ -21,22 +21,6 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'craigslist/' ); ?>
 	<div id="subcontent">
-		<?php
-		if ( isset( $_GET['m'] ) )
-		switch ( $_GET['m'] ) {
-			case '1':
-				echo '<p class="message">', _('Your ad has been successfully created.'), '</p>';
-			break;
-			
-			case '2':
-				echo '<p class="message">', _('Your ad has been successfully updated.'), '</p>';
-			break;
-			
-			case '3':
-				echo '<p class="message">', _('Your ad has been published.'), '</p>';
-			break;
-		}
-		?>
 		<br clear="left" /><br />
 		<br />
 		<table ajax="/ajax/craigslist/list/" perPage="100,250,500" sort="1" cellpadding="0" cellspacing="0" width="100%">

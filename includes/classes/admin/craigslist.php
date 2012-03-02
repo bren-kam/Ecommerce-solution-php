@@ -746,6 +746,35 @@ class Craigslist extends Base_Class {
         // Add the tags
         return ( 0 == count( $tags ) ) ? true : $this->add_tags( $tags );
     }
+
+    /**
+     * Get unknown tag ids
+     *
+     * @param array $tag_ids
+     * @return bool
+     */
+    public function report_unknown_tags( $tag_ids ) {
+        // SQL Safe
+        foreach ( $tag_ids as &$tid ) {
+            $tid = (int) $tid;
+        }
+
+        // Get tags that we have
+        $craiglist_tag_ids = $this->db->get_col( "SELECT `craigslist_tag_id` FROM `craigslist_tags` WHERE `craigslist_tag_id` IN ( " . implode( ',', $tag_ids ) . ')' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get craigslist tags.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        $unknown_tag_ids = array_diff( $tag_ids, $craiglist_tag_ids );
+
+        // Mail the report
+        fn::mail( 'kerry@greysuitretail.com', 'Unknown Tags', 'Total: ' . count( $unknown_tag_ids ) . "\n\n" . implode( "\n", $tag_ids ) );
+
+        return true;
+    }
     
     /***** OTHER *****/
 

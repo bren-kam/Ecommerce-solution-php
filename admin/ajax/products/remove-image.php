@@ -19,12 +19,14 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'remove-image
 	
 	preg_match( '/\/products\/([0-9]+)\//', $_POST['image'] );
 			
-	$base_image = str_replace( 'http://' . $industry . '.retailcatalog.us/', '', $_POST['image'] );
-	$thumbnail = preg_replace( '/(products\/[0-9]+\/(?:[^\/]+\/)?)?([^\/]+)/', "$1thumbnail/$2", $base_image );
+	$thumbnail = str_replace( 'http://' . $industry . '.retailcatalog.us/', '', $_POST['image'] );
+	$base_image = str_replace( 'thumbnail/', '', $thumbnail );
+	$small = preg_replace( '/(products\/[0-9]+\/(?:[^\/]+\/)?)?([^\/]+)/', "$1small/$2", $base_image );
 	$large = preg_replace( '/(products\/[0-9]+\/(?:[^\/]+\/)?)?([^\/]+)/', "$1large/$2", $base_image );
-	
-	$f->delete_image( $base_image, $industry );
+
 	$f->delete_image( $thumbnail, $industry );
+	$f->delete_image( $base_image, $industry );
+	$f->delete_image( $small, $industry );
 	$f->delete_image( $large, $industry );
 	
 	$result = $p->remove_image( basename( $base_image ), $_POST['pid'] );

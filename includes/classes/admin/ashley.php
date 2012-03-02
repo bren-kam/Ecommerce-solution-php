@@ -171,6 +171,8 @@ class Ashley extends Base_Class {
 		
 		// Generate array of our items
 		foreach( $items as $item ) {
+			echo '                    ';
+			
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
@@ -187,7 +189,8 @@ class Ashley extends Base_Class {
 				$group_description = '<p>' . $group['description'] . '</p>';
 				$group_features = '<p>' . $group['features'] . '</p>';
 			} else {
-				$group_name = $group_description = $group_features = '';
+                fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
+                continue;
 			}
 			
 			$name = $group_name . $item['description'];
@@ -219,7 +222,8 @@ class Ashley extends Base_Class {
 				
 				if( empty( $slug ) ) {
 					$slug = $product['slug'];
-				} elseif ( $slug != $product['slug'] ) { 
+				} elseif ( $slug != $product['slug'] ) {
+					$slug = $this->unique_slug( $slug );
 					$identical = false;
 				}
 				

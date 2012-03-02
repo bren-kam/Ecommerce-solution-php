@@ -14,7 +14,8 @@
  * Properly includes a file and checks the right paths
  *
  * @param string $file
- * @return string|bool
+ * @param bool $require [optional]
+ * @return string
  */
 function inc( $file, $require = true ) {
 	$file_path = INC_PATH . $file . '.php';
@@ -35,6 +36,7 @@ function inc( $file, $require = true ) {
  * Properly includes a file and checks the right paths
  *
  * @param string $file
+ * @return bool
  */
 function library( $file ) {
 	$file_path = INC_PATH . 'libraries/' . $file . '.php';
@@ -54,6 +56,7 @@ function library( $file ) {
  * Properly includes a file and checks the right paths
  *
  * @param string $file
+ * @return bool
  */
 function module( $file ) {
 	$file_path = INC_PATH . 'modules/' . $file . '.php';
@@ -150,7 +153,6 @@ function set_cookie( $name, $value, $expire ) {
     // If it's set on the admin side, we also want to set it on the account side.
     if ( stristr( SUBDOMAIN, 'admin' ) )
         setcookie( COOKIE_ABBR . $name, $value, time() + $expire, '/', '.' . str_replace( 'admin', 'account', SUBDOMAIN ) . '.' . DOMAIN, $secure, true );
-
 }
 
 /**
