@@ -11,8 +11,8 @@ define( 'PROFILE', ( 'true' == $_GET['profile'] ) ? true : false );
 
 if( PROFILE ) {
 	// Enable XHProf (profiler)
-	require('/home/imaginer/xhprof_lib/utils/xhprof_lib.php');
-	require('/home/imaginer/xhprof_lib/utils/xhprof_runs.php');
+	require '/home/imaginer/xhprof_lib/utils/xhprof_lib.php';
+	require '/home/imaginer/xhprof_lib/utils/xhprof_runs.php';
 	xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 }
 
@@ -52,9 +52,13 @@ if ( extension_loaded('newrelic') )
     set_error_handler( 'newrelic_notice_error' );
 
 /** Include Studio98 library */
-require_once( ABS_PATH . 's98lib/init.php' );
+require ABS_PATH . 's98lib/init.php';
 
 /** Load Cookie Definitions */
+
+// Create a cookie abbreviation
+define( 'COOKIE_ABBR', 'gsr_' );
+
 // Used to guarantee unique hash cookies
 define( 'COOKIE_HASH', md5( 'http://apps.imagineretailer.com/' ) );
 
@@ -65,10 +69,10 @@ define( 'AUTH_COOKIE', 'auth_' . COOKIE_HASH );
 define( 'SECURE_AUTH_COOKIE', 'sec_auth_' . COOKIE_HASH );
 
 /** Load global functions */
-require_once( INC_PATH . 'functions.php' );
+require INC_PATH . 'functions.php';
 
 /** Load classes */
-require_once( INC_PATH . 'classes.php' );
+require INC_PATH . 'classes.php';
 
 /** Load Objects */
 $mc = new Memcache_Wrapper;
@@ -81,7 +85,7 @@ if( !isset( $s98_cache ) )
 $cache = &$s98_cache; // Setting up a point to all cache functions
 
 /** Routing */
-require_once( OPERATING_PATH . 'routing.php' );
+require OPERATING_PATH . 'routing.php';
 
 if( PROFILE ) {
 	// End XHProf and save query
