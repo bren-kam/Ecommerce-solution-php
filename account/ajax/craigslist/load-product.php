@@ -45,7 +45,7 @@ jQuery('#hProductID')->val( $product['product_id'] );
 jQuery('#hProductCategoryName')->val( $product['category'] );
 jQuery('#hProductSKU')->val( $product['sku'] );
 jQuery('#hProductBrandName')->val( $product['brand'] );
-jQuery('#tPrice')->val( $price );
+jQuery('#tPrice[val=]')->val( $price );
 
 
 $image_html = '';

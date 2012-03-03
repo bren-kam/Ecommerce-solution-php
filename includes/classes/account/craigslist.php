@@ -310,8 +310,9 @@ class Craigslist extends Base_Class {
      * @param int $craigslist_ad_id
      * @return bool
      */
-    public function post_ad( $craigslist_ad_id ) {
+    public function post_ad( $craigslist_ad_id, $text ) {
         $p = new Products();
+		$c = new Categories();
 
         // Get the ad
         $ad = $this->get( $craigslist_ad_id );
@@ -322,12 +323,13 @@ class Craigslist extends Base_Class {
 
         // Get the product
         $product = $p->get_product( $ad['product_id'] );
+        $parent_category = $c->get_top( $product['category_id'] );
 
         // Make sure we have the product
         if ( !$product )
             return false;
 
-        $craigslist_tags = $this->db->get_results( "SELECT `craigslist_tag_id`, `type` FROM `craigslist_tags` WHERE ( `type` = 'category' AND `object_id` = " . $product['category_id'] . ") OR ( `type` = 'product' AND `object_id` = " . $product['product_id'] . ")", ARRAY_A );
+        $craigslist_tags = $this->db->get_results( "SELECT `craigslist_tag_id`, `object_id`, `type` FROM `craigslist_tags` WHERE ( `type` = 'category' AND `object_id` IN( " . $product['category_id'] . ", " . $parent_category['category_id'] . " ) ) OR ( `type` = 'product' AND `object_id` = " . $product['product_id'] . ")", ARRAY_A );
 
         // Handle any error
 		if( $this->db->errno() ) {
@@ -336,13 +338,17 @@ class Craigslist extends Base_Class {
 		}
 
         // Declare variables
-        $product_tag_id = $category_tag_id = $tags = false;
+        $product_tag_id = $category_tag_id = $parent_category_tag_id = $tags = false;
 
         if ( is_array( $craigslist_tags ) )
         foreach ( $craigslist_tags as $ct ) {
             switch ( $ct['type'] ) {
                 case 'category':
-                    $category_tag_id = $ct['craigslist_tag_id'];
+                    if ( $ct['object_id'] == $ad['category_id'] ) {
+                        $category_tag_id = $ct['craigslist_tag_id'];
+                    } elseif ( $ct['object_id'] == $parent_category['category_id'] ) {
+                        $parent_category_tag_id = $ct['craigslist_tag_id'];
+                    }
                 break;
 
                 case 'product':
@@ -353,7 +359,7 @@ class Craigslist extends Base_Class {
 
         // Create product tag
         if ( !$product_tag_id ) {
-            $tags[$product_tag_id] = array(
+            $tags[$ad['product_id']] = array(
                 'type' => 'item'
                 , 'name' => $product['sku']
             );
@@ -361,16 +367,22 @@ class Craigslist extends Base_Class {
 
         // Create category tag
         if ( !$category_tag_id ) {
-            // We need to create the category
-            $c = new Categories;
-
             // Get the category
             $category = $c->get( $product['category_id'] );
 
             // Add it to the tags array
-            $tags[$category_tag_id] = array(
-                'type' => 'item'
+            $tags[$product['category_id']] = array(
+                'type' => 'category'
                 , 'name' => $category['name']
+            );
+        }
+
+        // Create category tag
+        if ( !$parent_category_tag_id ) {
+            // Add it to the tags array
+            $tags[$parent_category['category_id']] = array(
+                'type' => 'category'
+                , 'name' => $parent_category['name']
             );
         }
 
@@ -403,8 +415,13 @@ class Craigslist extends Base_Class {
                     break;
 
                     case 'category':
-                        // Get the category tag ID
-                        $category_tag_id = $tr->id;
+                        if ( $object_id == $product['category_id'] ) {
+                            // Get the category tag ID
+                            $category_tag_id = $tr->id;
+                        } elseif( $object_id == $parent_category['category_id'] ) {
+                            // Get the parent category tag ID
+                            $parent_category_tag_id = $tr->id;
+                        }
 
                         // Make sure we create separation
                         if ( !empty( $tag_values ) )
@@ -429,17 +446,13 @@ class Craigslist extends Base_Class {
         }
 
         // Set post tags
-        $post_tags = array( $product_tag_id, $category_tag_id );
+        $post_tags = array( $product_tag_id, $category_tag_id, $parent_category_tag_id );
 
         // Ge the product URL is there is one
         $website_product = $p->get_website_product( $product['product_id'] );
 
         // Get product URL
         if ( $website_product ) {
-            // Make sure we have categories
-            if ( !isset( $c ) )
-    			$c = new Categories();
-
             // Make Product URL
         	$product_url = $c->category_url( $product['category_id'] ) . $product['slug'] . '/';
         } else {
@@ -454,7 +467,7 @@ class Craigslist extends Base_Class {
         $craigslist_market = $this->get_craigslist_market( $ad['craigslist_market_id'] );
 
         // Post to craigslist
-        return $craigslist->add_ad_product( $craigslist_market['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], array( $ad['title'] ), $ad['text'] );
+        return $craigslist->add_ad_product( $craigslist_market['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], array( $ad['title'] ), $text );
     }
 	
 	/**

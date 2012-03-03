@@ -195,7 +195,7 @@ class Ashley extends Base_Class {
 			
 			$name = $group_name . $item['description'];
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-			$description = format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
+			$description = ( empty( $item['description'] ) ) ? '' : format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
 			
 			$brand_id = $item['brand_id'];
 			

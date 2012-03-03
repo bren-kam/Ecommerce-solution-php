@@ -28,13 +28,13 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
         $success = $c->create( $_POST['hProductID'], $_POST['sCraigslistMarketID'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
 
         if ( $success && $post )
-            $c->post_ad( $success );
+            $c->post_ad( $success, $_POST['hCraigslistPost'] );
     } else {
         // Update Ad
         $success = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $_POST['sCraigslistMarketID'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
 
         if ( $success && $post ) {
-            if ( $c->post_ad( $_POST['hCraigslistAdID'] ) ) {
+            if ( $c->post_ad( $_POST['hCraigslistAdID'], $_POST['hCraigslistPost'] ) ) {
                 url::redirect('/craigslist/?m=1');
             } else {
                 $success = false;
@@ -98,7 +98,6 @@ get_header();
             <form name="fAddCraigslistTemplate" id="fAddCraigslistTemplate" action="" method="post">
                 <input id="hCraigslistAdID" name="hCraigslistAdID" type="hidden" value="<?php if ( $craigslist_ad_id ) echo $craigslist_ad_id; ?>" />
                 <input id="hProductID" name="hProductID" type="hidden" value="<?php echo ( !$success && isset( $_POST['hProductID'] ) ) ? $_POST['hProductID'] : $ad['product_id'];?>" />
-                <input id="hCraigslistAdDescription" name="hCraigslistAdDescription" type="hidden" value="<?php echo ( !$success && isset( $_POST['hCraigslistAdDescription'] ) ) ? $_POST['hCraigslistAdDescription'] : $ad['text'];?>"/>
                 <input id="hProductName" name="hProductName" type="hidden" value="<?php echo ( !$success && isset( $_POST['hProductName'] ) ) ? $_POST['hProductName'] : $ad['product_name']; ?>" />
                 <input id="hProductCategoryID" type="hidden" value="0" />
                 <input id="hProductCategoryName" type="hidden" value="" />
