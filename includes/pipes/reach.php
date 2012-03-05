@@ -27,22 +27,24 @@ $mysqli->query( "INSERT INTO `website_reach_comments` ( `website_reach_id`, `web
 $mysqli->query( "UPDATE `website_reaches` SET `waiting` = 1 WHERE `website_reach_id` = " . (int) $reach_id );
 
 // Get the email of the admin user assigned to their ticket, and the original ticket
-$result = $mysqli->query( 'SELECT a.`email`, b.`message`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `website_reaches` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE b.`website_reach_id` = ' . $reach_id );
+$result = $mysqli->query( 'SELECT a.`email`, b.`message`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `website_reaches` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( a.`company_id` = c.`company_id` ) WHERE b.`website_reach_id` = ' . $reach_id );
 
-
-// Get the row
-$row = $result->fetch_assoc();
-
-// Set email headers
-$headers  = 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-
-// Additional headers
-$headers .= 'To: ' . $row['email'] . "\r\n";
-$headers .= 'From: RethinkTraining.com <noreply@rethinktraining.com>' . "\r\n";
-
-// Let assigned user know
-mail( $row['email'], "New Response on Reach #{$reach_id}", "<p>A new response from the client has been received. See message below:</p><p><strong>Original Message:</strong><br />" . nl2br( $row['message'] ) . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='http://account.rethinktraining.com/view-feedback/?fid={$feedback_id}'>http://admin.rethinktraining.com/view-feedback/?fid={$feedback_id}</a></p>", $headers );
+if ( $result ) {
+	// Get the row
+	$row = $result->fetch_assoc();
+	
+	
+	// Set email headers
+	$headers  = 'MIME-Version: 1.0' . "\r\n";
+	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+	
+	// Additional headers
+	$headers .= 'To: ' . $row['email'] . "\r\n";
+	$headers .= 'From: ' . $row['name'] . ' <reaches@' . $row['domain'] . '.com>' . "\r\n";
+	
+	// Let assigned user know
+	mail( $row['email'], "New Response on Reach #{$reach_id}", "<p>A new response from the client has been received. See message below:</p><p><strong>Original Message:</strong><br />" . nl2br( $row['message'] ) . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='http://account." . $row['domain'] . "/reaches/reach/?rid={$reach_id}'>http://account." . $row['domain'] . "/reaches/reach/?rid={$reach_id}</a></p>", $headers );
+}
 
 // Close connection
 $mysqli->kill( $mysqli->thread_id );
