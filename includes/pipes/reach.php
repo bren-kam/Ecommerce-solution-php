@@ -15,10 +15,10 @@ $email = $emails[0];
 $subject = $email['Headers']['subject:'];
 $body = ( empty( $email['Body'] ) ) ? nl2br( $email['Parts'][0]['Body'] ) : nl2br( $email['Body'] );
 $body = substr( $body, 0, strpos( $body, '******************* Reply Above This Line *******************' ) );
-$reach_id = preg_replace( '/.*\w #([0-9]+).*/', '$1', $subject );
+$reach_id = preg_replace( '/.*#([0-9]+).*/', '$1', $subject );
 
 // Create MySQL DB Object
-$mysqli =  mysqli_connect( 'localhost', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' ); 
+$mysqli =  mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' ); 
 
 // Insert Reach  comment
 $mysqli->query( "INSERT INTO `website_reach_comments` ( `website_reach_id`, `website_user_id`, `comment`, `date_created` ) SELECT `website_reach_id`, `website_user_id`, '" . $mysqli->real_escape_string( nl2br( $body ) ) . "', NOW() FROM `website_reaches` WHERE `website_reach_id` = " . (int) $reach_id );
