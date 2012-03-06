@@ -74,8 +74,11 @@ if ( $_GET['sSearch'] != "" ) {
 }
 
 // Grab only the right status
-if ( isset( $_SESSION['tickets']['status'] ) )
+if ( isset( $_SESSION['tickets']['status'] ) ) {
 	$where .= ' AND a.`status` = ' . $_SESSION['tickets']['status'];
+} else {
+	$where .= ' AND a.`status` = 0';
+}
 
 // Grab only the right status
 if ( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] )
