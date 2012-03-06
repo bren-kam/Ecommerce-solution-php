@@ -26,7 +26,7 @@ get_header();
 		<table ajax="/ajax/craigslist/list/" perPage="100,250,500" sort="1" cellpadding="0" cellspacing="0" width="100%">
 			<thead>
 				<tr>
-					<th width="20%"><?php echo _('Title'); ?></th>
+					<th width="20%"><?php echo _('Headline'); ?></th>
 					<th width="40%"><?php echo _('Content'); ?></th>
 					<th width="10%"><?php echo _('Product Name'); ?></th>
 					<th width="10%"><?php echo _('SKU' ); ?></th>
