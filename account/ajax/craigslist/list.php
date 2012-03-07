@@ -48,7 +48,7 @@ foreach ( $craigslist_ads as $ad ) {
             '<a href="/ajax/craigslist/copy/?caid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $copy_craigslist_ad_nonce . '" title="' . _('Copy Craiglist Ad') . '" ajax="1">' . _('Copy') . '</a> |
             <a href="/ajax/craigslist/delete/?caid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $delete_craigslist_ad_nonce . '" title="' . _('Delete Craiglist Ad') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a>
         </div>'
-        , format::limit_chars( strip_tags( html_entity_decode( str_replace( "\n", '', $ad['text'] ) ) ), 45, NULL, TRUE ) . '...'
+        , format::limit_chars( html_entity_decode( str_replace( "\n", '', $ad['text'] ) ), 100, NULL, TRUE ) . '...'
         , $ad['product_name']
         , $ad['sku']
         , $status

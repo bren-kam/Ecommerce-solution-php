@@ -189,13 +189,23 @@ class Ashley extends Base_Class {
 				$group_description = '<p>' . $group['description'] . '</p>';
 				$group_features = '<p>' . $group['features'] . '</p>';
 			} else {
-                fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
+				$item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
+			}
+			
+			if( isset( $groups[$item['group']] ) ) {
+				$group = $groups[$item['group']];
+			
+				$group_name = $group['name'] . ' - ';
+				$group_description = '<p>' . $group['description'] . '</p>';
+				$group_features = '<p>' . $group['features'] . '</p>';
+			} else {
+				fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
                 continue;
 			}
 			
 			$name = $group_name . $item['description'];
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-			$description = ( empty( $item['description'] ) ) ? '' : format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
+			$description = format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
 			
 			$brand_id = $item['brand_id'];
 			

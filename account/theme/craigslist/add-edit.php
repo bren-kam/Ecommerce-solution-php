@@ -101,7 +101,7 @@ get_header();
             <input id="hProductDescription" type="hidden" value="" />
             <input id="hStoreName" type="hidden" value="<?php echo $user['website']['title']; ?>" />
             <input id="hStoreURL" type="hidden" value="<?php echo 'http://', $user['website']['domain']; ?>" />
-            <input id="hStoreLogo" type="hidden" value="<?php echo $user['website']['logo']; ?>" />
+            <input id="hStoreLogo" type="hidden" value="<?php echo str_replace( 'logo/', 'logo/large/', $user['website']['logo'] ); ?>" />
             <input name="hPostAd" id="hPostAd" type="hidden" value="0" />
             <textarea name="hCraigslistPost" id="hCraigslistPost" rows="5" cols="50" class="hidden"></textarea>
 
