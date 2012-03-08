@@ -73,7 +73,7 @@ get_header('facebook/');
 	if( !$page_id ) {
 	?>
 	<ol>
-		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/apps/application.php?id=118945651530886';" title="Online Platform - Share and Save">Online Platform - Share and Save</a> and click "Add to My Page" in the left-hand bar, select your page and add it.</li>
+		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=118945651530886&pages=1';" title="Online Platform - Share and Save">Online Platform - Share and Save</a>, select your page and add it.</li>
 		<li>Go to the page you selected, click on the "Home" tab and click "Update Settings" to connect to your page to the platform.</li>
 	</ol>
 	<?php } else { ?>
