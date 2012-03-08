@@ -25,9 +25,7 @@ class Craigslist extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$craigslist_ads = $this->db->get_results( "SELECT a.`craigslist_ad_id`, a.`text`, b.`headline`, c.`name` AS `product_name`, c.`sku`, a.`date_created`, a.`date_posted`
-												 FROM `craigslist_ads` AS a LEFT JOIN `craigslist_ad_headlines` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) LEFT JOIN `products` AS c ON( a.product_id = c.product_id )
-												 WHERE a.`active` = 1 $where GROUP BY a.`craigslist_ad_id` $order_by LIMIT $limit", ARRAY_A );
+		$craigslist_ads = $this->db->get_results( "SELECT a.`craigslist_ad_id`, a.`text`, b.`headline`, c.`name` AS `product_name`, c.`sku`, a.`date_created`, a.`date_posted` FROM `craigslist_ads` AS a LEFT JOIN `craigslist_ad_headlines` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) LEFT JOIN `products` AS c ON( a.product_id = c.product_id ) WHERE a.`active` = 1 $where GROUP BY a.`craigslist_ad_id` $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -371,12 +369,14 @@ class Craigslist extends Base_Class {
         if ( !$markets || 0 == count( $markets ) )
             return false;
 
+        global $user;
+
         $p = new Products();
 		$c = new Categories();
 
         // Get the ad
         $ad = $this->get( $craigslist_ad_id );
-
+		
         // Make sure we have the ad
         if ( !$ad )
             return false;
@@ -495,7 +495,7 @@ class Craigslist extends Base_Class {
 
             // Insert into our database
             if ( !empty( $tag_values ) ) {
-                $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `object_id`, `type` ) VALUES $tag_values" );
+                $this->db->query( "INSERT INTO `craigslist_tags` ( `craigslist_tag_id`, `object_id`, `type` ) VALUES $tag_values ON DUPLICATE KEY UPDATE `object_id` = VALUES( `object_id` ), `type` = VALUES( `type` )" );
 
                 // Handle any error
                 if( $this->db->errno() ) {
@@ -508,11 +508,8 @@ class Craigslist extends Base_Class {
         // Set post tags
         $post_tags = array( $product_tag_id, $category_tag_id, $parent_category_tag_id );
 
-        // Ge the product URL is there is one
-        $website_product = $p->get_website_product( $product['product_id'] );
-
         // Get product URL
-        if ( $website_product ) {
+        if ( $user['website']['pages'] ) {
             // Make Product URL
         	$product_url = $c->category_url( $product['category_id'] ) . $product['slug'] . '/';
         } else {
@@ -525,8 +522,8 @@ class Craigslist extends Base_Class {
 
         // Post the ad in each market
         foreach ( $markets as $m ) {
-            if ( !$craigslist->add_ad_product( $m['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], $ad['headlines'], $text ) )
-                return false;
+            if( !$craigslist->add_ad_product( $m['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], $ad['headlines'], $text ) )
+				return false;
         }
 
         return true;
