@@ -112,11 +112,11 @@ get_header();
                 nonce::field( 'random-headline', '_ajax_get_random_headline' );
                 ?>
                 <h2><?php echo _('Select Product');?></h2>
-                <select id="sAutoComplete">
+                <select id="sAutoComplete" tabindex="1">
                     <option value="sku"><?php echo _('SKU'); ?></option>
                     <option value="product"><?php echo _('Product Name'); ?></option>
                 </select>
-                <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" value="<?php if ( $success || !isset( $_POST['hProductSKU'] ) ) echo $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
+                <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php if ( $success || !isset( $_POST['hProductSKU'] ) ) echo $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
                 <br /><br />
             </div>
 
@@ -133,13 +133,13 @@ get_header();
                         ?>
                         <tr>
                             <td><?php echo $i + 1; ?>)</td>
-                            <td><input type="text" class="tb" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" /> <a href="javascript:;" class="random-headline" title="<?php echo _('Random Title'); ?>" ajax="1"><?php echo _('Random Headline'); ?></a></td>
+                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" /> <a href="javascript:;" class="random-headline" title="<?php echo _('Random Title'); ?>" ajax="1"><?php echo _('Random Headline'); ?></a></td>
                         </tr>
                    <?php } ?>
                 </table>
 
                 <br /><br />
-                <textarea name="taDescription" id="taDescription" rte="1"><?php echo ( !$success && isset( $_POST['taDescription'] ) ) ? $_POST['taDescription'] : $ad['text']; ?></textarea>
+                <textarea name="taDescription" id="taDescription" rte="1" tabindex="13"><?php echo ( !$success && isset( $_POST['taDescription'] ) ) ? $_POST['taDescription'] : $ad['text']; ?></textarea>
                 <p>
                     <strong><?php echo _('Syntax Tags'); ?>:</strong>
                     [<?php echo _('Product Name'); ?>]
@@ -152,10 +152,10 @@ get_header();
                     [<?php echo _('Photo'); ?>]
                 </p>
                 <label for="tPrice"><?php echo _('Price'); ?>:</label>
-                <input type="text" class="tb" name="tPrice" id="tPrice" value="<?php echo ( !$success && isset( $_POST['tPrice'] ) ) ? $_POST['tPrice'] : $ad['price']; ?>" />
+                <input type="text" class="tb" name="tPrice" id="tPrice" tabindex="14" value="<?php echo ( !$success && isset( $_POST['tPrice'] ) ) ? $_POST['tPrice'] : $ad['price']; ?>" />
                 <br /><br />
 
-                <input type="submit" class="button" value="<?php echo _('Save'); ?>" />
+                <input type="submit" class="button" tabindex="15" value="<?php echo _('Save'); ?>" />
                 <br /><br />
                 <br />
             </div>
