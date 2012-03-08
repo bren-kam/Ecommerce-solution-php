@@ -73,7 +73,7 @@ get_header('facebook/');
 	if( !$page_id ) {
 	?>
 	<ol>
-		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/apps/application.php?id=113993535359575';" title="Online Platform - Sweepstakes">Online Platform - Sweepstakes</a> and click "Add to My Page" in the left-hand bar, select your page and add it.</li>
+		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=113993535359575&pages=1';" title="Online Platform - Sweepstakes">Online Platform - Sweepstakes</a>, select your page and add it.</li>
 		<li>Go to the page you selected, click on the "Home" tab and click "Update Settings" to connect to your page to the platform.</li>
 	</ol>
 	<?php } else { ?>
