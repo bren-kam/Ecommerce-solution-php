@@ -1658,9 +1658,17 @@ class Products extends Base_Class {
 		$statement->bind_param( 'dddssi', $alternate_price, $price, $sale_price, $alternate_price_name, $price_note, $product_id );
 
 		foreach ( $values as $product_id => $array ) {
-            // Get the values
+			// Make sure all values have a value
+			$alternate_price = 0;
+			$price = 0;
+			$sale_price = 0;
+			$alternate_price_name = '';
+			$price_note = '';
+		
+			// Get the values
             extract( $array );
-
+			
+			
             $statement->execute();
 
 			// Handle any error

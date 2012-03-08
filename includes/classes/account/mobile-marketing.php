@@ -621,7 +621,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
+		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`mobile_keyword_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -732,9 +732,9 @@ class Mobile_Marketing extends Base_Class {
             // They have to both be here
             if ( is_null( $mobile_keyword_id ) || is_null( $am_keyword_campaign_id ) )
                 return false;
-
+			
             // Create a dynamic group
-            $am_group_id = $this->am_groups->create_group( $name, $this->am_groups::GROUP_DYNAMIC );
+            $am_group_id = $this->am_groups->create_group( $name, AM_Groups::GROUP_DYNAMIC );
 
             // Make sure it was created properly
             if ( !$am_group_id )
@@ -775,7 +775,7 @@ class Mobile_Marketing extends Base_Class {
             return false;
 
         // Define the type of the group
-        $type = ( 0 == $mobile_list['mobile_keyword_id'] ) ? $this->am_groups::GROUP_STATIC : $this->am_groups::GROUP_DYNAMIC;
+        $type = ( 0 == $mobile_list['mobile_keyword_id'] ) ? AM_Groups::GROUP_STATIC : AM_Groups::GROUP_DYNAMIC;
 
         // Update the Avid Mobile group
         if ( !$this->am_groups->update_group( $mobile_list['am_group_id'], $name, $type ) )
@@ -1338,7 +1338,6 @@ class Mobile_Marketing extends Base_Class {
             break;
         }
     }
-
 	
 	/**
 	 * Report an error
