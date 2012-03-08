@@ -99,6 +99,7 @@ get_header();
             <input id="hProductSKU" type="hidden" value="<?php echo ( !$success && isset( $_POST['hProductSKU'] ) ) ? $_POST['hProductSKU'] : $ad['sku']; ?>" />
             <input id="hProductBrandName" type="hidden" value="0" />
             <input id="hProductDescription" type="hidden" value="" />
+            <textarea id="hProductSpecifications" class="hidden" rows="5" cols="50"></textarea>
             <input id="hStoreName" type="hidden" value="<?php echo $user['website']['title']; ?>" />
             <input id="hStoreURL" type="hidden" value="<?php echo 'http://', $user['website']['domain']; ?>" />
             <input id="hStoreLogo" type="hidden" value="<?php echo str_replace( 'logo/', 'logo/large/', $user['website']['logo'] ); ?>" />
@@ -150,6 +151,7 @@ get_header();
                     [<?php echo _('Product Description'); ?>]
                     [<?php echo _('SKU'); ?>]
                     [<?php echo _('Photo'); ?>]
+                    [<?php echo _('Product Specifications'); ?>]
                 </p>
                 <label for="tPrice"><?php echo _('Price'); ?>:</label>
                 <input type="text" class="tb" name="tPrice" id="tPrice" tabindex="14" value="<?php echo ( !$success && isset( $_POST['tPrice'] ) ) ? $_POST['tPrice'] : $ad['price']; ?>" />

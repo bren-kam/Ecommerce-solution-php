@@ -38,7 +38,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-page' ) 
 javascript('website/website');
 
 $selected = "website";
-$title = _('Add Page | Website ') . ' | ' . TITLE;
+$title = _('Add Page') . ' | ' . _('Website ') . ' | ' . TITLE;
 get_header();
 ?>
 
