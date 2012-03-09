@@ -20,6 +20,7 @@ $w = new Websites;
 
 $user['website'] = $w->get_website( $_POST['wid'] );
 
+
 // Instantiate other classes now that ther user['website'] is in place
 $wa = new Website_Attachments;
 $ftp = new FTP( (int) $_POST['wid'] );
@@ -28,7 +29,6 @@ $name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
 
 // Set variables
 $banner_name = "$name.$file_extension";
-$upload_url = 'http://account2.' . DOMAIN . '/media/uploads/site_uploads/' . $_POST['wid'] . "/$banner_name";
 $upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
 // Directory needs to exist
@@ -37,8 +37,6 @@ if ( !is_dir( $upload_dir ) )
 
 // Resize the image
 $ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your banner.') );
-
-$url_data = parse_url( $upload_url );
 
 // Get our local directory
 $local_file_path = $upload_dir . $banner_name;
@@ -63,7 +61,7 @@ $settings = $w->get_settings('banner-width');
 
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '" style="width:' . $settings['banner-width'] . 'px">';
 $contact_box .= '<h2>' . _('Flash Banner') . '</h2>';
-$contacT_box .= '<p><small>' . $settings['banner-width'] . '</small></p>';
+$contact_box .= '<p><small>' . $settings['banner-width'] . '</small></p>';
 $contact_box .= '<a href="/ajax/website/sidebar/update-status/?_nonce=' . nonce::create( 'update-status' ) . '&amp;waid=' . $website_attachment_id . '&amp;s=0" id="aEnableDisable' . $website_attachment_id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this banner?') . '"><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
 $contact_box .= '<div id="dBanner' . $website_attachment_id . '" class="text-center">';
 $contact_box .= '<img src="http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . $absolute_url . '" alt="' . _('Sidebar Image') . '" />';
