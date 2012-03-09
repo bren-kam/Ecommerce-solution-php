@@ -40,10 +40,9 @@ function inc( $file, $require = true ) {
  */
 function library( $file ) {
 	$file_path = INC_PATH . 'libraries/' . $file . '.php';
-	
-	
+
 	if ( file_exists( $file_path ) ) {
-		require( $file_path );
+		require_once $file_path;
 		return true;
 	}
 	

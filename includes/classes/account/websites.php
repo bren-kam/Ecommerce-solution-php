@@ -477,7 +477,7 @@ class Websites extends Base_Class {
 	public function create_page( $slug, $title ) {
 		global $user;
 		
-		if ( $user['role'] < 8 )
+		if ( $user['role'] < 7 )
 			return false;
 		
 		// Insert the page

@@ -408,7 +408,7 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 
-		$product = $this->db->get_row( "SELECT a.`product_id`, a.`name`, a.`slug`, a.`description`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`, c.`name` AS category, e.`image`, f.`name` AS industry FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) INNER JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) WHERE a.`product_id` = $product_id AND e.`sequence` = 0", ARRAY_A );
+		$product = $this->db->get_row( "SELECT a.`product_id`, a.`name`, a.`slug`, a.`description`, a.`product_specifications`, d.`name` AS brand, a.`sku`, a.`status`, c.`category_id`, c.`name` AS category, e.`image`, f.`name` AS industry FROM `products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON ( a.`brand_id` = d.`brand_id` ) INNER JOIN `product_images` AS e ON (a.`product_id` = e.`product_id`) LEFT JOIN `industries` AS f ON ( a.`industry_id` = f.`industry_id` ) WHERE a.`product_id` = $product_id AND e.`sequence` = 0", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1658,9 +1658,17 @@ class Products extends Base_Class {
 		$statement->bind_param( 'dddssi', $alternate_price, $price, $sale_price, $alternate_price_name, $price_note, $product_id );
 
 		foreach ( $values as $product_id => $array ) {
-            // Get the values
+			// Make sure all values have a value
+			$alternate_price = 0;
+			$price = 0;
+			$sale_price = 0;
+			$alternate_price_name = '';
+			$price_note = '';
+		
+			// Get the values
             extract( $array );
-
+			
+			
             $statement->execute();
 
 			// Handle any error

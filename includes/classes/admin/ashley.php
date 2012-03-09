@@ -189,7 +189,17 @@ class Ashley extends Base_Class {
 				$group_description = '<p>' . $group['description'] . '</p>';
 				$group_features = '<p>' . $group['features'] . '</p>';
 			} else {
-                fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
+				$item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
+			}
+			
+			if( isset( $groups[$item['group']] ) ) {
+				$group = $groups[$item['group']];
+			
+				$group_name = $group['name'] . ' - ';
+				$group_description = '<p>' . $group['description'] . '</p>';
+				$group_features = '<p>' . $group['features'] . '</p>';
+			} else {
+				fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
                 continue;
 			}
 			

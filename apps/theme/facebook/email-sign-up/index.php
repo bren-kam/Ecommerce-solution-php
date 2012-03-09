@@ -73,7 +73,7 @@ get_header('facebook/');
 	if( !$page_id ) {
 	?>
 	<ol>
-		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/apps/application.php?id=165553963512320';" title="Online Platform - Email Sign Up">Online Platform - Email Sign Up</a> and click "Add to My Page" in the left-hand bar, select your page and add it.</li>
+		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=165553963512320&pages=1';" title="Online Platform - Email Sign Up">Online Platform - Email Sign Up</a>, select your page and add it.</li>
 		<li>Go to the page you selected, click on the "Home" tab and click "Update Settings" to connect to your page to the platform.</li>
 	</ol>
 	<?php } else { ?>

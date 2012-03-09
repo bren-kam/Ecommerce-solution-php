@@ -10,9 +10,9 @@ $c = new Craigslist;
 $dt = new Data_Table();
 
 // Set variables
-$dt->order_by( 'a.`title`', 'a.`text`', 'c.`name`', 'c.`sku`', 'a.`active`', 'a.`date_created`' );
+$dt->order_by( 'b.`headline`', 'a.`text`', 'c.`name`', 'c.`sku`', 'a.`active`', 'a.`date_created`' );
 $dt->add_where( " AND a.`website_id` = " . (int) $user['website']['website_id'] );
-$dt->search( array( 'a.`title`' => false, 'a.`text`' => true, 'c.`name`' => true, 'c.`sku`' => false ) );
+$dt->search( array( 'b.`headline`' => false, 'a.`text`' => true, 'c.`name`' => true, 'c.`sku`' => false ) );
 
 // Get ads
 $craigslist_ads = $c->get_craigslist_ads( $dt->get_variables() );
@@ -43,12 +43,12 @@ foreach ( $craigslist_ads as $ad ) {
     $date = new DateTime( $ad['date_created'] );
 
 	$data[] = array(
-        $ad['title'] . '<br />
+        $ad['headline'] . '<br />
         <div class="actions">' . $links .
             '<a href="/ajax/craigslist/copy/?caid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $copy_craigslist_ad_nonce . '" title="' . _('Copy Craiglist Ad') . '" ajax="1">' . _('Copy') . '</a> |
             <a href="/ajax/craigslist/delete/?caid=' . $ad['craigslist_ad_id'] . '&amp;_nonce=' . $delete_craigslist_ad_nonce . '" title="' . _('Delete Craiglist Ad') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a>
         </div>'
-        , format::limit_chars( strip_tags( html_entity_decode( str_replace( "\n", '', $ad['text'] ) ) ), 45, NULL, TRUE ) . '...'
+        , format::limit_chars( html_entity_decode( str_replace( "\n", '', $ad['text'] ) ), 100, NULL, TRUE ) . '...'
         , $ad['product_name']
         , $ad['sku']
         , $status
