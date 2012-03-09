@@ -23,10 +23,8 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Authorized Users'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'settings/' ); ?>
+	<?php get_sidebar( 'settings/', 'authorized_users' ); ?>
 	<div id="subcontent">
-		<a href="/settings/add-edit-authorized-user/" class="button" title="<?php echo _('Add Authorized User'); ?>"><?php echo _('Add Authorized User'); ?></a>
-		<br /><br />
 		<br />
 		<table ajax="/ajax/settings/list-authorized-users/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>

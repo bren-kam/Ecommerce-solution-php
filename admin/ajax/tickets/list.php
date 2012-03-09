@@ -34,15 +34,15 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
-				$field = 'name';
-			break;
-
-			case 1:
 				$field = 'a.`summary`';
 			break;
 
+			case 1:
+				$field = 'name';
+			break;
+
 			case 2:
-				$field = '`title`';
+				$field = 'd.`title`';
 			break;
 			
 			case 3:
@@ -74,8 +74,11 @@ if ( $_GET['sSearch'] != "" ) {
 }
 
 // Grab only the right status
-if ( isset( $_SESSION['tickets']['status'] ) )
+if ( isset( $_SESSION['tickets']['status'] ) ) {
 	$where .= ' AND a.`status` = ' . $_SESSION['tickets']['status'];
+} else {
+	$where .= ' AND a.`status` = 0';
+}
 
 // Grab only the right status
 if ( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] )

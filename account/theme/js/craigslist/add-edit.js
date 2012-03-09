@@ -81,6 +81,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
             setTimeout( refreshPreview, 1000 );
         });
     }
+
+    // Random Headline
+    $('.random-headline').click( function() {
+        $.post( '/ajax/craigslist/get-random-headline/', { _nonce : $('#_ajax_get_random_headline').val(), cid : $('#hProductCategoryID').val(), eid: $(this).prev().attr('id') }, ajaxResponse );
+    });
 });
 
 /**
@@ -112,7 +117,7 @@ function loadProduct( productID ) {
  */
 function refreshPreview() {
 	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
-	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val();
+	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val(), productSpecifications = $("#hProductSpecifications").val();
 
 	storeLogo = ( storeLogo.search( /http:/i ) > -1 ) ? storeLogo : storeURL + '/custom/uploads/images/' + storeLogo;
 
@@ -126,6 +131,7 @@ function refreshPreview() {
     newContent = newContent.replace( '[Brand]', brand );
     newContent = newContent.replace( '[Product Description]', productDescription );
     newContent = newContent.replace( '[SKU]', sku );
+    newContent = newContent.replace( '[Product Specifications]', productSpecifications );
 
 	var photos = document.getElementsByClassName( 'hiddenImage' ), photoHTML = '', index = 0;
 	

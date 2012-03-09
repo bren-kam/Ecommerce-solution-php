@@ -26,12 +26,16 @@ $delete_mobile_list_nonce = nonce::create( 'delete-mobile-list' );
 if ( is_array( $mobile_lists ) )
 foreach ( $mobile_lists as $ml ) {
     $date = new DateTime( $ml['date_created'] );
-
+	
+	// Get another type
+	$type = ( 0 == $ml['mobile_keyword_id'] ) ? _('Custom') : _('Keyword');
+	
 	$data[] = array(
 		$ml['name'] . ' (' . $ml['count'] . ')<br /><div class="actions"><a href="/mobile-marketing/subscribers/?mlid=' . $ml['mobile_list_id'] . '" title="' . _('View Subscribers') . '">' . _('View Subscribers') . '</a> |
 						<a href="/mobile-marketing/lists/add-edit/?elid=' . $ml['mobile_list_id'] . '" title="' . _('Edit') . '">' . _('Edit') . '</a> |
-						<a href="/ajax/mobile-marketing/lists/delete/?elid=' . $ml['mobile_list_id'] . '&amp;_nonce=' . $delete_mobile_list_nonce . '" title="' . _('Delete Mobile List') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>',
-		$date->format( 'F jS, Y' )
+						<a href="/ajax/mobile-marketing/lists/delete/?elid=' . $ml['mobile_list_id'] . '&amp;_nonce=' . $delete_mobile_list_nonce . '" title="' . _('Delete Mobile List') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>'
+		, $type
+		, $date->format( 'F jS, Y' )
 	);
 }
 

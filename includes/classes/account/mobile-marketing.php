@@ -11,6 +11,8 @@ class Mobile_Marketing extends Base_Class {
      * Avid Mobile Customer ID
      */
     private $settings;
+    private $am_keywords;
+    private $am_groups;
 
 	/**
 	 * Construct initializes data
@@ -421,20 +423,12 @@ class Mobile_Marketing extends Base_Class {
     public function create_keyword( $name, $keyword, $response, $date_started, $timezone ) {
         global $user;
 
-        list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
-
-        // They need to have a customer ID
-        if ( !$am_customer_id )
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('keywords') )
             return false;
 
-        // Load the library
-        library('avid-mobile/keywords');
-
-        // Get the Keywords part
-        $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
-
         // Create the keyword
-        $am_keyword_campaign_id = $am_keywords->create( $name, $keyword, $response, $date_started, $timezone );
+        $am_keyword_campaign_id = $this->am_keywords->create( $name, $keyword, $response, $date_started, $timezone );
 
         if ( !$am_keyword_campaign_id )
             return false;
@@ -457,7 +451,14 @@ class Mobile_Marketing extends Base_Class {
             return false;
         }
 
-        return $this->db->insert_id;
+        // Get the keyword ID
+        $mobile_keyword_id = $this->db->insert_id;
+
+        // Now we need to create the list on ourside
+        if ( !$this->create_mobile_list( $name, $mobile_keyword_id, $am_keyword_campaign_id ) )
+            return false;
+
+        return $mobile_keyword_id;
     }
 
     /**
@@ -474,23 +475,15 @@ class Mobile_Marketing extends Base_Class {
     public function update_keyword( $mobile_keyword_id, $name, $keyword, $response, $date_started, $timezone ) {
         global $user;
 
-        list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
-
-        // They need to have a customer ID
-        if ( !$am_customer_id )
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('keywords') )
             return false;
-
-        // Load the library
-        library('avid-mobile/keywords');
-
-        // Get the Keywords part
-        $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
 
         // First, get keyword, update it, then update our own
         $am_keyword_campaign_id = $this->get_am_keyword_campaign_id( $mobile_keyword_id );
 
         // Delete the keywords
-        if( !$am_keywords->update( $am_keyword_campaign_id, $name, $keyword, $response, $date_started, $timezone ) )
+        if( !$this->am_keywords->update( $am_keyword_campaign_id, $name, $keyword, $response, $date_started, $timezone ) )
             return false;
 
         // Add the keyword to our database
@@ -556,20 +549,12 @@ class Mobile_Marketing extends Base_Class {
         $am_keyword_campaign_id = $this->get_am_keyword_campaign_id( $mobile_keyword_id );
 
         if ( $am_keyword_campaign_id ) {
-           list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
-
-			// They need to have a customer ID
-			if ( !$am_customer_id )
-				return false;
-	
-			// Load the library
-			library('avid-mobile/keywords');
-	
-			// Get the Keywords part
-			$am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
+           // Make sure it's instantiated
+            if ( !$this->_get_am_lib('keywords') )
+                return false;
 
             // Delete the keywords
-            if ( !$am_keywords->delete( $am_keyword_campaign_id ) )
+            if ( !$this->am_keywords->delete( $am_keyword_campaign_id ) )
                 return false;
         }
 
@@ -616,20 +601,12 @@ class Mobile_Marketing extends Base_Class {
      * @return bool
      */
     public function check_keyword_availability( $keyword ) {
-        list( $am_customer_id, $am_username, $am_password ) = $this->_get_am_credentials();
-		
-        // They need to have a customer ID
-        if ( !$am_customer_id )
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('keywords') )
             return false;
 		
-        // Load the library
-        library('avid-mobile/keywords');
-        
-        // Get the Keywords part
-        $am_keywords = new AM_Keywords( $am_customer_id, $am_username, $am_password );
-		
 		// See if its available
-		return $am_keywords->available( $keyword );
+		return $this->am_keywords->available( $keyword );
     }
 
 	/***** MOBILE LISTS *****/
@@ -644,7 +621,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
+		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`mobile_keyword_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -686,7 +663,7 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $mobile_list_id = (int) $mobile_list_id;
 
-		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id", ARRAY_A );
+		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `am_group_id`, `mobile_keyword_id`, `name` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -728,33 +705,54 @@ class Mobile_Marketing extends Base_Class {
 	 * Create mobile list
 	 *
 	 * @param string $name
+     * @param int $mobile_keyword_id [optional]
+     * @param int $am_keyword_campaign_id [optional]
 	 * @return int
 	 */
-	public function create_mobile_list( $name ) {
+	public function create_mobile_list( $name, $mobile_keyword_id = NULL, $am_keyword_campaign_id = NULL ) {
 		global $user;
 
-        // Get setting
-        $w = new Websites;
-        $customer_id = $w->get_setting( 'avid-mobile-customer-id' );
-
-        if ( !$customer_id )
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('groups') )
             return false;
 
-        // Create the group on their end
-		library('avid-mobile-api');
-        $am_groups = Avid_Mobile_API::groups( $customer_id );
+        if ( is_null( $mobile_keyword_id ) && is_null( $am_keyword_campaign_id ) ) {
+            // Creat the group and get the ID
+            $am_group_id = $this->am_groups->create_group( $name );
 
-        // Creat the group and get the ID
-        $am_group_id = $am_groups->create_group( $name );
+            // Create the list on our end
+            $this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siis' );
 
-        // Create the list on our end
-		$this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siis' );
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to create mobile list.', __LINE__, __METHOD__ );
+                return false;
+            }
+        } else {
+            // They have to both be here
+            if ( is_null( $mobile_keyword_id ) || is_null( $am_keyword_campaign_id ) )
+                return false;
+			
+            // Create a dynamic group
+            $am_group_id = $this->am_groups->create_group( $name, AM_Groups::GROUP_DYNAMIC );
 
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create mobile list.', __LINE__, __METHOD__ );
-			return false;
-		}
+            // Make sure it was created properly
+            if ( !$am_group_id )
+                return false;
+
+            // Link the group and the keyword
+            if ( !$this->am_groups->link_dynamic_group( $am_group_id, $am_keyword_campaign_id ) )
+                return false;
+
+            // Create the dynamic list on our end
+            $this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'mobile_keyword_id' => $mobile_keyword_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siiis' );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to create dynamic mobile list.', __LINE__, __METHOD__ );
+                return false;
+            }
+        }
 
 		return $this->db->insert_id;
 	}
@@ -769,12 +767,22 @@ class Mobile_Marketing extends Base_Class {
 	public function update_mobile_list( $mobile_list_id, $name ) {
 		global $user;
 
-        // Type Juggling
-        $website_id = (int) $user['website']['website_id'];
+        // Get the mobile list
+        $mobile_list = $this->get_mobile_list( $mobile_list_id );
 
-        // @avid
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('groups') )
+            return false;
 
-		$this->db->update( 'mobile_lists', array( 'name' => $name, 'description' => $description ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $website_id ), 'ss', 'ii' );
+        // Define the type of the group
+        $type = ( 0 == $mobile_list['mobile_keyword_id'] ) ? AM_Groups::GROUP_STATIC : AM_Groups::GROUP_DYNAMIC;
+
+        // Update the Avid Mobile group
+        if ( !$this->am_groups->update_group( $mobile_list['am_group_id'], $name, $type ) )
+            return false;
+
+        // Update the list
+		$this->db->update( 'mobile_lists', array( 'name' => $name ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -794,8 +802,16 @@ class Mobile_Marketing extends Base_Class {
 	public function delete_mobile_list( $mobile_list_id ) {
 		global $user;
 
-		// Delete Avoid Mobile Group
-        // @avid
+        // Get the mobile list
+        $mobile_list = $this->get_mobile_list( $mobile_list_id );
+
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('groups') )
+            return false;
+
+        // Delete Avoid Mobile Group
+        if ( !$this->am_groups->delete( $mobile_list['am_group_id'] ) )
+            return false;
 
         // Type Juggling
         $mobile_list_id = (int) $mobile_list_id;
@@ -1283,9 +1299,10 @@ class Mobile_Marketing extends Base_Class {
     /**
      * Get the Avid Mobile Customer ID
      *
-     * @return string
+     * @param string $library
+     * @return object
      */
-    private function _get_am_credentials() {
+    private function _get_am_lib( $library ) {
         if ( !$this->settings ) {
             // Now we need to get the site's mobile ID
             $w = new Websites();
@@ -1295,9 +1312,32 @@ class Mobile_Marketing extends Base_Class {
             $this->settings['avid-mobile-password'] = security::decrypt( base64_decode( $this->settings['avid-mobile-password'] ), ENCRYPTION_KEY );
         }
 
-        return array( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
-    }
+        // We need this to go on
+        if ( !$this->settings['avid-mobile-customer-id'] )
+            return false;
 
+        switch ( $library ) {
+            case 'groups':
+                library('avid-mobile/groups');
+
+                $this->am_groups = new AM_Groups( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+
+                return true;
+            break;
+
+            case 'keywords':
+                library('avid-mobile/keywords');
+
+                $this->am_keywords = new AM_Keywords( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+
+                return true;
+            break;
+
+            default:
+                return array( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+            break;
+        }
+    }
 	
 	/**
 	 * Report an error

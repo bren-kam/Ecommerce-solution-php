@@ -38,6 +38,8 @@ class Categories extends Base_Class {
 	
 	/**
 	 * Load All the category variables
+     *
+     * @return array
 	 */
 	 public function load_categories() {
 		$categories = $this->db->get_results( 'SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, `sequence` ASC, `name` ASC', ARRAY_A );

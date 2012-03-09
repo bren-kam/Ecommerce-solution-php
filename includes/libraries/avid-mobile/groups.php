@@ -6,20 +6,24 @@
  *
  * @version 1.0.0
  */
+library('avid-mobile-api');
+
 class AM_Groups extends Avid_Mobile_API {
     /**
      * Group Constants
      */
     const GROUP_STATIC = 'STATIC';
-    const GROUP_DYNAMIC = 'DYNAMIC';
+    const GROUP_DYNAMIC = 'DYNAMIC_KEYWORD';
 
     /**
 	 * Construct class will initiate and run everything
 	 *
 	 * @param int $customer_id
+	 * @param string $username
+	 * @param string $password
 	 */
-	public function __construct( $customer_id = NULL ) {
-        if ( !is_null( $customer_id ) && !parent::__construct( $customer_id ) )
+	public function __construct( $customer_id, $username, $password ) {
+        if ( !parent::__construct( $customer_id, $username, $password ) )
             return false;
 	}
 
@@ -27,7 +31,7 @@ class AM_Groups extends Avid_Mobile_API {
 	 * Create Group
 	 *
      * @param string $name
-     * @param string $type optional ('STATIC' or 'DYNAMIC')
+     * @param string $type [optional] ('STATIC' or 'DYNAMIC_KEYWORD')
 	 * @return int
 	 */
 	public function create_group( $name, $type = self::GROUP_STATIC ) {
@@ -37,6 +41,42 @@ class AM_Groups extends Avid_Mobile_API {
 
         // Return the Group ID
 		return $this->_execute( self::OPERATION_PUT, 'group.create', compact( 'name', 'type' ) );
+	}
+
+    /**
+	 * Link Dynamic Group to Keyword Campaign
+	 *
+     * @param string $group_id
+     * @param string $keyword_campaign_id
+	 * @return int
+	 */
+	public function link_dynamic_group( $group_id, $keyword_campaign_id ) {
+        // Return the Group ID
+		return $this->_execute( self::OPERATION_PUT, 'group.createdynamicgroup', array( 'group_id' => $group_id, 'param1' => $keyword_campaign_id ) );
+	}
+
+    /**
+	 * Update Group
+	 *
+     * @param int $id The Group ID
+     * @param string $name
+     * @param string $type
+	 * @return int
+	 */
+	public function update_group( $id, $name, $type ) {
+        // Return the Group ID
+		return $this->_execute( self::OPERATION_PUT, 'group.update', compact( 'id', 'name', 'type' ) );
+	}
+
+    /**
+	 * Delete Group
+	 *
+     * @param int $id The Group ID
+	 * @return int
+	 */
+	public function delete_group( $id ) {
+        // Return the Group ID
+		return $this->_execute( self::OPERATION_PUT, 'group.delete', compact( 'id' ) );
 	}
 
     /**

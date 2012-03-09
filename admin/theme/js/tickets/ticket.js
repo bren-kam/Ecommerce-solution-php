@@ -100,9 +100,7 @@ jQuery(function($) {
 			}
 			
 			// Make the entry go away
-			c.slideUp( 'fast', function() {
-				$(this).next().remove().end().remove();
-			});
+			c.remove();
 		}, 'json' );
 	});
 	

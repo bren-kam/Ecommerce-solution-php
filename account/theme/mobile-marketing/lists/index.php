@@ -29,8 +29,9 @@ get_header();
 		<table ajax="/ajax/mobile-marketing/lists/list/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>
 				<tr>
-					<th width="70%" sort="1"><?php echo _('Name'); ?></th>
-					<th width="30%"><?php echo _('Date Created'); ?></th>
+					<th width="50%" sort="2"><?php echo _('Name'); ?></th>
+					<th width="30%" sort="1"><?php echo _('Type'); ?></th>
+					<th width="20%"><?php echo _('Date Created'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
