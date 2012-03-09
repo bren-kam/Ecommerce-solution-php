@@ -33,8 +33,11 @@ if ( ! empty( $_POST['iplist'] ) ) {
 			
 	
 	//generate backends
-	foreach( $ips as $ip ) {
+	foreach( $ips as &$ip ) { 
+		$ip[0] = trim( $ip[0], ' ' );
+		$ip[1] = trim( $ip[1], ' ' );
 		$name = "b" . preg_replace( "/\./", "_", $ip[0] );
+		
 		$output .=  "backend " . $name . '{' . "\n";
 		$output .=  '  .host = "' . $ip[0] . '";' . "\n";
 		$output .=  '  .port = "' . $_POST['port'] . '";' . "\n";
@@ -136,24 +139,20 @@ get_header();
 			</p>
 			<p>
 				<strong>Custom Logic</strong><br/>
-				<textarea name="custom">if ( req.http.host ~ "test.imagineretailer.com" ) {
-			  	
-			  	#Go ahead and get cache up on static files
-			  	if ( req.url ~ "\.(js)|(css)|(jpg)|(jpeg)|(png)|(gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
-			  		unset req.http.Cookie;
-			  		return(lookup);
-			  	}
-			  
-				if ( req.http.Cookie ~ "vcache" ) {
-					return(pass);
-				} elsif ( req.http.Cookie ~ "gsr_" ) {
-					return(pass);
-				} elsif ( req.url ~ "wp-admin" ) {
-					return(pass);
-				}
-			
-				unset req.http.Cookie;
-			 }</textarea>
+				<textarea name="custom">	#Go ahead and get cache up on static files
+  	if ( req.url ~ "\.(js)|(css)|(jpg)|(jpeg)|(png)|(gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
+  		unset req.http.Cookie;
+  		return(lookup);
+  	}
+  
+	if ( req.http.Cookie ~ "gsr_" ) {
+		return(pass);
+	} elsif ( req.url ~ "wp-admin" ) {
+		return(pass);
+	}
+
+	unset req.http.Cookie;
+</textarea>
 			</p>
 			
 			<input class="button" type="submit" />
@@ -167,11 +166,12 @@ get_header();
 	
 	<h1>Reloading VCL</h1>
 	<br style="clear: both;" />
+	<?php $rando = substr( md5( date('Y-m-d H:i:s', time() ) ), -8, 8); ?>
 	
 	<p>
 		Load new VCL (rl01 can be any unique name)<br/><br/>
-		<pre>varnishadm -T localhost:6082 vcl.load rl01 /etc/varnish/s98_alldomains_prod.vcl
-varnishadm -T localhost:6082 vcl.use rl01</pre>
+		<pre>varnishadm -T localhost:6082 vcl.load rl<?php echo $rando; ?> /etc/varnish/s98_alldomains_prod.vcl
+varnishadm -T localhost:6082 vcl.use rl<?php echo $rando; ?></pre>
 	</p>
 </div>
 
