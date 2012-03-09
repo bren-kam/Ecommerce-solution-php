@@ -47,7 +47,6 @@ switch ( $page['slug'] ) {
 // Set variables
 $image_name = "$name." . str_replace( 'jpeg', 'jpg', $file_extension );
 
-// OLD, DOESN'T WORK FOR COUPONS --> $upload_url = 'http://account2.' . DOMAIN . '/media/uploads/site_uploads/' . $_POST['wid'] . "/$image_name";
 $upload_url = 'http://' . ( ( isset( $user['website']['subdomain'] ) && ( $user['website']['subdomain'] != '' ) ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . '/custom/uploads/images/' . $image_name;
 $upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
