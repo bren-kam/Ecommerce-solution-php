@@ -42,7 +42,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		auto      	: true,
 		displayData	: 'speed',
 		debug		: true,
-		buttonImg 	: 'http://admin2.imagineretailer.com/images/buttons/products/upload-images.png',
+		buttonImg 	: '/images/buttons/products/upload-images.png',
 		cancelImg 	: '/images/icons/cancel.png',
 		fileExt		: '*.swf;*.flv;*.mp4;*.f4v',
 		fileDesc	: 'Video Files', // @Fix needs to be put in PHP
