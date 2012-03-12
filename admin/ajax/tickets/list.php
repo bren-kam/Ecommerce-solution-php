@@ -105,8 +105,7 @@ foreach ( $tickets as $ticket ) {
 		break;
 	}
 	
-	$date_due = ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : dt::date( 'm/d/Y', $ticket['date_due'] );
-	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ), $date_due );
+	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ) );
 }
 
 echo json_encode( array( 

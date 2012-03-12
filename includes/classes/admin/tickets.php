@@ -182,29 +182,6 @@ class Tickets extends Base_Class {
 	}
 
 	/**
-	 * Update date due
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param int $ticket_id
-	 * @param string $date_due
-	 * @return bool
-	 */
-	public function update_date_due( $ticket_id, $date_due ) {
-		global $user;
-		
-		$this->db->update( 'tickets', array( 'date_due' => $date_due ), array( 'ticket_id' => $ticket_id ), 's', 'i' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update ticket date_due.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return true;
-	}
-
-	/**
 	 * Returns ticket
 	 *
 	 * @param int $ticket_id
@@ -212,7 +189,7 @@ class Tickets extends Base_Class {
 	 */
 	public function get( $ticket_id ) {
 		// Get linked users
-		$ticket = $this->db->get_row( "SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = " . (int) $ticket_id, ARRAY_A );
+		$ticket = $this->db->get_row( "SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = " . (int) $ticket_id, ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -246,7 +223,7 @@ class Tickets extends Base_Class {
 	 */
 	public function list_tickets( $limit, $where, $order_by ) {
         // Get linked tickets
-        $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_due` ) AS date_due, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, d.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+        $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, d.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -274,29 +251,6 @@ class Tickets extends Base_Class {
         }
 
 		return $count;
-	}
-	
-	/**
-	 * Email overdue tickets
-	 *
-	 * @return bool
-	 */
-	public function email_overdue_tickets() {
-		$overdue_tickets = $this->db->get_results( "SELECT a.`email`, b.`ticket_id`, b.`summary`, c.`name`, c.`domain` FROM `users` AS a LEFT JOIN `tickets` AS b ON ( a.`user_id` = b.`assigned_to_user_id` ) LEFT JOIN `companies` AS c ON ( a.`company_id` = c.`company_id` ) WHERE a.`status` = 0 AND a.`date_due` <> '0000-00-00 00:00:00' AND a.`date_due` < DATE( NOW() )", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails to email for overdue tickets.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Email each over the overdue persons
-		if ( is_array( $overdue_tickets ) )
-		foreach ( $overdue_tickets as $ot ) {
-			fn::mail( $ot['email'], html_entity_decode( $ot['name'] ) . ' Overdue Ticket: #' . $ot['ticket_id'] . ' - ' . $ot['summary'], "Summary:\n" . $ot['summary'] . "\n\nClick here to view the ticket:\nhttp://admin." . $ot['domain'] . "/tickets/ticket/?tid=" . $ot['ticket_id'] );
-		}
-		
-		return true;
 	}
 	
 	/**

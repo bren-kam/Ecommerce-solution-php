@@ -37,8 +37,6 @@ blockquote { line-height: 17px; font-size: 14px; }
 .attachments { margin-top: 14px }
 .attachments a { font-size: 11px; padding-left: 21px; background: url(/images/icons/tickets/download.gif) 0 5px no-repeat; display: block; line-height: 26px; }
 
-#ui-datepicker-div { display: none }
-
 /** Checklist */
 #ticket { top: 40% !important }
 #checklist { position:fixed; left:0; top: 60%; width:29px; height:108px; background: #a5a5a5 }

@@ -37,7 +37,7 @@ javascript( 'swfobject', 'validator', 'jquery', 'jquery.uploadify', 'jquery.auto
 $admin_users = $u->get_users( "AND `status` <> 0 AND `role` > 5 AND `status` = 1 AND '' <> `contact_name`" );
 
 $selected = 'tickets';
-$title = _('View Ticket | Admin') . ' | ' . TITLE;
+$title = _('View Ticket') . ' | ' . _('Tickets') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -53,7 +53,6 @@ get_header();
 		nonce::field( 'delete-comment', '_ajax_delete_comment' );
 		nonce::field( 'update-assigned-to', '_ajax_update_assigned_to' );
 		nonce::field( 'update-priority', '_ajax_update_priority' );
-		nonce::field( 'update-date-due', '_ajax_update_date_due' );
 		nonce::field( 'upload-attachment', '_ajax_upload_attachment' );
 		nonce::field( 'remove-attachment', '_ajax_remove_attachment' );
 	?>
@@ -116,10 +115,6 @@ get_header();
 		<tr>
 			<td><strong><?php echo _('Date'); ?>:</strong><?php echo dt::date( 'm-d-Y', $ticket['date_created'] ); ?></td>
 			<td>&nbsp;</td>
-			<td class="move">
-				<label for="tDateDue"><?php echo _('Due'); ?>:</label>
-				<input type="text" id="tDateDue" class="tb" value="<?php echo ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : dt::date('m-d-Y', $ticket['date_due']); ?>" />
-			</td>
 		</tr>
 	</table>
 	<br /><br />

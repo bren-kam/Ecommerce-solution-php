@@ -718,7 +718,7 @@ class Mobile_Marketing extends Base_Class {
 
         if ( is_null( $mobile_keyword_id ) && is_null( $am_keyword_campaign_id ) ) {
             // Creat the group and get the ID
-            $am_group_id = $this->am_groups->create_group( $name );
+            $am_group_id = $this->am_groups->create( $name );
 
             // Create the list on our end
             $this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siis' );
@@ -734,7 +734,7 @@ class Mobile_Marketing extends Base_Class {
                 return false;
 			
             // Create a dynamic group
-            $am_group_id = $this->am_groups->create_group( $name, AM_Groups::GROUP_DYNAMIC );
+            $am_group_id = $this->am_groups->create( $name, AM_Groups::GROUP_DYNAMIC );
 
             // Make sure it was created properly
             if ( !$am_group_id )
