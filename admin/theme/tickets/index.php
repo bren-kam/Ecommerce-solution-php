@@ -51,9 +51,8 @@ get_header();
 				<th width="15%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
 				<th width="18%"><?php echo _('Website'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
 				<th width="10%" class="center"><?php echo _('Priority'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-				<th width="15%"><?php echo _('Assigned To'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-				<th width="8%"><?php echo _('Created'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-				<th width="8%"><?php echo _('Due'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
+				<th width="16%"><?php echo _('Assigned To'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
+				<th width="15%"><?php echo _('Created'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
 			</tr>
 		</thead>
 		<tbody>

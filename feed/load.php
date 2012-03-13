@@ -45,7 +45,7 @@ require ABS_PATH . 's98lib/init.php';
 define( 'COOKIE_ABBR', 'gsr_' );
 
 // Used to guarantee unique hash cookies
-define( 'COOKIE_HASH', md5( 'http://api.imagineretailer.com/' ) );
+define( 'COOKIE_HASH', md5( 'http://feed.imagineretailer.com/' ) );
 
 // The Cookie for the authorization in a insecure environmen
 define( 'AUTH_COOKIE', 'auth_' . COOKIE_HASH );
@@ -78,5 +78,4 @@ $cache = &$s98_cache; // Setting up a point to all cache functions
 /** Including the label information */
 require INC_PATH . 'labels/' . DOMAIN . '.php';
 
-/** Routing */
-require OPERATING_PATH . 'routing.php';
+$feed = new Feed_API;

@@ -34,7 +34,7 @@ class AM_Groups extends Avid_Mobile_API {
      * @param string $type [optional] ('STATIC' or 'DYNAMIC_KEYWORD')
 	 * @return int
 	 */
-	public function create_group( $name, $type = self::GROUP_STATIC ) {
+	public function create( $name, $type = self::GROUP_STATIC ) {
 		// Must contain a valid type
         if ( !in_array( $type, array( self::GROUP_STATIC, self::GROUP_DYNAMIC ) ) )
             return false;
@@ -74,7 +74,7 @@ class AM_Groups extends Avid_Mobile_API {
      * @param int $id The Group ID
 	 * @return int
 	 */
-	public function delete_group( $id ) {
+	public function delete( $id ) {
         // Return the Group ID
 		return $this->_execute( self::OPERATION_PUT, 'group.delete', compact( 'id' ) );
 	}
