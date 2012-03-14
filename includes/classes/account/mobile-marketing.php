@@ -58,7 +58,7 @@ class Mobile_Marketing extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-		$subscribers = $this->db->get_results( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT 5", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
