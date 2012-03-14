@@ -18,9 +18,9 @@ $user = $fb->user;
 $v->add_validation( 'tFBConnectionKey', 'req', _('The "Facebook Connection Key" field is required') );
 
 // Make sure they are validly editing the app
-if( isset( $_GET['app_data'] ) ) {
+if ( isset( $_REQUEST['app_data'] ) ) {
 	// Get App Data
-	$app_data = url::decode( $_GET['app_data'] );
+	$app_data = url::decode( $_REQUEST['app_data'] );
 	$other_user_id = security::decrypt( $app_data['uid'], 'SecREt-Us3r!' );
 	$page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 }
@@ -137,7 +137,7 @@ get_header('facebook/');
 	<?php } else { ?>
 	</div>
 	<div id="content">
-		<form name="fConnect" method="post" action="/facebook/email-sign-up/<?php if( isset( $_GET['app_data'] ) ) echo '?app_data=' . $_GET['app_data']; ?>">
+		<form name="fConnect" method="post" action="/facebook/email-sign-up/">
 		<table cellpadding="0" cellspacing="0">
 			<tr>
 				<td width="200"><strong><?php echo _('Website'); ?>:</strong></td>
@@ -152,6 +152,7 @@ get_header('facebook/');
 				<td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
 			</tr>
 		</table>
+		<input type="hidden" name="app_data" value="<?php echo $_REQUEST['app_data']; ?>" />
 		<?php nonce::field('connect-to-field'); ?>
 		</form>
 	</div>
