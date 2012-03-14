@@ -140,7 +140,7 @@ get_header();
 			<p>
 				<strong>Custom Logic</strong><br/>
 				<textarea name="custom">	#Go ahead and get cache up on static files
-  	if ( req.url ~ "\.(js)|(css)|(jpg)|(jpeg)|(png)|(gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
+  	if ( req.url ~ "\.(js|css|jpg|jpeg|png|gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
   		unset req.http.Cookie;
   		return(lookup);
   	}
