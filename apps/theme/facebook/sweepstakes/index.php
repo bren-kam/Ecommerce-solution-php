@@ -54,12 +54,16 @@ add_footer('<div id="fb-root"></div>
     document.getElementById("fb-root").appendChild(e);
   }());
 </script>');
+$selected = 'sweepstakes';
 $title = _('Sweepstakes') . ' | ' . _('Online Platform');
 get_header('facebook/');
 ?>
 
-<div id="content">
-	<h1><?php echo _('Online Platform - Sweepstakes'); ?></h1>
+    <div id="header">
+        <div id="logo">
+            <a href="http://www.greysuitapps.com/" title="Grey Suit Apps"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Grey Suit Apps" /></a>
+        </div><!-- #logo -->
+        
 	<?php if( $success && $website ) { ?>
 	<div class="success">
 		<p><?php echo _('Your information has been successfully updated!'); ?></p>
@@ -72,28 +76,86 @@ get_header('facebook/');
 	
 	if( !$page_id ) {
 	?>
-	<ol>
-		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=113993535359575&pages=1';" title="Online Platform - Sweepstakes">Online Platform - Sweepstakes</a>, select your page and add it.</li>
-		<li>Go to the page you selected, click on the "Home" tab and click "Update Settings" to connect to your page to the platform.</li>
-	</ol>
+	
+	<div id="nav">
+            <ul>
+                <li id="nav-apps"><a id="aTabApps" class="fb-tab" href="#" title="Apps"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Apps" /></a></li>
+                <li id="nav-pricing"><a id="aTabPricing" class="fb-tab" href="#" title="Pricing"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Pricing" /></a></li>
+                <!-- <li id="nav-faqs"><a id="aTabFaqs" class="fb-tab" href="#" title="FAQs"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="FAQs" /></a></li> -->
+            </ul>
+        </div><!-- #nav -->
+    </div><!-- #header -->
+    <div id="content">
+    	<div id="apps" class="fb-tab-wrapper">
+	        <div id="apps-header">
+	            <div id="apps-header-1">
+	                <h2>1. Purchase the Apps</h2>
+	                <p>You'll be redirected to GreySuitApps.com<br />
+	                to choose your monthly plan.</p>
+	            </div>
+	            
+	            <div id="apps-header-2">
+	                <h2>2. Return to Facebook</h2>
+	                <p>After you make your purchase you'll<br />
+	                head back here to begin.</p>
+	            </div>
+	            
+	            <div id="apps-header-3">
+	                <h2>3. Get Started!</h2>
+	                <p>Start using your new apps now to<br />
+	                get your message out there!</p>
+	            </div>
+	        </div><!-- #apps-header -->
+	        <div id="apps-container" class="clear">
+	        	
+	            <?php theme_inc( 'facebook/app-sidebar', true); ?>
+	            
+	            <div id="apps-content" class="clear">
+					<div id="apps-icon">
+	                    <img src="http://www.greysuitapps.com/fb/images/icons/sweepstakes.png" alt="Sweepstakes" />
+	                </div>
+	                <div id="apps-desc">
+	                    <h1>Sweepstakes</h1>
+	                    <h3>Launch a sweepstakes and watch your business grow</h3>
+	                    <ul>
+	                        <li>Take the guesswork out of running a sweepstakes</li>
+	                        <li>Persuade non-fans to become fans to enter your sweepstakes</li>
+	                        <li>Add gorgeous images and simple terms to your sweepstakes</li>
+	                        <li>Set a start date and an end date</li>
+	                        <li>Let our Sweepstakes app take total control of running your sweepstakes</li>
+	                    </ul>
+	                    <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="http://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
+	                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=113993535359575&pages=1'"title="Install this App" class="install-app"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
+	                    <p class="sml-text">gives you acces to ALL apps</p>
+	                </div>
+	            </div>
+	        </div><!-- #apps-container .clear -->
+	    </div> <!-- #apps -->
+        
+        <?php theme_inc( 'facebook/price-tab', true ); ?>
+        <?php theme_inc( 'facebook/faq-tab', true ); ?>
+        
 	<?php } else { ?>
-	<form name="fConnect" method="post" action="/facebook/sweepstakes/<?php if( isset( $_GET['app_data'] ) ) echo '?app_data=' . $_GET['app_data']; ?>">
-	<table cellpadding="0" cellspacing="0">
-		<tr>
-			<td width="200"><strong><?php echo _('Website'); ?>:</strong></td>
-			<td><?php echo ( $website ) ? $website['title'] : 'N/A'; ?></td>
-		</tr>
-		<tr>
-			<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
-			<td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="<?php echo ( $website ) ? $website['key'] : ''; ?>" /> <strong><?php echo ( $website ) ? '<span class="success">(' . _('Connected') . ')</span>' : '<span class="error">(' . _('Not Connected') . ')</span>'; ?></strong></td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
-		</tr>
-	</table>
-	<?php nonce::field('connect-to-field'); ?>
-	</form>
+	</div>
+	<div id="content">
+		<form name="fConnect" method="post" action="/facebook/sweepstakes/<?php if( isset( $_GET['app_data'] ) ) echo '?app_data=' . $_GET['app_data']; ?>">
+		<table cellpadding="0" cellspacing="0">
+			<tr>
+				<td width="200"><strong><?php echo _('Website'); ?>:</strong></td>
+				<td><?php echo ( $website ) ? $website['title'] : 'N/A'; ?></td>
+			</tr>
+			<tr>
+				<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
+				<td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="<?php echo ( $website ) ? $website['key'] : ''; ?>" /> <strong><?php echo ( $website ) ? '<span class="success">(' . _('Connected') . ')</span>' : '<span class="error">(' . _('Not Connected') . ')</span>'; ?></strong></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
+			</tr>
+		</table>
+		<?php nonce::field('connect-to-field'); ?>
+		</form>
+	</div>
 	<?php } ?>
 </div>
 
