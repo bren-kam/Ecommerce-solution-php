@@ -118,20 +118,20 @@ class Ashley extends Base_Class {
 				
 				// Specifications
 				case 'depth':
-					if ( $dimensions )
+					if ( $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
 						$items[$j]['specs'] = 'Depth`' . trim( $xml_reader->getAttribute('value') );
 				break;
 
 				// Specifications
 				case 'height':
-					if ( $dimensions )
-						$items[$j]['specs'] .= '`0|Height`' . trim( $xml_reader->getAttribute('value') );
+					if ( $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
+						$items[$j]['specs'] .= ' Inches`0|Height`' . trim( $xml_reader->getAttribute('value') );
 				break;
 
 				// Specifications
 				case 'length':
-					if ( $dimensions )
-						$items[$j]['specs'] .= '`1|Length`' . trim( $xml_reader->getAttribute('value') ) . '`2';
+					if ( $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
+						$items[$j]['specs'] .= ' Inches`1|Length`' . trim( $xml_reader->getAttribute('value') ) . ' Inches`2';
 					
 					$dimensions = 0;
 				break;
