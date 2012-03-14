@@ -11,7 +11,6 @@ $ajax->ok( $user, _('You must be signed in to remove an attachment.') );
 // Instantiate class
 $wa = new Website_Attachments();
 $wf = new Website_Files();
-$ftp = new FTP( $user['website']['website_id'] );
 $f = new Files;
 
 // Get the file
@@ -26,11 +25,6 @@ if ( stristr( $attachment['value'], 'http://' ) ) {
     // Delete from website
     $ajax->ok( $wf->delete( $file['website_file_id'] ), _('An error occurred while trying to delete your file. Please refresh the page and try again.') );
 
-} else {
-    $path_pieces = explode( '/', $attachment['value'] );
-
-    // Delete file - don't check as it may not exist
-    $ftp->delete( format::file_name( $attachment['value'] ), $path_pieces[count($path_pieces) - 2] . '/' );
 }
 
 if ( '1' == $_GET['si'] ) {
