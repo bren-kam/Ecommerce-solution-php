@@ -14,8 +14,6 @@ class Ashley extends Base_Class {
 	
 	/**
 	 * Creates new Database instance
-	 *
-	 * @return  void
 	 */
 	public function __construct() {
 		// Load database library into $this->db (can be omitted if not required)
@@ -115,6 +113,11 @@ class Ashley extends Base_Class {
 				case 'itemDimensions':
 					$dimensions = 1;
 				break;
+
+                // Turn off so it doesn't get overridden by package characteristics
+                case 'packageDimensions':
+                    $dimensions = 0;
+                break;
 				
 				// Specifications
 				case 'depth':
