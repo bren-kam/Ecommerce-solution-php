@@ -25,10 +25,6 @@ $delete_mobile_list_nonce = nonce::create( 'delete-mobile-list' );
 if ( is_array( $mobile_lists ) )
 foreach ( $mobile_lists as $ml ) {
     $date = new DateTime( $ml['date_created'] );
-	
-	// Get info
-	$info = $m->mobile_list_info( $ml['am_group_id'] );
-	fn::info( $info );
 
 	// Get another type
 	$type = ( 0 == $ml['mobile_keyword_id'] ) ? _('Custom') : _('Keyword');

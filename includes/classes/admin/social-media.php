@@ -29,34 +29,17 @@ class Social_Media extends Base_Class {
 			$this->err( 'Failed to get the posts.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		return $posts;
-	}
-	
-	/**
-	 * Get Posting Posts
-	 *
-	 * @param array $sm_posting_post_ids
-	 * @return bool
-	 */
-	public function complete_posting_posts( $sm_posting_post_ids ) {
-		if ( !is_array( $sm_posting_post_ids ) || 0 == count( $sm_posting_post_ids ) )
-			return false;
-		
-		// Make sure they are all integers
-		foreach ( $sm_posting_post_ids as &$id ) {
-			$id = (int) $id;
-		}
-		
-		$this->db->query( 'UPDATE `sm_posting_posts` SET `status` = 1 WHERE `sm_posting_post_id` IN(' . implode( ',', $sm_posting_post_ids ) . ')' );
-		
+
+        // Mark those posts as scheduled
+        $this->db->query( 'UPDATE `sm_posting_posts` SET `status` = 1 WHERE `status` = 0 AND NOW() > `date_posted`' );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to complete the posting posts.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to to mark posts as posted.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		return true;
+
+		return $posts;
 	}
 	
 	/**

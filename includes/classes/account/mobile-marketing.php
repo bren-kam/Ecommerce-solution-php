@@ -160,8 +160,9 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Typecast
 		$mobile_subscriber_id = (int) $mobile_subscriber_id;
+		$website_id = (int) $user['website']['website_id'];
 		
-		$subscriber = $this->db->get_row( "SELECT `phone` FROM `mobile_subscribers` WHERE `mobile_subscriber_id` = $mobile_subscriber_id", ARRAY_A );
+		$subscriber = $this->db->get_row( "SELECT `am_subscriber_id`, `phone` FROM `mobile_subscribers` WHERE `mobile_subscriber_id` = $mobile_subscriber_id AND `website_id` = $website_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -214,9 +215,17 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $mobile_subscriber_id = (int) $mobile_subscriber_id;
 
-		// First, get avoid mobile and unsubscribe
-		// @avid
+		// Make sure it's instantiated
+        if ( !$this->_get_am_lib('members') )
+            return false;
 
+        // First, get subscriber, update it, then update our own
+        $subscriber = $this->get_subscriber( $mobile_subscriber_id );
+
+        // Delete the keywords
+        if( !$this->am_members->delete( $subscriber['am_subscriber_id'] ) )
+            return false;
+		
 		// Remove subscriber from lists
 		$this->db->query( "DELETE a.* FROM `mobile_associations` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_subscriber_id` = $mobile_subscriber_id AND b.`website_id` = $website_id" );
 		
@@ -227,7 +236,7 @@ class Mobile_Marketing extends Base_Class {
 		}
 		
 		// Set the subscriber's status to "unsubscribed"
-		$this->db->update( 'mobile_subscribers', array( 'status' => 0 ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i', 'i' );
+		$this->db->update( 'mobile_subscribers', array( 'status' => 0, 'date_unsubscribed' => dt::date('Y-m-d H:i:s') ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'is', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -247,7 +256,21 @@ class Mobile_Marketing extends Base_Class {
 	public function create_subscriber( $phone ) {
 		global $user;
 		
-		$this->db->insert( 'mobile_subscribers', array( 'website_id' => $user['website']['website_id'], 'phone' => $phone, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isis' );
+		// Update the subscriber if it already exists
+		if ( $subscriber = $this->subscriber_exists( $phone ) )
+			return $this->update_subscriber( $subscriber['mobile_subscriber_id'], $phone );
+		
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('members') )
+            return false;
+
+        // Create the member
+        $am_subscriber_id = $this->am_members->create( $phone );
+
+        if ( !$am_subscriber_id )
+            return false;
+
+		$this->db->insert( 'mobile_subscribers', array( 'website_id' => $user['website']['website_id'], 'am_subscriber_id' => $am_subscriber_id, 'phone' => $phone, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisis' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -266,11 +289,24 @@ class Mobile_Marketing extends Base_Class {
 	 * @return bool
 	 */
 	public function update_subscriber( $mobile_subscriber_id, $phone ) {
-		$this->db->update( 'mobile_subscribers', array( 'phone' => $phone ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 's', 'i' );
+		global $user;
+		
+		// Make sure it's instantiated
+        if ( !$this->_get_am_lib('members') )
+            return false;
+
+        // First, get subscriber, update it, then update our own
+        $subscriber = $this->get_subscriber( $mobile_subscriber_id );
+
+        // Delete the keywords
+        if ( !$this->am_members->update( $subscriber['am_subscriber_id'], $phone ) )
+            return false;
+		
+		$this->db->update( 'mobile_subscribers', array( 'phone' => $phone ), array( 'mobile_subscriber_id' => $mobile_subscriber_id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update mobile.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to update subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -298,6 +334,17 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Add new values if they exist
 		if ( is_array( $mobile_lists ) ) {
+			// Get the subscriber
+			$subscriber = $this->get_subscriber( $mobile_subscriber_id );
+			
+			// Make sure it's instantiated
+			if ( !$this->_get_am_lib('members') )
+				return false;
+				
+			// Get lists so we can get the avid mobile groups
+			$all_mobile_lists = ar::assign_key( $this->get_mobile_lists(), 'mobile_list_id' );
+			$am_group_ids = array();
+			
 			$values = '';
 			
 			foreach ( $mobile_lists as $ml ){
@@ -305,6 +352,9 @@ class Mobile_Marketing extends Base_Class {
 					$values .= ',';
 				
 				$values .= "( $mobile_subscriber_id, " . (int) $ml . ')';
+				
+				// Add to Avid Mobile
+				$this->am_members->add_members_to_group( array( $subscriber['am_subscriber_id'] ), $all_mobile_lists[$ml]['am_group_id'] );
 			}
 			
 			$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id` )  VALUES $values" );
@@ -687,9 +737,9 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
 		if ( $count ) {
-			$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`am_group_id`, a.`name`, COUNT( DISTINCT b.`mobile_subscription_id` ) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE a.`website_id` = $website_id AND c.`status` = 1 GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
+			$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`am_group_id`, a.`mobile_keyword_id`, a.`name`, COUNT( DISTINCT b.`mobile_subscription_id` ) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE a.`website_id` = $website_id AND c.`status` = 1 GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
 		} else {
-			$mobile_lists = $this->db->get_results( "SELECT `mobile_list_id`, `am_group_id`, `name` FROM `mobile_lists` WHERE `website_id` = $website_id ORDER BY `name`", ARRAY_A );
+			$mobile_lists = $this->db->get_results( "SELECT `mobile_list_id`, `am_group_id`, `mobile_keyword_id`, `name` FROM `mobile_lists` WHERE `website_id` = $website_id ORDER BY `name`", ARRAY_A );
 		}
 
 		// Handle any error
@@ -827,6 +877,26 @@ class Mobile_Marketing extends Base_Class {
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Synchronize Subscribers from Mailchimp with our subscribers
+	 *
+	 * @return bool
+	 */
+	public function sync_subscribers_by_lists() {
+		$mobile_lists = $this->get_mobile_lists();
+		
+		if ( !$mobile_lists || 0 == count( $mobile_lists ) )
+			return false;
+		
+		// Make sure it's instantiated
+        if ( !$this->_get_am_lib('groups') )
+            return false;
+		
+		foreach ( $mobile_lists as $ml ) {
+			$subscribers = $this->am_groups->list_members( $ml['am_group_id'] );
+		}
 	}
 
 	/***** MOBILE MESSAGES *****/
@@ -1329,6 +1399,14 @@ class Mobile_Marketing extends Base_Class {
                 library('avid-mobile/keywords');
 
                 $this->am_keywords = new AM_Keywords( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+
+                return true;
+            break;
+			
+			case 'members':
+                library('avid-mobile/members');
+
+                $this->am_members = new AM_Members( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
 
                 return true;
             break;

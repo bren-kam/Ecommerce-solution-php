@@ -38,12 +38,7 @@ if ( is_array( $posts ) ) {
             fn::mail( $p['email'], $p['company'] . ' - Unable to Post to Facebook', "We were unable to send the following post to Facebook:\n\n" . $p['post'] . "\n\nFor the following reason(s):\n\n" . $error_message . "\n\nTo fix this, please login to the dashboard, go to Social Media > Posting, then delete this post and recreate it following the rules above.\n\n" . $p['account'] . "\nhttp://admin." . $p['domain'] . "/accounts/control/?wid=" . $p['website_id'] . "\n\nHave a great day!", $p['company'] . ' <noreply@' . $p['domain'] . '>' );
             continue;
         }
-		
-        $sm_posting_post_ids[] = $p['sm_posting_post_id'];
 	}
-	
-	// Mark as posted
-	$sm->complete_posting_posts( $sm_posting_post_ids );
 	
 	// Mark post errors
 	$sm->mark_posting_post_errors( $sm_error_ids );

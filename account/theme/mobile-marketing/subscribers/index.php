@@ -12,8 +12,11 @@ if ( !$user )
 	login();
 
 // Secure the section
-if ( !$user['website']['mobile-marketing'] )
+if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
+
+$m = new Mobile_Marketing();
+$m->sync_subscribers_by_lists();
 
 $selected = "subscribers";
 $title = _('Subscribers') . ' | ' . _('Mobile Marketing') . ' |' . TITLE;
