@@ -16,6 +16,13 @@ $success = false;
 $output = "";
 
 if ( ! empty( $_POST['iplist'] ) ) {
+	
+		
+	$output .=  "#varnishd -f /etc/varnish/s98_alldomains_prod.vcl -s malloc,32M -T :8887 -a 0.0.0.0:80\n";
+
+	$output .=  "#BEGIN BACKEND LOGIC\n\n\n";
+			
+			
 	//process
 	$ip_data = $_POST['iplist'];
 	
@@ -23,36 +30,39 @@ if ( ! empty( $_POST['iplist'] ) ) {
 	
 	//isolate data
 	$lines = explode( "\n", $ip_data );
+	
+	// Split ips and hosts
 	foreach ( $lines as $l ) {
 		$ips[] = explode( "\t", $l );
 	}
 	
-	$output .=  "#varnishd -f /etc/varnish/s98_alldomains_prod.vcl -s malloc,32M -T :8887 -a 0.0.0.0:80\n";
 
-	$output .=  "#BEGIN BACKEND LOGIC\n\n\n";
-			
 	
 	//generate backends
 	foreach( $ips as &$ip ) { 
 		$ip[0] = trim( $ip[0], ' ' );
 		$ip[1] = trim( $ip[1], ' ' );
-		$name = "b" . preg_replace( "/\./", "_", $ip[0] );
 		
-		$output .=  "backend " . $name . '{' . "\n";
-		$output .=  '  .host = "' . $ip[0] . '";' . "\n";
-		$output .=  '  .port = "' . $_POST['port'] . '";' . "\n";
-		$output .=  '  .connect_timeout = 30s; ' . "\n";
-		$output .=  '  .first_byte_timeout = 30s; ' . "\n";
-		$output .=  '  .between_bytes_timeout = 30s; ' . "\n";
-		$output .=  '}' . "\n\n";
-		
-		/* backend b199_204_138_145 {
-		  .host = "199.204.138.145";
-		  .port = "8001";
-		  .connect_timeout = 30s;
-		  .first_byte_timeout = 30s;
-		  .between_bytes_timeout = 30s;
-		} */
+		// Omit blank IPs and Empty hostnames
+		if( $ip[0] && $ip[1] ) {
+	 		$name = "b" . preg_replace( "/\./", "_", $ip[0] );
+			
+			$output .=  "backend " . $name . '{' . "\n";
+			$output .=  '  .host = "' . $ip[0] . '";' . "\n";
+			$output .=  '  .port = "' . $_POST['port'] . '";' . "\n";
+			$output .=  '  .connect_timeout = 30s; ' . "\n";
+			$output .=  '  .first_byte_timeout = 30s; ' . "\n";
+			$output .=  '  .between_bytes_timeout = 30s; ' . "\n";
+			$output .=  '}' . "\n\n";
+			
+			/* backend b199_204_138_145 {
+			  .host = "199.204.138.145";
+			  .port = "8001";
+			  .connect_timeout = 30s;
+			  .first_byte_timeout = 30s;
+			  .between_bytes_timeout = 30s;
+			} */
+		}
 	}
 	
 	$output .=  'backend default {' . "\n" ;
@@ -75,27 +85,16 @@ if ( ! empty( $_POST['iplist'] ) ) {
 	$first = true;
 	// Buffer, for ordering
 	$buffer = false;
-	foreach( $ips as $ip ) {
-		
-		if( $ip[0] == '199.47.222.13' ) {
-			$buffer = $ip; 
-			continue;
-		} else {
-			
-			$name = "b" . preg_replace( "/\./", "_", $ip[0] );
-			$domains = preg_replace( "/ /", ")|(", $ip[1] );
-			if ( $first ) {
-				$output .=  '  if ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
-				$first = false;
+	foreach( $ips as &$ip ) {
+		// Omit blank IPs and Empty hostnames
+		if( $ip[0] && $ip[1] ) {		
+			if( $ip[0] == '199.47.222.13' ) {
+				$buffer = $ip; 
+				continue;
 			} else {
-				$output .=  ' elsif ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
-			}
-			$output .=  '    set req.backend = ' . $name . ';' . "\n";
-			$output .=  '  }';
-			
-			if ( $buffer ) {
-				$name = "b" . preg_replace( "/\./", "_", $buffer[0] );
-				$domains = preg_replace( "/ /", ")|(", $buffer[1] );
+			 	
+				$name = "b" . preg_replace( "/\./", "_", $ip[0] );
+				$domains = preg_replace( "/ /", ")|(", $ip[1] );
 				if ( $first ) {
 					$output .=  '  if ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
 					$first = false;
@@ -104,8 +103,21 @@ if ( ! empty( $_POST['iplist'] ) ) {
 				}
 				$output .=  '    set req.backend = ' . $name . ';' . "\n";
 				$output .=  '  }';
-			
-				$buffer = false;
+				
+				if ( $buffer ) {
+					$name = "b" . preg_replace( "/\./", "_", $buffer[0] );
+					$domains = preg_replace( "/ /", ")|(", $buffer[1] );
+					if ( $first ) {
+						$output .=  '  if ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
+						$first = false;
+					} else {
+						$output .=  ' elsif ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
+					}
+					$output .=  '    set req.backend = ' . $name . ';' . "\n";
+					$output .=  '  }';
+				
+					$buffer = false;
+				}
 			}
 		}
 	}
