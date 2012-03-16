@@ -115,9 +115,12 @@ class Ashley_Feed extends Base_Class {
 		}
 		
 		// Generate array of our items
-		foreach( $this->xml->items->item as $item ) {
+		foreach ( $this->xml->items->item as $item ) {
+            if ( 'Discontinued' == trim( $item->attributes()->itemStatus ) )
+                continue;
+
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-			
+
 			if ( !array_key_exists( $sku, $products ) ) {
 				$new_products[] = $sku;
 			}

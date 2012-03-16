@@ -100,7 +100,7 @@ foreach ( $products as $product ) {
 		<a href="<?php echo $product['link']; ?>" title='View "<?php echo $product['name']; ?>"' target="_blank"><?php echo _('View'); ?></a> | 
 		<a href="/ajax/products/remove/?_nonce=<?php echo $remove_product_nonce; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo _('Remove Product'); ?>" ajax="1" confirm="<?php echo $confirm_remove_product; ?>"><?php echo _('Remove'); ?></a> |
 		<a href="javascript:;" class="edit-product" title="<?php echo _('Edit Product'); ?>"><?php echo _('Edit'); ?></a><br />
-		<a href="/ajax/products/set-category-image/?_nonce=<?php echo $set_category_image_nonce; ?>&amp;cid=<?php echo $_POST['cid']; ?>&amp;i=<?php echo urlencode( $image_url ); ?>" title="<?php echo _('Set as Category Picture'); ?>" ajax="1"><?php echo _('Set as Category Picture'); ?></a>
+		<a href="/ajax/products/set-category-image/?_nonce=<?php echo $set_category_image_nonce; ?>&amp;i=<?php echo urlencode( $image_url ); ?>&amp;cid=<?php echo $_POST['cid']; ?>" title="<?php echo _('Set as Category Picture'); ?>" ajax="1"><?php echo _('Set as Category Picture'); ?></a>
 	</p>
 </div>
 <?php

@@ -66,7 +66,8 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 
 
 /* Filtering  */
-$where = ( '0' == $_SESSION['tickets']['assigned-to'] ) ? ' AND ( ' . $user['role'] . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $user['user_id'] . ' )' : ' AND ' . $user['role'] . ' >= COALESCE( c.`role`, 7 )';
+$where = ' AND ( ' . $user['role'] . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $user['user_id'] . ' )';
+
 if ( $_GET['sSearch'] != "" ) {
 	$where .= " AND ( b.`contact_name` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
 					"`title` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .

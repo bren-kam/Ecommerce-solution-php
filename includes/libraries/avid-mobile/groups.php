@@ -108,4 +108,18 @@ class AM_Groups extends Avid_Mobile_API {
 
         return $groups;
 	}
+	
+	/**
+	 * List Members
+	 *
+     * @param int $group_id
+	 * @return int
+	 */
+	public function list_members( $group_id ) {
+		// We want to select the phone number
+		$phone_num = $first_name = $last_name = 'select';
+		
+        // Return the Group ID
+		return $this->_execute( self::OPERATION_GET, 'group.listmembers', compact( 'group_id', 'first_name', 'last_name', 'phone_num' ) );
+	}
 }

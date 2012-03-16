@@ -86,7 +86,7 @@ get_header();
 				if ( is_array( $emails ) ) {
 					foreach ( $emails as $em ) {
 					?>
-						<p><a href="/analytics/email/?mcid=<?php echo $em['mc_campaign_id']; ?>" title="<?php echo $em['subject']; ?>"><?php echo $em['subject']; ?></a></p>
+						<p><a href="/analytics/email-marketing/email/?mcid=<?php echo $em['mc_campaign_id']; ?>" title="<?php echo $em['subject']; ?>"><?php echo $em['subject']; ?></a></p>
 					<?php } ?>
 					<p align="right"><a href="/email-marketing/emails/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
 				<?php } else { ?>

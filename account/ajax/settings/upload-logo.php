@@ -16,8 +16,8 @@ $image_name = "logo." . str_replace( 'jpeg', 'jpg', $file_extension );
 $dir = OPERATING_PATH . 'media/uploads/site_logos/' . $_POST['wid'] . '/';
 
 // Directory needs to exist
-if ( !is_dir( $upload_dir ) )
-	mkdir( $upload_dir, 0777, true );
+if ( !is_dir( $dir ) )
+	mkdir( $dir, 0777, true );
 
 $image_path = $dir . $image_name;
 
