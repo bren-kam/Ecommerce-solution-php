@@ -110,7 +110,10 @@ get_header();
             <table>
                 <tr>
                     <td class="top"><label for="taMessage"><?php echo _('Message'); ?>:</label></td>
-                    <td><textarea name="taMessage" id="taMessage" rows="5" cols="50"></textarea></td>
+                    <td>
+                        <textarea name="taMessage" id="taMessage" rows="5" cols="50"></textarea>
+                        <a href="javascript:var%20e=document.createElement('script');e.setAttribute('language','javascript');e.setAttribute('src','//bitly.com/bookmarklet/load.js');document.body.appendChild(e);void(0);" id="aURLShortner" title="<?php echo _('Shorten URL'); ?>"><?php echo _('Shorten URL'); ?></a>
+                    </td>
                 </tr>
                 <tr>
                     <td class="top"><label><?php echo _('Lists'); ?>:</label></td>

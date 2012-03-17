@@ -135,7 +135,10 @@ get_header();
 				</tr>
 				<tr>
 					<td class="top"><label for="taResponse"><?php echo _('Response'); ?>:</label></td>
-					<td><textarea name="taResponse" id="taResponse" rows="5" cols="50"><?php echo ( !$success && isset( $_POST['taResponse'] ) ) ? $_POST['taResponse'] : $keyword['response']; ?></textarea></td>
+					<td>
+                        <textarea name="taResponse" id="taResponse" rows="5" cols="50"><?php echo ( !$success && isset( $_POST['taResponse'] ) ) ? $_POST['taResponse'] : $keyword['response']; ?></textarea>
+                        <a href="javascript:var%20e=document.createElement('script');e.setAttribute('language','javascript');e.setAttribute('src','//bitly.com/bookmarklet/load.js');document.body.appendChild(e);void(0);" id="aURLShortner" title="<?php echo _('Shorten URL'); ?>"><?php echo _('Shorten URL'); ?></a>
+                    </td>
 				</tr>
 				<tr>
                     <td><label for="tDateStarted"><?php echo _('Campaign Start Date'); ?>:</label></td>
