@@ -178,6 +178,8 @@ get_header();
 					<select name="sStatus" id="sStatus">
 						<option value="1"><?php echo _('In Stock'); ?></option>
 						<option value="0"><?php echo _('Out of Stock'); ?></option>
+						<option value="2"><?php echo _('On Display'); ?></option>
+						<option value="3"><?php echo _('Special Order'); ?></option>
 					</select>
 				</td>
 			</tr>
