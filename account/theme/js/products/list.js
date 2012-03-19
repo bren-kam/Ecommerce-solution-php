@@ -94,7 +94,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			$('#tWarrantyLength').val( p['warranty_length'] );
 			$('#tInventory').val( p['inventory'] );
 			$('#cbDisplayInventory').attr( 'checked', 1 == p['display_inventory'] );
-			$('#sStatus option[value=' + ( ( 0 == p['status'] ) ? 0 : 1 ) + ']').attr( 'selected', true );
+			$('#sStatus option[value=' + ( p['status'] * 1 ) + ']').attr( 'selected', true );
 			$('#tMetaTitle').val( p['meta_title'] );
 			$('#tMetaDescription').val( p['meta_description'] );
 			$('#tMetaKeywords').val( p['meta_keywords'] );
