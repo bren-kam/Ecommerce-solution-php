@@ -13,6 +13,8 @@ class Mobile_Marketing extends Base_Class {
     private $settings;
     private $am_keywords;
     private $am_groups;
+    private $am_members;
+    private $am_blast;
 
 	/**
 	 * Construct initializes data
@@ -1387,6 +1389,14 @@ class Mobile_Marketing extends Base_Class {
             return false;
 
         switch ( $library ) {
+            case 'blast':
+                library('avid-mobile/blast');
+
+                $this->blast = new AM_Blast( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+
+                return true;
+            break;
+
             case 'groups':
                 library('avid-mobile/groups');
 
