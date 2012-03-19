@@ -753,7 +753,7 @@ class Products extends Base_Class {
 		$sql .= 'LEFT JOIN `product_images` AS e ON ( a.`product_id` = e.`product_id`) ';
 		$sql .= 'LEFT JOIN `website_products` AS f ON (a.`product_id` = f.`product_id`) ';
 		$sql .= 'LEFT JOIN `industries` AS g ON ( a.`industry_id` = g.`industry_id` ) ';
-		$sql .= "WHERE f.`active` = 1 AND f.`website_id` = $website_id AND ( e.`sequence` = 0 OR e.`sequence` IS NULL ) AND a.`publish_visibility` <> 'deleted' AND a.`date_created` <> '0000-00-00 00:00:00' ";
+		$sql .= "WHERE f.`active` = 1 AND f.`website_id` = $website_id AND ( e.`sequence` = 0 OR e.`sequence` IS NULL ) AND a.`date_created` <> '0000-00-00 00:00:00' ";
 		$sql .= $where;
 		$sql .= " GROUP BY a.`product_id` ORDER BY f.`sequence` ASC $sql_limit";
 		
@@ -793,7 +793,7 @@ class Products extends Base_Class {
 		$sql .= 'LEFT JOIN `product_images` AS e ON ( a.`product_id` = e.`product_id`) ';
 		$sql .= 'LEFT JOIN website_products AS f ON (a.`product_id` = f.`product_id`) ';
 		$sql .= 'LEFT JOIN `industries` AS g ON ( a.`industry_id` = g.`industry_id`) ';
-		$sql .= "WHERE f.`active` = 1 AND f.`website_id` = $website_id AND e.`sequence` = 0 AND a.`publish_visibility` <> 'deleted' AND a.`date_created` <> '0000-00-00 00:00:00' ";
+		$sql .= "WHERE f.`active` = 1 AND f.`website_id` = $website_id AND e.`sequence` = 0 AND a.`date_created` <> '0000-00-00 00:00:00' ";
 		$sql .= $where;
 		$sql .= "GROUP BY a.`product_id` ORDER BY f.`sequence` ASC";
 		

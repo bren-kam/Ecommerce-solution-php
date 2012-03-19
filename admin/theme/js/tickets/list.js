@@ -56,6 +56,11 @@ function postLoad( $ ) {
 				dt.fnDraw();
 		}, 'json' );
 	});
+
+    // Refresh the page every 5 minutes
+    setInterval( function() {
+        dt.fnDraw();
+    }, 300000 );
 }
 
 /**

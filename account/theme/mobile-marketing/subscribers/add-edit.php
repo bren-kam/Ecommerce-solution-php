@@ -39,7 +39,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-sub
 	if ( empty( $errs ) ) {
 		if ( $mobile_subscriber_id ) {
 			// Update subscriber
-			$success = $m->update_mobile_lists_subscription( $mobile_subscriber_id, $_POST['cbMobileLists'] ) && $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'] );
+			$success = $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'] );
+			
+			if ( $success )
+				$success = $m->update_mobile_lists_subscription( $mobile_subscriber_id, $_POST['cbMobileLists'] ) && $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'] );
 		} else {
 			// Add subscriber
 			if ( $subscriber = $m->subscriber_exists( $_POST['tPhone'] ) && '2' == $subscriber['status'] ) {
@@ -121,6 +124,9 @@ get_header();
 							$selected_mobile_lists = array();
 						
 						foreach ( $mobile_lists as $ml ) {
+							if ( 0 != $ml['mobile_keyword_id'] )
+								continue;
+							
 							$checked = ( in_array( $ml['mobile_list_id'], $selected_mobile_lists ) ) ? ' checked="checked"' : '';
 						?>
 						<input type="checkbox" class="cb" name="cbMobileLists[]" id="cbMobileList<?php echo $ml['mobile_list_id']; ?>" value="<?php echo $ml['mobile_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbMobileList<?php echo $ml['mobile_list_id']; ?>"><?php echo $ml['name']; ?></label>

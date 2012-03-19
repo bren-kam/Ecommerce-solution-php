@@ -692,7 +692,7 @@ class SQL extends Base_Class {
 			'message' => $message,
 			'sql' => $this->last_query,
 			'sql_error' => $this->error(),
-			'page' => 'http://account2.imagineretailer.com' . $_SERVER['REQUEST_URI'] . '?' . $query_string,
+			'page' => 'http://' . DOMAIN . $_SERVER['REQUEST_URI'] . '?' . $query_string,
 			'referer' => ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : '',
 			'line' => $line,
 			'file' => __FILE__,

@@ -32,8 +32,14 @@ class AM_Keywords extends Avid_Mobile_API {
 	 * @return int
 	 */
 	public function create( $name, $keyword, $reply_1, $start_time, $start_timezone ) {
+        // Set the end time to be 100 years from now
+        $end_time_object = new DateTime( $start_time );
+        $end_time_object->add( new DateInterval('P25Y') ); // Add 100 years
+        $end_time = $end_time_object->format( 'Y-m-d H:i:s' );
+        $end_timezone = $start_timezone;
+		
         // Return the keyword_campaign_id
-		return $this->_execute( self::OPERATION_PUT, 'keyword.create', compact( 'name', 'keyword', 'reply_1', 'start_time', 'start_timezone' ) );
+		return $this->_execute( self::OPERATION_PUT, 'keyword.create', compact( 'name', 'keyword', 'reply_1', 'start_time', 'start_timezone', 'end_time', 'end_timezone' ) );
 	}
 
     /**
@@ -48,6 +54,12 @@ class AM_Keywords extends Avid_Mobile_API {
 	 * @return bool
 	 */
 	public function update( $id, $name, $keyword, $reply_1, $start_time, $start_timezone ) {
+        // Set the end time to be 100 years from now
+        $end_time_object = new DateTime( $start_time );
+        $end_time_object->add( new DateInterval('P25Y') ); // Add 100 years
+        $end_time = $end_time_object->format( 'Y-m-d H:i:s' );
+        $end_timezone = $start_timezone;
+		
         // Return the keyword_campaign_id
 		$this->_execute( self::OPERATION_PUT, 'keyword.update', compact( 'id', 'name', 'keyword', 'reply_1', 'start_time', 'start_timezone', 'end_time', 'end_timezone' ) );
 

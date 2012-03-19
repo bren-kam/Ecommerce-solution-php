@@ -89,7 +89,7 @@ require OPERATING_PATH . 'routing.php';
 
 if( PROFILE ) {
 	// End XHProf and save query
-	$profiler_namespace = 'account2.imagineretailer.com';  // namespace for your application
+	$profiler_namespace = 'apps.imagineretailer.com';  // namespace for your application
 	$xhprof_data = xhprof_disable();
 	$xhprof_runs = new XHProfRuns_Default();
 	$run_id = $xhprof_runs->save_run( $xhprof_data, $profiler_namespace );
