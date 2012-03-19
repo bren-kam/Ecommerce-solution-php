@@ -17,7 +17,7 @@
 		<a href="/mobile-marketing/subscribers/" title="<?php echo _('View Subscribed Users'); ?>" class="sub<?php if ( isset( $subscribed ) ) echo ' selected'; ?>"><?php echo _('Subscribed'); ?></a>
 		<a href="/mobile-marketing/subscribers/unsubscribed/" title="<?php echo _('View Unsubscribed Users'); ?>" class="sub<?php if ( isset( $unsubscribed ) ) echo ' selected'; ?>"><?php echo _('Unsubscribed'); ?></a>
 		<a href="/mobile-marketing/subscribers/add-edit/" title="<?php echo _('Add Subscriber'); ?>" class="sub<?php if ( isset( $add_edit_subscriber ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
-		<a href="/mobile-marketing/subscribers/import/" title="<?php echo _('Import Subscribers'); ?>" class="sub<?php if ( isset( $import_subscribers ) ) echo ' selected'; ?>"><?php echo _('Import'); ?></a>
+		<!--<a href="/mobile-marketing/subscribers/import/" title="<?php echo _('Import Subscribers'); ?>" class="sub<?php if ( isset( $import_subscribers ) ) echo ' selected'; ?>"><?php echo _('Import'); ?></a>-->
 	<?php } ?>
 	
 	<a href="/mobile-marketing/lists/" title="<?php echo _('Mobile Lists'); ?>" class="top<?php if ( isset( $mobile_lists ) ) echo ' selected'; ?>"><?php echo _('Mobile Lists'); ?></a>

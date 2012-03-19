@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', '/js2/?f=charCount', function() {
 	// Date Picker
 	$('#tDate').datepicker({
 		minDate: 0,
@@ -9,5 +9,17 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$('#tTime').timePicker({
 	  	step: 60,
 		show24Hours: false
+	});
+	
+	$('#taMessage').charCount({
+        css : 'counter bold'
+        , cssExceeded : 'error'
+        , counterText : 'Characters Left: '
+    });
+
+    // Date Picker
+	$('#tDate').datepicker({
+		minDate: 0,
+		dateFormat: 'mm/dd/yy'
 	});
 });

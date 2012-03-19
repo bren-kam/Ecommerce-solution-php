@@ -69,7 +69,7 @@ get_header();
 		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $mobile_list_id ) ? _('Your mobile list has been updated successfully!') : _('Your mobile list has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/mobile-lists/" title="', _('Mobile Lists'), '">', _('view your mobile lists'), '</a>.'; ?></p>
+			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/lists/" title="', _('Mobile Lists'), '">', _('view your mobile lists'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}
@@ -81,7 +81,7 @@ get_header();
 		if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fAddEditMobileList" action="/mobile-marketing/mobile-lists/add-edit/<?php if ( $mobile_list_id ) echo "?mlid=$mobile_list_id"; ?>" method="post">
+		<form name="fAddEditMobileList" action="/mobile-marketing/lists/add-edit/<?php if ( $mobile_list_id ) echo "?mlid=$mobile_list_id"; ?>" method="post">
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td><label for="tName"><?php echo _('Name'); ?>:</label></td>

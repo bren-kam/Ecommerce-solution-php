@@ -30,6 +30,12 @@ $timezone = $w->get_setting( 'timezone' );
 $now = new DateTime;
 $now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
 
+$v->form_name = 'fMobileMessage';
+$v->add_validation( 'taMessage', 'req', _('The "Message" field is required') );
+$v->add_validation( 'taMessage', 'maxlen=140', _('The "Message" field must be 140 characters or less') );
+
+$v->add_validation( 'cbMobileLists', 'req', _('You must select at least one list to send to') );
+
 // Initialize variable
 $success = false;
 
@@ -79,13 +85,13 @@ if ( $mobile_message_id ) {
 	);
 }
 
-css( 'jquery.timepicker' );
-javascript( 'mammoth', 'jquery.timepicker', 'mobile-marketing/messages/posting' );
+css( 'mobile-marketing/main', 'jquery.timepicker' );
+javascript( 'mammoth', 'jquery.timepicker', 'mobile-marketing/messages/add-edit' );
 
 // Load the jQuery UI CSS
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
-$selected = "social_media";
+$selected = "mobile_marketing";
 $title = _('Posting') . ' | ' . _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
 get_header();
 ?>
@@ -104,7 +110,10 @@ get_header();
             <table>
                 <tr>
                     <td class="top"><label for="taMessage"><?php echo _('Message'); ?>:</label></td>
-                    <td><textarea name="taMessage" id="taMessage" rows="5" cols="50"></textarea></td>
+                    <td>
+                        <textarea name="taMessage" id="taMessage" rows="5" cols="50"></textarea>
+                        <a href="javascript:var%20e=document.createElement('script');e.setAttribute('language','javascript');e.setAttribute('src','//bitly.com/bookmarklet/load.js');document.body.appendChild(e);void(0);" id="aURLShortner" title="<?php echo _('Shorten URL'); ?>"><?php echo _('Shorten URL'); ?></a>
+                    </td>
                 </tr>
                 <tr>
                     <td class="top"><label><?php echo _('Lists'); ?>:</label></td>
@@ -125,12 +134,12 @@ get_header();
                     <td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
                     <td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date_posted ) ) ? $now->format('m/d/Y') : $date_posted; ?>" maxlength="10" /></td>
                     <td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-                    <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i a') : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+                    <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i A') : dt::date( 'h:i A', strtotime( $time ) ); ?>" maxlength="8" /></td>
                 </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td><input type="submit" class="button" value="<?php echo _('Post to Facebook'); ?>" /></td>
+                    <td><input type="submit" class="button" value="<?php echo _('Schedule Message'); ?>" /></td>
                 </tr>
             </table>
             <?php nonce::field('fb-post'); ?>

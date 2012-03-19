@@ -16,8 +16,8 @@ $image_name = "logo." . str_replace( 'jpeg', 'jpg', $file_extension );
 $dir = OPERATING_PATH . 'media/uploads/site_logos/' . $_POST['wid'] . '/';
 
 // Directory needs to exist
-if ( !is_dir( $upload_dir ) )
-	mkdir( $upload_dir, 0777, true );
+if ( !is_dir( $dir ) )
+	mkdir( $dir, 0777, true );
 
 $image_path = $dir . $image_name;
 
@@ -32,8 +32,8 @@ $f = new Files;
 $user['website'] = $w->get_website( $_POST['wid'] );
 
 // Resize the logo
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, 'logo', 700, 200, true, false ), _('An error occurred while trying to upload your logo. Please refresh the page and try again.') );
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir . 'large/', 'logo', 700, 700, 100, true, false ), _('An error occurred while trying to upload your logo. Please refresh the page and try again.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, 'logo', 700, 200 ), _('An error occurred while trying to upload your logo. Please refresh the page and try again.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir . 'large/', 'logo', 700, 700, 100 ), _('An error occurred while trying to upload your logo. Please refresh the page and try again.') );
 
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $image_path, $image_name, $user['website']['website_id'], 'logo/' ), _('An error occurred while trying to upload your logo to the website. Please refresh the page and try again') );

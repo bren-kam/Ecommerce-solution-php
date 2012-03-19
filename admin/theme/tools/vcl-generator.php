@@ -16,6 +16,13 @@ $success = false;
 $output = "";
 
 if ( ! empty( $_POST['iplist'] ) ) {
+	
+		
+	$output .=  "#varnishd -f /etc/varnish/s98_alldomains_prod.vcl -s malloc,32M -T :8887 -a 0.0.0.0:80\n";
+
+	$output .=  "#BEGIN BACKEND LOGIC\n\n\n";
+			
+			
 	//process
 	$ip_data = $_POST['iplist'];
 	
@@ -23,33 +30,39 @@ if ( ! empty( $_POST['iplist'] ) ) {
 	
 	//isolate data
 	$lines = explode( "\n", $ip_data );
+	
+	// Split ips and hosts
 	foreach ( $lines as $l ) {
 		$ips[] = explode( "\t", $l );
 	}
 	
-	$output .=  "#varnishd -f /etc/varnish/s98_alldomains_prod.vcl -s malloc,32M -T :8887 -a 0.0.0.0:80\n";
 
-	$output .=  "#BEGIN BACKEND LOGIC\n\n\n";
-			
 	
 	//generate backends
-	foreach( $ips as $ip ) {
-		$name = "b" . preg_replace( "/\./", "_", $ip[0] );
-		$output .=  "backend " . $name . '{' . "\n";
-		$output .=  '  .host = "' . $ip[0] . '";' . "\n";
-		$output .=  '  .port = "' . $_POST['port'] . '";' . "\n";
-		$output .=  '  .connect_timeout = 30s; ' . "\n";
-		$output .=  '  .first_byte_timeout = 30s; ' . "\n";
-		$output .=  '  .between_bytes_timeout = 30s; ' . "\n";
-		$output .=  '}' . "\n\n";
+	foreach( $ips as &$ip ) { 
+		$ip[0] = trim( $ip[0], ' ' );
+		$ip[1] = trim( $ip[1], ' ' );
 		
-		/* backend b199_204_138_145 {
-		  .host = "199.204.138.145";
-		  .port = "8001";
-		  .connect_timeout = 30s;
-		  .first_byte_timeout = 30s;
-		  .between_bytes_timeout = 30s;
-		} */
+		// Omit blank IPs and Empty hostnames
+		if( $ip[0] && $ip[1] ) {
+	 		$name = "b" . preg_replace( "/\./", "_", $ip[0] );
+			
+			$output .=  "backend " . $name . '{' . "\n";
+			$output .=  '  .host = "' . $ip[0] . '";' . "\n";
+			$output .=  '  .port = "' . $_POST['port'] . '";' . "\n";
+			$output .=  '  .connect_timeout = 30s; ' . "\n";
+			$output .=  '  .first_byte_timeout = 30s; ' . "\n";
+			$output .=  '  .between_bytes_timeout = 30s; ' . "\n";
+			$output .=  '}' . "\n\n";
+			
+			/* backend b199_204_138_145 {
+			  .host = "199.204.138.145";
+			  .port = "8001";
+			  .connect_timeout = 30s;
+			  .first_byte_timeout = 30s;
+			  .between_bytes_timeout = 30s;
+			} */
+		}
 	}
 	
 	$output .=  'backend default {' . "\n" ;
@@ -72,27 +85,16 @@ if ( ! empty( $_POST['iplist'] ) ) {
 	$first = true;
 	// Buffer, for ordering
 	$buffer = false;
-	foreach( $ips as $ip ) {
-		
-		if( $ip[0] == '199.47.222.13' ) {
-			$buffer = $ip; 
-			continue;
-		} else {
-			
-			$name = "b" . preg_replace( "/\./", "_", $ip[0] );
-			$domains = preg_replace( "/ /", ")|(", $ip[1] );
-			if ( $first ) {
-				$output .=  '  if ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
-				$first = false;
+	foreach( $ips as &$ip ) {
+		// Omit blank IPs and Empty hostnames
+		if( $ip[0] && $ip[1] ) {		
+			if( $ip[0] == '199.47.222.13' ) {
+				$buffer = $ip; 
+				continue;
 			} else {
-				$output .=  ' elsif ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
-			}
-			$output .=  '    set req.backend = ' . $name . ';' . "\n";
-			$output .=  '  }';
-			
-			if ( $buffer ) {
-				$name = "b" . preg_replace( "/\./", "_", $buffer[0] );
-				$domains = preg_replace( "/ /", ")|(", $buffer[1] );
+			 	
+				$name = "b" . preg_replace( "/\./", "_", $ip[0] );
+				$domains = preg_replace( "/ /", ")|(", $ip[1] );
 				if ( $first ) {
 					$output .=  '  if ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
 					$first = false;
@@ -101,8 +103,21 @@ if ( ! empty( $_POST['iplist'] ) ) {
 				}
 				$output .=  '    set req.backend = ' . $name . ';' . "\n";
 				$output .=  '  }';
-			
-				$buffer = false;
+				
+				if ( $buffer ) {
+					$name = "b" . preg_replace( "/\./", "_", $buffer[0] );
+					$domains = preg_replace( "/ /", ")|(", $buffer[1] );
+					if ( $first ) {
+						$output .=  '  if ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
+						$first = false;
+					} else {
+						$output .=  ' elsif ( req.http.host ~ "(' . $domains . ')" ) {' . "\n";
+					}
+					$output .=  '    set req.backend = ' . $name . ';' . "\n";
+					$output .=  '  }';
+				
+					$buffer = false;
+				}
 			}
 		}
 	}
@@ -136,24 +151,20 @@ get_header();
 			</p>
 			<p>
 				<strong>Custom Logic</strong><br/>
-				<textarea name="custom">if ( req.http.host ~ "test.imagineretailer.com" ) {
-			  	
-			  	#Go ahead and get cache up on static files
-			  	if ( req.url ~ "\.(js)|(css)|(jpg)|(jpeg)|(png)|(gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
-			  		unset req.http.Cookie;
-			  		return(lookup);
-			  	}
-			  
-				if ( req.http.Cookie ~ "vcache" ) {
-					return(pass);
-				} elsif ( req.http.Cookie ~ "gsr_" ) {
-					return(pass);
-				} elsif ( req.url ~ "wp-admin" ) {
-					return(pass);
-				}
-			
-				unset req.http.Cookie;
-			 }</textarea>
+				<textarea name="custom">	#Go ahead and get cache up on static files
+  	if ( req.url ~ "\.(js|css|jpg|jpeg|png|gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
+  		unset req.http.Cookie;
+  		return(lookup);
+  	}
+  
+	if ( req.http.Cookie ~ "gsr_" ) {
+		return(pass);
+	} elsif ( req.url ~ "wp-admin" ) {
+		return(pass);
+	}
+
+	unset req.http.Cookie;
+</textarea>
 			</p>
 			
 			<input class="button" type="submit" />
@@ -167,11 +178,12 @@ get_header();
 	
 	<h1>Reloading VCL</h1>
 	<br style="clear: both;" />
+	<?php $rando = substr( md5( date('Y-m-d H:i:s', time() ) ), -8, 8); ?>
 	
 	<p>
 		Load new VCL (rl01 can be any unique name)<br/><br/>
-		<pre>varnishadm -T localhost:6082 vcl.load rl01 /etc/varnish/s98_alldomains_prod.vcl
-varnishadm -T localhost:6082 vcl.use rl01</pre>
+		<pre>varnishadm -T localhost:6082 vcl.load rl<?php echo $rando; ?> /etc/varnish/s98_alldomains_prod.vcl
+varnishadm -T localhost:6082 vcl.use rl<?php echo $rando; ?></pre>
 	</p>
 </div>
 

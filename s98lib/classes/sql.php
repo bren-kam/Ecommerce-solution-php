@@ -37,7 +37,7 @@ if ( !defined('DB_CHARSET') )
 if ( !defined('DB_COLLATE') )
 	define( 'DB_COLLATE', '' );
 
-class SQL extends Base_Class {
+class SQL {
 	/**
 	 * The holder for the MySQLi object
 	 * 

@@ -73,7 +73,6 @@ class image extends Base_Class {
 		$mime = $info['mime'];
 		
 		// Keep proportions
-		// if ( $keep_proportions ) {
 		if ( $fill_constraints ) {
 			list( $new_width, $new_height ) = self::proportions( $width, $height, $width_constraint, $height_constraint );
 		} else {
@@ -127,24 +126,44 @@ class image extends Base_Class {
 				$new_image_ext = 'jpg';
 			break;
 		}
-
-		// New Image
-        if ( $keep_proportions ) { 
-			$image_c = imagecreatetruecolor( $new_width, $new_height );
-		} else {
-			$image_c = imagecreatetruecolor( $width_constraint, $height_constraint );
-		}
+		
+		// Create New Image
 		$new_image = $image_create_func( $image_to_resize );
 		
+		// New Image
+        if ( $keep_proportions ) { 
+			$resized_image = imagecreatetruecolor( $new_width, $new_height );
+		} else {
+			$resized_image = imagecreatetruecolor( $width_constraint, $height_constraint );
+		}
+
 		// Keep transparency
-		if ( 'gif' == $type || 'png' == $type ) {
-			//$transparent_color = imagecolortransparent( $new_image );
-			imagepalettecopy( $new_image, $image_c );
-			imagefill( $image_c, 0, 0, imagecolorallocate( $image_c, 255, 255, 255 ) ); // Make the background white
-			//imagecolortransparent( $image_c, $transparent_color );
+		if ( $info[2] == IMAGETYPE_GIF || $info[2] == IMAGETYPE_PNG ) {
+			$transparent_index = imagecolortransparent( $new_image );
+			
+			if ( $transparent_index >= 0 ) {
+				$transparent_color = imagecolorsforindex( $new_image, transparent_index );
+				$transparent_allocated_color = imagecolorallocate( $resized_image, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue'] );
+				
+				imagefill( $resized_image, 0, 0, $transparent_allocated_color ); // Make the background white
+				
+				imagecolortransparent( $resized_image, $transparent_allocated_color );
+			} elseif ( $info[2] == IMAGETYPE_PNG ) {
+				// Turn off transparency blending (temporarily)
+				imagealphablending( $resized_image, false );
+		   
+				// Create a new transparent color for image
+				$transparent_color = imagecolorallocatealpha( $resized_image, 0, 0, 0, 127 );
+		   
+				// Completely fill the background of the new image with allocated color.
+				imagefill( $resized_image, 0, 0, $transparent_color );
+		   
+				// Restore transparency blending
+				imagesavealpha( $resized_image, true );
+			}
 		}
 		
-		if ( !$keep_proportions) {
+		if ( !$keep_proportions ) {
 			$destination_x = ceil( ( $width_constraint - $new_width ) / 2 );
 			$destination_y = ceil( ( $height_constraint - $new_height ) / 2 );
 
@@ -154,9 +173,7 @@ class image extends Base_Class {
 		}
 		
 		// Copy image to new image with new proportions
-		imagecopyresampled( $image_c, $new_image, $destination_x, $destination_y, 0, 0, $new_width, $new_height, $width, $height );
-		
-		// mail( 'tom@studio98.com', 'Image Upload Data', ( "destination_x:" . $destination_x . ", destination_y:" . $destination_y . ", width:" . $width . ", height:" . $height . ", new_width:" . $new_width . ", new_height:" . $new_height.", width_constraint:" . $width_constraint . ", height_constraint:" . $height_constraint ) );
+		imagecopyresampled( $resized_image, $new_image, $destination_x, $destination_y, 0, 0, $new_width, $new_height, $width, $height );
 		
 		// Make the directory if it doesn't exist
 		if ( !file_exists( $save_folder ) )
@@ -170,7 +187,7 @@ class image extends Base_Class {
 		if ( is_file( $save_path ) )
 			unlink( $save_path );
 		
-		$process = ( 'jpeg' == $type ) ? $image_save_func( $image_c, $save_path, $quality ) : $image_save_func( $image_c, $save_path );
+		$process = ( 'jpeg' == $type ) ? $image_save_func( $resized_image, $save_path, $quality ) : $image_save_func( $resized_image, $save_path );
 		
 		return array( $process, $save_path );
 	}
