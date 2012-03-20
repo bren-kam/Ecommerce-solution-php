@@ -15,37 +15,51 @@ if( !$user )
 define( 'CRAIGSLIST_HEADLINES', 10 );
 
 $c = new Craigslist();
+$v = new Validator();
 
 // Get the Craigslist Ad Id
 $craigslist_ad_id = ( isset( $_GET['caid'] ) ) ? $_GET['caid'] : false;
+
+$v->form_name = 'fAddCraigslistTemplate';
+$v->add_validation( 'taDescription', 'req', _('The "Description" field is required') );
+$v->add_validation( 'taDescription', 'maxlen=30000', _('The "Description" field must be 30,000 characters or less') );
+
+$v->add_validation( 'tPrice', 'float', _('The "Price" field may only contain numbers and a decimal point.') );
+
+// Add validation
+add_footer( $v->js_validation() );
 
 // Initialize variable
 $success = false;
 
 // Make sure it's a valid request
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
-	$post = '1' == $_POST['hPostAd'];
+    $errs = $v->validate();
 
-    if ( empty ( $_POST['hCraigslistAdID'] ) ) {
-        // Create ad
-        $success = $c->create( $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
+	// if there are no errors
+	if ( empty( $errs ) ) {
+        $post = '1' == $_POST['hPostAd'];
 
-        if ( $success && $post )
-            $c->post_ad( $success, $_POST['hCraigslistPost'] );
-    } else {
-        // Update Ad
-        $success = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
+        if ( empty ( $_POST['hCraigslistAdID'] ) ) {
+            // Create ad
+            $success = $c->create( $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
 
-        if ( $success && $post ) {
-            if ( $c->post_ad( $_POST['hCraigslistAdID'], $_POST['hCraigslistPost'] ) ) {
-                url::redirect('/craigslist/?m=1');
-            } else {
-                $success = false;
-                $errs = _('An error occurred while trying to send this post to Craigslist. Please make sure your account has been connected to Craigslist and try again.');
+            if ( $success && $post )
+                $c->post_ad( $success, $_POST['hCraigslistPost'] );
+        } else {
+            // Update Ad
+            $success = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
+
+            if ( $success && $post ) {
+                if ( $c->post_ad( $_POST['hCraigslistAdID'], $_POST['hCraigslistPost'] ) ) {
+                    url::redirect('/craigslist/?m=1');
+                } else {
+                    $success = false;
+                    $errs = _('An error occurred while trying to send this post to Craigslist. Please make sure your account has been connected to Craigslist and try again.');
+                }
             }
         }
     }
-
 }
 
 // Get the email if necessary
@@ -134,7 +148,7 @@ get_header();
                         ?>
                         <tr>
                             <td><?php echo $i + 1; ?>)</td>
-                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" /> <a href="javascript:;" class="random-headline" title="<?php echo _('Random Title'); ?>" ajax="1"><?php echo _('Random Headline'); ?></a></td>
+                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" maxlength="70" /> <a href="javascript:;" class="random-headline" title="<?php echo _('Random Title'); ?>" ajax="1"><?php echo _('Random Headline'); ?></a></td>
                         </tr>
                    <?php } ?>
                 </table>

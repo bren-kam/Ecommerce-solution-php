@@ -33,6 +33,31 @@ class AM_Blast extends Avid_Mobile_API {
         // Return the Blast ID
 		return $this->_execute( self::OPERATION_PUT, 'blast.create', compact( 'name', 'blast_text', 'blast_type' ) );
 	}
+	
+	/**
+	 * Update Blast
+	 *
+	 * @param int $id
+     * @param string $name
+     * @param string $blast_text
+     * @param string $blast_type [optional]
+	 * @return bool
+	 */
+	public function update( $id, $name, $blast_text, $blast_type = 'text' ) {
+        // Return the Blast ID
+		return $this->_execute( self::OPERATION_PUT, 'blast.update', compact( 'id', 'name', 'blast_text', 'blast_type' ) );
+	}
+	
+	/**
+	 * Delete Blast
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete( $id ) {
+        // Return the Blast ID
+		return $this->_execute( self::OPERATION_PUT, 'blast.delete', compact( 'id' ) );
+	}
 
     /**
 	 * Link Dynamic Group to Keyword Campaign
