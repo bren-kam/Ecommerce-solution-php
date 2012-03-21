@@ -401,8 +401,8 @@ get_header();
                             <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
                         </p>
                         <p>
-                            <label for="cbAshleyAlternateFolder"><?php echo _('Ashley - Alternate Folder'); ?>:</label>
                             <input type="checkbox" class="cb" name="cbAshleyAlternateFolder" id="cbAshleyAlternateFolder" value="1"<?php if ( !empty( $settings['ashley-alternate-folder'] ) ) echo ' checked="checked"'; ?> />
+                            <label for="cbAshleyAlternateFolder" class="inline"><?php echo _('Ashley - Alternate Folder'); ?>:</label>
                         </p>
 
                         <?php if ( !empty( $settings['ashley-ftp-password'] ) ) { ?>

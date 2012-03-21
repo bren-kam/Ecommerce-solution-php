@@ -70,7 +70,7 @@ class Ashley_Feed extends Base_Class {
 		// Initialize variables
 		$folder = str_replace( 'CE_', '', $username );
         $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
-        
+
 		$products = $this->get_website_product_skus( $website_id );
 		
 		if ( !is_array( $products ) )
