@@ -142,7 +142,7 @@ class image extends Base_Class {
 			$transparent_index = imagecolortransparent( $new_image );
 			
 			if ( $transparent_index >= 0 ) {
-				$transparent_color = imagecolorsforindex( $new_image, transparent_index );
+				$transparent_color = imagecolorsforindex( $new_image, $transparent_index );
 				$transparent_allocated_color = imagecolorallocate( $resized_image, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue'] );
 				
 				imagefill( $resized_image, 0, 0, $transparent_allocated_color ); // Make the background white
@@ -153,10 +153,10 @@ class image extends Base_Class {
 				imagealphablending( $resized_image, false );
 		   
 				// Create a new transparent color for image
-				$transparent_color = imagecolorallocatealpha( $resized_image, 0, 0, 0, 127 );
+				$transparent_allocated_color = imagecolorallocatealpha( $resized_image, 0, 0, 0, 127 );
 		   
 				// Completely fill the background of the new image with allocated color.
-				imagefill( $resized_image, 0, 0, $transparent_color );
+				imagefill( $resized_image, 0, 0, $transparent_allocated_color );
 		   
 				// Restore transparency blending
 				imagesavealpha( $resized_image, true );
@@ -167,7 +167,10 @@ class image extends Base_Class {
 			$destination_x = ceil( ( $width_constraint - $new_width ) / 2 );
 			$destination_y = ceil( ( $height_constraint - $new_height ) / 2 );
 
-			imagefilledrectangle( $image_c, 0, 0, $width_constraint, $height_constraint, imagecolorallocate( $image_c, 255, 255, 255 ) );
+            // Determine allocated color -- special ternary operator
+            $allocated_color = $transparent_allocated_color ?: imagecolorallocate( $resized_image, 255, 255, 255 );
+
+			imagefilledrectangle( $resized_image, 0, 0, $width_constraint, $height_constraint, $allocated_color );
 		} else {
 			$destination_x = $destination_y = 0;
 		}

@@ -62,19 +62,21 @@ class Ashley_Feed extends Base_Class {
 		$this->timer_start();
 		
         // Get the settings
-		$settings = $this->w->get_settings( $website_id, array( 'ashley-ftp-username', 'ashley-ftp-password' ) );
+		$settings = $this->w->get_settings( $website_id, array( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' ) );
 		
 		$username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
 		$password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
 		
 		// Initialize variables
 		$folder = str_replace( 'CE_', '', $username );
+        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
+        
 		$products = $this->get_website_product_skus( $website_id );
 		
 		if ( !is_array( $products ) )
 			$products = array();
 		
-		$ftp = new FTP( 0, "/CustEDI/$folder/Outbound/", true );
+		$ftp = new FTP( 0, "/CustEDI/$folder/$subfolder/", true );
 		ini_set( 'max_execution_time', 600 ); // 10 minutes
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );

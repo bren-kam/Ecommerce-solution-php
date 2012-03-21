@@ -129,6 +129,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
+            , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
             , 'avid-mobile-customer-id' => $_POST['tAvidMobileCustomerID']
             , 'avid-mobile-username' => ( empty( $_POST['tAvidMobileUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobileUsername'], ENCRYPTION_KEY ) )
@@ -151,6 +152,7 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ga-password'
     , 'ashley-ftp-username'
     , 'ashley-ftp-password'
+    , 'ashley-alternate-folder'
     , 'social-media-add-ons'
     , 'avid-mobile-customer-id'
     , 'avid-mobile-username'
@@ -398,6 +400,11 @@ get_header();
                             <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
                             <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
                         </p>
+                        <p>
+                            <label for="cbAshleyAlternateFolder"><?php echo _('Ashley - Alternate Folder'); ?>:</label>
+                            <input type="checkbox" class="cb" name="cbAshleyAlternateFolder" id="cbAshleyAlternateFolder" value="1"<?php if ( !empty( $settings['ashley-alternate-folder'] ) ) echo ' checked="checked"'; ?> />
+                        </p>
+
                         <?php if ( !empty( $settings['ashley-ftp-password'] ) ) { ?>
                         <p><a href="/bots/ashley-feed/?wid=<?php echo $_GET['wid']; ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
                         <br />
