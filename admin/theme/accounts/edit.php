@@ -206,6 +206,9 @@ get_header();
             if ( $user['role'] >= 7 ) {
             ?>
                 <p align="right">
+                    <?php if ( 10 == $user['role'] ) { ?>
+					<a href="/accounts/dns/?wid=<?php echo $_GET['wid']; ?>" title="<?php echo _('Edit DNS'); ?>"><?php echo _('Edit DNS'); ?></a> |
+					<?php } ?>
                     <a href="javascript:;" id="aDeleteProducts" rel="<?php echo $_GET['wid']; ?>" title="<?php echo _('Delete Categories and Products'); ?>"><?php echo _('Delete Categories and Products'); ?></a> |
                     <?php if ( 10 == $user['role'] ) { ?>
                         <a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a>
