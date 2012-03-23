@@ -152,8 +152,8 @@ get_header('facebook/');
 			</tr>
 		</table>
 		<?php nonce::field('connect-to-field'); ?>
-		</form>
         <input type="hidden" name="app_data" value="<?php echo $_REQUEST['app_data']; ?>" />
+		</form>
 	</div>
 	<?php } ?>
 </div>
