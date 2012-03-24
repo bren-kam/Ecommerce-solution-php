@@ -17,7 +17,31 @@ function postLoad( $ ) {
 	$('#aAddRecord').click( function() {
 		// Find parent tr and add a new one before it
 		var newRecord = $('#original tr:first').clone( true, true );
+		$('input.action', newRecord).val('1');
 		$(this).parents('tr:first').before( newRecord );
+	});
+	
+	// Change the inputs to being editable
+	$('.edit-record').live( 'click', function() {
+		var parentTR = $(this).parents('tr:first'), deleteTR = parentTR.clone();
+		deleteTR.addClass('hidden');
+		$('input.action', deleteTR).val('0');
+		parentTR.before( deleteTR );
+		
+		$('input.disabled, select.disabled, textarea.disabled', parentTR).removeClass('disabled').attr( 'disabled', false );
+		$('input.disabled, select.disabled, textarea.disabled', deleteTR).removeClass('disabled').attr( 'disabled', false );
+		$('input.action', parentTR).val('1');
+	});
+	
+	// Change the inputs to being editable
+	$('.delete-record').live( 'click', function() {
+		if ( !confirm( 'Are you sure you want to delete this record? This cannot be undone.' ) )
+			return false;
+		
+		var parentTR = $(this).parents('tr:first');
+		$('input.action', parentTR).val('0');
+		parentTR.addClass('hidden');
+		$('input.disabled, select.disabled, textarea.disabled', parentTR).removeClass('disabled').attr( 'disabled', false );
 	});
     
 	// Temporary Value

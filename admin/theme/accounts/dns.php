@@ -44,10 +44,23 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-dns' 
 				// Get the records
 				$records = format::trim_deep( explode( "\n", $_POST['changes']['records'][$i] ) );
 				
-				$changes[] = $r53->prepareChange( 'CREATE', $_POST['changes']['name'][$i], $_POST['changes']['type'][$i], $_POST['changes']['ttl'][$i], $records );
+				switch( $_POST['changes']['action'][$i] ) {
+					default:
+						continue;
+					break;
+					
+					case '1':
+						$action = 'CREATE';
+					break;
+					
+					case '0':
+						$action = 'DELETE';
+					break;
+				}
+				
+				$changes[] = $r53->prepareChange( $action, $_POST['changes']['name'][$i], $_POST['changes']['type'][$i], $_POST['changes']['ttl'][$i], $records );
 			}
 			
-			fn::info( $changes );
 			$response = $r53->changeResourceRecordSets( $zone_id, $changes );
 		}
 	}
@@ -96,9 +109,8 @@ $zone = $r53->getHostedZone( $zone_id );
 $records = $r53->listResourceRecordSets( $zone_id );
 
 usort( $records['ResourceRecordSets'], 'dns_sort' );
-//$records['ResourceRecordSets'] = array_reverse( $records['ResourceRecordSets'] );
 
-css( 'form', 'accounts/edit' );
+css( 'form', 'accounts/dns' );
 javascript( 'validator', 'jquery', 'accounts/dns' );
 
 $selected = 'accounts';
@@ -111,6 +123,17 @@ get_header();
 	<br clear="all" /><br />
 	<?php $sidebar_emails = true; get_sidebar( 'accounts/', 'dns' ); ?>
 	<div id="subcontent">
+		<?php 
+		if ( isset( $response ) ) { 
+			if ( $response ) {
+			?>
+				<p class="success"><?php echo _('Your DNS Zone file has been successfully updated!'); ?></p>
+			<?php } else { ?>
+				<p class="success"><?php echo _('There was an error while trying to update your DNS Zone file. Please try again.'); ?></p>
+			<?php
+			}
+		}
+		?>
 		<form name="fEditDNS" action="" method="post">
         <table cellpadding="0" cellspacing="0">
 			<tr>
@@ -127,7 +150,7 @@ get_header();
 								<th><?php echo _('Type'); ?></th>
 								<th><?php echo _('TTL'); ?></th>
 								<th><?php echo _('Records'); ?></th>
-								<th>&nbsp;</th>
+								<th width="35">&nbsp;</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -137,11 +160,28 @@ get_header();
 								$no_delete =  $full_domain_name == $r['Name'] && ( 'NS' == $r['Type'] || 'SOA' == $r['Type'] );
 								?>
 								<tr>
-									<td><?php echo $r['Name']; ?></td>
-									<td><?php echo $r['Type']; ?></td>
-									<td><?php echo $r['TTL']; ?></td>
-									<td><?php echo implode( "<br />\n", $r['ResourceRecords'] ); ?></td>
-									<td><?php if ( !$no_delete ) { ?><a href="javascript:;" class="delete-record" title="<?php echo _('Delete Record'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete Record'); ?>" /></a>&nbsp;<?php } ?></td>
+									<td class="top"><?php if ( $no_delete ) { echo $r['Name']; } else { ?><input type="text" name="changes[name][]" class="tb disabled" disabled="disabled" tmpval="<?php echo _('Domain'); ?>" value="<?php echo $r['Name']; ?>" /><input class="action disabled" type="hidden" disabled="disabled" name="changes[action][]" value="" /><?php } ?></td>
+									<td class="top">
+										<?php if ( $no_delete ) { echo $r['Type']; } else { ?>
+										<select name="changes[type][]" class="disabled" disabled="disabled">
+											<?php
+											$types = array( 'A', 'CNAME', 'MX', 'NS' );
+											foreach ( $types as $type ) {
+												$selected = ( $type == $r['Type'] ) ? ' selected="Selected"' : '';
+												?>
+												<option value="<?php echo $type; ?>"<?php echo $selected; ?>><?php echo $type; ?></option>
+											<?php } ?>
+										</select>
+										<?php } ?>
+									</td>
+									<td class="top"><?php if ( $no_delete ) { echo $r['TTL']; } else { ?><input type="text" name="changes[ttl][]" class="tb disabled" tmpval="TTL" value="<?php echo $r['TTL']; ?>" disabled="disabled" /><?php } ?></td>
+									<td class="top"><?php if ( $no_delete ) { echo implode( "<br />\n", $r['ResourceRecords'] ); } else { ?><textarea name="changes[records][]" class="tmpval disabled" cols="50" rows="3" tmpval="<?php echo _('Records - 1 per line'); ?>" disabled="disabled"><?php echo implode( "\n", $r['ResourceRecords'] ); ?></textarea><?php } ?></td>
+									<td class="top">
+										<?php if ( !$no_delete ) { ?>
+											<a href="javascript:;" class="edit-record" title="<?php echo _('Edit Record'); ?>"><img src="/images/icons/edit.png" width="15" height="17" alt="<?php echo _('Edit Record'); ?>" /></a>
+											<a href="javascript:;" class="delete-record" title="<?php echo _('Delete Record'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete Record'); ?>" /></a>
+										<?php } ?>
+									</td>
 								</tr>
 							<?php } ?>
 							<tr class="last"><td colspan="4"><a href="javascript:;" id="aAddRecord" title="<?php echo _('Add Record'); ?>"><?php echo _('Add Record'); ?></a></td></tr>
@@ -159,17 +199,23 @@ get_header();
 		</form>
 		<table class="hidden" id="original">
 			<tr>
-				<td class="top"><input type="text" name="changes[name][]" class="tb" tmpval="<?php echo _('Domain'); ?>" /></td>
+				<td class="top"><input type="text" name="changes[name][]" class="tb" tmpval="<?php echo _('Domain'); ?>" /><input type="hidden" class="action" name="changes[action][]" value="1" /></td>
 				<td class="top">
 					<select name="changes[type][]">
-						<option value="A">A</option>
-						<option value="CNAME">CNAME</option>
-						<option value="MX">MX</option>
-						<option value="NS">NS</option>
+						<?php
+						$types = array( 'A', 'CNAME', 'MX', 'NS' );
+						foreach ( $types as $type ) {
+							?>
+							<option value="<?php echo $type; ?>"><?php echo $type; ?></option>
+						<?php } ?>
 					</select>
 				</td>
 				<td class="top"><input type="text" name="changes[ttl][]" class="tb" tmpval="TTL" value="14400" /></td>
 				<td class="top"><textarea name="changes[records][]" class="tmpval" cols="50" rows="3" tmpval="<?php echo _('Records - 1 per line'); ?>"><?php echo _('Records - 1 per line'); ?></textarea></td>
+				<td>
+					<a href="javascript:;" class="edit-record" title="<?php echo _('Edit Record'); ?>"><img src="/images/icons/edit.png" width="15" height="17" alt="<?php echo _('Edit Record'); ?>" /></a>
+					<a href="javascript:;" class="delete-record" title="<?php echo _('Delete Record'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete Record'); ?>" /></a>
+				</td>
 			</tr>
 		</table>
 	</div>
