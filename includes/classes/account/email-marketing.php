@@ -150,7 +150,7 @@ class Email_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_unsubscribed` ) ) AS date FROM `emails` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_timestamp` ) ) AS date FROM `emails` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -189,7 +189,7 @@ class Email_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_unsubscribed` ) ) AS date FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_timestamp` ) ) AS date FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

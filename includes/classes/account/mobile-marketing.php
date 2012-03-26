@@ -13,6 +13,8 @@ class Mobile_Marketing extends Base_Class {
     private $settings;
     private $am_keywords;
     private $am_groups;
+    private $am_members;
+    private $am_blast;
 
 	/**
 	 * Construct initializes data
@@ -904,47 +906,82 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Add a new message
 	 *
+	 * @param string $title
 	 * @param string $message
      * @param string $date_sent
      * @param bool $future
 	 * @return int
 	 */
-	public function create_message( $message, $date_sent, $mobile_list_ids, $future ) {
+	public function create_message( $title, $message, $date_sent, $mobile_list_ids, $future ) {
         global $user;
 
-        // @avid
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('blast') )
+            return false;
+		
+		// Delete Avoid Mobile Group
+        $am_blast_id = $this->am_blast->create( $title, $message . "\n" );
+		
+		// Failed!
+		if ( !$am_blast_id )
+			return false;
+		
+		// Create date object
+		$date = new DateTime( $date_sent );
+		
+		// Schedule
+		if ( !$this->am_blast->schedule( $am_blast_id, $date->format('m'), $date->format('d'), '*', $date->format('Y'), $date->format('H'), $date->format('i'), $date->format('s') ) )
+			return false;
+		
 		// Create the posting post
-        $this->db->insert( 'mobile_messages', array( 'website_id' => $user['website']['website_id'], 'message' => $message, 'date_sent' => $date_sent, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isss' );
+        $this->db->insert( 'mobile_messages', array( 'website_id' => $user['website']['website_id'], 'am_blast_id' => $am_blast_id, 'title' => $title, 'message' => $message, 'status' => $future, 'date_sent' => $date_sent, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iississ' );
 
         // Handle any error
         if ( $this->db->errno() ) {
             $this->err( 'Failed to create the mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
+		
+		// Get the mobile message ID
+		$mobile_message_id = $this->db->insert_id;
+		
+		// Add lists
+		foreach ( $mobile_list_ids as $mlid ) {
+			// Get the mobile list so we can get the group ID
+			$mobile_list = $this->get_mobile_list( $mlid );
+			
+			// Link it to a group
+			$this->am_blast->add_group( $am_blast_id, $mobile_list['am_group_id'] );
+		}
 
-		return $this->db->insert_id;
+		return $this->add_message_lists( $mobile_message_id, $mobile_list_ids;
 	}
 
 	/**
 	 * Update a message
 	 *
 	 * @param int $mobile_message_id
+	 * @param string $title
 	 * @param string $message
 	 * @param string $date_sent
 	 * @param array $mobile_list_ids
      * @param bool $future
 	 * @return bool
 	 */
-	public function update_message( $mobile_message_id, $message, $date_sent, $mobile_list_ids, $future ) {
+	public function update_message( $mobile_message_id, $title, $message, $date_sent, $mobile_list_ids, $future ) {
 		global $user;
-
-        // If it's not future we need to send it now
-        // @avid
+		
+		// Get the mobile list
+        $message = $this->get_message( $mobile_message_id );
+		
+        // Make sure it's instantiated
+        if ( !$this->_get_am_lib('blast') )
+            return false;
 
 		// Add other date
 		$this->add_message_lists( $mobile_message_id, $mobile_list_ids );
 
-		$this->db->update( 'mobile_messages', array( 'message' => $message, 'date_sent' => $date_sent ), array( 'website_id' => $user['website']['website_id'], 'mobile_message_id' => $mobile_message_id ), 'ss', 'ii' );
+		$this->db->update( 'mobile_messages', array( 'am_blast_id' => $am_blast_id, 'title' => $title, 'message' => $message, 'status' => $future, 'date_sent' => $date_sent ), array( 'website_id' => $user['website']['website_id'], 'mobile_message_id' => $mobile_message_id ), 'issis', 'ii' );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1387,6 +1424,14 @@ class Mobile_Marketing extends Base_Class {
             return false;
 
         switch ( $library ) {
+            case 'blast':
+                library('avid-mobile/blast');
+
+                $this->blast = new AM_Blast( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+
+                return true;
+            break;
+
             case 'groups':
                 library('avid-mobile/groups');
 

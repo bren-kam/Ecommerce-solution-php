@@ -591,24 +591,28 @@ class Websites extends Base_Class {
 				$ftp->chmod( 0777, '/public_html' . $subdomain2 );
 				
 				// Get data for SSH
-				$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
-				$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
+				//$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
+				//$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
 				
 				// System version
-				$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
+				//$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
 				
 				// SSH Connection
 				$ssh_connection = ssh2_connect( '199.204.138.145', 22 );
 				ssh2_auth_password( $ssh_connection, 'root', 'GcK5oy29IiPi' );
 				
 				// Checkout
-				ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
-				
+				//ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
+
+                // Copy files
+                ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/* /home/$username/public_html" . $subdomain2 );
+
 				// Install Cron
-				ssh2_exec( $ssh_connection, 'echo -e "MAILTO=\"systemadmin@imagineretailer.com\"
+				/*ssh2_exec( $ssh_connection, 'echo -e "MAILTO=\"systemadmin@imagineretailer.com\"
 0 03 * * * /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/daily.php > /dev/null
 0 23 * * 0 /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/weekly.php > /dev/null" | crontab' );
-				
+				*/
+
 				// Update config & .htaccess file
 				$document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
 
@@ -639,7 +643,7 @@ class Websites extends Base_Class {
 				ssh2_exec( $ssh_connection, "cp -R {$document_root}/media/images/buttons/sign-up.png {$document_root}/custom/uploads/images/buttons/sign-up.png" );
 				
 				// Remove .svn/_notes folders
-				ssh2_exec( $ssh_connection, "find {$document_root}/custom/uploads/images/shopping_cart/ -name '.svn' -o -name '_notes' -exec rm -rf {} \;" );
+				//ssh2_exec( $ssh_connection, "find {$document_root}/custom/uploads/images/shopping_cart/ -name '.svn' -o -name '_notes' -exec rm -rf {} \;" );
 				
 				// Change owner of shopping_cart folder
 				ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/custom/uploads/images/shopping_cart" );
@@ -648,7 +652,7 @@ class Websites extends Base_Class {
 				$ftp->chmod( 0755, '/public_html' . $subdomain2 );
 				
 				// Updated website version
-				$this->update_website_version( $system_version, $website_id );
+				//$this->update_website_version( $system_version, $website_id );
 				
 				// Insert pages
 				$this->db->query( Pre_Data::pages_sql( $website_id ) );

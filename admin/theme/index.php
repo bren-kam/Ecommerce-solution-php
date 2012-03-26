@@ -11,6 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
+// Redirect to accounts
+url::redirect('/accounts/');
+exit;
+
 css( 'dashboard' );
 css_ie8( 'dashboard' );
 
