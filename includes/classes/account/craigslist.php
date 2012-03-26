@@ -518,7 +518,7 @@ class Craigslist extends Base_Class {
         }
 
         // Get the product image URL
-        $product_image_url = 'http://' . $product['industry'] . '.retailcatalog.us/products/' . $product['product_id'] . '/' . $product['image'];
+        $product_image_url = 'http://' . $product['industry'] . '.retailcatalog.us/products/' . $product['product_id'] . '/large/' . $product['image'];
 
         // Post the ad in each market
         foreach ( $markets as $m ) {

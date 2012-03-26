@@ -32,10 +32,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cus
 	if ( empty( $errs ) ) {
 		if ( '' != $_POST['hID'] ) {
 			$success = $sc->update_shipping_method( $_POST['hID'], $_POST['tName'], $_POST['sMethod'], $_POST['tAmount'] );
-			$success *= $sc->update_shipping_zip_codes( $_POST['hID'], explode( "\n", $_POST['taZips'] ) );
+			$success *= $sc->update_shipping_zip_codes( $_POST['hID'], format::trim_deep( explode( "\n", $_POST['taZips'] ) ) );
 		} else {
 			$website_shipping_method_id = $sc->add_shipping_method( 'custom', $_POST['tName'], $_POST['sMethod'], $_POST['tAmount'] );
-			$success = $sc->update_shipping_zip_codes( $website_shipping_method_id, explode( "\n", $_POST['taZips'] ) );
+			$success = $sc->update_shipping_zip_codes( $website_shipping_method_id, format::trim_deep( explode( "\n", $_POST['taZips'] ) ) );
 		}
 		
 		// If we were successful

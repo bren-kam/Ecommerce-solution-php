@@ -27,7 +27,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'login' ) ) {
 		
 		if ( $u->login( $_POST['tEmail'], $_POST['tPassword'], isset( $_POST['cbRememberMe'] ) ) ) {
 			if( !isset( $_POST['referer'] ) || isset( $_POST['referer'] ) && empty( $_POST['referer'] ) ) {
-				url::redirect( '/' );
+				url::redirect( '/accounts/' );
 			} else {
 				unset( $_SESSION['referer'] );
 				url::redirect( $_POST['referer'] );
