@@ -126,8 +126,12 @@ if ( ! empty( $_POST['iplist'] ) ) {
 	$output .=  ' else {' . "\n";
 	$output .=  '    set req.backend = default;' . "\n";
 	$output .=  '  }' . "\n";
-	$output .=  $_POST['custom'];
-	$output .=  '}';
+	$output .=  $_POST['custom_recv'];
+	$output .=  '}' . "\n";
+	
+	$output .= 'sub vcl_fetch {' . "\n";
+	$output .= '    ' . $_POST['custom_fetch'] . "\n";
+	$output .= '}';
 }
 
 
@@ -150,8 +154,8 @@ get_header();
 				<input class="tb" type="text" name="port" value="8001" />
 			</p>
 			<p>
-				<strong>Custom Logic</strong><br/>
-				<textarea name="custom">#Handle Captcha requests
+				<strong>Custom recv Logic</strong><br/>
+				<textarea name="custom_recv">#Handle Captcha requests
   	if (req.url ~ "captcha/" || req.request == "POST" ) {
   		/*Pipe captcha and POST requests entirely*/
   		return (pipe);
@@ -175,7 +179,12 @@ get_header();
 	}
 
 	unset req.http.Cookie;
-</textarea>
+</textarea></p>
+				<p><strong>Custom fetch Logic</strong><br/>
+				<textarea name="custom_fetch">#Go ahead and get cache up on static files
+  	if ( req.url ~ "\.(js|css|jpg|jpeg|png|gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
+  		unset beresp.http.set-cookie;
+  	}</textarea>
 			</p>
 			
 			<input class="button" type="submit" />
