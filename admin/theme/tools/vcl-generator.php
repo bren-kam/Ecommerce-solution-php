@@ -151,7 +151,18 @@ get_header();
 			</p>
 			<p>
 				<strong>Custom Logic</strong><br/>
-				<textarea name="custom">	#Go ahead and get cache up on static files
+				<textarea name="custom">#Handle Captcha requests
+  	if (req.url ~ "captcha/" || req.request == "POST" ) {
+  		/*Pipe captcha and POST requests entirely*/
+  		return (pipe);
+  	}
+  
+    if (req.request != "GET" && req.request != "HEAD") {
+        /* We only deal with GET and HEAD by default */
+        return (pass);
+    }	
+    
+    #Go ahead and get cache up on static files
   	if ( req.url ~ "\.(js|css|jpg|jpeg|png|gif)$" || req.url ~ "/js/" || req.url ~ "/css/" ) {
   		unset req.http.Cookie;
   		return(lookup);
