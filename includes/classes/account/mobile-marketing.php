@@ -954,7 +954,7 @@ class Mobile_Marketing extends Base_Class {
 			$this->am_blast->add_group( $am_blast_id, $mobile_list['am_group_id'] );
 		}
 
-		return $this->add_message_lists( $mobile_message_id, $mobile_list_ids;
+		return $this->add_message_lists( $mobile_message_id, $mobile_list_ids );
 	}
 
 	/**
@@ -1461,6 +1461,57 @@ class Mobile_Marketing extends Base_Class {
             break;
         }
     }
+
+	/** Mobile Pages **/
+	public function update_mobile_pages( $page_data ) {
+		global $user;
+		
+		$website_id = $user['website']['website_id'];
+
+		// Get current pages
+		$pages = $this->db->get_results( "SELECT a.`slug` FROM mobile_pages AS a WHERE a.`website_id` = " . $this->db->escape( $website_id ) . ";", ARRAY_A);
+		
+		// Reindex by page slugs
+		$pages = ar::assign_key( $pages, 'slug' );
+		
+		foreach( $page_data as $slug => $content ) {
+			// Page exists
+			if ( array_key_exists( $slug, $pages ) )
+				$result = $this->db->update( 'mobile_pages', array( 'content' => $content['content'], 'title' => $content['title'], 'updated_user_id' => $user['user_id'] ), array( 'slug' => $slug, 'website_id' => $website_id ), 'ssi', 'si' );
+			else // Page should be created
+				$result = $this->db->insert( 'mobile_pages', array( 'slug' => $slug, 'content' => $content['content'], 'title' => $content['title'], 'date_created' => dt::date('Y-m-d H:i:s'), 'website_id' => $website_id, 'status' => 1 ), 'ssssii' );
+			
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to update mobile pages', __LINE__, __METHOD__ );
+				return false;
+			}
+			
+		}
+		
+		return true;
+		
+	}
+
+	public function get_mobile_pages( $website_id = false ) {
+		global $user;
+		
+		if ( !$website_id )
+			$website_id = $user['website']['website_id'];
+		
+		$website_id = (int) $website_id;
+		
+		// Get current pages
+		$pages = $this->db->get_results( "SELECT a.`mobile_page_id`, a.`slug`, a.`title`, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`status`, a.`updated_user_id`, a.`date_created`, a.`date_updated`  FROM mobile_pages AS a WHERE a.`website_id` = " . $this->db->escape( $website_id ) . ";", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update mobile pages', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return ( is_array( $pages) ) ? $pages : false;
+	}
 	
 	/**
 	 * Report an error
