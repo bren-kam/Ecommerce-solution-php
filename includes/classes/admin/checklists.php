@@ -3,7 +3,7 @@
 /**
  * Handles all the checklists
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Checklists extends Base_Class {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page SKU Exists
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
  // Create new AJAX

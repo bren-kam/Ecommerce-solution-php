@@ -2,7 +2,7 @@
 /**
  * Handles standard emailing
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Emails {	

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Add Bulk
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  *
  * @since 1.0.3
  */

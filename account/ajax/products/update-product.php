@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Get Product Dialog Info
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

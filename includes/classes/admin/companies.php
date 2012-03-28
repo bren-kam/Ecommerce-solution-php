@@ -2,7 +2,7 @@
 /**
  * Handles all the companies
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Companies extends Base_Class {

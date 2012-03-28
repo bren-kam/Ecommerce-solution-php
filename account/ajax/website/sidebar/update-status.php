@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Update a Status (Enable/Disable)
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

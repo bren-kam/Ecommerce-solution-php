@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Ashley Replacement
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 if( nonce::verify( $_POST['_nonce'], 'autocomplete' ) ) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Create Section
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Admin
  */
  

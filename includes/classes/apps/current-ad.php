@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Current Ad
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Current_Ad extends Base_Class {

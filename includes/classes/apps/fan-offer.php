@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Fan Offer
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Fan_Offer extends Base_Class {

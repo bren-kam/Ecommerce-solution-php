@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Social Media Settings
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

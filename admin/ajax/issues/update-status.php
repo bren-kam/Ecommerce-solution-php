@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Update an Issue's Status
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
  
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-issue-status' ) ) {

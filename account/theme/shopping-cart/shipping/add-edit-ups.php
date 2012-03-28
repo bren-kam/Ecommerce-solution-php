@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Shipping - Add/Edit UPS Shipping Method
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

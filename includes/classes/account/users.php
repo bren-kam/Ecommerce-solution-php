@@ -2,7 +2,7 @@
 /**
  * Handles all the user information
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Users extends Base_Class {

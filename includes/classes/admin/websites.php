@@ -3,7 +3,7 @@
 /**
  * Handles all the website information
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Websites extends Base_Class {

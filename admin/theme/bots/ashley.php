@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Bot - Ashley
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 error_reporting(E_ALL);
