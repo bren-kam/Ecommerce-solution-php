@@ -76,15 +76,15 @@ if ( is_null( $zone_id ) || empty( $zone_id ) ) {
 	$zone_id = $zone['HostedZone']['Id'];
 	
 	$changes = array(
-		$r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', '199.47.222.14' )
+		$r53->prepareChange( 'CREATE', $full_domain_name, 'A', '14400', '199.79.48.138' )
 		, $r53->prepareChange( 'CREATE', $full_domain_name, 'MX', '14400', '0 ' . $full_domain_name )
 		, $r53->prepareChange( 'CREATE', 'mail.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
 		, $r53->prepareChange( 'CREATE', 'www.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-		, $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'CNAME', '14400', $full_domain_name )
-		, $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', '199.47.222.14' )
-		, $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', '199.47.222.14' )
-		, $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', '199.47.222.14' )
-		, $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', '199.47.222.14' )
+		, $r53->prepareChange( 'CREATE', 'ftp.' . $full_domain_name, 'A', '14400', '199.79.48.137' )
+		, $r53->prepareChange( 'CREATE', 'cpanel.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
+		, $r53->prepareChange( 'CREATE', 'whm.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
+		, $r53->prepareChange( 'CREATE', 'webmail.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
+		, $r53->prepareChange( 'CREATE', 'webdisk.' . $full_domain_name, 'A', '14400', '199.79.48.138' )
 	);
 
 	$response = $r53->changeResourceRecordSets( $zone_id, $changes );

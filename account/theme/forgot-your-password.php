@@ -9,65 +9,77 @@ if ( isset( $user ) && $user )
 	url::redirect('/');
 
 $v = new Validator();
-$v->form_name = 'fLogin';
+$v->form_name = 'fForgotYourPassword';
 
 $v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
 $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email address') );
 
-$v->add_validation( 'tPassword', 'req', _('The "Password" field is required') );
+add_footer( $v->js_validation() );
 
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'login' ) ) {
+// Make sure they posted
+if( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'forgot-your-password' ) ) {
 	$errs = $v->validate();
-	
-	if ( empty( $errs ) ) {
-		global $u;
-		if ( $u->login( $_POST['tEmail'], $_POST['tPassword'], ( ( 'yes' == $_POST['cbRememberMe'] ) ? true : false ) ) ) {
 
-			url::redirect( '/' );
-		} else {
-			$errs = _('Your email and password do not match. Please try again.');
+	// Check for errs
+	if( empty( $errs ) ) {
+		global $u;
+
+		$response_code = $u->forgot_password( $_POST['tEmail'] );
+
+		switch( $response_code ) {
+			case 0:
+			default:
+				$response = _("The email you entered doesn't exist. Please <a href='http://www.realstatistics.com/get-started/' title='Sign Up'>sign up</a> first.");
+			break;
+
+			case 1:
+				$response = _('The email you entered is not confirmed. You have been sent a new confirmation email.');
+			break;
+
+			case 2:
+				$response = _('You have been sent an email with further instructions to reset your password.');
+			break;
 		}
 	}
 }
 
-$title = _('Login') . ' | ' . TITLE;
+$title = _('Forgot Your Passsword') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Login'); ?></h1>
+	<h1><?php echo _('Forgot Your Passsword'); ?></h1>
 	<br clear="all" />
 	<br />
 	
-	<?php if ( !empty( $errs ) ) echo "<p class='red'>$errs</p><br />"; ?>
-	<form action="" method="post" name="fLogin">
+	<?php
+	if( $response_code > 0 ) {
+		echo "<p>$response</p>";
+	} else {
+	?>
+	<p><?php echo _('If you have forgotten your password and would like to reset it, enter your email below:'); ?></p>
+	<br />
+	<?php
+	if( !empty( $errs ) )
+		echo "<p class='red'>$errs</p><br />";
+
+	if( !empty( $response ) )
+		echo "<p class='red'>$response</p>\n";
+	?>
+	<form action="" method="post" name="fForgotYourPassword">
         <table cellpadding="0" cellspacing="0">
             <tr>
                 <td><label for="tEmail"><?php echo _('Email:'); ?></label></td>
                 <td><input type="text" class="tb" name="tEmail" id="tEmail" value="<?php if ( isset( $_POST['tEmail'] ) ) echo $_POST['tEmail']; ?>" maxlength="200" /></td>
             </tr>
-            <tr>
-                <td><label for="tPassword"><?php echo _('Password:'); ?></label></td>
-                <td><input type="password" class="tb" name="tPassword" id="tPassword" maxlength="30" /></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="checkbox" class="cb" name="cbRememberMe" id="cbRememberMe" value="yes" /> <label for="cbRememberMe"><?php echo _('Remember me?'); ?></label></td>
-            </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
                 <td>&nbsp;</td>
-                <td>
-                    <input type="submit" value="Login" class="button" />
-                    <br /><br />
-                    <a href="/forgot-your-password/" title="<?php echo _('Forgot Your Password?'); ?>"><?php echo _('Forgot Your Password?'); ?></a>
-                </td>
+                <td><input type="submit" value="<?php echo _('Reset Password'); ?>" class="button" /></td>
             </tr>
         </table>
-        <input type="hidden" name="referer" value="<?php echo $_SESSION['referer']; ?>" />
-        <?php nonce::field( 'login' ); ?>
+        <?php nonce::field( 'forgot-your-password' ); ?>
 	</form>
-	<?php add_footer( $v->js_validation() ); ?>
 </div>
 
 <?php get_footer(); ?>
