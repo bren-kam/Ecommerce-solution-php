@@ -23,7 +23,7 @@ class Brands extends Base_Class {
 	 * @param string $link the link to the brand's website
 	 * @param file $image the product image file
 	 * @param string $product_options
-	 * @returns bool
+	 * @return bool
 	 */
 	public function create( $name, $slug, $link, $image, $product_options ) {
 		// Get rid of the slashes and another other characters in the slug
@@ -96,7 +96,7 @@ class Brands extends Base_Class {
 	 * @param string $link the link to the brand's website
 	 * @param file $image the product image file
 	 * @param string $product_options
-	 * @returns bool
+	 * @return bool
 	 */
 	public function update( $brand_id, $name, $slug, $link, $image, $product_options ) {		
 		// Typecast

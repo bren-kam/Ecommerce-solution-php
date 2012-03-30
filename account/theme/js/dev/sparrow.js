@@ -134,7 +134,7 @@ var sparrow = function(context) {
 		
 		if( confirmQuestion && !confirm( confirmQuestion ) )
 			return
-		
+
 		$.get( $(this).attr('href'), ajaxResponse, 'json' );
 	}).removeAttr('ajax'); // Prevent it from getting called again
 	

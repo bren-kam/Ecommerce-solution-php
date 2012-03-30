@@ -25,7 +25,7 @@ class Websites extends Base_Class {
         // Type Jugglin
         $website_id = (int) $website_id;
 
-		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id AND `status` = 1", ARRAY_A );
+		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id AND `status` = 1", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -477,7 +477,7 @@ class Websites extends Base_Class {
 	public function create_page( $slug, $title ) {
 		global $user;
 		
-		if ( $user['role'] < 8 )
+		if ( $user['role'] < 7 )
 			return false;
 		
 		// Insert the page
@@ -514,6 +514,26 @@ class Websites extends Base_Class {
 			return false;
 		}
 		
+		return true;
+	}
+
+    /**
+	 * Deletes the website image dimensions for a URL
+	 *
+	 * @param string $url
+	 * @return bool
+	 */
+	public function delete_image_dimensions( $url ) {
+        global $user;
+
+		$this->db->prepare( 'DELETE FROM `website_image_dimensions` WHERE `website_id` = ? AND `image_url` = ?', 'is', $user['website']['website_id'], $url )->query('');
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to delete website image dimensions.', __LINE__, __METHOD__ );
+			return false;
+		}
+
 		return true;
 	}
 	

@@ -56,6 +56,7 @@ h1 { float:left; font-size:30px; color: #404040; }
 h2 { font-size:22px; color: #404040; }
 h3 { font-size: 18px; color: #404040; }
 textarea { font-family:Arial, Helvetica, sans-serif; color:#63656B; font-size:14px; }
+li { padding-bottom: 7px }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }
@@ -161,13 +162,15 @@ input.button {
 .text-right { text-align:right; }
 .text-center { text-align:center; }
 .success, .success p { color: #090 }
-.alert, .error{ color: #F00; }
+.yellow, .warning { color: #FFCF40 }
+.alert, .error, .red{ color: #F00; }
 .padding-bottom { padding-bottom: 7px }
 h2.title { font-size: 19px; font-weight: bold; padding-bottom: 7px; }
 h2.title label { font-size: 19px }
 .image-border { padding: 1px; border: 1px solid #929292 }
 .top { vertical-align: top }
 .relative { position: relative; }
+.clr { clear: both; }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 
@@ -518,3 +521,6 @@ td.title strong { font-size: 20px }
 
 /** Date Picker is glitching, need to hide this **/
 #ui-datepicker-div { display: none }
+
+/** Media Manager **/
+#ulUploadFile { height: 250px; overflow: auto; padding-right: 5px }

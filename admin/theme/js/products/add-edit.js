@@ -376,7 +376,7 @@ function postLoad( $ ) {
 	$('#fUploadImages').uploadify({
 		'auto'      	: true,
 		'displayData'	: 'speed',
-		'buttonImg' 	: 'http://admin2.imagineretailer.com/images/buttons/products/upload-images.png',
+		'buttonImg' 	: '/images/buttons/products/upload-images.png',
 		'cancelImg' 	: 'http://sm2.rethinktraining.com/images/icons/cancel.png',
 		'fileExt'		: '*.jpg;*.gif;*.png',
 		'fileDesc'		: 'Common Image Files',

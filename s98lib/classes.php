@@ -9,7 +9,7 @@
  *
  * @param string $class_name the class name is automatically sent here
  */
-if ( !function_exists( __autoload ) && AUTOLOAD ) {
+if ( !function_exists( '__autoload' ) && AUTOLOAD ) {
 	function __autoload( $class_name ) {
 		s98lib_classes( $class_name );
 	}

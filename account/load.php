@@ -7,10 +7,10 @@
  * $cache - Cache
  */
 
-//define( 'PROFILE', ( 'true' == $_GET['profile'] ) ? true : false );
+define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 
 /** Define LIVE if the website is live */
-define( 'LIVE', false );
+define( 'LIVE', true );
 
 /** Let other parts of the system know this is not the admin section */
 define( 'ADMIN', false );
@@ -30,14 +30,13 @@ define( 'INC_PATH', ABS_PATH . 'includes/' );
 /** Define THEME_PATH as the place with all the pages */
 define( 'THEME_PATH', ABS_PATH . 'account/theme/' );
 
-/*
+
 if ( PROFILE ) {
 	// Enable XHProf (profiler)
-	require('/home/develop4/xhprof_lib/utils/xhprof_lib.php');
-	require('/home/develop4/xhprof_lib/utils/xhprof_runs.php');
+	require '/home/imaginer/xhprof_lib/utils/xhprof_lib.php';
+	require '/home/imaginer/xhprof_lib/utils/xhprof_runs.php';
 	xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 }
-*/
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {
@@ -46,25 +45,28 @@ if ( defined('E_RECOVERABLE_ERROR') ) {
     error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING );
 }
 
-
+/** Error Handler */
+if ( extension_loaded('newrelic') )
+    set_error_handler( 'newrelic_notice_error' );
 
 /** Include Studio98 library */
-require_once ABS_PATH . 's98lib/init.php';
+require ABS_PATH . 's98lib/init.php';
 
 /** Load global functions */
-require_once INC_PATH . 'functions.php';
+require INC_PATH . 'functions.php';
 
 /** Load classes */
-require_once INC_PATH . 'classes.php';
-
-/** Error Handler */
-//$e = new Error_Handler();
+require INC_PATH . 'classes.php';
 
 /** Dynamic definitions */
 define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );
 define( 'SUBDOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], true ) ) : str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_HOST'], true ) ) );
 
 /** Load Cookie Definitions */
+
+// Create a cookie abbreviation
+define( 'COOKIE_ABBR', 'gsr_' );
+
 // Used to guarantee unique hash cookies
 define( 'COOKIE_HASH', md5( 'http://www.' . DOMAIN . '.com/' ) );
 
@@ -86,12 +88,12 @@ if ( !isset( $s98_cache ) )
 $cache = &$s98_cache; // Setting up a point to all cache functions
 
 /** Including the label information */
-require_once INC_PATH . 'labels/' . DOMAIN . '.php';
+require INC_PATH . 'labels/' . DOMAIN . '.php';
 
 /** Routing */
-require_once OPERATING_PATH . 'routing.php' ;
+require OPERATING_PATH . 'routing.php' ;
 
-/*
+
 if ( PROFILE ) {
 	// End XHProf and save query
 	$profiler_namespace = 'account.imagineretailer.com';  // namespace for your application
@@ -102,4 +104,4 @@ if ( PROFILE ) {
 	// url to the XHProf UI libraries (change the host name and path)
 	$profiler_url = sprintf('http://account.imagineretailer.com/xhprof_html/index.php?run=%s&source=%s', $run_id, $profiler_namespace);
 	echo '<a href="'. $profiler_url .'" target="_blank">Profiler output</a>';
-}*/
+}

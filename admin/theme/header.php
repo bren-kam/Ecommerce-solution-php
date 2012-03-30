@@ -43,7 +43,7 @@ if ( !empty( $selected ) )
 	<div id="nav">
 		<div id="nav-links">
 			<?php if ( $user ) { ?>
-			<a href="/" title="<?php echo _('Home'); ?>"<?php if ( isset( $home ) ) echo $home; ?>><?php echo _('Home'); ?></a>
+			<!--<a href="/" title="<?php echo _('Home'); ?>"<?php if ( isset( $home ) ) echo $home; ?>><?php echo _('Home'); ?></a>-->
 			<a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php if ( isset( $accounts ) ) echo $accounts; ?>><?php echo _('Accounts'); ?></a>
 			<a href="/products/" title="<?php echo _('Products'); ?>"<?php if ( isset( $products ) ) echo $products; ?>><?php echo _('Products'); ?></a>
 			<?php if ( $user['role'] >= 7 ) { ?>

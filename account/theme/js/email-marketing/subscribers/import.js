@@ -3,7 +3,7 @@ jQuery( function() {
 	$('#fUploadSubscribers').uploadify({
 		auto      	: true,
 		displayData	: 'speed',
-		buttonImg 	: 'http://admin2.imagineretailer.com/images/buttons/products/upload-images.png',
+		buttonImg 	: '/images/buttons/products/upload-images.png',
 		cancelImg 	: '/images/icons/cancel.png',
 		fileExt		: '*.csv;*.xls',
 		fileDesc	: 'Excel/CSV Files', // @Fix needs to be put in PHP

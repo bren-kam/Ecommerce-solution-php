@@ -131,7 +131,7 @@ class Websites extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-		$website = $this->db->get_row( "SELECT a.`website_id`, a.`os_user_id`, a.`user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`website_id`, a.`os_user_id`, a.`user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -140,6 +140,49 @@ class Websites extends Base_Class {
 		}
 		
 		return $website;
+	}
+
+    /**
+	 * Gets a metadata for a page
+	 *
+	 * @param int $website_id
+	 * @param string $key_1, $key_2, $key_3, etc.
+	 * @return array
+	 */
+	public function get_pagemeta_by_key( $website_id ) {
+		// Get the arguments
+		$arguments = func_get_args();
+
+		// Needs to have at least two arguments
+		if ( count( $arguments ) <= 1 )
+			return false;
+
+		// Typecast
+		$website_id = (int) array_shift( $arguments );
+
+		// Get keys, escape them and turn them into comma separated values
+		array_walk( $arguments, array( $this->db, 'escape' ) );
+		$keys = "'" . implode( "', '", $arguments ) . "'";
+
+		// Get the meta data
+		$metadata = $this->db->get_results( "SELECT `key`, `value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) WHERE a.`key` IN ($keys) AND b.`website_id` = $website_id", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get metadata.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Set the array
+		$new_metadata = array_fill_keys( $arguments, '' );
+
+		// Decrypt any meta data
+		if ( is_array( $metadata ) )
+		foreach ( $metadata as $md ) {
+			$new_metadata[$md['key']] = html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' );
+		}
+
+		return ( 1 == count( $new_metadata ) ) ? array_shift( $new_metadata ) : $new_metadata;
 	}
 	
 	/**
@@ -174,13 +217,17 @@ class Websites extends Base_Class {
 	public function list_websites( $where, $order_by, $limit ) {
 		global $user;
 		
-		// If they are below 8, that means they are a partner
-		if ( $user['role'] < 8 )
-			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
-		
+        if ( 251 == $user['user_id'] ) {
+            $where = ( empty( $where ) ) ? ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )' : $where . ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )';
+        } else {
+            // If they are below 8, that means they are a partner
+            if ( $user['role'] < 8 )
+                $where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
+        }
+
 		// What other sites we might need to omit
 		$omit_sites = ( $user['role'] < 8 ) ? ', 96, 114, 115, 116' : '';
-		
+
 		// Form the where
 		$where = ( empty( $where ) ) ? "WHERE a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" : "WHERE 1 $where AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )";
 				
@@ -214,9 +261,13 @@ class Websites extends Base_Class {
 	public function count_websites( $where ) {
 		global $user;
 		
-		// If they are below 8, that means they are a partner
-		if ( $user['role'] < 8 )
-			$where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
+        if ( 251 == $user['user_id'] ) {
+            $where = ( empty( $where ) ) ? ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )' : $where . ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $user['company_id'] . ' )';
+        } else {
+            // If they are below 8, that means they are a partner
+            if ( $user['role'] < 8 )
+                $where = ( empty( $where ) ) ? ' AND b.`company_id` = ' . $user['company_id'] : $where . ' AND b.`company_id` = ' . $user['company_id'];
+        }
 		
 		// What other sites we might need to omit
 		$omit_sites = ( $user['role'] < 8 ) ? ', 96, 114, 115, 116' : '';
@@ -540,28 +591,31 @@ class Websites extends Base_Class {
 				$ftp->chmod( 0777, '/public_html' . $subdomain2 );
 				
 				// Get data for SSH
-				$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
-				$svn['repo_url'] = 'https://svn.codespaces.com/imagineretailer/system';
+				//$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
+				//$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
 				
 				// System version
-				$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
+				//$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
 				
 				// SSH Connection
 				$ssh_connection = ssh2_connect( '199.204.138.145', 22 );
 				ssh2_auth_password( $ssh_connection, 'root', 'GcK5oy29IiPi' );
 				
 				// Checkout
-				ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
-				
+				//ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
+
+                // Copy files
+                ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/* /home/$username/public_html" . $subdomain2 );
+
 				// Install Cron
-				ssh2_exec( $ssh_connection, 'echo -e "MAILTO=\"systemadmin@imagineretailer.com\"
+				/*ssh2_exec( $ssh_connection, 'echo -e "MAILTO=\"systemadmin@imagineretailer.com\"
 0 03 * * * /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/daily.php > /dev/null
 0 23 * * 0 /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/weekly.php > /dev/null" | crontab' );
-				
+				*/
+
 				// Update config & .htaccess file
 				$document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
-				ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/{$subdomain}.htaccess" );
-				
+
 				ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/{$subdomain}config.php" );
 				ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
 				
@@ -589,7 +643,7 @@ class Websites extends Base_Class {
 				ssh2_exec( $ssh_connection, "cp -R {$document_root}/media/images/buttons/sign-up.png {$document_root}/custom/uploads/images/buttons/sign-up.png" );
 				
 				// Remove .svn/_notes folders
-				ssh2_exec( $ssh_connection, "find {$document_root}/custom/uploads/images/shopping_cart/ -name '.svn' -o -name '_notes' -exec rm -rf {} \;" );
+				//ssh2_exec( $ssh_connection, "find {$document_root}/custom/uploads/images/shopping_cart/ -name '.svn' -o -name '_notes' -exec rm -rf {} \;" );
 				
 				// Change owner of shopping_cart folder
 				ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/custom/uploads/images/shopping_cart" );
@@ -598,7 +652,7 @@ class Websites extends Base_Class {
 				$ftp->chmod( 0755, '/public_html' . $subdomain2 );
 				
 				// Updated website version
-				$this->update_website_version( $system_version, $website_id );
+				//$this->update_website_version( $system_version, $website_id );
 				
 				// Insert pages
 				$this->db->query( Pre_Data::pages_sql( $website_id ) );
@@ -819,7 +873,11 @@ class Websites extends Base_Class {
 								case 'email-marketing':
 									$where .= ' AND a.`email_marketing` = 1';
 								break;
-								
+
+                                case 'mobile-marketing':
+                                    $where .= ' AND a.`mobile_marketing` = 1';
+                                break;
+
 								case 'product-catalog':
 									$where .= ' AND a.`product_catalog` = 1';
 								break;
@@ -827,7 +885,11 @@ class Websites extends Base_Class {
 								case 'room-planner':
 									$where .= ' AND a.`room_planner` = 1';
 								break;
-								
+
+                                case 'craigslist':
+                                    $where .= ' AND a.`craigslist` = 1';
+                                break;
+
 								case 'seo':
 									$where .= ' AND a.`seo` = 1';
 								break;
@@ -909,8 +971,8 @@ class Websites extends Base_Class {
 		}
 		
 		// Title, Company, #of products, Date Signed Up
-		$websites = $this->db->get_results( "SELECT a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
-		
+		$websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE_FORMAT( DATE( a.`date_created` ), '%m-%d-%Y' ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website report.', __LINE__, __METHOD__ );
@@ -936,7 +998,7 @@ class Websites extends Base_Class {
 		);
 
 		$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r --no-auth-cache';
-		$svn['repo_url'] = 'https://svn.codespaces.com/imagineretailer/system';
+		$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
 
@@ -1091,6 +1153,25 @@ class Websites extends Base_Class {
 		}
 		
 		return $settings;
+	}
+
+    /**
+	 * Get Website Setting
+	 *
+     * @param int $website_id
+	 * @param string $key
+	 * @return string
+	 */
+	public function get_setting( $website_id, $key ) {
+		$value = $this->db->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = ? AND `key` = ?', 'is', $website_id, $key )->get_var('');
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get website setting.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $value;
 	}
 	
 	/**

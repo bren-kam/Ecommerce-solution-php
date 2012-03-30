@@ -150,7 +150,7 @@ class Email_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_unsubscribed` ) ) AS date FROM `emails` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_timestamp` ) ) AS date FROM `emails` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -189,7 +189,7 @@ class Email_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_unsubscribed` ) ) AS date FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`email_id`, a.`name`, a.`email`, a.`phone`, IF( 1 = a.`status`, UNIX_TIMESTAMP( a.`date_created` ), UNIX_TIMESTAMP( a.`date_timestamp` ) ) AS date FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -216,6 +216,42 @@ class Email_Marketing extends Base_Class {
 		}
 		
 		return $count;
+	}
+
+    /**
+	 * Export subscribers
+	 *
+	 * @param int $email_list_id
+	 * @return array
+	 */
+	public function export_subscribers( $email_list_id = 0 ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $email_list_id = (int) $email_list_id;
+
+        if ( 0 == $email_list_id ) {
+            // Grab all subscribers
+		    $subscribers = $this->db->get_results( "SELECT `name`, `email`, `phone` FROM `emails` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `email` ASC", ARRAY_A );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
+                return false;
+            }
+        } else {
+            // Grab the subscribers for a specific email list
+		    $subscribers = $this->db->get_results( "SELECT a.`name`, a.`email`, a.`phone` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) WHERE a.`website_id` = $website_id AND a.`status` = 1 AND b.`email_list_id` = $email_list_id GROUP BY a.`email_id` ORDER BY a.`email` ASC", ARRAY_A );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
+                return false;
+            }
+        }
+
+		return $subscribers;
 	}
 	
 	/**
@@ -251,19 +287,19 @@ class Email_Marketing extends Base_Class {
 	
 	/**
 	 * Checks an email already exits
-	 * 
-	 * @param string $email 
+	 *
+	 * @param string $email
 	 * @return array
 	 */
 	public function email_exists( $email ){
 		$email = $this->db->prepare( 'SELECT a.`email_id`, a.`status` FROM `emails` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_id` = b.`email_id` ) RIGHT JOIN `email_lists` AS c ON ( b.`email_list_id` = c.`email_list_id` ) WHERE a.`email` = ? AND c.`website_id` = ?', 'si', $email, $user['website']['website_id'] )->get_var('');
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to check if email exists.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $email;
 	}
 	

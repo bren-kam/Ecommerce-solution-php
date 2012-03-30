@@ -137,7 +137,7 @@ get_header();
 						<?php } ?>
 					</div>
 					<br clear="left" />
-					<p align="right";><a href="/analytics/traffic-sources-overview/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="gray"><?php echo _('Report'); ?></span></a></p>
+					<p align="right";><a href="/analytics/traffic-sources/overview/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="gray"><?php echo _('Report'); ?></span></a></p>
 				</div>
 			</div>
 		</div>

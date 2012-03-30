@@ -16,8 +16,6 @@ class format extends Base_Class {
 	 * If an array is passed, the array_map() function causes a callback to pass the
 	 * value back to the function. The slashes from this value will removed.
 	 *
-	 * @since 1.0
-	 *
 	 * @param array|string $value The array or string to be stripped
 	 * @return array|string Stripped array (or string in the callback).
 	 */
@@ -31,15 +29,26 @@ class format extends Base_Class {
 	 * Uses a callback to pass the value of the array back to the function as a
 	 * string.
 	 *
-	 * @since 1.0
-	 *
 	 * @param array|string $value The array or string to be encoded.
 	 * @return array|string $value The encoded array (or string from the callback).
 	 */
 	public static function urlencode_deep( $value ) {
 		return is_array($value) ? array_map( array('self', 'urlencode_deep'), $value) : urlencode($value);
 	}
-	
+
+    /**
+	 * Navigates through an array and removes spaces
+	 *
+	 * If an array is passed, the array_map() function causes a callback to pass the
+	 * value back to the function. The slashes from this value will removed.
+	 *
+	 * @param array|string $value The array or string to be stripped
+	 * @return array|string Stripped array (or string in the callback).
+	 */
+	public static function trim_deep( $value ) {
+		return is_array( $value ) ? array_map( array('self', 'trim_deep'), $value ) : trim( $value );
+	}
+
 	/**
 	 * Limits a phrase to a given number of words.
 	 *
@@ -50,7 +59,7 @@ class format extends Base_Class {
 	 */
 	public static function limit_words( $str, $limit = 100, $end_char = NULL ) {
 		$limit = (int) $limit;
-		$end_char = ( NULL === $end_char ) ? '&#8230;' : $end_char;
+		$end_char = ( NULL === $end_char ) ? '...' : $end_char;
 
 		if ( '' === trim( $str ) )
 			return $str;
@@ -74,9 +83,9 @@ class format extends Base_Class {
 	 * @param boolean $preserve_words (optional) enable or disable the preservation of words while limiting
 	 * @return string
 	 */
-	public static function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = FALSE ) {
-		$end_char = ( NULL === $end_char ) ? '&#8230;' : $end_char;
-
+	public static function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = TRUE ) {
+		$end_char = ( NULL === $end_char ) ? '...' : $end_char;
+		
 		$limit = (int) $limit;
 
 		if ( '' === trim($str) || mb_strlen( $str ) <= $limit )

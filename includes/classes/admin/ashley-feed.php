@@ -62,19 +62,21 @@ class Ashley_Feed extends Base_Class {
 		$this->timer_start();
 		
         // Get the settings
-		$settings = $this->w->get_settings( $website_id, array( 'ashley-ftp-username', 'ashley-ftp-password' ) );
+		$settings = $this->w->get_settings( $website_id, array( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' ) );
 		
 		$username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
 		$password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
 		
 		// Initialize variables
 		$folder = str_replace( 'CE_', '', $username );
+        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
+
 		$products = $this->get_website_product_skus( $website_id );
 		
 		if ( !is_array( $products ) )
 			$products = array();
 		
-		$ftp = new FTP( 0, "/CustEDI/$folder/Outbound/", true );
+		$ftp = new FTP( 0, "/CustEDI/$folder/$subfolder/", true );
 		ini_set( 'max_execution_time', 600 ); // 10 minutes
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
@@ -106,13 +108,21 @@ class Ashley_Feed extends Base_Class {
 		if( file_exists( $local_folder . $file ) ) {
 			$this->xml = simplexml_load_file( $local_folder . $file );
 		} else {
+		    $count_spaces = 0; 
+            while($count_spaces < 500) { 
+              print('          '); 
+              $count_spaces++; 
+            } 
 			$this->xml = simplexml_load_string( $ftp->ftp_get_contents( $file ) );
 		}
 		
 		// Generate array of our items
-		foreach( $this->xml->items->item as $item ) {
+		foreach ( $this->xml->items->item as $item ) {
+            if ( 'Discontinued' == trim( $item->attributes()->itemStatus ) )
+                continue;
+
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-			
+
 			if ( !array_key_exists( $sku, $products ) ) {
 				$new_products[] = $sku;
 			}
@@ -155,7 +165,7 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// Get Products
-		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id` = 0", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 0", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

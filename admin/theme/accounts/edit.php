@@ -57,6 +57,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
  			'product_catalog' => $_POST['cbProductCatalog'],
 			'blog' => $_POST['cbBlog'],
 			'email_marketing' => $_POST['cbEmailMarketing'],
+            'mobile_marketing' => $_POST['cbMobileMarketing'],
 			'shopping_cart' => $_POST['cbShoppingCart'],
 			'seo' => $_POST['cbSEO'],
 			'room_planner' => $_POST['cbRoomPlanner'],
@@ -71,7 +72,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iisssssssiisiiiiiiiiiiissi';
+		$fields_safety = 'iisssssssiisiiiiiiiiiiiissi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -128,7 +129,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
+            , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
+            , 'avid-mobile-customer-id' => $_POST['tAvidMobileCustomerID']
+            , 'avid-mobile-username' => ( empty( $_POST['tAvidMobileUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobileUsername'], ENCRYPTION_KEY ) )
+            , 'avid-mobile-password' => ( empty( $_POST['tAvidMobilePassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobilePassword'], ENCRYPTION_KEY ) )
 		) );
 	}
 }
@@ -147,7 +152,11 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ga-password'
     , 'ashley-ftp-username'
     , 'ashley-ftp-password'
+    , 'ashley-alternate-folder'
     , 'social-media-add-ons'
+    , 'avid-mobile-customer-id'
+    , 'avid-mobile-username'
+    , 'avid-mobile-password'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -197,6 +206,9 @@ get_header();
             if ( $user['role'] >= 7 ) {
             ?>
                 <p align="right">
+                    <?php if ( 10 == $user['role'] ) { ?>
+					<a href="/accounts/dns/?wid=<?php echo $_GET['wid']; ?>" title="<?php echo _('Edit DNS'); ?>"><?php echo _('Edit DNS'); ?></a> |
+					<?php } ?>
                     <a href="javascript:;" id="aDeleteProducts" rel="<?php echo $_GET['wid']; ?>" title="<?php echo _('Delete Categories and Products'); ?>"><?php echo _('Delete Categories and Products'); ?></a> |
                     <?php if ( 10 == $user['role'] ) { ?>
                         <a href="/accounts/delete/?wid=<?php echo $_GET['wid']; ?>" id="aCancelAccount" title="<?php echo _('Cancel'), ' ', $web['title']; ?>"><?php echo _('Cancel Account'); ?></a>
@@ -287,6 +299,7 @@ get_header();
 						<p><input type="checkbox" name="cbLimitedProducts" id="cbLimitedProducts" value="1" class="cb"<?php if ( '1' == $settings['limited-products'] ) echo ' checked="checked"'; ?> /> <label for="cbLimitedProducts"><?php echo _('Limited Products'); ?></label></p>
 						<p><input type="checkbox" name="cbBlog" id="cbBlog" value="1" class="cb"<?php if ( $web['blog'] ) echo ' checked="checked"'; ?> /> <label for="cbBlog"><?php echo _('Blog'); ?></label></p>
 						<p><input type="checkbox" name="cbEmailMarketing" id="cbEmailMarketing" value="1" class="cb"<?php if ( $web['email_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label></p>
+                        <p><input type="checkbox" name="cbMobileMarketing" id="cbMobileMarketing" value="1" class="cb"<?php if ( $web['mobile_marketing'] ) echo ' checked="checked"'; ?> /> <label for="cbMobileMarketing"><?php echo _('Mobile Marketing'); ?></label></p>
 						<p><input type="checkbox" name="cbShoppingCart" id="cbShoppingCart" value="1" class="cb"<?php if ( $web['shopping_cart'] ) echo ' checked="checked"'; ?> /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label></p>
 						<p><input type="checkbox" name="cbSEO" id="cbSEO" value="1" class="cb"<?php if ( $web['seo'] ) echo 'checked="checked"'; ?> /> <label for="cbSEO"><?php echo _('SEO'); ?></label></p>
 						<p><input type="checkbox" name="cbRoomPlanner" id="cbRoomPlanner" value="1" class="cb"<?php if ( $web['room_planner'] ) echo ' checked="checked"'; ?> /> <label for="cbRoomPlanner"><?php echo _('Room Planner'); ?></label></p>
@@ -390,6 +403,15 @@ get_header();
                             <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
                             <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
                         </p>
+                        <p>
+                            <input type="checkbox" class="cb" name="cbAshleyAlternateFolder" id="cbAshleyAlternateFolder" value="1"<?php if ( !empty( $settings['ashley-alternate-folder'] ) ) echo ' checked="checked"'; ?> />
+                            <label for="cbAshleyAlternateFolder" class="inline"><?php echo _('Ashley - Alternate Folder'); ?>:</label>
+                        </p>
+
+                        <?php if ( !empty( $settings['ashley-ftp-password'] ) ) { ?>
+                        <p><a href="/bots/ashley-feed/?wid=<?php echo $_GET['wid']; ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
+                        <br />
+                        <?php } ?>
 						<p>
 							<label for="tFacebookURL"><?php echo _('Facebook Page Insights URL'); ?>:</label>
 							<input type="text" name="tFacebookURL" id="tFacebookURL" value="<?php if ( !is_array( $settings['facebook-url'] ) ) echo $settings['facebook-url']; ?>" class="tb" />
@@ -402,6 +424,18 @@ get_header();
 							<label for="tMCListID"><?php echo _('MailChimp List ID'); ?>:</label>
 							<input type="text" name="tMCListID" id="tMCListID" value="<?php echo $web['mc_list_id']; ?>" class="tb" />
 						</p>
+                        <p>
+							<label for="tAvidMobileCustomerID"><?php echo _('Avid Mobile Client ID'); ?>:</label>
+							<input type="text" name="tAvidMobileCustomerID" id="tAvidMobileCustomerID" value="<?php if ( isset( $settings['avid-mobile-customer-id'] ) ) echo $settings['avid-mobile-customer-id']; ?>" class="tb" />
+						</p>
+                        <p>
+                            <label for="tAvidMobileUsername"><?php echo _('Avid Mobile Username'); ?>:</label>
+                            <input type="text" name="tAvidMobileUsername" id="tAvidMobileUsername" value="<?php if ( !empty( $settings['avid-mobile-username'] ) ) echo security::decrypt( base64_decode( $settings['avid-mobile-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
+                        <p>
+                            <label for="tAvidMobilePassword"><?php echo _('Avid Mobile Password'); ?>:</label>
+                            <input type="text" name="tAvidMobilePassword" id="tAvidMobilePassword" value="<?php if ( !empty( $settings['avid-mobile-password'] ) ) echo security::decrypt( base64_decode( $settings['avid-mobile-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                        </p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 
                             <label for="cbLive" class="inline"><?php echo _('Max image size for custom products:'); ?></label>&nbsp;

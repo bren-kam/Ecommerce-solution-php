@@ -38,6 +38,8 @@ class Categories extends Base_Class {
 	
 	/**
 	 * Load All the category variables
+     *
+     * @return array
 	 */
 	 public function load_categories() {
 		$categories = $this->db->get_results( 'SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, `sequence` ASC, `name` ASC', ARRAY_A );
@@ -61,7 +63,17 @@ class Categories extends Base_Class {
 
 		$this->categories = $parent_categories;
 	}
-	
+
+    /**
+     * Get Category
+     *
+     * @param int $category_id
+     * @return array
+     */
+    public function get( $category_id ) {
+        return $this->categories_list[$category_id];
+    }
+
 	/**
 	 * Get List
 	 *
@@ -310,6 +322,7 @@ class Categories extends Base_Class {
      *
      * @param int $category_id
      * @param string $title
+     * @param string $slug
      * @param string $content
      * @param string $meta_title
      * @param string $meta_description
@@ -317,7 +330,7 @@ class Categories extends Base_Class {
      * @param bool $top
      * @return array
      */
-    public function update_website_category( $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top ) {
+    public function update_website_category( $category_id, $title, $slug, $content, $meta_title, $meta_description, $meta_keywords, $top ) {
         global $user;
 
         $this->db->update( 'website_categories', array( 'title' => $title, 'content' => $content, 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'top' => $top ), array( 'website_id' => $user['website']['website_id'], 'category_id' => $category_id ), 'sssssi', 'ii' );

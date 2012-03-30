@@ -103,8 +103,8 @@ get_header();
 		if ( $success && !$email_id )
 			$email_id = $success;
 		
-		if ( isset( $errs ) )
-				echo "<p class='red'>$errs</p>";
+		if ( isset( $errs ) && !empty( $errs ) )
+            echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fAddEditEmail" action="/email-marketing/subscribers/add-edit/<?php if ( $email_id ) echo "?eid=$email_id"; ?>" method="post">
 			<?php nonce::field( 'add-edit-email' ); ?>
