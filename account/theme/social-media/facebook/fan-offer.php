@@ -154,13 +154,13 @@ get_header();
 				
 				<h2 class="title"><label for="taBefore"><?php echo _('What Non-Fans See'); ?>:</label></h2>
 				<textarea name="taBefore" id="taBefore" cols="50" rows="3" rte="1"><?php echo $fan_offer['before']; ?></textarea>
-				<p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 520px Image Height: 700px Max'); ?>)</p>
+				<p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
 				<br />
 				
 				<h2 class="title"><label for="taAfter"><?php echo _('What Fans See After Liking the Page'); ?>:</label></h2>
 				<textarea name="taAfter" id="taAfter" cols="50" rows="3" rte="1"><?php echo $fan_offer['after']; ?></textarea>
 				
-				<p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 520px Image Height: 700px Max'); ?>)</p>
+				<p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
 				<br />
 				
 				<h2 class="title"><label for="tStartDate"><?php echo _('Start of Fan Offer'); ?>:</label></h2>
