@@ -15,3 +15,4 @@ CREATE TABLE `mobile_pages` (
   KEY `website_id` (`website_id`)
 ) ENGINE=MyISAM;
 
+ALTER TABLE `imaginer_system`.`website_pages` ADD COLUMN `mobile` TINYINT NOT NULL DEFAULT 0  AFTER `meta_keywords` ;

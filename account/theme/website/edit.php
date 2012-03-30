@@ -65,9 +65,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 	if ( empty( $errs ) ) {
         // Home page can't update their slug
         $slug = ( 'home' == $page['slug'] ) ? 'home' : $_POST['tPageSlug'];
+		
+		$mobile = (int) ( $_POST['cbIsMobile'] == "on" );
         
 		// Update the page
-		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
+		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $mobile );
 		
 		// Update custom meta
 		switch ( $page['slug'] ) {
@@ -182,6 +184,7 @@ get_header();
                 <a href="javascript:;" id="aCancelPageSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
                 <a href="javascript:;" id="aEditPageSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
                 <a href="javascript:;" id="aSavePageSlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
+                <?php if( $user['website']['mobile_marketing'] ): ?><input type="checkbox" name="cbIsMobile" id="cbIsMobile" <?php if ( $page['mobile'] ) echo "checked"; ?> /><?php echo _('Mobile'); endif; ?>
             </div>
             <?php } ?>
             <br />
