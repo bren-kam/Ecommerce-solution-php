@@ -119,7 +119,7 @@ get_header();
                 ?>
                 <textarea name="taEmailSignUp" cols="50" rows="3" rte="1"><?php echo $email_sign_up['tab']; ?></textarea>
 
-                <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 520px Image Height: 700px Max'); ?>)</p>
+                <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
                 <br />
                 <p>
                     <label for="sEmailList"><?php echo _('Email List'); ?>:</label>
