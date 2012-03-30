@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Change Visibility
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Admin
  */
  

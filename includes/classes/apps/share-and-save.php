@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Share and Save
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Share_and_Save extends Base_Class {

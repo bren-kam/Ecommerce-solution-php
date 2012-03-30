@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Send Email - Part 1
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

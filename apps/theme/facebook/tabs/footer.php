@@ -1,6 +1,6 @@
 <?php
 /**
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @page Footer
  */
 global $user;

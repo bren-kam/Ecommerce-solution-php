@@ -2,7 +2,7 @@
 /**
  * Stores data
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Pre_Data {

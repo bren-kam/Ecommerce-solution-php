@@ -3,7 +3,7 @@
  * Handles all the Mobile Marketing
  *
  * Interact with Avid Mobile API wrapper
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Mobile_Marketing extends Base_Class {

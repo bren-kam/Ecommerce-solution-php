@@ -1,7 +1,7 @@
 <?php
 /**
  * @page About Us
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 global $user;

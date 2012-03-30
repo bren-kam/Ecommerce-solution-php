@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Delete Shipping Method
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

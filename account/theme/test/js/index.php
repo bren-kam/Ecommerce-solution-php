@@ -1,7 +1,7 @@
 <?php
 /**
  * @page QUnit Testing Page
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 global $user;

@@ -88,12 +88,23 @@ class Craigslist_API {
      *
      * @param int $customer_id
      * @param string $name
+     * @param array $locations
      * @param array $replace (optional)
      * @return bool
      */
-    public function add_market( $customer_id, $name, $replace = array() ) {
+    public function add_market( $customer_id, $name, $locations, $replace = array() ) {
+        $new_locations = array();
+
+        if ( is_array( $locations ) )
+        foreach ( $locations as $l ) {
+            $new_locations[] = array(
+                'key' => 'location'
+                , 'value' => $l
+            );
+        }
+
         // Setup the arguments correctly
-        $replace = $this->_arguments( $replace );
+        $replace = array_merge( $this->_arguments( $replace ), $locations );
 
         // Add customer
         $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );

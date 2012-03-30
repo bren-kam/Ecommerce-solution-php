@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Sets pagemeta
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

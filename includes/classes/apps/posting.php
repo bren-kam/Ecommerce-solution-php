@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Posting
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Posting extends Base_Class {

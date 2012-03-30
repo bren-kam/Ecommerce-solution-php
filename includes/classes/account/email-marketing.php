@@ -4,7 +4,7 @@
  *
  * @Fix need to upgrade MailChimp API from 1.2 (deprecated) > 1.3
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Email_Marketing extends Base_Class {

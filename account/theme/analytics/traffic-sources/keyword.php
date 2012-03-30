@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Analytics - Traffic Keywords
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

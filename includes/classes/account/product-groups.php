@@ -2,7 +2,7 @@
 /**
  * Handles all the Product Groups
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Product_Groups extends Base_Class {

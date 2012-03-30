@@ -3,7 +3,7 @@
 /**
  * Handles all the report information
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Reports extends Base_Class {

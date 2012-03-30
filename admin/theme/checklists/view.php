@@ -1,7 +1,7 @@
 <?php
 /**
  * @page View Checklist
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

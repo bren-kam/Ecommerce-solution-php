@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Tools - Extract Zip Codes
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

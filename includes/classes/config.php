@@ -2,7 +2,7 @@
 /**
  * Contains the main config variables
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0.0
  */
 
