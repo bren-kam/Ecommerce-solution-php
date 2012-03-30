@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate class
 $w = new Websites;
 
-$settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings' );
+$settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands' );
 
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -50,11 +50,12 @@ $settings['request-a-quote-email'] = '';
 $settings = $w->get_settings( $settings_array );
 
 $checkboxes = array(
-	'category-show-price-note' 	=> _('Categories - Show Price Note?'),
-	'add-product-popup' 		=> _('Add Product - Popup'), 
-	'hide-skus' 				=> _('Hide Manufacturer SKUs'), 
-	'hide-request-quote' 		=> _('Hide "Request a Quote" Button'), 
-	'hide-customer-ratings' 	=> _('Hide Customer Ratings')
+	'category-show-price-note' 	=> _('Categories - Show Price Note?')
+	, 'add-product-popup' 		=> _('Add Product - Popup')
+	, 'hide-skus' 				=> _('Hide Manufacturer SKUs')
+	, 'hide-request-quote' 		=> _('Hide "Request a Quote" Button')
+	, 'hide-customer-ratings' 	=> _('Hide Customer Ratings')
+	, 'hide-product-brands' 	=> _('Hide Product Brands')
 );
 
 $title = _('Settings') . ' | ' . _('Product Catalog') . ' ' . TITLE;
@@ -84,7 +85,7 @@ get_header();
 				</tr>
 				<?php
 				foreach ( $checkboxes as $k => $v ) {
-					$checked = ( ( isset( $_POST['k'] ) && '1' == $_POST[$k] ) || ( !isset( $_POST[$k] ) && $settings[$k] ) );
+					$checked = ( ( isset( $_POST[$k] ) && '1' == $_POST[$k] ) || ( !isset( $_POST[$k] ) && $settings[$k] ) );
 					?>
 					<tr>
 						<td>&nbsp;</td>

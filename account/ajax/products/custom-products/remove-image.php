@@ -25,6 +25,7 @@ $image = basename( $_POST['i'] );
 // Delete images from amazon S3
 $f->delete_image( "products/$product_id/$image", $industry );
 $f->delete_image( "products/$product_id/thumbnail/$image", $industry );
+$f->delete_image( "products/$product_id/thumbnail/small/$image", $industry );
 $f->delete_image( "products/$product_id/thumbnail/large/$image", $industry );
 
 // Delete image from database

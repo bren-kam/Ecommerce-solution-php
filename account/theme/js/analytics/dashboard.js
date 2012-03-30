@@ -32,9 +32,12 @@ jQuery(function($) {
 	
 	$('a.sparkline').click( function(e) {
 		e.preventDefault();
-		var name = $(this).attr('title').replace( ' Sparkline', '' );
-		
-		$.post( '/ajax/analytics/get-graph/', { _nonce: $("#_ajax_get_graph").val(), metric: $(this).attr('href').replace('#',''), extra: $('#hExtra').val() }, function( plots ) {
+		var name = $(this).attr('title').replace( ' Sparkline', '' ), filter = $('#hFilter');
+
+        if ( 'undefined' != filter )
+            filter = filter.val();
+
+		$.post( '/ajax/analytics/get-graph/', { _nonce: $("#_ajax_get_graph").val(), metric: $(this).attr('href').replace('#',''), f : filter }, function( plots ) {
 			active_graph = name;
 			graphOptions = {
 				lines: { show: true, fill: true },

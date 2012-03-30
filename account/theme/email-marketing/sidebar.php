@@ -13,11 +13,12 @@
 		<a href="/email-marketing/subscribers/unsubscribed/" title="<?php echo _('View Unsubscribed Users'); ?>" class="sub<?php if ( isset( $unsubscribed ) ) echo ' selected'; ?>"><?php echo _('Unsubscribed'); ?></a>
 		<a href="/email-marketing/subscribers/add-edit/" title="<?php echo _('Add Subscriber'); ?>" class="sub<?php if ( isset( $add_edit_subscriber ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 		<a href="/email-marketing/subscribers/import/" title="<?php echo _('Import Subscribers'); ?>" class="sub<?php if ( isset( $import_subscribers ) ) echo ' selected'; ?>"><?php echo _('Import'); ?></a>
+        <a href="/email-marketing/subscribers/export/<?php if ( isset( $_GET['elid'] ) ) echo '?elid=' . $_GET['elid']; ?>" title="<?php echo _('Export Subscribers'); ?>" class="sub"><?php echo _('Export'); ?></a>
 	<?php } ?>
 	
 	<a href="/email-marketing/email-lists/" title="<?php echo _('Email Lists'); ?>" class="top<?php if ( isset( $email_lists ) ) echo ' selected'; ?>"><?php echo _('Email Lists'); ?></a>
 	<?php if ( isset( $email_lists ) ) { ?>
-		<a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add Email List'); ?>" class="sub<?php if ( isset( $add_edit_email_list ) ) echo ' selected'; ?>"><?php echo _('>Add'); ?></a>
+		<a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add Email List'); ?>" class="sub<?php if ( isset( $add_edit_email_list ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 	
 	<a href="/email-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>

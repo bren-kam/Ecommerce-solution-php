@@ -100,25 +100,8 @@ jQuery(function($) {
 			}
 			
 			// Make the entry go away
-			c.slideUp( 'fast', function() {
-				$(this).next().remove().end().remove();
-			});
+			c.remove();
 		}, 'json' );
-	});
-	
-	// Create the date due datepicker
-	$('#tDateDue').datepicker({
-		'dateFormat': 'mm-dd-yy',
-		'minDate'	: '+0d',
-		'onSelect'	: function() {
-			// Adjust the server
-			$.post( '/ajax/tickets/update-date-due/', { _nonce: $('#_ajax_update_date_due').val(), 'tid' : $('#hTicketID').val(), 'd' : $('#tDateDue').val() }, function( response ) {
-				if ( !response['result'] ) {
-					alert( response['error'] );
-					return;
-				}
-			}, 'json' );
-		}
 	});
 	
 	// Make the upload image icon work with uploadify

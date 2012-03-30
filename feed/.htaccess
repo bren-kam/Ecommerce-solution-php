@@ -1,0 +1,3 @@
+# Cross-subdomain Sessions
+#php_value auto_prepend_file /home/imaginer/public_html/s98_fw2/compression/begin_gzip.php
+#php_value auto_append_file /home/imaginer/public_html/s98_fw2/compression/end_gzip.php

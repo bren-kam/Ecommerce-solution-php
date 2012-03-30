@@ -18,9 +18,9 @@ $user = $fb->user;
 $v->add_validation( 'tFBConnectionKey', 'req', _('The "Facebook Connection Key" field is required') );
 
 // Make sure they are validly editing the app
-if( isset( $_GET['app_data'] ) ) {
+if ( isset( $_REQUEST['app_data'] ) ) {
 	// Get App Data
-	$app_data = url::decode( $_GET['app_data'] );
+	$app_data = url::decode( $_REQUEST['app_data'] );
 	$other_user_id = security::decrypt( $app_data['uid'], 'SecREt-Us3r!' );
 	$page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 }
@@ -73,11 +73,11 @@ get_header('facebook/');
 	if( !$page_id ) {
 	?>
 	<ol>
-		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/apps/application.php?id=114243368669744';" title="Online Platform - Facebook Site Page">Online Platform - Facebook Site Page</a> and click "Add to My Page" in the left-hand bar, select your page and add it.</li>
+		<li>Go to this page: <a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=114243368669744&pages=1';" title="Online Platform - Facebook Site Page">Online Platform - Facebook Site Page</a>, select your page and add it.</li>
 		<li>Go to the page you selected, click on the "Facebook Site" tab and click "Update Settings" to connect to your page to the platform.</li>
 	</ol>
 	<?php } else { ?>
-	<form name="fConnect" method="post" action="/facebook/facebook-site/<?php if( isset( $_GET['app_data'] ) ) echo '?app_data=' . $_GET['app_data']; ?>">
+	<form name="fConnect" method="post" action="/facebook/facebook-site/">
 	<table cellpadding="0" cellspacing="0">
 		<tr>
 			<td width="200"><strong><?php echo _('Website'); ?>:</strong></td>
@@ -92,6 +92,7 @@ get_header('facebook/');
 			<td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
 		</tr>
 	</table>
+    <input type="hidden" name="app_data" value="<?php echo $_REQUEST['app_data']; ?>" />
 	<?php nonce::field('connect-to-field'); ?>
 	</form>
 	<?php } ?>

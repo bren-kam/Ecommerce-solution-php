@@ -12,12 +12,12 @@ if ( !$user )
 	login();
 
 $selected = "subscribers";
-$title = _('Email Lists') . ' | ' . TITLE;
+$title = _('Email Subscribers') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Email Lists'); ?></h1>
+	<h1><?php echo _('Email Subscribers'); ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'subscribers' ); ?>
 	<div id="subcontent">

@@ -68,12 +68,16 @@ get_header();
 							&nbsp;
 							<input type="checkbox" class="cb" id="cbEmailMarketing" value="email-marketing" /> <label for="cbEmailMarketing"><?php echo _('Email Marketing'); ?></label>
 							&nbsp;
+                            <input type="checkbox" class="cb" id="cbMobileMarketing" value="mobile-marketing" /> <label for="cbMobileMarketing"><?php echo _('Mobile Marketing'); ?></label>
+                            &nbsp;
 							<input type="checkbox" class="cb" id="cbShoppingCart" value="shopping-cart" /> <label for="cbShoppingCart"><?php echo _('Shopping Cart'); ?></label>
 							&nbsp;
 							<input type="checkbox" class="cb" id="cbSEO" value="seo" /> <label for="cbSEO"><?php echo _('SEO'); ?></label>
 							&nbsp;
 							<input type="checkbox" class="cb" id="cbRoomPlanner" value="room-planner" /> <label for="cbRoomPlanner"><?php echo _('Room Planner'); ?></label>
 							&nbsp;
+                            <input type="checkbox" class="cb" id="cbCraigslist" value="craigslist" /> <label for="cbCraigslist"><?php echo _('Craigslist'); ?></label>
+                            &nbsp;
 							<input type="checkbox" class="cb" id="cbDomainRegistration" value="domain-registration" /> <label for="cbDomainRegistration"><?php echo _('Domain Registration'); ?></label>
 							&nbsp;
 							<input type="checkbox" class="cb" id="cbAdditionalEmailAddresses" value="additional-email-addresses" /> <label for="cbAdditionalEmailAddresses"><?php echo _('Additional Email Addresses'); ?></label>

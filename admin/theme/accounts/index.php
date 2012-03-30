@@ -25,7 +25,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Accounts'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'accounts/' ); ?>
+	<?php get_sidebar( 'accounts/', 'accounts' ); ?>
 	<div id="subcontent">
 		<div id="dNarrowSearchContainer">
 			<div id="dNarrowSearch">

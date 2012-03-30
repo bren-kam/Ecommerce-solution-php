@@ -83,7 +83,7 @@ function postLoad( $ ) {
 	
 	// Add checkboxes to the criteria
 	$('.cb').click( function() {
-		if ( $(this).attr('checked') ) {
+		if ( $(this).is(':checked') ) {
 			criteria['checkboxes'][$(this).val()] = 1;
 		} else {
 			delete criteria['checkboxes'][$(this).val()];
@@ -118,7 +118,7 @@ function ajaxSearchClick( response ) {
 	
 	for ( var i in response['report'] ) {
 		var w = response['report'][i];
-		trs += '<tr><td><a href="http://' + w['domain'] + '/" title="' + w['title'] + '" target="_blank">' + w['title'] + '</a></td><td>' + w['company'] + '</td><td>' + w['products'] + '</td><td>' + w['date_created'] + '</td></tr>';
+		trs += '<tr><td><a href="/accounts/edit/?wid=' + w['website_id'] + '" title="' + w['title'] + '" target="_blank">' + w['title'] + '</a></td><td>' + w['company'] + '</td><td>' + w['products'] + '</td><td>' + w['date_created'] + '</td></tr>';
 	}
 	
 	$('#table tbody:first').html( trs );
@@ -150,7 +150,7 @@ function autocompleteSuccess( request, response ) {
 		}) );
 		
 		// If it was cached, return now
-		return;
+		return false;
 	}
 	
 	// It was not cached, get data

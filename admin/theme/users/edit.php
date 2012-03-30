@@ -53,19 +53,21 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user'
 	
 	if ( empty( $errs ) ) {
 		$information = array(
-			'company_id'			=> $_POST['sCompany'], 
-			'email'					=> $_POST['tEmail'],
-			'contact_name'			=> $_POST['tContactName'], 
-			'store_name'			=> $_POST['tStoreName'], 
-			'billing_first_name' 	=> $_POST['tBillingFirstName'],
-			'billing_last_name' 	=> $_POST['tBillingLastName'],
-			'billing_address1' 		=> $_POST['tBillingAddress'],
-			'billing_city' 			=> $_POST['tBillingCity'],
-			'billing_state'		 	=> $_POST['sBillingState'],
-			'billing_zip'		 	=> $_POST['tBillingZip'],
-			'products'				=> $_POST['tProducts'],
-			'role'					=> ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] ),
-			'status'				=> $_POST['sStatus']
+			'company_id'			=> $_POST['sCompany']
+			, 'email'				=> $_POST['tEmail']
+			, 'contact_name'		=> $_POST['tContactName']
+            , 'work_phone'          => $_POST['tWorkPhone']
+			, 'cell_phone'          => $_POST['tCellPhone']
+			, 'store_name'			=> $_POST['tStoreName']
+			, 'billing_first_name' 	=> $_POST['tBillingFirstName']
+			, 'billing_last_name' 	=> $_POST['tBillingLastName']
+			, 'billing_address1' 		=> $_POST['tBillingAddress']
+			, 'billing_city' 			=> $_POST['tBillingCity']
+			, 'billing_state'		 	=> $_POST['sBillingState']
+			, 'billing_zip'		 	=> $_POST['tBillingZip']
+			, 'products'				=> $_POST['tProducts']
+			, 'role'					=> ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] )
+			, 'status'				=> $_POST['sStatus']
 		);
 		
 		if ( !empty( $_POST['pPassword'] ) )
@@ -187,7 +189,7 @@ get_header();
 						<select name="sRole" id="sRole">
 							<?php
 							$max_role = ( $user['role'] <= 10 ) ? $user['role'] : 5;
-							$roles = array( 1 => _('Basic User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Online Specialist'), 8 => _('Admin'), 10 => _('Super Admin') );
+							$roles = array( 1 => _('Authorized User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Online Specialist'), 8 => _('Admin'), 10 => _('Super Admin') );
 							$selected_role_number = ( empty( $_POST['sRole'] ) ) ? $us['role'] : $_POST['sRole'];
 							
 							for ( $i = 1; $i <= $max_role; $i++ ) { 
@@ -250,7 +252,7 @@ get_header();
 				<h2><?php echo _('Websites'); ?></h2>
 				<?php
 				foreach ( $websites as $w ) { ?>
-				<p><a href="/websites/edit/?wid=<?php echo $w['website_id']; ?>" title="<?php echo $w['title']; ?>"><?php echo $w['title']; ?> - <?php echo $w['domain']; ?></a> &ndash; <a href="/websites/control/?wid=<?php echo $w['website_id']; ?>" title="<?php echo _('Control'), ' ', $w['title']; ?>" target="_blank"><?php echo _('Control Website'); ?></a></p>
+				<p><a href="/accounts/edit/?wid=<?php echo $w['website_id']; ?>" title="<?php echo $w['title']; ?>"><?php echo $w['title']; ?> - <?php echo $w['domain']; ?></a> &ndash; <a href="/websites/control/?wid=<?php echo $w['website_id']; ?>" title="<?php echo _('Control'), ' ', $w['title']; ?>" target="_blank"><?php echo _('Control Website'); ?></a></p>
 				<?php
 				}
 			}

@@ -14,8 +14,6 @@ class Ashley extends Base_Class {
 	
 	/**
 	 * Creates new Database instance
-	 *
-	 * @return  void
 	 */
 	public function __construct() {
 		// Load database library into $this->db (can be omitted if not required)
@@ -115,23 +113,28 @@ class Ashley extends Base_Class {
 				case 'itemDimensions':
 					$dimensions = 1;
 				break;
+
+                // Turn off so it doesn't get overridden by package characteristics
+                case 'packageDimensions':
+                    $dimensions = 0;
+                break;
 				
 				// Specifications
 				case 'depth':
-					if ( $dimensions )
+					if ( $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
 						$items[$j]['specs'] = 'Depth`' . trim( $xml_reader->getAttribute('value') );
 				break;
 
 				// Specifications
 				case 'height':
-					if ( $dimensions )
-						$items[$j]['specs'] .= '`0|Height`' . trim( $xml_reader->getAttribute('value') );
+					if ( $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
+						$items[$j]['specs'] .= ' Inches`0|Height`' . trim( $xml_reader->getAttribute('value') );
 				break;
 
 				// Specifications
 				case 'length':
-					if ( $dimensions )
-						$items[$j]['specs'] .= '`1|Length`' . trim( $xml_reader->getAttribute('value') ) . '`2';
+					if ( $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
+						$items[$j]['specs'] .= ' Inches`1|Length`' . trim( $xml_reader->getAttribute('value') ) . ' Inches`2';
 					
 					$dimensions = 0;
 				break;
@@ -171,6 +174,8 @@ class Ashley extends Base_Class {
 		
 		// Generate array of our items
 		foreach( $items as $item ) {
+			echo '                    ';
+			
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
@@ -187,7 +192,18 @@ class Ashley extends Base_Class {
 				$group_description = '<p>' . $group['description'] . '</p>';
 				$group_features = '<p>' . $group['features'] . '</p>';
 			} else {
-				$group_name = $group_description = $group_features = '';
+				$item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
+			}
+			
+			if( isset( $groups[$item['group']] ) ) {
+				$group = $groups[$item['group']];
+			
+				$group_name = $group['name'] . ' - ';
+				$group_description = '<p>' . $group['description'] . '</p>';
+				$group_features = '<p>' . $group['features'] . '</p>';
+			} else {
+				fn::mail( 'kerry@greysuitretail.com', 'Missing Group', 'Missing Group: ' . $item['group'] );
+                continue;
 			}
 			
 			$name = $group_name . $item['description'];
@@ -219,7 +235,8 @@ class Ashley extends Base_Class {
 				
 				if( empty( $slug ) ) {
 					$slug = $product['slug'];
-				} elseif ( $slug != $product['slug'] ) { 
+				} elseif ( $slug != $product['slug'] ) {
+					$slug = $this->unique_slug( $slug );
 					$identical = false;
 				}
 				

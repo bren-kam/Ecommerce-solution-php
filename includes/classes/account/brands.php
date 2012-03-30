@@ -61,7 +61,7 @@ class Brands extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-		$brands = $this->db->get_results( "SELECT a.* FROM `brands` AS a LEFT JOIN `products` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS c ON ( b.`product_id` = c.`product_id` ) WHERE c.`website_id` = $website_id GROUP BY a.`brand_id` ORDER BY `name` ASC", ARRAY_A );
+		$brands = $this->db->get_results( "SELECT a.* FROM `brands` AS a LEFT JOIN `products` AS b ON ( a.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS c ON ( b.`product_id` = c.`product_id` ) WHERE c.`website_id` = $website_id AND c.`active` = 1 GROUP BY a.`brand_id` ORDER BY `name` ASC", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

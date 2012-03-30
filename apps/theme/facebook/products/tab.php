@@ -25,7 +25,7 @@ if ( security::is_ssl() )
 
 $title = _('Products') . ' | ' . _('Online Platform');
 css('facebook/products');
-get_header('facebook/');
+get_header('facebook/tabs/');
 ?>
 
 <div id="content">
@@ -38,4 +38,4 @@ get_header('facebook/');
 	?>
 </div>
 
-<?php get_footer('facebook/'); ?>
+<?php get_footer('facebook/tabs/'); ?>

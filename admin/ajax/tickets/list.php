@@ -34,15 +34,15 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 		switch (  $_GET['iSortCol_' . $i] ) {
 			default:
 			case 0:
-				$field = 'name';
-			break;
-
-			case 1:
 				$field = 'a.`summary`';
 			break;
 
+			case 1:
+				$field = 'name';
+			break;
+
 			case 2:
-				$field = 'e.`title`';
+				$field = 'd.`title`';
 			break;
 			
 			case 3:
@@ -66,16 +66,20 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 
 
 /* Filtering  */
-$where = ( '0' == $_SESSION['tickets']['assigned-to'] ) ? ' AND ( ' . $user['role'] . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $user['user_id'] . ' )' : ' AND ' . $user['role'] . ' >= COALESCE( c.`role`, 7 )';
+$where = ' AND ( ' . $user['role'] . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $user['user_id'] . ' )';
+
 if ( $_GET['sSearch'] != "" ) {
 	$where .= " AND ( b.`contact_name` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
-					"e.`title` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
+					"`title` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' OR " .
 					"a.`summary` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' )";
 }
 
 // Grab only the right status
-if ( isset( $_SESSION['tickets']['status'] ) )
+if ( isset( $_SESSION['tickets']['status'] ) ) {
 	$where .= ' AND a.`status` = ' . $_SESSION['tickets']['status'];
+} else {
+	$where .= ' AND a.`status` = 0';
+}
 
 // Grab only the right status
 if ( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] )
@@ -102,8 +106,7 @@ foreach ( $tickets as $ticket ) {
 		break;
 	}
 	
-	$date_due = ( empty( $ticket['date_due'] ) || 0 == $ticket['date_due'] ) ? '' : dt::date( 'm/d/Y', $ticket['date_due'] );
-	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'] . '|' . $ticket['waiting'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ), $date_due );
+	$aaData[] = array( '<a href="/tickets/ticket/?tid=' . $ticket['ticket_id'] . '" title="View Ticket">' . format::limit_chars( $ticket['summary'], 55 ) . '</a>', $ticket['name'], $ticket['website'], $priority, $ticket['assigned_to'], dt::date( 'm/d/Y', $ticket['date_created'] ) );
 }
 
 echo json_encode( array( 

@@ -42,7 +42,7 @@ if( $signed_request['page']['liked'] && $tab['valid'] ) {
 $user_id = $fb->user;
 
 $title = _('Sweepstakes') . ' | ' . _('Online Platform');
-get_header('facebook/');
+get_header('facebook/tabs/');
 ?>
 
 <div id="content">
@@ -97,4 +97,4 @@ get_header('facebook/');
 	<?php } ?>
 </div>
 
-<?php get_footer('facebook/'); ?>
+<?php get_footer('facebook/tabs/'); ?>

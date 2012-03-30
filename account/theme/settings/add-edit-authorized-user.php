@@ -76,7 +76,7 @@ get_header();
 <div id="content">
 	<h1><?php echo $sub_title; ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'settings/' ); ?>
+	<?php get_sidebar( 'settings/', 'authorized-user' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
 		<div class="success">

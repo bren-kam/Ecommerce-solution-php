@@ -1,15 +1,18 @@
 <?php
-$mysqli =  mysqli_connect( 'localhost', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' ); 
+// Set it as a background job
+newrelic_background_job();
+
+$mysqli =  mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
 
 // Update automatic statistics
 require( '/home/develop4/public_html/includes/libraries/statistics-api.php' );
 $stat = new Stat_API( '941cb213d6bbf2dd73c1214fad6321e6' );
 
 // Get the total paid users
-$result = $mysqli->query( 'SELECT COUNT(`website_id`) AS websites FROM `websites`' );
+$result = $mysqli->query( 'SELECT COUNT(`website_id`) AS websites FROM `websites` WHERE `status` = 1' );
 $row = $result->fetch_assoc();
 
-$stat->add_graph_value( 7139, $row['websites'], date('Y-m-d') ); // RS - Total Paid Users
+$stat->add_graph_value( 7139, $row['websites'], date('Y-m-d') ); // GSR - Total Paid Users
 
 $result = $mysqli->query( 'SELECT COUNT( `product_id` ) AS count FROM `products` WHERE ( `timestamp` > DATE_SUB( NOW(), INTERVAL 3 DAY ) AND `user_id_modified` = 353 ) OR ( `date_created` > DATE_SUB( NOW(), INTERVAL 3 DAY ) AND `user_id_created` = 353 )' );
 $row = $result->fetch_assoc();

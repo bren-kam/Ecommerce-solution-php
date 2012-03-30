@@ -8,13 +8,13 @@ global $user;
 <div id="footer">
 		<p>
 			<?php if ( $user ) { ?>
-			<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | 
-			<a href="/websites/" title="<?php echo _('Websites'); ?>"><?php echo _('Websites'); ?></a> | 
+			<!--<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | -->
+			<a href="/accounts/" title="<?php echo _('Accounts'); ?>"><?php echo _('Accounts'); ?></a> |
 			<a href="/products/" title="<?php echo _('Product Catalog'); ?>"><?php echo _('Product Catalog'); ?></a> | 
 			<a href="/users/" title="<?php echo _('Users'); ?>"><?php echo _('Users'); ?></a> | 
 			<a href="/checklists/" title="<?php echo _('Checklists'); ?>"><?php echo _('Checklists'); ?></a> | 
 			<?php if ( $user['role'] >= 8 ) { ?>
-			<a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a>
+			<a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a> |
 			<?php } ?>
 			<a href="/help/" title="<?php echo _('Help'); ?>"><?php echo _('Help'); ?></a>
 			<?php } ?>

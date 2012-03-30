@@ -43,8 +43,8 @@
 #tdSearch { padding-left:49px;text-align:right; }
 
 /***** Data Tables *****/
-.dataTables_length select { 
-	padding: 7px 5px 7px 17px; width: 148px; height: 35px; border: 1px solid #c8d2d6; font-size: 12px; font-weight: bold; color: #808b9d; position:relative; right: 110px; bottom: 17px;
+.dataTables_length select {
+	padding: 7px 5px 7px 17px; width: 148px; height: 35px; border: 1px solid #c8d2d6; font-size: 12px; font-weight: bold; color: #808b9d; position:relative; right: 70px; bottom: 3px;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;

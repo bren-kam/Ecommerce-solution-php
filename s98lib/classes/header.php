@@ -16,6 +16,8 @@ class header extends Base_Class {
 	 */
 	public static $content_types = array (
 		'json' => 'application/json'
+        , 'text' => 'text/plain'
+        , 'xml' => 'text/xml'
 	);
 	
 	/**
@@ -64,7 +66,22 @@ class header extends Base_Class {
 			'Pragma' => 'no-cache'
 		) );
 	}
-	
+
+	/**
+	 * Sets the headers to not cache this page
+	 *
+	 * @param int $seconds (optional|60)
+	 */
+	public static function cache( $seconds = 60 ) {
+		// Greenwich Mean Time
+		$gmt = gmdate( 'D, d M Y H:i:s', time() + $seconds );
+
+		self::send( array(
+			'Cache-Control' => "public, max-age=$seconds"
+			, 'Expires' => "$gmt GMT"
+			, 'Last-Modified' =>  "$gmt GMT"
+		) );
+	}
 	/**
 	 * Sets the headers for css
 	 *

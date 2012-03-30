@@ -35,9 +35,10 @@ class Products extends Base_Class {
 			// Initial variables
 			$product_ids = array();
 			$tab = '';
+			$website_id = (int) $tab_data['website_id'];
 			
 			// Get top categories
-			$categories = $this->db->get_results( 'SELECT a.`name`, a.`slug`, b.`image_url`, COALESCE( c.`width`, 0 ) AS width, COALESCE( c.`height`, 0 ) AS height FROM `categories` AS a LEFT JOIN `website_categories` AS b ON ( a.`category_id` = b.`category_id` ) LEFT JOIN `website_image_dimensions` AS c ON ( b.`website_id` = c.`website_id` AND ( b.`image_url` = c.`image_url` OR c.`image_url` IS NULL ) ) WHERE a.`parent_category_id` = 0 AND b.`website_id` = ' . (int) $tab_data['website_id'], ARRAY_A );
+			$categories = $this->db->get_results( "SELECT a.`name`, a.`slug`, b.`image_url`, COALESCE( c.`width`, 0 ) AS width, COALESCE( c.`height`, 0 ) AS height FROM `categories` AS a LEFT JOIN `website_categories` AS b ON ( a.`category_id` = b.`category_id` ) LEFT JOIN `website_image_dimensions` AS c ON ( b.`website_id` = c.`website_id` AND ( b.`image_url` = c.`image_url` OR c.`image_url` IS NULL ) ) WHERE a.`parent_category_id` = 0 AND b.`website_id` = $website_id GROUP BY a.`category_id`", ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -132,7 +133,7 @@ class Products extends Base_Class {
 	/**
 	 * Get Connected Website
 	 *
-	 * @param int $fb_user_id
+	 * @param int $fb_page_id
 	 * @return array
 	 */
 	public function get_connected_website( $fb_page_id ) {

@@ -24,6 +24,13 @@ $v = new Validator;
 $fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3' );
 $w = new Websites;
 
+// Add validation
+$v->form_name = 'fFBPost';
+$v->trigger = true;
+$v->add_validation( 'taPost', 'req', _('The Post field is required') );
+
+add_footer( $v->js_validation() );
+
 // Get variables
 $posting = $sm->get_posting();
 $timezone = $w->get_setting( 'timezone' );
@@ -44,49 +51,52 @@ if ( 0 != $posting['fb_page_id'] ) {
 }
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) ) {
-	$date_posted = $_POST['tDate'];
-
-	// Turn it into machine-readable time
-	if ( !empty( $_POST['tTime'] ) ) {
-		list( $time, $am_pm ) = explode( ' ', $_POST['tTime'] );
-		
-		if ( 'pm' == strtolower( $am_pm ) ) {
-			list( $hour, $minute ) = explode( ':', $time );
-			
-			$date_posted .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
-		} else {
-			$date_posted .= ' ' . $time . ':00';
-		}
-	}
-	
-	// Adjust for time zone
-	$new_date_posted = new DateTime;
-	$new_date_posted->setTimestamp( strtotime( $date_posted ) - (  $timezone * 3600 ) + $now->getOffset() );
-	
-	// Make sure we don't have anything extra
-	$_POST['taPost'] = stripslashes( $_POST['taPost'] );
-	
-	// Get link
-	preg_match( '/(?:(http|ftp|https):\/\/|www\.)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/', $_POST['taPost'], $matches );
-	
-	if ( !empty( $matches[0] ) ) {
-		$link = ( stristr( $matches[0], 'http://' ) ) ? $matches[0] : 'http://' . $matches[0];
-	} else {
-		$link = '';
-	}
-	
-	if ( time() >= $new_date_posted->getTimestamp() ) {
-		$fb->setAccessToken( $pages[$posting['fb_page_id']]['access_token'] );
-		
-		// Information:
-		// http://developers.facebook.com/docs/reference/api/page/#posts
-		$fb->api( $posting['fb_page_id'] . '/feed', 'POST', array( 'message' => $_POST['taPost'], 'link' => $link ) );
-		
-		$success = $sm->create_posting_post( $pages[$posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $new_date_posted->format('Y-m-d H:i:s'), 1 );
-	} else {
-		$success = $sm->create_posting_post( $pages[$posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $new_date_posted->format('Y-m-d H:i:s') );
-	}
-	
+    $errs = $v->validate();
+    
+    if ( empty( $errs ) ) {
+        $date_posted = $_POST['tDate'];
+    
+        // Turn it into machine-readable time
+        if ( !empty( $_POST['tTime'] ) ) {
+            list( $time, $am_pm ) = explode( ' ', $_POST['tTime'] );
+            
+            if ( 'pm' == strtolower( $am_pm ) ) {
+                list( $hour, $minute ) = explode( ':', $time );
+                
+                $date_posted .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+            } else {
+                $date_posted .= ' ' . $time . ':00';
+            }
+        }
+        
+        // Adjust for time zone
+        $new_date_posted = new DateTime;
+        $new_date_posted->setTimestamp( strtotime( $date_posted ) - (  $timezone * 3600 ) + $now->getOffset() );
+        
+        // Make sure we don't have anything extra
+        $_POST['taPost'] = str_replace( array( '“', '”', '’' ), array( '"', '"', "'" ), stripslashes( $_POST['taPost'] ) );
+        
+        // Get link
+        preg_match( '/(?:(http|ftp|https):\/\/|www\.)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/', $_POST['taPost'], $matches );
+        
+        if ( !empty( $matches[0] ) ) {
+            $link = ( stristr( $matches[0], 'http://' ) ) ? $matches[0] : 'http://' . $matches[0];
+        } else {
+            $link = '';
+        }
+        
+        if ( time() >= $new_date_posted->getTimestamp() ) {
+            $fb->setAccessToken( $pages[$posting['fb_page_id']]['access_token'] );
+            
+            // Information:
+            // http://developers.facebook.com/docs/reference/api/page/#posts
+            $fb->api( $posting['fb_page_id'] . '/feed', 'POST', array( 'message' => $_POST['taPost'], 'link' => $link ) );
+            
+            $success = $sm->create_posting_post( $pages[$posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $new_date_posted->format('Y-m-d H:i:s'), 1 );
+        } else {
+            $success = $sm->create_posting_post( $pages[$posting['fb_page_id']]['access_token'], $_POST['taPost'], $link, $new_date_posted->format('Y-m-d H:i:s') );
+        }
+    }
 }
 
 css( 'jquery.uploadify', 'jquery.timepicker' );
@@ -122,9 +132,12 @@ get_header();
 				<p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>
 			<?php
 			}
+        
+            if ( isset( $errs ) && !empty( $errs ) )
+                echo "<p class='red'>$errs</p>";
 			
 			if ( is_array( $pages ) ) { ?>
-				<form action="" method="post" name="fFBPost">
+				<form action="" method="post" name="fFBPost" id="fFBPost">
 					<table>
 						<tr>
 							<td><strong><?php echo _('Page'); ?>:</strong></td>
@@ -136,14 +149,14 @@ get_header();
 						</tr>
 						<tr>
 							<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? $now->format('Y-m-d') : $date; ?>" maxlength="10" /></td>
+							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( isset( $new_date_posted ) && !$success ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
 							<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? $now->format('h:i a') : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( isset( $new_date_posted ) && !$success ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" maxlength="8" /></td>
 						</tr>
 						<tr><td colspan="2">&nbsp;</td></tr>
 						<tr>
 							<td>&nbsp;</td>
-							<td><input type="submit" class="button" value="<?php echo _('Post to Facebook'); ?>" /></td>
+							<td><input type="submit" class="button" id="sSubmit" value="<?php echo _('Post to Facebook'); ?>" /></td>
 						</tr>
 					</table>
 					<?php nonce::field('fb-post'); ?>
