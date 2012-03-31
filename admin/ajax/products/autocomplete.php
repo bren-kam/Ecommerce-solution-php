@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Autocomplete Products
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Admin
  */
 

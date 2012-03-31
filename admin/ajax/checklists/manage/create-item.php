@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Create Item
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Admin
  */
  

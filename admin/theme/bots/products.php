@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Bot - Mssing Product Images
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 $p = new Products;

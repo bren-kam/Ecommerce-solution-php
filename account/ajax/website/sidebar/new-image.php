@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Website - New Image
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

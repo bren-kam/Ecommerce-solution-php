@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Upload Attachment
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 if ( empty( $_FILES ) || !nonce::verify( $_POST['_nonce'], 'upload-attachment' ) ) 
 	return;

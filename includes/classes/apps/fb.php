@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff to start FB
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 

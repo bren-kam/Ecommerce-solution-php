@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Delete Keyword
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

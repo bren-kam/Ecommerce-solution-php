@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Contact Us
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Contact_Us extends Base_Class {

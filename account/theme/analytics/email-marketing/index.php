@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Analytics - Email Marketing
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

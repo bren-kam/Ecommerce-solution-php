@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Edit Website Category
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

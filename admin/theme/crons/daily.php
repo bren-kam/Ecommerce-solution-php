@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Cron Jobs run Daily
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Set it as a background job

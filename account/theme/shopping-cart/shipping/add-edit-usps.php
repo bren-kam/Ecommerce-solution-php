@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Shipping - Add/Edit USPS Shipping Method
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // @fix need to get this working before making the page visible
