@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Remove Attachment
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'remove-attachment' ) ) {

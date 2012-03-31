@@ -2,7 +2,7 @@
 /**
  * Handles all the tokens
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Tokens extends Base_Class {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Craigslist - Headlines
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

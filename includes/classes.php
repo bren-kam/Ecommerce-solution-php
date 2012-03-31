@@ -4,7 +4,7 @@
  *
  * Tries to load from custom first, then core directory
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 if ( !function_exists( '__autoload' ) ) :

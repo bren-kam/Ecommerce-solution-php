@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Email Sign Up
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 global $user;

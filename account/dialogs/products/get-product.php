@@ -2,7 +2,7 @@
 /**
  * @page Get Product Dialog
  * @type Dialog
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
  
  // Create new AJAX

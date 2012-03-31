@@ -4,7 +4,7 @@
  *
  * Contains basic functions that can be used anywhere
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 

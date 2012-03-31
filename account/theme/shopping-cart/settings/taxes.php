@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Taxes
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

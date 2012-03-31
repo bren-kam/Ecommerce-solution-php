@@ -2,7 +2,7 @@
 /**
  * Handles all the creation of tickets
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Tickets extends Base_Class {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page PHP Unit Testing Page
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 //global $user;

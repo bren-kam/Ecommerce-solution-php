@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Sweepstakes
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Sweepstakes extends Base_Class {

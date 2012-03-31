@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Product Request
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 error_reporting(E_ALL);
 // Create new AJAX

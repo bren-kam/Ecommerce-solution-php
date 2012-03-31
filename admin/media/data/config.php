@@ -4,7 +4,7 @@
  *
  * All paths and urls will end in a trailing slash
  *
- * @package Imagine Retailer Template
+ * @package Grey Suit Retail Template
  * @since 1.0
  */
 

@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Email Sign Up
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Email_Sign_Up extends Base_Class {

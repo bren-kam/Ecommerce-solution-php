@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Facebook - Posting
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

@@ -2,7 +2,7 @@
 /**
  * Handles all the authorized users
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Authorized_Users extends Base_Class {

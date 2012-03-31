@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Custom Products - Autocomplete Tags
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

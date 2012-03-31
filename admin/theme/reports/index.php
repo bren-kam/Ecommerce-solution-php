@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Reports
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -50,7 +50,7 @@ get_header();
 								<option value="brand"><?php echo _('Brand'); ?></option>
 								<option value="online_specialist"><?php echo _('Online Specialist'); ?></option>
                                 <option value="marketing_specialist"><?php echo _('Marketing Specialist'); ?></option>
-								<option value="company"><?php echo _('Company'); ?></option>
+								<?php if ( $user['role'] > 7 ) { ?><option value="company"><?php echo _('Company'); ?></option><?php } ?>
                                 <option value="billing_state"><?php echo _('State'); ?></option>
 							</select>
 						</td>

@@ -4,7 +4,7 @@
  *
  * Amazon S3 Manager: http://www.s3fm.com/
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Files extends Base_Class {

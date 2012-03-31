@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Logout
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 global $u;
 $u->logout();

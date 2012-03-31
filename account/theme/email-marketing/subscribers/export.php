@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Email Marketing - Export Subscribers
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 header("Content-type: application/octet-stream");

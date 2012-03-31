@@ -2,7 +2,7 @@
 /**
  * Handles all the tags
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Tags extends Base_Class {

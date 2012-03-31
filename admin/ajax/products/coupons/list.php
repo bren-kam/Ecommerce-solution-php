@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Product Coupons
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 
