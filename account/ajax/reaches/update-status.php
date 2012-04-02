@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Update Reach Status
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 // Create new AJAX
 $ajax = new AJAX( $_GET['_nonce'], 'update-status' );

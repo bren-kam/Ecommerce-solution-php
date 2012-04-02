@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Autocomplete Reports
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Admin
  */
 
@@ -27,9 +27,13 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete
         break;
 
 		case 'company':
-			$c = new Companies;
-			
-			$results = $c->autocomplete( $_POST['term'] );
+            if ( $user['role'] > 7 ) {
+                $c = new Companies;
+
+                $results = $c->autocomplete( $_POST['term'] );
+            } else {
+                $results = array();
+            }
 		break;
 
         case 'billing_state':

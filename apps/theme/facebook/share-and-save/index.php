@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Share and Save
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 global $user;

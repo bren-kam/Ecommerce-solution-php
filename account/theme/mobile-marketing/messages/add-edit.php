@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Send Mobile Message
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

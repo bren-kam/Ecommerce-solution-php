@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Shipping Methods (Ajax)
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

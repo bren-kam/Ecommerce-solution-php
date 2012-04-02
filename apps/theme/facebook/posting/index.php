@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Posting
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 global $user;

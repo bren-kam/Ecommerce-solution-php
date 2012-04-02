@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Settings - Upload Logo
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

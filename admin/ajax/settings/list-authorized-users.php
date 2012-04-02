@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Authorized Users
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

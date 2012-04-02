@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Website Add Page
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

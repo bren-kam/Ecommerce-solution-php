@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Test Data Tables
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Instantiate classes

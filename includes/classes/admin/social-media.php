@@ -2,7 +2,7 @@
 /**
  * Handles all the social media
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Social_Media extends Base_Class {

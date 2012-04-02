@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Set Free Shipping
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Website - Upload Video
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

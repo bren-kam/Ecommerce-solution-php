@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Social Media - Facebook - Contact Us
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -110,7 +110,7 @@ get_header();
 				<h2 class="title"><label for="taContent"><?php echo _('Contact Us Page'); ?>:</label></h2>
 				<textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $contact_us['content']; ?></textarea>
 				
-				<p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 520px Image Height: 700px Max'); ?>)</p>
+				<p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
 				<br /><br />
 				
 				<input type="submit" class="button" value="<?php echo _('Save'); ?>" />
