@@ -2,7 +2,7 @@
 /**
  * Handles ashley import
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Ashley_Feed extends Base_Class {
@@ -69,8 +69,12 @@ class Ashley_Feed extends Base_Class {
 		
 		// Initialize variables
 		$folder = str_replace( 'CE_', '', $username );
+		
+		if ( '-' != substr( $folder, 0, -1 ) )
+			$folder .= '-';
+		
         $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
-
+        
 		$products = $this->get_website_product_skus( $website_id );
 		
 		if ( !is_array( $products ) )

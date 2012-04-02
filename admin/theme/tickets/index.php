@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 $_SESSION['tickets']['status'] = '0';
-$_SESSION['tickets']['assigned-to'] = '0';
+$_SESSION['tickets']['assigned-to'] = $user['user_id'];
 
 css( 'tickets/list', 'data-tables/TableTools.css', 'data-tables/ui.css' );
 javascript( 'jquery', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'tickets/list' );
@@ -40,8 +40,11 @@ get_header();
 	<select id="sAssignedTo">
 		<option value="0"><?php echo _('All'); ?></option>
 		<option value="-1"><?php echo _('Peers'); ?></option>
-		<?php foreach ( $admin_users as $au ) { ?>
-		<option value="<?php echo $au['user_id']; ?>"><?php echo $au['contact_name']; ?></option>
+		<?php 
+		foreach ( $admin_users as $au ) { 
+			$selected = ( $au['user_id'] == $user['user_id'] ) ? ' selected="selected"' : '';
+			?>
+			<option value="<?php echo $au['user_id']; ?>"<?php echo $selected; ?>><?php echo $au['contact_name']; ?></option>
 		<?php } ?>
 	</select>
 	<table cellpadding="0" cellspacing="0" width="100%" id="tListTickets">

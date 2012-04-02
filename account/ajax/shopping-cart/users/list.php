@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Shopping Cart Users
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Instantiate classes

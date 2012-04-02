@@ -2,7 +2,7 @@
 /**
  * Handles all the Product Options
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Product_Options extends Base_Class {

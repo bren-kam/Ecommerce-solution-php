@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List - Add Custom Products
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

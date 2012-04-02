@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Brands - Autocomplete
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Create new AJAX

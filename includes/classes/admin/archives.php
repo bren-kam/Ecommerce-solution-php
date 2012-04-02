@@ -2,7 +2,7 @@
 /**
  * Handles all the archives
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Archives extends Base_Class {

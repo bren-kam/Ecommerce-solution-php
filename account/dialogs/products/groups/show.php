@@ -2,7 +2,7 @@
 /**
  * @page Products > Groups > Show Products
  * @type Dialog
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
  
  // Create new AJAX

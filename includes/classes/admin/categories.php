@@ -2,7 +2,7 @@
 /**
  * Handles all the Categories
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Categories extends Base_Class {

@@ -2,7 +2,7 @@
 /**
  * Lists and manages Issues
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 

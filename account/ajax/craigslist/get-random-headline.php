@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Get Random Headline
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 $ajax = new AJAX( $_POST['_nonce'], 'random-headline' );

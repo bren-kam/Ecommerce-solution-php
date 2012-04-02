@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Craigslist Templates
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Analytics - Traffic Sources Overview
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

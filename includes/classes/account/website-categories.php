@@ -2,7 +2,7 @@
 /**
  * Handles all the Website Categories
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Website_Categories extends Base_Class {

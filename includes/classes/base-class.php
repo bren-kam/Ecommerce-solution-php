@@ -2,7 +2,7 @@
 /**
  * The base class that is extended by all other classes
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 

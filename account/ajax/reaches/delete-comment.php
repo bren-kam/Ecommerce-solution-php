@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Delete Comment
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Graphs
  */
  
