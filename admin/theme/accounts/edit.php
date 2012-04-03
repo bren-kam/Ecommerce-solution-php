@@ -32,6 +32,7 @@ $v->add_validation( 'tGAProfileID', 'num', _('The "Google Analytics Profile ID" 
 
 // Initialize variable
 $success = false;
+$errs = '';
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-account' ) ) {
 	$errs = $v->validate();
@@ -166,6 +167,10 @@ foreach ( $web as &$slot ){
 	$slot = stripslashes( $slot );
 }
 
+// Do some error checking
+if ( '1' != $user['user_status'] )
+    $errs .= "The owner's account has been deactivated. This account will not work until it has an active owner.";
+
 css( 'form', 'accounts/edit' );
 javascript( 'validator', 'jquery', 'accounts/edit' );
 
@@ -181,27 +186,17 @@ get_header();
 	<div id="subcontent">
 		<?php 
 		if ( !isset( $success ) || !$success ) {
-			$main_form_class = '';
 			$success_class = ' class="hidden"';
-			
-			if ( isset( $errs ) )
-				echo "<p class='red'>$errs</p>";
-		} else {
+			$main_form_class = '';
+		 else {
 			$success_class = '';
 			$main_form_class = ' class="hidden"';
 		}
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php
-			if ( isset( $errs ) && !empty( $errs ) ) {
-				$error_message = '';
-				
-				foreach ( $errs as $e ) {
-					$error_message .= ( !empty( $error_message ) ) ? "<br />$e" : $e;
-				}
-				
-				echo "<p class='red'>$error_message</p>";
-			}
+			if ( !empty( $errs ) )
+				echo "<p class='red'>$errs</p>";
 
             if ( $user['role'] >= 7 ) {
             ?>
