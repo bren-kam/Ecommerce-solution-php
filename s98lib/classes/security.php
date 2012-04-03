@@ -36,9 +36,6 @@ class security extends Base_Class {
 	/**
 	 * Determines whether SSL is enabled
 	 *
-	 * @since 1.0
-	 *
-	 * @param bool $enabled whether to redirect to enabled SSL or disabled
 	 * @return bool
 	 */
 	public static function is_ssl() {
@@ -48,11 +45,8 @@ class security extends Base_Class {
 	/**
 	 * Encrypts a string (256 bit)
 	 *
-	 * @uses config defined keys
-	 * @since 1.0.0
-	 *
-	 * @param string the string to be encrypted
-	 * @param hash_key a second hash key
+	 * @param string $string the string to be encrypted
+	 * @param string $hash_key a second hash key
 	 * @return string
 	 */
 	public static function encrypt( $string, $hash_key ) {
@@ -80,8 +74,8 @@ class security extends Base_Class {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string the string to be decrypted
-	 * @param hash_key a second hash key
+	 * @param string $string the string to be decrypted
+	 * @param string $hash_key a second hash key
 	 * @param string $encryption_key (optional) will override encryption key within
 	 * @return string
 	 */
