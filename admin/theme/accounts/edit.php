@@ -188,7 +188,7 @@ get_header();
 		if ( !isset( $success ) || !$success ) {
 			$success_class = ' class="hidden"';
 			$main_form_class = '';
-		 else {
+        } else {
 			$success_class = '';
 			$main_form_class = ' class="hidden"';
 		}
