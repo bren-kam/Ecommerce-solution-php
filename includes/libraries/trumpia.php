@@ -208,7 +208,7 @@ class Trumpia {
      */
     public function update_contact_data( $ContactID, $FirstName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
         // Execute the command
-		$response = $this->_execute( 'updatecontactdata', compact( 'ContactID', 'FirstName', 'LastName', 'Email', 'CountryCode', 'MobileNumber', 'AIM', 'MSN', 'SendVerification', 'UseCustomMobileVerificationMessage', 'CustomMobileVerificationMessage' ) );
+		$this->_execute( 'updatecontactdata', compact( 'ContactID', 'FirstName', 'LastName', 'Email', 'CountryCode', 'MobileNumber', 'AIM', 'MSN', 'SendVerification', 'UseCustomMobileVerificationMessage', 'CustomMobileVerificationMessage' ) );
 
         // Return Success
 		return $this->success();

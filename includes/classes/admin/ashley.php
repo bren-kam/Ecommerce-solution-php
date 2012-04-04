@@ -179,6 +179,11 @@ class Ashley extends Base_Class {
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
+			
+			// We can't have a SKU like B457B532 -- it means it is international and comes in a container
+			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
+				continue;
+			
 			$product_status = $item['status'];
 			$product_specs = $item['specs'];
 			$weight = $item['weight'];
@@ -385,7 +390,7 @@ class Ashley extends Base_Class {
 		//fn::info( $this->images );
 		//$this->empty_product_images( $product_ids );
 		//$this->add_product_images();
-		
+		echo $i;
 		echo '|' . memory_get_peak_usage(true) . '-' . memory_get_usage(true);
 		
 		$headers = "From: noreply@greysuitretail.com" . "\r\n" .
