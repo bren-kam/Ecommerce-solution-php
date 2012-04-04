@@ -328,7 +328,7 @@ class Ashley extends Base_Class {
 				
 				$price = $list_price = 0;
 				$publish_visibility = 'private';
-				$publish_date = date_time::date( 'Y-m-d' );
+				$publish_date = dt::date( 'Y-m-d' );
 				
 				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
 				
@@ -399,15 +399,25 @@ class Ashley extends Base_Class {
 		
 		mail( 'kerry@studio98.com', 'Ashley Feed - ' . $file, $products_string, $headers );
 		
-		if( is_array( $links ) ) {
+		if( is_array( $links['new-products'] ) ) {
 			$message = '';
 			
-			foreach ( $links as $section => $link_array ) {
-				$message .= '-----' . ucwords( str_replace( '-', ' ', $section ) ) . "-----\n";
-				$message .= implode( "\n", $link_array );
-				$message .= "\n\n\n";
-			}
-			
+			//foreach ( $links as $section => $link_array ) {
+			//	$message .= '-----' . ucwords( str_replace( '-', ' ', $section ) ) . "-----\n";
+			//	$message .= implode( "\n", $link_array );
+			//	$message .= "\n\n\n";
+			//}
+
+			$message .= "-----New Products-----\n";
+			$message .= implode( "\n", $links['new-products'] );
+            $message .= "\n\n\n";
+
+			//foreach ( $links as $section => $link_array ) {
+			//	$message .= '-----' . ucwords( str_replace( '-', ' ', $section ) ) . "-----\n";
+			//	$message .= implode( "\n", $link_array );
+			//	$message .= "\n\n\n";
+			//}
+
 			mail( 'david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
 		}
 	}
