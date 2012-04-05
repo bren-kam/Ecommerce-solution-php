@@ -39,7 +39,11 @@ class security extends Base_Class {
 	 * @return bool
 	 */
 	public static function is_ssl() {
-		return ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) || ( !isset( $_SERVER['HTTPS'] ) && 443 == $_SERVER['SERVER_PORT'] ) ) ? true : false;
+		return (
+            ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' )
+                || ( !isset( $_SERVER['HTTPS'] ) && 443 == $_SERVER['SERVER_PORT'] )
+                || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'HTTPS' == $_SERVER['HTTP_X_FORWARDED_PROTO'] )
+            ) ? true : false;
 	}
 	
 	/**
