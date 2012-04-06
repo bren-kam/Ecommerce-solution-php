@@ -10,11 +10,7 @@ class Mobile_Marketing extends Base_Class {
     /**
      * Avid Mobile Customer ID
      */
-    private $settings;
-    private $am_keywords;
-    private $am_groups;
-    private $am_members;
-    private $am_blast;
+    private $trumpia;
 
 	/**
 	 * Construct initializes data
@@ -476,19 +472,18 @@ class Mobile_Marketing extends Base_Class {
         global $user;
 
         // Make sure it's instantiated
-        if ( !$this->_get_am_lib('keywords') )
+        if ( !$this->_init_trumpia() )
             return false;
 
         // Create the keyword
-        $am_keyword_campaign_id = $this->am_keywords->create( $name, $keyword, $response, $date_started, $timezone );
+        $this->trumpia->create_keyword( $keyword, TRUE, $response );
 
         if ( !$am_keyword_campaign_id )
             return false;
 
         // Add the keyword to our database
         $this->db->insert( 'mobile_keywords', array(
-            'am_keyword_campaign_id' => $am_keyword_campaign_id
-            , 'website_id' => $user['website']['website_id']
+            'website_id' => $user['website']['website_id']
             , 'name' => $name
             , 'keyword' => $keyword
             , 'response' => $response
@@ -654,11 +649,10 @@ class Mobile_Marketing extends Base_Class {
      */
     public function check_keyword_availability( $keyword ) {
         // Make sure it's instantiated
-        if ( !$this->_get_am_lib('keywords') )
-            return false;
-		
+        $this->_init_trumpia();
+
 		// See if its available
-		return $this->am_keywords->available( $keyword );
+		return $this->trumpia->check_keyword( $keyword );
     }
 
 	/***** MOBILE LISTS *****/
@@ -673,7 +667,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`mobile_keyword_id`, a.`name`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
+		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`name`, a.`frequency`, a.`description`, a.`date_created`, COUNT( DISTINCT b.`mobile_subscriber_id`) AS count FROM `mobile_lists` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) LEFT JOIN `mobile_subscribers` AS c ON ( b.`mobile_subscriber_id` = c.`mobile_subscriber_id` ) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`mobile_list_id` $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -715,7 +709,7 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $mobile_list_id = (int) $mobile_list_id;
 
-		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `am_group_id`, `mobile_keyword_id`, `name` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id", ARRAY_A );
+		$mobile_list = $this->db->get_row( "SELECT `mobile_list_id`, `name`, `frequency`, `description` FROM `mobile_lists` WHERE `mobile_list_id` = $mobile_list_id AND `website_id` = $website_id", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -757,53 +751,27 @@ class Mobile_Marketing extends Base_Class {
 	 * Create mobile list
 	 *
 	 * @param string $name
-     * @param int $mobile_keyword_id [optional]
-     * @param int $am_keyword_campaign_id [optional]
+     * @param int $frequency
+     * @param string $description
 	 * @return int
 	 */
-	public function create_mobile_list( $name, $mobile_keyword_id = NULL, $am_keyword_campaign_id = NULL ) {
+	public function create_mobile_list( $name, $frequency, $description ) {
 		global $user;
 
         // Make sure it's instantiated
-        if ( !$this->_get_am_lib('groups') )
+        $this->_init_trumpia();
+
+        // Create a list
+        if ( !$this->trumpia->create_list( substr( preg_replace( '/[^a-zA-Z0-9]/', '', $name ), 0, 32 ), $name, $frequency, $description ) )
             return false;
 
-        if ( is_null( $mobile_keyword_id ) && is_null( $am_keyword_campaign_id ) ) {
-            // Creat the group and get the ID
-            $am_group_id = $this->am_groups->create( $name );
+        // Create the dynamic list on our end
+        $this->db->insert( 'mobile_lists', array(  'website_id' => $user['website']['website_id'], 'name' => $name, 'frequency' => $frequency, 'description' => $description, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isiss' );
 
-            // Create the list on our end
-            $this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siis' );
-
-            // Handle any error
-            if ( $this->db->errno() ) {
-                $this->err( 'Failed to create mobile list.', __LINE__, __METHOD__ );
-                return false;
-            }
-        } else {
-            // They have to both be here
-            if ( is_null( $mobile_keyword_id ) || is_null( $am_keyword_campaign_id ) )
-                return false;
-			
-            // Create a dynamic group
-            $am_group_id = $this->am_groups->create( $name, AM_Groups::GROUP_DYNAMIC );
-
-            // Make sure it was created properly
-            if ( !$am_group_id )
-                return false;
-
-            // Link the group and the keyword
-            if ( !$this->am_groups->link_dynamic_group( $am_group_id, $am_keyword_campaign_id ) )
-                return false;
-
-            // Create the dynamic list on our end
-            $this->db->insert( 'mobile_lists', array( 'name' => $name, 'website_id' => $user['website']['website_id'], 'am_group_id' => $am_group_id, 'mobile_keyword_id' => $mobile_keyword_id, 'date_created' => dt::date('Y-m-d H:i:s') ), 'siiis' );
-
-            // Handle any error
-            if ( $this->db->errno() ) {
-                $this->err( 'Failed to create dynamic mobile list.', __LINE__, __METHOD__ );
-                return false;
-            }
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to create dynamic mobile list.', __LINE__, __METHOD__ );
+            return false;
         }
 
 		return $this->db->insert_id;
@@ -814,27 +782,24 @@ class Mobile_Marketing extends Base_Class {
 	 *
 	 * @param int $mobile_list_id
 	 * @param string $name
-	 * @return int
+	 * @param int $frequency
+     * @param string $description
+	 * @return bool
 	 */
-	public function update_mobile_list( $mobile_list_id, $name ) {
+	public function update_mobile_list( $mobile_list_id, $name, $frequency, $description ) {
 		global $user;
 
         // Get the mobile list
         $mobile_list = $this->get_mobile_list( $mobile_list_id );
 
         // Make sure it's instantiated
-        if ( !$this->_get_am_lib('groups') )
-            return false;
+        $this->_init_trumpia();
 
-        // Define the type of the group
-        $type = ( 0 == $mobile_list['mobile_keyword_id'] ) ? AM_Groups::GROUP_STATIC : AM_Groups::GROUP_DYNAMIC;
-
-        // Update the Avid Mobile group
-        if ( !$this->am_groups->update_group( $mobile_list['am_group_id'], $name, $type ) )
-            return false;
+        // Rename list a list
+        $this->trumpia->rename_list( substr( preg_replace( '/[^a-zA-Z0-9]/', '', $mobile_list['name'] ), 0, 32 ), substr( preg_replace( '/[^a-zA-Z0-9]/', '', $name ), 0, 32 ), $name, $frequency, $description );
 
         // Update the list
-		$this->db->update( 'mobile_lists', array( 'name' => $name ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
+		$this->db->update( 'mobile_lists', array( 'name' => $name, 'frequency' => $frequency, 'description' => $description ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $user['website']['website_id'] ), 'sis', 'ii' );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -857,12 +822,11 @@ class Mobile_Marketing extends Base_Class {
         // Get the mobile list
         $mobile_list = $this->get_mobile_list( $mobile_list_id );
 
-        // Make sure it's instantiated
-        if ( !$this->_get_am_lib('groups') )
-            return false;
+        // Initialize trumpia
+        $this->_init_trumpia();
 
         // Delete Avoid Mobile Group
-        if ( !$this->am_groups->delete( $mobile_list['am_group_id'] ) )
+        if ( !$this->trumpia->delete_list( substr( preg_replace( '/[^a-zA-Z0-9]/', '', $mobile_list['name'] ), 0, 32 ) ) )
             return false;
 
         // Type Juggling
@@ -954,7 +918,7 @@ class Mobile_Marketing extends Base_Class {
 			$this->am_blast->add_group( $am_blast_id, $mobile_list['am_group_id'] );
 		}
 
-		return $this->add_message_lists( $mobile_message_id, $mobile_list_ids;
+		return $this->add_message_lists( $mobile_message_id, $mobile_list_ids );
 	}
 
 	/**
@@ -1404,62 +1368,27 @@ class Mobile_Marketing extends Base_Class {
 	/***** OTHER FUNCTIONS *****/
 
     /**
-     * Get the Avid Mobile Customer ID
+     * Initiate Trumpia
      *
-     * @param string $library
-     * @return object
+     * @return bool
      */
-    private function _get_am_lib( $library ) {
-        if ( !$this->settings ) {
-            // Now we need to get the site's mobile ID
-            $w = new Websites();
+    private function _init_trumpia( ) {
+        if ( $this->trumpia )
+            return true;
 
-            $this->settings = $w->get_settings( 'avid-mobile-customer-id', 'avid-mobile-username', 'avid-mobile-password' );
-            $this->settings['avid-mobile-username'] = security::decrypt( base64_decode( $this->settings['avid-mobile-username'] ), ENCRYPTION_KEY );
-            $this->settings['avid-mobile-password'] = security::decrypt( base64_decode( $this->settings['avid-mobile-password'] ), ENCRYPTION_KEY );
-        }
+        // Include the library
+        library('trumpia');
 
-        // We need this to go on
-        if ( !$this->settings['avid-mobile-customer-id'] )
-            return false;
+        // Now we need to get the site's mobile ID
+        $w = new Websites();
 
-        switch ( $library ) {
-            case 'blast':
-                library('avid-mobile/blast');
+        // Get the API Key
+        $api_key = $w->get_setting( 'trumpia-key' );
 
-                $this->blast = new AM_Blast( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
+        // Setup Trumpia
+        $this->trumpia = new Trumpia( $api_key );
 
-                return true;
-            break;
-
-            case 'groups':
-                library('avid-mobile/groups');
-
-                $this->am_groups = new AM_Groups( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
-
-                return true;
-            break;
-
-            case 'keywords':
-                library('avid-mobile/keywords');
-
-                $this->am_keywords = new AM_Keywords( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
-
-                return true;
-            break;
-			
-			case 'members':
-                library('avid-mobile/members');
-
-                $this->am_members = new AM_Members( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
-
-                return true;
-            break;
-
-            default:
-                return array( $this->settings['avid-mobile-customer-id'], $this->settings['avid-mobile-username'], $this->settings['avid-mobile-password'] );
-            break;
-        }
+        return true;
     }
 	
 	/**

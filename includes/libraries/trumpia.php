@@ -9,7 +9,7 @@ class Trumpia {
 	/**
 	 * Constant paths to include files
 	 */
-	const URL_API = 'http://trumpia.com/api/';
+	const URL_API = 'http://greysuitmobile.com/api/';
 	const DEBUG = false;
 	
 	/**
@@ -573,6 +573,8 @@ class Trumpia {
      * @return bool
      */
     public function delete_list( $ListName, $DeleteContact = FALSE ) {
+        $DeleteContact = ( TRUE === $DeleteContact ) ? 'TRUE' : 'FALSE';
+
         // Execute the command
 		$this->_execute( 'deletelist', compact( 'ListName', 'DeleteContact' ) );
 
@@ -697,7 +699,7 @@ class Trumpia {
 
         // If we're debugging lets give as much info as possible
         if ( self::DEBUG ) {
-            echo "<h1>URL</h1>\n<p>", self::URL_API, "</p>\n<hr />\n<br /><br />\n";
+            echo "<h1>URL</h1>\n<p>", self::URL_API, "$method.php</p>\n<hr />\n<br /><br />\n";
             echo "<h1>Raw Request</h1>\n<pre>", $this->raw_request, "</pre>\n<hr />\n<br /><br />\n";
             echo "<h1>Request</h1>\n\n<pre>", var_export( $this->request, true ), "</pre>\n<hr />\n<br /><br />\n";
             echo "<h1>Raw Response</h1>\n<pre>", $this->raw_response, "</pre>\n<hr />\n<br /><br />\n";

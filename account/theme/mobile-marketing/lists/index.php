@@ -17,7 +17,7 @@ if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
 $m = new Mobile_Marketing();
-$m->sync_subscribers_by_lists();
+//$m->sync_subscribers_by_lists();
 
 $selected = "mobile_marketing";
 $title = _('Mobile Lists') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
@@ -32,8 +32,9 @@ get_header();
 		<table ajax="/ajax/mobile-marketing/lists/list/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
 			<thead>
 				<tr>
-					<th width="50%" sort="2"><?php echo _('Name'); ?></th>
-					<th width="30%" sort="1"><?php echo _('Type'); ?></th>
+					<th width="25%" sort="2"><?php echo _('Name'); ?></th>
+					<th width="15%" sort="1"><?php echo _('Frequency'); ?></th>
+					<th width="40%" sort="1"><?php echo _('Description'); ?></th>
 					<th width="20%"><?php echo _('Date Created'); ?></th>
 				</tr>
 			</thead>
