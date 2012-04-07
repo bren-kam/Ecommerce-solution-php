@@ -4,13 +4,31 @@
  *
  * Library based on documentation available on 03/28/2012 from
  * @url http://trumpia.com/api/doc.php
+ *
+ * Functions:
+ *      add_contact( $ListName, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' )
+ *      update_contact_data( $ContactID, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' )
+ *      delete_contact( $ContactID )
+ *      add_contact_to_list( $ContactID, $ListName, $CreateCopy = FALSE )
+ *      get_contact_data( $ContactID )
+ *      get_contact_id( $ListName, $ToolType, $ToolData )
+ *      remove_contact( $tool, $tooltype, $listname, $removeall )
+ *      send_to_list( $EmailMode, $IMMode, $SMSMode, $SBMode, $Description, $ListNames, $SendLater, $LaterTime = '', $EmailSubject = '', $EmailMessage = '', $IMMessage = '', $SMSMessage = '', $ChangeOrganizationName = '', $SBMessage = '', $AreaCode = '', $MailMergeFirstName = '', $MailMergeLastName = '' )
+ *      send_to_contact( $EmailMode, $IMMode, $SMSMode, $SBMode, $Description, $ContactIDs, $EmailSubject = '', $EmailMessage = '', $IMMessage = '', $SMSMessage = '', $ChangeOrganizationName = '', $SBMessage = '', $MailMergeFirstName = '', $MailMergeLastName = '' )
+ *      check_keyword( $Keyword )
+ *      create_keyword( $Keyword, $ListNames, $UserResponse, $KeywordMessage, $NotifyEmail = '', $NotifyMobile = '', $UseNotify = false, $NotifyType1 = FALSE, $NotifyType2 = FALSE, $NotifyType3 = FALSE, $NotifyType4 = FALSE, $NotifyType5 = FALSE, $SendAutoResponse = 2, $SendAlternate = FALSE, $AlternateMessage = '', $ChangeOrganizationName = '' )
+ *      update_keyword( $Keyword, $ListNames, $UserResponse, $KeywordMessage, $NotifyEmail = '', $NotifyMobile = '', $UseNotify = false, $NotifyType1 = FALSE, $NotifyType2 = FALSE, $NotifyType3 = FALSE, $NotifyType4 = FALSE, $NotifyType5 = FALSE, $SendAutoResponse = 2, $SendAlternate = FALSE, $AlternateMessage = '', $ChangeOrganizationName = '' )
+ *      delete_keyword( $Keyword )
+ *      create_list( $ListName, $DisplayName, $Frequency, $Description )
+ *      rename_list( $ListName, $NewListName, $DisplayName, $Frequency, $Description )
+ *      delete_list( $ListName, $DeleteContact = FALSE )
  */
 class Trumpia {
 	/**
 	 * Constant paths to include files
 	 */
 	const URL_API = 'http://greysuitmobile.com/api/';
-	const DEBUG = false;
+	const DEBUG = true;
 	
 	/**
 	 * A few variables that will determine the basic status
@@ -52,8 +70,8 @@ class Trumpia {
      * with unique ContactID's. To copy, move, or other contact management, please go online to
      * trumpia.com.
      *
-     * @param string $FirstName First name of the contact.
      * @param string $ListName List to add the contact to.
+     * @param string $FirstName [optional] First name of the contact.
      * @param string $LastName [optional] Last name of the contact.
      * @param string $Email [optional] Email address of the contact.
      * @param int $CountryCode [optional|1]
@@ -79,13 +97,80 @@ class Trumpia {
      *      Default Verification Message : Reply OK to start. Msg&Data rates may apply. Upto 30msg/mo.
 	 * @return int
 	 */
-    public function add_contact( $FirstName, $ListName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
+    public function add_contact( $ListName, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
+        // Format the bool values
+        $this->_format_bools( array( &$SendVerification, &$UseCustomMobileVerificationMessage ) );
+
 		// Execute the command
 		$response = $this->_execute( 'addcontact', compact( 'FirstName', 'ListName', 'LastName', 'Email', 'CountryCode', 'MobileNumber', 'AIM', 'MSN', 'SendVerification', 'UseCustomMobileVerificationMessage', 'CustomMobileVerificationMessage' ) );
 
 		// Return the contact id if successful
 		return ( $this->success() ) ? $response->CONTACTID : false;
 	}
+
+    /**
+     * Update Contact Data
+     *
+     * This function allows you to update an existing contact record. The ContactID must be provided
+     * and this is the only way to identify which contact to update. Keep in mind that the same contact
+     * record, a duplicate, can exist in multiple lists.
+     *
+     * NOTES: Currently distribution lists that a contact belongs to cannot be updated through the API.
+     * Distribution list management must also be done online at trumpia.com.
+     *
+     * @param int $ContactID Unique ID of contact.
+     * @param string $FirstName [optional] First name of the contact.
+     * @param string $LastName [optional] Last name of the contact.
+     * @param string $Email [optional] Email address of the contact.
+     * @param int $CountryCode [optional|1]
+     *      Mobile phone number's country code. If left blank then it will be assumed to be a
+     *      US number.
+     * @param string $MobileNumber [optional]
+     *      For US, the 10 digit number without the leading 0 or 1. For some international numbers,
+     *      the leading 0 or 1 must be omitted.
+     * @param string $AIM [optional] AOL Instant Messenger screen name
+     * @param string $MSN [optional] MSN Instant Messenger screen name must be an email address.
+     * @param bool $SendVerification [optional|FALSE]
+     *      TRUE or FALSE. If set to true, this sends a verification message to each tool before they
+     *      are added to your distribution list. If the tool is not verified, they will be marked as
+     *      not verified and cannot be used. If set to false, the verification step is bypassed and
+     *      contacts will be added directly into your distribution list. A verification is omitted
+     *      for an international phone number (not US).
+     * @param bool $UseCustomMobileVerificationMessage [optional|FALSE]
+     *      TRUE or FALSE. Send your custom verification message.
+     * @param string $CustomMobileVerificationMessage [optional]
+     *      If UseCustomMobileVerificationMessage is TRUE, this message will be sent for the
+     *      verification message.
+     *      Limit 60 characters.
+     *      Default Verification Message : Reply OK to start. Msg&Data rates may apply. Upto 30msg/mo.
+     * @return bool
+     */
+    public function update_contact_data( $ContactID, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
+        // Format the bool values
+        $this->_format_bools( array( &$SendVerification, &$UseCustomMobileVerificationMessage ) );
+
+        // Execute the command
+		$this->_execute( 'updatecontactdata', compact( 'ContactID', 'FirstName', 'LastName', 'Email', 'CountryCode', 'MobileNumber', 'AIM', 'MSN', 'SendVerification', 'UseCustomMobileVerificationMessage', 'CustomMobileVerificationMessage' ) );
+
+        // Return Success
+		return $this->success();
+    }
+
+    /**
+     * Delete Contact
+     *
+     * This function deletes the contact from your contact list and any distribution lists it was on.
+     *
+     * @param int $ContactID Unique ID of contact.
+     * @return bool
+     */
+    public function delete_contact( $ContactID ) {
+        // Execute the command
+		$this->_execute( 'deletecontact', compact( 'ContactID' ) );
+
+        // Return Success
+		return $this->success();
+    }
 
     /**
      * Add Contact To List
@@ -103,6 +188,9 @@ class Trumpia {
      * @return bool
      */
     public function add_contact_to_list( $ContactID, $ListName, $CreateCopy = FALSE ) {
+        // Format the bool values
+        $this->_format_bools( array( &$CreateCopy ) );
+
         // Execute the command
 		$response = $this->_execute( 'addcontacttolist', compact( 'ContactID', 'ListName', 'CreateCopy' ) );
 
@@ -170,67 +258,6 @@ class Trumpia {
     }
 
     /**
-     * Update Contact Data
-     *
-     * This function allows you to update an existing contact record. The ContactID must be provided
-     * and this is the only way to identify which contact to update. Keep in mind that the same contact
-     * record, a duplicate, can exist in multiple lists.
-     *
-     * NOTES: Currently distribution lists that a contact belongs to cannot be updated through the API.
-     * Distribution list management must also be done online at trumpia.com.
-     *
-     * @param int $ContactID Unique ID of contact.
-     * @param string $FirstName First name of the contact.
-     * @param string $LastName [optional] Last name of the contact.
-     * @param string $Email [optional] Email address of the contact.
-     * @param int $CountryCode [optional|1]
-     *      Mobile phone number's country code. If left blank then it will be assumed to be a
-     *      US number.
-     * @param string $MobileNumber [optional]
-     *      For US, the 10 digit number without the leading 0 or 1. For some international numbers,
-     *      the leading 0 or 1 must be omitted.
-     * @param string $AIM [optional] AOL Instant Messenger screen name
-     * @param string $MSN [optional] MSN Instant Messenger screen name must be an email address.
-     * @param bool $SendVerification [optional|FALSE]
-     *      TRUE or FALSE. If set to true, this sends a verification message to each tool before they
-     *      are added to your distribution list. If the tool is not verified, they will be marked as
-     *      not verified and cannot be used. If set to false, the verification step is bypassed and
-     *      contacts will be added directly into your distribution list. A verification is omitted
-     *      for an international phone number (not US).
-     * @param bool $UseCustomMobileVerificationMessage [optional|FALSE]
-     *      TRUE or FALSE. Send your custom verification message.
-     * @param string $CustomMobileVerificationMessage [optional]
-     *      If UseCustomMobileVerificationMessage is TRUE, this message will be sent for the
-     *      verification message.
-     *      Limit 60 characters.
-     *      Default Verification Message : Reply OK to start. Msg&Data rates may apply. Upto 30msg/mo.
-     * @return bool
-     */
-    public function update_contact_data( $ContactID, $FirstName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
-        // Execute the command
-		$this->_execute( 'updatecontactdata', compact( 'ContactID', 'FirstName', 'LastName', 'Email', 'CountryCode', 'MobileNumber', 'AIM', 'MSN', 'SendVerification', 'UseCustomMobileVerificationMessage', 'CustomMobileVerificationMessage' ) );
-
-        // Return Success
-		return $this->success();
-    }
-
-    /**
-     * Delete Contact
-     *
-     * This function deletes the contact from your contact list and any distribution lists it was on.
-     *
-     * @param int $ContactID Unique ID of contact.
-     * @return bool
-     */
-    public function delete_contact( $ContactID ) {
-        // Execute the command
-		$this->_execute( 'deletecontact', compact( 'ContactID' ) );
-
-        // Return Success
-		return $this->success();
-    }
-
-    /**
      * Remove Contact
      *
      * This function removes a contact by the actual contact information instead of the ContactID. This
@@ -253,7 +280,10 @@ class Trumpia {
      *      deleted. In other words the whole subscription will be deleted.
      * @return bool
      */
-    public function remove_contact( $tool, $tooltype, $listname, $removeall ) {
+    public function remove_contact( $tool, $tooltype, $listname, $removeall = FALSE ) {
+        // Format the bool values
+        $this->_format_bools( array( &$removeall ) );
+
         // Execute the command
 		$this->_execute( 'removecontact', compact( 'tool', 'tooltype', 'listname', 'removeall' ) );
 
@@ -300,6 +330,9 @@ class Trumpia {
      * @return bool
      */
     public function send_to_list( $EmailMode, $IMMode, $SMSMode, $SBMode, $Description, $ListNames, $SendLater, $LaterTime = '', $EmailSubject = '', $EmailMessage = '', $IMMessage = '', $SMSMessage = '', $ChangeOrganizationName = '', $SBMessage = '', $AreaCode = '', $MailMergeFirstName = '', $MailMergeLastName = '' ) {
+        // Format the bool values
+        $this->_format_bools( array( &$EmailMode, &$IMMode, &$SMSMode, &$SBMode, &$SendLater ) );
+
         // Execute the command
 		$this->_execute( 'sendtolist', compact( 'EmailMode', 'IMMode', 'SMSMode', 'SBMode', 'Description', 'ListNames', 'SendLater', 'LaterTime', 'EmailSubject', 'EmailMessage', 'IMMessage', 'SMSMessage', 'ChangeOrganizationName', 'SBMessage', 'AreaCode', 'MailMergeFirstName', 'MailMergeLastName' ) );
 
@@ -341,6 +374,9 @@ class Trumpia {
      * @return bool
      */
     public function send_to_contact( $EmailMode, $IMMode, $SMSMode, $SBMode, $Description, $ContactIDs, $EmailSubject = '', $EmailMessage = '', $IMMessage = '', $SMSMessage = '', $ChangeOrganizationName = '', $SBMessage = '', $MailMergeFirstName = '', $MailMergeLastName = '' ) {
+        // Format the bool values
+        $this->_format_bools( array( &$EmailMode, &$IMMode, &$SMSMode, &$SBMode ) );
+
         // Execute the command
 		$this->_execute( 'sendtocontact', compact( 'EmailMode', 'IMMode', 'SMSMode', 'SBMode', 'Description', 'ContactIDs', 'EmailSubject', 'EmailMessage', 'IMMessage', 'SMSMessage', 'ChangeOrganizationName', 'SBMessage', 'MailMergeFirstName', 'MailMergeLastName' ) );
 
@@ -422,6 +458,9 @@ class Trumpia {
      * @return bool
      */
     public function create_keyword( $Keyword, $ListNames, $UserResponse, $KeywordMessage, $NotifyEmail = '', $NotifyMobile = '', $UseNotify = false, $NotifyType1 = FALSE, $NotifyType2 = FALSE, $NotifyType3 = FALSE, $NotifyType4 = FALSE, $NotifyType5 = FALSE, $SendAutoResponse = 2, $SendAlternate = FALSE, $AlternateMessage = '', $ChangeOrganizationName = '' ) {
+        // Format the bool values
+        $this->_format_bools( array( &$UserResponse, &$UseNotify, &$NotifyType1, &$NotifyType2, &$NotifyType3, &$NotifyType4, &$NotifyType5, &$SendAlternate ) );
+
         // Execute the command
 		$this->_execute( 'createkeyword', compact( 'Keyword', 'ListNames', 'UserResponse', 'KeywordMessage', 'NotifyEmail', 'NotifyMobile', 'UseNotify', 'NotifyType1', 'NotifyType2', 'NotifyType3', 'NotifyType4', 'NotifyType5', 'SendAutoResponse', 'SendAlternate', 'AlternateMessage', 'ChangeOrganizationName' ) );
 
@@ -432,7 +471,7 @@ class Trumpia {
     /**
      * Update Keyword
      *
-     * @param string $Keyword The keyword to create. Check availability before creating.
+     * @param string $Keyword The keyword to update. This must be keyword setup on your account.
      * @param string $ListNames name1,name2,name3...
      * @param bool $UserResponse
      *      TRUE or FALSE. This enables users to add a message or response after the keyword. This
@@ -484,6 +523,9 @@ class Trumpia {
      * @return bool
      */
     public function update_keyword( $Keyword, $ListNames, $UserResponse, $KeywordMessage, $NotifyEmail = '', $NotifyMobile = '', $UseNotify = false, $NotifyType1 = FALSE, $NotifyType2 = FALSE, $NotifyType3 = FALSE, $NotifyType4 = FALSE, $NotifyType5 = FALSE, $SendAutoResponse = 2, $SendAlternate = FALSE, $AlternateMessage = '', $ChangeOrganizationName = '' ) {
+        // Format the bool values
+        $this->_format_bools( array( &$UserResponse, &$UseNotify, &$NotifyType1, &$NotifyType2, &$NotifyType3, &$NotifyType4, &$NotifyType5, &$SendAlternate ) );
+
         // Execute the command
 		$this->_execute( 'updatekeyword', compact( 'Keyword', 'ListNames', 'UserResponse', 'KeywordMessage', 'NotifyEmail', 'NotifyMobile', 'UseNotify', 'NotifyType1', 'NotifyType2', 'NotifyType3', 'NotifyType4', 'NotifyType5', 'SendAutoResponse', 'SendAlternate', 'AlternateMessage', 'ChangeOrganizationName' ) );
 
@@ -573,7 +615,8 @@ class Trumpia {
      * @return bool
      */
     public function delete_list( $ListName, $DeleteContact = FALSE ) {
-        $DeleteContact = ( TRUE === $DeleteContact ) ? 'TRUE' : 'FALSE';
+        // Format the bool values
+        $this->_format_bools( array( &$DeleteContact ) );
 
         // Execute the command
 		$this->_execute( 'deletelist', compact( 'ListName', 'DeleteContact' ) );
@@ -647,6 +690,18 @@ class Trumpia {
      */
     public function error() {
         return $this->error;
+    }
+
+    /**
+     * Format Boolean values
+     *
+     * @param array $arguments
+     * @return void
+     */
+    private function _format_bools( $arguments ) {
+        foreach ( $arguments as &$a ) {
+            $a = ( true === $a ) ? 'TRUE' : 'FALSE';
+        }
     }
 
 	/**

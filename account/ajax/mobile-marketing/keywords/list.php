@@ -10,9 +10,9 @@ $e = new Mobile_Marketing;
 $dt = new Data_Table();
 
 // Set variables
-$dt->order_by( '`name`', '`keyword`', '`date_started`' );
+$dt->order_by( '`keyword`', '`response`', '`date_created`' );
 $dt->add_where( " AND `website_id` = " . (int) $user['website']['website_id'] );
-$dt->search( array( '`name`' => false, '`keyword`' => false ) );
+$dt->search( array( '`keyword`' => false, '`response`' => true ) );
 
 // Get Keywords
 $keywords = $e->list_keywords( $dt->get_variables() );
@@ -28,11 +28,11 @@ $data = array();
 // Create output
 if ( is_array( $keywords ) )
 foreach ( $keywords as $k ) {
-    $date = new DateTime( $k['date_started'] );
+    $date = new DateTime( $k['date_created'] );
 
 	$data[] = array( 
-		$k['name'] . '<div class="actions"><a href="/mobile-marketing/keywords/add-edit/?mkid=' . $k['mobile_keyword_id'] . '" title="' . _('Edit Keyword') . '">' . _('Edit Keyword') . '</a> | <a href="/ajax/mobile-marketing/keywords/delete/?mkid=' . $k['mobile_keyword_id'] . '&amp;_nonce=' . $delete_nonce . '"  title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>'
-        , $k['keyword']
+		$k['keyword'] . '<div class="actions"><a href="/mobile-marketing/keywords/add-edit/?mkid=' . $k['mobile_keyword_id'] . '" title="' . _('Edit Keyword') . '">' . _('Edit Keyword') . '</a> | <a href="/ajax/mobile-marketing/keywords/delete/?mkid=' . $k['mobile_keyword_id'] . '&amp;_nonce=' . $delete_nonce . '"  title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>'
+        , format::limit_chars( $k['response'] )
 		, $date->format( 'F jS, Y g:i a')
 	);
 }
