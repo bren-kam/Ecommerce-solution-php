@@ -3,13 +3,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         css : 'counter bold'
         , cssExceeded : 'error'
         , counterText : 'Characters Left: '
+        , allowed : 131
     });
-
-    // Date Picker
-	$('#tDateStarted').datepicker({
-		minDate: 0,
-		dateFormat: 'mm/dd/yy'
-	});
 
     // Check availibity
     $('#aCheckKeywordAvailability').click( function() {
