@@ -1012,35 +1012,39 @@ class Mobile_Marketing extends Base_Class {
 	/**
 	 * Add a new message
 	 *
-	 * @param string $title
+     * @param string $title
 	 * @param string $message
      * @param string $date_sent
+     * @param array $mobile_list_ids
      * @param bool $future
 	 * @return int
 	 */
 	public function create_message( $title, $message, $date_sent, $mobile_list_ids, $future ) {
         global $user;
 
+        // Initialize variables
+        $lists = '';
+
+        // @Fix shouldn't look a query
+        // Form List
+        foreach ( $mobile_list_ids as $mlid ) {
+            $mobile_list = $this->get_mobile_list( $mlid );
+
+            if ( !empty( $lists ) )
+                $lists .= ',';
+
+            $lists .= $this->_format_mobile_list_name( $mobile_list['name'] );
+        }
+
         // Make sure it's instantiated
-        if ( !$this->_get_am_lib('blast') )
+        $this->_init_trumpia();
+
+		// Send message
+        if ( !$this->trumpia->send_to_list( false, false, true, false, $title, $lists, $future, $date_sent, '', '', '', ' ' . $message ) )
             return false;
-		
-		// Delete Avoid Mobile Group
-        $am_blast_id = $this->am_blast->create( $title, $message . "\n" );
-		
-		// Failed!
-		if ( !$am_blast_id )
-			return false;
-		
-		// Create date object
-		$date = new DateTime( $date_sent );
-		
-		// Schedule
-		if ( !$this->am_blast->schedule( $am_blast_id, $date->format('m'), $date->format('d'), '*', $date->format('Y'), $date->format('H'), $date->format('i'), $date->format('s') ) )
-			return false;
-		
+
 		// Create the posting post
-        $this->db->insert( 'mobile_messages', array( 'website_id' => $user['website']['website_id'], 'am_blast_id' => $am_blast_id, 'title' => $title, 'message' => $message, 'status' => $future, 'date_sent' => $date_sent, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iississ' );
+        $this->db->insert( 'mobile_messages', array( 'website_id' => $user['website']['website_id'], 'title' => $title, 'message' => $message, 'status' => $future, 'date_sent' => $date_sent, 'date_created' => dt::date('Y-m-d H:i:s') ), 'ississ' );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -1050,15 +1054,6 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Get the mobile message ID
 		$mobile_message_id = $this->db->insert_id;
-		
-		// Add lists
-		foreach ( $mobile_list_ids as $mlid ) {
-			// Get the mobile list so we can get the group ID
-			$mobile_list = $this->get_mobile_list( $mlid );
-			
-			// Link it to a group
-			$this->am_blast->add_group( $am_blast_id, $mobile_list['am_group_id'] );
-		}
 
 		return $this->add_message_lists( $mobile_message_id, $mobile_list_ids );
 	}
@@ -1067,7 +1062,7 @@ class Mobile_Marketing extends Base_Class {
 	 * Update a message
 	 *
 	 * @param int $mobile_message_id
-	 * @param string $title
+     * @param string $title
 	 * @param string $message
 	 * @param string $date_sent
 	 * @param array $mobile_list_ids
@@ -1075,7 +1070,7 @@ class Mobile_Marketing extends Base_Class {
 	 * @return bool
 	 */
 	public function update_message( $mobile_message_id, $title, $message, $date_sent, $mobile_list_ids, $future ) {
-		global $user;
+		/*global $user;
 		
 		// Get the mobile list
         $message = $this->get_message( $mobile_message_id );
@@ -1102,9 +1097,8 @@ class Mobile_Marketing extends Base_Class {
 		if ( 0 == $message['am_blast_id'] )
 			return true;
 
-		// @avid update
 
-		return true;
+		return true;*/
 	}
 
 	/**
