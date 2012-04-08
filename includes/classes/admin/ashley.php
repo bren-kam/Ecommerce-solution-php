@@ -141,12 +141,14 @@ class Ashley extends Base_Class {
 				
 				// Weight
 				case 'weight':
-					$items[$j]['weight'] .= trim( $xml_reader->getAttribute('value') );
+					if ( !isset( $items[$j]['weight'] ) )
+						$items[$j]['weight'] = trim( $xml_reader->getAttribute('value') );
 				break;
 				
 				// Volumne
 				case 'volume':
-					$items[$j]['volume'] .= trim( $xml_reader->getAttribute('value') );
+					if ( !isset( $items[$j]['volume'] ) )
+						$items[$j]['volume'] = trim( $xml_reader->getAttribute('value') );
 				break;
 				
 				// Groups
@@ -179,6 +181,11 @@ class Ashley extends Base_Class {
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
+			
+			// We can't have a SKU like B457B532 -- it means it is international and comes in a container
+			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
+				continue;
+			
 			$product_status = $item['status'];
 			$product_specs = $item['specs'];
 			$weight = $item['weight'];
@@ -237,7 +244,9 @@ class Ashley extends Base_Class {
 					$slug = $product['slug'];
 				} elseif ( $slug != $product['slug'] ) {
 					$slug = $this->unique_slug( $slug );
-					$identical = false;
+					
+					if ( $slug != $product['slug'] )
+						$identical = false;
 				}
 				
 				if( empty( $description ) ) {
@@ -260,13 +269,21 @@ class Ashley extends Base_Class {
 				
 				$price = 0;//$product_information['price'];
 				$list_price = 0;//$product_information['list_price'];
+				$product_specifications = '';
 				
+				$product['product_specifications'] = unserialize( $product['product_specifications'] );
 				if( is_array( $product['product_specifications'] ) )
 				foreach( $product['product_specifications'] as $ps ) {
-					if( !empty( $product_specs ) )
-						$product_specs .= '|';
+					if( !empty( $product_specifications ) )
+						$product_specifications .= '|';
 					
-					$product_specs .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
+					$product_specifications .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
+				}
+				
+				if( empty( $product_specs ) ) {
+					$product_specs = $product_specifications;
+				} elseif ( $product_specs != $product_specifications ) { 
+					$identical = false;
 				}
 				
 				if( empty( $brand_id ) ) {
@@ -300,12 +317,12 @@ class Ashley extends Base_Class {
 					$identical = false;
 				}
 				
+				// If everything is identical, we don't want to do anything
 				if ( $identical ) {
 					$skipped++;
 					$products_string .= $name . "\n";
 					continue;
 				}
-				// If everything is identical, we don't want to do anything
 			} else {
 				$product_id = $this->p->create( 353 );
 
@@ -385,7 +402,8 @@ class Ashley extends Base_Class {
 		//fn::info( $this->images );
 		//$this->empty_product_images( $product_ids );
 		//$this->add_product_images();
-		
+		echo "Skipped: $skipped<br />\n";
+		echo $i;
 		echo '|' . memory_get_peak_usage(true) . '-' . memory_get_usage(true);
 		
 		$headers = "From: noreply@greysuitretail.com" . "\r\n" .
@@ -427,7 +445,7 @@ class Ashley extends Base_Class {
 	/**
 	 * Empty product images for a specific product ID
 	 *
-	 * @param array $product_id
+	 * @param array $product_ids
 	 * @return bool
 	 */
 	public function empty_product_images( $product_ids ) {
@@ -454,6 +472,7 @@ class Ashley extends Base_Class {
 	 * Commits a product image to a product
 	 *
 	 * @param array $images
+     * @param int $product_id
 	 * @return bool
 	 */
 	public function commit_product_images( $images, $product_id ) {
@@ -624,14 +643,12 @@ class Ashley extends Base_Class {
 	}
 	
 	/**
-	 * /
-	
-	/**
 	 * Upload image
 	 *
 	 * @param string $image_url
 	 * @param string $slug
 	 * @param int $product_id
+     * @return string
 	 */
 	public function upload_image( $image_url, $slug, $product_id ) {
 		$new_image_name = $slug;

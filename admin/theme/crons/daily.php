@@ -7,10 +7,7 @@
 // Set it as a background job
 newrelic_background_job();
 
-$t = new Tickets;
-$t->email_overdue_tickets();
-
-/***** CRAIGSLIT *****/
+/***** CRAIGLIST *****/
 
 // Declare classes
 $a = new Analytics();

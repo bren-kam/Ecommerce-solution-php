@@ -24,7 +24,7 @@ li { padding-top: 7px; }
 	<li>Web: <a href="http://www.imagineretailer.com/" title="www.ImagineRetailer.com">www.imagineretailer.com</a></li>
 </ul>
 <br />
-<p>Your credit card has been billed for the Total Monthly Cost indicated below. You will automatically be billed for this amount each month.</p>
+<p style="color:#CC2222;font-size:1.5em;font-weight:bold">Your credit card has been billed for the Total Monthly Cost &amp; Set Up Cost indicated below. You will automatically be billed the Monthly Cost each month.</p>
 <br />
 
 <h2>Order Information</h2>

@@ -22,24 +22,21 @@ $w = new Websites;
 $mobile_keyword_id = ( isset( $_GET['mkid'] ) ) ? $_GET['mkid'] : false;
 
 // Get variables
-$timezone = $w->get_setting( 'timezone' );
+$mobile_lists = $m->get_mobile_lists();
 
-// Figure out what the time is
-$now = new DateTime;
-$now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
-
+// Do Validation
 $v = new Validator();
 $v->form_name = 'fAddEditKeyword';
-$v->add_validation( 'tName', 'req' , _('The "Name" field is required') );
 
-$v->add_validation( 'tKeyword', 'req' , _('The "Keyword" field is require') );
-$v->add_validation( 'hKeywordAvailable', 'val=1' , _('The "Keyword" field must contain an available keyword') );
+if ( !$mobile_keyword_id ) {
+    $v->add_validation( 'tKeyword', 'req' , _('The "Keyword" field is required') );
+    $v->add_validation( 'hKeywordAvailable', 'val=1' , _('The "Keyword" field must contain an available keyword') );
+}
 
 $v->add_validation( 'taResponse', 'req', _('The "Response" field is required') );
-$v->add_validation( 'taResponse', 'maxlen=140', _('The "Response" field must be 140 characters or less') );
+$v->add_validation( 'taResponse', 'maxlen=132', _('The "Response" field must be 132 characters or less') );
 
-$v->add_validation( 'tDateStarted', 'req', _('The "DateStarted" field is required') );
-$v->add_validation( 'sTimezone', 'req', _('The "Timezone" field is required') );
+$v->add_validation( 'cbMobileLists', 'req', _('The "Mobile List" field is required') );
 
 // Add validation
 add_footer( $v->js_validation() );
@@ -53,15 +50,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-key
 	
 	// if there are no errors
 	if ( empty( $errs ) ) {
-		$date_started_array = explode( '/', $_POST['tDateStarted'] );
-		$date_started = $date_started_array[2] . '-' . $date_started_array[0] . '-' . $date_started_array[1];
-		
 		if ( $mobile_keyword_id ) {
 			// Update subscriber
-    		$success = $m->update_keyword( $mobile_keyword_id, $_POST['tName'], $_POST['tKeyword'], $_POST['taResponse'], $date_started, $_POST['sTimezone'] );
+    		$success = $m->update_keyword( $mobile_keyword_id, $_POST['taResponse'], $_POST['sMobileLists'] );
 		} else {
 			// Create Subscriber
-			$success = $m->create_keyword( $_POST['tName'], $_POST['tKeyword'], $_POST['taResponse'], $date_started, $_POST['sTimezone'] );
+			$success = $m->create_keyword( $_POST['tKeyword'], $_POST['taResponse'], $_POST['sMobileLists'] );
 		}
 	}
 }
@@ -69,15 +63,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-key
 // Get the subscriber if necessary
 if ( $mobile_keyword_id || $success ) {
 	$keyword = ( !$mobile_keyword_id && $success ) ? $m->get_keyword( $success ) : $m->get_keyword( $mobile_keyword_id );
-	$now = new DateTime( $keyword['date_started'] );
 } else {
 	// Initialize variable
 	$keyword = array(
-		'name' => ''
-		, 'keyword' => ''
+		'keyword' => ''
         , 'response' => ''
-        , 'date_started' => ''
-        , 'timezone' => ''
+        , 'mobile_lists' => array()
 	);
 }
 
@@ -115,22 +106,26 @@ get_header();
 			$mobile_keyword_id = $success;
 		
 		if ( isset( $errs ) )
-				echo "<p class='red'>$errs</p>";
+            echo "<p class='red'>$errs</p>";
+        
+        if ( is_array( $mobile_lists ) && count( $mobile_lists ) > 0 ) {
 		?>
 		<form name="fAddEditKeyword" action="/mobile-marketing/keywords/add-edit/<?php if ( $mobile_keyword_id ) echo "?mkid=$mobile_keyword_id"; ?>" method="post">
 			<?php nonce::field( 'add-edit-keyword' ); ?>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
-					<td><label for="tName"><?php echo _('Name of Keyword Campaign'); ?>:</label></td>
-					<td><input type="text" class="tb" name="tName" id="tName" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $keyword['name']; ?>" /></td>
-				</tr>
-				<tr>
 					<td><label for="tKeyword"><?php echo _('Keyword'); ?>:</label></td>
 					<td>
-                        <input type="text" class="tb" name="tKeyword" id="tKeyword" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tKeyword'] ) ) ? $_POST['tKeyword'] : $keyword['keyword']; ?>" />
-                        <br />
-                        <p><a href="javascript:;" id="aCheckKeywordAvailability" title="<?php echo _('Check Keyword Availability'); ?>"><?php echo _('Check Availability'); ?></a> <span id="sAvailable"></span></span></p>
-                        <input type="hidden" name="hKeywordAvailable" id="hKeywordAvailable" value="<?php echo ( $mobile_keyword_id ) ? '1' : '0'; ?>" />
+                        <?php
+                        if ( $mobile_keyword_id ) {
+                            echo $keyword['keyword'];
+                        } else {
+                            ?>
+                            <input type="text" class="tb" name="tKeyword" id="tKeyword" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tKeyword'] ) ) ? $_POST['tKeyword'] : $keyword['keyword']; ?>" />
+                            <br />
+                            <p><a href="javascript:;" id="aCheckKeywordAvailability" title="<?php echo _('Check Keyword Availability'); ?>"><?php echo _('Check Availability'); ?></a> <span id="sAvailable"></span></span></p>
+                            <input type="hidden" name="hKeywordAvailable" id="hKeywordAvailable" value="<?php echo ( $mobile_keyword_id ) ? '1' : '0'; ?>" />
+                        <?php } ?>
                     </td>
 				</tr>
 				<tr>
@@ -141,29 +136,19 @@ get_header();
                     </td>
 				</tr>
 				<tr>
-                    <td><label for="tDateStarted"><?php echo _('Campaign Start Date'); ?>:</label></td>
-                    <td><input type="text" class="tb" name="tDateStarted" id="tDateStarted" value="<?php echo ( !$success && isset( $_POST['tDateStarted'] ) ) ? $_POST['tDateStarted'] : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
-                </tr>
-                <tr>
-                    <td><label for="sTimeZone"><?php echo _('Timezone'); ?></label>:</td>
+                    <td class="top"><label><?php echo _('Lists'); ?></label>:</td>
                     <td>
-                        <select name="sTimezone" id="sTimeZone">
+                        <p>
                             <?php
-                            $timezones = array(
-                                'E' =>  _('Eastern')
-                                , 'C' => _('Central')
-                                , 'M' => _('Mountain')
-                                , 'P' => _('Pacific')
-                            );
+                            $selected_mobile_lists = ( !$success && isset( $_POST['cbMobileLists'] ) ) ? $_POST['cbMobileLists'] : $keyword['mobile_lists'];
 
-                            $timezone = ( !$success && isset( $_POST['tDateStarted'] ) ) ? $keyword['timezone'] : $_POST['sTimezone'];
-
-                            foreach ( $timezones as $abbr => $zone ) {
-                                $selected = ( $abbr == $timezone ) ? ' selected="selected"' : '';
+                            foreach ( $mobile_lists as $ml ) {
+                                $checked = ( in_array( $ml['mobile_list_id'], $selected_mobile_lists ) ) ? ' checked="checked"' : '';
                             ?>
-                            <option value="<?php echo $abbr; ?>"<?php echo $selected; ?>><?php echo $zone; ?></option>
+                            <input type="checkbox" class="cb" name="cbMobileLists[]" id="cbMobileList<?php echo $ml['mobile_list_id']; ?>" value="<?php echo $ml['mobile_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbMobileList<?php echo $ml['mobile_list_id']; ?>"><?php echo $ml['name']; ?></label>
+                            <br />
                             <?php } ?>
-                        </select>
+                        </p>
                     </td>
                 </tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
@@ -173,6 +158,9 @@ get_header();
 				</tr>
 			</table>
 		</form>
+        <?php } else { ?>
+            <p><?php echo _('You must'), ' ', '<a href="/mobile-marketing/lists/add-edit/" title="', _('Add Mobile List'), '">', _('add a Mobile List'), '</a>', ' ', _('before you can add a Keyword.'); ?></p>
+        <?php } ?>
 		<br /><br />
 	</div>
 	<br /><br />
