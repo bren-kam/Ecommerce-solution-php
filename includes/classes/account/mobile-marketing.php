@@ -272,7 +272,7 @@ class Mobile_Marketing extends Base_Class {
             $mobile_list = $this->get_mobile_list( $ml );
 
             // Update the trumpia data
-            $trumpia_contact_id = $this->trumpia->add_contact( $this->_format_mobile_list_name( $mobile_list['name'] ), '', '', '', 1, $phone );
+            $trumpia_contact_id = $this->trumpia->add_contact( 'Unknown', $this->_format_mobile_list_name( $mobile_list['name'] ), '', '', 1, $phone );
 
             if ( !$trumpia_contact_id )
                 return false;
@@ -321,7 +321,7 @@ class Mobile_Marketing extends Base_Class {
         foreach ( $subscriber['mobile_lists'] as $mobile_list_id => $trumpia_contact_id ) {
             if ( in_array( $mobile_list_id, $mobile_lists ) ) {
                  // Update the trumpia data
-                if ( !$this->trumpia->update_contact_data( $trumpia_contact_id, '', '', '', 1, $phone ) )
+                if ( !$this->trumpia->update_contact_data( $trumpia_contact_id, 'Unknown', '', '', 1, $phone ) )
                     return false;
             } else {
                 if ( !$this->trumpia->delete_contact( $trumpia_contact_id ) )
@@ -379,7 +379,7 @@ class Mobile_Marketing extends Base_Class {
             return false;
 
         // Delete old lists
-        if ( is_array( $old_lists ) ) {
+        if ( is_array( $old_lists ) && count( $old_lists ) > 0 ) {
             foreach ( $old_lists as &$mlid ) {
                 $mlid = (int) $mlid;
             }
@@ -394,7 +394,7 @@ class Mobile_Marketing extends Base_Class {
         }
 		
 		// Add new values if they exist
-		if ( is_array( $new_lists ) ) {
+		if ( is_array( $new_lists ) && count( $new_lists ) > 0 ) {
             $values = '';
 
 			foreach ( $new_lists as $mobile_list_id => $trumpia_contact_id ){

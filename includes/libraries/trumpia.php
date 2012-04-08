@@ -6,8 +6,8 @@
  * @url http://trumpia.com/api/doc.php
  *
  * Functions:
- *      add_contact( $ListName, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' )
- *      update_contact_data( $ContactID, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' )
+ *      add_contact( $FirstName, $ListName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' )
+ *      update_contact_data( $ContactID, $FirstName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' )
  *      delete_contact( $ContactID )
  *      add_contact_to_list( $ContactID, $ListName, $CreateCopy = FALSE )
  *      get_contact_data( $ContactID )
@@ -28,7 +28,7 @@ class Trumpia {
 	 * Constant paths to include files
 	 */
 	const URL_API = 'http://greysuitmobile.com/api/';
-	const DEBUG = true;
+	const DEBUG = false;
 	
 	/**
 	 * A few variables that will determine the basic status
@@ -70,8 +70,8 @@ class Trumpia {
      * with unique ContactID's. To copy, move, or other contact management, please go online to
      * trumpia.com.
      *
+     * @param string $FirstName First name of the contact.
      * @param string $ListName List to add the contact to.
-     * @param string $FirstName [optional] First name of the contact.
      * @param string $LastName [optional] Last name of the contact.
      * @param string $Email [optional] Email address of the contact.
      * @param int $CountryCode [optional|1]
@@ -97,7 +97,7 @@ class Trumpia {
      *      Default Verification Message : Reply OK to start. Msg&Data rates may apply. Upto 30msg/mo.
 	 * @return int
 	 */
-    public function add_contact( $ListName, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
+    public function add_contact( $FirstName, $ListName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
         // Format the bool values
         $this->_format_bools( array( &$SendVerification, &$UseCustomMobileVerificationMessage ) );
 
@@ -119,7 +119,7 @@ class Trumpia {
      * Distribution list management must also be done online at trumpia.com.
      *
      * @param int $ContactID Unique ID of contact.
-     * @param string $FirstName [optional] First name of the contact.
+     * @param string $FirstName First name of the contact.
      * @param string $LastName [optional] Last name of the contact.
      * @param string $Email [optional] Email address of the contact.
      * @param int $CountryCode [optional|1]
@@ -145,7 +145,7 @@ class Trumpia {
      *      Default Verification Message : Reply OK to start. Msg&Data rates may apply. Upto 30msg/mo.
      * @return bool
      */
-    public function update_contact_data( $ContactID, $FirstName = '', $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
+    public function update_contact_data( $ContactID, $FirstName, $LastName = '', $Email = '', $CountryCode = 1, $MobileNumber = '', $AIM = '', $MSN = '', $SendVerification = FALSE, $UseCustomMobileVerificationMessage = FALSE, $CustomMobileVerificationMessage = '' ) {
         // Format the bool values
         $this->_format_bools( array( &$SendVerification, &$UseCustomMobileVerificationMessage ) );
 

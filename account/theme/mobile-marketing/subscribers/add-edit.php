@@ -109,7 +109,7 @@ get_header();
                     <td>
                         <p>
                             <?php
-                            $selected_mobile_lists = ( !$success && isset( $_POST['cbMobileLists'] ) ) ? $_POST['cbMobileLists'] : $subscriber['mobile_lists'];
+                            $selected_mobile_lists = ( !$success && isset( $_POST['cbMobileLists'] ) ) ? $_POST['cbMobileLists'] : array_keys( $subscriber['mobile_lists'] );
 
                             foreach ( $mobile_lists as $ml ) {
                                 $checked = ( in_array( $ml['mobile_list_id'], $selected_mobile_lists ) ) ? ' checked="checked"' : '';
