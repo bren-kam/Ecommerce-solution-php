@@ -3,7 +3,7 @@
 	<a href="/checklists/" title="<?php echo _('Checklists'); ?>" class="top"><?php echo _('Checklists'); ?></a>
 		<a href="/checklists/" title="<?php echo _('In Progress'); ?>" class="sub first"><?php echo _('In Progress'); ?></a>
 		<a href="/checklists/completed/" title="<?php echo _('Completed'); ?>" class="sub"><?php echo _('Completed'); ?></a>
-		<a href="/checklists/add-checklist/" title="<?php echo _('Add Checklist'); ?>" class="sub last"><?php echo _('Add Checklist'); ?></a>
+		<!--<a href="/checklists/add-checklist/" title="<?php echo _('Add Checklist'); ?>" class="sub last"><?php echo _('Add Checklist'); ?></a>-->
     <?php
     global $user;
     if ( $user['role'] >= 8 ) {

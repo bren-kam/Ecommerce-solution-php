@@ -367,7 +367,7 @@ class Users extends Base_Class {
 		if ( $user['role'] < 8 )
 			$where .= ' AND ( `company_id` = ' . $user['company_id'] . ' OR `user_id` = 493 )';
 		
-		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE 1 $where ORDER BY `contact_name`", ARRAY_A );
+		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 $where ORDER BY `contact_name`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
