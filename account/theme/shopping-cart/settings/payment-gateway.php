@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Payment Gateway
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

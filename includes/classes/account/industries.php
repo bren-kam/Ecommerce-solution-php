@@ -3,7 +3,7 @@
 /**
  * Handles all the industries
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Industries extends Base_Class {

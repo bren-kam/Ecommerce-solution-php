@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Facebook Site
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Facebook_Site extends Base_Class {

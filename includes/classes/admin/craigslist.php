@@ -2,7 +2,7 @@
 /**
  * Handles all the craiglist functions
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Craigslist extends Base_Class {
@@ -717,7 +717,7 @@ class Craigslist extends Base_Class {
      */
     public function update_tags() {
         // Get tags that need to be updated
-        $tag_ids = $this->db->get_col( "SELECT a.`craigslist_tag_id` FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`date` > DATE_SUB( a.`date`, INTERVAL DAYS 30 ) AND b.`craigslist_tag_id` IS NULL" );
+        $tag_ids = $this->db->get_col( "SELECT a.`craigslist_tag_id` FROM `analytics_craigslist` AS a LEFT JOIN `craigslist_tags` AS b ON ( a.`craigslist_tag_id` = b.`craigslist_tag_id` ) WHERE a.`date` > DATE_SUB( a.`date`, INTERVAL 30 DAY ) AND b.`craigslist_tag_id` IS NULL" );
 
         // Handle any error
         if ( $this->db->errno() ) {

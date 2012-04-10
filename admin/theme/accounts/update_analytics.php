@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Upgrade Accounts
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 library( 'GAPI' );

@@ -2,7 +2,7 @@
 /**
  * Handles all the Coupons
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Coupons extends Base_Class {

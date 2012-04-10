@@ -2,7 +2,7 @@
 /**
  * Handles all the stuff for Analytics
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Analytics extends Base_Class {

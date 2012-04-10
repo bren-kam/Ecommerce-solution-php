@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Update CHecklist
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Admin
  */
 

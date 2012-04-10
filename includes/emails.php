@@ -24,7 +24,7 @@ li { padding-top: 7px; }
 	<li>Web: <a href="http://www.imagineretailer.com/" title="www.ImagineRetailer.com">www.imagineretailer.com</a></li>
 </ul>
 <br />
-<p>Your credit card has been billed for the Total Monthly Cost indicated below. You will automatically be billed for this amount each month.</p>
+<p style="color:#CC2222;font-size:1.5em;font-weight:bold">Your credit card has been billed for the Total Monthly Cost &amp; Set Up Cost indicated below. You will automatically be billed the Monthly Cost each month.</p>
 <br />
 
 <h2>Order Information</h2>
@@ -51,6 +51,15 @@ li { padding-top: 7px; }
 	Thank you again!<br />
 	ImagineRetailer.com
 </p>
+
+<br />
+<p><strong><small>Return/Refund/Cancellation Policy</small></strong></p>
+<p><small>If you are unhappy with ImagineRetailer.com for any reason with at least 90 days written notice you can opt out of our agreement and there will be no further billing for services.</small></p>
+<p><small>The service is billed in advance on a monthly basis and is non-refundable. There will be no refunds or credits for partial months of service, upgrade/downgrade refunds, or refunds for months unused with an open account. In order to treat everyone equally, no exceptions will be made.</small></p>
+<br />
+
+<p><strong><small>Delivery of Service</small></strong></p>
+<p><small>Imagine Retailer, in its sole discretion, has the right to suspend or terminate your account and refuse any and all current or future use of the platform, or any other Imagine Retailer service, for any reason at any time. Such termination of the service will result in the deactivation or deletion of your Account or your access to your Account, and the forfeiture and relinquishment of all content in your Account. Imagine Retailer reserves the right to refuse service to anyone for any reason at any time.</small></p>
 </body>
 </html>';
 ?>

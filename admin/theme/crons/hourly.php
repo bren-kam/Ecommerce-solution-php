@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Update Scheduled Emails
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Set it as a background job

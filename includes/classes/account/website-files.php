@@ -2,7 +2,7 @@
 /**
  * Handles all the website files
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Website_Files extends Base_Class {

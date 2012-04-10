@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Get Graph
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Analytics
  */
 

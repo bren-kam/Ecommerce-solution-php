@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Product Catalog > All Products
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

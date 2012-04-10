@@ -88,12 +88,23 @@ class Craigslist_API {
      *
      * @param int $customer_id
      * @param string $name
+     * @param array $locations
      * @param array $replace (optional)
      * @return bool
      */
-    public function add_market( $customer_id, $name, $replace = array() ) {
+    public function add_market( $customer_id, $name, $locations, $replace = array() ) {
+        $new_locations = array();
+
+        if ( is_array( $locations ) )
+        foreach ( $locations as $l ) {
+            $new_locations[] = array(
+                'key' => 'location'
+                , 'value' => $l
+            );
+        }
+
         // Setup the arguments correctly
-        $replace = $this->_arguments( $replace );
+        $replace = array_merge( $this->_arguments( $replace ), $locations );
 
         // Add customer
         $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );
@@ -265,12 +276,12 @@ class Craigslist_API {
         // Make sure they have an API key
 		if ( empty( $this->key ) )
 			return false;
-
-        $post_vars = http_build_query( array( 'data' => json_encode( $params ) ) );
+		
+		$this->post = array( 'data' => json_encode( $params ) );
+        $post_vars = http_build_query( $this->post );
 
         // Set variables
         $this->request = self::URL_API . $method . '/reseller_id/' . $this->reseller_id . '/apikey/' . $this->key . '/';
-        $this->post = $post_vars;
 
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_URL, $this->request );
@@ -278,7 +289,7 @@ class Craigslist_API {
         curl_setopt( $ch, CURLOPT_TIMEOUT, 20 );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->post );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_vars );
         curl_setopt( $ch, CURLOPT_POST, 1 );
 
         // Do the call and get the raw response
@@ -292,11 +303,11 @@ class Craigslist_API {
 
         // Debugging info
         if ( self::DEBUG ) {
-            echo "<h1>Request</h1>\n" . $this->request . "\n<br />\n<h2>Post Variables</h2>\n" . var_export( $this->post, true ) . "<hr />\n";
+            echo "<h1>Request</h1>\n" . $this->request . "\n<br /><h2>Post</h2>\n{$post_vars}\n<br />\n<h2>Post Variables</h2>\n" . var_export( $this->post, true ) . "<hr />\n";
             echo "<h1>Raw Response</h1>\n" . $this->raw_response . "\n<hr />\n";
             echo "<h1>Response</h1>\n" . var_export( $this->response, true );
         }
-
+		
         // Return the JSON response
 		return $this->response;
 	}

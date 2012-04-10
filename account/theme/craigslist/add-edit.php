@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Craigslist
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -51,7 +51,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
             $success = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
 
             if ( $success && $post ) {
-                if ( $c->post_ad( $_POST['hCraigslistAdID'], $_POST['hCraigslistPost'] ) ) {
+                if ( $c->post_ad( $_POST['hCraigslistAdID'], stripslashes( $_POST['hCraigslistPost'] ) ) ) {
                     url::redirect('/craigslist/?m=1');
                 } else {
                     $success = false;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Mobile Messages
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 
@@ -28,15 +28,17 @@ $data = array();
 // Create output
 if ( is_array( $messages ) )
 foreach ( $messages as $m ) {
-	if ( $m['status'] < 2 ) {
-		$actions = '<a href="/mobile-marketing/messages/add-edit/?mmid=' . $m['mobile_message_id'] . '" title="' . _('Edit Message') . '">' . _('Edit') . '</a> | ';
+	$actions = '';
+
+    if ( $m['status'] < 2 ) {
+		// $actions = '<a href="/mobile-marketing/messages/add-edit/?mmid=' . $m['mobile_message_id'] . '" title="' . _('Edit Message') . '">' . _('Edit') . '</a> | ';
 		$actions .= '<a href="/ajax/mobile-marketing/messages/delete/?mmid=' . $m['mobile_message_id'] . '&amp;_nonce=' . $delete_mobile_message_nonce . '" title="' . _('Delete Message') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 	} else {
-		$actions = '<a href="/analytics/mobile-message/?mmid=' . $m['mobile_message_id'] . '" title="' . _('View Analytics') . '">' . _('Analytics') . '</a>';
+		//$actions = '<a href="/analytics/mobile-message/?mmid=' . $m['mobile_message_id'] . '" title="' . _('View Analytics') . '">' . _('Analytics') . '</a>';
 	}
 	
 	$data[] = array( 
-		format::limit_chars( $m['message'], 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
+		format::limit_chars( $m['message'], 75, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
 		$statuses[$m['status']],
 		dt::date( 'F jS, Y g:i a', $m['date_sent'] )
 	);

@@ -2,7 +2,7 @@
 /**
  * Handles all the website attachments
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Website_Attachments extends Base_Class {

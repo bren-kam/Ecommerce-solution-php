@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Send Mobile Message
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -32,7 +32,7 @@ $now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
 
 $v->form_name = 'fMobileMessage';
 $v->add_validation( 'taMessage', 'req', _('The "Message" field is required') );
-$v->add_validation( 'taMessage', 'maxlen=140', _('The "Message" field must be 140 characters or less') );
+$v->add_validation( 'taMessage', 'maxlen=132', _('The "Message" field must be 140 characters or less') );
 
 $v->add_validation( 'cbMobileLists', 'req', _('You must select at least one list to send to') );
 
@@ -63,14 +63,14 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'mobile-messa
 	$_POST['taMessage'] = stripslashes( $_POST['taMessage'] );
 
     // Do we future date?
-    $future = time() >= $new_date_posted->getTimestamp();
+    $future = $new_date_posted->getTimestamp() >= time();
 
     if ( $mobile_message_id ) {
         // Update message
-        $success = $m->update_message( $mobile_message_id, $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $_POST['cbMobileLists'], $future );
+        //$success = $m->update_message( $mobile_message_id, $_POST['tTitle'], $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $_POST['cbMobileLists'], $future );
     } else {
         // Create message
-        $success = $m->create_message( $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $_POST['cbMobileLists'], $future );
+        $success = $m->create_message( $_POST['tTitle'], $_POST['taMessage'], $new_date_posted->format('Y-m-d H:i:s'), $_POST['cbMobileLists'], $future );
     }
 }
 
@@ -80,7 +80,8 @@ if ( $mobile_message_id ) {
 } else {
 	// Initialize variable
 	$message = array(
-		'message' => ''
+        'title' => ''
+		, 'message' => ''
 		, 'mobile_lists' => ''
 	);
 }
@@ -92,7 +93,7 @@ javascript( 'mammoth', 'jquery.timepicker', 'mobile-marketing/messages/add-edit'
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
 $selected = "mobile_marketing";
-$title = _('Posting') . ' | ' . _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
+$title = _('Posting') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();
 ?>
 
@@ -108,6 +109,10 @@ get_header();
 
         <form action="" method="post" name="fMobileMessage">
             <table>
+                <tr>
+                    <td><label for="tTitle"><?php echo _('Title'); ?></label></td>
+                    <td><input type="text" class="tb" name="tTitle" id="tTitle" value="<?php echo ( !$success && isset( $_POST['tTitle'] ) ) ? $_POST['tTitle'] : $message['title']; ?>" /></td>
+                </tr>
                 <tr>
                     <td class="top"><label for="taMessage"><?php echo _('Message'); ?>:</label></td>
                     <td>
@@ -142,7 +147,7 @@ get_header();
                     <td><input type="submit" class="button" value="<?php echo _('Schedule Message'); ?>" /></td>
                 </tr>
             </table>
-            <?php nonce::field('fb-post'); ?>
+            <?php nonce::field('mobile-message'); ?>
         </form>
 	</div>
 	<br /><br />

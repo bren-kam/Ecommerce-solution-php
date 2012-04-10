@@ -2,7 +2,7 @@
 /**
  * Handles all the craiglist functions
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Craigslist extends Base_Class {

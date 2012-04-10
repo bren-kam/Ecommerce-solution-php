@@ -1,7 +1,7 @@
 <?php
 /**
  * @page List Subscribers
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @subpackage Account
  */
 

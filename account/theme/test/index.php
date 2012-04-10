@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Firehost Test
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 if ( 1 != $user['user_id'] )

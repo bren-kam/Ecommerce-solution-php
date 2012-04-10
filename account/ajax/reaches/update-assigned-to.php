@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Update Reach Assigned To
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
  
 $ajax = new AJAX( $_GET['_nonce'], 'update-assigned-to' );

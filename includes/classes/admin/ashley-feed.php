@@ -2,7 +2,7 @@
 /**
  * Handles ashley import
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  * @since 1.0
  */
 class Ashley_Feed extends Base_Class {
@@ -69,8 +69,12 @@ class Ashley_Feed extends Base_Class {
 		
 		// Initialize variables
 		$folder = str_replace( 'CE_', '', $username );
+		
+		if ( '-' != substr( $folder, -1 ) )
+			$folder .= '-';
+		
         $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
-
+        
 		$products = $this->get_website_product_skus( $website_id );
 		
 		if ( !is_array( $products ) )
@@ -81,7 +85,6 @@ class Ashley_Feed extends Base_Class {
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
 		$start = time();
-
 
 		// Set login information
 		$ftp->host     = self::FTP_URL;
@@ -122,7 +125,10 @@ class Ashley_Feed extends Base_Class {
                 continue;
 
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-
+			
+			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
+				continue;
+			
 			if ( !array_key_exists( $sku, $products ) ) {
 				$new_products[] = $sku;
 			}
@@ -165,7 +171,7 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// Get Products
-		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 0", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 353", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

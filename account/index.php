@@ -5,7 +5,7 @@
  *
  * Be aware that the Studio98 Framework is included by default
  *
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // This is not a cron job

@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Add Attribute
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user

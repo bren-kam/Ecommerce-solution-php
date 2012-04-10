@@ -1,7 +1,7 @@
 <?php
 /**
  * @page Add Edit Mobile Lists
- * @package Imagine Retailer
+ * @package Grey Suit Retail
  */
 
 // Get current user
@@ -22,7 +22,13 @@ $mobile_list_id = ( isset( $_GET['mlid'] ) ) ? $_GET['mlid'] : false;
 
 $v = new Validator();
 $v->form_name = 'fAddEditMobileList';
-$v->add_validation( 'tName', 'req' , 'The "Name" field is required' );
+$v->add_validation( 'tName', 'req', _('The "Name" field is required') );
+
+$v->add_validation( 'tFrequency', 'req', _('The "Frequency" field is required') );
+$v->add_validation( 'tFrequency', 'int', _('The "Frequency" field may only contain numbers') );
+
+$v->add_validation( 'tDescription', 'req' , 'The "Description" field is required' );
+$v->add_validation( 'tDescription', 'maxlen=50' , 'The "Description" field must contain 50 characters or less' );
 
 // Add validation
 add_footer( $v->js_validation() );
@@ -38,10 +44,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-mob
 	if ( empty( $errs ) ) {
 		if ( $mobile_list_id ) {
 			// Update mobile list
-			$success = $m->update_mobile_list( $mobile_list_id, $_POST['tName'] );
+			$success = $m->update_mobile_list( $mobile_list_id, $_POST['tName'], $_POST['tFrequency'], $_POST['tDescription'] );
 		} else {
 			// Create mobile list
-			$success = $m->create_mobile_list( $_POST['tName'] );
+			$success = $m->create_mobile_list( $_POST['tName'], $_POST['tFrequency'], $_POST['tDescription'] );
 		}
 	}
 }
@@ -52,6 +58,8 @@ if ( $mobile_list_id ) {
 } else {
 	$mobile_list = array(
 		'name' => ''
+        , 'frequency' => '10'
+        , 'description' => 'Offers'
 	);
 }
 
@@ -86,6 +94,14 @@ get_header();
 				<tr>
 					<td><label for="tName"><?php echo _('Name'); ?>:</label></td>
 					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $mobile_list['name']; ?>" /></td>
+				</tr>
+                <tr>
+					<td><label for="tFrequency"><?php echo _('Est. Messages/Month'); ?>:</label></td>
+					<td><input type="text" class="tb" name="tFrequency" id="tFrequency" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tFrequency'] ) ) ? $_POST['tFrequency'] : $mobile_list['frequency']; ?>" /></td>
+				</tr>
+                <tr>
+					<td><label for="tDescription"><?php echo _('Description'); ?>:</label></td>
+					<td><input type="text" class="tb" name="tDescription" id="tDescription" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tDescription'] ) ) ? $_POST['tDescription'] : $mobile_list['description']; ?>" /></td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
