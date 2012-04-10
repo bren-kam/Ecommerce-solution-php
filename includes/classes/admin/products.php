@@ -119,6 +119,8 @@ class Products extends Base_Class {
 	 * @return bool false if failed to create to cart
 	 */
 	public function update( $name, $slug, $description, $status, $sku, $price, $list_price, $product_specifications, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight = 0, $volume = 0 ) {
+        global $user;
+
 		// Assign local variable
 		$this->product_id = $product_id;
 		
@@ -152,7 +154,7 @@ class Products extends Base_Class {
 				'product_specifications' => serialize( $product_specs ),
 				'publish_visibility' => $publish_visibility,
 				'publish_date' => $publish_date,
-				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 353 ),
+				'user_id_modified' => ( ( isset( $user['user_id'] ) ) ? $user['user_id'] : 353 ),
 			), array( 'product_id' => $product_id ), 'iisssssddddsssi', 'i' );
 
 		// Handle any error
