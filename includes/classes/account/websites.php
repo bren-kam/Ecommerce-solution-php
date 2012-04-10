@@ -91,11 +91,14 @@ class Websites extends Base_Class {
 	 * @param string $meta_keywords
 	 * @return bool
 	 */
-	public function update_page( $website_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords ) {
+	public function update_page( $website_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile = 0 ) {
 		global $user;
 		
+		//Type cast
+		$mobile = (int) $mobile;
+		
 		// Update existing request
-		$this->db->update( 'website_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssi', 'ii' );
+		$this->db->update( 'website_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'mobile' => $mobile, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssii', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -135,7 +138,7 @@ class Websites extends Base_Class {
 		$website_page_id = (int) $website_page_id;
 		
 		// Get the page
-		$page = $this->db->get_row( "SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords` FROM `website_pages` WHERE `website_page_id` = $website_page_id", ARRAY_A );
+		$page = $this->db->get_row( "SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_page_id` = $website_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
