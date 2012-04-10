@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 $_SESSION['tickets']['status'] = '0';
-$_SESSION['tickets']['assigned-to'] = $user['user_id'];
+$_SESSION['tickets']['assigned-to'] =  ( $user['role'] >= 8 ) ? $user['user_id'] : 0;
 
 css( 'tickets/list', 'data-tables/TableTools.css', 'data-tables/ui.css' );
 javascript( 'jquery', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'tickets/list' );
