@@ -64,7 +64,7 @@ get_header();
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="referer" value="<?php echo $_SESSION['referer']; ?>" />
+        <input type="hidden" name="referer" value="<?php if ( isset( $_GET['r'] ) ) echo urldecode( $_GET['r'] ); ?>" />
         <?php nonce::field( 'login' ); ?>
 	</form>
 	<?php add_footer( $v->js_validation() ); ?>

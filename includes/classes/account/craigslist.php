@@ -64,14 +64,14 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_ad_id = (int) $craigslist_ad_id;
 
-		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`, GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, GROUP_CONCAT( c.`craigslist_market_id` SEPARATOR ',' ) AS craigslist_markets, d.`title` AS store_name, e.`name` AS product_name,
-												 e.`sku`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted
+		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`, GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, c.`title` AS store_name, d.`name` AS product_name,
+												 d.`sku`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted
 												 FROM `craigslist_ads` AS a
 												 LEFT JOIN `craigslist_ad_headlines` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` )
-												 LEFT JOIN `craigslist_ad_markets` AS c ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` )
-												 LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` )
-												 LEFT JOIN `products` AS e ON ( a.product_id = e.product_id )
+												 LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` )
+												 LEFT JOIN `products` AS d ON ( a.product_id = d.product_id )
 												 WHERE a.`craigslist_ad_id` = $craigslist_ad_id GROUP BY a.`craigslist_ad_id`", ARRAY_A );
+		
 
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -79,10 +79,18 @@ class Craigslist extends Base_Class {
 			return false;
 		}
 
-        // Adjust the headlines/markets
+        // Adjust the headlines
         $ad['headlines'] = explode( '`', $ad['headlines'] );
-        $ad['craigslist_markets'] = explode( ',', $ad['craigslist_markets'] );
-
+		
+		// Get markets
+        $ad['craigslist_markets'] = $this->db->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist ad markets.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
 		return $ad;
 	}
 
