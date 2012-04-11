@@ -276,7 +276,7 @@ class Users extends Base_Class {
 	 */
 	public function forgot_password( $email ) {
 		// Get the user
-		$user = $this->db->prepare( "SELECT `user_id`, `account_type_id`, CONCAT( `first_name`, ' ', `last_name` ) AS name, `status` FROM `users` WHERE `email` = ?", 's', $email )->get_row( '', ARRAY_A );
+		$user = $this->db->prepare( "SELECT `user_id`, `contact_name` FROM `users` WHERE `email` = ?", 's', $email )->get_row( '', ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -287,17 +287,10 @@ class Users extends Base_Class {
 		if ( $user ) {
 			$e = new Emails();
 
-			if ( -1 == $user['status'] ) {
-				// This means their account was never activated, so send the same email
-				$e->send_confirmation( $user['user_id'], $email );
+			// This means it is a legitimate forgot password request
+			$e->reset_password( $user['user_id'], $user['contact_name'], $email );
 
-				return 1;
-			} else {
-				// This means it is a legitimate forgot password request
-				$e->reset_password( $user['user_id'], $user['name'], $email );
-
-				return 2;
-			}
+			return 1;
 		} else {
 			return 0;
 		}
