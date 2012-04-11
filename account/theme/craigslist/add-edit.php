@@ -39,6 +39,15 @@ $success = false;
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
     $errs = $v->validate();
 
+    // Validation for the headlines
+    $i = 1;
+    foreach ( $_POST['tHeadlines'] as $hl ) {
+        if ( empty( $hl ) )
+            $errs .= _('Headline') . ' #' . $i . ' is requied';
+
+        $i++;
+    }
+
 	// if there are no errors
 	if ( empty( $errs ) ) {
         $post = '1' == $_POST['hPostAd'];
