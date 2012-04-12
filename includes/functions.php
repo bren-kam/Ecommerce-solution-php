@@ -170,7 +170,6 @@ function get_cookie( $name ) {
  * @param string $name the name of the cookie (defined in load.php)
  */
 function remove_cookie( $name ) {
-	echo COOKIE_ABBR . $name;
     setcookie( COOKIE_ABBR . $name, ' ', time() - 31536000, '/', '.' . DOMAIN );
 	setcookie( COOKIE_ABBR . $name, ' ', time() - 31536000, '/', '.' . SUBDOMAIN . '.' . DOMAIN );
 
