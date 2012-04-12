@@ -1,24 +1,4 @@
 <?php
-$HTML_template = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Website Manager Message</title>
-<style type="text/css">
-body { width: 800px; font-family:Arial, Helvetica, sans-serif; color:#616268; font-size:13px; margin: 15px auto; }
-p { line-height: 21px; padding-bottom: 7px; }
-h2{ padding:0; margin:0; }
-td{ font-size: 13px; padding-right: 10px; }
-li { padding-top: 7px; }
-</style>
-</head>
-<body>
-<img src="http://www.imagineretailer.com/images/[logo]" width="314" height="48" alt="Website Manager" /><br />
-
-[content]
-</body>
-</html>';
-
 $email['sign_up'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -84,7 +64,6 @@ li { padding-top: 7px; }
 </html>';
 
 // Reset Password emails
-$email['reset-password']['html'] = "<p>Hi {name},</p>\n<p>We received a request to change your password. Click on the link below to reset your password:</p>\n<p><a href='{token_link}'>{token_link}</a></p>\n<br /><p>-- " . TITLE . " Team</p>\n<br /><p>Didn't send this request? Your password has not been changed; please ignore this email.</p>";
 $email['reset-password']['text'] = "Hi {name},\n\nWe received a request to change your password. Use the link below to reset your password:\n\n{token_link}\n\n\n-- " . TITLE . " Team\n\n\nDidn't send this request? Your password has not been changed; please ignore this email.";
 $email['reset-password']['subject'] = 'Reset Password Request';
 $email['reset-password']['variables'] = array( '{name}', '{email}', '{token_link}' );

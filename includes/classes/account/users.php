@@ -205,14 +205,11 @@ class Users extends Base_Class {
 	 * Logs out
 	 */
 	public function logout() {
-		global $mc;
-
 		// Removing both of these cookies will destroy everything
 		remove_cookie( AUTH_COOKIE );
 		remove_cookie( SECURE_AUTH_COOKIE );
 		remove_cookie( 'action' );
-
-		$mc->delete( $this->encrypted_email );
+		remove_cookie( 'wid' );
 	}
 
 	/**
@@ -305,22 +302,14 @@ class Users extends Base_Class {
 	 * @return object
 	 */
 	public function get_user( $user_id ) {
-		global $mc;
+        // Prepare the statement
+        $user = $this->db->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`products`, a.`role`, b.`name`, b.`domain` AS company FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = ? AND a.`status` = 1', 'i', $user_id )->get_row( '', ARRAY_A );
 
-		$user = $mc->get( 'get_user > ' . $user_id );
-
-		if ( empty( $user ) ) {
-			// Prepare the statement
-			$user = $this->db->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`products`, a.`role`, b.`name`, b.`domain` AS company FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = ? AND a.`status` = 1', 'i', $user_id )->get_row( '', ARRAY_A );
-
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get user.', __LINE__, __METHOD__ );
-				return false;
-			}
-
-			$mc->add( 'get_user > ' . $user_id, $user, 7200 );
-		}
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get user.', __LINE__, __METHOD__ );
+            return false;
+        }
 
 		return $user;
 	}
@@ -385,6 +374,7 @@ class Users extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

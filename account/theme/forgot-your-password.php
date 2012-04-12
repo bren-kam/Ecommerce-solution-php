@@ -50,7 +50,7 @@ get_header();
 	
 	<?php
 	if( $response_code > 0 ) {
-		echo "<p>$response</p>";
+		echo "<p>$response</p><br /><br />";
 	} else {
 	?>
 	<p><?php echo _('If you have forgotten your password and would like to reset it, enter your email below:'); ?></p>

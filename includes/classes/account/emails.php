@@ -38,11 +38,9 @@ li { padding-top: 7px; }
 		if( !parent::__construct() )
 			return false;
 		
-		// Load SES library
-		library( 'ses' );
-		
 		// Load emails
-		$this->email = require( inc( 'emails', false ) );
+		require inc( 'emails', false );
+		$this->email = $email;
 	}
 	
 	/**
@@ -80,20 +78,10 @@ li { padding-top: 7px; }
 	 */
 	public function reset_password( $user_id, $name, $email ) {
 		$token = new Tokens();
-		//$m = new PHPMailerLite();
+		
 		$token_hash = $token->create( $user_id, 'reset-password' );
-
-		$ses = new SimpleEmailService( 'AKIAIM64EVOSIJZMTA3Q', 'Ge1sAIQlT3wN3GWMBrHGX9nxn5Mui+31NKpliJ1x' );
-
-		//create a message
-		$m = new SimpleEmailServiceMessage();
 		
-		$m->addTo( $email );
-		$m->setFrom( $this->from_name .' <' . $this->from_email . '>' );
-		$m->setSubject( $this->email['reset-password']['subject'] );
-		$m->setMessageFromString( $this->fill( 'reset-password', array( $name, $email, "http://" . URL . "/reset-password/?uID=$user_id" . '&t=' . $token_hash ), false ), $this->fill( 'reset-password', array( $name, $email, "http://" . URL . "/reset-password/?uID=$user_id" . '&t=' . $token_hash ) ) );
-		
-		$result = $ses->sendEmail( $m );
+		$result = fn::mail( $email, $this->email['reset-password']['subject'], $this->fill( 'reset-password', array( $name, $email, 'http://' . SUBDOMAIN . '.' . DOMAIN . "/reset-password/?uID=$user_id" . '&t=' . $token_hash ), false ), TITLE . ' <info@' . DOMAIN . '>' );
 		
 		// Make sure it was sent
 		if( !$result )
