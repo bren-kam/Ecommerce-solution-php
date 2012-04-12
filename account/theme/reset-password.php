@@ -6,7 +6,7 @@
 
 // They need to have a user id and activation code
 if( empty( $_GET['uID'] ) || empty( $_GET['t'] ) )
-	url::redirect( 'http://www.' . DOMAIN . '.com/', 417 );
+	url::redirect( 'http://www.' . DOMAIN . '/', 417 );
 
 // If they're already logged in, lets log them out
 if ( isset( $user ) && $user ) {
@@ -19,7 +19,7 @@ $token_id = $token->check( $_GET['uID'], $_GET['t'], 'reset-password' ); // retu
 
 // If the tocken didn't check out, redirect them
 if( !$token_id )
-	url::redirect( 'http://www.' . DOMAIN . '.com/', 417 );
+	url::redirect( 'http://www.' . DOMAIN . '/', 417 );
 
 global $u;
 $rp_user = $u->get_user( $_GET['uID'] );
