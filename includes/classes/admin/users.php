@@ -343,7 +343,7 @@ class Users extends Base_Class {
 	 */
 	public function get_user( $user_id ) {
         // Prepare the statement
-        $user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `work_phone`, `cell_phone`, `billing_first_name`, `billing_last_name`, `billing_address1`, `billing_city`, `billing_state`, `billing_zip`, `products`, `role`, `status`, `date_created` FROM `users` WHERE `user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
+        $user = $this->db->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`work_phone`, a.`cell_phone`, a.`billing_first_name`, a.`billing_last_name`, a.`billing_address1`, a.`billing_city`, a.`billing_state`, a.`billing_zip`, a.`products`, a.`role`, a.`status`, a.`date_created`, b.`name` AS company, b.`domain` FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
