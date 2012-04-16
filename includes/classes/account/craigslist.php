@@ -590,7 +590,7 @@ class Craigslist extends Base_Class {
         $post_tags = array( $product_tag_id, $category_tag_id, $parent_category_tag_id );
 
         // Get product URL
-        if ( $user['website']['pages'] ) {
+        if ( $p->get_website_product( $product['product_id'] ) ) {
             // Make Product URL
         	$product_url = $c->category_url( $product['category_id'] ) . $product['slug'] . '/';
         } else {
