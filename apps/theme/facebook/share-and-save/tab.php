@@ -58,7 +58,8 @@ get_header('facebook/tabs/');
 	$remaining = $tab['minimum'] - $tab['total'];
 	
 	// How many are left
-	echo ( $remaining > 0 ) ?'<h2 class="share-save">Only ' . $remaining . ' more until this deal is active!</h2>' : '<h2 class="share-save">This deal is active!</h2>';
+	if ( !empty( $tab['content'] ) && !empty( $tab['minimum'] ) )
+		echo ( $remaining > 0 ) ?'<h2 class="share-save">Only ' . $remaining . ' more until this deal is active!</h2>' : '<h2 class="share-save">This deal is active!</h2>';
 	
 	if( $tab['total'] > $tab['maximum'] )
 		echo '<p class="error">The maximum number of deals has been attained. Stay tuned for another offer...</p>';

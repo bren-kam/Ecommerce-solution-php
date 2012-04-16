@@ -51,6 +51,19 @@ li { padding-top: 7px; }
 	Thank you again!<br />
 	ImagineRetailer.com
 </p>
+
+<br />
+<p><strong><small>Return/Refund/Cancellation Policy</small></strong></p>
+<p><small>If you are unhappy with ImagineRetailer.com for any reason with at least 90 days written notice you can opt out of our agreement and there will be no further billing for services.</small></p>
+<p><small>The service is billed in advance on a monthly basis and is non-refundable. There will be no refunds or credits for partial months of service, upgrade/downgrade refunds, or refunds for months unused with an open account. In order to treat everyone equally, no exceptions will be made.</small></p>
+<br />
+
+<p><strong><small>Delivery of Service</small></strong></p>
+<p><small>Imagine Retailer, in its sole discretion, has the right to suspend or terminate your account and refuse any and all current or future use of the platform, or any other Imagine Retailer service, for any reason at any time. Such termination of the service will result in the deactivation or deletion of your Account or your access to your Account, and the forfeiture and relinquishment of all content in your Account. Imagine Retailer reserves the right to refuse service to anyone for any reason at any time.</small></p>
 </body>
 </html>';
-?>
+
+// Reset Password emails
+$email['reset-password']['text'] = "Hi {name},\n\nWe received a request to change your password. Use the link below to reset your password:\n\n{token_link}\n\n\n-- " . TITLE . " Team\n\n\nDidn't send this request? Your password has not been changed; please ignore this email.";
+$email['reset-password']['subject'] = 'Reset Password Request';
+$email['reset-password']['variables'] = array( '{name}', '{email}', '{token_link}' );

@@ -417,7 +417,11 @@ get_header();
 						</p>
                         <p>
 							<label for="tTrumpiaAPIKey"><?php echo _('Trumpia API Key'); ?>:</label>
+                            <?php if ( empty( $settings['trumpia-api-key'] ) ) { ?>
+                                <a href="/accounts/create-mobile-account/?wid=<?php echo $_GET['wid']; ?>"><?php echo _('Create Trumpia Account'); ?></a>
+                            <?php } else { ?>
 							<input type="text" name="tTrumpiaAPIKey" id="tTrumpiaAPIKey" value="<?php if ( isset( $settings['trumpia-api-key'] ) ) echo $settings['trumpia-api-key']; ?>" class="tb" />
+                            <?php } ?>
 						</p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 

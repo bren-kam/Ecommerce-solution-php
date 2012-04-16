@@ -13,7 +13,6 @@ class IRR {
 	 * Constant paths to include files
 	 */
 	const DEBUG = false;
-	const PATH_CHECKLIST_DATA = '/home/imaginer/public_html/includes/data.php';
 	const PATH_DB = '/home/imaginer/public_html/includes/db.php';
 	const PATH_S98_FW = '/home/imaginer/public_html/s98_fw/init.php';
 	
@@ -306,13 +305,11 @@ class IRR {
 		}
 		
 		// Get checklist ID
-		$checklist_id = $this->db->insert_id;
-		
-		// Require checklist data
-		require_once( self::PATH_CHECKLIST_DATA );
-		
-		$this->db->query( str_replace( '[checklist_id]', $checklist_id, $data['checklist_items'] ) );
-		
+		$checklist_id = (int) $this->db->insert_id;
+
+        // Insert all the checklist items
+        $this->db->query( "INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT $checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = 1" );
+
 		// If there was a MySQL error
 		if( mysql_errno() ) {
 			$this->err( 'Failed to insert checklist', "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );

@@ -24,6 +24,8 @@
 	<?php if ( isset( $mobile_lists ) ) { ?>
 		<a href="/mobile-marketing/lists/add-edit/" title="<?php echo _('Add Mobile List'); ?>" class="sub<?php if ( isset( $add_edit_mobile_list ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
+	<a href="/mobile-marketing/pages/" title="<?php echo _('Mobile Pages'); ?>" class="top<?php if ( isset( $mobile_pages ) ) echo ' selected'; ?>"><?php echo _('Mobile Pages'); ?></a>
+	
 	<!--
 	<a href="/mobile-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>
 	<?php if ( isset( $autoresponders ) ) { ?>

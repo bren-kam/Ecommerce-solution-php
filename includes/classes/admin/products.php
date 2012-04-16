@@ -119,6 +119,8 @@ class Products extends Base_Class {
 	 * @return bool false if failed to create to cart
 	 */
 	public function update( $name, $slug, $description, $status, $sku, $price, $list_price, $product_specifications, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight = 0, $volume = 0 ) {
+        global $user;
+
 		// Assign local variable
 		$this->product_id = $product_id;
 		
@@ -152,7 +154,7 @@ class Products extends Base_Class {
 				'product_specifications' => serialize( $product_specs ),
 				'publish_visibility' => $publish_visibility,
 				'publish_date' => $publish_date,
-				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 353 ),
+				'user_id_modified' => ( ( isset( $user['user_id'] ) ) ? $user['user_id'] : 353 ),
 			), array( 'product_id' => $product_id ), 'iisssssddddsssi', 'i' );
 
 		// Handle any error
@@ -858,7 +860,7 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 		
-		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 1 AND b.`product_id` = $product_id AND b.`active` = 1" );
+		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 1 AND b.`product_id` = $product_id AND b.`active` = 1 ORDER BY a.`title`" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

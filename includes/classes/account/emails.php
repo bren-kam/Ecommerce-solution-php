@@ -5,7 +5,7 @@
  * @package Grey Suit Retail
  * @since 1.0
  */
-class Emails {	
+class Emails extends Base_Class {	
 	/**
 	 * Declare a template for the email
 	 * @var string
@@ -29,7 +29,20 @@ li { padding-top: 7px; }
 [content]
 </body>
 </html>';
-
+	
+	/**
+	 * Construct initializes data
+	 */
+	public function __construct() {
+		// Need to load the parent constructor
+		if( !parent::__construct() )
+			return false;
+		
+		// Load emails
+		require inc( 'emails', false );
+		$this->email = $email;
+	}
+	
 	/**
 	 * Apply the template and send it out
 	 *
@@ -51,5 +64,58 @@ li { padding-top: 7px; }
 		$headers .= $extra_headers;
 		
 		return mail( $to, $subject, str_replace( array( '[logo]', '[content]' ), array( $logo, $message ), self::$template ), $headers );
+	}
+	
+	/**
+	 * Reset password
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $user_id
+	 * @param string $name
+	 * @param string $email
+	 * @return bool|int
+	 */
+	public function reset_password( $user_id, $name, $email ) {
+		$token = new Tokens();
+		
+		$token_hash = $token->create( $user_id, 'reset-password' );
+		
+		$result = fn::mail( $email, $this->email['reset-password']['subject'], $this->fill( 'reset-password', array( $name, $email, 'http://' . SUBDOMAIN . '.' . DOMAIN . "/reset-password/?uID=$user_id" . '&t=' . $token_hash ), false ), TITLE . ' <info@' . DOMAIN . '>' );
+		
+		// Make sure it was sent
+		if( !$result )
+			$this->err( "Failed to send reset password email.\n\nError messsage: " . $m->ErrorInfo, __LINE__, __METHOD__ );
+		
+		return $result;
+	}
+	
+	/**
+	 * Fills a predefined email with data
+	 *
+	 * @param string $key the key to the correct email
+	 * @param array $replacements
+     * @param bool $html [optional]
+     * @return string
+	 */
+	private function fill( $key, $replacements, $html = true ) {
+		if( !is_array( $replacements ) )
+			return false;
+		
+		return str_replace( $this->email[$key]['variables'], $replacements, $this->email[$key][( $html ) ? 'html' : 'text'] );
+	}
+
+	/**
+	 * Report an error
+	 *
+	 * Make the parent error function a little less complicated
+	 *
+	 * @param string $message the error message
+	 * @param int $line (optional) the line number
+	 * @param string $method (optional) the class method that is being called
+     * @return string
+	 */
+	private function err( $message, $line = 0, $method = '' ) {
+		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
