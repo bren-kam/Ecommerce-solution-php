@@ -1,5 +1,5 @@
 <?php
-$a = new Analytics;
+/*$a = new Analytics;
 
 // Get the date from today
 //$date = new DateTime();
@@ -29,7 +29,7 @@ foreach ( $categories as $category ) {
 $tags = $craigslist->add_tags( $new_tags );
 
 fn::info( $tags );
-*/
+
 $craigs->add_tags( $tags );
 
 
@@ -39,3 +39,7 @@ $craigs->add_tags( $tags );
 //$api = new Feed_API( 'd29ef52d65d77ce46db77d010f37e41e' );
 //fn::info( $api->get_products( '2010-01-01', '2010-02-01', 0, 10 ) );
 //echo $api->raw_response();
+*/
+
+$m = new Mobile_Marketing();
+$m->create_trumpia_account( 160, 'level-3' );
