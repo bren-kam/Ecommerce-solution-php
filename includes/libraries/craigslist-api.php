@@ -104,7 +104,7 @@ class Craigslist_API {
         }
 
         // Setup the arguments correctly
-        $replace = array_merge( $this->_arguments( $replace ), $locations );
+        $replace = array_merge( $this->_arguments( $replace ), $new_locations );
 
         // Add customer
         $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );
