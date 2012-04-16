@@ -64,13 +64,14 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_ad_id = (int) $craigslist_ad_id;
 
-		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`, GROUP_CONCAT( b.`headline` SEPARATOR '`') AS headlines, c.`title` AS store_name, d.`name` AS product_name,
+		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`, GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, c.`title` AS store_name, d.`name` AS product_name,
 												 d.`sku`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted
 												 FROM `craigslist_ads` AS a
 												 LEFT JOIN `craigslist_ad_headlines` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` )
 												 LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` )
 												 LEFT JOIN `products` AS d ON ( a.product_id = d.product_id )
 												 WHERE a.`craigslist_ad_id` = $craigslist_ad_id GROUP BY a.`craigslist_ad_id`", ARRAY_A );
+		
 
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -80,7 +81,16 @@ class Craigslist extends Base_Class {
 
         // Adjust the headlines
         $ad['headlines'] = explode( '`', $ad['headlines'] );
-
+		
+		// Get markets
+        $ad['craigslist_markets'] = $this->db->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist ad markets.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
 		return $ad;
 	}
 
@@ -115,10 +125,11 @@ class Craigslist extends Base_Class {
 	 * @param array $headlines
 	 * @param string $text
      * @param float $price
+     * @param array $craigslist_market_ids
 	 * @param bool $post
 	 * @return int craigslist_ad_id
 	 */
-	public function create( $product_id, $headlines, $text, $price, $post ) {
+	public function create( $product_id, $headlines, $text, $price, $craigslist_market_ids, $post ) {
         global $user;
 
         // Determine if we're publishing
@@ -147,8 +158,9 @@ class Craigslist extends Base_Class {
         // Get the craigslist ad ID
         $craigslist_ad_id = $this->db->insert_id;
 
-        // Set the headlines
+        // Set the headlines/markets
         $this->set_headlines( $craigslist_ad_id, $headlines );
+        $this->set_markets( $craigslist_ad_id, $craigslist_market_ids );
 
 		return $craigslist_ad_id;
 	}
@@ -161,10 +173,11 @@ class Craigslist extends Base_Class {
 	 * @param array $headlines
 	 * @param string $text
      * @param float $price
+     * @param array $craigslist_market_ids
 	 * @param bool $post
 	 * @return bool
 	 */
-	public function update( $craigslist_ad_id, $product_id, $headlines, $text, $price, $post ) {
+	public function update( $craigslist_ad_id, $product_id, $headlines, $text, $price, $craigslist_market_ids, $post ) {
 		global $user;
 
         // Determine if we're publishing
@@ -188,8 +201,9 @@ class Craigslist extends Base_Class {
 			return false;
 		}
 
-        // Set the headlines
+        // Set the headlines/markets
         $this->set_headlines( $craigslist_ad_id, $headlines );
+        $this->set_markets( $craigslist_ad_id, $craigslist_market_ids );
 
 		return true;
 	}
@@ -309,6 +323,59 @@ class Craigslist extends Base_Class {
     }
 
     /**
+     * Set Craigslist Markets
+     *
+     * @param int $craigslist_ad_id
+     * @param array $craigslist_market_ids
+     * @return bool
+     */
+    public function set_markets( $craigslist_ad_id, $craigslist_market_ids ) {
+        global $user;
+
+        // Type Juggling
+        $craigslist_ad_id = (int) $craigslist_ad_id;
+        $website_id = (int) $user['website']['website_id'];
+
+        // First delete all the current ones
+        $this->db->query( "DELETE a.* FROM `craigslist_ad_markets` AS a LEFT JOIN `craigslist_ads` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) WHERE a.`craigslist_ad_id` = $craigslist_ad_id AND b.`website_id` = $website_id" );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to delete Craigslist Ad Markets.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Insert headlines
+        $values = '';
+
+        if ( is_array( $craigslist_market_ids ) )
+        foreach ( $craigslist_market_ids as $cmid ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            // Type Juggling
+            $cmid = (int) $cmid;
+
+            $values .= "( $craigslist_ad_id, $cmid )";
+        }
+
+        // If there are no values to add, we're done
+        if ( empty( $values ) )
+            return true;
+
+        // Add them!
+        $this->db->query( "INSERT INTO `craigslist_ad_markets` VALUES $values" );
+
+        // Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to add Craigslist Ad Markets.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
      * Get Craigslist Market
      *
      * @param int $craigslist_market_id
@@ -335,15 +402,23 @@ class Craigslist extends Base_Class {
     /**
      * Get Craigslist Markets
      *
+     * @param int $craigslist_ad_id [optional] If specified it will get the craiglist markets specified by the ad rather than all of them
      * @return array
      */
-    public function get_craigslist_markets() {
+    public function get_craigslist_markets( $craigslist_ad_id = NULL ) {
         global $user;
 
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-        $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, b.`market_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`website_id` = $website_id", ARRAY_A );
+        if ( is_null( $craigslist_ad_id ) ) {
+            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, b.`market_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`website_id` = $website_id", ARRAY_A );
+        } else {
+            // Type Juggling
+            $craigslist_ad_id = (int) $craigslist_ad_id;
+
+            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, c.`market_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_ad_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) LEFT JOIN `craigslist_market_links` AS c ON ( b.`craigslist_market_id` = c.`craigslist_market_id` ) WHERE b.`craigslist_ad_id` = $craigslist_ad_id AND c.`website_id` = $website_id", ARRAY_A );
+        }
 
         // Handle any error
 		if( $this->db->errno() ) {
@@ -363,7 +438,7 @@ class Craigslist extends Base_Class {
      */
     public function post_ad( $craigslist_ad_id, $text ) {
         // Get craigslist markets
-        $markets = $this->get_craigslist_markets();
+        $markets = $this->get_craigslist_markets( $craigslist_ad_id );
 
         // If we don't have markets, then we can't post
         if ( !$markets || 0 == count( $markets ) )
@@ -380,6 +455,12 @@ class Craigslist extends Base_Class {
         // Make sure we have the ad
         if ( !$ad )
             return false;
+
+        // Make sure the headlines aren't empty
+        foreach ( $ad['headlines'] as $hl ) {
+            if ( empty( $hl ) )
+                return false;
+        }
 
         // Get the product
         $product = $p->get_product( $ad['product_id'] );
