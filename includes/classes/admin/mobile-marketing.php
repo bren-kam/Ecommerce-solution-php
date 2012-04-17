@@ -176,9 +176,9 @@ class Mobile_Marketing extends Base_Class {
             , 'member_uid' => $user_id
             , 'ipType' => 'ip'
             , 'ip1' => '199'
-            , 'ip2' => '204'
-            , 'ip3' => '138'
-            , 'ip4' => '78'
+            , 'ip2' => '79'
+            , 'ip3' => '48'
+            , 'ip4' => '137'
         );
 
         $update_api = $c->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_apiCustomers.php', $assign_ip_fields );

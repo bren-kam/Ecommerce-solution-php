@@ -335,11 +335,11 @@ get_header();
 							</p>
 							<p>
 								<label for="tFTPUser"><?php echo _('User Name'); ?>:</label>
-								<input type="text" name="tFTPUser" id="tFTPUser" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+								<input type="text" name="tFTPUser" id="tFTPUser" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY ); ?>" class="tb" autocomplete="off" />
 							</p>
 							<p>
 								<label for="tFTPPassword"><?php echo _('Password'); ?>:</label>
-								<input type="password" name="tFTPPassword" id="tFTPPassword" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+								<input type="password" name="tFTPPassword" id="tFTPPassword" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_password'] ), ENCRYPTION_KEY ); ?>" class="tb" autocomplete="off" />
 							</p>
 						</div>
 						<br />

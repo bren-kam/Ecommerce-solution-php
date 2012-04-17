@@ -73,14 +73,22 @@ get_header();
 					$disabled = '';
 					$confirm = ' confirm="' . $confirm_disable . '"';
 				}
+
+                if ( stristr( $a['value'], 'http:' ) ) {
+                        $banner_url = $a['value'];
+                    } else {
+                        $banner_url = 'http://';
+                        $banner_url .= ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '';
+                        $banner_url .= $user['website']['domain'] . $a['value'];
+                    }
 				?>
 				<div class="contact-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a['website_attachment_id']; ?>">
-					<h2><?php echo _('Flash Banner'); ?></h2>
+					<h2><?php echo _('Banner'); ?></h2>
 					<p><small><?php echo $dimensions; ?></small></p>
 					<a href="/ajax/website/sidebar/update-status/?_nonce=<?php echo $update_status_nonce; ?>&amp;waid=<?php echo $a['website_attachment_id']; ?>&amp;s=<?php echo ( '0' == $a['status'] ) ? '1' : '0'; ?>" id="aEnableDisable<?php echo $a['website_attachment_id']; ?>" class="enable-disable<?php echo $disabled; ?>" title="<?php echo _('Enable/Disable'); ?>" ajax="1"<?php echo $confirm; ?>><img src="/images/trans.gif" width="26" height="28" alt="<?php echo _('Enable/Disable'); ?>" /></a>
 					
 					<div id="dBanner<?php echo $a['website_attachment_id']; ?>" class="text-center">
-						<img src="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'], $a['value']; ?>" alt="<?php echo _('Sidebar Image'); ?>" />
+						<img src="<?php echo $banner_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" />
 					</div>
 					<br />
 					

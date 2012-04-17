@@ -1286,7 +1286,7 @@ class Mobile_Marketing extends Base_Class {
         $w = new Websites();
 
         // Get the API Key
-        $api_key = $w->get_setting( 'trumpia-key' );
+        $api_key = $w->get_setting( 'trumpia-api-key' );
 
         // Setup Trumpia
         $this->trumpia = new Trumpia( $api_key );

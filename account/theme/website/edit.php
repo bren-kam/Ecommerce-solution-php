@@ -184,7 +184,7 @@ get_header();
                 <a href="javascript:;" id="aCancelPageSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
                 <a href="javascript:;" id="aEditPageSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
                 <a href="javascript:;" id="aSavePageSlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
-                <?php if( $user['website']['mobile_marketing'] ): ?><input type="checkbox" name="cbIsMobile" id="cbIsMobile" <?php if ( $page['mobile'] ) echo "checked"; ?> /><?php echo _('Mobile'); endif; ?>
+                <?php if( $user['website']['mobile_marketing'] ): ?><input type="checkbox" class="cb" name="cbIsMobile" id="cbIsMobile" <?php if ( $page['mobile'] ) echo "checked"; ?> /><?php echo _('Mobile'); endif; ?>
             </div>
             <?php } ?>
             <br />
