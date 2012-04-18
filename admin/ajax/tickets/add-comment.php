@@ -18,6 +18,9 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 	// Get ticket information
 	$ticket = $t->get( $_POST['tid'] );
 	
+	// Get the user
+	$assigned_to_user = $u->get_user( $ticket['assigned_to_user_id'] );
+
 	// Define variables
 	$content = stripslashes( $_POST['c'] );
 	$status = ( 0 == $ticket['status'] ) ? ' (Open)' : ' (Closed)';
@@ -34,8 +37,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 	
 	// Send the assigned user an email if they are not submitting the comment
 	if ( $ticket['assigned_to_user_id'] != $user['user_id'] ) {
-		// Get the user
-		$assigned_to_user = $u->get_user( $ticket['assigned_to_user_id'] );
 		
 		// Send email
 		fn::mail( $assigned_to_user['email'], 'New Comment on Ticket #' . $_POST['tid'] . ' - ' . $ticket['summary'], $user['contact_name'] . ' has posted a new comment on Ticket #' . $_POST['tid'] . ".\n\nhttp://admin." . $assigned_to_user['domain'] . "/tickets/ticket/?tid=" . $_POST['tid'], $assigned_to_user['company'] . ' <support@' . $assigned_to_user['domain'] . '>' );
