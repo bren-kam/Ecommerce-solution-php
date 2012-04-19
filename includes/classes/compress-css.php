@@ -158,9 +158,7 @@ class Compress_CSS {
 				//$output = str_replace(';}', '}', $output); 
 				
 				// Turn some semi-colons into [colon]
-				$output = preg_replace( '/\(([a-z\'"]+):/', '($1[colon]', $output );
-
-                echo $output;exit;
+				$output = preg_replace( '/\(([a-z]+):/', '($1[colon]', $output );
 				
 				return $output;
 			}
