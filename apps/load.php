@@ -29,7 +29,7 @@ define( 'ACCOUNT', false );
 define( 'APPS', true );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', '/home/imaginer/public_html/' );
+define( 'ABS_PATH', str_replace( '/apps', '/', $_SERVER['DOCUMENT_ROOT'] ) );
 
 /** Define OPERATING_PATH as the main directory to get things from */
 define( 'OPERATING_PATH', '/home/imaginer/public_html/apps/' );

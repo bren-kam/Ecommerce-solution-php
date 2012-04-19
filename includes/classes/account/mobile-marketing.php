@@ -927,8 +927,11 @@ class Mobile_Marketing extends Base_Class {
         // Make sure it's instantiated
         $this->_init_trumpia();
 
-        // Rename list a list
-        $this->trumpia->rename_list( $this->_format_mobile_list_name( $mobile_list['name'] ), substr( preg_replace( '/[^a-zA-Z0-9]/', '', $name ), 0, 32 ), $name, $frequency, $description );
+        // Rename list to a secondary list
+        $this->trumpia->rename_list( $this->_format_mobile_list_name( $mobile_list['name'] ), $this->_format_mobile_list_name( $name ) . '2', $name, $frequency, $description );
+
+        // Rename back to first list (won't let a normal rename happend)
+        $this->trumpia->rename_list( $this->_format_mobile_list_name( $name ) . '2', $this->_format_mobile_list_name( $name ), $name, $frequency, $description );
 
         // Update the list
 		$this->db->update( 'mobile_lists', array( 'name' => $name, 'frequency' => $frequency, 'description' => $description ), array( 'mobile_list_id' => $mobile_list_id, 'website_id' => $user['website']['website_id'] ), 'sis', 'ii' );
@@ -1121,6 +1124,7 @@ class Mobile_Marketing extends Base_Class {
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to delete message associations.', __LINE__, __METHOD__ );
+
 			return false;
 		}
 
