@@ -87,7 +87,11 @@ get_header();
 					</tr>
                     <tr>
                         <td>&nbsp;</td>
-                        <td><input type="checkbox" class="cb" id="cbOnlyDiscontinued" value="1" /> <label for="cbOnlyDiscontinued"><?php echo _('Search Only Discontinued Products'); ?></label> (<a href="/ajax/products/remove-all-discontinued-products/?_nonce=<?php echo nonce::create('remove-all-discontinued-products'); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove all discontinued products? This cannot be undone.'); ?>" title="<?php echo _('Remove All Discontinued Products'); ?>"><?php echo _('Remove All Discontinued Products'); ?></a>) </td>
+                        <td>
+                            <input type="checkbox" class="cb" id="cbOnlyDiscontinued" value="1" /> <label for="cbOnlyDiscontinued"><?php echo _('Search Only Discontinued Products'); ?></label>
+                            <br />
+                            &nbsp; &nbsp; (<a href="/ajax/products/remove-all-discontinued-products/?_nonce=<?php echo nonce::create('remove-all-discontinued-products'); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove all discontinued products? This cannot be undone.'); ?>" title="<?php echo _('Remove All Discontinued Products'); ?>"><?php echo _('Remove All Discontinued Products'); ?></a>)
+                        </td>
                     </tr>
 				</table>
 				<img id="iNYSArrow" src="/images/narrow-your-search.png" alt="" width="76" height="27" />
