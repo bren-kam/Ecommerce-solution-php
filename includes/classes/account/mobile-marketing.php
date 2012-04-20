@@ -1349,6 +1349,157 @@ class Mobile_Marketing extends Base_Class {
 		return ( is_array( $pages) ) ? $pages : false;
 	}
 	
+		
+	/**
+	 * Create Page
+	 *
+	 * Adds a page to a mobile website website if the user has permissions 7 or higher
+	 *
+	 * @param string $slug
+	 * @param string $title
+	 * @return bool
+	 */
+	public function create_mobile_page( $slug, $title ) {
+		global $user;
+		
+		if ( $user['role'] < 7 )
+			return false;
+		
+		// Insert the page
+		$this->db->insert( 'mobile_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'issis' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to create website page.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+		
+	/**
+	 * Updates page information
+	 *
+	 * @param int $website_page_id
+     * @param string $slug
+     * @param string $title
+	 * @param string $content
+	 * @param string $meta_title
+	 * @param string $meta_description
+	 * @param string $meta_keywords
+	 * @return bool
+	 */
+	public function update_mobile_page( $mobile_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords ) {
+		global $user;
+		
+		
+		// Update existing request
+		$this->db->update( 'mobile_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'mobile_page_id' => $mobile_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssi', 'ii' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get check if request exists.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * List Pages
+	 *
+	 * @param $variables array( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_pages( $variables ) {
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+		
+		$pages = $this->db->get_results( "SELECT `mobile_page_id`, `slug`, `title`, `status`, UNIX_TIMESTAMP( `date_updated` ) AS date_updated FROM `mobile_pages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to list pages.', __LINE__, __METHOD__ );
+			return false;
+		}
+			
+		return $pages;
+	}
+	
+	/**
+	 * Count Pages
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_pages( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( `mobile_page_id` ) FROM `mobile_pages` WHERE 1 $where" );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to count pages.', __LINE__, __METHOD__ );
+			return false;
+		}
+			
+		return $count;
+	}
+	
+		/**
+	 * Gets a specific page by the page_id
+	 *
+	 * @param int $website_page_id
+	 * @return array
+	 */
+	public function get_mobile_page( $mobile_page_id ) {
+		// Typecast
+		$mobile_page_id = (int) $mobile_page_id;
+		
+		// Get the page
+		$page = $this->db->get_row( "SELECT `mobile_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords` FROM `mobile_pages` WHERE `mobile_page_id` = $mobile_page_id", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get page.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// unencrypt data
+		if ( is_array( $page ) )
+		foreach ( $page as $k => $v ) {
+			$new_page[$k] = html_entity_decode( $v, ENT_QUOTES, 'UTF-8' );
+		}
+		
+		return $new_page;
+	}
+	
+	
+	/**
+	 * Delete
+	 *
+	 * @param int $mobile_page_id
+	 * @return bool
+	 */
+	public function delete_mobile_page( $mobile_page_id ) {
+		global $user;
+		
+		// Must have the proper role
+		if ( $user['role'] < 8 )
+			return false;
+		
+		// Delete the website page
+		$this->db->prepare( 'DELETE FROM `mobile_pages` WHERE `mobile_page_id` = ? AND `website_id` = ?', 'ii', $mobile_page_id, $user['website']['website_id'] )->query('');
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to delete website page.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * Report an error
 	 *
