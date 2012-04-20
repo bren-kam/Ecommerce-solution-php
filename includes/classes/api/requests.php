@@ -1,6 +1,6 @@
 <?php
 /**
- * Imagine Retailer - Requests Class
+ * Grey Suit Retail - Requests Class
  *
  * @requires Studio98 Framework
  * @requires Database Connection file
@@ -8,7 +8,7 @@
  * This handles all API Requests
  * @version 1.0.0
  */
-class IRR {
+class Requests {
 	/**
 	 * Constant paths to include files
 	 */
@@ -242,7 +242,7 @@ class IRR {
 		// Gets parameters and errors out if something is missing
 		$personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip' );
 		$personal_information['password'] = md5( $personal_information['password'] );
-		
+
 		// Insert the user
 		$this->db->insert( 'users', array_merge( array( 'company_id' => $this->company_id ), $personal_information, array( 'date_created' => date_time::date('Y-m-d H:i:s') ) ), array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) );
 		
