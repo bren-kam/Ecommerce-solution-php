@@ -598,8 +598,8 @@ class Websites extends Base_Class {
 				//$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
 				
 				// SSH Connection
-				$ssh_connection = ssh2_connect( '199.204.138.145', 22 );
-				ssh2_auth_password( $ssh_connection, 'root', 'GcK5oy29IiPi' );
+				$ssh_connection = ssh2_connect( '199.79.48.137', 22 );
+				ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
 				
 				// Checkout
 				//ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
@@ -1002,8 +1002,9 @@ class Websites extends Base_Class {
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
 
-		$connection = ssh2_connect( '199.204.138.145', 22 );
-        if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+		// SSH Connection
+        $connection = ssh2_connect( '199.79.48.137', 22 );
+        if ( !@ssh2_auth_password( $connection, 'root', 'WIxp2sDfRgLMDTL5' ) )
             return;
 
 		error_reporting( E_ALL );
@@ -1028,9 +1029,9 @@ class Websites extends Base_Class {
 			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
 
 			if ( !$stream ) {
-				$connection = ssh2_connect( '199.204.138.145', 22 );
+				$connection = ssh2_connect( '199.79.48.137', 22 );
 
-				if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+				if ( !@ssh2_auth_password( $connection, 'root', 'WIxp2sDfRgLMDTL5' ) )
 					die( "Couldn't connect to SSH Tunnel" );
 
 				$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
@@ -1043,9 +1044,9 @@ class Websites extends Base_Class {
 
 
 			if ( !$stream ) {
-				$connection = ssh2_connect( '199.204.138.145', 22 );
+				$connection = ssh2_connect( '199.79.48.137', 22 );
 
-				if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+				if ( !@ssh2_auth_password( $connection, 'root', 'WIxp2sDfRgLMDTL5' ) )
 					die( "Couldn't connect to SSH Tunnel" );
 
 				$stream = ssh2_exec( $connection, "chown -R $username:$username /home/$username/public_html/*" );

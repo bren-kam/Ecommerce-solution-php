@@ -1268,239 +1268,6 @@ class Mobile_Marketing extends Base_Class {
 		return true;
 	}
 
-	/***** AUTORESPONDERS *****/
-
-	/**
-	 * List autoresponders
-	 *
-	 * @param array( $where, $order_by, $limit )
-	 * @return array
-	 */
-	public function list_autoresponders( $variables ) {
-		// Get the variables
-		list( $where, $order_by, $limit ) = $variables;
-
-		$autoresponders = $this->db->get_results( "SELECT `mobile_autoresponder_id`, `name`, `default`, `date_created` FROM `mobile_autoresponders` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list autoresponders.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $autoresponders;
-	}
-
-	/**
-	 * Count autoresponders
-	 *
-	 * @param string $where
-	 * @return array
-	 */
-	public function count_autoresponders( $where ) {
-		$count = $this->db->get_var( "SELECT COUNT( `mobile_autoresponder_id` ) FROM `mobile_autoresponders` WHERE 1 $where" );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count autoresponders.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $count;
-	}
-
-	/**
-	 * Get an autoresponder
-	 *
-	 * @param int $mobile_autoresponder_id
-	 * @return array
-	 */
-	public function get_autoresponder( $mobile_autoresponder_id ) {
-		global $user;
-
-        // Type Juggling
-        $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
-        $website_id = (int) $user['website']['website_id'];
-
-		$autoresponder = $this->db->get_row( "SELECT a.`mobile_autoresponder_id`, a.`mobile_list_id`, a.`name`, a.`message`, a.`default`, b.`name` AS mobile_list FROM `mobile_autoresponders` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_autoresponder_id` = $mobile_autoresponder_id AND a.`website_id` = $website_id", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autoresponder.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $autoresponder;
-	}
-
-	/**
-	 * Create autoresponder
-	 *
-	 * @param string $name
-	 * @param string $message
-	 * @param int $mobile_list_id
-	 * @return int
-	 */
-	public function create_autoresponder( $name, $message, $mobile_list_id ) {
-		global $user;
-
-		$this->db->insert( 'mobile_autoresponders', array( 'website_id' => $user['website']['website_id'], 'mobile_list_id' => $mobile_list_id, 'name' => $name, 'message' => $message, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisss' );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create autoresponder.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $this->db->insert_id;
-	}
-
-	/**
-	 * Update autoresponder
-	 *
-	 * @param int $mobile_autoresponder_id
-     * @param string $name
-	 * @param string $message
-	 * @param int $mobile_list_id
-	 * @return bool
-	 */
-	public function update_autoresponder( $mobile_autoresponder_id, $name, $message, $mobile_list_id ) {
-		global $user;
-
-		$this->db->update( 'mobile_autoresponders', array( 'mobile_list_id' => $mobile_list_id, 'name' => $name, 'message' => $message ), array( 'mobile_autoresponder_id' => $mobile_autoresponder_id, 'website_id' => $user['website']['website_id'] ), 'iss', 'ii' );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update autoresponder.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Get available autoresponder mobile lists
-	 *
-	 * @param int $mobile_autoresponder_id
-	 * @return array
-	 */
-	public function get_autoresponder_mobile_lists( $mobile_autoresponder_id ) {
-		global $user;
-
-        // Type Juggling
-        $website_id = (int) $user['website']['website_id'];
-        $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
-
-		$mobile_lists = $this->db->get_results( "SELECT a.`mobile_list_id`, a.`mobile_keyword_id`, a.`name` FROM `mobile_lists`AS a LEFT JOIN `mobile_autoresponders` AS b ON ( a.`website_id` = b.`website_id` AND a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`website_id` = $website_id AND a.`category_id` <> 0 AND ( b.`mobile_list_id` IS NULL OR b.`mobile_list_id` = $mobile_autoresponder_id ) GROUP BY a.`mobile_list_id` ORDER BY a.`name`", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $mobile_lists;
-	}
-
-	/**
-	 * Delete autoresponder
-	 *
-	 * @param int $mobile_autoresponder_id
-	 * @return bool
-	 */
-	 public function delete_autoresponder( $mobile_autoresponder_id ) {
-		global $user;
-
-        // Type Juggling
-        $website_id = (int) $user['website']['website_id'];
-        $mobile_autoresponder_id = (int) $mobile_autoresponder_id;
-
-		$this->db->query( "DELETE FROM `mobile_autoresponders` WHERE `mobile_autoresponder_id` = $mobile_autoresponder_id AND `website_id` = $website_id" );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete autoresponder.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return true;
-	}
-
-	/***** EMAIL SETTINGS *****/
-
-	/**
-	 * Get mobile settings
-	 *
-	 * @return array
-	 */
-	public function get_settings() {
-		global $user;
-
-        // Type Juggling
-        $website_id = (int) $user['website']['website_id'];
-
-		// Get settings
-		$settings = $this->db->get_results( "SELECT `key`, `value` FROM `mobile_settings` WHERE `website_id` = $website_id", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile settings.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return ( $settings ) ? ar::assign_key( $settings, 'key', true ) : array();
-	}
-
-	/**
-	 * Get Mobile Setting
-	 *
-	 * @param string $key
-	 * @return string
-	 */
-	public function get_setting( $key ) {
-		global $user;
-
-		$value = $this->db->prepare( 'SELECT `value` FROM `mobile_settings` WHERE `key` = ? AND `website_id` = ?', 'si', $key, $user['website']['website_id'] )->get_var('');
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile setting.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Sets mobile settings
-	 *
-	 * @param array $settings
-	 * @return bool
-	 */
-	public function set_settings( $settings ) {
-		global $user;
-
-		$values = '';
-
-		// Make the settings safe for SQL
-		foreach ( $settings as $k => $v ) {
-			if ( !empty( $values ) )
-				$values .= ',';
-
-			$values .= '(' . (int) $user['website']['website_id'] . ", '" . $this->db->escape( $k ) . "', '" . $this->db->escape( $v ) . "')";
-		}
-
-		$this->db->query( "INSERT INTO `mobile_settings` ( `website_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)" );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update all the mobile settings', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return true;
-	}
-
 	/***** OTHER FUNCTIONS *****/
 
     /**
@@ -1526,6 +1293,57 @@ class Mobile_Marketing extends Base_Class {
 
         return true;
     }
+
+	/** Mobile Pages **/
+	public function update_mobile_pages( $page_data ) {
+		global $user;
+		
+		$website_id = $user['website']['website_id'];
+
+		// Get current pages
+		$pages = $this->db->get_results( "SELECT a.`slug` FROM mobile_pages AS a WHERE a.`website_id` = " . $this->db->escape( $website_id ) . ";", ARRAY_A);
+		
+		// Reindex by page slugs
+		$pages = ar::assign_key( $pages, 'slug' );
+		
+		foreach( $page_data as $slug => $content ) {
+			// Page exists
+			if ( array_key_exists( $slug, $pages ) )
+				$result = $this->db->update( 'mobile_pages', array( 'content' => $content['content'], 'title' => $content['title'], 'updated_user_id' => $user['user_id'] ), array( 'slug' => $slug, 'website_id' => $website_id ), 'ssi', 'si' );
+			else // Page should be created
+				$result = $this->db->insert( 'mobile_pages', array( 'slug' => $slug, 'content' => $content['content'], 'title' => $content['title'], 'date_created' => dt::date('Y-m-d H:i:s'), 'website_id' => $website_id, 'status' => 1 ), 'ssssii' );
+			
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->err( 'Failed to update mobile pages', __LINE__, __METHOD__ );
+				return false;
+			}
+			
+		}
+		
+		return true;
+		
+	}
+
+	public function get_mobile_pages( $website_id = false ) {
+		global $user;
+		
+		if ( !$website_id )
+			$website_id = $user['website']['website_id'];
+		
+		$website_id = (int) $website_id;
+		
+		// Get current pages
+		$pages = $this->db->get_results( "SELECT a.`mobile_page_id`, a.`slug`, a.`title`, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`status`, a.`updated_user_id`, a.`date_created`, a.`date_updated`  FROM mobile_pages AS a WHERE a.`website_id` = " . $this->db->escape( $website_id ) . ";", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update mobile pages', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return ( is_array( $pages) ) ? $pages : false;
+	}
 	
 	/**
 	 * Report an error

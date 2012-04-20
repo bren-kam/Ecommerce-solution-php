@@ -9,62 +9,52 @@
 $ajax = new AJAX( $_POST['_nonce'], 'upload-banner' );
 $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 
-
 // Get the file extension
 $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+$dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 
+// Directory needs to exist
+if ( !is_dir( $dir ) )
+	mkdir( $dir, 0777, true );
+
+// User is blank, must fill website
 global $user;
 
 // Instantiate classes
 $w = new Websites;
+$wa = new Website_Attachments;
+$f = new Files;
 
+// Variables
 $user['website'] = $w->get_website( $_POST['wid'] );
 
-
-// Instantiate other classes now that ther user['website'] is in place
-$wa = new Website_Attachments;
-$ftp = new FTP( (int) $_POST['wid'] );
-
-$name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
-
 // Set variables
+$name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
 $banner_name = "$name.$file_extension";
-$upload_dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
-
-// Directory needs to exist
-if ( !is_dir( $upload_dir ) )
-	mkdir( $upload_dir, 0777, true );
+$banner_path = $dir . $banner_name;
 
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $upload_dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your banner.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
 
-// Get our local directory
-$local_file_path = $upload_dir . $banner_name;
+// Transfer file to Amazon
+$ajax->ok( $f->upload_file( $banner_path, $banner_name, $user['website']['website_id'], "banners/" ), _('An error occurred while trying to upload your logo to the website. Please refresh the page and try again') );
 
-$remote_directory = 'slideshow/';
-
-// Get the path info
-$pathinfo = pathinfo( $local_file_path );
-
-// Add it to their site
-$ajax->ok( $ftp->add( $local_file_path, $remote_directory ), _('An error occurred while trying to upload the banner to your site') );
-
-// Create the absolute url
-$absolute_url = '/custom/uploads/' . $remote_directory . $pathinfo['basename'];
+// Set variables
+$upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id'] . "/banners/" . $banner_name;
 
 // Set the website data, if successful, delete the local file
-$ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'banner', $absolute_url ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
+$ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'banner', $upload_url ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
 
-unlink( $local_file_path ); // Delete file
-		
-$settings = $w->get_settings('banner-width');
+unlink( $banner_path ); // Delete file
+
+$settings = $w->get_settings( 'banner-width' );
 
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '" style="width:' . $settings['banner-width'] . 'px">';
 $contact_box .= '<h2>' . _('Flash Banner') . '</h2>';
 $contact_box .= '<p><small>' . $settings['banner-width'] . '</small></p>';
 $contact_box .= '<a href="/ajax/website/sidebar/update-status/?_nonce=' . nonce::create( 'update-status' ) . '&amp;waid=' . $website_attachment_id . '&amp;s=0" id="aEnableDisable' . $website_attachment_id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this banner?') . '"><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
 $contact_box .= '<div id="dBanner' . $website_attachment_id . '" class="text-center">';
-$contact_box .= '<img src="http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . $absolute_url . '" alt="' . _('Sidebar Image') . '" />';
+$contact_box .= '<img src="' . $upload_url . '" alt="' . _('Banner Image') . '" />';
 $contact_box .= '</div><br />';
 $contact_box .= '<form action="/ajax/website/sidebar/update-extra/" method="post" ajax="1">';
 $contact_box .= '<p id="pTempSuccess' . $website_attachment_id . '" class="success hidden">' . _('Your banner link has been successfully updated.') . '</p>';

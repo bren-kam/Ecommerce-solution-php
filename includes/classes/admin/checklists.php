@@ -17,6 +17,56 @@ class Checklists extends Base_Class {
 	}
 
     /**
+     * Get accounts that have no checklists
+     *
+     * @return array
+     */
+    public function get_unchecklisted_accounts() {
+        $accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title` FROM `websites` AS a LEFT JOIN `checklists` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NULL", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get unlinked craigslist accounts.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $accounts;
+    }
+
+    /**
+     * Add Checklist to a website
+     *
+     * @param int $website_id
+     * @return int
+     */
+    public function add_checklist( $website_id ) {
+        // Get the date for today
+        $today = new DateTime();
+
+        $this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => $today->format('Y-m-d H:i:s') ), 'iss' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to add checklist to website.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Checklist ID
+        $checklist_id = $this->db->insert_id;
+
+        // Insert all the checklist items
+        $this->db->query( "INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT $checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = 1" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to add website checklists items.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $checklist_id;
+    }
+
+    /**
      * Create a section that is set as inactive
      *
      * @return bool
