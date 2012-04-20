@@ -36,7 +36,7 @@ get_header();
             , 'about-us' => _('About Us')
             , 'products' => _('Products')
             , 'current-ad' => _('Current Ad')
-            , 'posting/post' => _('Posting')
+            , 'posting' => _('Posting')
         );
 
         $website_social_media_add_ons = @unserialize( $settings['social-media-add-ons'] );
@@ -45,6 +45,13 @@ get_header();
             if ( !is_array( $website_social_media_add_ons ) || !in_array( $url, $website_social_media_add_ons ) )
                 continue;
 
+            switch ( $url ) {
+                case 'posting':
+                    $url .= '/post';
+                break;
+
+                default:break;
+            }
             ?>
             <p class="sm">
                 <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $url; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>

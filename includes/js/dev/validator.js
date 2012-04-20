@@ -212,6 +212,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 		'email': /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
 		'float': /[^0-9\.]/,
 		'img': /^[0-9A-Za-z_ \-]+(.[jJ][pP][gG]|.[jJ][pP][eE][gG]|.[gG][iI][fF]|.[pP][nN][gG])$/,
+		'ip': /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/,
 		'num': /[^0-9]/,
 		'phone': /[^0-9\- ()]/,
 		'URL': /(([\w]+:)?\/\/)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,4}(:[\d]+)?(\/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?/,
@@ -228,7 +229,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n [Error character position " + eval(charpos + 1) + "]");
 				return false;
 			}
-			break; 
+		break;
 
 		case "alnumhyphen":
 			var charpos = fObj[elementName].value.search(patterns['alnumhyphen']); 
@@ -237,7 +238,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n [Error character position " + eval(charpos + 1) + "]"); 
 				return false;
 			}
-			break;
+		break;
 
 		case "alphabetic": 
 		case "alpha": 
@@ -330,7 +331,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert( ccError );
 				return false;
 			}
-			break;
+		break;
 
 		case "csv":
 			var charpos = fObj[elementName].value.search( patterns['csv'] );
@@ -339,7 +340,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert( err );
 				return false;
 			}
-			break;
+		break;
 
 		case "custom":
 			var charpos = fObj[elementName].value.search(patterns['custom']);
@@ -348,7 +349,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n [Error character position " + eval(charpos + 1) + "]");
 				return false;
 			}
-			break;
+		break;
 
 		case "date": 
 			if (fObj[elementName].value.length > 0 && fObj[elementName].value != fObj[elementName].getAttribute('tmpval')) {
@@ -359,7 +360,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 					return false;
 				}
 			}
-			break;
+		break;
 		
 		case "email": 
 			if (fObj[elementName].value.length > 0) {
@@ -370,7 +371,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 					return false;
 				}
 			}
-			break; 
+		break;
 
 		case "extension":
 		case "ext":
@@ -403,7 +404,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err);
 				return false;
 			}
-			break;
+		break;
 
 		case "image":
 		case "img":
@@ -414,7 +415,16 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n [Error character position " + eval(charpos + 1) + "]"); 
 				return false;
 			}
-			break;
+		break;
+
+        case "ip":
+			var charpos = fObj[elementName].value.search(patterns['ip']);
+			if (fObj[elementName].value.length > 0 && charpos >= 0 && fObj[elementName].value != fObj[elementName].getAttribute('tmpval')) {
+				if (!err || err.length == 0) err = elementName + " must be a number";
+				alert(err + "\n [Error character position " + eval(charpos + 1) + "]");
+				return false;
+			}
+		break;
 
 		case "lt":
 		case "lessthan":
@@ -427,7 +437,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err);
 				return false;
 			}
-			break;
+		break;
 
 		case "match":
 			var tmpElements = elementName.split("|");
@@ -436,7 +446,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err);
 				return false;
 			}
-			break;
+		break;
 
 		case "maxlength": 
 		case "maxlen":
@@ -445,7 +455,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n[Current length = " + fObj[elementName].value.length + " ]");
 				return false;
 			}
-			break;              
+		break;
 
 		case "minlength": 
 		case "minlen": 
@@ -454,7 +464,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n[Current length = " + fObj[elementName].value.length + " ]");
 				return false;                 
 			} 
-			break; 
+		break;
 
 		case "num": 
 		case "numeric": 
@@ -464,7 +474,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n [Error character position " + eval(charpos + 1) + "]"); 
 				return false; 
 			} 
-			break;
+		break;
 
 		case "phone":
 			var charpos = fObj[elementName].value.search(patterns['phone']); 
@@ -483,7 +493,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 					return false;                   
 				} 
 			}
-			break;
+		break;
 
 		case "req": 
 		case "required":
@@ -492,7 +502,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err); 
 				return false;
 			} 
-			break;
+		break;
 
 		case "URL":
 			if (fObj[elementName].value.length > 0) {
@@ -503,7 +513,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 					return false;
 				}
 			}
-			break;
+		break;
 
 		case "val":
 			if (fObj[elementName].value != cmdvalue && fObj[elementName].value.length > 0) {
@@ -511,7 +521,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err);
 				return false;
 			}
-			break;
+		break;
 		
 		case "!val":
 			if (fObj[elementName].value == cmdvalue && fObj[elementName].value.length > 0) {
@@ -528,7 +538,7 @@ function checkValidation(elementName, descriptor, err, fObj) {
 				alert(err + "\n [Error character position " + eval(charpos + 1) + "]");
 				return false; 
 			} 
-			break;               
+		break;
 
 		default:break;
 	}
