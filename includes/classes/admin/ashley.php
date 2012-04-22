@@ -412,14 +412,11 @@ class Ashley extends Base_Class {
 		
 		mail( 'kerry@studio98.com', 'Ashley Feed - ' . $file, $products_string, $headers );
 		
-		if( is_array( $links ) ) {
+		if( is_array( $links['new-products'] ) ) {
 			$message = '';
 			
-			foreach ( $links as $section => $link_array ) {
-				$message .= '-----' . ucwords( str_replace( '-', ' ', $section ) ) . "-----\n";
-				$message .= implode( "\n", $link_array );
-				$message .= "\n\n\n";
-			}
+			$message .= "-----New Products-----\n";
+			$message .= implode( "\n", $links['new-products'] );
 			
 			mail( 'david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
 		}
