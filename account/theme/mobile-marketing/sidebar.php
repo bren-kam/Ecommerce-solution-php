@@ -1,3 +1,4 @@
+<?php global $user; ?>
 <div id="sidebar">
 	<h2><?php echo _('Sidebar'); ?></h2>
 	<a href="/mobile-marketing/" title="<?php echo _('Dashboard'); ?>" class="top<?php if ( isset( $dashboard ) ) echo ' selected'; ?>"><?php echo _('Dashboard'); ?></a>
@@ -26,7 +27,11 @@
 	<?php } ?>
 
 	<a href="/mobile-marketing/pages/" title="<?php echo _('Mobile Pages'); ?>" class="top<?php if ( isset( $mobile_pages ) ) echo ' selected'; ?>"><?php echo _('Mobile Pages'); ?></a>
-	
+	<a href="/mobile-marketing/pages/" class="sub<?php if ( isset( $mobile_pages ) ) echo ' selected"'; ?>" title="<?php echo _('Mobile Website'); ?>"><?php echo _('Mobile Website'); ?></a>
+    <?php if ( $user['role'] >= 7 ) { ?>
+        <a href="/mobile-marketing/add-page/" class="sub<?php if ( isset( $add_page ) ) echo ' selected'; ?>" title="<?php echo _('Add Mobile Page'); ?>"><?php echo _('Add Mobile Page'); ?></a>
+    <?php } ?>
+    
 	<!--
 	<a href="/mobile-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>
 	<?php if ( isset( $autoresponders ) ) { ?>

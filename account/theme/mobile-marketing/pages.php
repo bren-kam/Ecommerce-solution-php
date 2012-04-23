@@ -58,23 +58,22 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Mobile Pages'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'mobile-marketing/', 'dashboard' ); ?>
+	<?php get_sidebar( 'mobile-marketing/' ); ?>
 	<div id="subcontent">
-		<?php if ( !empty( $error ) ): ?>
-			<p class="error"><?php echo $error; ?></p>
-		<?php endif; ?>
-		<form action="/mobile-marketing/pages/" method="POST">
-			<h2>Homepage</h2>
-			<textarea id="taHomepageContent" name="taHomepageContent" rte="1"><?php echo ( $pages['homepage'] ) ? $pages['homepage']['content'] : NULL; ?></textarea>
-			<h2>Contact Us</h2>
-			<textarea id="taContactUsContent" name="taContactUsContent" rte="1"><?php echo ( $pages['contact-us'] ) ? $pages['contact-us']['content'] : NULL; ?></textarea>
-			<h2>Current Ad</h2>
-			<textarea id="taCurrentAdContent" name="taCurrentAdContent" rte="1"><?php echo ( $pages['current-ad'] ) ? $pages['current-ad']['content'] : NULL; ?></textarea>
-			<input type="submit" class="button" value="<?php echo _('Save Pages'); ?>" />
-			<?php nonce::field( 'update-mobile-pages' ); ?>
-		</form>
+		<table ajax="/ajax/mobile-marketing/list-pages/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th width="65%" sort="1"><?php echo _('Title'); ?></th>
+					<th width="15%"><?php echo _('Status'); ?></th>
+					<th width="20%"><?php echo _('Last Updated'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
 	</div>
 	<br /><br />
 </div>
+
 
 <?php get_footer(); ?>
