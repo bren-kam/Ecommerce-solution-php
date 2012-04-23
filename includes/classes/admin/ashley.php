@@ -418,7 +418,7 @@ class Ashley extends Base_Class {
 			$message .= "-----New Products-----\n";
 			$message .= implode( "\n", $links['new-products'] );
 			
-			mail( 'david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
+			mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . $file, $message, $headers );
 		}
 	}
 
