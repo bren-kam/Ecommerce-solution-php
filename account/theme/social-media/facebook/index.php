@@ -45,6 +45,8 @@ get_header();
             if ( !is_array( $website_social_media_add_ons ) || !in_array( $url, $website_social_media_add_ons ) )
                 continue;
 
+            $image = $url;
+
             switch ( $url ) {
                 case 'posting':
                     $url .= '/post';
@@ -54,7 +56,7 @@ get_header();
             }
             ?>
             <p class="sm">
-                <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $url; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>
+                <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $image; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>
                 <br />
                 <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><?php echo $name; ?></a>
             </p>
