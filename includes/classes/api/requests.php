@@ -51,7 +51,7 @@ class Requests {
 		'create_website',
         'update-social-media',
 		'update_user',
-		'update_user_arb_subscription',
+		'set_arb_subscription',
 	);
 	
 	/**
@@ -296,12 +296,12 @@ class Requests {
 	 */
 	private function create_website() {
 		// Gets parameters and errors out if something is missing
-		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'domain_registration', 'additional_email_addresses', 'products' );
+		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' );
 		$website['status'] = 1;
-        $website['date_created'] = date_time::date('Y-m-d H:i:s');
+        $website['date_created'] = dt::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, 'isssssiiiiiiisiis' );
+		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiisiis' );
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
@@ -476,6 +476,9 @@ class Requests {
 	private function set_arb_subscription() {
 		// Gets parameters and errors out if something is missing
 		extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
+
+        // Make sure we can edit this website
+        $this->verify_website( $website_id );
 
         // Protection
 		$website_id = (int) $website_id;
