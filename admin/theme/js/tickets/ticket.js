@@ -31,8 +31,7 @@ jQuery(function($) {
 	// Make it possible to update the "assigned to" on the fly
 	$('#sAssignedTo').change( function() {
 		// Update the status when they change it
-		
-		$.post( '/ajax/tickets/update-assigned-to/', { '_nonce' : $('#_ajax_update_assigned_to').val(), 'tid' : $('#hTicketID').val(), 'atui' : $(this).find('option:selected').val() }, function( response ) {
+		$.post( '/ajax/tickets/update-assigned-to/', { '_nonce' : $('#_ajax_update_assigned_to').val(), 'tid' : $('#hTicketID').val(), atui : $(this).find('option:selected').val() }, function( response ) {
 			// Handle any error
 			if ( !response['result'] ) {
 				alert( response['error'] );
@@ -40,6 +39,23 @@ jQuery(function($) {
 			}
 		}, 'json' );
 	});
+
+    // Make it so links can assign people too
+    $('.assign-to').click( function() {
+        // Get who it's being assigned to
+        var assigned_to_user_id = $(this).attr('rel');
+
+		// Update the status when they change it
+		$.post( '/ajax/tickets/update-assigned-to/', { '_nonce' : $('#_ajax_update_assigned_to').val(), 'tid' : $('#hTicketID').val(), atui : assigned_to_user_id }, function( response ) {
+			// Handle any error
+			if ( !response['result'] ) {
+				alert( response['error'] );
+				return;
+			}
+
+            $('#sAssignedTo').val( assigned_to_user_id );
+		}, 'json' );
+    });
 
 	// Comments
 	$('#taTicketComments').click( function() {

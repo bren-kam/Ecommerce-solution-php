@@ -1,6 +1,6 @@
 <?php
 /**
- * Imagine Retailer - Requests Class
+ * Grey Suit Retail - Requests Class
  *
  * @requires Studio98 Framework
  * @requires Database Connection file
@@ -8,14 +8,12 @@
  * This handles all API Requests
  * @version 1.0.0
  */
-class IRR {
+class Requests {
 	/**
 	 * Constant paths to include files
 	 */
 	const DEBUG = false;
-	const PATH_DB = '/home/imaginer/public_html/includes/db.php';
-	const PATH_S98_FW = '/home/imaginer/public_html/s98_fw/init.php';
-	
+
 	/**
 	 * Set of messages used throughout the script for easy access
 	 * @var array $messages
@@ -29,7 +27,7 @@ class IRR {
 		'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.',
         'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.',
 		'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.',
-		'failed-update-user-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.',
+		'failed-set-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.',
 		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
 		'ssl-required' => 'You must make the call to the secured version of our website.',
 		'success-add-order-item' => 'Add Order Item succeeded!',
@@ -38,7 +36,7 @@ class IRR {
 		'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.',
         'success-update-social-media' => 'Update Social Media succeeded!',
 		'success-update-user' => 'Update User succeeded!',
-		'success-update-user-arb-subscription' => 'Update User ARB Subscription succeeded!'
+		'success-set-arb-subscription' => 'Update User ARB Subscription succeeded!'
 	);
 	
 	/**
@@ -47,12 +45,13 @@ class IRR {
 	 */
 	private $methods = array(
 		'add_order_item',
+        'craigslist_error',
 		'create_order',
 		'create_user',
 		'create_website',
         'update-social-media',
 		'update_user',
-		'update_user_arb_subscription'
+		'update_user_arb_subscription',
 	);
 	
 	/**
@@ -108,12 +107,13 @@ class IRR {
 			$this->error_message = 'There was no authentication key';
 			exit;
 		}
-			
-		$this->company_id = $this->db->get_var( $this->db->prepare( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = %s", $_POST['auth_key'] ) );
+
+        $auth_key = $this->db->escape( $_POST['auth_key'] );
+		$this->company_id = $this->db->get_var( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = '$auth_key'" );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to process authentication', 'Could not retrieve company id', __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
 			exit;
 		}
@@ -170,11 +170,11 @@ class IRR {
 		$order_item = $this->get_parameters( 'order_id', 'item', 'quantity', 'amount', 'monthly' );
 		
 		// Execute the command
-		$this->db->insert( 'order_items', $order_item, array( '%d', '%s', '%d', '%f', '%f' ) );
+		$this->db->insert( 'order_items', $order_item, 'isidd' );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to add order item', 'Failed to add order item', __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to add order item', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-add-order-item' ) );
 			exit;
 		}
@@ -203,14 +203,13 @@ class IRR {
 		// Add extra fields
 		$order['type'] = 'new-website';
 		$order['status'] = 0;
-		$order['date_created'] = date_time::date('Y-m-d H:i:s');
+		$order['date_created'] = dt::date('Y-m-d H:i:s');
 		
-		$this->db->insert( 'orders', $order, array( '%d', '%f', '%f', '%s', '%d', '%s' )
-		);
+		$this->db->insert( 'orders', $order, 'iddsis' );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to create order', 'Failed to create order', __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to create order', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-order' ) );
 			exit;
 		}
@@ -242,19 +241,39 @@ class IRR {
 		// Gets parameters and errors out if something is missing
 		$personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip' );
 		$personal_information['password'] = md5( $personal_information['password'] );
-		
-		// Insert the user
-		$this->db->insert( 'users', array_merge( array( 'company_id' => $this->company_id ), $personal_information, array( 'date_created' => date_time::date('Y-m-d H:i:s') ) ), array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ) );
-		
-		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to create user', 'Failed to create user', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
-			exit;
-		}
-		
-		$user_id = $this->db->insert_id;
-		
+
+        $email = $this->db->escape( $personal_information['email'] );
+
+        $user = $this->db->get_row( "SELECT `user_id`, `status` FROM `users` WHERE `email` = $email", ARRAY_A );
+
+        // If there is a user already, use that
+        if ( $user ) {
+            if ( 0 == $user['status'] ) {
+                $this->db->update( 'users', array( 'status' => 1 ), array( 'user_id' => $user['user_id'] ), 'i', 'i' );
+
+                // If there was a MySQL error
+                if( $this->db->errno() ) {
+                    $this->err( 'Failed to create user', __LINE__, __METHOD__ );
+                    $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
+                    exit;
+                }
+            }
+
+            $user_id = $user['user_id'];
+        } else {
+            // Insert the user
+            $this->db->insert( 'users', array_merge( array( 'company_id' => $this->company_id ), $personal_information, array( 'date_created' => dt::date('Y-m-d H:i:s') ) ), 'isssssssssssss' );
+
+            // If there was a MySQL error
+            if( $this->db->errno() ) {
+                $this->err( 'Failed to create user', __LINE__, __METHOD__ );
+                $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
+                exit;
+            }
+
+            $user_id = $this->db->insert_id;
+        }
+
 		$this->add_response( array( 'success' => true, 'message' => 'success-create-user', 'user_id' => $user_id ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: $user_id", true );
 	}
@@ -282,11 +301,11 @@ class IRR {
         $website['date_created'] = date_time::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%d', '%d', '%s' ) );
+		$this->db->insert( 'websites', $website, 'isssssiiiiiiisiis' );
 
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to create website', "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
@@ -295,11 +314,11 @@ class IRR {
 		$website_id = $this->db->insert_id;
 		
 		// Now we have to insert checklists
-		$this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => date_time::date('Y-m-d H:i:s') ), array( '%d', '%s', '%s' ) );
+		$this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to insert checklists', "Failed to insert checklist.\n\nWebsite ID: $website_id", __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( "Failed to insert checklist.\n\nWebsite ID: $website_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
@@ -311,8 +330,8 @@ class IRR {
         $this->db->query( "INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT $checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = 1" );
 
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to insert checklist', "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
@@ -322,8 +341,8 @@ class IRR {
             $this->db->insert( 'website_settings', array( 'website_id' => $website_id, 'key' => 'social-media-add-ons', 'value' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}' ), 'iss' );
 
             // If there was a MySQL error
-            if( mysql_errno() ) {
-                $this->err( 'Failed to create website settings', "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+            if( $this->db->errno() ) {
+                $this->err( "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
                 $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                 exit;
             }
@@ -342,7 +361,7 @@ class IRR {
 	 */
 	private function update_social_media() {
 		// Gets parameters and errors out if something is missing
-		$personal_information = $this->get_parameters( 'website_id', 'website_social_media_add_ons' );
+		extract( $this->get_parameters( 'website_id', 'website_social_media_add_ons' ) );
 
         // Make sure we can edit this website
         $this->verify_website( $website_id );
@@ -388,8 +407,8 @@ class IRR {
         $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( $website_id, 'social-media-add-ons', '$db_website_social_media_add_ons' ) ON DUPLICATE KEY UPDATE `value` = '$db_website_social_media_add_ons'" );
 
         // If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to update website settings', "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
 			exit;
 		}
@@ -432,11 +451,11 @@ class IRR {
 		$personal_information['password'] = md5( $personal_information['password'] );
 		
 		// Update the user
-		$this->db->update( 'users', array_merge( $personal_information, array( 'date_created' => date_time::date('Y-m-d H:i:s') ) ), array( 'user_id' => $user_id, 'company_id' => $this->company_id ), array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ), array( '%d', '%d' ) );
+		$this->db->update( 'users', array_merge( $personal_information, array( 'date_created' => dt::date('Y-m-d H:i:s') ) ), array( 'user_id' => $user_id, 'company_id' => $this->company_id ), 'ssssssssssss', 'ii' );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to update user', 'Failed to update user', __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update user', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
 			exit;
 		}
@@ -446,29 +465,33 @@ class IRR {
 	}
 	
 	/**
-	 * Update User ARB Subscription
+	 * Set ARB Subscription
 	 *
 	 * ARB is Automatic Recurring Billing (part of Authorize.net)
 	 *
 	 * @param int $arb_subscription_id
-	 * @param int $user_id
+	 * @param int $website_id
 	 * @return bool
 	 */
-	private function update_user_arb_subscription() {
+	private function set_arb_subscription() {
 		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'arb_subscription_id', 'user_id' ) );
-		
-		$this->db->update( 'users', array( 'arb_subscription_id' => $arb_subscription_id ), array( 'user_id' => $user_id, 'company_id' => $this->company_id ), array( '%s' ), array( '%d', '%d' ) );
+		extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
+
+        // Protection
+		$website_id = (int) $website_id;
+        $arb_subscription_id = $this->db->escape( $arb_subscription_id );
+
+		$this->db->query( "INSERT INTO `website_settings` VALUES $website_id, 'arb-subscription-id', '$arb_subscription_id' ON DUPLICATE KEY UPDATE `value` = '$arb_subscription_id' " );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to update user ARB subscription id', "Failed to update user ARB subscription id.\n\nUser ID: $user_id\nARB Subscription ID:$arb_subscription_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user-arb-subscription' ) );
+		if( $this->db->errno() ) {
+			$this->err( "Failed to set ARB subscription id.\n\nWebsite ID: $website_id\nARB Subscription ID:$arb_subscription_id", __LINE__, __METHOD__ );
+			$this->add_response( array( 'success' => false, 'message' => 'failed-set-arb-subscription' ) );
 			exit;
 		}
 
-		$this->add_response( array( 'success' => true, 'message' => 'success-update-user-arb-subscription' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
+		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
 	}
 	
 	/***********************/
@@ -489,8 +512,8 @@ class IRR {
         $verify_website_id = $this->db->get_var( "SELECT a.`website_id` FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id`) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id AND c.`company_id` = $company_id" );
 
         // If there was a MySQL error
-        if( mysql_errno() ) {
-			$this->err( 'Failed to verify website', "Could not verify Website ID: $website_id to Company ID: $company_id", __LINE__, __METHOD__ );
+        if( $this->db->errno() ) {
+			$this->err( "Could not verify Website ID: $website_id to Company ID: $company_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
 			exit;
 		}
@@ -509,11 +532,15 @@ class IRR {
 	 * @return bool
 	 */
 	private function user_exists( $user_id ) {
-		$email = $this->db->get_var( $this->db->prepare( "SELECT `email` FROM `users` WHERE `user_id` = %d AND `company_id` = %d", $user_id, $this->company_id ) );
+        // Type Juggling
+        $user_id = (int) $user_id;
+        $company_id = (int) $this->company_id;
+
+		$email = $this->db->get_var( "SELECT `email` FROM `users` WHERE `user_id` = $user_id AND `company_id` = $company_id" );
 		
 		// If there was a MySQL error
-		if( mysql_errno() ) {
-			$this->err( 'Failed to check if user exists', 'Failed to check if user exists', __LINE__, __METHOD__ );
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to check if user exists', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
 			exit;
 		}
@@ -528,12 +555,6 @@ class IRR {
 	 * @access private
 	 */
 	private function init() {
-		// Load S98 Framework
-		require_once( self::PATH_S98_FW );
-		
-		// Load database
-		$this->load_db();
-		
 		// Make sure it's ssl
 		if( !security::is_ssl() ) {
 			$this->add_response( array( 'success' => false, 'message' => 'ssl-required' ) );
@@ -544,16 +565,6 @@ class IRR {
 		}
 		
 		$this->statuses['init'] = true;
-	}
-	
-	/**
-	 * Loads everything necessary for the database
-	 */
-	private function load_db() {
-		// Include data
-		require_once( self::PATH_DB );
-		
-		$this->db = new SQL( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
 	}
 	
 	/**
@@ -568,7 +579,7 @@ class IRR {
 		if( empty( $value ) && !is_array( $key ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
 			
-			$this->err( 'Tried to add a response without a valid key and value', "Key: \n----------\n" . fn::info( $key, false ) . "\n----------\n" . $value, __LINE__, __METHOD__ );
+			$this->err( "Tried to add a response without a valid key and value\n\nKey: \n----------\n" . fn::info( $key, false ) . "\n----------\n" . $value, __LINE__, __METHOD__ );
 		}
 		
 		// Set the response
@@ -595,7 +606,7 @@ class IRR {
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			$this->err( 'Call to get_parameters with incorrect arguments', "Arguments:\n" . fn::info( $args ), __LINE__, __METHOD__ );
+			$this->err( "Call to get_parameters with incorrect arguments\n\nArguments:\n" . fn::info( $args ), __LINE__, __METHOD__ );
 			exit;
 		}
 		
@@ -632,44 +643,14 @@ class IRR {
 			$this->logged = true;
 		
 		// If it fails to insert, send an email with the information
-		if( !$this->db->insert( 'api_log', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => date_time::date('Y-m-d H:i:s') ), array( '%d', '%s', '%s', '%s', '%d', '%s' ) ) ) {
-			$this->err( 'Failed to add entry to log', "Type: $type\nMessage:\n$message", __LINE__, __METHOD__ );
+		$this->db->insert( 'api_log', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssis' );
+
+        if( $this->db->errno() ) {
+			$this->err( "Failed to add entry to log\n\nType: $type\nMessage:\n$message", __LINE__, __METHOD__ );
 			
 			// Let the client know that something broke
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
 		}
-	}
-	
-	/**
-	 * Adds an error to the error table
-	 *
-	 * Grab as much information as possible
-	 *
-	 * @param string $subject the problem that occurred
-	 * @param string $message the error message and details
- 	 * @param int $line (optional) the line number of the file
-	 * @param string $method (optional) the class name
-	 */
-	private function err( $subject, $message, $line = 0, $method = '' ) { 
-		$query_string = ( isset( $_SERVER['QUERY_STRING'] ) && !empty( $_SERVER['QUERY_STRING'] ) ) ? '?' . $_SERVER['QUERY_STRING'] : '';
-		
-		$last_query = $this->db->last_query();
-		$last_error = MySQL_error();
-		$page = 'http://wwww.imagineretailer.com' . $_SERVER['REQUEST_URI'] . '?' . $query_string;
-		$referer = ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : '';
-		$message = $subject . "\n\n" . $message;
-
-		list( $source, $subject, $message, $last_query, $last_error, $page, $referer, $file, $dir, $function, $class, $method, $b['name'], $b['version'], $b['platform'], $b['user_agent'] ) = format::sql_safe_deep( array( 'API', $subject, $message, $last_query, $last_error, $page, $referer, __FILE__, dirname(__FILE__), '', __CLASS__, $method, '', '', '', '' ) );
-		
-		// If it fails to insert, send an email with the information
-		if( !$this->db->query( sprintf( "INSERT INTO `errors` ( `user_id`, `website_id`, `source`, `subject`, `message`, `sql`, `sql_error`, `page`, `referer`, `line`, `file`, `dir`, `function`, `class`, `method`, `browser_name`, `browser_version`, `browser_platform`, `browser_user_agent`, `date_created` ) VALUES( %d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', NOW() )", $_SESSION['user']['user_id'], $_SESSION['website']['website_id'], $source, $subject, $message, $last_query, $last_error, $page, $referer, $line, $file, $dir, $function, $class, $method, $b['name'], $b['version'], $b['platform'], $b['user_agent'] ) ) )
-			mail( 'serveradmin@imagineretailer.com', 'IR API: ' . $subject, "Source: $source\nMessage:\n$message" );
-		
-		// Send the email off to the system admin
-		mail( 'serveradmin@imagineretailer.com', 'IR API: ' . $subject, $message );
-		
-		$this->error = true;
-		$this->error_message = $subject;
 	}
 	
 	/**
@@ -694,5 +675,19 @@ class IRR {
 		
 		// Respond in JSON
 		echo json_encode( $this->response );
+	}
+
+	/**
+	 * Report an error
+	 *
+	 * Make the parent error function a little less complicated
+	 *
+	 * @param string $message the error message
+	 * @param int $line (optional) the line number
+	 * @param string $method (optional) the class method that is being called
+     * @return bool
+	 */
+	private function _err( $message, $line = 0, $method = '' ) {
+		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

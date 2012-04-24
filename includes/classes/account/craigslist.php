@@ -64,14 +64,13 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_ad_id = (int) $craigslist_ad_id;
 
-		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`, GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, c.`title` AS store_name, d.`name` AS product_name,
+		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`,  a.`primus_product_ids`, GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, c.`title` AS store_name, d.`name` AS product_name,
 												 d.`sku`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted
 												 FROM `craigslist_ads` AS a
 												 LEFT JOIN `craigslist_ad_headlines` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` )
 												 LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` )
 												 LEFT JOIN `products` AS d ON ( a.product_id = d.product_id )
 												 WHERE a.`craigslist_ad_id` = $craigslist_ad_id GROUP BY a.`craigslist_ad_id`", ARRAY_A );
-		
 
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -126,28 +125,18 @@ class Craigslist extends Base_Class {
 	 * @param string $text
      * @param float $price
      * @param array $craigslist_market_ids
-	 * @param bool $post
 	 * @return int craigslist_ad_id
 	 */
-	public function create( $product_id, $headlines, $text, $price, $craigslist_market_ids, $post ) {
+	public function create( $product_id, $headlines, $text, $price, $craigslist_market_ids ) {
         global $user;
-
-        // Determine if we're publishing
-        if ( $post ) {
-            $date = new DateTime();
-            $date_posted = $date->format('Y-m-d H:i:s');
-        } else {
-            $date_posted = '0000-00-00 00:00:00';
-        }
 
         $this->db->insert( 'craigslist_ads', array(
             'website_id' => $user['website']['website_id']
             , 'product_id' => $product_id
             , 'text' => $text
             , 'price' => $price
-            , 'date_posted' => $date_posted
             , 'date_created' => dt::date( "Y-m-d H:i:s" )
-        ), 'iisdss' );
+        ), 'iisds' );
 		
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -174,26 +163,16 @@ class Craigslist extends Base_Class {
 	 * @param string $text
      * @param float $price
      * @param array $craigslist_market_ids
-	 * @param bool $post
 	 * @return bool
 	 */
-	public function update( $craigslist_ad_id, $product_id, $headlines, $text, $price, $craigslist_market_ids, $post ) {
+	public function update( $craigslist_ad_id, $product_id, $headlines, $text, $price, $craigslist_market_ids ) {
 		global $user;
 
-        // Determine if we're publishing
-        if ( $post ) {
-            $date = new DateTime();
-            $date_posted = $date->format('Y-m-d H:i:s');
-        } else {
-            $date_posted = '0000-00-00 00:00:00';
-        }
-
-		$result = $this->db->update( 'craigslist_ads', array(
+		$this->db->update( 'craigslist_ads', array(
             'product_id' => $product_id
             , 'text' => $text
             , 'price' => $price
-            , 'date_posted' => $date_posted
-        ), array( 'craigslist_ad_id' => $craigslist_ad_id, 'website_id' => $user['website']['website_id'] ), 'isds', 'ii' );
+        ), array( 'craigslist_ad_id' => $craigslist_ad_id, 'website_id' => $user['website']['website_id'] ), 'isd', 'ii' );
 
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -590,7 +569,7 @@ class Craigslist extends Base_Class {
         $post_tags = array( $product_tag_id, $category_tag_id, $parent_category_tag_id );
 
         // Get product URL
-        if ( $user['website']['pages'] ) {
+        if ( $p->get_website_product( $product['product_id'] ) ) {
             // Make Product URL
         	$product_url = $c->category_url( $product['category_id'] ) . $product['slug'] . '/';
         } else {
@@ -601,13 +580,58 @@ class Craigslist extends Base_Class {
         // Get the product image URL
         $product_image_url = 'http://' . $product['industry'] . '.retailcatalog.us/products/' . $product['product_id'] . '/large/' . $product['image'];
 
-        // Post the ad in each market
-        foreach ( $markets as $m ) {
-            if( !$craigslist->add_ad_product( $m['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], $ad['headlines'], $text ) )
-				return false;
+        $primus_product_ids = array();
+        $success = true;
+
+        // Delete old ads and upate the status so that
+        $old_primus_product_ids = @unserialize( $ad['primus_product_ids'] );
+
+        if ( is_array( $old_primus_product_ids ) && count( $old_primus_product_ids ) > 0 ) {
+            // Make sure we successfully remove the old IDs
+            if ( !$craigslist->delete_ad_product( $old_primus_product_ids ) )
+                return false;
+
+            // Now update the database
+            $this->db->update( 'craigslist_ads', array( 'date_posted' => '0000-00-00 00:00:00', 'primus_product_ids' => '' ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'ss', 'i' );
+
+            // Handle any error
+            if( $this->db->errno() ) {
+                $this->err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
+                return false;
+            }
         }
 
-        return true;
+        // Post the ad in each market
+        foreach ( $markets as $m ) {
+            $response = array( 'status' => 'RETRY' );
+            $i = 0;
+
+            while ( 'RETRY' == $response['status'] && $i < 10 ) {
+                $response = $craigslist->add_ad_product( $m['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], $ad['headlines'], $text );
+
+                if ( 'SUCCESS' == $response['status'] ) {
+                    $primus_product_ids[] = $response['product_id'];
+                } elseif ( 'ERROR' == $response['status'] ) {
+                    $success = false;
+                    break 2;
+                }
+
+                $i++;
+            }
+        }
+
+        // Get the date
+        $date = new DateTime();
+
+        $this->db->update( 'craigslist_ads', array( 'date_posted' => $date->format('Y-m-d H:i:s'), 'primus_product_ids' => serialize( $primus_product_ids ) ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'ss', 'i' );
+
+        // Handle any error
+        if( $this->db->errno() ) {
+            $this->err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $success;
     }
 	
 	/**

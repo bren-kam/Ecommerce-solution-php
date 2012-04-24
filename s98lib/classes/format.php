@@ -19,7 +19,7 @@ class format extends Base_Class {
 	 * @param array|string $value The array or string to be stripped
 	 * @return array|string Stripped array (or string in the callback).
 	 */
-	function stripslashes_deep( $value ) {
+	public static function stripslashes_deep( $value ) {
 		return is_array( $value ) ? array_map( array('self', 'stripslashes_deep'), $value ) : stripslashes( $value );
 	}
 	

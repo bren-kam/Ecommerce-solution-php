@@ -160,6 +160,7 @@ get_header();
 				break;
 				
 				case 'sidebar-image':
+
                     if ( stristr( $a['value'], 'http:' ) ) {
                         $image_url = $a['value'];
                     } else {

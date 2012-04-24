@@ -104,7 +104,7 @@ class Craigslist_API {
         }
 
         // Setup the arguments correctly
-        $replace = array_merge( $this->_arguments( $replace ), $locations );
+        $replace = array_merge( $this->_arguments( $replace ), $new_locations );
 
         // Add customer
         $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );
@@ -142,6 +142,24 @@ class Craigslist_API {
         $response = $this->_execute( 'addadproduct', array( compact( 'market_id', 'tags', 'product_url', 'image_url', 'price', 'header', 'body' ) ) );
 
         return ( 'SUCCESS' == $response[0]->status ) ? true : false;
+    }
+
+    /**
+     * Delete Ad Products
+     *
+     * @param array @product_ids
+     * @return bool
+     */
+    public function delete_ad_product( array $product_ids ) {
+        $products = array();
+        foreach( $product_ids as $pid ) {
+            $products[] = array( 'product_id' => $pid );
+        }
+
+        // Add customer
+        $response = $this->_execute( 'deleteadproduct', $products );
+
+        return 'SUCCESS' == $response[0]->status;
     }
 
     /**

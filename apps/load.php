@@ -29,16 +29,16 @@ define( 'ACCOUNT', false );
 define( 'APPS', true );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', '/home/imaginer/public_html/' );
+define( 'ABS_PATH', '/gsr/systems/backend/' );
 
 /** Define OPERATING_PATH as the main directory to get things from */
-define( 'OPERATING_PATH', '/home/imaginer/public_html/apps/' );
+define( 'OPERATING_PATH', OPERATING_PATH . 'apps/' );
 
 /** Define INC_PATH as the includes directory */
-define( 'INC_PATH', '/home/imaginer/public_html/includes/' );
+define( 'INC_PATH', ABS_PATH . 'includes/' );
 
 /** Define THEME_PATH as the place with all the pages */
-define( 'THEME_PATH', '/home/imaginer/public_html/apps/theme/' );
+define( 'THEME_PATH', OPERATING_PATH . 'theme/' );
 
 // Show us the errors
 if ( defined('E_RECOVERABLE_ERROR') ) {

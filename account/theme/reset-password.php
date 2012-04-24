@@ -15,10 +15,10 @@ if ( isset( $user ) && $user ) {
 }
 
 $token = new Tokens();
-$token_id = $token->check( $_GET['uID'], $_GET['t'], 'reset-password' ); // returns the token_id
+$user_id = $token->check( $_GET['t'], 'reset-password' ); // returns the token_id
 
 // If the tocken didn't check out, redirect them
-if( !$token_id )
+if( !$user_id )
 	url::redirect( 'http://www.' . DOMAIN . '/', 417 );
 
 global $u;
@@ -40,7 +40,7 @@ if( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'reset-passwor
 
 		// Delete the token
 		if( $success )
-			$token->delete( $token_id );
+			$token->delete( $_GET['t'] );
 	}
 }
 
