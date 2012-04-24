@@ -301,7 +301,7 @@ Boxy.prototype = {
     
     // Replace dialog content
     setContent: function(newContent) {
-        newContent = $(newContent).css({display: 'block'}).addClass('boxy-content').append('<br clear="all" />');
+        newContent = $(newContent).css({display: 'block'}).addClass('boxy-content').find('.boxy-break').remove().end().append('<br class="boxy-break" clear="all" />');
 
         if (this.options.clone) newContent = newContent.clone(true);
         this.getContent().remove();
