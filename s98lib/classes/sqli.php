@@ -160,7 +160,7 @@ class SQL extends Base_Class {
 	 * @param string $query
 	 * @param string $format for what is being requested
 	 * @param unknown
-	 * @return this
+	 * @return object
 	 */
 	public function prepare( $query, $format = '' ) {
 		// Destroyed cached query results

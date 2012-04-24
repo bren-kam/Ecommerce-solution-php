@@ -54,7 +54,7 @@ blockquote, q {
 body { font-family:Arial, Helvetica, sans-serif; color:#63656B; font-size:13px; background-color: #62636A }
 h1 { float:left; font-size:30px; color: #404040; }
 
-.red { color:#F00; }
+.red, .error { color:#F00; }
 .green { color: green; }
 .success { color:#090; font-weight: bold; }
 

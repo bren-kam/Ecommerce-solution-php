@@ -11,43 +11,26 @@ global $user;
 if ( !$user )
 	login();
 
-$website_page_id = (int) $_GET['wpid'];
+$mobile_page_id = (int) $_GET['mpid'];
 
 // Send to website listing page
-if ( empty( $website_page_id ) )
-	url::redirect('/website/');
+if ( empty( $mobile_page_id ) )
+	url::redirect('/mobile-marketing/pages/');
 
 // Instantiate classes
-$w = new Websites;
-$wf = new Website_Files;
+$m = new Mobile_Marketing;
 $v = new Validator;
 
 // Get page
-$page = $w->get_page( $website_page_id );
+$page = $m->get_mobile_page( $mobile_page_id );
 
 // Get all the website files
-$website_files = $wf->get_all();
+//$website_files = $wf->get_all();
 
 /***** VALIDATION *****/
 $v->form_name = 'fEditPage';
 
-// Products can be blank
-if ( 'products' != $page['slug'] )
-	$v->add_validation( 'taContent', 'req', _('Page Content is required.') );
-
-// Custom validation
-switch ( $page['slug'] ) {
-	case 'financing':
-		$v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must conain a valid link') );
-	break;
-	
-	case 'current-offer':
-		$v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
-		$v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
-	break;
-	
-	default:break;
-}
+$v->add_validation( 'taContent', 'req', _('Page Content is required.') );
 
 // Add the javascript vlidation
 add_footer( $v->js_validation() );
@@ -66,51 +49,19 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
         // Home page can't update their slug
         $slug = ( 'home' == $page['slug'] ) ? 'home' : $_POST['tPageSlug'];
 		
-		$mobile = (int) ( $_POST['cbIsMobile'] == "on" );
-        
 		// Update the page
-		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $mobile );
-		
-		// Update custom meta
-		switch ( $page['slug'] ) {
-			case 'contact-us':
-				$pagemeta = array( 'addresses' => htmlspecialchars( stripslashes( $_POST['hAddresses'] ) ) );
-			break;
-			
-			case 'current-offer':
-				$pagemeta = array(
-                    'email' => $_POST['tEmail']
-                    , 'display-coupon' => $_POST['cbDisplayCoupon']
-                    , 'email-coupon' => ( isset( $_POST['cbEmailCoupon'] ) ) ? 'yes' : 'no'
-                );
-			break;
-			
-			case 'financing':
-				$pagemeta = array( 'apply-now' => $_POST['tApplyNowLink'] );
-			break;
-
-			case 'products':
-				$pagemeta = array( 'top' => $_POST['sTop'] );
-
-                if ( $_POST['tTitle'] == _('Page Title...') ) $_POST['tTitle'] = '';
-                    $pagemeta['page-title'] = $_POST['tTitle'];
-			break;
-		}
-
-		// Set pagemeta
-		if ( is_array( $pagemeta ) )
-			$w->set_pagemeta( $website_page_id, $pagemeta );
+		$success = $m->update_mobile_page( $mobile_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
 		
 		// Get new page
-		$page = $w->get_page( $website_page_id );
+		$page = $m->get_mobile_page( $mobile_page_id );
 	}
 }
 
 /***** ATTACHMENTS & PAGEMETA *****/
 
 css( 'jquery.uploadify' );
-javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'website/page' );
-
+javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'mobile-marketing/page' );
+/*
 switch ( $page['slug'] ) {
 	case 'contact-us':
 		css('website/pages/contact-us');
@@ -145,27 +96,27 @@ switch ( $page['slug'] ) {
 
 if ( 'products' == $page['slug'] ) {
     $page_title = $w->get_pagemeta_by_key( $website_page_id, 'page-title' );
-} else {
+} else {*/
     $page_title = $page['title'];
-}
+//}*/
 
 /***** NORMAL PAGE FUNCTIONS *****/
 
-$selected = "website";
-css('website/page');
-$title = _('Edit Page') . ' | ' . TITLE;
+$selected = "mobile-marketing";
+css('mobile-marketing/page');
+$title = _('Edit Mobile Page') . ' | ' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Edit Page'); ?></h1>
+	<h1><?php echo _('Edit Mobile Page'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'website/', 'edit_page' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'edit_mobile_page' ); ?>
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
 		<div class="success">
-			<p><?php echo _('Your page has been updated.'); ?> <a href="http://<?php if ( !empty( $user['website']['subdomain'] ) ) echo $user['website']['subdomain'], '.'; echo $user['website']['domain'], '/', $page['slug']; ?>/" title="<?php echo _('View Page'); ?>" target="_blank"><?php echo _('View the page.'); ?></a></p>
-			<p><a href="/website/" title="<?php echo _('Edit Other Pages'); ?>"><?php echo _('Click here to edit other pages.'); ?></a></p>
+			<p><?php echo _('Your page has been updated.'); ?> <a href="http://<?php  echo $user['website']['mobile_domain'], '/', $page['slug']; ?>/" title="<?php echo _('View Page'); ?>" target="_blank"><?php echo _('View the page.'); ?></a></p>
+			<p><a href="/mobile-marketing/pages/" title="<?php echo _('Edit Other Pages'); ?>"><?php echo _('Click here to edit other pages.'); ?></a></p>
 		</div>
 		<?php
 		}
@@ -173,25 +124,24 @@ get_header();
 		if ( isset( $errs ) )
 			echo "<p class='red'>$errs</p>";
 		?>
-		<form name="fEditPage" action="/website/edit/?wpid=<?php echo $website_page_id; ?>" method="post">
+		<form name="fEditPage" action="/mobile-marketing/edit-page/?mpid=<?php echo $mobile_page_id; ?>" method="post">
             <div id="dTitleContainer">
                 <input name="tTitle" id="tTitle" class="tb" value="<?php echo ( ( isset( $page_title ) && $page_title != '' ) ? $page_title : '' );?>" tmpval="<?php echo _('Page Title...'); ?>" />
             </div>
             <?php if ( 'home' != $page['slug'] ) { ?>
             <div id="dPageSlug">
-            	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['domain']; ?>/<span id="sPageSlug"><?php echo $page['slug']; ?></span><input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb hidden" value="<?php echo $page['slug']; ?>" />/</span>
+            	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['mobile_domain']; ?>/<span id="sPageSlug"><?php echo $page['slug']; ?></span><input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb hidden" value="<?php echo $page['slug']; ?>" />/</span>
                 &nbsp;
                 <a href="javascript:;" id="aCancelPageSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
                 <a href="javascript:;" id="aEditPageSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
                 <a href="javascript:;" id="aSavePageSlug" title="<?php echo _('Save Link'); ?>" class="button hidden round"><?php echo _('Save'); ?></a>
-                <?php if( $user['website']['mobile_marketing'] ): ?><input type="checkbox" class="cb" name="cbIsMobile" id="cbIsMobile" <?php if ( $page['mobile'] ) echo "checked"; ?> /><?php echo _('Mobile'); endif; ?>
             </div>
             <?php } ?>
             <br />
             <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $page['content']; ?></textarea>
-            <p><a href="javascript:;" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p>
+            <!-- <p><a href="javascript:;" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p> -->
             <br />
-            <div id="dMetaData" class="hidden">
+            <!--<div id="dMetaData" class="hidden">
                 <p>
                     <label for="tMetaTitle"><?php echo _('Meta Title'); ?></label> <small>(<?php echo _('Recommended not to exceed 70 characters'); ?>)</small><br />
                     <input type="text" class="tb" name="tMetaTitle" id="tMetaTitle" value="<?php echo $page['meta_title']; ?>" />
@@ -205,20 +155,14 @@ get_header();
                     <input type="text" class="tb" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $page['meta_keywords']; ?>" />
                 </p>
                 <br />
-            </div>
+            </div>-->
 
-            <?php
-            if ( in_array( $page['slug'], array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
-                require theme_inc( 'website/pages/' . $page['slug'] );
-            ?>
-            <br /><br />
-            <br /><br />
             <p><input type="submit" id="bSubmit" value="<?php echo _('Save'); ?>" class="button" /></p>
             <?php nonce::field( 'edit-page' ); ?>
 		</form>
 		<br />
 		
-		<div id="dUploadFile" class="hidden">
+		<!-- <div id="dUploadFile" class="hidden">
 			<ul id="ulUploadFile">
 				<?php
 				if ( is_array( $website_files ) ) {
@@ -244,7 +188,7 @@ get_header();
 				<p><strong><?php echo _('Current Link'); ?>:</strong></p>
 				<p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
 			</div>
-		</div>
+		</div> -->
 		<?php 
 		nonce::field( 'upload-file', '_ajax_upload_file' );
 		nonce::field( 'upload-image', '_ajax_upload_image' );

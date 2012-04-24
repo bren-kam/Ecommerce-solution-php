@@ -71,6 +71,99 @@ class Social_Media extends Base_Class {
 		return true;
 	}
 
+    /**
+     * Reset Social Media Account
+     *
+     * @param int $website_id
+     * @param string $social_media
+     * @return bool
+     */
+    public function reset( $website_id, $social_media ) {
+        // Type Juggling
+        $website_id = (int) $website_id;
+
+        // Define variables
+        $delete = false;
+
+        switch ( $social_media ) {
+            case 'email-sign-up':
+                $table = 'sm_email_sign_up';
+            break;
+
+            case 'fan-offer':
+                $table = 'sm_fan_offer';
+            break;
+
+            case 'sweepstakes':
+                $table = 'sm_sweepstakes';
+            break;
+
+            case 'share-and-save':
+                $table = 'sm_share_and_save';
+            break;
+
+            case 'facebook-site':
+                $table = 'sm_facebook_site';
+            break;
+
+            case 'contact-us':
+                $table = 'sm_contact_us';
+
+                $delete = true;
+            break;
+
+            case 'about-us':
+                $table = 'sm_about_us';
+
+                $delete = true;
+            break;
+
+            case 'products':
+                $table = 'sm_products';
+            break;
+
+            case 'current-ad':
+                $table = 'sm_current_ad';
+
+                $delete = true;
+            break;
+
+            case 'posting':
+                $this->db->update( 'sm_posting', array( 'fb_user_id' => 0, 'fb_page_id' => 0, 'access_token' => '' ), array( 'website_id' => $website_id ), 'iis', 'i' );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( 'Failed to reset Social Media - Posting.', __LINE__, __METHOD__ );
+                    return false;
+                }
+
+                return true;
+            break;
+        }
+
+        if ( $delete ) {
+            $this->db->query( "DELETE FROM `$table` WHERE `website_id` = $website_id" );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->err( "Failed to delete Social Media - $social_media.", __LINE__, __METHOD__ );
+                return false;
+            }
+
+            return true;
+        }
+
+        $this->db->update( $table, array( 'fb_page_id' => '' ), array( 'website_id' => $website_id ), 's', 'i' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( "Failed to to reset Social Media - $social_media.", __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return true;
+    }
+
 	/**
 	 * Report an error
 	 *
@@ -79,6 +172,7 @@ class Social_Media extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

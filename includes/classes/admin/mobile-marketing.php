@@ -28,12 +28,24 @@ class Mobile_Marketing extends Base_Class {
 
         $w = new Websites;
         $i = new Industries();
+        $c = new Curl();
 
 		$website = $w->get_website( $website_id );
         $user = $u->get_user( $website['user_id'] );
+
+        // Login to Grey Suit Apps
+        $login_fields = array(
+            'username' => config::key('trumpia-admin-username')
+            , 'password' => config::key('trumpia-admin-password')
+        );
+
+        $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
+
+        // Now that we're logged in, lets create the account
         $industries = $w->get_industries( $website_id );
         $industry = $i->get( $industries[0] );
         $timezone = (int) $w->get_setting( $website_id, 'timezone' );
+        $password = security::generate_password();
 
         if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )
             $timezone = -5;
@@ -58,37 +70,29 @@ class Mobile_Marketing extends Base_Class {
             $mobile = '8185551234';
 
 		$post_fields = array(
-			'promo_code' => ''
+            'wlw_uid' => 7529
+            , 'mode' => 'signup'
+			, 'promo_code' => ''
+            , 'username' => format::slug( $website['title'] )
+            , 'password1' => $password
+            , 'password2' => $password
 			, 'organization_name' => $website['title']
 			, 'firstname' => $first_name
 			, 'lastname' => $last_name
 			, 'email' => $user['email']
 			, 'mobile' => $mobile
-			, 'contry_code' => '1'
             , 'industry' => $industry
             , 'timezone' => $timezone
-            , 'username' => format::slug( $website['title'] )
-            , 'wlw_uid' => 7529
-            , 'mode' => 'signup'
-            , 'password' => security::generate_password()
+            , 'send_confirmation' => 0
+            , 'send_welcome' => 0
         );
 
-		$c = new Curl();
-
-        $page = $c->post( 'http://greysuitmobile.com/manageAccount/direct_signup.php', $post_fields );
+        $page = $c->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_createCustomer.php', $post_fields );
 
         $success = preg_match( '/action="[^"]+"/', $page );
 
         if ( !$success )
             return false;
-
-        // Login to Grey Suit Apps
-        $login_fields = array(
-            'username' => config::key('trumpia-admin-username')
-            , 'password' => config::key('trumpia-admin-password')
-        );
-
-        $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
 
         // Get Member's User ID
         $list_page = $c->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $user['email'] ) . '&x=28&y=15' );
@@ -176,9 +180,9 @@ class Mobile_Marketing extends Base_Class {
             , 'member_uid' => $user_id
             , 'ipType' => 'ip'
             , 'ip1' => '199'
-            , 'ip2' => '204'
-            , 'ip3' => '138'
-            , 'ip4' => '78'
+            , 'ip2' => '79'
+            , 'ip3' => '48'
+            , 'ip4' => '137'
         );
 
         $update_api = $c->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_apiCustomers.php', $assign_ip_fields );

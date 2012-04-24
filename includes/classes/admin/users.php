@@ -351,6 +351,8 @@ class Users extends Base_Class {
             return false;
         }
 
+        $user['company'] = html_entity_decode( $user['company'], ENT_QUOTES );
+
 		return $user;
 	}
 	
