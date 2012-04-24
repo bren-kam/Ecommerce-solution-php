@@ -2,8 +2,6 @@
 /**
  * Grey Suit Retail - API Class
  *
- * @requires Studio98 Framework
- *
  * This handles all API Calls
  * @version 1.0.0
  */
@@ -11,7 +9,6 @@ class GSR_API {
 	/**
 	 * Constant paths to include files
 	 */
-	const PATH_S98LIB = '/path/to/s98lib/init.php';
 	const URL_API = 'https://www.imagineretailer.com/api/';
 	const DEBUG = false;
 	
@@ -36,16 +33,13 @@ class GSR_API {
 		// Do we need to debug
 		if ( self::DEBUG )
 			error_reporting( E_ALL );
-		
-		// Include S98 Framework
-		require self::PATH_S98LIB;
-		
+
 		$this->api_key = $api_key;
 	}
 	
-	/*************************/
+	/**************************/
 	/* Start: GSR API Methods */
-	/*************************/	
+	/**************************/
 	
 	/**
 	 * Add Order Item
@@ -61,10 +55,10 @@ class GSR_API {
 		// Execute the command
 		$this->_execute( 'add_order_item', compact( 'order_id', 'item', 'quantity', 'amount', 'monthly' ) );
 		
-		// Return the user id successful
-		return ( $this->success ) ? true : false;
+		// Return the success of the method
+		return $this->success;
 	}
-	
+
 	/**
 	 * Create Order
 	 *
@@ -76,14 +70,14 @@ class GSR_API {
 	public function create_order( $user_id, $setup, $monthly ) {
 		// Execute the command
 		$this->_execute( 'create_order', compact( 'user_id', 'setup', 'monthly' ) );
-		
-		// Return the user id successful
+
+		// Return the order id if successful
 		return ( $this->success ) ? $this->response->order_id : false;
 	}
-	
+
 	/**
 	 * Create User
-	 * 
+	 *
 	 * @param string $email
 	 * @param string $password
 	 * @param string $contact_name
@@ -101,14 +95,14 @@ class GSR_API {
 	public function create_user( $email, $password, $contact_name, $store_name, $work_phone, $cell_phone, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip ) {
 		// Execute the command
 		$this->_execute( 'create_user', compact( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip' ) );
-		
-		// Return the user id successful
+
+		// Return the user id if successful
 		return ( $this->success ) ? $this->response->user_id : false;
 	}
-	
+
 	/**
 	 * Create Website
-	 * 
+	 *
 	 * @param int $user_id
 	 * @param string $domain
 	 * @param string $title
@@ -133,17 +127,17 @@ class GSR_API {
 		// We need to make sure there is a number there
 		if( !$additional_email_addresses )
 			$additional_email_addresses = 0;
-		
+
 		// Execute the command
 		$this->_execute( 'create_website', compact( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
-		
-		// Return the user id successful
+
+		// Return the website id if successful
 		return ( $this->success ) ? $this->response->website_id : false;
 	}
-	
+
 	/**
 	 * Update Social media
-	 * 
+	 *
 	 * @param int $website_id
 	 * @param array $social_media_add_ons
 	 * @return bool
@@ -151,14 +145,14 @@ class GSR_API {
 	public function update_social_media( $website_id, $social_media_add_ons ) {
 		// Execute the command
 		$this->_execute( 'update_social_media', compact( 'website_id', 'social_media_add_ons' ) );
-		
-		// Return the user id successful
-		return ( $this->success ) ? true : false;
+
+		// Return the success of the method
+		return $this->success;
 	}
-	
+
 	/**
 	 * Update User
-	 * 
+	 *
 	 * @param string $email
 	 * @param string $password
 	 * @param string $contact_name
@@ -177,11 +171,11 @@ class GSR_API {
 	public function update_user( $email, $password, $contact_name, $store_name, $work_phone, $cell_phone, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip, $user_id ) {
 		// Execute the command
 		$this->_execute( 'update_user', compact( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' ) );
-		
-		// Return the user id successful
-		return ( $this->success ) ? true : false;
+
+		// Return the success of the method
+		return $this->success;
 	}
-	
+
 	/**
 	 * Set ARB Subscription
 	 *
@@ -194,14 +188,14 @@ class GSR_API {
 	public function set_arb_subscription( $arb_subscription_id, $website_id ) {
 		// Execute the command
 		$this->_execute( 'set_arb_subscription', compact( 'arb_subscription_id', 'website_id' ) );
-		
-		// Return the user id successful
-		return ( $this->success ) ? true : false;
+
+		// Return the success of the method
+		return $this->success;
 	}
 	
-	/***********************/
+	/************************/
 	/* END: GSR API Methods */
-	/***********************/
+	/************************/
 
     /**
      * Get private message variable
@@ -286,7 +280,6 @@ class GSR_API {
 		
 		$ch = curl_init();
 		curl_setopt( $ch, CURLOPT_URL, self::URL_API );
-		//curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
 		curl_setopt( $ch, CURLOPT_TIMEOUT, 20 );
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );

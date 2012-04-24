@@ -21,6 +21,7 @@ class Requests extends Base_Class {
 	private $messages = array(
 		'error' => 'An unknown error has occured. This has been reported to the Database Administrator. Please try again later.',
 		'failed-add-order-item' => 'Failed to add the order item. Please verify you have the correct parameters.',
+		'failed-craigslist-error' => 'Failed to report craigslist error. Please verify you have the correct parameters and try again.',
 		'failed-authentication' => 'Authentication failed. Please verify you have the correct Authorization Key.',
 		'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.',
 		'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.',
@@ -31,6 +32,7 @@ class Requests extends Base_Class {
 		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
 		'ssl-required' => 'You must make the call to the secured version of our website.',
 		'success-add-order-item' => 'Add Order Item succeeded!',
+		'success-craigslist-error' => 'Craigslist Error succeeded!',
 		'success-create-order' => 'Create Order succeeded!',
 		'success-create-user' => 'Create User succeeded!',
 		'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.',
@@ -184,6 +186,36 @@ class Requests extends Base_Class {
 		
 		$this->add_response( array( 'success' => true, 'message' => 'success-add-order-item' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item['order_id'], true );
+	}
+
+    /**
+	 * Craigslist Error
+	 *
+     * Reports an error for craigslist ads from Primus Concepts
+     *
+	 * @param int $product_id primus_product_id
+	 * @param string $message
+	 * @return bool
+	 */
+	private function craigslist_error() {
+		// Gets parameters and errors out if something is missing
+		$order_item = $this->get_parameters( 'product_id', 'message' );
+
+        $primus_product_id = (int) $product_id;
+        $message = $this->db->escape( $message );
+
+		// Execute the command
+		$this->db->query( "UPDATE `craigslist_ads` AS a LEFT JOIN `craigslist_ad_markets` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) SET `error` = '$message' WHERE b.`primus_product_id` = $primus_product_id" );
+
+		// If there was a MySQL error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to update craigslist ad with an error message', __LINE__, __METHOD__ );
+			$this->add_response( array( 'success' => false, 'message' => 'failed-craigslist-error' ) );
+			exit;
+		}
+
+		$this->add_response( array( 'success' => true, 'message' => 'success-craigslist-error' ) );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nPrimus Product ID: " . $primus_product_id, true );
 	}
 	
 	/**
