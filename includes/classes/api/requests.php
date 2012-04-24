@@ -8,7 +8,7 @@
  * This handles all API Requests
  * @version 1.0.0
  */
-class Requests {
+class Requests extends Base_Class {
 	/**
 	 * Constant paths to include files
 	 */
@@ -79,10 +79,14 @@ class Requests {
 	 * This class simply needs to be initiated for it run to the data on $_POST variables
 	 */
 	public function __construct() {
+		// Need to load the parent constructor
+		if ( !parent::__construct() )
+			return false;
+			
 		// Do we need to debug
 		if( self::DEBUG )
 			error_reporting( E_ALL );
-		
+
 		// Load everything that needs to be loaded
 		$this->init();
 		
@@ -113,7 +117,7 @@ class Requests {
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
 			exit;
 		}
@@ -140,8 +144,7 @@ class Requests {
 			$this->method = $_POST['method'];
 			$this->statuses['method_called'] = true;
 			
-			$class_name = 'IRR';
-			call_user_func( array( 'IRR', $_POST['method'] ) );
+			call_user_func( array( 'Requests', $_POST['method'] ) );
 		} else {
 			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
 			
@@ -174,7 +177,7 @@ class Requests {
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to add order item', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add order item', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-add-order-item' ) );
 			exit;
 		}
@@ -209,7 +212,7 @@ class Requests {
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to create order', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create order', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-order' ) );
 			exit;
 		}
@@ -253,7 +256,7 @@ class Requests {
 
                 // If there was a MySQL error
                 if( $this->db->errno() ) {
-                    $this->err( 'Failed to create user', __LINE__, __METHOD__ );
+                    $this->_err( 'Failed to create user', __LINE__, __METHOD__ );
                     $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
                     exit;
                 }
@@ -266,7 +269,7 @@ class Requests {
 
             // If there was a MySQL error
             if( $this->db->errno() ) {
-                $this->err( 'Failed to create user', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to create user', __LINE__, __METHOD__ );
                 $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
                 exit;
             }
@@ -301,11 +304,11 @@ class Requests {
         $website['date_created'] = dt::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiisiis' );
+		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiiiis' );
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
+			$this->_err( "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
@@ -318,7 +321,7 @@ class Requests {
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( "Failed to insert checklist.\n\nWebsite ID: $website_id", __LINE__, __METHOD__ );
+			$this->_err( "Failed to insert checklist.\n\nWebsite ID: $website_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
@@ -331,7 +334,7 @@ class Requests {
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );
+			$this->_err( "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
@@ -342,7 +345,7 @@ class Requests {
 
             // If there was a MySQL error
             if( $this->db->errno() ) {
-                $this->err( "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+                $this->_err( "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
                 $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                 exit;
             }
@@ -408,7 +411,7 @@ class Requests {
 
         // If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+			$this->_err( "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
 			exit;
 		}
@@ -455,7 +458,7 @@ class Requests {
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to update user', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update user', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
 			exit;
 		}
@@ -484,11 +487,11 @@ class Requests {
 		$website_id = (int) $website_id;
         $arb_subscription_id = $this->db->escape( $arb_subscription_id );
 
-		$this->db->query( "INSERT INTO `website_settings` VALUES $website_id, 'arb-subscription-id', '$arb_subscription_id' ON DUPLICATE KEY UPDATE `value` = '$arb_subscription_id' " );
+		$this->db->query( "INSERT INTO `website_settings` (`website_id`, `key`, `value`) VALUES ( $website_id, 'arb-subscription-id', '$arb_subscription_id' ) ON DUPLICATE KEY UPDATE `value` = '$arb_subscription_id' " );
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( "Failed to set ARB subscription id.\n\nWebsite ID: $website_id\nARB Subscription ID:$arb_subscription_id", __LINE__, __METHOD__ );
+			$this->_err( "Failed to set ARB subscription id.\n\nWebsite ID: $website_id\nARB Subscription ID:$arb_subscription_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-set-arb-subscription' ) );
 			exit;
 		}
@@ -516,7 +519,7 @@ class Requests {
 
         // If there was a MySQL error
         if( $this->db->errno() ) {
-			$this->err( "Could not verify Website ID: $website_id to Company ID: $company_id", __LINE__, __METHOD__ );
+			$this->_err( "Could not verify Website ID: $website_id to Company ID: $company_id", __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
 			exit;
 		}
@@ -543,7 +546,7 @@ class Requests {
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to check if user exists', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if user exists', __LINE__, __METHOD__ );
 			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
 			exit;
 		}
@@ -582,7 +585,7 @@ class Requests {
 		if( empty( $value ) && !is_array( $key ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
 			
-			$this->err( "Tried to add a response without a valid key and value\n\nKey: \n----------\n" . fn::info( $key, false ) . "\n----------\n" . $value, __LINE__, __METHOD__ );
+			$this->_err( "Tried to add a response without a valid key and value\n\nKey: \n----------\n" . fn::info( $key, false ) . "\n----------\n" . $value, __LINE__, __METHOD__ );
 		}
 		
 		// Set the response
@@ -609,7 +612,7 @@ class Requests {
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			$this->err( "Call to get_parameters with incorrect arguments\n\nArguments:\n" . fn::info( $args ), __LINE__, __METHOD__ );
+			$this->_err( "Call to get_parameters with incorrect arguments\n\nArguments:\n" . fn::info( $args ), __LINE__, __METHOD__ );
 			exit;
 		}
 		
@@ -649,7 +652,7 @@ class Requests {
 		$this->db->insert( 'api_log', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssis' );
 
         if( $this->db->errno() ) {
-			$this->err( "Failed to add entry to log\n\nType: $type\nMessage:\n$message", __LINE__, __METHOD__ );
+			$this->_err( "Failed to add entry to log\n\nType: $type\nMessage:\n$message", __LINE__, __METHOD__ );
 			
 			// Let the client know that something broke
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );

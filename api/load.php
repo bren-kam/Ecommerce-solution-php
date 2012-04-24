@@ -7,8 +7,11 @@
  * $cache - Cache
  */
 
+// Show what directory to look for classes from
+define( 'API', true );
+
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', str_replace( '/api', '/', $_SERVER['DOCUMENT_ROOT'] ) );
+define( 'ABS_PATH', '/gsr/systems/backend/' );
 
 /** Define OPERATING_PATH as the main directory to get things from */
 define( 'OPERATING_PATH', ABS_PATH . 'api/' );
