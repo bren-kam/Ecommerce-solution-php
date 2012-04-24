@@ -282,8 +282,8 @@ class Requests extends Base_Class {
 
             $user_id = $this->db->insert_id;
         }
-
-		$this->add_response( array( 'success' => true, 'message' => 'success-create-user', 'user_id' => $user_id ) );
+		
+		$this->add_response( array( 'success' => true, 'message' => 'success-create-user', 'user_id' => (int) $user_id ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: $user_id", true );
 	}
 	
