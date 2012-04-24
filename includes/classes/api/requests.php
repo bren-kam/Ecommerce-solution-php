@@ -247,7 +247,13 @@ class Requests extends Base_Class {
 
         $email = $this->db->escape( $personal_information['email'] );
 
-        $user = $this->db->get_row( "SELECT `user_id`, `status` FROM `users` WHERE `email` = $email", ARRAY_A );
+        $user = $this->db->get_row( "SELECT `user_id`, `status` FROM `users` WHERE `email` = '$email'", ARRAY_A );
+
+        if( $this->db->errno() ) {
+            $this->_err( 'Failed to get user', __LINE__, __METHOD__ );
+            $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
+            exit;
+        }
 
         // If there is a user already, use that
         if ( $user ) {
@@ -553,7 +559,6 @@ class Requests extends Base_Class {
 		
 		return ( $email ) ? true : false;
 	}
-
 
 	/**
 	 * This loads all the variables that we need
