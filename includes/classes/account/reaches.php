@@ -234,11 +234,10 @@ class Reaches extends Base_Class {
 	 * Returns reach
 	 *
 	 * @param int $reach_id
+     * @param bool $meta [optional]
 	 * @return array
 	 */
 	public function get( $reach_id, $meta = false ) {
-	
-		
 		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', IF( b.`billing_last_name`,  b.`billing_last_name`, '' ) ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
 		
 		// Handle any error
@@ -249,7 +248,6 @@ class Reaches extends Base_Class {
 		
 		// Get meta if there is any
 		if( $meta ) {
-			
 			// This will be expanded in the future as the meta is further developed
 			$reach['meta'] = $this->db->get_results( "SELECT a.`key`, a.`value` FROM `website_reach_meta` AS a WHERE a.`website_reach_id` = {$reach['website_reach_id']};", ARRAY_A );
 			$reach['meta'] = ar::assign_key( $reach['meta'], 'key', true);
@@ -273,7 +271,6 @@ class Reaches extends Base_Class {
 	 * @return array
 	 */
 	public function list_reaches( $variables ) {
-		
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		

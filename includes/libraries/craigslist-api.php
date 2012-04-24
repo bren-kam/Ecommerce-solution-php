@@ -145,6 +145,24 @@ class Craigslist_API {
     }
 
     /**
+     * Delete Ad Products
+     *
+     * @param array @product_ids
+     * @return bool
+     */
+    public function delete_ad_product( array $product_ids ) {
+        $products = array();
+        foreach( $product_ids as $pid ) {
+            $products[] = array( 'product_id' => $pid );
+        }
+
+        // Add customer
+        $response = $this->_execute( 'deleteadproduct', $products );
+
+        return 'SUCCESS' == $response[0]->status;
+    }
+
+    /**
      * Get Stats
      *
      * @param string $date_start

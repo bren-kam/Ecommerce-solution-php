@@ -500,10 +500,8 @@ class data extends Base_Class {
 	/**
 	 * Returns or displays timezones
 	 *
-	 * @since 1.0
-	 * 
-	 * @param bool $echo (optional|true)
-	 * @param string $select_value (optional)
+	 * @param bool $echo [optional]
+	 * @param string $select_value [optional]
 	 * @return array
 	 */
 	public static function timezones( $echo = true, $select_value = '' ) {
@@ -553,6 +551,44 @@ class data extends Base_Class {
 			echo $timezone_options;
 		}
 		
+		return $timezones;
+	}
+
+    /**
+	 * Returns or displays php timezones using geoIP
+	 *
+	 * @param bool $echo [optional]
+	 * @param string $select_value [optional]
+	 * @return array
+	 */
+	public static function php_timezones( $echo = true, $select_value = '' ) {
+        $regions = array(
+            //'Africa' => DateTimeZone::AFRICA
+            'America' => DateTimeZone::AMERICA
+            //, 'Antarctica' => DateTimeZone::ANTARCTICA
+            //, 'Asia' => DateTimeZone::ASIA
+            //, 'Atlantic' => DateTimeZone::ATLANTIC
+            //, 'Europe' => DateTimeZone::EUROPE
+            //, 'Indian' => DateTimeZone::INDIAN
+            //, 'Pacific' => DateTimeZone::PACIFIC
+        );
+
+        foreach ( $regions as $name => $mask ) {
+            $timezones[$name] = DateTimeZone::listIdentifiers( $mask );
+        }
+
+		if ( $echo ) {
+			// Initialize variable
+			$timezone_options = '';
+
+			foreach ( $timezones as $tz => $timezone ) {
+				$selected = ( $select_value == $tz ) ? ' selected="selected"' : '';
+				$timezone_options .= "<option value='$tz'$selected>$timezone</option>\n";
+			}
+
+			echo $timezone_options;
+		}
+
 		return $timezones;
 	}
 }
