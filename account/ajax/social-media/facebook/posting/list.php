@@ -51,13 +51,10 @@ foreach ( $posts as $p ) {
 		break;
 	}
 
-    $date = new DateTime();
-    $date->setTimestamp( $p['date_posted'] - $date->getOffset() + (  $timezone * 3600 ) );
-
  	$data[] = array(
 		$p['post'] . $actions,
 		$status,
-         $date->format( 'F jS, Y g:i a' )
+        dt::adjust_timezone( $p['date_posted'], config::setting('server-timezone'), $timezone, 'F jS, Y g:i a' )
 	);
 }
 

@@ -62,8 +62,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'sweepstakes'
 		}
 		
 		// Adjust for time zone
-		$start_date = dt::date( 'Y-m-d H:i:s', strtotime( $start_date ) - ( $timezone * 3600 ) - 18000 );
-		$end_date = dt::date( 'Y-m-d H:i:s', strtotime( $end_date ) - ( $timezone * 3600 ) - 18000 );
+		$start_date = dt::adjust_timezone( $start_date, $timezone, config::setting('server-timezone') );
+		$end_date = dt::adjust_timezone( $end_date, $timezone, config::setting('server-timezone') );
 		
 		// Update Sweepstakes
 		$success = $sm->update_sweepstakes( $_POST['sEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $start_date, $end_date, $_POST['contest-rules'], stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
@@ -83,20 +83,17 @@ if ( !$sweepstakes ) {
 		'key' => $sm->create_sweepstakes()
 		, 'before' => ''
 		, 'after' => ''
-		, 'start_date' => time() - ( 3600 * $timezone ) - 18000
-		, 'end_date' => time() - ( 3600 * $timezone ) - 18000 + 604800 // 1 week
 	);
 	
 	// Adjust for timezone
-	$sweepstakes['start_date'] = $sweepstakes['start_date'] + $timezone * 3600 + 18000;
-	$sweepstakes['end_date'] = $sweepstakes['end_date'] + $timezone * 3600 + 18000;
+	$sweepstakes['start_date'] = strtotime( dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone ) );
+	$sweepstakes['end_date'] = strtotime( dt::adjust_timezone( '+1 weeks', config::setting('server-timezone'), $timezone ) );
 } else {
-	// Make sure they have a good starting date
-	if ( 0 == $sweepstakes['start_date'] )
-		$sweepstakes['start_date'] = time() - ( 3600 * $timezone ) - 18000;
+	$start_date = ( 0 == $sweepstakes['start_date'] ) ? 'now' : $sweepstakes['start_date'];
+    $end_date = ( 0 == $sweepstakes['end_date'] ) ? '+1 weeks' : $sweepstakes['end_date'];
 
-	if ( 0 == $sweepstakes['end_date'] )
-		$sweepstakes['end_date'] = $sweepstakes['start_date'] - ( 3600 * $timezone ) - 18000 + 604800; // 1 week
+	$sweepstakes['start_date'] = strtotime( dt::adjust_timezone( $start_date, config::setting('server-timezone'), $timezone ) );
+    $sweepstakes['end_date'] = strtotime( dt::adjust_timezone( $end_date, config::setting('server-timezone'), $timezone ) );
 }
 
 // Load the jQuery UI CSS

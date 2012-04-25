@@ -44,7 +44,8 @@ class Mobile_Marketing extends Base_Class {
         // Now that we're logged in, lets create the account
         $industries = $w->get_industries( $website_id );
         $industry = $i->get( $industries[0] );
-        $timezone = (int) $w->get_setting( $website_id, 'timezone' );
+        $timezone_object = new DateTimeZone( $w->get_setting( $website_id, 'timezone' ) );
+        $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
         $password = security::generate_password();
 
         if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )

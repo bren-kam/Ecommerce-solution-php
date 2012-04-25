@@ -29,16 +29,33 @@ class Config {
         , 'trumpia-admin-username'  => 'greysuitretail'
         , 'trumpia-admin-password'  => 'V5JC7B#v691j'
 	);
+
+    /**
+     * The Settings
+     * @access piravte
+     * @var array
+     */
+    private static $settings = array(
+        'server-timezone'         => 'America/Chicago'
+    );
 		
 	/**
 	 * Returns a key
-	 *
-	 * @since 1.0.0
 	 *
 	 * @param string $key
 	 * @return bool
 	 */
 	public static function key( $key ) {
 		return self::$keys[$key];
+	}
+
+	/**
+	 * Returns a setting
+	 *
+	 * @param string $setting
+	 * @return bool
+	 */
+	public static function setting( $setting ) {
+		return self::$settings[$setting];
 	}
 }

@@ -584,7 +584,13 @@ class Craigslist extends Base_Class {
         $success = true;
 
         // Delete old ads and upate the status so that
-        $old_primus_product_ids = @unserialize( $ad['primus_product_ids'] );
+        $old_primus_product_ids = $this->db->get_col( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+
+        if ( is_array( $old_primus_product_ids ) )
+        foreach ( $old_primus_product_ids as $key => $oppid ) {
+            if ( empty( $oppid ) || '0' == $oppid )
+                unset( $old_primus_product_ids[$key] );
+        }
 
         if ( is_array( $old_primus_product_ids ) && count( $old_primus_product_ids ) > 0 ) {
             // Make sure we successfully remove the old IDs
@@ -592,11 +598,20 @@ class Craigslist extends Base_Class {
                 return false;
 
             // Now update the database
-            $this->db->update( 'craigslist_ads', array( 'date_posted' => '0000-00-00 00:00:00', 'primus_product_ids' => '' ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'ss', 'i' );
+            $this->db->update( 'craigslist_ads', array( 'date_posted' => '0000-00-00 00:00:00' ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 's', 'i' );
 
             // Handle any error
             if( $this->db->errno() ) {
-                $this->err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
+                $this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
+                return false;
+            }
+
+            // Now remove the old primus product_ids
+            $this->db->update( 'craigslist_ad_markets', array( 'primus_product_id' => 0 ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'i', 'i' );
+
+            // Handle any error
+            if( $this->db->errno() ) {
+                $this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
                 return false;
             }
         }
@@ -610,7 +625,7 @@ class Craigslist extends Base_Class {
                 $response = $craigslist->add_ad_product( $m['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], $ad['headlines'], $text );
 
                 if ( 'SUCCESS' == $response['status'] ) {
-                    $primus_product_ids[] = $response['product_id'];
+                    $primus_product_ids[$m['craigslist_market_id']] = $response['product_id'];
                 } elseif ( 'ERROR' == $response['status'] ) {
                     $success = false;
                     break 2;
@@ -623,13 +638,28 @@ class Craigslist extends Base_Class {
         // Get the date
         $date = new DateTime();
 
-        $this->db->update( 'craigslist_ads', array( 'date_posted' => $date->format('Y-m-d H:i:s'), 'primus_product_ids' => serialize( $primus_product_ids ) ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'ss', 'i' );
+        $this->db->update( 'craigslist_ads', array( 'date_posted' => $date->format('Y-m-d H:i:s') ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 's', 'i' );
 
         // Handle any error
         if( $this->db->errno() ) {
             $this->err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
             return false;
         }
+
+        // Update primus product links
+		$statement = $this->db->prepare( "UPDATE `craigslist_ad_markets` SET `primus_product_id` = ? WHERE `craigslist_ad_id` = $craigslist_ad_id AND `craigslist_market_id` = ?" );
+		$statement->bind_param( 'ii', $craigslist_market_id, $primus_product_id );
+
+		foreach ( $primus_product_ids as $craigslist_market_id => $primus_product_id ) {
+			$statement->execute();
+
+			// Handle any error
+			if ( $statement->errno ) {
+				$this->db->m->error = $statement->error;
+				$this->err( 'Failed to update craigslist - primus product id', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
 
         return $success;
     }
@@ -646,5 +676,5 @@ class Craigslist extends Base_Class {
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
-	}	
+	}
 }

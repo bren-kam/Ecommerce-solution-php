@@ -32,7 +32,7 @@ define( 'APPS', true );
 define( 'ABS_PATH', '/gsr/systems/backend/' );
 
 /** Define OPERATING_PATH as the main directory to get things from */
-define( 'OPERATING_PATH', OPERATING_PATH . 'apps/' );
+define( 'OPERATING_PATH', ABS_PATH . 'apps/' );
 
 /** Define INC_PATH as the includes directory */
 define( 'INC_PATH', ABS_PATH . 'includes/' );
