@@ -61,8 +61,11 @@ $c = new Checklists;
 $where = '';
 
 // Live accounts
-if ( isset( $_SESSION['accounts']['state'] ) )
-	$where .= ' AND a.`live` = ' . $_SESSION['accounts']['state'];
+if ( isset( $_SESSION['accounts']['state'] ) ) {
+    $where .= ( -1 == $_SESSION['accounts']['state'] ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . $_SESSION['accounts']['state'];
+} else {
+    $where .= ' AND a.`status` = 1';
+}
 
 if ( isset( $_SESSION['accounts']['search'] ) ) {
 	$where .= " AND ( a.`title` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' OR " .
