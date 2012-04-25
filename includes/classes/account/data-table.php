@@ -54,9 +54,12 @@ class Data_Table extends Base_Class {
 			) );
 			exit;
 		}
-		
+
+        // Set display length
+        $display_length = ( -1 == $_GET['iDisplayLength'] ) ? 1000 : intval( $_GET['iDisplayLength'] );
+
 		// Set the limit
-		$this->limit = ( isset( $_GET['iDisplayStart'] ) ) ? intval( $_GET['iDisplayStart'] ) . ', ' . intval( $_GET['iDisplayLength'] ) : 1000;
+		$this->limit = ( isset( $_GET['iDisplayStart'] ) ) ? intval( $_GET['iDisplayStart'] ) . ', ' . $display_length : 1000;
 	}
 	
 	/**

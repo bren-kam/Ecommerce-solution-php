@@ -24,6 +24,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'change-state
 		case 'staging':
 			$_SESSION['accounts']['state'] = 0;
 		break;
+
+        case 'inactive':
+			$_SESSION['accounts']['state'] = -1;
+        break;
 	}
 	
 	// If there was an error, let them know

@@ -64,7 +64,7 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_ad_id = (int) $craigslist_ad_id;
 
-		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`,  a.`primus_product_ids`, GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, c.`title` AS store_name, d.`name` AS product_name,
+		$ad = $this->db->get_row( "SELECT a.`craigslist_ad_id`, a.`product_id`, a.`text`, a.`price`,  GROUP_CONCAT( b.`headline` SEPARATOR '`' ) AS headlines, c.`title` AS store_name, d.`name` AS product_name,
 												 d.`sku`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, UNIX_TIMESTAMP( a.`date_posted` ) AS date_posted
 												 FROM `craigslist_ads` AS a
 												 LEFT JOIN `craigslist_ad_headlines` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` )
