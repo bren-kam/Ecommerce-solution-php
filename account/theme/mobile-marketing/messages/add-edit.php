@@ -27,8 +27,7 @@ $mobile_message_id = ( isset( $_GET['mmid'] ) ) ? $_GET['mmid'] : false;
 $timezone = $w->get_setting( 'timezone' );
 
 // Figure out what the time is
-$now = new DateTime;
-$now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
+$now = new DateTime( dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone ) );
 
 $v->form_name = 'fMobileMessage';
 $v->add_validation( 'taMessage', 'req', _('The "Message" field is required') );
@@ -56,8 +55,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'mobile-messa
 	}
 
 	// Adjust for time zone
-	$new_date_posted = new DateTime;
-	$new_date_posted->setTimestamp( strtotime( $date_posted ) - (  $timezone * 3600 ) + $now->getOffset() );
+	$new_date_posted = new DateTime( dt::adjust_timezone( $date_posted, $timezone, config::setting('server-timezone') ) );
 
 	// Make sure we don't have anything extra
 	$_POST['taMessage'] = stripslashes( $_POST['taMessage'] );

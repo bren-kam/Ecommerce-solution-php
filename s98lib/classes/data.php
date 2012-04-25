@@ -502,42 +502,79 @@ class data extends Base_Class {
 	 *
 	 * @param bool $echo [optional]
 	 * @param string $select_value [optional]
+     * @param bool $php_timezones [optional]
 	 * @return array
 	 */
-	public static function timezones( $echo = true, $select_value = '' ) {
-		$timezones = array(
-			'-12.0'		=> '(GMT -12:00) Eniwetok, Kwajalein'
-			, '-11.0'	=> '(GMT -11:00) Midway Island, Samoa'
-			, '-10.0'	=> '(GMT -10:00) Hawaii'
-			, '-9.0'	=> '(GMT -9:00) Alaska'
-			, '-8.0'	=> '(GMT -8:00) Pacific Time (US &amp; Canada)'
-			, '-7.0'	=> '(GMT -7:00) Mountain Time (US &amp; Canada)'
-			, '-6.0'	=> '(GMT -6:00) Central Time (US &amp; Canada), Mexico City'
-			, '-5.0'	=> '(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima'
-			, '-4.0'	=> '(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz'
-			, '-3.5'	=> '(GMT -3:30) Newfoundland'
-			, '-3.0'	=> '(GMT -3:00) Brazil, Buenos Aires, Georgetown'
-			, '-2.0'	=> '(GMT -2:00) Mid-Atlantic'
-			, '-1.0'	=> '(GMT -1:00 hour) Azores, Cape Verde Islands'
-			, '0.0'		=> '(GMT) Western Europe Time, London, Lisbon, Casablanca'
-			, '1.0'		=> '(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris'
-			, '2.0'		=> '(GMT +2:00) Kaliningrad, South Africa'
-			, '3.0'		=> '(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg'
-			, '3.5'		=> '(GMT +3:30) Tehran'
-			, '4.0'		=> '(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi'
-			, '4.5'		=> '(GMT +4:30) Kabul'
-			, '5.0'		=> '(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent'
-			, '5.5'		=> '(GMT +5:30) Bombay, Calcutta, Madras, New Delhi'
-			, '5.75'	=> '(GMT +5:45) Kathmandu'
-			, '6.0'		=> '(GMT +6:00) Almaty, Dhaka, Colombo'
-			, '7.0'		=> '(GMT +7:00) Bangkok, Hanoi, Jakarta'
-			, '8.0'		=> '(GMT +8:00) Beijing, Perth, Singapore, Hong Kong'
-			, '9.0'		=> '(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk'
-			, '9.5'		=> '(GMT +9:30) Adelaide, Darwin'
-			, '10.0'	=> '(GMT +10:00) Eastern Australia, Guam, Vladivostok'
-			, '11.0'	=> '(GMT +11:00) Magadan, Solomon Islands, New Caledonia'
-			, '12.0'	=> '(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka'
-		);
+	public static function timezones( $echo = true, $select_value = '', $php_timezones = false ) {
+        if ( $php_timezones ) {
+            $timezones = array(
+                'Pacific/Kwajalein'         => '(GMT -12:00) Eniwetok, Kwajalein'
+                , 'Pacific/Samoa'	        => '(GMT -11:00) Midway Island, Samoa'
+                , 'Pacific/Honolulu'    	=> '(GMT -10:00) Hawaii'
+                , 'America/Anchorage'   	=> '(GMT -9:00) Alaska'
+                , 'America/Los_Angeles' 	=> '(GMT -8:00) Pacific Time (US &amp; Canada)'
+                , 'America/Denver'	        => '(GMT -7:00) Mountain Time (US &amp; Canada)'
+                , 'America/Chicago'	        => '(GMT -6:00) Central Time (US &amp; Canada), Mexico City'
+                , 'America/New_York'	    => '(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima'
+                , 'America/Caracas'	        => '(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz'
+                , 'Canada/Newfoundland'	    => '(GMT -3:30) Newfoundland'
+                , 'Brazil/West'	            => '(GMT -3:00) Brazil, Buenos Aires, Georgetown'
+                , 'Brazil/East'	            => '(GMT -2:00) Mid-Atlantic'
+                , 'Atlantic/Cape_Verde'	    => '(GMT -1:00 hour) Azores, Cape Verde Islands'
+                , 'UTC'		                => '(GMT) Western Europe Time, London, Lisbon, Casablanca'
+                , 'Europe/Brussels'		    => '(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris'
+                , 'Europe/Kaliningrad'		=> '(GMT +2:00) Kaliningrad, South Africa'
+                , 'Europe/Moscow'		    => '(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg'
+                , 'Asia/Tehran'		        => '(GMT +3:30) Tehran'
+                , 'Asia/Muscat'		        => '(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi'
+                , 'Asia/Kabul'		        => '(GMT +4:30) Kabul'
+                , 'Asia/Karachi'		    => '(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent'
+                , 'Asia/Calcutta'		    => '(GMT +5:30) Bombay, Calcutta, Madras, New Delhi'
+                , 'Asia/Kathmandu'	        => '(GMT +5:45) Kathmandu'
+                , 'Asia/Almaty'		        => '(GMT +6:00) Almaty, Dhaka, Colombo'
+                , 'Asia/Bangkok'		    => '(GMT +7:00) Bangkok, Hanoi, Jakarta'
+                , 'Australia/Perth'		    => '(GMT +8:00) Beijing, Perth, Singapore, Hong Kong'
+                , 'Asia/Tokyo'		        => '(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk'
+                , 'Australia/Adelaide'		=> '(GMT +9:30) Adelaide, Darwin'
+                , 'Pacific/Guam'	        => '(GMT +10:00) Eastern Australia, Guam, Vladivostok'
+                , 'Asia/Magadan'	        => '(GMT +11:00) Magadan, Solomon Islands, New Caledonia'
+                , 'Pacific/Auckland'	=> '(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka'
+            );
+        } else {
+            $timezones = array(
+                '-12.0'		=> '(GMT -12:00) Eniwetok, Kwajalein'
+                , '-11.0'	=> '(GMT -11:00) Midway Island, Samoa'
+                , '-10.0'	=> '(GMT -10:00) Hawaii'
+                , '-9.0'	=> '(GMT -9:00) Alaska'
+                , '-8.0'	=> '(GMT -8:00) Pacific Time (US &amp; Canada)'
+                , '-7.0'	=> '(GMT -7:00) Mountain Time (US &amp; Canada)'
+                , '-6.0'	=> '(GMT -6:00) Central Time (US &amp; Canada), Mexico City'
+                , '-5.0'	=> '(GMT -5:00) Eastern Time (US &amp; Canada), Bogota, Lima'
+                , '-4.0'	=> '(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz'
+                , '-3.5'	=> '(GMT -3:30) Newfoundland'
+                , '-3.0'	=> '(GMT -3:00) Brazil, Buenos Aires, Georgetown'
+                , '-2.0'	=> '(GMT -2:00) Mid-Atlantic'
+                , '-1.0'	=> '(GMT -1:00 hour) Azores, Cape Verde Islands'
+                , '0.0'		=> '(GMT) Western Europe Time, London, Lisbon, Casablanca'
+                , '1.0'		=> '(GMT +1:00 hour) Brussels, Copenhagen, Madrid, Paris'
+                , '2.0'		=> '(GMT +2:00) Kaliningrad, South Africa'
+                , '3.0'		=> '(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg'
+                , '3.5'		=> '(GMT +3:30) Tehran'
+                , '4.0'		=> '(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi'
+                , '4.5'		=> '(GMT +4:30) Kabul'
+                , '5.0'		=> '(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent'
+                , '5.5'		=> '(GMT +5:30) Bombay, Calcutta, Madras, New Delhi'
+                , '5.75'	=> '(GMT +5:45) Kathmandu'
+                , '6.0'		=> '(GMT +6:00) Almaty, Dhaka, Colombo'
+                , '7.0'		=> '(GMT +7:00) Bangkok, Hanoi, Jakarta'
+                , '8.0'		=> '(GMT +8:00) Beijing, Perth, Singapore, Hong Kong'
+                , '9.0'		=> '(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk'
+                , '9.5'		=> '(GMT +9:30) Adelaide, Darwin'
+                , '10.0'	=> '(GMT +10:00) Eastern Australia, Guam, Vladivostok'
+                , '11.0'	=> '(GMT +11:00) Magadan, Solomon Islands, New Caledonia'
+                , '12.0'	=> '(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka'
+            );
+        }
 		
 		if ( $echo ) {
 			// Initialize variable
@@ -551,44 +588,6 @@ class data extends Base_Class {
 			echo $timezone_options;
 		}
 		
-		return $timezones;
-	}
-
-    /**
-	 * Returns or displays php timezones using geoIP
-	 *
-	 * @param bool $echo [optional]
-	 * @param string $select_value [optional]
-	 * @return array
-	 */
-	public static function php_timezones( $echo = true, $select_value = '' ) {
-        $regions = array(
-            //'Africa' => DateTimeZone::AFRICA
-            'America' => DateTimeZone::AMERICA
-            //, 'Antarctica' => DateTimeZone::ANTARCTICA
-            //, 'Asia' => DateTimeZone::ASIA
-            //, 'Atlantic' => DateTimeZone::ATLANTIC
-            //, 'Europe' => DateTimeZone::EUROPE
-            //, 'Indian' => DateTimeZone::INDIAN
-            //, 'Pacific' => DateTimeZone::PACIFIC
-        );
-
-        foreach ( $regions as $name => $mask ) {
-            $timezones[$name] = DateTimeZone::listIdentifiers( $mask );
-        }
-
-		if ( $echo ) {
-			// Initialize variable
-			$timezone_options = '';
-
-			foreach ( $timezones as $tz => $timezone ) {
-				$selected = ( $select_value == $tz ) ? ' selected="selected"' : '';
-				$timezone_options .= "<option value='$tz'$selected>$timezone</option>\n";
-			}
-
-			echo $timezone_options;
-		}
-
 		return $timezones;
 	}
 }

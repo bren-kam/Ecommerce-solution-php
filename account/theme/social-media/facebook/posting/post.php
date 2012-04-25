@@ -33,11 +33,10 @@ add_footer( $v->js_validation() );
 
 // Get variables
 $posting = $sm->get_posting();
-$timezone = $w->get_setting( 'timezone' );
+$timezone = $w->get_setting('timezone');
 
 // Figure out what the time is
-$now = new DateTime;
-$now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
+$now = new DateTime( dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone ) );
 
 // Get the posting variable if it exists
 if ( 0 != $posting['fb_page_id'] ) {
@@ -70,9 +69,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
         }
         
         // Adjust for time zone
-        $new_date_posted = new DateTime;
-        $new_date_posted->setTimestamp( strtotime( $date_posted ) - (  $timezone * 3600 ) + $now->getOffset() );
-        
+        $new_date_posted = new DateTime( dt::adjust_timezone( $date_posted, $timezone, config::setting('server-timezone') ) );
+
         // Make sure we don't have anything extra
         $_POST['taPost'] = str_replace( array( '“', '”', '’' ), array( '"', '"', "'" ), stripslashes( $_POST['taPost'] ) );
         

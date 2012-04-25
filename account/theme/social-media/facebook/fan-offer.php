@@ -53,8 +53,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fan-offer' )
 	}
 	
 	// Adjust for time zone
-	$start_date = dt::date( 'Y-m-d H:i:s', strtotime( $start_date ) - ( $timezone * 3600 ) - 18000 );
-	$end_date = dt::date( 'Y-m-d H:i:s', strtotime( $end_date ) - ( $timezone * 3600 ) - 18000 );
+	$start_date = dt::adjust_timezone( $start_date, $timezone, config::setting('server-timezone') );
+	$end_date = dt::adjust_timezone( $end_date, $timezone, config::setting('server-timezone') );
 		
 	$success = $sm->update_fan_offer( $_POST['sEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $start_date, $end_date, stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
 }
@@ -68,20 +68,20 @@ if ( !$fan_offer ) {
 	$fan_offer = array( 
 		'key' => $sm->create_fan_offer()
 		, 'before' => ''
-		, 'start_date' => time() - ( 3600 * $timezone ) - 18000
+		, 'start_date' => dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone )
 		, 'end_date' => time() - ( 3600 * $timezone ) - 18000 + 604800 // 1 week
 	);
 	
 	// Adjust for timezone
-	$fan_offer['start_date'] = $fan_offer['start_date'] + $timezone * 3600 + 18000;
-	$fan_offer['end_date'] = $fan_offer['end_date'] + $timezone * 3600 + 18000;
+	$fan_offer['start_date'] = strtotime( dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone ) );
+	$fan_offer['end_date'] = strtotime( dt::adjust_timezone( '+1 weeks', config::setting('server-timezone'), $timezone ) );
 } else {
 	// Make sure they have a good starting date
-	if ( 0 == $fan_offer['start_date'] )
-		$fan_offer['start_date'] = time() - ( 3600 * $timezone ) - 18000;
+	$start_date = ( 0 == $fan_offer['start_date'] ) ? 'now' : $fan_offer['start_date'];
+    $end_date = ( 0 == $fan_offer['end_date'] ) ? '+1 weeks' : $fan_offer['end_date'];
 
-	if ( 0 == $fan_offer['end_date'] )
-		$fan_offer['end_date'] = $fan_offer['start_date'] - ( 3600 * $timezone ) - 18000 + 604800; // 1 week
+	$fan_offer['start_date'] = strtotime( dt::adjust_timezone( $start_date, config::setting('server-timezone'), $timezone ) );
+    $fan_offer['end_date'] = strtotime( dt::adjust_timezone( $end_date, config::setting('server-timezone'), $timezone ) );
 }
 
 // Load the jQuery UI CSS

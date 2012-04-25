@@ -71,7 +71,7 @@ get_header();
 				<?php
 				if ( !empty( $em['date_sent'] ) ) {
 					// Adjust for timezone
-					$em['date_sent'] = dt::date( 'Y-m-d H:i:s', strtotime( $em['date_sent'] ) + $timezone * 3600 + 18000 );
+					$em['date_sent'] = dt::adjust_timezone( $em['date_sent'], config::setting('server-timezone'), $timezone );
 
 					list( $date, $time ) = explode( ' ', $em['date_sent'] );
 				}
@@ -84,9 +84,9 @@ get_header();
 					</tr>
 					<tr>
 						<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-						<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
+						<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::adjust_timezone( 'now', config::setting( 'server-timezone' ), $timezone, 'Y-m-d' ) : $date; ?>" maxlength="10" /></td>
 						<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-						<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+						<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::adjust_timezone( 'now', config::setting( 'server-timezone' ), $timezone, 'h:i a' ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
 					</tr>
 					<tr>
 						<td valign="top"><label><?php echo _('Mailing List(s)'); ?>:</label></td>

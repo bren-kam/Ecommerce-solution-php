@@ -91,5 +91,29 @@ class dt extends Base_Class {
 		$seconds = $seconds % 60;
 		
 		return sprintf( "%02d:%02d:%02d", $hours, $minutes, $seconds );
-	} 
+	}
+
+    /**
+     * Adjust a timezone for a date
+     *
+     * @param string $date
+     * @param string $timezone
+     * @param string $new_timezone
+     * @param string $format
+     * @return string
+     */
+    public static function adjust_timezone( $date, $timezone, $new_timezone = NULL, $format = 'Y-m-d H:i:s' ) {
+        // Make sure we have a default timezone
+        if ( is_null( $new_timezone ) )
+            $new_timezone = DEFAULT_TIMEZONE;
+
+        // Create Date Object
+        $datetime = new DateTime( $date, new DateTimeZone( $timezone ) );
+
+        // Adjust the timezone
+        $datetime->setTimezone( new DateTimeZone( $new_timezone ) );
+
+        // Return the format
+        return $datetime->format( $format );
+    }
 }

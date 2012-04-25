@@ -28,6 +28,10 @@ define( 'POST_KEY', 	'x{k)aOt$OY@YCu:V(#GK%X&m/Il*xQAx"qINkUtwTdyt@IEA/(cWyBGt-q
 define( 'COOKIE_KEY', 		'wE[D..ffx&IP%!ICpm"~++}/Db&aP"WP#{|(-xi?)VDPzT+pomwtWNx!!d[HZk~e' );
 define( 'PAYMENT_DECRYPTION_KEY',	'@p(-PzQ/AD%oQybq$xgGOo)(|d/(@Pbf_@?DCIx,PqLa=IJ#JJl*Iv,toiAus!xH' );
 
+// Settings
+if ( !defined( 'DEFAULT_TIMEZONE' ) )
+    define( 'DEFAULT_TIMEZONE', 'America/Chicago' );
+
 // Modules
 $modules = array( 'validator' );
 
