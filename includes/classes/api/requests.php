@@ -199,14 +199,14 @@ class Requests extends Base_Class {
 	 */
 	private function craigslist_error() {
 		// Gets parameters and errors out if something is missing
-		$order_item = $this->get_parameters( 'product_id', 'message' );
+		extract( $this->get_parameters( 'product_id', 'message' ) );
 
         $primus_product_id = (int) $product_id;
         $message = $this->db->escape( $message );
-
+		
 		// Execute the command
 		$this->db->query( "UPDATE `craigslist_ads` AS a LEFT JOIN `craigslist_ad_markets` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) SET `error` = '$message' WHERE b.`primus_product_id` = $primus_product_id" );
-
+		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to update craigslist ad with an error message', __LINE__, __METHOD__ );

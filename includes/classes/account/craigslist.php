@@ -607,7 +607,7 @@ class Craigslist extends Base_Class {
             }
 
             // Now remove the old primus product_ids
-            $this->db->update( 'craigslist_ad_markets', array( 'primus_product_id' => 0 ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'i', 'i' )
+            $this->db->update( 'craigslist_ad_markets', array( 'primus_product_id' => 0 ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'i', 'i' );
 
             // Handle any error
             if( $this->db->errno() ) {
@@ -676,5 +676,5 @@ class Craigslist extends Base_Class {
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
-	}	
+	}
 }

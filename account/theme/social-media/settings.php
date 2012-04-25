@@ -83,7 +83,7 @@ get_header();
 						<select name="timezone" id="timezone">
 							<?php
 							$timezone = ( !$success && !empty( $_POST['timezone'] ) ) ? $_POST['timezone'] : $settings['timezone'];
-							data::timezones( true, $timezone );
+							data::timezones( true, $timezone, true );
 							?>
 						</select>
 					</td>

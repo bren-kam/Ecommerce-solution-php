@@ -59,6 +59,21 @@ class GSR_API {
 		return $this->success;
 	}
 
+    /**
+	 * Craigslist Error
+	 *
+	 * @param int $product_id
+	 * @param string $message
+	 * @return bool
+	 */
+	public function craigslist_error( $product_id, $message ) {
+		// Execute the command
+		$this->_execute( 'craigslist_error', compact( 'product_id', 'message' ) );
+
+		// Return the user id successful
+		return $this->success;
+	}
+
 	/**
 	 * Create Order
 	 *
