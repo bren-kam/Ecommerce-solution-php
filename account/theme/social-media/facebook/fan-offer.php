@@ -68,8 +68,6 @@ if ( !$fan_offer ) {
 	$fan_offer = array( 
 		'key' => $sm->create_fan_offer()
 		, 'before' => ''
-		, 'start_date' => dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone )
-		, 'end_date' => time() - ( 3600 * $timezone ) - 18000 + 604800 // 1 week
 	);
 	
 	// Adjust for timezone
@@ -77,8 +75,8 @@ if ( !$fan_offer ) {
 	$fan_offer['end_date'] = strtotime( dt::adjust_timezone( '+1 weeks', config::setting('server-timezone'), $timezone ) );
 } else {
 	// Make sure they have a good starting date
-	$start_date = ( 0 == $fan_offer['start_date'] ) ? 'now' : $fan_offer['start_date'];
-    $end_date = ( 0 == $fan_offer['end_date'] ) ? '+1 weeks' : $fan_offer['end_date'];
+	$start_date = ( 0 == $fan_offer['start_date'] ) ? 'now' : dt::date( 'Y-m-d H:i:s', $fan_offer['start_date'] );
+    $end_date = ( 0 == $fan_offer['end_date'] ) ? '+1 weeks' : dt::date( 'Y-m-d H:i:s', $fan_offer['end_date'] );
 
 	$fan_offer['start_date'] = strtotime( dt::adjust_timezone( $start_date, config::setting('server-timezone'), $timezone ) );
     $fan_offer['end_date'] = strtotime( dt::adjust_timezone( $end_date, config::setting('server-timezone'), $timezone ) );
