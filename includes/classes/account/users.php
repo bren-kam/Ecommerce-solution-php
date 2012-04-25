@@ -225,7 +225,7 @@ class Users extends Base_Class {
 
 		if ( $role > 1 ) {
 			// @Fix should `phone` and `logo` be removed and put in the websites:get_website function (meaning theme/website/top needs to change)
-			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
+			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
 
 			// Handle any error
 			if ( $this->db->errno() ) {

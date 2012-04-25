@@ -277,7 +277,7 @@ class Websites extends Base_Class {
 		
 		// @Fix -- shouldn't have to count the results
 		// Get the website count
-		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where AND a.`status` = 1 GROUP BY a.`website_id`", ARRAY_A ) );
+		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id`", ARRAY_A ) );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
