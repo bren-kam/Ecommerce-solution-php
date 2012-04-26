@@ -281,13 +281,13 @@ class Mobile_Marketing extends Base_Class {
 
             $export_id = $matches[1];
 
-            $excel_file = tempnam( '/tmp', 'gsr_' );
+            $excel_file = tempnam( sys_get_temp_dir(), 'gsr_' );
             $excel_file_handle = fopen( $excel_file, 'w+' );
-
-            $page = $c->save_file( "http://greysuitmobile.com/manageContacts/action/action_export_download.php?uid=$export_id", $excel_file_handle );
+			
+			$page = $c->save_file( "http://greysuitmobile.com/manageContacts/action/action_export_download.php?uid=$export_id", $excel_file_handle );
 
             fclose( $excel_file_handle );
-
+            
             // Load excel reader
             library('Excel_Reader/Excel_Reader');
             $er = new Excel_Reader();
