@@ -209,6 +209,9 @@ class Mobile_Marketing extends Base_Class {
         $c = new Curl();
         $w = new Websites;
 
+		// Include the library
+        library('trumpia');
+		
         $user_ids = $this->db->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'trumpia-user-id'", ARRAY_A );
 
         // Handle any error
@@ -228,10 +231,13 @@ class Mobile_Marketing extends Base_Class {
             'username' => config::key('trumpia-admin-username')
             , 'password' => config::key('trumpia-admin-password')
         );
-
+		
         $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
 
-        foreach ( $user_ids as $uid ) {
+        foreach ( $user_ids as $website_id => $uid ) {
+			// Trying to set timeout limit
+			set_time_limit(300);
+			
             // Set settings
             $c->get( "http://greysuitmobile.com/main/action/action_main.php?mode=x__admin_signin&uid=$uid" );
 
@@ -274,19 +280,27 @@ class Mobile_Marketing extends Base_Class {
 
             //if ( !$success )
                 //return false;
-
+			
+			// This is done to create a lag between export and download -- see function for more information
+			if ( isset( $values ) && isset( $last_website_id ) && $last_website_id )
+				$this->_update_mobile_subscribers( $last_website_id, $values, $w );
+			
             $page = $c->get( 'http://greysuitmobile.com/manageContacts/manage_contact_summary.php' );
 
             preg_match( '/export_contacts_result\.php\?uid=([0-9]+)/', $page, $matches );
 
             $export_id = $matches[1];
-
+			
+			// Give it some more time
+			if ( isset( $excel_file_handle ) ) {
+				fclose( $excel_file_handle );
+				unlink( $excel_file );
+			}
+			
             $excel_file = tempnam( sys_get_temp_dir(), 'gsr_' );
             $excel_file_handle = fopen( $excel_file, 'w+' );
 			
 			$page = $c->save_file( "http://greysuitmobile.com/manageContacts/action/action_export_download.php?uid=$export_id", $excel_file_handle );
-
-            fclose( $excel_file_handle );
             
             // Load excel reader
             library('Excel_Reader/Excel_Reader');
@@ -294,10 +308,42 @@ class Mobile_Marketing extends Base_Class {
             // Set the basics and then read in the rows
             $er->setOutputEncoding('ASCII');
             $er->read( $excel_file );
-
-            fn::info( $er->sheets[0]['cells'] );
-            exit;
-        }
+			
+			$values = array();
+			$subscribers = $er->sheets[0]['cells'];
+			
+			if ( is_array( $subscribers ) && count( $subscribers ) > 1 ) {
+				array_shift( $subscribers );
+			
+				foreach ( $subscribers as $s ) {
+					$mobile_number = $s[2];
+					
+					$lists = explode( ',', $s[1] );
+					
+					foreach( $lists as $key => &$l ) {
+						if ( empty( $l ) ) {
+							unset( $lists[$key] );
+						}
+						
+						$l = preg_replace( '/^[0-9]+\s/', '', $l );
+					}
+					
+					$values[$this->db->escape( $mobile_number )] = array_values( $lists );
+				}
+			}
+			
+			// Set the last website_id
+			$last_website_id = $website_id;
+		}
+		
+		if ( isset( $excel_file_handle ) ) {
+			fclose( $excel_file_handle );
+			unlink( $excel_file );
+		}
+		
+		// Do the last one
+		if ( isset( $values ) && isset( $last_website_id ) && $last_website_id )
+			$this->_update_mobile_subscribers( $last_website_id, $values, $w );
     }
 
     /**
@@ -314,6 +360,160 @@ class Mobile_Marketing extends Base_Class {
         );
 
         return $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
+    }
+	
+	/**
+	 * Update Mobile Subscribers
+	 * 
+	 * This will only run the second time around and is done so that there is a slight lag between when the export 
+	 * of the contact lists is initiated (command above) and when they download it (command below), which will 
+	 * hopefully minimize any grabbing of old lists. If the list is alrge it may take a couple of seconds, hopefully
+	 * this will slow it down just a little while
+	 *
+	 * If this doesn't work, we can go through this loop twice, initiating the export, then second time we go through
+	 * the loop of all the sites we download it
+	 *
+	 * @param int $website_id
+	 * @param array $values
+	 * @param object $w (Websites)
+	 * @return bool
+	 */
+	private function _update_mobile_subscribers( $website_id, $values, $w ) {
+		// Type Juggling
+		$website_id = (int) $website_id;
+		
+		// Now clear out the database and then readd subscribers
+		$this->db->update( 'mobile_subscribers', array( 'status' => 0 ), array( 'website_id' => $website_id ), 'i', 'i' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to unsubscribe subscribers.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		$mobile_numbers = array_keys( $values );
+		
+		$subscriber_values = "( $website_id, '" . implode( "', NOW(), NOW() ),( $website_id, '", $mobile_numbers ) . "', NOW(), NOW() )";
+		
+		$this->db->query( "INSERT INTO `mobile_subscribers` (`website_id`, `phone`, `date_created`, `date_synced`) VALUES $subscriber_values ON DUPLICATE KEY UPDATE `status` = 1, `date_synced` = NOW()" );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to mass subscribe subscribers.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Now remove all lists from subscribers who have no status
+		$this->db->query( "DELETE a.* FROM `mobile_associations` AS a LEFT JOIN `mobile_subscribers` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) WHERE ( b.`mobile_subscriber_id` IS NULL OR b.`status` = 0 ) AND b.`website_id` = $website_id" );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to delete mobile subscriber associations.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Get all of the lists with this account
+		$mobile_lists = $this->db->get_results( "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `website_id` = $website_id", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Get Subscribers
+		$mobile_subscribers = $this->db->get_results( "SELECT `mobile_subscriber_id`, `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `phone` IN('" . implode( "','", $mobile_numbers ) . "')", ARRAY_A );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get mobile subscrbers.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// Get Mobile Associations
+		$full_mobile_associations = $this->db->get_results( "SELECT a.* FROM `mobile_associations` AS a LEFT JOIN `mobile_subscribers` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) WHERE b.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get mobile assocations.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		$mobile_associations = array();
+		// Format the mobile associations so we can find them
+		if ( is_array( $full_mobile_associations ) )
+		foreach ( $full_mobile_associations as $fma ) {
+			$mobile_associations[$fma['mobile_subscriber_id'] . '-' . $fma['mobile_list_id']] = $fma['trumpia_contact_id'];
+		}
+
+		$mobile_lists = ar::assign_key( $mobile_lists, 'name', true );
+		$mobile_subscribers = ar::assign_key( $mobile_subscribers, 'phone', true );
+		$association_values = array();
+		
+		// Get the API Key
+        $api_key = $w->get_setting( $website_id, 'trumpia-api-key' );
+		
+		// Setup Trumpia
+        $trumpia = new Trumpia( $api_key );
+
+		
+		// Now we have to readd them
+		foreach ( $values as $mobile_number => $lists ) {
+			// Want to make sure we can get the subscriber
+			if ( isset( $mobile_subscribers[$mobile_number] ) ) {
+				$mobile_subscriber_id = (int) $mobile_subscribers[$mobile_number];
+			} else {
+				continue;
+			}
+			
+			foreach( $lists as $list ) {
+				if ( !isset( $mobile_lists[$list] ) ) {
+					$this->db->insert( 'mobile_lists', array( 'website_id' => $website_id, 'name' => $list, 'frequency' => 10, 'description' => 'Unknown', 'date_created' => dt::date('Y-m-d H:i:s') ), 'isiss' );
+					
+					// Handle any error
+					if ( $this->db->errno() ) {
+						$this->_err( 'Failed to create mobile list.', __LINE__, __METHOD__ );
+						return false;
+					}
+					
+					$mobile_lists[$list] = $this->db->insert_id;
+				}
+				
+				$mobile_list_id = (int) $mobile_lists[$list];
+				
+				// Get the trumpia contact id
+				$trumpia_contact_id = (int) $mobile_associations["$mobile_subscriber_id-$mobile_list_id"];
+				
+				// Get the trumpia contact id via API if necessary
+				if ( !$trumpia_contact_id )
+					$trumpia_contact_id = (int) $trumpia->get_contact_id( $this->_format_mobile_list_name( $list ), 2, $mobile_number );
+				
+				$association_values[] = "( $mobile_subscriber_id, $mobile_list_id, $trumpia_contact_id )";
+			}
+		}
+		
+		$association_values_string = implode( ',', $association_values );
+		
+		// Insert all the mobile lists
+		$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id`, `trumpia_contact_id` ) VALUES $association_values_string ON DUPLICATE KEY UPDATE `trumpia_contact_id` = VALUES( `trumpia_contact_id` )" );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+     * Format Mobile List Name
+     *
+     * @param string $name
+     * @return string
+     */
+    private function _format_mobile_list_name( $name ) {
+        return substr( preg_replace( '/[^a-zA-Z0-9]/', '', $name ), 0, 32 );
     }
 	
 	/**

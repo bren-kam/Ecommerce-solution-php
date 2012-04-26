@@ -82,13 +82,14 @@ get_header();
 					<td><label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label></td>
 					<td>
 						<select id="sAssignedTo" class="dd" style="width: 150px">
-						<?php
-							foreach ( $assignable_users as $au ) {
-								$selected = ( $reach['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
-								
-								echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
-							}
-						?>
+                            <option value="">-- <?php echo _('Assign a User'); ?>--</option>
+                            <?php
+                                foreach ( $assignable_users as $au ) {
+                                    $selected = ( $reach['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
+
+                                    echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
+                                }
+                            ?>
 						</select>
 					</td>
 				</tr>

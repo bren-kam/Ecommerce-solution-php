@@ -20,9 +20,9 @@ class Mobile_Marketing extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 	}
-	
+
 	/***** DASHBOARD *****/
-    
+
 	/**
 	 * Dashboard Messages
 	 *
@@ -35,19 +35,19 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
 		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `message` FROM `mobile_messages` WHERE `website_id` = $website_id AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get dashboard messages.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $messages;
 	}
-	
+
 	/**
 	 * Dashboard Subscribers
-	 * 
+	 *
 	 * @return array
 	 */
 	public function dashboard_subscribers() {
@@ -57,18 +57,18 @@ class Mobile_Marketing extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
 		$subscribers = $this->db->get_results( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT 5", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get dashboard subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $subscribers;
 	}
-	
+
 	/***** SUBSCRIBERS *****/
-	
+
 	/**
 	 * List Subscribers
 	 *
@@ -78,18 +78,18 @@ class Mobile_Marketing extends Base_Class {
 	public function list_subscribers( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
-		
+
 		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`mobile_subscriber_id`, a.`phone`, IF( 1 = a.`status`, a.`date_created`, a.`date_unsubscribed` ) AS date FROM `mobile_subscribers` AS a WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $subscribers;
 	}
-	
+
 	/**
 	 * Count Subscribers
 	 *
@@ -98,16 +98,16 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function count_subscribers( $where ) {
 		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`mobile_subscriber_id` ) FROM `mobile_subscribers` AS a WHERE 1 $where" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $count;
 	}
-	
+
 	/**
 	 * List Subscribers by mobile list id
 	 *
@@ -117,18 +117,18 @@ class Mobile_Marketing extends Base_Class {
 	public function list_subscribers_by_mobile_list_id( $variables ) {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
-		
+
 		$subscribers = $this->db->get_results( "SELECT DISTINCT a.`mobile_subscriber_id`, a.`phone`, IF( 1 = a.`status`, a.`date_created`, a.`date_unsubscribed` ) AS date FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $subscribers;
 	}
-	
+
 	/**
 	 * Count Subscribers by mobile list id
 	 *
@@ -137,16 +137,16 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function count_subscribers_by_mobile_list_id( $where ) {
 		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`mobile_subscriber_id` ) FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) WHERE 1 $where" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $count;
 	}
-	
+
 	/**
 	 * Get Subscriber
 	 *
@@ -155,13 +155,13 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function get_subscriber( $mobile_subscriber_id ) {
 		global $user;
-		
+
 		// Typecast
 		$mobile_subscriber_id = (int) $mobile_subscriber_id;
 		$website_id = (int) $user['website']['website_id'];
-		
+
 		$subscriber = $this->db->get_row( "SELECT `mobile_subscriber_id`, `phone` FROM `mobile_subscribers` WHERE `mobile_subscriber_id` = $mobile_subscriber_id AND `website_id` = $website_id", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get subscriber.', __LINE__, __METHOD__ );
@@ -170,7 +170,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Get lists that this subscriber is subscribed to
 		$mobile_lists = $this->db->get_results( "SELECT `mobile_list_id`, `trumpia_contact_id` FROM `mobile_associations` WHERE `mobile_subscriber_id` = $mobile_subscriber_id", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
@@ -181,10 +181,10 @@ class Mobile_Marketing extends Base_Class {
 
 		return $subscriber;
 	}
-	
+
 	/**
 	 * Checks if a subscriber already exits
-	 * 
+	 *
 	 * @param string $phone
 	 * @return array
 	 */
@@ -192,16 +192,16 @@ class Mobile_Marketing extends Base_Class {
         global $user;
 
 		$phone = $this->db->prepare( 'SELECT a.`mobile_subscriber_id`, a.`status` FROM `mobile_subscribers` AS a LEFT JOIN `mobile_associations` AS b ON ( a.`mobile_subscriber_id` = b.`mobile_subscriber_id` ) LEFT JOIN `mobile_lists` AS c ON ( b.`mobile_list_id` = c.`mobile_list_id` ) WHERE a.`phone` = ? AND c.`website_id` = ?', 'si', $phone, $user['website']['website_id'] )->get_row( '', ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to check if phone exists.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $phone;
 	}
-	
+
 	/**
 	 * Unsubscribes a single mobile_subscriber
      *
@@ -227,25 +227,25 @@ class Mobile_Marketing extends Base_Class {
 
 		// Remove subscriber from lists
 		$this->db->query( "DELETE a.* FROM `mobile_associations` AS a LEFT JOIN `mobile_lists` AS b ON ( a.`mobile_list_id` = b.`mobile_list_id` ) WHERE a.`mobile_subscriber_id` = $mobile_subscriber_id AND b.`website_id` = $website_id" );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to remove subscriber from list.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		// Set the subscriber's status to "unsubscribed"
 		$this->db->update( 'mobile_subscribers', array( 'status' => 0, 'date_unsubscribed' => dt::date('Y-m-d H:i:s') ), array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'is', 'i' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to unsubscribe subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
-				
+
 		return true;
 	}
-	
+
 	/**
 	 * Create Subscriber
 	 *
@@ -255,7 +255,7 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function create_subscriber( $phone, $mobile_lists ) {
 		global $user;
-		
+
 		// Update the subscriber if it already exists
 		if ( $subscriber = $this->subscriber_exists( $phone ) )
 			return $this->update_subscriber( $subscriber['mobile_subscriber_id'], $phone, $mobile_lists );
@@ -282,7 +282,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Create the mobile subscriber
 		$this->db->insert( 'mobile_subscribers', array( 'website_id' => $user['website']['website_id'], 'phone' => $phone, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to create subscriber.', __LINE__, __METHOD__ );
@@ -295,10 +295,10 @@ class Mobile_Marketing extends Base_Class {
         // Update the mobile lists
         if ( !$this->update_mobile_lists_subscription( $mobile_subscriber_id, $new_lists ) )
             return false;
-		
+
 		return $mobile_subscriber_id;
 	}
-	
+
 	/**
 	 * Update a mobile subscription
 	 *
@@ -309,7 +309,7 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function update_subscriber( $mobile_subscriber_id, $phone, $mobile_lists ) {
 		global $user;
-		
+
         // First, get subscriber, update it, then update our own
         $subscriber = $this->get_subscriber( $mobile_subscriber_id, true );
         $old_lists = $new_lists = array();
@@ -346,9 +346,9 @@ class Mobile_Marketing extends Base_Class {
                 $new_lists[$ml] = $trumpia_contact_id;
             }
         }
-		
+
 		$this->db->update( 'mobile_subscribers', array( 'phone' => $phone ), array( 'mobile_subscriber_id' => $mobile_subscriber_id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to update subscriber.', __LINE__, __METHOD__ );
@@ -358,13 +358,13 @@ class Mobile_Marketing extends Base_Class {
         // Update the mobile lists
         if ( !$this->update_mobile_lists_subscription( $mobile_subscriber_id, $new_lists, $old_lists ) )
             return false;
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Update mobile list subscriptions
-	 * 
+	 *
 	 * @param int $mobile_subscriber_id
 	 * @param array $new_lists [optional]
      * @param array $old_lists [optional]
@@ -392,7 +392,7 @@ class Mobile_Marketing extends Base_Class {
                 return false;
             }
         }
-		
+
 		// Add new values if they exist
 		if ( is_array( $new_lists ) && count( $new_lists ) > 0 ) {
             $values = '';
@@ -404,37 +404,37 @@ class Mobile_Marketing extends Base_Class {
                 // Type Juggling
                 $mobile_list_id = (int) $mobile_list_id;
                 $trumpia_contact_id = (int) $trumpia_contact_id;
-				
+
 				$values .= "( $mobile_subscriber_id, $mobile_list_id, $trumpia_contact_id )";
             }
 
 			$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id`, `trumpia_contact_id` )  VALUES $values" );
-			
+
 			// Handle any error
 			if ( $this->db->errno() ) {
 				$this->_err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
 	/**
 	 * Import phone numbers based on an array
-	 * 
+	 *
 	 * @param array $phone_numbers
 	 * @return bool
 	 */
 	public function import( $phone_numbers ) {
 		global $user;
-		
+
 		// Typecast
 		$website_id = (int) $user['website']['website_id'];
-		
+
 		// Select all the unsubscribed subscribers they already have
 		$unsubscribed_subscribers = $this->db->get_col( "SELECT `phone` FROM `mobile_subscribers` WHERE `status` = 0 AND `website_id` = $website_id", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get unsubscribed subscribers.', __LINE__, __METHOD__ );
@@ -449,7 +449,7 @@ class Mobile_Marketing extends Base_Class {
 			// Make sure they haven't been unsubscribed
 			if ( in_array( $phone, $unsubscribed_subscribers ) )
 				continue;
-			
+
 			$values[] = "( $website_id, '" . $this->db->escape( $phone ) . "', NOW() )";
 		}
 
@@ -459,14 +459,14 @@ class Mobile_Marketing extends Base_Class {
 		foreach ( $value_chunks as $values ) {
 			// Insert 500
 			$this->db->query( 'INSERT INTO `mobile_subscribers` ( `website_id`, `phone`, `date_created` ) VALUES ' . implode( ',', $values ) );
-			
+
 			// Handle any error
 			if ( $this->db->errno() ) {
 				$this->_err( 'Failed to import subscribers.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -979,36 +979,6 @@ class Mobile_Marketing extends Base_Class {
 
 		return true;
 	}
-	
-	/**
-	 * Synchronize Subscribers from Mailchimp with our subscribers
-	 *
-	 * @return bool
-	 */
-	public function sync_subscribers_by_lists() {
-		$mobile_lists = $this->get_mobile_lists();
-		
-		if ( !$mobile_lists || 0 == count( $mobile_lists ) )
-			return false;
-		
-		// Make sure it's instantiated
-        if ( !$this->_get_am_lib('groups') )
-            return false;
-		
-		foreach ( $mobile_lists as $ml ) {
-			$subscribers = $this->am_groups->list_members( $ml['am_group_id'] );
-		}
-	}
-
-    /**
-     * Format Mobile List Name
-     *
-     * @param string $name
-     * @return string
-     */
-    private function _format_mobile_list_name( $name ) {
-        return substr( preg_replace( '/[^a-zA-Z0-9]/', '', $name ), 0, 32 );
-    }
 
 	/***** MOBILE MESSAGES *****/
 
@@ -1054,7 +1024,7 @@ class Mobile_Marketing extends Base_Class {
             $this->_err( 'Failed to create the mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		// Get the mobile message ID
 		$mobile_message_id = $this->db->insert_id;
 
@@ -1074,10 +1044,10 @@ class Mobile_Marketing extends Base_Class {
 	 */
 	public function update_message( $mobile_message_id, $title, $message, $date_sent, $mobile_list_ids, $future ) {
 		/*global $user;
-		
+
 		// Get the mobile list
         $message = $this->get_message( $mobile_message_id );
-		
+
         // Make sure it's instantiated
         if ( !$this->_get_am_lib('blast') )
             return false;
@@ -1272,6 +1242,142 @@ class Mobile_Marketing extends Base_Class {
 		return true;
 	}
 
+    /** Mobile Pages **/
+
+	/**
+	 * Create Page
+	 *
+	 * Adds a page to a mobile website website if the user has permissions 7 or higher
+	 *
+	 * @param string $slug
+	 * @param string $title
+     * @param string $content
+	 * @return int
+	 */
+	public function create_mobile_page( $slug, $title, $content ) {
+		global $user;
+
+		// Insert the page
+		$this->db->insert( 'mobile_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'content' => $content, 'date_created' => dt::date('Y-m-d H:i:s') ), 'issss' );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to create mobile page.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $this->db->insert_id;
+	}
+
+
+	/**
+	 * Updates page information
+	 *
+	 * @param int $mobile_page_id
+     * @param string $slug
+     * @param string $title
+	 * @param string $content
+	 * @return bool
+	 */
+	public function update_mobile_page( $mobile_page_id, $slug, $title, $content ) {
+		global $user;
+
+		// Update existing request
+		$this->db->update( 'mobile_pages', array( 'slug' => $slug, 'title' => $title, 'content' => $content ), array( 'mobile_page_id' => $mobile_page_id, 'website_id' => $user['website']['website_id'] ), 'sss', 'ii' );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to update mobile page.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * List Pages
+	 *
+	 * @param $variables array( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_pages( $variables ) {
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+
+		$pages = $this->db->get_results( "SELECT `mobile_page_id`, `slug`, `title`, `status`, `date_updated` FROM `mobile_pages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to list pages.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $pages;
+	}
+
+	/**
+	 * Count Pages
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_pages( $where ) {
+		$count = $this->db->get_var( "SELECT COUNT( `mobile_page_id` ) FROM `mobile_pages` WHERE 1 $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to count pages.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Gets a specific page by the page_id
+	 *
+	 * @param int $mobile_page_id
+	 * @return array
+	 */
+	public function get_mobile_page( $mobile_page_id ) {
+		// Typecast
+		$mobile_page_id = (int) $mobile_page_id;
+
+		// Get the page
+		$page = $this->db->get_row( "SELECT `mobile_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords` FROM `mobile_pages` WHERE `mobile_page_id` = $mobile_page_id", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get mobile page.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $page;
+	}
+
+
+	/**
+	 * Delete
+	 *
+	 * @param int $mobile_page_id
+	 * @return bool
+	 */
+	public function delete_mobile_page( $mobile_page_id ) {
+		global $user;
+
+		// Delete the website page
+		$this->db->prepare( 'DELETE FROM `mobile_pages` WHERE `mobile_page_id` = ? AND `website_id` = ?', 'ii', $mobile_page_id, $user['website']['website_id'] )->query('');
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to delete website page.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return true;
+	}
+
 	/***** OTHER FUNCTIONS *****/
 
     /**
@@ -1298,142 +1404,16 @@ class Mobile_Marketing extends Base_Class {
         return true;
     }
 
-	/** Mobile Pages **/
+     /**
+     * Format Mobile List Name
+     *
+     * @param string $name
+     * @return string
+     */
+    private function _format_mobile_list_name( $name ) {
+        return substr( preg_replace( '/[^a-zA-Z0-9]/', '', $name ), 0, 32 );
+    }
 
-	/**
-	 * Create Page
-	 *
-	 * Adds a page to a mobile website website if the user has permissions 7 or higher
-	 *
-	 * @param string $slug
-	 * @param string $title
-     * @param string $content
-	 * @return int
-	 */
-	public function create_mobile_page( $slug, $title, $content ) {
-		global $user;
-		
-		// Insert the page
-		$this->db->insert( 'mobile_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'content' => $content, 'date_created' => dt::date('Y-m-d H:i:s') ), 'issss' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to create mobile page.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $this->db->insert_id;
-	}
-	
-		
-	/**
-	 * Updates page information
-	 *
-	 * @param int $mobile_page_id
-     * @param string $slug
-     * @param string $title
-	 * @param string $content
-	 * @return bool
-	 */
-	public function update_mobile_page( $mobile_page_id, $slug, $title, $content ) {
-		global $user;
-		
-		// Update existing request
-		$this->db->update( 'mobile_pages', array( 'slug' => $slug, 'title' => $title, 'content' => $content ), array( 'mobile_page_id' => $mobile_page_id, 'website_id' => $user['website']['website_id'] ), 'sss', 'ii' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to update mobile page.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return true;
-	}
-	
-	
-	/**
-	 * List Pages
-	 *
-	 * @param $variables array( $where, $order_by, $limit )
-	 * @return array
-	 */
-	public function list_pages( $variables ) {
-		// Get the variables
-		list( $where, $order_by, $limit ) = $variables;
-		
-		$pages = $this->db->get_results( "SELECT `mobile_page_id`, `slug`, `title`, `status`, `date_updated` FROM `mobile_pages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to list pages.', __LINE__, __METHOD__ );
-			return false;
-		}
-			
-		return $pages;
-	}
-	
-	/**
-	 * Count Pages
-	 *
-	 * @param string $where
-	 * @return array
-	 */
-	public function count_pages( $where ) {
-		$count = $this->db->get_var( "SELECT COUNT( `mobile_page_id` ) FROM `mobile_pages` WHERE 1 $where" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to count pages.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $count;
-	}
-	
-	/**
-	 * Gets a specific page by the page_id
-	 *
-	 * @param int $mobile_page_id
-	 * @return array
-	 */
-	public function get_mobile_page( $mobile_page_id ) {
-		// Typecast
-		$mobile_page_id = (int) $mobile_page_id;
-		
-		// Get the page
-		$page = $this->db->get_row( "SELECT `mobile_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords` FROM `mobile_pages` WHERE `mobile_page_id` = $mobile_page_id", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to get mobile page.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $page;
-	}
-	
-	
-	/**
-	 * Delete
-	 *
-	 * @param int $mobile_page_id
-	 * @return bool
-	 */
-	public function delete_mobile_page( $mobile_page_id ) {
-		global $user;
-		
-		// Delete the website page
-		$this->db->prepare( 'DELETE FROM `mobile_pages` WHERE `mobile_page_id` = ? AND `website_id` = ?', 'ii', $mobile_page_id, $user['website']['website_id'] )->query('');
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to delete website page.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return true;
-	}
-	
 	/**
 	 * Report an error
 	 *
