@@ -38,7 +38,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get dashboard messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get dashboard messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -60,7 +60,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get dashboard subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get dashboard subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -83,7 +83,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -101,7 +101,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -122,7 +122,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -140,7 +140,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count mobile subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -164,7 +164,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get subscriber.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -173,7 +173,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -195,7 +195,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if phone exists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if phone exists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -230,7 +230,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to remove subscriber from list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to remove subscriber from list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -239,7 +239,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to unsubscribe subscriber.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to unsubscribe subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 				
@@ -285,7 +285,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create subscriber.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -351,7 +351,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update subscriber.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update subscriber.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -388,7 +388,7 @@ class Mobile_Marketing extends Base_Class {
 
             // Handle any error
             if ( $this->db->errno() ) {
-                $this->err( 'Failed to delete mobile associations.', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to delete mobile associations.', __LINE__, __METHOD__ );
                 return false;
             }
         }
@@ -412,7 +412,7 @@ class Mobile_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -437,7 +437,7 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get unsubscribed subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get unsubscribed subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -462,7 +462,7 @@ class Mobile_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to import subscribers.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to import subscribers.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -486,7 +486,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to list keywords.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to list keywords.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -504,7 +504,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to count keywords.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to count keywords.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -555,7 +555,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to create keyword.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to create keyword.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -614,7 +614,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to update keyword.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to update keyword.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -646,7 +646,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to get keyword.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to get keyword.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -655,7 +655,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to get mobile keyword lists.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to get mobile keyword lists.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -691,7 +691,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to delete keyword.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to delete keyword.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -746,7 +746,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to connect mobile keyword to lists.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to connect mobile keyword to lists.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -768,7 +768,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to delete mobile keyword to lists connections.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to delete mobile keyword to lists connections.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -791,7 +791,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -809,7 +809,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count mobile lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -833,7 +833,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -872,7 +872,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -902,7 +902,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to create dynamic mobile list.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to create dynamic mobile list.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -938,7 +938,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update mobile list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -973,7 +973,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete mobile list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete mobile list.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1051,7 +1051,7 @@ class Mobile_Marketing extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to create the mobile message.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to create the mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1089,7 +1089,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update mobile message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1123,7 +1123,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete message associations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete message associations.', __LINE__, __METHOD__ );
 
 			return false;
 		}
@@ -1142,7 +1142,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create mobile message associations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create mobile message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1163,7 +1163,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1181,7 +1181,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count mobile messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count mobile messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1206,7 +1206,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get mobile message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1216,7 +1216,7 @@ class Mobile_Marketing extends Base_Class {
 
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to get mobile lists.', __LINE__, __METHOD__ );
 				return false;
 			}
 
@@ -1252,7 +1252,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete mobile message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete mobile message.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1265,7 +1265,7 @@ class Mobile_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete mobile message associations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete mobile message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1299,57 +1299,7 @@ class Mobile_Marketing extends Base_Class {
     }
 
 	/** Mobile Pages **/
-	public function update_mobile_pages( $page_data ) {
-		global $user;
-		
-		$website_id = $user['website']['website_id'];
 
-		// Get current pages
-		$pages = $this->db->get_results( "SELECT a.`slug` FROM mobile_pages AS a WHERE a.`website_id` = " . $this->db->escape( $website_id ) . ";", ARRAY_A);
-		
-		// Reindex by page slugs
-		$pages = ar::assign_key( $pages, 'slug' );
-		
-		foreach( $page_data as $slug => $content ) {
-			// Page exists
-			if ( array_key_exists( $slug, $pages ) )
-				$result = $this->db->update( 'mobile_pages', array( 'content' => $content['content'], 'title' => $content['title'], 'updated_user_id' => $user['user_id'] ), array( 'slug' => $slug, 'website_id' => $website_id ), 'ssi', 'si' );
-			else // Page should be created
-				$result = $this->db->insert( 'mobile_pages', array( 'slug' => $slug, 'content' => $content['content'], 'title' => $content['title'], 'date_created' => dt::date('Y-m-d H:i:s'), 'website_id' => $website_id, 'status' => 1 ), 'ssssii' );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to update mobile pages', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-		}
-		
-		return true;
-		
-	}
-
-	public function get_mobile_pages( $website_id = false ) {
-		global $user;
-		
-		if ( !$website_id )
-			$website_id = $user['website']['website_id'];
-		
-		$website_id = (int) $website_id;
-		
-		// Get current pages
-		$pages = $this->db->get_results( "SELECT a.`mobile_page_id`, a.`slug`, a.`title`, a.`content`, a.`meta_title`, a.`meta_description`, a.`meta_keywords`, a.`status`, a.`updated_user_id`, a.`date_created`, a.`date_updated`  FROM mobile_pages AS a WHERE a.`website_id` = " . $this->db->escape( $website_id ) . ";", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update mobile pages', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return ( is_array( $pages) ) ? $pages : false;
-	}
-	
-		
 	/**
 	 * Create Page
 	 *
@@ -1357,49 +1307,43 @@ class Mobile_Marketing extends Base_Class {
 	 *
 	 * @param string $slug
 	 * @param string $title
-	 * @return bool
+     * @param string $content
+	 * @return int
 	 */
-	public function create_mobile_page( $slug, $title ) {
+	public function create_mobile_page( $slug, $title, $content ) {
 		global $user;
 		
-		if ( $user['role'] < 7 )
-			return false;
-		
 		// Insert the page
-		$this->db->insert( 'mobile_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'status' => 1, 'date_created' => dt::date('Y-m-d H:i:s') ), 'issis' );
+		$this->db->insert( 'mobile_pages', array( 'website_id' => $user['website']['website_id'], 'slug' => $slug, 'title' => $title, 'content' => $content, 'date_created' => dt::date('Y-m-d H:i:s') ), 'issss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create website page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create mobile page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return true;
+		return $this->db->insert_id;
 	}
 	
 		
 	/**
 	 * Updates page information
 	 *
-	 * @param int $website_page_id
+	 * @param int $mobile_page_id
      * @param string $slug
      * @param string $title
 	 * @param string $content
-	 * @param string $meta_title
-	 * @param string $meta_description
-	 * @param string $meta_keywords
 	 * @return bool
 	 */
-	public function update_mobile_page( $mobile_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords ) {
+	public function update_mobile_page( $mobile_page_id, $slug, $title, $content ) {
 		global $user;
 		
-		
 		// Update existing request
-		$this->db->update( 'mobile_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'mobile_page_id' => $mobile_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssi', 'ii' );
+		$this->db->update( 'mobile_pages', array( 'slug' => $slug, 'title' => $title, 'content' => $content ), array( 'mobile_page_id' => $mobile_page_id, 'website_id' => $user['website']['website_id'] ), 'sss', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get check if request exists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update mobile page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1417,11 +1361,11 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$pages = $this->db->get_results( "SELECT `mobile_page_id`, `slug`, `title`, `status`, UNIX_TIMESTAMP( `date_updated` ) AS date_updated FROM `mobile_pages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$pages = $this->db->get_results( "SELECT `mobile_page_id`, `slug`, `title`, `status`, `date_updated` FROM `mobile_pages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -1439,17 +1383,17 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count pages.', __LINE__, __METHOD__ );
 			return false;
 		}
-			
+		
 		return $count;
 	}
 	
-		/**
+	/**
 	 * Gets a specific page by the page_id
 	 *
-	 * @param int $website_page_id
+	 * @param int $mobile_page_id
 	 * @return array
 	 */
 	public function get_mobile_page( $mobile_page_id ) {
@@ -1461,17 +1405,11 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get mobile page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		// unencrypt data
-		if ( is_array( $page ) )
-		foreach ( $page as $k => $v ) {
-			$new_page[$k] = html_entity_decode( $v, ENT_QUOTES, 'UTF-8' );
-		}
-		
-		return $new_page;
+		return $page;
 	}
 	
 	
@@ -1484,16 +1422,12 @@ class Mobile_Marketing extends Base_Class {
 	public function delete_mobile_page( $mobile_page_id ) {
 		global $user;
 		
-		// Must have the proper role
-		if ( $user['role'] < 8 )
-			return false;
-		
 		// Delete the website page
 		$this->db->prepare( 'DELETE FROM `mobile_pages` WHERE `mobile_page_id` = ? AND `website_id` = ?', 'ii', $mobile_page_id, $user['website']['website_id'] )->query('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1511,7 +1445,7 @@ class Mobile_Marketing extends Base_Class {
      * @param bool $debug
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '', $debug = true ) {
+	private function _err( $message, $line = 0, $method = '', $debug = true ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method, $debug );
 	}
 }

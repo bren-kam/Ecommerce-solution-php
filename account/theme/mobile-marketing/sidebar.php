@@ -26,10 +26,10 @@
 		<a href="/mobile-marketing/lists/add-edit/" title="<?php echo _('Add Mobile List'); ?>" class="sub<?php if ( isset( $add_edit_mobile_list ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 
-	<a href="/mobile-marketing/pages/" title="<?php echo _('Mobile Pages'); ?>" class="top<?php if ( isset( $mobile_pages ) ) echo ' selected'; ?>"><?php echo _('Mobile Pages'); ?></a>
-	<a href="/mobile-marketing/pages/" class="sub<?php if ( isset( $mobile_pages ) ) echo ' selected"'; ?>" title="<?php echo _('Mobile Website'); ?>"><?php echo _('Mobile Website'); ?></a>
-    <?php if ( $user['role'] >= 7 ) { ?>
-        <a href="/mobile-marketing/add-page/" class="sub<?php if ( isset( $add_page ) ) echo ' selected'; ?>" title="<?php echo _('Add Mobile Page'); ?>"><?php echo _('Add Mobile Page'); ?></a>
+	<a href="/mobile-marketing/website/" class="top<?php if ( isset( $website ) ) echo ' selected"'; ?>" title="<?php echo _('Mobile Website'); ?>"><?php echo _('Mobile Website'); ?></a>
+    <?php if ( isset( $website ) ) { ?>
+    	<a href="/mobile-marketing/website/" title="<?php echo _('Pages'); ?>" class="sub<?php if ( isset( $website ) ) echo ' selected'; ?>"><?php echo _('Pages'); ?></a>
+        <a href="/mobile-marketing/website/add-edit/" class="sub<?php if ( isset( $add_page ) ) echo ' selected'; ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a>
     <?php } ?>
     
 	<!--

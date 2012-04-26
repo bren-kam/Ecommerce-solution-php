@@ -61,44 +61,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 
 css( 'jquery.uploadify' );
 javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'mobile-marketing/page' );
-/*
-switch ( $page['slug'] ) {
-	case 'contact-us':
-		css('website/pages/contact-us');
-		javascript('website/pages/contact-us');
-		list( $contacts, $multiple_location_map, $hide_all_maps ) = array_values( $w->get_pagemeta_by_key( $website_page_id, 'addresses', 'multiple-location-map', 'hide-all-maps' ) );
-	break;
-	
-	case 'current-offer':
-		// Need to get an attachment
-		$wa = new Website_Attachments;
-		javascript( 'website/pages/current-offer' );
-		$coupon = $wa->get_by_name( $website_page_id, 'coupon' );
-		
-		$metadata = $w->get_pagemeta_by_key( $website_page_id, 'email', 'display-coupon', 'email-coupon' );
-	break;
-	
-	case 'financing':
-		// Need to get an attachment
-		$wa = new Website_Attachments;
-		javascript('website/pages/financing');
-		
-		$apply_now = $wa->get_by_name( $website_page_id, 'apply-now' );
-		$apply_now_link = $w->get_pagemeta_by_key( $website_page_id, 'apply-now' );
-	break;
-	
-	case 'products':
-		$top = $w->get_pagemeta_by_key( $website_page_id, 'top' );
-	break;
-	
-	default:break;
-}
 
-if ( 'products' == $page['slug'] ) {
-    $page_title = $w->get_pagemeta_by_key( $website_page_id, 'page-title' );
-} else {*/
-    $page_title = $page['title'];
-//}*/
+$page_title = $page['title'];
 
 /***** NORMAL PAGE FUNCTIONS *****/
 

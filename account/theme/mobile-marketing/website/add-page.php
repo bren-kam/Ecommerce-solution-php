@@ -35,7 +35,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-page' ) 
 		$success = $m->create_mobile_page( $_POST['tSlug'], $_POST['tTitle'] );
 }
 
-javascript('mobile-marketing/pages');
+javascript('mobile-marketing/page');
 
 $selected = "mobile-marketing";
 $title = _('Add Page') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
