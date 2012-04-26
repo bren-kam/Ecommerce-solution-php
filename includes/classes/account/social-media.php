@@ -31,7 +31,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email sign up.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create email sign up.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -54,7 +54,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the email sign up.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the email sign up.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -76,7 +76,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email sign up.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update email sign up.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -99,7 +99,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create fan offer.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create fan offer.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -122,7 +122,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the fan offer.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the fan offer.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -150,7 +150,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update fan offer.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update fan offer.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -173,7 +173,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create sweepstakes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create sweepstakes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -198,7 +198,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the sweepstakes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the sweepstakes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -227,7 +227,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update sweepstakes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update sweepstakes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -250,7 +250,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create share and save.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create share and save.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -273,7 +273,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the share and save.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the share and save.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -302,7 +302,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update share and save.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update share and save.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -325,7 +325,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create facebook site.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create facebook site.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -348,7 +348,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the facebook site.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the facebook site.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -369,7 +369,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update the facebook site.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update the facebook site.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -403,7 +403,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create contact us.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create contact us.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -426,7 +426,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the contact us.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the contact us.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -447,7 +447,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update the contact us page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update the contact us page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -481,7 +481,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create about us.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create about us.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -504,7 +504,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the about us.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the about us.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -525,7 +525,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update the about us page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update the about us page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -548,7 +548,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -571,7 +571,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -592,7 +592,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update the products page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update the products page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -626,7 +626,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create current ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create current ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -649,7 +649,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the current ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the current ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -670,7 +670,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update the current ad page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update the current ad page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -693,7 +693,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create analytics.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create analytics.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -716,7 +716,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the analytics.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the analytics.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -739,7 +739,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create posting.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create posting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -762,7 +762,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get the posting.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get the posting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -787,7 +787,7 @@ class Social_Media extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create the posting post.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create the posting post.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -804,11 +804,11 @@ class Social_Media extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$posts = $this->db->get_results( "SELECT `sm_posting_post_id`, `post`, `error`, `status`, UNIX_TIMESTAMP( `date_posted` ) AS date_posted FROM `sm_posting_posts` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$posts = $this->db->get_results( "SELECT `sm_posting_post_id`, `post`, `error`, `status`, `date_posted` FROM `sm_posting_posts` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list posts.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list posts.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -826,7 +826,7 @@ class Social_Media extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count posting posts.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count posting posts.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -851,7 +851,7 @@ class Social_Media extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete posting post.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete posting post.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -868,7 +868,7 @@ class Social_Media extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
