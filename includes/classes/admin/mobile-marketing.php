@@ -274,11 +274,11 @@ class Mobile_Marketing extends Base_Class {
                 , 'subscription_opted_private' => '1'
             );
 
-            //$page = $c->post( 'greysuitmobile.com/manageContacts/action/action_contacts_export.php', $post_fields );
+            $page = $c->post( 'greysuitmobile.com/manageContacts/action/action_contacts_export.php', $post_fields );
 
-            //$success = preg_match( '/action="[^"]+"/', $page );
+            $success = preg_match( '/action="[^"]+"/', $page );
 
-            //if ( !$success )
+            if ( !$success )
                 //return false;
 			
 			// This is done to create a lag between export and download -- see function for more information
