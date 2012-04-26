@@ -1192,47 +1192,6 @@ class Websites extends Base_Class {
 		
 		return true;
 	}
-
-    /**
-     * Fix Timezones
-     *
-     * @temp
-     *
-     * @param string $table [optional]
-     * @return bool
-     */
-    public function fix_timezones( $table = 'website_settings' ) {
-        $old_timezones = data::timezones( false );
-        $new_timezones = data::timezones( false, '', true );
-
-        $website_timezones = $this->db->get_results( "SELECT `website_id`, `value` FROM `$table` WHERE `key` = 'timezone'", ARRAY_A );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website timezones.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        $website_timezones = ar::assign_key( $website_timezones, 'website_id', true );
-
-        // Prepare statement
-		$statement = $this->db->prepare( "UPDATE `$table` SET `value` = ? WHERE `website_id` = ? AND `key` = 'timezone'" );
-		$statement->bind_param( 'si', $timezone, $website_id );
-
-        foreach ( $website_timezones as $website_id => $tz ) {
-            $timezone = array_search( $old_timezones[$tz], $new_timezones );
-			$statement->execute();
-
-			// Handle any error
-			if ( $statement->errno ) {
-				$this->db->m->error = $statement->error;
-				$this->err( 'Failed to update website settings', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-
-        return true;
-    }
 	
 	/**
 	 * Report an error

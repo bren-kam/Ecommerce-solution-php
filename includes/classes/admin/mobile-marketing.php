@@ -33,13 +33,7 @@ class Mobile_Marketing extends Base_Class {
 		$website = $w->get_website( $website_id );
         $user = $u->get_user( $website['user_id'] );
 
-        // Login to Grey Suit Apps
-        $login_fields = array(
-            'username' => config::key('trumpia-admin-username')
-            , 'password' => config::key('trumpia-admin-password')
-        );
-
-        $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
+        $this->_login( $c );
 
         // Now that we're logged in, lets create the account
         $industries = $w->get_industries( $website_id );
@@ -200,10 +194,127 @@ class Mobile_Marketing extends Base_Class {
         $api_key = $matches[1];
 
         // Update the setting with the API Key. YAY!
-        $w->update_settings( $website_id, array( 'trumpia-api-key' => $api_key ) );
+        $w->update_settings( $website_id, array( 'trumpia-api-key' => $api_key, 'trumpia-user-id' => $user_id ) );
 
         return true;
 	}
+
+    /**
+     * Synchronize Account Contacts
+     *
+     * @return bool
+     */
+    public function synchronize_contacts() {
+        // Instantiate Classes
+        $c = new Curl();
+        $w = new Websites;
+
+        $user_ids = $this->db->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'trumpia-user-id'", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get user_ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        $user_ids = ar::assign_key( $user_ids, 'website_id', true );
+
+        if ( !is_array( $user_ids ) || 0 == count( $user_ids ) )
+            return false;
+
+        // Login
+        // Login to Grey Suit Apps
+        $login_fields = array(
+            'username' => config::key('trumpia-admin-username')
+            , 'password' => config::key('trumpia-admin-password')
+        );
+
+        $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
+
+        foreach ( $user_ids as $uid ) {
+            // Set settings
+            $c->get( "http://greysuitmobile.com/main/action/action_main.php?mode=x__admin_signin&uid=$uid" );
+
+            $page = $c->get( 'http://greysuitmobile.com/manageContacts/export_contacts_step1.php' );
+            preg_match_all( '/option value="([^"]+)"/', $page, $matches );
+
+            $list_ids = $matches[1];
+
+            if ( !is_array( $list_ids ) || 0 == count( $list_ids ) )
+                continue;
+
+            /**
+             * Intermediate Step -- not necessary
+             *
+             $post_fields = array(
+                'mylist' => ''
+                , 'addlist' => ''
+                , 'normal_data' => array( '5' ) // Lists
+                , 'contact_data' => array( '2' ) // Phone Number
+                , 'mode' => 'create'
+                , 'selected_list' => implode( ',', $list_ids )
+            );
+
+            $page = $c->post( 'http://greysuitmobile.com/manageContacts/export_contacts_result.php', $post_fields );
+            */
+
+            $post_fields = array(
+                'exportCount' => '1'
+                , 'export_list' => '["' . implode( '","', $list_ids ) . '"]'
+                , 'normal_data' => '["5"]' // Lists
+                , 'contact_data' => '["2"]' // Phone Number
+                , 'custom_data' => 'null'
+                , 'total_subscription_selected' => '1'
+                , 'subscription_opted_private' => '1'
+            );
+
+            //$page = $c->post( 'greysuitmobile.com/manageContacts/action/action_contacts_export.php', $post_fields );
+
+            //$success = preg_match( '/action="[^"]+"/', $page );
+
+            //if ( !$success )
+                //return false;
+
+            $page = $c->get( 'http://greysuitmobile.com/manageContacts/manage_contact_summary.php' );
+
+            preg_match( '/export_contacts_result\.php\?uid=([0-9]+)/', $page, $matches );
+
+            $export_id = $matches[1];
+
+            $excel_file = tempnam( '/tmp', 'gsr_' );
+            $excel_file_handle = fopen( $excel_file, 'w+' );
+
+            $page = $c->save_file( "http://greysuitmobile.com/manageContacts/action/action_export_download.php?uid=$export_id", $excel_file_handle );
+
+            fclose( $excel_file_handle );
+
+            // Load excel reader
+            library('Excel_Reader/Excel_Reader');
+            $er = new Excel_Reader();
+            // Set the basics and then read in the rows
+            $er->setOutputEncoding('ASCII');
+            $er->read( $excel_file );
+
+            fn::info( $er->sheets[0]['cells'] );
+            exit;
+        }
+    }
+
+    /**
+     * Login to the backend
+     *
+     * @param object $c Curl object
+     * @return string
+     */
+    private function _login( $c ) {
+         // Login to Grey Suit Apps
+        $login_fields = array(
+            'username' => config::key('trumpia-admin-username')
+            , 'password' => config::key('trumpia-admin-password')
+        );
+
+        return $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
+    }
 	
 	/**
 	 * Report an error
@@ -216,7 +327,7 @@ class Mobile_Marketing extends Base_Class {
      * @param bool $debug
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '', $debug = true ) {
+	private function _err( $message, $line = 0, $method = '', $debug = true ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method, $debug );
 	}
 }

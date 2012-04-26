@@ -30,12 +30,7 @@ $reach_info = $reaches->_get_friendly_info( $reach['meta'] );
 $ru = $u->get_user( $reach['user_id'] );
 $comments = $rc->get( $_GET['rid'] );
 
-// Auto assign feedback
-/*if ( 0 == $reach['assigned_to_user_id'] )
-	$reach['assigned_to_user_id'] = $reach->update_assigned_to( $_GET['rid'], $user['user_id'] );
- */
-
-$assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND role >=1 AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
+$assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND role >= 1 AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
  
 css( 'reaches/reach' );
 javascript( 'mammoth', 'reaches/reach' );
