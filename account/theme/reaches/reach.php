@@ -31,7 +31,7 @@ $ru = $u->get_user( $reach['user_id'] );
 $comments = $rc->get( $_GET['rid'] );
 
 $assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND role >= 1 AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
-$assignable_users[] = array( 'user_id' => $user['user_id'], 'contact_name' => $user['contact_name'] );
+$assignable_users[] = $u->get_user( $user['website']['user_id'] );
 
 css( 'reaches/reach' );
 javascript( 'mammoth', 'reaches/reach' );
