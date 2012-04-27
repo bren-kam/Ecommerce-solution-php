@@ -343,7 +343,7 @@ class Craigslist extends Base_Class {
             return true;
 
         // Add them!
-        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craiglist_ad_id`, `craiglist_market_id` ) VALUES $values" );
+        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES $values" );
 
         // Handle any error
 		if( $this->db->errno() ) {
