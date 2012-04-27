@@ -342,8 +342,9 @@ class format extends Base_Class {
 	public static function links_to_anchors( $string, $title_attribute = true, $new_window = false ) {
 		$title = ( $title_attribute ) ? ' title="\\1"' : '';
 		$target = ( $new_window ) ? ' target="_blank"' : '';
-		
-		return regexp::replace( $string, 'url', '<a href="\\1"' . $title . $target . '>\\1</a>' );
+
+        // Tricket to make sure there is always an http://
+		return str_replace( 'http://http', 'http', regexp::replace( $string, 'url', '<a href="http://\\1"' . $title . $target . '>\\1</a>' ) );
 	}
 	
 	/**
