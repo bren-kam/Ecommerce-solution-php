@@ -10,7 +10,7 @@ class WHM_API {
     /**
 	 * Constant paths to include files
 	 */
-	const URL_API = 'http://199.79.48.137:2087/json-api/';
+	const URL_API = 'https://199.79.48.137:2087/json-api/';
 	const DEBUG = false;
     const USERNAME = 'root';
     CONST HASH = '9943eb7e9b6bfa89d7ddea127cdb0b6a
@@ -72,7 +72,54 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
     public function app_list() {
         $response = $this->_execute( 'applist' );
 
-        return ( $this->success() ) ? $response->app : false
+        return ( is_array( $response->app ) ) ? $response->app : false;
+    }
+
+    /**
+     * Create Account
+     *
+     * @param string $username
+     * @param string $domain
+     * @param string $plan [optional]
+     * @param string $pkgname [optional]
+     * @param int $savepkg [optional]
+     * @param string $featurelist [optional]
+     * @param int $quota [optional]
+     * @param string $ip [optional]
+     * @param int $cgi [optional]
+     * @param int $frontpage [optional]
+     * @param int $hasshell [optional]
+     * @param string $contactemail [optional]
+     * @param string $cpmod [optional]
+     * @param string $maxftp [optional]
+     * @param string $maxsql [optional]
+     * @param string $maxpop [optional]
+     * @param string $maxlst [optional]
+     * @param string $maxsub [optional]
+     * @param string $maxpark [optional]
+     * @param string $maxaddon [optional]
+     * @param string $bwlimit [optional]
+     * @param string $customip [optional]
+     * @param string $language [optional]
+     * @param int $useregns [optional]
+     * @param int $hasuseregns [optional]
+     * @param int $reseller [optional]
+     * @param int $forcedns [optional]
+     * @param string $mxcheck [optional]
+     * @param int $MAX_EMAIL_PER_HOUR [optional]
+     * @param int $MAX_DEFER_FAIL_PERCENTAGE [optional]
+     * @param int $MIN_DEFER_FAIL_TO_TRIGGER_PROTECTION [optional]
+     * @return bool
+     */
+    public function create_account( $username, $domain, $plan = '', $pkgname = '', $savepkg = 0, $featurelist = '', $quota = 0, $ip = 'n', $cgi = 1,
+                                    $frontpage = 0, $hasshell = 0, $contactemail = '', $cpmod = 'x3', $maxftp = '10', $maxsql = '10', $maxpop = '50',
+                                    $maxlst = '50', $maxsub = '100', $maxpark = '100', $maxaddon = '100', $bwlimit = '0', $customip = '',
+                                    $language = '', $useregns = 1, $hasuseregns = 1, $reseller = 0, $forcedns = 1, $mxcheck = 'auto',
+                                    $MAX_EMAIL_PER_HOUR = 0, $MAX_DEFER_FAIL_PERCENTAGE = 0, $MIN_DEFER_FAIL_TO_TRIGGER_PROTECTION = 0 ) {
+
+        $this->_execute( 'createacct', compact( 'username', 'domain', 'plan', 'pkgname', 'savepkg', 'featurelist', 'quota', 'ip', 'cgi', 'frontpage', 'hasshell', 'contactemail', 'cpmod', 'maxftp', 'maxsql', 'maxpop', 'maxlst', 'maxsub', 'maxpark', 'maxaddon', 'bwlimit', 'customip', 'language', 'useregns', 'hasuseregns', 'reseller', 'forcedns', 'mxcheck', 'MAX_EMAIL_PER_HOUR', 'MAX_DEFER_FAIL_PERCENTAGE', 'MIN_DEFER_FAIL_TO_TRIGGER_PROTECTION' ) );
+
+        return $this->success();
     }
 
 	/************************/
