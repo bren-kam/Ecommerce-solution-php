@@ -1,4 +1,7 @@
 <?php
 
-$m = new Mobile_Marketing();
-$m->synchronize_contacts();
+library('whm-api');
+
+$whm = new WHM_API();
+
+fn::info( $whm->app_list() );

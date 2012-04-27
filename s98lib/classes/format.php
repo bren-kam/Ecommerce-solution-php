@@ -302,6 +302,7 @@ class format extends Base_Class {
 	 * @param string $str
 	 * @param string $tags the tags to remove
 	 * @param bool $strip_content (optional|false) whether to remove the content in the tags or not
+     * @return string
 	 */
 	public static function strip_only( $str, $tags, $strip_content = false ) {
 		$content = '';
@@ -333,10 +334,8 @@ class format extends Base_Class {
 	 * Converts links in text to anchor tags that link to those links
 	 * This does not take into account that there may already be links
 	 *
-	 * @uses regexp::replace
-	 * 
 	 * @param string $string
-	 * @param bool $title_tag (optional|true) whether you want the "title" attribute to be there (will match the link)
+	 * @param bool $title_attribute (optional|true) whether you want the "title" attribute to be there (will match the link)
 	 * @param bool $new_window (optional|false) whether the link should open a new tab/window
 	 * @return string
 	 */

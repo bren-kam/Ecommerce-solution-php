@@ -26,7 +26,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 	$status = ( 0 == $ticket['status'] ) ? ' (Open)' : ' (Closed)';
 	
 	// Add it to the comments list
-	$result = $tc->add( $_POST['tid'], $user['user_id'], nl2br( htmlentities( $content ) ), $_POST['p'], $_POST['a'] );
+	$result = $tc->add( $_POST['tid'], $user['user_id'], nl2br( format::links_to_anchors( htmlentities( $content ) ) ), $_POST['p'], $_POST['a'] );
 	
 	// If it's not private, send an email to the client
 	if ( '0' == $_POST['p'] )
