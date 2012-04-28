@@ -315,8 +315,21 @@ class Craigslist extends Base_Class {
         $craigslist_ad_id = (int) $craigslist_ad_id;
         $website_id = (int) $user['website']['website_id'];
 
-        // First delete all the current ones
-        $this->db->query( "DELETE a.* FROM `craigslist_ad_markets` AS a LEFT JOIN `craigslist_ads` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) WHERE a.`craigslist_ad_id` = $craigslist_ad_id AND b.`website_id` = $website_id" );
+        // Insert headlines
+        $values = '';
+
+        // Make it SQL Safe
+        foreach ( $craigslist_market_ids as &$cmid ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $cmid = (int) $cmid;
+
+            $values .= "( $craigslist_ad_id, $cmid )";
+        }
+
+        // Delete all the ones that are not there
+        $this->db->query( "DELETE a.* FROM `craigslist_ad_markets` AS a LEFT JOIN `craigslist_ads` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) WHERE a.`craigslist_ad_id` = $craigslist_ad_id AND a.`craigslist_market_id` NOT IN (" . implode( ',', $craigslist_market_ids ) . ")AND b.`website_id` = $website_id" );
 
         // Handle any error
 		if( $this->db->errno() ) {
@@ -324,26 +337,12 @@ class Craigslist extends Base_Class {
 			return false;
 		}
 
-        // Insert headlines
-        $values = '';
-
-        if ( is_array( $craigslist_market_ids ) )
-        foreach ( $craigslist_market_ids as $cmid ) {
-            if ( !empty( $values ) )
-                $values .= ',';
-
-            // Type Juggling
-            $cmid = (int) $cmid;
-
-            $values .= "( $craigslist_ad_id, $cmid )";
-        }
-
         // If there are no values to add, we're done
         if ( empty( $values ) )
             return true;
 
         // Add them!
-        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES $values" );
+        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES $values ON DUPLICATE KEY UPDATE `craigslist_ad_id` = $craigslist_ad_id" );
 
         // Handle any error
 		if( $this->db->errno() ) {
@@ -591,7 +590,7 @@ class Craigslist extends Base_Class {
             if ( empty( $oppid ) || '0' == $oppid )
                 unset( $old_primus_product_ids[$key] );
         }
-
+		
         if ( is_array( $old_primus_product_ids ) && count( $old_primus_product_ids ) > 0 ) {
             // Make sure we successfully remove the old IDs
             if ( !$craigslist->delete_ad_product( $old_primus_product_ids ) )
@@ -618,15 +617,15 @@ class Craigslist extends Base_Class {
 
         // Post the ad in each market
         foreach ( $markets as $m ) {
-            $response = array( 'status' => 'RETRY' );
+            $response = (object) array( 'status' => 'RETRY' );
             $i = 0;
 
-            while ( 'RETRY' == $response['status'] && $i < 10 ) {
+            while ( 'RETRY' == $response->status && $i < 10 ) {
                 $response = $craigslist->add_ad_product( $m['market_id'], $post_tags, $product_url, $product_image_url, $ad['price'], $ad['headlines'], $text );
-
-                if ( 'SUCCESS' == $response['status'] ) {
-                    $primus_product_ids[$m['craigslist_market_id']] = $response['product_id'];
-                } elseif ( 'ERROR' == $response['status'] ) {
+				
+                if ( 'SUCCESS' == $response->status ) {
+                    $primus_product_ids[$m['craigslist_market_id']] = $response->product_id;
+                } elseif ( 'ERROR' == $response->status ) {
                     $success = false;
                     break 2;
                 }
@@ -634,7 +633,7 @@ class Craigslist extends Base_Class {
                 $i++;
             }
         }
-
+		
         // Get the date
         $date = new DateTime();
 
@@ -645,10 +644,10 @@ class Craigslist extends Base_Class {
             $this->err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
             return false;
         }
-
+		
         // Update primus product links
 		$statement = $this->db->prepare( "UPDATE `craigslist_ad_markets` SET `primus_product_id` = ? WHERE `craigslist_ad_id` = $craigslist_ad_id AND `craigslist_market_id` = ?" );
-		$statement->bind_param( 'ii', $craigslist_market_id, $primus_product_id );
+		$statement->bind_param( 'ii', $primus_product_id, $craigslist_market_id );
 
 		foreach ( $primus_product_ids as $craigslist_market_id => $primus_product_id ) {
 			$statement->execute();
@@ -660,7 +659,7 @@ class Craigslist extends Base_Class {
 				return false;
 			}
 		}
-
+		
         return $success;
     }
 	
