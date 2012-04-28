@@ -314,16 +314,30 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_ad_id = (int) $craigslist_ad_id;
         $website_id = (int) $user['website']['website_id'];
+		
+		// Get current market ids
+		$current_craigslist_market_ids = $this->db->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get Current Craigslist Markets IDs.', __LINE__, __METHOD__ );
+			return false;
+		}
+
 
         // Insert headlines
         $values = '';
 
         // Make it SQL Safe
         foreach ( $craigslist_market_ids as &$cmid ) {
+            $cmid = (int) $cmid;
+			
+			// We only want to add the ones that we don't have
+			if ( in_array( $cmid, $current_craigslist_market_ids ) )
+				continue;
+			
             if ( !empty( $values ) )
                 $values .= ',';
-
-            $cmid = (int) $cmid;
 
             $values .= "( $craigslist_ad_id, $cmid )";
         }
