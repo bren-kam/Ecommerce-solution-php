@@ -240,8 +240,14 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
         curl_close($ch);
 
         // Set the response
-        $this->success = '1' == $this->response->status;
-        $this->message = $this->response->statusmsg;
+		if ( isset( $this->response->status ) ) {
+			$this->success = '1' == $this->response->status;
+			$this->message = $this->response->statusmsg;
+		} else {
+			$this->success = '1' == $this->response->result[0]->status;
+			$this->message = $this->response->result[0]->statusmsg;
+		}
+		
         $this->error = ( $this->success ) ? NULL : true;
 
         // If we're debugging lets give as much info as possible
