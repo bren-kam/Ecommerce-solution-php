@@ -130,6 +130,15 @@ class Websites extends Base_Class {
             $this->_err( 'Failed to insert email setting.', __LINE__, __METHOD__ );
             return false;
         }
+
+        // Update website username
+        $this->db->update( 'websites', array( 'ftp_username' => base64_encode( security::encrypt( $username, ENCRYPTION_KEY ) ) ), array( 'website_id' => $website_id ), 's', 'i' );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update website ftp username', __LINE__, __METHOD__ );
+			return false;
+		}
 			
         return true;
 	}

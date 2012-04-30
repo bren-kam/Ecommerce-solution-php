@@ -425,7 +425,7 @@ class Requests extends Base_Class {
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                     exit;
                 }
-				
+
 				// Setup DNS
 				library('r53');
 

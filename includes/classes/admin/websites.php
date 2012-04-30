@@ -1091,6 +1091,7 @@ class Websites extends Base_Class {
 	 *
 	 * @param int $website_id
 	 * @param array $keys (an array of $key => $value to insert into the settings )
+     * @return bool
 	 */
 	public function update_settings( $website_id, $keys ) {
 		// Type Juggling
