@@ -147,7 +147,7 @@ class security extends Base_Class {
 	 * @return string password
 	 */
 	public static function generate_password( $length = 12 ) {
-		$possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@#$%^&*()_-+=|}]{[":;,.?/';
+		$possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_-+=|}]{[":;,.?/';
 		
 		for ( $i = 1; $i <= $length; $i++ ):
 			$char = $possible[mt_rand( 0, strlen( $possible ) - 1 )];

@@ -32,7 +32,7 @@ class Tickets extends Base_Class {
 			$assigned_to_user_id = ( $user['role'] > 5 ) ? 493 : $user['website']['os_user_id']; 
 		}
 		
-		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => nl2br( htmlentities( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' ); 
+		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => nl2br( format::links_to_anchors( htmlentities( stripslashes( $message ) ), true , true ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

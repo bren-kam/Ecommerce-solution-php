@@ -44,6 +44,7 @@ get_header();
 						<option value="all"><?php echo _('All Accounts'); ?></option>
 						<option value="live"><?php echo _('Live'); ?></option>
 						<option value="staging"><?php echo _('Staging'); ?></option>
+						<option value="inactive"><?php echo _('Inactive'); ?></option>
 					</select>
 					</div>
 					<br clear="left" />

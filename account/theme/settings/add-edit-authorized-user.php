@@ -93,8 +93,10 @@ get_header();
 				echo "<p class='red'>$errs</p>";
 		?>
 		<form name="fAddEditAuthorizedUser" action="/settings/add-edit-authorized-user/<?php if ( $authorized_user_id ) echo "?uid=$authorized_user_id"; ?>" method="post">
-			<p><input type="text" class="tb" name="tEmail" tmpval="<?php echo _('Enter email...'); ?>" value="<?php echo $authorized_user['email']; ?>" size="35" /></p>
-			<br />
+			<?php if ( !$authorized_user_id ) { ?>
+                <p><input type="text" class="tb" name="tEmail" tmpval="<?php echo _('Enter email...'); ?>" value="<?php echo $authorized_user['email']; ?>" size="35" /></p>
+    			<br />
+            <?php } ?>
 			<p><strong><?php echo _('Section permissions:'); ?></strong></p>
 			<p>
 				<input type="checkbox" class="cb" name="cbPages" id="cbPages" value="1"<?php if ( '1' == $authorized_user['pages'] ) echo ' checked="checked"'; ?> /> <label for="cbPages"><?php echo _('Pages'); ?></label><br />

@@ -11,7 +11,7 @@ $dt = new Data_Table();
 
 // Set variables
 $dt->order_by( '`title`', '`status`', '`date_updated`' );
-$dt->add_where( " AND `website_id` = " . $user['website']['website_id'] );
+$dt->add_where( " AND `website_id` = " . (int) $user['website']['website_id'] );
 $dt->search( array( '`title`' => false ) );
 
 // Get pages

@@ -20,8 +20,12 @@ $source = $_GET['s'];
 if ( empty( $source ) )
 	url::redirect('/analytics/traffic-sources/');
 
+// Get start and end dates
+$date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : NULL;
+$date_end = (isset( $_GET['de'] ) ) ? $_GET['de'] : NULL;
+
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
+$a = new Analytics( $user['website']['ga_profile_id'], $date_start, $date_end );
 
 // Set global filter
 $filter = "source==$source";

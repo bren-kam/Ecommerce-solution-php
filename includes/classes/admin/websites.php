@@ -234,7 +234,7 @@ class Websites extends Base_Class {
 		// Get the websites
 		// $websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		// Original version ^, version below omits counting because it's difficult to get a 100% accurate count
-		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND a.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		foreach ( $websites as &$website ){
 			$website_id = $website['website_id'];
@@ -277,7 +277,7 @@ class Websites extends Base_Class {
 		
 		// @Fix -- shouldn't have to count the results
 		// Get the website count
-		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where AND a.`status` = 1 GROUP BY a.`website_id`", ARRAY_A ) );
+		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id`", ARRAY_A ) );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1192,47 +1192,6 @@ class Websites extends Base_Class {
 		
 		return true;
 	}
-
-    /**
-     * Fix Timezones
-     *
-     * @temp
-     *
-     * @param string $table [optional]
-     * @return bool
-     */
-    public function fix_timezones( $table = 'website_settings' ) {
-        $old_timezones = data::timezones( false );
-        $new_timezones = data::timezones( false, '', true );
-
-        $website_timezones = $this->db->get_results( "SELECT `website_id`, `value` FROM `$table` WHERE `key` = 'timezone'", ARRAY_A );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website timezones.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        $website_timezones = ar::assign_key( $website_timezones, 'website_id', true );
-
-        // Prepare statement
-		$statement = $this->db->prepare( "UPDATE `$table` SET `value` = ? WHERE `website_id` = ? AND `key` = 'timezone'" );
-		$statement->bind_param( 'si', $timezone, $website_id );
-
-        foreach ( $website_timezones as $website_id => $tz ) {
-            $timezone = array_search( $old_timezones[$tz], $new_timezones );
-			$statement->execute();
-
-			// Handle any error
-			if ( $statement->errno ) {
-				$this->db->m->error = $statement->error;
-				$this->err( 'Failed to update website settings', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-
-        return true;
-    }
 	
 	/**
 	 * Report an error

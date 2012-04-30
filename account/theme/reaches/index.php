@@ -11,12 +11,6 @@ global $user;
 if ( !$user )
 	login();
 
-//$_SESSION['tickets']['status'] = '0';
-//$_SESSION['tickets']['assigned-to'] = '0';
-
-//css( 'reaches/index' );
-//javascript( 'reaches/index' );
-
 $selected = 'reaches';
 $title = _('Reaches') . ' | ' . TITLE;
 get_header();
@@ -37,11 +31,11 @@ get_header();
 			<table ajax="/ajax/reaches/list/" perPage="100,250,500" cellpadding="0" cellspacing="0" width="100%" id="tListTickets">
 				<thead>
 					<tr>
-						<th width="15%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-						<th width="18%"><?php echo _('Assigned To'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-						<th width="15%"><?php echo _('Status'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-						<th width="15%"><?php echo _('Priority'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
-						<th width="8%"><?php echo _('Created'); ?><img src="/images/trans.gif" width="10" height="8" alt="" /></th>
+						<th width="15%"><?php echo _('Name'); ?></th>
+						<th width="18%"><?php echo _('Assigned To'); ?></th>
+						<th width="15%"><?php echo _('Status'); ?></th>
+						<th width="15%"><?php echo _('Priority'); ?></th>
+						<th width="8%"><?php echo _('Created'); ?></th>
 					</tr>
 				</thead>
 				<tbody>

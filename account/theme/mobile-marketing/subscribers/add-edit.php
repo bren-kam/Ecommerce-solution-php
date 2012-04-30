@@ -23,6 +23,7 @@ $mobile_subscriber_id = ( isset( $_GET['msid'] ) ) ? $_GET['msid'] : false;
 $v = new Validator();
 $v->form_name = 'fAddEditSubscriber';
 $v->add_validation( 'tPhone', 'req' , _('The "Phone" field is required') );
+$v->add_validation( 'tPhone', 'minlen=10' , _('The "Phone" field must be at least 10 digits') );
 $v->add_validation( 'tPhone', 'phone' , _('The "Phone" field may only contain a valid phone number') );
 $v->add_validation( 'cbMobileLists', 'req', _('You must choose at least one list') );
 
@@ -38,16 +39,19 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-sub
 	
 	// if there are no errors
 	if ( empty( $errs ) ) {
+        // We only want the number
+        $phone = preg_replace( '/[^0-9]/g', '', $_POST['tPhone'] );
+
 		if ( $mobile_subscriber_id ) {
 			// Update subscriber
-			$success = $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'], $_POST['cbMobileLists'] );
+			$success = $m->update_subscriber( $mobile_subscriber_id, $phone, $_POST['cbMobileLists'] );
 		} else {
 			// Add subscriber
-			if ( $subscriber = $m->subscriber_exists( $_POST['tPhone'] ) && '2' == $subscriber['status'] ) {
+			if ( $subscriber = $m->subscriber_exists( $phone ) && '2' == $subscriber['status'] ) {
 				$errs .= _('This subscriber has been unsubscribed by the user.') . '<br />';
 				$success = false;
 			} else {
-				$success = $m->create_subscriber( $_POST['tPhone'], $_POST['cbMobileLists'] );
+				$success = $m->create_subscriber( $phone, $_POST['cbMobileLists'] );
 				
 				if ( !$success )
 					$errs .= _('An error occurred while adding subscriber.') . '<br />';

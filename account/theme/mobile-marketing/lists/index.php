@@ -16,9 +16,6 @@ if ( !$user )
 if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
-$m = new Mobile_Marketing();
-//$m->sync_subscribers_by_lists();
-
 $selected = "mobile_marketing";
 $title = _('Mobile Lists') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
 get_header();

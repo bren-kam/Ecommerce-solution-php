@@ -12,10 +12,10 @@ $t = new Tickets;
 
 if ( '0' == $_POST['hTicketID'] ) {
 	// Create and get ticket id
-    $ajax->ok( $ticket_id = $t->create( $_POST['tTicketSummary'], $_POST['taTicket'] ), _('An error occurred while trying to create your ticket. Please refresh the page and try again') );
+    $ajax->ok( $ticket_id = $t->create( strip_tags( $_POST['tTicketSummary'] ), $_POST['taTicket'] ), _('An error occurred while trying to create your ticket. Please refresh the page and try again') );
 } else {
     // Update ticket
-	$ajax->ok( $t->update( $_POST['hTicketID'], $_POST['tTicketSummary'], $_POST['taTicket'], $_POST['hTicketImages'] ), _('An error occurred while trying to create your ticket. Please refresh the page and try again') );
+	$ajax->ok( $t->update( $_POST['hTicketID'], strip_tags( $_POST['tTicketSummary'] ), $_POST['taTicket'], $_POST['hTicketImages'] ), _('An error occurred while trying to create your ticket. Please refresh the page and try again') );
 
     // Get ticket id
     $ticket_id = $_POST['hTicketID'];

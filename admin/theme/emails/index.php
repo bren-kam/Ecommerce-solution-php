@@ -49,7 +49,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-template
 	}
 }
 
-$websites = $w->list_websites( "", "a.`title`", 1000 );
+$websites = $w->list_websites( " AND a.`status` = 1", "a.`title`", 1000 );
 $form_validation = $v->js_validation();
 
 css( 'form', 'emails/add_template' );

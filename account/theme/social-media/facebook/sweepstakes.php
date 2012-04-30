@@ -89,8 +89,8 @@ if ( !$sweepstakes ) {
 	$sweepstakes['start_date'] = strtotime( dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone ) );
 	$sweepstakes['end_date'] = strtotime( dt::adjust_timezone( '+1 weeks', config::setting('server-timezone'), $timezone ) );
 } else {
-	$start_date = ( 0 == $sweepstakes['start_date'] ) ? 'now' : $sweepstakes['start_date'];
-    $end_date = ( 0 == $sweepstakes['end_date'] ) ? '+1 weeks' : $sweepstakes['end_date'];
+	$start_date = ( 0 == $sweepstakes['start_date'] ) ? 'now' : dt::date( 'Y-m-d H:i:s', $sweepstakes['start_date'] );
+    $end_date = ( 0 == $sweepstakes['end_date'] ) ? '+1 weeks' : dt::date( 'Y-m-d H:i:s', $sweepstakes['end_date'] );
 
 	$sweepstakes['start_date'] = strtotime( dt::adjust_timezone( $start_date, config::setting('server-timezone'), $timezone ) );
     $sweepstakes['end_date'] = strtotime( dt::adjust_timezone( $end_date, config::setting('server-timezone'), $timezone ) );

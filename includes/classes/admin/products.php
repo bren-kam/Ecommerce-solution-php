@@ -40,7 +40,7 @@ class Products extends Base_Class {
 	 * @return array
 	 */
 	public function get( $product_id ) {
-		$product = $this->db->get_row( 'SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, c.`contact_name` AS created_user, d.`contact_name` AS updated_user  FROM `products` AS a LEFT JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `users` AS c ON ( a.`user_id_created` = c.`user_id` ) LEFT JOIN `users` AS d ON ( a.`user_id_modified` = d.`user_id` ) WHERE a.`product_id` = ' . (int) $product_id, ARRAY_A );
+		$product = $this->db->get_row( 'SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`website_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, c.`contact_name` AS created_user, d.`contact_name` AS updated_user, e.`title` AS website FROM `products` AS a LEFT JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `users` AS c ON ( a.`user_id_created` = c.`user_id` ) LEFT JOIN `users` AS d ON ( a.`user_id_modified` = d.`user_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE a.`product_id` = ' . (int) $product_id, ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

@@ -141,7 +141,7 @@ class Craigslist_API {
         // Add customer
         $response = $this->_execute( 'addadproduct', array( compact( 'market_id', 'tags', 'product_url', 'image_url', 'price', 'header', 'body' ) ) );
 
-        return ( 'SUCCESS' == $response[0]->status ) ? true : false;
+        return ( 'SUCCESS' == $response[0]->status ) ? $response[0] : false;
     }
 
     /**
