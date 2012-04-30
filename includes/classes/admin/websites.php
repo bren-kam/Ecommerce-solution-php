@@ -573,45 +573,14 @@ class Websites extends Base_Class {
 				}
 				
 				// Send .htaccess and config file
-				$web_domain = security::decrypt( base64_decode( $ftp_data['ftp_host'] ), ENCRYPTION_KEY );
 				$username = security::decrypt( base64_decode( $ftp_data['ftp_username'] ), ENCRYPTION_KEY );
-				$password = security::decrypt( base64_decode( $ftp_data['ftp_password'] ), ENCRYPTION_KEY );
-				
-				$ftp = new FTP( $website_id, "/public_html/" . $subdomain );
-				$ftp->cwd = "/public_html/" . $subdomain;
-				
-				if ( !$ftp->add( OPERATING_PATH . '/media/data/htaccess.txt', '', '.htaccess' ) )
-					return false;
 
-				if ( !$ftp->add( OPERATING_PATH . '/media/data/config.php', '' ) )
-					return false;
-				
-				
-				// Make the root directory writable
-				$ftp->chmod( 0777, '/public_html' . $subdomain2 );
-				
-				// Get data for SSH
-				//$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
-				//$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
-				
-				// System version
-				//$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
-				
 				// SSH Connection
 				$ssh_connection = ssh2_connect( '199.79.48.137', 22 );
 				ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
 				
-				// Checkout
-				//ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
-
                 // Copy files
-                ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/* /home/$username/public_html" . $subdomain2 );
-
-				// Install Cron
-				/*ssh2_exec( $ssh_connection, 'echo -e "MAILTO=\"systemadmin@imagineretailer.com\"
-0 03 * * * /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/daily.php > /dev/null
-0 23 * * 0 /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/weekly.php > /dev/null" | crontab' );
-				*/
+                ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/*.* /home/$username/public_html" . $subdomain2 );
 
 				// Update config & .htaccess file
 				$document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
@@ -620,37 +589,15 @@ class Websites extends Base_Class {
 				ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
 				
 				// Must use FTP to assign folders under the right user
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/' . $web['theme'] );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/cache' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/cache/css' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/cache/js' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/files' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/images' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/pdf' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/video' );
-				
-				// Change the cache directories to writeable
-				$ftp->chmod( 0777, '/public_html/' . $subdomain . 'custom/cache' );
-				$ftp->chmod( 0777, '/public_html/' . $subdomain . 'custom/cache/css' );
-				$ftp->chmod( 0777, '/public_html/' . $subdomain . 'custom/cache/js' );
-				
-				// Copy the shopping cart images
-				ssh2_exec( $ssh_connection, "cp -R {$document_root}/media/images/shopping_cart/ {$document_root}/custom/uploads/images/shopping_cart/" );
-				
-				// Copy the newsletter image
-				ssh2_exec( $ssh_connection, "cp -R {$document_root}/media/images/buttons/sign-up.png {$document_root}/custom/uploads/images/buttons/sign-up.png" );
-				
-				// Remove .svn/_notes folders
-				//ssh2_exec( $ssh_connection, "find {$document_root}/custom/uploads/images/shopping_cart/ -name '.svn' -o -name '_notes' -exec rm -rf {} \;" );
-				
-				// Change owner of shopping_cart folder
-				ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/custom/uploads/images/shopping_cart" );
-				
-				// Set to normal permissions
-				$ftp->chmod( 0755, '/public_html' . $subdomain2 );
-				
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom" );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/" . $web['theme'] );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache" );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/css" );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/js" );
+
+                ssh2_exec( "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
+                ssh2_exec( "chown -R $username:$username /home/$username/public_html/{$subdomain}" );
+
 				// Updated website version
 				$this->update_website_version( '1', $website_id );
 				
@@ -679,18 +626,9 @@ class Websites extends Base_Class {
 					$this->err( 'Failed to insert website sidebar attachments.', __LINE__, __METHOD__ );
 					return false;
 				}
-				
-				// Create website settings
-				$this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( $website_id, 'page_room-planner-slug', 'plan-your-room' ), ( $website_id, 'page_room-planner-title', 'Plan Your Room' )" );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->err( 'Failed to insert website settings.', __LINE__, __METHOD__ );
-					return false;
-				}
-				
+
 				// Create default email list
-				$email_list_result = $this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+				$this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
