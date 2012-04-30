@@ -161,7 +161,7 @@ get_header();
         if ( !empty( $zone_id ) ) {
 		?>
             <a href="<?php echo url::add_query_arg( 'a', 'delete' ); ?>" class="button" title="<?php echo _('Delete Zone File'); ?>"><?php echo _('Delete Zone File'); ?></a>
-            <br />
+            <br /><br />
             <form name="fEditDNS" action="" method="post">
             <table cellpadding="0" cellspacing="0">
                 <tr>
