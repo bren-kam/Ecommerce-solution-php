@@ -37,7 +37,7 @@ class Websites extends Base_Class {
         $ssh_connection = ssh2_connect( '199.79.48.137', 22 );
         ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
 
-        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/*.* /home/$username/public_html" . $subdomain2 );
+        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" . $subdomain2 );
 
         // Update config & .htaccess file
         $document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
