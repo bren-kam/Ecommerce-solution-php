@@ -194,6 +194,9 @@ class Analytics extends Base_Class {
         // See if there were any results
         $results = $this->ga->getResults();
 
+        // Initialize variable
+        $traffic_sources_totals['total'] = 0;
+
         if ( is_array( $results ) )
         foreach ( $this->ga->getResults() as $result ) {
             $metrics = $result->getMetrics();
