@@ -74,6 +74,37 @@ class Requests extends Base_Class {
 	);
 	private $logged = false;
 	private $error = false;
+
+    /**
+     * Password Manager Group IDs
+     */
+    private $group_ids = array(
+        'A' => 342
+        , 'B' => 343
+        , 'C' => 345
+        , 'D' => 346
+        , 'E' => 347
+        , 'F' => 348
+        , 'G' => 349
+        , 'H' => 350
+        , 'I' => 364
+        , 'J' => 351
+        , 'K' => 352
+        , 'L' => 353
+        , 'M' => 354
+        , 'N' => 355
+        , 'O' => 356
+        , 'P' => 357
+        , 'Q' => 606
+        , 'R' => 358
+        , 'S' => 359
+        , 'T' => 360
+        , 'U' => 468
+        , 'V' => 405
+        , 'W' => 361
+        , 'X' => 669
+        , 'Z' => 829
+    );
 	
 	/**
 	 * Construct class will initiate and run everything
@@ -90,70 +121,13 @@ class Requests extends Base_Class {
 			error_reporting( E_ALL );
 
 		// Load everything that needs to be loaded
-		$this->init();
+		$this->_init();
 		
 		// Authenticate & load company id
-		$this->authenticate();
+		$this->_authenticate();
 		
 		// Parse method
-		$this->parse();
-	}
-	
-	/**
-	 * This authenticates the request and loads the company data
-	 *
-	 * @access private
-	 */
-	private function authenticate() {
-		// They didn't send an authorization key
-		if( !isset( $_POST['auth_key'] ) ) {
-			$this->add_response( array( 'success' => false, 'message' => 'no-authentication-key' ) );
-			
-			$this->error = true;
-			$this->error_message = 'There was no authentication key';
-			exit;
-		}
-
-        $auth_key = $this->db->escape( $_POST['auth_key'] );
-		$this->company_id = $this->db->get_var( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = '$auth_key'" );
-		
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
-			exit;
-		}
-		
-		// If failed to grab any company id
-		if( !$this->company_id ) {
-			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
-			
-			$this->error = true;
-			$this->error_message = 'There was no company to match API key';
-			exit;
-		}
-		
-		$this->statuses['auth'] = true;
-	}
-	
-	/**
-	 * This parses the request and calls the correct functions
-	 *
-	 * @access private
-	 */
-	private function parse() {
-		if( in_array( $_POST['method'], $this->methods ) ) {
-			$this->method = $_POST['method'];
-			$this->statuses['method_called'] = true;
-			
-			call_user_func( array( 'Requests', $_POST['method'] ) );
-		} else {
-			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
-			
-			$this->error = true;
-			$this->error_message = 'The method, "' . $_POST['method'] . '", is not a valid method.';
-			exit;
-		}
+		$this->_parse();
 	}
 	
 	/*************************/
@@ -172,7 +146,7 @@ class Requests extends Base_Class {
 	 */
 	private function add_order_item() {
 		// Gets parameters and errors out if something is missing
-		$order_item = $this->get_parameters( 'order_id', 'item', 'quantity', 'amount', 'monthly' );
+		$order_item = $this->_get_parameters( 'order_id', 'item', 'quantity', 'amount', 'monthly' );
 		
 		// Execute the command
 		$this->db->insert( 'order_items', $order_item, 'isidd' );
@@ -180,12 +154,12 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to add order item', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-add-order-item' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-add-order-item' ) );
 			exit;
 		}
 		
-		$this->add_response( array( 'success' => true, 'message' => 'success-add-order-item' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item['order_id'], true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-add-order-item' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item['order_id'], true );
 	}
 
     /**
@@ -199,7 +173,7 @@ class Requests extends Base_Class {
 	 */
 	private function craigslist_error() {
 		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'product_id', 'message' ) );
+		extract( $this->_get_parameters( 'product_id', 'message' ) );
 
         $primus_product_id = (int) $product_id;
         $message = $this->db->escape( $message );
@@ -210,12 +184,12 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to update craigslist ad with an error message', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-craigslist-error' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-craigslist-error' ) );
 			exit;
 		}
 
-		$this->add_response( array( 'success' => true, 'message' => 'success-craigslist-error' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nPrimus Product ID: " . $primus_product_id, true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-craigslist-error' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nPrimus Product ID: " . $primus_product_id, true );
 	}
 	
 	/**
@@ -228,7 +202,7 @@ class Requests extends Base_Class {
 	 */
 	private function create_order() {
 		// Gets parameters and errors out if something is missing
-		$order = $this->get_parameters( 'user_id', 'setup', 'monthly' );
+		$order = $this->_get_parameters( 'user_id', 'setup', 'monthly' );
 		
 		// Correct the field names
 		$order['total_amount'] = $order['setup'];
@@ -245,14 +219,14 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to create order', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-order' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-create-order' ) );
 			exit;
 		}
 		
 		$order_id = $this->db->insert_id;
 		
-		$this->add_response( array( 'success' => true, 'message' => 'success-create-order', 'order_id' => $order_id ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $order['user_id'] . "\nOrder ID:" . $order_id, true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-create-order', 'order_id' => $order_id ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $order['user_id'] . "\nOrder ID:" . $order_id, true );
 	}
 	
 	/**
@@ -274,7 +248,7 @@ class Requests extends Base_Class {
 	 */
 	private function create_user() {
 		// Gets parameters and errors out if something is missing
-		$personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip' );
+		$personal_information = $this->_get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip' );
 		$personal_information['password'] = md5( $personal_information['password'] );
 
         $email = $this->db->escape( $personal_information['email'] );
@@ -283,7 +257,7 @@ class Requests extends Base_Class {
 
         if( $this->db->errno() ) {
             $this->_err( 'Failed to get user', __LINE__, __METHOD__ );
-            $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
+            $this->_add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
             exit;
         }
 
@@ -295,7 +269,7 @@ class Requests extends Base_Class {
                 // If there was a MySQL error
                 if( $this->db->errno() ) {
                     $this->_err( 'Failed to create user', __LINE__, __METHOD__ );
-                    $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
+                    $this->_add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
                     exit;
                 }
             }
@@ -308,15 +282,15 @@ class Requests extends Base_Class {
             // If there was a MySQL error
             if( $this->db->errno() ) {
                 $this->_err( 'Failed to create user', __LINE__, __METHOD__ );
-                $this->add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
+                $this->_add_response( array( 'success' => false, 'message' => 'failed-create-user' ) );
                 exit;
             }
 
             $user_id = $this->db->insert_id;
         }
 		
-		$this->add_response( array( 'success' => true, 'message' => 'success-create-user', 'user_id' => (int) $user_id ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: $user_id", true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-create-user', 'user_id' => (int) $user_id ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: $user_id", true );
 	}
 	
 	/**
@@ -325,29 +299,36 @@ class Requests extends Base_Class {
 	 * @param int $user_id
 	 * @param string $domain
 	 * @param string $title
+     * @param string $plan_name
+     * @param string $plan_description
 	 * @param string $type
+	 * @param bool $pages
+	 * @param bool $product_catalog
 	 * @param bool $blog
 	 * @param bool $email_marketing
 	 * @param bool $shopping_cart
 	 * @param bool $seo
 	 * @param bool $room_planner
+     * @param bool $craigslist
+     * @param bool $social_media
 	 * @param bool $domain_registration
 	 * @param bool $additional_email_addresses
+     * @param int $pages
 	 * @return int|bool
 	 */
 	private function create_website() {
 		// Gets parameters and errors out if something is missing
-		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' );
+		$website = $this->_get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' );
 		$website['status'] = 1;
         $website['date_created'] = dt::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiiiis' );
+		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiiiii' );
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
 		
@@ -360,7 +341,7 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( "Failed to insert checklist.\n\nWebsite ID: $website_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
 		
@@ -373,7 +354,7 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 			exit;
 		}
 
@@ -384,14 +365,73 @@ class Requests extends Base_Class {
             // If there was a MySQL error
             if( $this->db->errno() ) {
                 $this->_err( "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-                $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                 exit;
             }
         }
 
+        // Create WHM account and setup Password
+        if ( '1' == $website['pages'] ) {
+            library('pm-api');
+
+            // First we need to create the group and the password
+            $pm = new PM_API( config::key('s98-pm-key') );
+
+            // Get the group ID
+            $group_id = $pm->create_group( $website['title'], $this->group_ids[strtoupper( $website['title'][0] )] );
+
+            if ( $group_id ) {
+                library('whm-api');
+                $whm = new WHM_API();
+                $c = new Companies();
+
+                // Make sure it's a unique username
+                $username = $this->_generate_username( $website['title'] );
+
+                while ( !$whm->account_summary( $username ) ) {
+                    $username = $this->_generate_username( $website['title'], true );
+                }
+
+                $password = security::generate_password();
+
+                // Create the password
+                $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, '199.79.48.137' );
+
+                if ( !$password_id ) {
+                    $this->_err( "Failed to create password:\n" . $pm->error(), __LINE__, __METHOD__ );
+                    $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                    exit;
+                }
+
+                // Get the domain
+                $domain = preg_replace( '/[^a-z]/', '', strtolower( $website['title'] ) );
+                $company = $c->get( $this->company_id );
+                $email = 'serveradmin@' . url::domain( $company['domain'], false );
+
+                // Now, create the WHM API accounts
+                if ( !$whm->create_account( $username, "$domain.blinkyblinky.me", 'Basic No Shopping Cart', $email ) ) {
+                    $this->_err( "Failed to create WHM/cPanel Account:\n" . $whm->error(), __LINE__, __METHOD__ );
+                    $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                    exit;
+                }
+
+                // Now install
+                $w = new Websites();
+
+                // Now, create the WHM API accounts
+                if ( !$w->install( $website_id, $username ) ) {
+                    $this->_err( "Failed to install website", __LINE__, __METHOD__ );
+                    $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                    exit;
+                }
+            }
+
+            return true;
+        }
+
 		// Everything was successful
-		$this->add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
 	}
 
     /**
@@ -402,13 +442,13 @@ class Requests extends Base_Class {
 	 */
 	private function update_social_media() {
 		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'website_id', 'website_social_media_add_ons' ) );
+		extract( $this->_get_parameters( 'website_id', 'website_social_media_add_ons' ) );
 
         // Make sure we can edit this website
-        $this->verify_website( $website_id );
+        $this->_verify_website( $website_id );
 
         if ( !is_array( $website_social_media_add_ons ) ) {
-            $this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
+            $this->_add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
             exit;
         }
 
@@ -434,7 +474,7 @@ class Requests extends Base_Class {
 
         // Check again to make sure it is an array
         if ( !is_array( $website_social_media_add_ons ) ) {
-            $this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
+            $this->_add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
             exit;
         }
 
@@ -450,12 +490,12 @@ class Requests extends Base_Class {
         // If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
 			exit;
 		}
 
-		$this->add_response( array( 'success' => true, 'message' => 'success-update-social-media' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-update-social-media' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
 	}
 
 	/**
@@ -477,14 +517,14 @@ class Requests extends Base_Class {
 	 */
 	private function update_user() {
 		// Gets parameters and errors out if something is missing
-		$personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' );
+		$personal_information = $this->_get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' );
 		
 		// Get the user_id, but we don't want it in the update data
 		$user_id = $personal_information['user_id'];
 		unset( $personal_information['user_id'] );
 		
 		// Make sure he exists, if not, create user
-		if( !$this->user_exists( $user_id ) ) {
+		if( !$this->_user_exists( $user_id ) ) {
 			$this->create_user();
 			return;
 		}
@@ -497,12 +537,12 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to update user', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
 			exit;
 		}
 		
-		$this->add_response( array( 'success' => true, 'message' => 'success-update-user' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-update-user' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
 	}
 	
 	/**
@@ -516,10 +556,10 @@ class Requests extends Base_Class {
 	 */
 	private function set_arb_subscription() {
 		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
+		extract( $this->_get_parameters( 'arb_subscription_id', 'website_id' ) );
 
         // Make sure we can edit this website
-        $this->verify_website( $website_id );
+        $this->_verify_website( $website_id );
 
         // Protection
 		$website_id = (int) $website_id;
@@ -530,12 +570,12 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( "Failed to set ARB subscription id.\n\nWebsite ID: $website_id\nARB Subscription ID:$arb_subscription_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-set-arb-subscription' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-set-arb-subscription' ) );
 			exit;
 		}
 
-		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
+		$this->_add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
 	}
 	
 	/***********************/
@@ -543,11 +583,36 @@ class Requests extends Base_Class {
 	/***********************/
 
     /**
+     * Generate Username
+     *
+     * Generates a username for WHM/cPanel based off the title of a website
+     *
+     * @param string $title
+     * @param bool $complicated [optional]
+     * @return string
+     */
+    private function _generate_username( $title, $complicated = false ) {
+        $pieces = explode( ' ', strtolower( $title ) ;
+        $increment = ( $complicated ) ? 2 : 0;
+
+        if ( is_array( $pieces ) && count( $pieces ) > 1 ) {
+            $username = substr( $pieces[0], 0, 4 );
+            $username .= substr( $pieces[1], 0, 2 + $increment );
+        } else {
+            $username = substr( $pieces[0], 0, 6 + $increment );
+        }
+
+        if ( $complicated )
+            $username .= rand( 1, 99 );
+
+        return $username;
+    }
+    /**
      * Check to make sure a website belongs to the company
      *
      * @param int $website_id
-\     */
-    private function verify_website( $website_id ) {
+     */
+    private function _verify_website( $website_id ) {
         // Type Juggling
         $website_id = (int) $website_id;
         $company_id = (int) $this->company_id;
@@ -558,13 +623,13 @@ class Requests extends Base_Class {
         // If there was a MySQL error
         if( $this->db->errno() ) {
 			$this->_err( "Could not verify Website ID: $website_id to Company ID: $company_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
 			exit;
 		}
 
         // Verify that it exists
         if ( !$verify_website_id ) {
-            $this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
+            $this->_add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
             exit;
         }
     }
@@ -575,7 +640,7 @@ class Requests extends Base_Class {
 	 * @param int $user_id
 	 * @return bool
 	 */
-	private function user_exists( $user_id ) {
+	private function _user_exists( $user_id ) {
         // Type Juggling
         $user_id = (int) $user_id;
         $company_id = (int) $this->company_id;
@@ -585,22 +650,22 @@ class Requests extends Base_Class {
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to check if user exists', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
 			exit;
 		}
 		
 		return ( $email ) ? true : false;
 	}
-
-	/**
+    
+    /**
 	 * This loads all the variables that we need
 	 *
 	 * @access private
 	 */
-	private function init() {
+	private function _init() {
 		// Make sure it's ssl
 		if( !security::is_ssl() ) {
-			$this->add_response( array( 'success' => false, 'message' => 'ssl-required' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'ssl-required' ) );
 			
 			$this->error = true;
 			$this->error_message = 'The request was made without SSL';
@@ -609,6 +674,63 @@ class Requests extends Base_Class {
 		
 		$this->statuses['init'] = true;
 	}
+    
+    /**
+	 * This authenticates the request and loads the company data
+	 *
+	 * @access private
+	 */
+	private function _authenticate() {
+		// They didn't send an authorization key
+		if( !isset( $_POST['auth_key'] ) ) {
+			$this->_add_response( array( 'success' => false, 'message' => 'no-authentication-key' ) );
+			
+			$this->error = true;
+			$this->error_message = 'There was no authentication key';
+			exit;
+		}
+
+        $auth_key = $this->db->escape( $_POST['auth_key'] );
+		$this->company_id = $this->db->get_var( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = '$auth_key'" );
+		
+		// If there was a MySQL error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
+			exit;
+		}
+		
+		// If failed to grab any company id
+		if( !$this->company_id ) {
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
+			
+			$this->error = true;
+			$this->error_message = 'There was no company to match API key';
+			exit;
+		}
+		
+		$this->statuses['auth'] = true;
+	}
+	
+	/**
+	 * This parses the request and calls the correct functions
+	 *
+	 * @access private
+	 */
+	private function _parse() {
+		if( in_array( $_POST['method'], $this->methods ) ) {
+			$this->method = $_POST['method'];
+			$this->statuses['method_called'] = true;
+			
+			call_user_func( array( 'Requests', $_POST['method'] ) );
+		} else {
+			$this->_add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
+			
+			$this->error = true;
+			$this->error_message = 'The method, "' . $_POST['method'] . '", is not a valid method.';
+			exit;
+		}
+	}
 	
 	/**
 	 * Add a response to be sent
@@ -616,11 +738,11 @@ class Requests extends Base_Class {
 	 * Adds data to the response that will be sent back to the client
 	 *
 	 * @param string|array $key this can contain the key OR an array of key => value pairs
-	 * @param string (optional) $value of the $key. Only optional if $key is an array
+	 * @param string $value (optional) $value of the $key. Only optional if $key is an array
 	 */
-	private function add_response( $key, $value = '' ) {
+	private function _add_response( $key, $value = '' ) {
 		if( empty( $value ) && !is_array( $key ) ) {
-			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'error' ) );
 			
 			$this->_err( "Tried to add a response without a valid key and value\n\nKey: \n----------\n" . fn::info( $key, false ) . "\n----------\n" . $value, __LINE__, __METHOD__ );
 		}
@@ -643,13 +765,13 @@ class Requests extends Base_Class {
 	 * @param mixed $args the args that contain the parameters to get
 	 * @return array $parameters
 	 */
-	private function get_parameters() {
+	private function _get_parameters() {
 		$args = func_get_args();
 		
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
-			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			$this->_err( "Call to get_parameters with incorrect arguments\n\nArguments:\n" . fn::info( $args ), __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'error' ) );
+			$this->_err( "Call to get_parameters with incorrect arguments\n\nArguments:\n" . fn::info( $args, false ), __LINE__, __METHOD__ );
 			exit;
 		}
 		
@@ -658,7 +780,7 @@ class Requests extends Base_Class {
 			// Make sure the argument is set
 			if( !isset( $_POST[$a] ) ) {
 				$message = 'Required parameter "' . $a . '" was not set for the method "' . $this->method . '".';
-				$this->add_response( array( 'success' => false, 'message' => $message ) );
+				$this->_add_response( array( 'success' => false, 'message' => $message ) );
 				
 				$this->error = true;
 				$this->error_message = $message;
@@ -680,7 +802,7 @@ class Requests extends Base_Class {
  	 * @param bool $success whether the call was successful
 	 * @param bool $set_logged (optional) whether to set the logged variable as true
 	 */
-	private function log( $type, $message, $success, $set_logged = true ) { 
+	private function _log( $type, $message, $success, $set_logged = true ) { 
 		// Set before hand so that a loop isn't caught in the destructor
 		if( $set_logged )
 			$this->logged = true;
@@ -692,7 +814,7 @@ class Requests extends Base_Class {
 			$this->_err( "Failed to add entry to log\n\nType: $type\nMessage:\n$message", __LINE__, __METHOD__ );
 			
 			// Let the client know that something broke
-			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
+			$this->_add_response( array( 'success' => false, 'message' => 'error' ) );
 		}
 	}
 	
@@ -711,9 +833,9 @@ class Requests extends Base_Class {
 				$message .= "\n";
 			}
 			
-			$this->log( 'error', 'Error: ' . $this->error_message . "\n\n" . rtrim( $message, "\n" ), false );
+			$this->_log( 'error', 'Error: ' . $this->error_message . "\n\n" . rtrim( $message, "\n" ), false );
 		} else {
-			$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+			$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 		}
 		
 		// Respond in JSON
