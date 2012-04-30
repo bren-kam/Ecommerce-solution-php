@@ -28,6 +28,8 @@ class Config {
         // Trumpia
         , 'trumpia-admin-username'  => 'greysuitretail'
         , 'trumpia-admin-password'  => 'V5JC7B#v691j'
+        // Studio98 PM API
+        , 's98-pm-key'              => '6c309c4529c7a979606f9a8b8d0fc668'
 	);
 
     /**

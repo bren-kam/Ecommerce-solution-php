@@ -42,8 +42,13 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-user' ) 
 	$errs = $v->validate();
 	
 	if ( empty( $errs ) ) {
-		if ( $user['role'] <= 8 ) $_POST['sCompany'] = $user['company_id'];	
+		if ( $user['role'] <= 8 )
+                $_POST['sCompany'] = $user['company_id'];
+
 		$success = $u->create( $_POST['sCompany'], $_POST['tEmail'], $_POST['pPassword'], $_POST['tContactName'], $_POST['tStoreName'], ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] ) );
+
+        if ( $success )
+            $errs = _('An email with that user already exists. Please use another email address.');
 	}
 }
 

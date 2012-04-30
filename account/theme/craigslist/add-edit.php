@@ -27,8 +27,6 @@ $v->add_validation( 'taDescription', 'maxlen=30000', _('The "Description" field 
 $v->add_validation( 'tPrice', 'req', _('The "Price" field is requried') );
 $v->add_validation( 'tPrice', 'float', _('The "Price" field may only contain numbers and a decimal point') );
 
-$v->add_validation( 'sCraigslistMarkets', 'req', _('The "Craigslist Markets" section is required') );
-
 // Add validation
 add_footer( $v->js_validation() );
 

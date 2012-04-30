@@ -326,7 +326,10 @@ get_header();
 			<?php 
 			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
-			?>
+
+            if ( 0 != $p['website_id'] )
+                echo '<h2 style="margin-top:0">', _('Custom Product'), ': ', $p['website'], '</h2>';
+            ?>
 			<input type="hidden" id="hProductID" name="hProductID" value="<?php echo ( isset( $p['product_id'] ) ) ? $p['product_id'] : ''; ?>" />
 			<div id="dNameContainer"><input type="text" name="tName" id="tName" title="<?php echo _('Product Name'); ?>" value="<?php echo ( isset( $p['name'] ) ) ? str_replace( '"', '&quot;', $p['name'] ) : _('Product Name'); ?>" maxlength="200" /></div>
 			<div id="dProductSlug" <?php echo ( isset( $p['slug'] ) ) ? '' : "class='hidden'"; ?>>

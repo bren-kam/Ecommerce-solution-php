@@ -124,13 +124,21 @@ class curl {
 	 * @return bool
 	 */
 	public function save_file( $url, $fp ) {
-		$ch = curl_init( $url );
+		if ( isset( $this->ch ) ) {
+			$ch = &$this->ch;
+			$close = false;
+		} else {
+			$ch = curl_init();
+		}
 		
+		curl_setopt( $ch, CURLOPT_URL, $url );
 		curl_setopt( $ch, CURLOPT_FILE, $fp );
 		curl_setopt( $ch, CURLOPT_HEADER, 0 );
+		curl_setopt( $ch, CURLOPT_BINARYTRANSFER, TRUE );
 		curl_exec( $ch );
 		
-		curl_close( $ch );
+		if ( $close )
+			curl_close( $ch );
 		
 		return true;
 	}
