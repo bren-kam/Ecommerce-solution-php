@@ -29,6 +29,7 @@ class Base_Class {
 	 * @param string $function (optional) the function
 	 * @param string $class (optional) the class name
 	 * @param string $method (optional) the class name
+     * @param bool $debug [optional]
 	 */
 	public function error( $message, $line = 0, $file = '', $dir = '', $function = '', $class = '', $method = '', $debug = true ) { 
 		if ( !empty( $_SERVER['QUERY_STRING'] ) )
@@ -79,7 +80,7 @@ class Base_Class {
 		fn::mail( DEBUG_EMAIL, "IR: {$section} Section Error", $message );
 		
 		// Show the error on the screen
-		if ( DEBUG && $debug )
+		if ( DEBUG && $debug && ( !defined('LIVE') || !LIVE ) )
 			$this->display_error( $message . fn::info( $input_data, false ) );
 	}
 	
