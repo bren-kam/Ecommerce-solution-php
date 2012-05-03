@@ -1238,14 +1238,14 @@ class Email_Marketing extends Base_Class {
 			$this->err( 'Failed to list email messages.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		// @Fix should be done in query
 		// Modify the timezone
 		if ( is_array( $messages ) ) {
 			$timezone = $this->get_setting( 'timezone' );
-			
+
 			foreach ( $messages as &$m ) {
-				$m['date_sent'] -= strtotime( dt::adjust_timezone( $m['date_sent'], config::setting('server-timezone'), $timezone ) );
+				$m['date_sent'] = strtotime( dt::adjust_timezone( $m['date_sent'], config::setting('server-timezone'), $timezone ) );
 			}
 		}
 		
