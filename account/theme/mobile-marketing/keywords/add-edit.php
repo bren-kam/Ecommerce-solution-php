@@ -23,7 +23,7 @@ $mobile_keyword_id = ( isset( $_GET['mkid'] ) ) ? $_GET['mkid'] : false;
 
 list( $used_keywords, $total_keywords ) = $m->get_keyword_usage();
 
-$full = $used_keywords >= $total_keywords;
+$full = !$mobile_keyword_id && $used_keywords >= $total_keywords;
 
 if ( !$full || isset( $_POST['_nonce'] ) ) {
     

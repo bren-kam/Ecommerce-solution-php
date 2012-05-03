@@ -77,17 +77,17 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
-			$fields['ftp_host'] = base64_encode( security::encrypt( $_POST['tFTPHost'], ENCRYPTION_KEY ) );
+			$fields['ftp_host'] = security::encrypt( $_POST['tFTPHost'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
 		if ( !empty( $_POST['tFTPUser'] ) ) {
-			$fields['ftp_username'] = base64_encode( security::encrypt( $_POST['tFTPUser'], ENCRYPTION_KEY ) );
+			$fields['ftp_username'] = security::encrypt( $_POST['tFTPUser'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
 		if ( !empty( $_POST['tFTPPassword'] ) ) {
-			$fields['ftp_password'] = base64_encode( security::encrypt( stripslashes( $_POST['tFTPPassword'] ), ENCRYPTION_KEY ) );
+			$fields['ftp_password'] = security::encrypt( stripslashes( $_POST['tFTPPassword'] ), ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
@@ -103,12 +103,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 			
 		// Extras
 		if ( !empty( $_POST['tWordPressUsername'] ) ) {
-			$fields['wordpress_username'] = base64_encode( security::encrypt( $_POST['tWordPressUsername'], ENCRYPTION_KEY ) );
+			$fields['wordpress_username'] = security::encrypt( $_POST['tWordPressUsername'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 
 		if ( !empty( $_POST['tWordPressPassword'] ) ) {
-			$fields['wordpress_password'] = base64_encode( security::encrypt( $_POST['tWordPressPassword'], ENCRYPTION_KEY ) );
+			$fields['wordpress_password'] = security::encrypt( $_POST['tWordPressPassword'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
@@ -137,10 +137,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 			'facebook-url' => $_POST['tFacebookURL']
 			, 'limited-products' => ( isset( $_POST['cbLimitedProducts'] ) ) ? 1 : 0
             , 'advertising-url' => $_POST['tAdvertisingURL']
-            , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY ) )
-            , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
-            , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
-            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( stripslashes( $_POST['tAshleyFTPPassword'] ), ENCRYPTION_KEY ) )
+            , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY, true )
+            , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY, true )
+            , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
+            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : security::encrypt( stripslashes( $_POST['tAshleyFTPPassword'] ), ENCRYPTION_KEY, true )
             , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
             , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
