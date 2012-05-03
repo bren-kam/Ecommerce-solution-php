@@ -99,11 +99,17 @@ switch ( $_GET['a'] ) {
     break;
     
     case 'delete':
-        if ( !empty( $zone_id ) )
+        if ( empty( $zone_id ) )
             break;
-        
-        if ( !$r53->deleteHostedZone( $zone_id ) )
-            break;
+			
+		if ( !$r53->deleteHostedZone( $zone_id ) ) {
+			$error = $r53->getError();
+			
+			if ( 'NoSuchHostedZone' != $error['code'] ) {
+				$errs = $error['error'];
+				break;
+			}
+		}
 	
         // Update the settings
         $w->update_settings( $website_id, array( 'r53-zone-id' => '' ) );
@@ -158,6 +164,9 @@ get_header();
 			}
 		}
         
+		if ( $errs )
+			echo "<p class='error'>$errs</p>";
+		
         if ( !empty( $zone_id ) ) {
 		?>
             <a href="<?php echo url::add_query_arg( 'a', 'delete' ); ?>" class="button float-right" title="<?php echo _('Delete Zone File'); ?>"><?php echo _('Delete Zone File'); ?></a>
