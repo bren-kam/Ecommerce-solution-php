@@ -159,7 +159,7 @@ class Craigslist_API {
         // Add customer
         $response = $this->_execute( 'deleteadproduct', $products );
 
-        return 'SUCCESS' == $response[0]->status;
+        return 'SUCCESS' == $response[0]->status || 'product already deleted.' == $response[0]->message;
     }
 
     /**

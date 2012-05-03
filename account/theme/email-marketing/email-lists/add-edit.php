@@ -41,10 +41,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-ema
 	if ( empty( $errs ) ) {
 		if ( $email_list_id ) {
 			// Update email list
-			$success = $e->update_email_list( $email_list_id, $_POST['tName'], $_POST['taDescription'] );
+			$success = $e->update_email_list( $email_list_id, stripslashes( $_POST['tName'] ), stripslashes( $_POST['taDescription'] ) );
 		} else {
 			// Create email list
-			$success = $e->create_email_list( $_POST['tName'], $_POST['taDescription'] );
+			$success = $e->create_email_list( stripslashes( $_POST['tName'] ), stripslashes( $_POST['taDescription'] ) );
 		}
 	}
 }

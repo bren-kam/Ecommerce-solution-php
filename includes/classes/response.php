@@ -74,4 +74,16 @@ class Response {
     public function get_response( $key ) {
         return ( isset( $this->data[$key] ) ) ? $this->data[$key] : false;
     }
+	
+	/**
+	 * Exception
+	 *
+     * @param FacebookApiException $exception
+	 * @return Response
+	 */
+	public static function fb_exception( $exception ) {
+		$result = $exception->getResult();
+		
+		return new Response( false, $result['error']['message'], $result['error']['code'] );
+	}
 }

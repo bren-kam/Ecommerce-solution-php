@@ -87,7 +87,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		}
 		
 		if ( !empty( $_POST['tFTPPassword'] ) ) {
-			$fields['ftp_password'] = base64_encode( security::encrypt( $_POST['tFTPPassword'], ENCRYPTION_KEY ) );
+			$fields['ftp_password'] = base64_encode( security::encrypt( stripslashes( $_POST['tFTPPassword'] ), ENCRYPTION_KEY ) );
 			$fields_safety .= 's';
 		}
 		
