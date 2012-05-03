@@ -140,7 +140,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY ) )
             , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
             , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
-            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
+            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( stripslashes( $_POST['tAshleyFTPPassword'] ), ENCRYPTION_KEY ) )
             , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
             , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
@@ -403,7 +403,7 @@ get_header();
                         </p>
                         <p>
                             <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
-                            <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                            <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ); ?>" class="tb" />
                         </p>
                         <p>
                             <input type="checkbox" class="cb" name="cbAshleyAlternateFolder" id="cbAshleyAlternateFolder" value="1"<?php if ( !empty( $settings['ashley-alternate-folder'] ) ) echo ' checked="checked"'; ?> />
