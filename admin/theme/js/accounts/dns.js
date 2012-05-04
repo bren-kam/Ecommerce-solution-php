@@ -43,9 +43,62 @@ function postLoad( $ ) {
 		parentTR.addClass('hidden');
 		$('input.disabled, select.disabled, textarea.disabled', parentTR).removeClass('disabled').attr( 'disabled', false );
 	});
-    
+
+    /**
+     * CNAME and A record validation
+     */
+    $('#fEditDNS').submit( function() {
+        var success = true;
+
+        $(this).find('.changes-type:visible').each( function() {
+            var changeType = $(this).val(), records = $(this).parents('tr:first').find('.changes-records:first');
+
+            if ( !validateType( changeType, records.val().split("\n") ) ) {
+                alert( 'The records you have entered do not match the type you have selected.' );
+                records.focus();
+                success = false;
+                return false;
+            }
+        });
+
+        return success;
+    });
+
 	// Temporary Value
 	tmpval('input[tmpval],textarea[tmpval]');
+}
+
+/**
+ * Validates the DNS type for A records and CNAME's for any validation.
+ *
+ * @param changeType
+ * @param records
+ */
+function validateType( changeType, records ) {
+    switch ( changeType ) {
+        case 'A':
+            // Check for IPs
+            var regex = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
+        break;
+
+        case 'CNAME':
+            // Check domains
+            var regex = /^(?:[-a-zA-Z0-9]+\.)*([-a-zA-Z0-9]+\.[a-zA-Z]{2,3}){1,2}$/;
+        break;
+
+        default:
+            return true;
+        break;
+    }
+
+    for ( var i in records ) {
+        var charPos = records[i].match( regex );
+
+        if ( null == charPos )
+            return false;
+    }
+
+    return true;
 }
 
 /**

@@ -171,7 +171,7 @@ get_header();
 		?>
             <a href="<?php echo url::add_query_arg( 'a', 'delete' ); ?>" class="button float-right" title="<?php echo _('Delete Zone File'); ?>"><?php echo _('Delete Zone File'); ?></a>
             <br class="clr" /><br />
-            <form name="fEditDNS" action="" method="post">
+            <form name="fEditDNS" id="fEditDNS" action="" method="post">
             <table cellpadding="0" cellspacing="0">
                 <tr>
                     <td><label><?php echo _('Domain'); ?>: </label></td>
@@ -236,10 +236,10 @@ get_header();
             </form>
             <table class="hidden" id="original">
                 <tr>
-                    <td class="top"><input type="text" name="changes[name][]" class="tb" tmpval="<?php echo _('Domain'); ?>" /><input type="hidden" class="action" name="changes[action][]" value="1" /></td>
+                    <td class="top"><input type="text" name="changes[name][]" class="tb changes-name" tmpval="<?php echo _('Domain'); ?>" /><input type="hidden" class="action" name="changes[action][]" value="1" /></td>
                     <td class="top">
-                        <select name="changes[type][]">
-                            <?php
+                        <select name="changes[type][]" class="changes-type">
+                        <?php
                             $types = array( 'A', 'CNAME', 'MX', 'NS' );
                             foreach ( $types as $type ) {
                                 ?>
@@ -247,8 +247,8 @@ get_header();
                             <?php } ?>
                         </select>
                     </td>
-                    <td class="top"><input type="text" name="changes[ttl][]" class="tb" tmpval="TTL" value="14400" /></td>
-                    <td class="top"><textarea name="changes[records][]" class="tmpval" cols="50" rows="3" tmpval="<?php echo _('Records - 1 per line'); ?>"><?php echo _('Records - 1 per line'); ?></textarea></td>
+                    <td class="top"><input type="text" name="changes[ttl][]" class="tb changes-ttl" tmpval="TTL" value="14400" /></td>
+                    <td class="top"><textarea name="changes[records][]" class="tmpval changes-records" cols="50" rows="3" tmpval="<?php echo _('Records - 1 per line'); ?>"><?php echo _('Records - 1 per line'); ?></textarea></td>
                     <td>
                         <a href="javascript:;" class="edit-record" title="<?php echo _('Edit Record'); ?>"><img src="/images/icons/edit.png" width="15" height="17" alt="<?php echo _('Edit Record'); ?>" /></a>
                         <a href="javascript:;" class="delete-record" title="<?php echo _('Delete Record'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete Record'); ?>" /></a>
