@@ -72,7 +72,7 @@ class security extends Base_Class {
 		mcrypt_module_close( $td );
 
         if ( $base64_encode )
-            $encrypted = $base64_encode( $encrypted );
+            $encrypted = base64_encode( $encrypted );
 
 		return $encrypted;
 	}
