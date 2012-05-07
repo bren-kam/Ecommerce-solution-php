@@ -24,7 +24,8 @@ $email_message_id = ( isset( $_GET['emid'] ) ) ? $_GET['emid'] : '';
 // Get email message
 $em = $e->get_email_message( $email_message_id );
 
-$timezone = $e->get_setting('timezone');
+$settings = $e->get_settings( 'from_name', 'from_email', 'timezone' );
+$timezone = $settings['timezone'];
 
 // Set the meta
 if ( 'offer' == $em['type'] ) {
@@ -58,6 +59,12 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'send_email' ); ?>
 	<div id="subcontent">
+        <?php if ( array_search( '', $settings ) ) { ?>
+            <p><?php echo _('One or more of your'), ' ', '<a href="/email-marketing/settings/" title="', _('Email Settings'), '">', _('email settings'), '</a> ', _('has not been set. Please update them and then come back.'); ?></p>
+            <br /><br />
+            <br /><br />
+            <br /><br />
+        <?php } else { ?>
 		<div id="tab-top">
 			<h2 class="tab selected" id="h2Step1"><a href="javascript:;" id="aStep1" class="step" title="<?php echo _('Step 1'); ?>"><?php echo _('Step 1'); ?></a></h2>
 			<h2 class="tab" id="h2Step2"><a href="javascript:;" id="aStep2" class="step" title="<?php echo _('Step 2'); ?>"><?php echo _('Step 2'); ?></a></h2>
@@ -353,6 +360,7 @@ get_header();
 			nonce::field( 'search', '_ajax_search' );
 			?>
 		</div>
+        <?php } ?>
 	</div>
 	<br /><br />
 </div>

@@ -51,10 +51,13 @@ class Route53
 	protected $__accessKey; // AWS Access key
 	protected $__secretKey; // AWS Secret key
 	protected $__host;
+	protected $__error;
+	protected $__errorCode;
 
 	public function getAccessKey() { return $this->__accessKey; }
 	public function getSecretKey() { return $this->__secretKey; }
 	public function getHost() { return $this->__host; }
+	public function getError() { return array( 'error' => $this->__error, 'code' => $this->__errorCode ); }
 
 	protected $__verifyHost = 1;
 	protected $__verifyPeer = 1;
@@ -245,11 +248,13 @@ class Route53
 		$zoneId = trim($zoneId, '/');
 
 		$rest = new Route53Request($this, $zoneId, 'DELETE');
-
+		
 		$rest = $rest->getResponse();
+		
 		if($rest->error === false && $rest->code !== 200) {
 			$rest->error = array('code' => $rest->code, 'message' => 'Unexpected HTTP status');
 		}
+		
 		if($rest->error !== false) {
 			$this->__triggerError('deleteHostedZone', $rest->error);
 			return false;
@@ -259,7 +264,7 @@ class Route53
 		{
 			return array();
 		}
-
+		
 		return $this->parseChangeInfo($rest->body->ChangeInfo);
 	}
 
@@ -527,22 +532,26 @@ class Route53
 	*
 	* @internal Used by member functions to output errors
 	* @param array $error Array containing error information
-	* @return string
+	* @return void
 	*/
 	public function __triggerError($functionname, $error)
 	{
 		if($error == false) {
-			trigger_error(sprintf("Route53::%s(): Encountered an error, but no description given", $functionname), E_USER_WARNING);
+            // sprintf("Route53::%s(): Encountered an error, but no description given", $functionname)
+			$this->__error = 'An error occurred while trying to process your request. Please refresh the page and try again.';
 		}
 		else if(isset($error['curl']) && $error['curl'])
 		{
-			trigger_error(sprintf("Route53::%s(): %s %s", $functionname, $error['code'], $error['message']), E_USER_WARNING);
+            // sprintf("Route53::%s(): %s %s", $functionname, $error['code'], $error['message']);
+			$this->__error = $error['message'];
+			$this->__errorCode = $error['code'];
 		}
 		else if(isset($error['Error']))
 		{
 			$e = $error['Error'];
-			$message = sprintf("Route53::%s(): %s - %s: %s\nRequest Id: %s\n", $functionname, $e['Type'], $e['Code'], $e['Message'], $error['RequestId']);
-			trigger_error($message, E_USER_WARNING);
+            // sprintf("Route53::%s(): %s - %s: %s\nRequest Id: %s\n", $functionname, $e['Type'], $e['Code'], $e['Message'], $error['RequestId'])
+			$this->__error = $e['Message'];
+			$this->__errorCode = $e['Code'];
 		}
 	}
 
@@ -613,7 +622,9 @@ final class Route53Request
 	* @return object | false
 	*/
 	public function getResponse() {
-
+		// Unset the error
+		$this->__error = NULL;
+		
 		$params = array();
 		foreach ($this->parameters as $var => $value)
 		{

@@ -10,7 +10,7 @@
 define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 
 /** Define LIVE if the website is live */
-define( 'LIVE', true );
+define( 'LIVE', false );
 
 /** Let other parts of the system know this is not the admin section */
 define( 'ADMIN', false );

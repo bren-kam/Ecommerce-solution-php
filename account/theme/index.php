@@ -38,6 +38,7 @@ get_header();
 				, 'shopping_cart'		=> array( 'shopping-cart/users', _('Shopping Cart') )
 				, 'craigslist'		=> array( 'craigslist', _('Craigslist Ads') )
 				, 'social_media'	=> array( 'social-media', _('Social Media') )
+                , 'mobile_marketing' => array( 'mobile-marketing', _('Mobile Marketing') )
 			);
 			
 			$keys = array_keys( $links );

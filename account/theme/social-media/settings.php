@@ -14,6 +14,7 @@ if ( !$user )
 // Instantiate Class
 $w = new Websites;
 
+// Get the settings
 $settings = array( 'timezone' );
 
 // Make sure it's a valid request
@@ -21,10 +22,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-setti
     $new_settings = array();
 
     foreach ( $settings as $k ) {
-        // Don't need to update this one
-        if ( 'banner-loading-color' == $k )
-            continue;
-
         $new_settings[$k] = $_POST[$k];
     }
 
@@ -33,27 +30,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-setti
 }
 
 // Get the settings
-$settings_array = $w->get_settings( $settings );
-
-// Determine default settings
-foreach ( $settings_array as $k => &$val ) {
-	if ( !empty( $val ) )
-		continue;
-		
-	switch ( $k ) {
-		case 'timezone':
-			$val = '';
-		break;
-	}
-	
-	$default_settings[$k] = $val;
-}
+$settings = $w->get_settings( 'timezone' );
 
 // Set default settings
 if ( isset( $default_settings ) && is_array( $default_settings ) )
 	$w->update_settings( $default_settings );
 
-$settings = $settings_array;
 
 $selected = "social_media";
 $title = _('Settings') . ' | ' . _('Social Media') . ' | ' . TITLE;

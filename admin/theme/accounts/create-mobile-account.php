@@ -23,16 +23,17 @@ if ( !$website )
     url::redirect('/accounts/');
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'create-trumpia-account' ) ) {
-	$success = $m->create_trumpia_account( $_GET['wid'], $_POST['sLevel'] );
+	$response = $m->create_trumpia_account( $_GET['wid'], $_POST['sMobilePlanID'] );
 
-    if ( $success ) {
+    if ( $response->success() ) {
         url::redirect("/accounts/edit/?wid=$website_id");
     } else {
-        $errs = _('An error occurred while trying to create the Mobile Marketing Account. Please try again.');
+        $errs = $response->message();
     }
 }
 
 css( 'form' );
+$plans = $m->get_plans();
 
 $selected = 'accounts';
 $title = _('Create Mobile Account') . ' | ' . _('Accounts') . ' | ' . TITLE;
@@ -51,19 +52,14 @@ get_header();
 		<form action="/accounts/create-mobile-account/?wid=<?php echo $website_id; ?>" name="fCreateTrumpiaAcocunt" id="fCreateTrumpiaAcocunt" method="post">
             <table cellpadding="0" cellspacing="0">
                 <tr>
-                    <td><label for="sLevel"><?php echo _('Mobile Marketing Level'); ?></label></td>
+                    <td><label for="sMobilePlanID"><?php echo _('Mobile Marketing Plan'); ?></label></td>
                     <td>
-                        <select name="sLevel" id="sLevel">
+                        <select name="sMobilePlanID" id="sMobilePlanID">
                             <?php
-                            $levels = array( 1, 2, 3, 4, 5 );
-
-                            foreach ( $levels as $level ) {
-                                $value = "level-$level";
-                                $name = _('Level') . ' ' . $level;
-
-                                $selected = ( isset( $_POST['sLevel'] ) && $_POST['sLevel'] == $value || !isset( $_POST['sLevel'] ) && 2 == $level ) ? ' selected="selected"' : '';
+                            foreach ( $plans as $plan ) {
+                                $selected = ( isset( $_POST['sMobilePlanID'] ) && $_POST['sMobilePlanID'] == $plan['mobile_plan_id'] || !isset( $_POST['sMobilePlanID'] ) && 2 == $plan['mobile_plan_id'] ) ? ' selected="selected"' : '';
                             ?>
-                            <option value="<?php echo $value; ?>"<?php echo $selected; ?>><?php echo $name; ?></option>
+                            <option value="<?php echo $plan['mobile_plan_id']; ?>"<?php echo $selected; ?>><?php echo $plan['name']; ?></option>
                             <?php } ?>
                         </select>
                     </td>

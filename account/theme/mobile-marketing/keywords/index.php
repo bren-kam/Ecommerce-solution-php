@@ -15,13 +15,17 @@ if ( !$user )
 if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
+$m = new Mobile_Marketing();
+
+list( $used_keywords, $total_keywords ) = $m->get_keyword_usage();
+
 $selected = "keywords";
 $title = _('Keywords') . ' | ' . _('Mobile Marketing') . ' |' . TITLE;
 get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Keywords'); ?></h1>
+	<h1><?php echo _('Keywords'), " ($used_keywords/$total_keywords)"; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'mobile-marketing/', 'keywords' ); ?>
 	<div id="subcontent">

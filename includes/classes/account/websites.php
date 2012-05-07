@@ -25,7 +25,7 @@ class Websites extends Base_Class {
         // Type Jugglin
         $website_id = (int) $website_id;
 
-		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `mobile_domain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id AND `status` = 1", ARRAY_A );
+		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id AND `status` = 1", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -360,7 +360,7 @@ class Websites extends Base_Class {
 		} elseif ( !is_array( $settings ) ) {
 			return;
 		}
-		
+
 		// Typecast
 		$website_id = (int) $user['website']['website_id'];
 		
@@ -376,13 +376,13 @@ class Websites extends Base_Class {
 		
 		// Get the settings
 		$settings_array = $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $website_id AND `key` IN ($sql_settings) ORDER BY `key`", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website_settings.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		$new_settings = ar::assign_key( $settings_array, 'key', true );
 
 		// @Fix should not loop queries

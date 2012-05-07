@@ -82,8 +82,13 @@ if ( isset( $_SESSION['tickets']['status'] ) ) {
 }
 
 // Grab only the right status
-if ( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] )
-	$where .= ( '-1' == $_SESSION['tickets']['assigned-to'] ) ? ' AND c.`role` <= ' . $user['role'] : ' AND c.`user_id` = ' . $_SESSION['tickets']['assigned-to'];
+if ( !empty( $_SESSION['tickets']['assigned-to'] ) && '0' != $_SESSION['tickets']['assigned-to'] ) {
+	if ( ( '-1' == $_SESSION['tickets']['assigned-to'] ) ) {
+        $where .=  ' AND c.`role` <= ' . $user['role'];
+    } else {
+        $where .= ( $user['role'] > 8 ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
+    }
+}
 
 $tickets = $t->list_tickets( $limit, $where, $order_by );
 $ticket_count = $t->count( $where );

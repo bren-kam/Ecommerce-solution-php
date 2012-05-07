@@ -77,7 +77,7 @@ get_header();
 		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $mobile_list_id ) ? _('Your mobile list has been updated successfully!') : _('Your mobile list has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/lists/" title="', _('Mobile Lists'), '">', _('view your mobile lists'), '</a>.'; ?></p>
+			<p><?php echo '<a href="/mobile-marketing/lists/" title="', _('Mobile Lists'), '">', _('Click here to view your mobile lists'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}

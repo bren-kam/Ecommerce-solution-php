@@ -319,11 +319,12 @@ class Requests extends Base_Class {
 	private function create_website() {
 		// Gets parameters and errors out if something is missing
 		$website = $this->_get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' );
+		$website['title'] = stripslashes( $website['title'] );
 		$website['status'] = 1;
         $website['date_created'] = dt::date('Y-m-d H:i:s');
 		
 		// Insert website
-		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiiiii' );
+		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiiiiiis' );
 
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
@@ -333,7 +334,7 @@ class Requests extends Base_Class {
 		}
 		
 		// Get the website ID
-		$website_id = $this->db->insert_id;
+		$website_id = (int) $this->db->insert_id;
 		
 		// Now we have to insert checklists
 		$this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
@@ -379,7 +380,7 @@ class Requests extends Base_Class {
 
             // Get the group ID
             $group_id = $pm->create_group( $website['title'], $this->group_ids[strtoupper( $website['title'][0] )] );
-
+			
             if ( $group_id ) {
                 library('whm-api');
                 $whm = new WHM_API();
@@ -388,12 +389,12 @@ class Requests extends Base_Class {
                 // Make sure it's a unique username
                 $username = $this->_generate_username( $website['title'] );
 
-                while ( !$whm->account_summary( $username ) ) {
+				while ( $whm->account_summary( $username ) ) {
                     $username = $this->_generate_username( $website['title'], true );
                 }
 
                 $password = security::generate_password();
-
+				
                 // Create the password
                 $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, '199.79.48.137' );
 
@@ -404,17 +405,17 @@ class Requests extends Base_Class {
                 }
 
                 // Get the domain
-                $domain = preg_replace( '/[^a-z]/', '', strtolower( $website['title'] ) );
+                $domain = preg_replace( '/[^a-z]/', '', strtolower( $website['title'] ) ) . '.blinkyblinky.me';
                 $company = $c->get( $this->company_id );
                 $email = 'serveradmin@' . url::domain( $company['domain'], false );
-
+				
                 // Now, create the WHM API accounts
-                if ( !$whm->create_account( $username, "$domain.blinkyblinky.me", 'Basic No Shopping Cart', $email ) ) {
-                    $this->_err( "Failed to create WHM/cPanel Account:\n" . $whm->error(), __LINE__, __METHOD__ );
+                if ( !$whm->create_account( $username, $domain, 'Basic No Shopping Cart', $email ) ) {
+                    $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $whm->message(), __LINE__, __METHOD__ );
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-                    exit;
+					exit;
                 }
-
+				
                 // Now install
                 $w = new Websites();
 
@@ -424,9 +425,16 @@ class Requests extends Base_Class {
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                     exit;
                 }
+
+				// Setup DNS
+				library('r53');
+
+				$r53 = new Route53( config::key('aws_iam-access-key'), config::key('aws_iam-secret-key') );
+				
+				// Add to domain.blinkyblinky.me
+		        $r53->changeResourceRecordSets( 'hostedzone/Z20FV3IPLIV928', array( $r53->prepareChange( 'CREATE', $domain . '.', 'CNAME', '14400', 'blinkyblinky.me.' ) ) );
             }
 
-            return true;
         }
 
 		// Everything was successful
@@ -592,8 +600,8 @@ class Requests extends Base_Class {
      * @return string
      */
     private function _generate_username( $title, $complicated = false ) {
-        $pieces = explode( ' ', strtolower( $title ) ;
-        $increment = ( $complicated ) ? 2 : 0;
+        $pieces = explode( ' ', preg_replace( '/[^a-z0-9 ]/', '', strtolower( $title ) ) );
+        $increment = ( $complicated ) ? 0 : 2;
 
         if ( is_array( $pieces ) && count( $pieces ) > 1 ) {
             $username = substr( $pieces[0], 0, 4 );

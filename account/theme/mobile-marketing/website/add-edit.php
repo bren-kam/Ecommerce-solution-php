@@ -86,7 +86,7 @@ get_header();
 		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $mobile_page_id ) ? _('Your page has been updated successfully!') : _('Your page has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/website/" title="', _('Pages'), '">', _('view your pages'), '</a>.'; ?></p>
+			<p><?php echo '<a href="/mobile-marketing/website/" title="', _('Pages'), '">', _('Click here to view your pages'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}
@@ -104,7 +104,7 @@ get_header();
             </div>
             <?php if ( 'home' != $page['slug'] ) { ?>
             <div id="dSlug">
-            	<span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user['website']['mobile_domain']; ?>/<span id="sSlug"><?php $slug = ( !$success && isset( $_POST['tSlug'] ) ) ? $_POST['tSlug'] : $page['slug']; echo $slug; ?></span><input type="text" name="tSlug" id="tSlug" maxlength="50" class="tb hidden" value="<?php echo $slug; ?>" />/</span>
+            	<span><strong><?php echo _('Link:'); ?></strong> http://m.<?php echo url::domain( $user['website']['domain'], false ); ?>/<span id="sSlug"><?php $slug = ( !$success && isset( $_POST['tSlug'] ) ) ? $_POST['tSlug'] : $page['slug']; echo $slug; ?></span><input type="text" name="tSlug" id="tSlug" maxlength="50" class="tb hidden" value="<?php echo $slug; ?>" />/</span>
                 &nbsp;
                 <a href="javascript:;" id="aCancelSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
                 <a href="javascript:;" id="aEditSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
