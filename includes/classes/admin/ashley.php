@@ -259,7 +259,6 @@ class Ashley extends Base_Class {
 				
 				
 				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
-					mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image");
 					$identical = false;
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 					
@@ -331,7 +330,6 @@ class Ashley extends Base_Class {
 
 				// Upload image if it's not blank
 				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
-					mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image");
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 					
 					if ( !in_array( $image_name, $images ) )

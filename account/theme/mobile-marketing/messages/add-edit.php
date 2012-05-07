@@ -104,7 +104,6 @@ get_header();
         <?php if ( $success ) { ?>
             <p class="success"><?php echo _('Your message has been successfully posted or scheduled!'); ?></p>
         <?php } ?>
-
         <form action="" method="post" name="fMobileMessage">
             <table>
                 <tr>

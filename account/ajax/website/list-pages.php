@@ -39,7 +39,7 @@ foreach ( $pages as $p ) {
 	
 	$data[] = array( $p['title'] . '<br />
 					<div class="actions">
-						<a href="http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . '/' . $p['slug'] . '/" title="' . _('View Page') . '" target="_blank">' . _('View') . '</a> |
+						<a href="http://' . $user['website']['domain'] . '/' . $p['slug'] . '/" title="' . _('View Page') . '" target="_blank">' . _('View') . '</a> |
 						<a href="/website/edit/?wpid=' . $p['website_page_id'] . '" title="' . _('Edit Page') . '">' . _('Edit') . '</a>' . $actions .
 					'</div>',
 					( $p['status'] ) ? _('Visible') : _('Not Visible'),

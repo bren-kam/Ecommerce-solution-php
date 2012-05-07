@@ -51,6 +51,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'mobile-marketing/', 'dashboard' ); ?>
 	<div id="subcontent">
+        <p><strong><?php echo _('Short Code'), ':</strong> ', '#96362'; ?></strong></p>
 		<?php if ( $messages[0] ) { ?>
 		<p><strong><?php echo _('Latest message:'); ?></strong> <?php echo format::limit_chars( $messages[0]['message'], 50 ); ?></p>
 		<?php } else { ?>

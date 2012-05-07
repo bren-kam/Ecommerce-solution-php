@@ -230,3 +230,5 @@ input.small-button {
 
 /* Temporary Values */
 .tmpval { color: #929292 }
+.float-right { float: right }
+.clr { clear: both }

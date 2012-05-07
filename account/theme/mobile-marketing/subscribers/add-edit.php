@@ -40,7 +40,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-sub
 	// if there are no errors
 	if ( empty( $errs ) ) {
         // We only want the number
-        $phone = preg_replace( '/[^0-9]/g', '', $_POST['tPhone'] );
+        $phone = preg_replace( '/[^0-9]/', '', $_POST['tPhone'] );
 
 		if ( $mobile_subscriber_id ) {
 			// Update subscriber
@@ -88,7 +88,7 @@ get_header();
 		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $mobile_subscriber_id ) ? _('Your subscriber has been updated successfully!') : _('Your subscriber has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/subscribers/" title="', _('Subscribers'), '">', _('view your subscribers'), '</a>.'; ?></p>
+			<p><?php echo '<a href="/mobile-marketing/subscribers/" title="', _('Subscribers'), '">', _('Click here to view your subscribers'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}

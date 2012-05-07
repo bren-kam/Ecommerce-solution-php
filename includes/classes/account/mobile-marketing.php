@@ -663,6 +663,30 @@ class Mobile_Marketing extends Base_Class {
     }
 
     /**
+     * Get Keyword Usage
+     *
+     * Determine total keywords and the amount they have left
+     *
+     * @return array( $used_keywords, $total_keywords )
+     */
+    public function get_keyword_usage() {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+        $keyword_usage = $this->db->get_row( "SELECT COUNT(a.`mobile_keyword_id`) AS used_keywords, c.`keywords` FROM `mobile_keywords` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `mobile_plans` AS c ON ( b.`value` = c.`mobile_plan_id` ) WHERE a.`website_id` = $website_id AND b.`key` = 'mobile-plan-id'", ARRAY_A );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->_err( 'Failed to get keyword usage lists.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return array( (int) $keyword_usage['used_keywords'], (int) $keyword_usage['keywords'] );
+    }
+
+    /**
      * Delete Keyword
      *
      * @param int $mobile_keyword_id

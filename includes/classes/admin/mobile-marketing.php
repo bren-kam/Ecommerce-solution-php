@@ -20,10 +20,10 @@ class Mobile_Marketing extends Base_Class {
 	 * Create a Trumpia Account
 	 *
      * @param int $website_id
-     * @param string $level
-     * @return bool
+     * @param string $mobile_plan_id
+     * @return Response
 	 */
-	public function create_trumpia_account( $website_id, $level ) {
+	public function create_trumpia_account( $website_id, $mobile_plan_id ) {
 		global $u;
 
         $w = new Websites;
@@ -87,7 +87,7 @@ class Mobile_Marketing extends Base_Class {
         $success = preg_match( '/action="[^"]+"/', $page );
 
         if ( !$success )
-            return false;
+            return new Response( false, _('Failed to create Trumpia customer') );
 
         // Get Member's User ID
         $list_page = $c->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $user['email'] ) . '&x=28&y=15' );
@@ -98,40 +98,17 @@ class Mobile_Marketing extends Base_Class {
         // Get USER ID
         $user_id = $matches[1];
 
-        // Assign Plan Level
-        switch ( $level ) {
-            case 'level-1':
-                $trumpia_plan = 36456;
-                $plus_credits = 490;
-            break;
+        // Get mobile plan
+        $plan = $this->get_plan( $mobile_plan_id );
 
-            default:
-            case 'level-2':
-                $trumpia_plan = 36455;
-                $plus_credits = 990;
-            break;
-
-            case 'level-3':
-                $trumpia_plan = 36457;
-                $plus_credits = 2490;
-            break;
-
-            case 'level-4':
-                $trumpia_plan = 36458;
-                $plus_credits = 4990;
-            break;
-
-            case 'level-5':
-                $trumpia_plan = 36459;
-                $plus_credits = 7490;
-            break;
-        }
+        // Determine how many more credits they need
+        $plus_credits = $plan['credits'] - 10;
 
         // Update Plan
         $update_plan_fields = array(
             'mode' => 'updatePlan'
             , 'member_uid' => $user_id
-            , 'arg1' => $trumpia_plan
+            , 'arg1' => $plan['trumpia_plan_id']
         );
 
         $update_plan = $c->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_plan_fields );
@@ -139,7 +116,7 @@ class Mobile_Marketing extends Base_Class {
         $success = '<script type="text/javascript">history.go(-1);</script>' == $update_plan;
 
         if ( !$success )
-            return false;
+            return new Response( false, _("Failed to update customer's plan") );
 
         // Update Credits
         $update_credits_fields = array(
@@ -153,7 +130,7 @@ class Mobile_Marketing extends Base_Class {
         $success = '<script type="text/javascript">history.go(-1);</script>' == $update_credits;
 
         if ( !$success )
-            return false;
+            return new Response( false, _("Failed to update customer's credits") );
 
         // Create API Key
         $api_fields = array(
@@ -167,7 +144,7 @@ class Mobile_Marketing extends Base_Class {
         $success = preg_match( '/action="[^"]+"/', $api_creation );
 
         if ( !$success )
-            return false;
+            return new Response( false, _('Failed to create API key') );
 
         // Assign API to All IP Addresses
         $assign_ip_fields = array(
@@ -185,7 +162,7 @@ class Mobile_Marketing extends Base_Class {
         $success = preg_match( '/action="[^"]+"/', $update_api );
 
         if ( !$success )
-            return false;
+            return new Response( false, _('Failed to update API Key to the right IP address') );
 
         // Get API Key
         $api_page = $c->get( 'http://greysuitmobile.com/admin/MemberManagement/apiCustomers.php' );
@@ -194,10 +171,66 @@ class Mobile_Marketing extends Base_Class {
         $api_key = $matches[1];
 
         // Update the setting with the API Key. YAY!
-        $w->update_settings( $website_id, array( 'trumpia-api-key' => $api_key, 'trumpia-user-id' => $user_id ) );
+        $w->update_settings( $website_id, array( 'trumpia-api-key' => $api_key, 'trumpia-user-id' => $user_id, 'mobile-plan-id' => $mobile_plan_id ) );
 
-        return true;
+        // Now we want to create the home page for mobile
+        $this->db->insert( 'mobile_pages', array( 'website_id' => $website_id, 'slug' => 'home', 'title' => 'Home', 'date_created' => dt::date('Y-m-d H:i:s') ), 'isss' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to insert mobile page.', __LINE__, __METHOD__ );
+			return new Response( false, _('Failed to create Mobile Home page') );
+		}
+
+        // We need to get their DNS zone if they are live
+        if ( '1' == $website['live'] && '1' == $website['pages'] ) {
+            library('r53');
+            $r53 = new Route53( config::key('aws_iam-access-key'), config::key('aws_iam-secret-key') );
+
+            $zone_id = $w->get_setting( $website_id, 'r53-zone-id' );
+            $r53->changeResourceRecordSets( $zone_id, array( $r53->prepareChange( 'CREATE', 'm.' . url::domain( $website['domain'], false ) .'.', 'A', '14400', '199.79.48.138' ) ) );
+        }
+
+        return new Response( true );
 	}
+
+    /**
+     * Get Plans
+     *
+     * @return array
+     */
+    public function get_plans() {
+        $plans = $this->db->get_results( 'SELECT * FROM `mobile_plans`', ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get plans.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $plans;
+    }
+
+    /**
+     * Get Plan
+     *
+     * @param int $mobile_plan_id
+     * @return array
+     */
+    public function get_plan( $mobile_plan_id ) {
+        // Type Juggling
+        $mobile_plan_id = (int) $mobile_plan_id;
+
+        $plan = $this->db->get_row( "SELECT `trumpia_plan_id`, `name`, `credits`, `keywords` FROM `mobile_plans` WHERE `mobile_plan_id` = $mobile_plan_id", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get plan.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $plan;
+    }
 
     /**
      * Synchronize Account Contacts

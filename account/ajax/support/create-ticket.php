@@ -22,7 +22,7 @@ if ( '0' == $_POST['hTicketID'] ) {
 }
 
 // Complete any checklist items that were specified
-if ( $user['role'] >= 7 && is_array( $_POST['sChecklistItems'] ) ) {
+if ( $user['role'] >= 7 && isset( $_POST['sChecklistItems'] ) ) {
     // Declare object
     $c = new Checklists;
 

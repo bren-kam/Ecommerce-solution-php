@@ -37,8 +37,7 @@ class Websites extends Base_Class {
         $ssh_connection = ssh2_connect( '199.79.48.137', 22 );
         ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
 
-        // Copy files
-        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/* /home/$username/public_html" . $subdomain2 );
+        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" . $subdomain2 );
 
         // Update config & .htaccess file
         $document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
@@ -47,14 +46,12 @@ class Websites extends Base_Class {
         ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
 
         // Must use FTP to assign folders under the right user
-        ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom" );
-        ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/theme" );
-        ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache" );
-        ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/css" );
-        ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/js" );
+        ssh2_exec( "mkdir -p /home/$username/public_html/custom/cache/css" );
+        ssh2_exec( "mkdir /home/$username/public_html/custom/theme" );
+        ssh2_exec( "mkdir /home/$username/public_html/custom/cache/js" );
 
-        ssh2_exec( "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
-        ssh2_exec( "chown -R $username:$username /home/$username/public_html/{$subdomain}custom/cache" );
+        ssh2_exec( "chmod -R 0777 /home/$username/public_html/custom/cache" );
+        ssh2_exec( "chown -R $username:$username /home/$username/public_html/" );
 
         // Insert pages
         $this->db->query( Pre_Data::pages_sql( $website_id ) );
@@ -130,6 +127,15 @@ class Websites extends Base_Class {
             $this->_err( 'Failed to insert email setting.', __LINE__, __METHOD__ );
             return false;
         }
+
+        // Update website username
+        $this->db->update( 'websites', array( 'ftp_username' => base64_encode( security::encrypt( $username, ENCRYPTION_KEY ) ), 'version' => 1 ), array( 'website_id' => $website_id ), 'si', 'i' );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to update website ftp username', __LINE__, __METHOD__ );
+			return false;
+		}
 			
         return true;
 	}

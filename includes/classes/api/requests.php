@@ -425,14 +425,14 @@ class Requests extends Base_Class {
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                     exit;
                 }
-				
+
 				// Setup DNS
 				library('r53');
 
 				$r53 = new Route53( config::key('aws_iam-access-key'), config::key('aws_iam-secret-key') );
 				
 				// Add to domain.blinkyblinky.me
-		        $r53->changeResourceRecordSets( 'hostedzone/Z20FV3IPLIV928', array( $r53->prepareChange( 'CREATE', $domain . '.', 'A', '14400', '199.79.48.138' ) ) );
+		        $r53->changeResourceRecordSets( 'hostedzone/Z20FV3IPLIV928', array( $r53->prepareChange( 'CREATE', $domain . '.', 'CNAME', '14400', 'blinkyblinky.me.' ) ) );
             }
 
         }

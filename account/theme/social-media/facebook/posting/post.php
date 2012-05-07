@@ -41,7 +41,19 @@ $now = new DateTime( dt::adjust_timezone( 'now', config::setting('server-timezon
 // Get the posting variable if it exists
 if ( 0 != $posting['fb_page_id'] ) {
 	$fb->setAccessToken( $posting['access_token'] );
-	$accounts = $fb->api( '/' . $posting['fb_user_id'] . '/accounts' );
+	
+	try {
+		$accounts = $fb->api( '/' . $posting['fb_user_id'] . '/accounts' );
+	} catch( Exception $e ) {
+		$response = Response::fb_exception( $e );
+		
+		switch ( $response->error_code() ) {
+			case 190:
+				$errs = _('Due to a recent change to your Facebook account, your Online Specialist needs to reconnect your Posting App to Facebook.');
+			break;
+		}
+	}
+	
 	$pages = ar::assign_key( $accounts['data'], 'id' );
 } elseif ( !$posting ) {
 	$posting = array(
@@ -159,7 +171,7 @@ get_header();
 					</table>
 					<?php nonce::field('fb-post'); ?>
 				</form>
-			<?php } else { ?>
+			<?php } elseif ( empty( $errs ) ) { ?>
 				<p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
 			<?php 
 			} 
