@@ -31,7 +31,9 @@
     	<a href="/mobile-marketing/website/" title="<?php echo _('Pages'); ?>" class="sub<?php if ( isset( $website ) ) echo ' selected'; ?>"><?php echo _('Pages'); ?></a>
         <a href="/mobile-marketing/website/add-edit/" class="sub<?php if ( isset( $add_page ) ) echo ' selected'; ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a>
     <?php } ?>
-    
+
+    <a href="/mobile-marketing/settings/" class="top<?php if ( isset( $settings ) ) echo ' selected'; ?>" title="<?php echo _('Settings'); ?>"><?php echo _('Settings'); ?></a>
+
 	<!--
 	<a href="/mobile-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>
 	<?php if ( isset( $autoresponders ) ) { ?>

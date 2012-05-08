@@ -16,34 +16,49 @@ if ( !$user['website']['mobile_marketing'] )
 	url::redirect('/');
 
 // Instantiate class
-$m = new Mobile_Marketing;
+$w = new Websites;
 
-// List of settings
-$empty_settings = array(
-);
+$settings = array( 'timezone' );
 
 // Initialize variables
 $success = false;
 
 // Make sure it's a valid request
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-settings' ) ) {
-    $settings = array();
-    $setting_keys = array_keys( $empty_settings );
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-settings' ) ) {
+    $new_settings = array();
 
-    // Assign new values for settings
-    foreach ( $setting_keys as $sk ) {
-        if ( !isset( $_POST[$sk] ) )
-            continue;
-
-        $settings[$sk] = $_POST[$sk];
+    foreach ( $settings as $k ) {
+        $new_settings[$k] = $_POST[$k];
     }
 
-    // Set settings
-    $success = $m->set_settings( $settings );
+    // Update the settings
+    $success = $w->update_settings( $new_settings );
 }
 
 // Get the settings
-$settings = array_merge( $empty_settings, $m->get_settings() );
+$settings_array = $w->get_settings( $settings );
+
+// Determine default settings
+foreach ( $settings_array as $k => &$val ) {
+	if ( !empty( $val ) )
+		continue;
+
+	switch ( $k ) {
+		case 'timezone':
+			$val = '';
+		break;
+	}
+
+	$default_settings[$k] = $val;
+}
+
+// Set default settings
+if ( isset( $default_settings ) && is_array( $default_settings ) )
+	$w->update_settings( $default_settings );
+
+$settings = $settings_array;
+
+$timezone = ( !$success && !empty( $_POST['timezone'] ) ) ? $_POST['timezone'] : $settings['timezone'];
 
 $selected = "mobile_marketing";
 $title = _('Settings') . ' | ' . _('Mobile Marketing') . ' | ' . TITLE;
@@ -67,14 +82,24 @@ get_header();
 		?>
 		<form name="fSettings" action="/mobile-marketing/settings/" method="post">
 		<table cellpadding="0" cellspacing="0">
-			
+			<tr>
+                <td><label for="timezone"><?php echo _('Timezone'); ?>:</label></td>
+                <td>
+                    <select name="timezone" id="timezone">
+                        <?php
+                        $timezone = ( !$success && !empty( $_POST['timezone'] ) ) ? $_POST['timezone'] : $settings['timezone'];
+                        data::timezones( true, $timezone, true );
+                        ?>
+                    </select>
+                </td>
+            </tr>
 			<tr><td colspan="2">&nbsp;</td></tr>
 			<tr>
 				<td>&nbsp;</td>
 				<td><input type="submit" value="<?php echo _('Save'); ?>" class="button" /></td>
 			</tr>
 		</table>
-		<?php nonce::field( 'edit-settings' ); ?>
+		<?php nonce::field( 'update-settings' ); ?>
 		</form>
 	</div>
 	<br /><br />
