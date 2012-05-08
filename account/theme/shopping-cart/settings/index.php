@@ -25,19 +25,21 @@ add_footer( $v->js_validation() );
 $success = false;
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'general-settings' ) ) {
-	$errs = $v->validate();
+    $errs = $v->validate();
 	
 	// if there are no errors
 	if ( empty( $errs ) )
-		$success = $w->update_settings( $settings );
+		$success = $w->update_settings( $_POST );
 }
 
 // Get the settings
-$settings = $w->get_settings( 'email-receipt' );
+$settings = $w->get_settings( 'email-receipt', 'receipt-message' );
 
 // Get the receipt
 $email_receipt = $settings['email-receipt'];
+$receipt_message = $settings['receipt-message'];
 
+javascript('mammoth');
 $title = _('Settings') . ' | ' . _('Shopping Cart') . ' | ' . TITLE;
 $page = 'settings';
 get_header();
@@ -56,11 +58,15 @@ get_header();
 		if ( isset( $errs ) )
 				echo "<p class='error'>$errs</p>";
 		?>
-        <form name="fGeneralSettings" id="fGeneralSettings" action="/shopping-cart/general-settings/" method="post">
+        <form name="fGeneralSettings" id="fGeneralSettings" action="/shopping-cart/settings/" method="post">
         <table cellpadding="0" cellspacing="0" width="100%">
             <tr>
                 <td width="150"><label for="email-receipt"><?php echo _('Email Receipt'); ?>:</label></td>
                 <td><input type="text" class="tb" name="email-receipt" id="email-receipt" value="<?php echo $email_receipt; ?>" maxlength="150" /></td>
+            </tr>
+            <tr>
+                <td class="top"><label for="receipt-message"><?php echo _('Receipt Message'); ?>:</label></td>
+                <td><textarea name="receipt-message" id="receipt-message" rte="1"><?php echo $receipt_message; ?></textarea></td>
             </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
