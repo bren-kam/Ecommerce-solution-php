@@ -150,6 +150,21 @@ class GSR_API {
 		return ( $this->success ) ? $this->response->website_id : false;
 	}
 
+    /**
+	 * Add Note
+	 *
+	 * @param int $website_id
+	 * @param int $user_id
+	 * @param string $message
+	 * @return bool
+	 */
+	public function add_note( $website_id, $user_id, $message ) {
+		// Execute the command
+		$this->_execute( 'add_note', compact( 'website_id', 'user_id', 'message' ) );
+
+		return $this->success;
+	}
+
 	/**
 	 * Update Social media
 	 *
