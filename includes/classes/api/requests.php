@@ -53,7 +53,7 @@ class Requests extends Base_Class {
 		'create_order',
 		'create_user',
 		'create_website',
-        'add-note',
+        'add_note',
         'update-social-media',
 		'update_user',
 		'set_arb_subscription',
