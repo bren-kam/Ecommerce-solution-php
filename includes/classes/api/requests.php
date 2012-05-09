@@ -26,6 +26,7 @@ class Requests extends Base_Class {
 		'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.',
 		'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.',
 		'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.',
+        'failed-add-note' => 'Add Note failed. Please verify you have sent the correct parameters.',
         'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.',
 		'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.',
 		'failed-set-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.',
@@ -36,6 +37,7 @@ class Requests extends Base_Class {
 		'success-create-order' => 'Create Order succeeded!',
 		'success-create-user' => 'Create User succeeded!',
 		'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.',
+        'success-add-note' => 'Add Note succeeded! You can see the information in the dashboard.',
         'success-update-social-media' => 'Update Social Media succeeded!',
 		'success-update-user' => 'Update User succeeded!',
 		'success-set-arb-subscription' => 'Update User ARB Subscription succeeded!'
@@ -51,6 +53,7 @@ class Requests extends Base_Class {
 		'create_order',
 		'create_user',
 		'create_website',
+        'add-note',
         'update-social-media',
 		'update_user',
 		'set_arb_subscription',
@@ -452,6 +455,31 @@ class Requests extends Base_Class {
 		// Everything was successful
 		$this->_add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
+	}
+
+    /**
+	 * Add Note
+	 *
+	 * @param int $website_id
+     * @param int $user_id
+	 * @param string $message
+	 * @return int|bool
+	 */
+	private function add_note() {
+		// Gets parameters and errors out if something is missing
+		extract( $this->_get_parameters( 'website_id', 'user_id', 'message' ) );
+
+		$this->db->insert( 'website_notes', array( 'website_id' => $website_id, 'user_id' => $user_id, 'message' => $message, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
+
+		// If there was a MySQL error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to add website note', __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-add-note' ) );
+			exit;
+		}
+
+		$this->_add_response( array( 'success' => true, 'message' => 'success-add-note' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nWebsite ID: $website_id\nUser ID: $user_id", true );
 	}
 
     /**
