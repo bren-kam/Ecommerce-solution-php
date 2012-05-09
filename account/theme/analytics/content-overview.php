@@ -128,7 +128,7 @@ get_header();
 						$top['page'] = str_replace( '&', '&amp;', $top['page'] ); 
 					?>
 					<tr>
-						<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
+						<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo ( '/' == $top['page'] ) ? 'Home' : $top['page']; ?></a></td>
 						<td class="text-right"><?php echo number_format( $top['page_views'] ); ?></td>
 						<td class="text-right"><?php echo $top['time_on_page']; ?></td>
 						<td class="text-right"><?php echo number_format( $top['bounce_rate'], 2 ); ?>%</td>

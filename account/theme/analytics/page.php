@@ -74,6 +74,10 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 	active_graph = 'Visits', percent = '', time = false;
 ");
 
+// Look niec
+if ( '/' == $page )
+    $page = 'Home';
+
 $selected = "analytics";
 $title = _('Page | Analytics') . ' | ' . TITLE;
 get_header();

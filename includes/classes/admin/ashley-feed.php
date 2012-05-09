@@ -179,15 +179,28 @@ class Ashley_Feed extends Base_Class {
             return true;
 
         // Grab any authorized users that have ashley in their email
-        $online_specialists = $this->db->get_col( "SELECT a.`email` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`website_id` ) WHERE a.`email` LIKE '%@ashleyfurniture.com' AND a.`status` = 1 AND b.`website_id` = $website_id" );
+        $emails = $this->db->get_col( "SELECT a.`email` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`user_id` = c.`user_id` OR a.`user_id` = c.`os_user_id` ) WHERE a.`status` = 1 AND ( b.`website_id` IS NULL AND c.`website_id` = $website_id OR a.`email` LIKE '%@ashleyfurniture.com' AND b.`website_id` = $website_id )" );
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get online specialists.', __LINE__, __METHOD__ );
+			$this->err( 'Failed to get emails.', __LINE__, __METHOD__ );
 			return false;
 		}
 
-        $message = "This email is a notification that the Ashley Dealer Specific Feed has been run for $title and products have been added. Please contact the store owners and the Marketing Specialists to inform them products have been added.";
+        // Get the company domain
+        $domain = $this->db->get_var( "SELECT a.`domain` FROM `companies` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get domain.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        $message = "This email is a notification that the Ashley Dealer Specific Feed has been run for $title and products have been added.";
+
+        // Send out the email
+        if ( fn::mail( implode( ',', $emails ), 'Ashley Dealer Specific Feed - Started', $message, "noreply@$domain" ) )
+            $w->update_settings( $website_id, array( 'ashley-feed-started' => 1 ) );
 
         return true;
     }
