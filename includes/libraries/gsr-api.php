@@ -145,7 +145,7 @@ class GSR_API {
 
 		// Execute the command
 		$this->_execute( 'create_website', compact( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
-
+		
 		// Return the website id if successful
 		return ( $this->success ) ? $this->response->website_id : false;
 	}
