@@ -110,6 +110,13 @@ class Requests extends Base_Class {
     );
 	
 	/**
+	 * Hold WHM object
+     *
+     * @var WHM_API
+	 */
+	private $whm;
+	
+	/**
 	 * Construct class will initiate and run everything
 	 *
 	 * This class simply needs to be initiated for it run to the data on $_POST variables
@@ -386,16 +393,15 @@ class Requests extends Base_Class {
 			
             if ( $group_id ) {
                 library('whm-api');
-                $whm = new WHM_API();
+                $this->whm = new WHM_API();
                 $c = new Companies();
 
                 // Make sure it's a unique username
-                $username = $this->_generate_username( $website['title'] );
-
-				while ( $whm->account_summary( $username ) ) {
-                    $username = $this->_generate_username( $website['title'], true );
-                }
-
+                $company = $c->get( $this->company_id );
+                $email = 'serveradmin@' . url::domain( $company['domain'], false );
+                $domain = $this->_unique_domain( $website['title'] );
+                $username = $this->_unique_username( $website['title'] );
+				
                 $password = security::generate_password();
 				
                 // Create the password
@@ -406,15 +412,10 @@ class Requests extends Base_Class {
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                     exit;
                 }
-
-                // Get the domain
-                $domain = preg_replace( '/[^a-z]/', '', strtolower( $website['title'] ) ) . '.blinkyblinky.me';
-                $company = $c->get( $this->company_id );
-                $email = 'serveradmin@' . url::domain( $company['domain'], false );
 				
                 // Now, create the WHM API accounts
-                if ( !$whm->create_account( $username, $domain, 'Basic No Shopping Cart', $email ) ) {
-                    $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $whm->message(), __LINE__, __METHOD__ );
+                if ( !$this->whm->create_account( $username, $domain, 'Basic No Shopping Cart', $email ) ) {
+                    $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $this->whm->message(), __LINE__, __METHOD__ );
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 					exit;
                 }
@@ -617,7 +618,30 @@ class Requests extends Base_Class {
 	/***********************/
 	/* END: IR API Methods */
 	/***********************/
-
+	
+	/**
+	 * Unique Username
+	 *
+	 * Runs a loop and returns a unique username
+	 *
+	 * @param string $title
+	 * @return string
+	 */
+	public function _unique_username( $title ) {
+		$username = $this->_generate_username( $title );
+		$available = $this->whm->account_summary( $username );
+		
+		while ( false != $available ) {
+			$username = $this->_generate_username( $title, true );
+			$available = $this->whm->account_summary( $username );
+			
+			if ( false != $available )
+				break;
+		}
+		
+		return $username;
+	}
+	
     /**
      * Generate Username
      *
@@ -628,6 +652,9 @@ class Requests extends Base_Class {
      * @return string
      */
     private function _generate_username( $title, $complicated = false ) {
+		// Cant use test
+		$title = str_replace( 'test', 'tes', $title );
+		
         $pieces = explode( ' ', preg_replace( '/[^a-z0-9 ]/', '', strtolower( $title ) ) );
         $increment = ( $complicated ) ? 0 : 2;
 
@@ -643,6 +670,47 @@ class Requests extends Base_Class {
 
         return $username;
     }
+	
+	/**
+	 * Unique Domain
+	 *
+	 * Runs a loop and returns a unique domain
+	 *
+	 * @param string $title
+	 * @return string
+	 */
+	public function _unique_domain( $title ) {
+		$domain = $this->_generate_domain( $title );
+		
+		$available = $this->whm->domain_user_data( $domain );
+		
+		while ( false != $available ) {
+			$domain = $this->_generate_domain( $title, true );
+			$available = $this->whm->domain_user_data( $domain );
+			
+			if ( false != $available )
+				break;
+		}
+		
+		return $domain;
+	}
+	
+	/**
+	 * Generate Domain
+	 *
+	 * Generates a unique domain for WHM/cPnale
+	 *
+	 * @param string $domain
+	 */
+	public function _generate_domain( $title, $complicated = false ) {
+		$domain = preg_replace( '/[^a-z]/', '', strtolower( $title ) );
+		
+		if ( $complicated )
+            $domain .= rand( 1, 999 );
+		
+		return $domain . '.blinkyblinky.me';
+	}
+	
     /**
      * Check to make sure a website belongs to the company
      *
@@ -861,6 +929,8 @@ class Requests extends Base_Class {
 		// Make sure we haven't already logged something
 		if( !$this->logged )
 		if( $this->error ) {
+            $message = '';
+
 			foreach( $this->statuses as $status => $value ) {
 				// Set the message status name
 				$message_status = ucwords( str_replace( '_', ' ', $status ) );

@@ -130,9 +130,21 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
      */
     public function account_summary( $user ) {
         $response = $this->_execute( 'accountsummary', compact( 'user' ) );
-
+		
         return ( $this->success() ) ? $response->acct : false;
     }
+	
+	/**
+	 * Domain User Data
+	 *
+	 * @param string $domain
+	 * @return array
+	 */
+	public function domain_user_data( $domain ) {
+		$response = $this->_execute( 'domainuserdata', compact( 'domain' ) );
+		
+		return ( $this->success() ) ? $response->userdata : false;
+	}
 
 	/************************/
 	/* END: WHM API Methods */
