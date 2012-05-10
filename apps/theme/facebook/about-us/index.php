@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '233746136649331', '298bb76cda7b2c964e0bf752cf239799' );
+$fb = new FB( '233746136649331', '298bb76cda7b2c964e0bf752cf239799', 'op-about-us' );
 $au = new About_Us;
 $v = new Validator;
 
