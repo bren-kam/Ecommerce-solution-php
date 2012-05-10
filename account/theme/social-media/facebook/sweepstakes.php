@@ -114,7 +114,7 @@ get_header();
 	<div id="subcontent">
 		<?php if ( 0 == $sweepstakes['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Sweepstakes application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=113993535359575" title="<?php echo _('Online Platform - Sweepstakes'); ?>" target="_blank"><?php echo _('Sweepstakes'); ?></a> <?php echo _('application page'); ?>.</p>
+			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-sweepstakes/" title="<?php echo _('Online Platform - Sweepstakes'); ?>" target="_blank"><?php echo _('Sweepstakes'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
 			
 			<h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>
