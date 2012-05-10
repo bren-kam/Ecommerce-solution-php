@@ -46,20 +46,15 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
     /**
 	 * A few variables that will determine the basic status
 	 */
-	private $message = NULL;
-	private $success = false;
-	private $raw_request = NULL;
-	private $request = NULL;
-	private $raw_response = NULL;
-	private $response = NULL;
-    private $error = NULL;
-
-	/**
-	 * Construct class will initiate and run everything
-	 */
-	public function __construct() {
-	}
-
+	protected $message = NULL;
+	protected $success = false;
+	protected $raw_request = NULL;
+	protected $request = NULL;
+	protected $raw_response = NULL;
+	protected $response = NULL;
+    protected $error = NULL;
+	protected $params = array();
+	
 	/**************************/
 	/* Start: WHM API Methods */
 	/**************************/
@@ -220,9 +215,9 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
 	 * @param array $params an array of the parameters to be sent
      * @return stdClass object
 	 */
-	private function _execute( $method, $params = array() ) {
+	protected function _execute( $method, $params = array() ) {
         // Authorization
-		$header[0] = "Authorization: WHM " . self::USERNAME . ':'  .preg_replace( "'(\r|\n)'", "", self::HASH );
+		$header[0] = "Authorization: WHM " . self::USERNAME . ':'  . preg_replace( "'(\r|\n)'", "", self::HASH );
 
         // Set Request Parameters
 		$this->request = $params;
@@ -252,16 +247,21 @@ e530ebbdf4dacc8e383b51e1d3009c5d';
         curl_close($ch);
 
         // Set the response
-		if ( isset( $this->response->status ) ) {
-			$this->success = '1' == $this->response->status;
-			$this->message = $this->response->statusmsg;
+		if ( 'cpanel' == $method ) {
+			$this->success = !isset( $this->response->cpanelresult->error );
+			$this->message = ( $this->success ) ? $this->response->cpanelresult->error : '';
 		} else {
-			$this->success = '1' == $this->response->result[0]->status;
-			$this->message = $this->response->result[0]->statusmsg;
+			if ( isset( $this->response->status ) ) {
+				$this->success = '1' == $this->response->status;
+				$this->message = $this->response->statusmsg;
+			} else {
+				$this->success = '1' == $this->response->result[0]->status;
+				$this->message = $this->response->result[0]->statusmsg;
+			}
 		}
-		
-        $this->error = ( $this->success ) ? NULL : true;
 
+		$this->error = ( $this->success ) ? NULL : true;
+		
         // If we're debugging lets give as much info as possible
         if ( self::DEBUG ) {
             echo "<h1>URL</h1>\n<p>", $url, "</p>\n<hr />\n<br /><br />\n";
