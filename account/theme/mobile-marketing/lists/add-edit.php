@@ -23,6 +23,7 @@ $mobile_list_id = ( isset( $_GET['mlid'] ) ) ? $_GET['mlid'] : false;
 $v = new Validator();
 $v->form_name = 'fAddEditMobileList';
 $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
+$v->add_validation( 'tName', 'alnum', _('The "Name" field may only contain alphabetic and numeric characters') );
 
 $v->add_validation( 'tFrequency', 'req', _('The "Frequency" field is required') );
 $v->add_validation( 'tFrequency', 'int', _('The "Frequency" field may only contain numbers') );
