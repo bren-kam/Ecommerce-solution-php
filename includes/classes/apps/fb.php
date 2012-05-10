@@ -12,10 +12,11 @@ class FB extends Base_Class {
 	 *
 	 * @param string $app_id
 	 * @param string $secret
-	 * @param bool $skip (optional|false)
-	 * @param array $parameters (optional|false)
+	 * @param string $uri
+	 * @param bool $skip [optional]
+	 * @param array $parameters [optional]
 	 */
-	public function __construct( $app_id, $secret, $skip = false, $parameters = false ) {
+	public function __construct( $app_id, $secret, $uri, $skip = false, $parameters = false ) {
 		// Need to load the parent constructor
 		if ( !parent::__construct() )
 			return false;
@@ -49,15 +50,10 @@ class FB extends Base_Class {
 		
 		// Login or logout url will be needed depending on current user state.
 		if (!$this->user && !$skip) {
-			if ( $parameters ) {
-				// If we need to get permission
-				$permissions = '&' . http_build_query( $parameters );
-				$redirect_uri = urlencode( "http://apps.facebook.com/op-posting/" );
-			} else {
-				$permissions = '';
-				$redirect_uri = urlencode( "http://www.facebook.com/apps/application.php?id=$app_id" );
-			}
-			
+            // If we need to get permission
+            $permissions = ( $parameters ) ? '&' . http_build_query( $parameters ) : '';
+            $redirect_uri = urlencode( "http://apps.facebook.com/$uri/" );
+
 			echo '<script type="text/javascript">top.location.href="http://www.facebook.com/dialog/oauth?client_id=' . $app_id . '&redirect_uri=' .  $redirect_uri . $permissions . '";</script>';
 			exit;
 		}

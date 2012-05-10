@@ -53,7 +53,7 @@ get_header();
 	<div id="subcontent">
 		<?php if ( 0 == $current_ad['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the Current Ad application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=186618394735117" title="<?php echo _('Online Platform - Current Ad'); ?>" target="_blank"><?php echo _('Current Ad'); ?></a> <?php echo _('application page'); ?>.</p>
+			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/current-ad/" title="<?php echo _('Online Platform - Current Ad'); ?>" target="_blank"><?php echo _('Current Ad'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
 			
 			<h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>
