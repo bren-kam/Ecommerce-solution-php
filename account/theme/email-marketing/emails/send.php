@@ -24,7 +24,8 @@ $email_message_id = ( isset( $_GET['emid'] ) ) ? $_GET['emid'] : '';
 // Get email message
 $em = $e->get_email_message( $email_message_id );
 
-$timezone = $e->get_setting('timezone');
+$settings = $e->get_settings( 'from_name', 'from_email', 'timezone' );
+$timezone = $settings['timezone'];
 
 // Set the meta
 if ( 'offer' == $em['type'] ) {
@@ -58,6 +59,12 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'email-marketing/', 'send_email' ); ?>
 	<div id="subcontent">
+        <?php if ( array_search( '', $settings ) ) { ?>
+            <p><?php echo _('One or more of your'), ' ', '<a href="/email-marketing/settings/" title="', _('Email Settings'), '">', _('email settings'), '</a> ', _('has not been set. Please update them and then come back.'); ?></p>
+            <br /><br />
+            <br /><br />
+            <br /><br />
+        <?php } else { ?>
 		<div id="tab-top">
 			<h2 class="tab selected" id="h2Step1"><a href="javascript:;" id="aStep1" class="step" title="<?php echo _('Step 1'); ?>"><?php echo _('Step 1'); ?></a></h2>
 			<h2 class="tab" id="h2Step2"><a href="javascript:;" id="aStep2" class="step" title="<?php echo _('Step 2'); ?>"><?php echo _('Step 2'); ?></a></h2>
@@ -71,7 +78,7 @@ get_header();
 				<?php
 				if ( !empty( $em['date_sent'] ) ) {
 					// Adjust for timezone
-					$em['date_sent'] = dt::date( 'Y-m-d H:i:s', strtotime( $em['date_sent'] ) + $timezone * 3600 + 18000 );
+					$em['date_sent'] = dt::adjust_timezone( $em['date_sent'], config::setting('server-timezone'), $timezone );
 
 					list( $date, $time ) = explode( ' ', $em['date_sent'] );
 				}
@@ -84,9 +91,9 @@ get_header();
 					</tr>
 					<tr>
 						<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-						<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::date('Y-m-d', time() - ( 3600 * $timezone ) - 18000 ) : $date; ?>" maxlength="10" /></td>
+						<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( empty( $date ) ) ? dt::adjust_timezone( 'now', config::setting( 'server-timezone' ), $timezone, 'Y-m-d' ) : $date; ?>" maxlength="10" /></td>
 						<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-						<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::date('h:i a', time() - ( 3600 * $timezone ) - 18000 ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
+						<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $time ) ) ? dt::adjust_timezone( 'now', config::setting( 'server-timezone' ), $timezone, 'h:i a' ) : dt::date( 'h:i a', strtotime( $time ) ); ?>" maxlength="8" /></td>
 					</tr>
 					<tr>
 						<td valign="top"><label><?php echo _('Mailing List(s)'); ?>:</label></td>
@@ -353,6 +360,7 @@ get_header();
 			nonce::field( 'search', '_ajax_search' );
 			?>
 		</div>
+        <?php } ?>
 	</div>
 	<br /><br />
 </div>

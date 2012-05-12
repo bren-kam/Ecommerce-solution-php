@@ -49,7 +49,7 @@ get_header();
 	<div id="subcontent">
 		<?php if ( 0 == $facebook_site['fb_page_id'] ) { ?>
 			<h2 class="title"><?php echo _('Step 1: Go to the Facebook Site application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=114243368669744" title="<?php echo _('Online Platform - Facebook Site'); ?>" target="_blank"><?php echo _('Facebook Site'); ?></a> <?php echo _('application page'); ?>.</p>
+			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-facebook-site/" title="<?php echo _('Online Platform - Facebook Site'); ?>" target="_blank"><?php echo _('Facebook Site'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
 			
 			<h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>

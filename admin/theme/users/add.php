@@ -42,8 +42,13 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-user' ) 
 	$errs = $v->validate();
 	
 	if ( empty( $errs ) ) {
-		if ( $user['role'] <= 8 ) $_POST['sCompany'] = $user['company_id'];	
+		if ( $user['role'] <= 8 )
+                $_POST['sCompany'] = $user['company_id'];
+
 		$success = $u->create( $_POST['sCompany'], $_POST['tEmail'], $_POST['pPassword'], $_POST['tContactName'], $_POST['tStoreName'], ( $user['role'] >= $_POST['sRole'] ) ? intval( $_POST['sRole'] ) : intval( $user['role'] ) );
+
+        if ( $success )
+            $errs = _('An email with that user already exists. Please use another email address.');
 	}
 }
 
@@ -133,8 +138,9 @@ get_header();
 					<td>
 						<select name="sRole" id="sRole">
 							<?php
-							$max_role = ( $user['role'] <= 10 ) ? $user['role'] : 5;
-							$roles = array( 1 => _('Authorized User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Online Specialist'), 8 => _('Admin'), 10 => _('Super Admin') );
+							$max_role = ( $user['role'] < 10 ) ? $user['role'] - 1 : 10;
+
+							$roles = array( 1 => _('Authorized User'), 5 => _('Basic Account'), 6 => _('Marketing Specialist'), 7 => _('Reseller'), 8 => _('Online Specialist'), 10 => _('Super Admin') );
 							$selected_role_number = ( !$success && isset( $_POST['sRole'] ) ) ? $_POST['sRole'] : 5;
 							
 							for ( $i = 1; $i <= $max_role; $i++ ) { 

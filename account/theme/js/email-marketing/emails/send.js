@@ -101,38 +101,25 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		hiddenProduct.val( hiddenProduct.val().replace( /\|[0-9]*/, '|' + parseFloat( $(this).val() ) ) );
 	});
 	
-	// Cache
-	var cache = { 'offer-box' : {}, 'sku' : {}, 'product' : {}, 'brand' : {} };
-	
 	// Create autocomplete
-	$('#tAutoSuggestBox1, #tAutoSuggestBox2').autocomplete( {
+	$('#tAutoSuggestBox1').autocomplete( {
 		minLength: 1,
-		source:function( request, response ) {
-			if ( request['term'] in cache['offer-box'] ) {
-				response( $.map( cache['offer-box'][request['term']], function( item ) {
-					return {
-						'label' : item['name'],
-						'value' : item['value']
-					}
-				}) );
-				return;
-			}
-			
-			// AJAX to perform autocomplete
-			$.post( '/ajax/products/autocomplete/', { _nonce: $('#_ajax_autocomplete').val(), term : request['term'], type: 'sku-products', owned : 1 }, function( autocompleteResponse ) {
-				cache['offer-box'][request['term']] = autocompleteResponse['suggestions'];
-
-				response( $.map( autocompleteResponse['suggestions'], function( item ) {
-					return {
-						'label' : item['name'],
-						'value' : item['value']
-					}
-				}))
-			}, 'json' );
-		},
+		source: autocomplete_source,
 		select: function( event, ui ) {
-			// AJAX call to get the offer box
-			$.post( '/ajax/email-marketing/emails/offer-box/', { _nonce : $('#_ajax_offer_box').val(), pid : ui['item']['value'], bid : $(event.target).attr('id').replace('tAutoSuggest', '') }, ajaxResponse, 'json' );
+            // AJAX call to get the offer box
+			$.post( '/ajax/email-marketing/emails/offer-box/', { _nonce : $('#_ajax_offer_box').val(), pid : ui['item']['value'], bid : 'Box1' }, ajaxResponse, 'json' );
+
+			return false;
+		}
+	});
+
+	// Create autocomplete
+	$('#tAutoSuggestBox2').autocomplete( {
+		minLength: 1,
+		source: autocomplete_source,
+		select: function( event, ui ) {
+            // AJAX call to get the offer box
+			$.post( '/ajax/email-marketing/emails/offer-box/', { _nonce : $('#_ajax_offer_box').val(), pid : ui['item']['value'], bid : 'Box2' }, ajaxResponse, 'json' );
 
 			return false;
 		}
@@ -291,6 +278,39 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		$('input.mailing-list').attr( 'checked', false );
 	});
 });
+
+// Cache
+cache = { 'offer-box' : {}, 'sku' : {}, 'product' : {}, 'brand' : {} };
+
+/**
+ * Autocomplete - Source function
+ *
+ * @param request
+ * @param response
+ */
+function autocomplete_source( request, response ) {
+    if ( request['term'] in cache['offer-box'] ) {
+        response( $.map( cache['offer-box'][request['term']], function( item ) {
+            return {
+                'label' : item['name'],
+                'value' : item['value']
+            }
+        }) );
+        return;
+    }
+
+    // AJAX to perform autocomplete
+    $.post( '/ajax/products/autocomplete/', { _nonce: $('#_ajax_autocomplete').val(), term : request['term'], type: 'sku-products', owned : 1 }, function( autocompleteResponse ) {
+        cache['offer-box'][request['term']] = autocompleteResponse['suggestions'];
+
+        response( $.map( autocompleteResponse['suggestions'], function( item ) {
+            return {
+                'label' : item['name'],
+                'value' : item['value']
+            }
+        }))
+    }, 'json' );
+}
 
 /**
  * Resort products

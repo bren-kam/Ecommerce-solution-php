@@ -24,7 +24,8 @@ $v->form_name = 'fAddCraigslistTemplate';
 $v->add_validation( 'taDescription', 'req', _('The "Description" field is required') );
 $v->add_validation( 'taDescription', 'maxlen=30000', _('The "Description" field must be 30,000 characters or less') );
 
-$v->add_validation( 'tPrice', 'float', _('The "Price" field may only contain numbers and a decimal point.') );
+$v->add_validation( 'tPrice', 'req', _('The "Price" field is requried') );
+$v->add_validation( 'tPrice', 'float', _('The "Price" field may only contain numbers and a decimal point') );
 
 // Add validation
 add_footer( $v->js_validation() );
@@ -36,22 +37,31 @@ $success = false;
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-craigslist' ) ) {
     $errs = $v->validate();
 
+    // Validation for the headlines
+    $i = 1;
+    foreach ( $_POST['tHeadlines'] as $hl ) {
+        if ( empty( $hl ) )
+            $errs .= _('Headline') . ' #' . $i . ' is requied';
+
+        $i++;
+    }
+
 	// if there are no errors
 	if ( empty( $errs ) ) {
         $post = '1' == $_POST['hPostAd'];
 
         if ( empty ( $_POST['hCraigslistAdID'] ) ) {
             // Create ad
-            $success = $c->create( $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
+            $success = $c->create( $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $_POST['sCraigslistMarkets'], $post );
 
             if ( $success && $post )
                 $c->post_ad( $success, $_POST['hCraigslistPost'] );
         } else {
             // Update Ad
-            $success = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $post );
+            $success = $c->update( $_POST['hCraigslistAdID'], $_POST['hProductID'], $_POST['tHeadlines'], stripslashes( $_POST['taDescription'] ), $_POST['tPrice'], $_POST['sCraigslistMarkets'], $post );
 
             if ( $success && $post ) {
-                if ( $c->post_ad( $_POST['hCraigslistAdID'], $_POST['hCraigslistPost'] ) ) {
+                if ( $c->post_ad( $_POST['hCraigslistAdID'], stripslashes( $_POST['hCraigslistPost'] ) ) ) {
                     url::redirect('/craigslist/?m=1');
                 } else {
                     $success = false;
@@ -61,6 +71,13 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
         }
     }
 }
+
+// Get markets
+$markets = $c->get_craigslist_markets();
+
+// Make sure they have markets
+if ( !is_array( $markets ) || 0 == count( $markets ) )
+    $errs .= _('You have no Craigslist markets connected with your account. Please contact your Online Specialist to connect a market.');
 
 // Get the email if necessary
 if ( $craigslist_ad_id ) {
@@ -167,11 +184,22 @@ get_header();
                     [<?php echo _('Photo'); ?>]
                     [<?php echo _('Product Specifications'); ?>]
                 </p>
-                <label for="tPrice"><?php echo _('Price'); ?>:</label>
+                <label for="tPrice"><strong><?php echo _('Price'); ?>:</strong></label>
                 <input type="text" class="tb" name="tPrice" id="tPrice" tabindex="14" value="<?php echo ( !$success && isset( $_POST['tPrice'] ) ) ? $_POST['tPrice'] : $ad['price']; ?>" />
                 <br /><br />
 
-                <input type="submit" class="button" tabindex="15" value="<?php echo _('Save'); ?>" />
+                <label for="sCraigslistMarkets"><strong><?php echo _('Craigslist Markets'); ?>:</strong></label><br />
+                <select name="sCraigslistMarkets[]" id="sCraigslistMarkets" tabindex="15" multiple="multiple">
+                    <?php
+                    foreach ( $markets as $m ) {
+                        $selected = ( in_array( $m['craigslist_market_id'], $ad['craigslist_markets'] ) ) ? ' selected="selected"' : '';
+                        ?>
+                        <option value="<?php echo $m['craigslist_market_id']; ?>"<?php echo $selected; ?>><?php echo $m['market']; ?></option>
+                    <?php } ?>
+                </select>
+                <br /><br />
+
+                <input type="submit" class="button" tabindex="16" value="<?php echo _('Save'); ?>" />
                 <br /><br />
                 <br />
             </div>

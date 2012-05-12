@@ -42,7 +42,7 @@ if ( security::is_ssl() )
     $tab['content'] = ( stristr( $tab['content'], 'websites.retailcatalog.us' ) ) ? preg_replace( '/(?<=src=")(http:\/\/)/i', 'https://s3.amazonaws.com/', $tab['content'] ) : preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab['content'] );
 
 $title = _('Fan Offer') . ' | ' . _('Online Platform');
-get_header('facebook/');
+get_header('facebook/tabs/');
 ?>
 
 <div id="content">
@@ -102,4 +102,4 @@ get_header('facebook/');
 	<?php } ?>
 </div>
 
-<?php get_footer('facebook/'); ?>
+<?php get_footer('facebook/tabs/'); ?>

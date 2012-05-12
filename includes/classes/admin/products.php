@@ -40,8 +40,8 @@ class Products extends Base_Class {
 	 * @return array
 	 */
 	public function get( $product_id ) {
-		$product = $this->db->get_row( 'SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry  FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) WHERE a.`product_id` = ' . (int) $product_id, ARRAY_A );
-		
+		$product = $this->db->get_row( 'SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`website_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, c.`contact_name` AS created_user, d.`contact_name` AS updated_user, e.`title` AS website FROM `products` AS a LEFT JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `users` AS c ON ( a.`user_id_created` = c.`user_id` ) LEFT JOIN `users` AS d ON ( a.`user_id_modified` = d.`user_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE a.`product_id` = ' . (int) $product_id, ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get product.', __LINE__, __METHOD__ );
@@ -119,6 +119,8 @@ class Products extends Base_Class {
 	 * @return bool false if failed to create to cart
 	 */
 	public function update( $name, $slug, $description, $status, $sku, $price, $list_price, $product_specifications, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight = 0, $volume = 0 ) {
+        global $user;
+
 		// Assign local variable
 		$this->product_id = $product_id;
 		
@@ -152,7 +154,7 @@ class Products extends Base_Class {
 				'product_specifications' => serialize( $product_specs ),
 				'publish_visibility' => $publish_visibility,
 				'publish_date' => $publish_date,
-				'user_id_modified' => ( ( isset( $_SESSION['user']['user_id'] ) ) ? $_SESSION['user']['user_id'] : 353 ),
+				'user_id_modified' => ( ( isset( $user['user_id'] ) ) ? $user['user_id'] : 353 ),
 			), array( 'product_id' => $product_id ), 'iisssssddddsssi', 'i' );
 
 		// Handle any error
@@ -858,7 +860,7 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 		
-		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`product_id` = $product_id" );
+		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 1 AND b.`product_id` = $product_id AND b.`active` = 1 ORDER BY a.`title`" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

@@ -53,7 +53,7 @@ get_header();
 	<div id="subcontent">
 		<?php if ( !isset( $about_us['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the About Us application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=233746136649331" title="<?php echo _('Online Platform - About Us'); ?>" target="_blank"><?php echo _('About Us'); ?></a> <?php echo _('application page'); ?>.</p>
+			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-about-us/" title="<?php echo _('Online Platform - About Us'); ?>" target="_blank"><?php echo _('About Us'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
 			
 			<h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>

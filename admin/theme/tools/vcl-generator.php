@@ -18,7 +18,7 @@ $output = "";
 if ( ! empty( $_POST['iplist'] ) ) {
 	
 		
-	$output .=  "#varnishd -f /etc/varnish/s98_alldomains_prod.vcl -s malloc,32M -T :8887 -a 0.0.0.0:80\n";
+	$output .=  "#varnishd -f /etc/varnish/gsr.vcl -s malloc,32M -T :8887 -a 0.0.0.0:80\n";
 
 	$output .=  "#BEGIN BACKEND LOGIC\n\n\n";
 			
@@ -202,7 +202,7 @@ get_header();
 	
 	<p>
 		Load new VCL (rl01 can be any unique name)<br/><br/>
-		<pre>varnishadm -T localhost:6082 vcl.load rl<?php echo $rando; ?> /etc/varnish/s98_alldomains_prod.vcl
+		<pre>varnishadm -T localhost:6082 vcl.load rl<?php echo $rando; ?> /etc/varnish/gsr.vcl
 varnishadm -T localhost:6082 vcl.use rl<?php echo $rando; ?></pre>
 	</p>
 </div>

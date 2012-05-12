@@ -30,13 +30,9 @@ $reach_info = $reaches->_get_friendly_info( $reach['meta'] );
 $ru = $u->get_user( $reach['user_id'] );
 $comments = $rc->get( $_GET['rid'] );
 
-// Auto assign feedback
-/*if ( 0 == $reach['assigned_to_user_id'] )
-	$reach['assigned_to_user_id'] = $reach->update_assigned_to( $_GET['rid'], $user['user_id'] );
- */
+$assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND role >= 1 AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
+$assignable_users[] = $u->get_user( $user['website']['user_id'] );
 
-$assignable_users = $u->get_website_users( "AND b.`website_id` = {$user[website][website_id]} AND role >=1 AND a.`status` <> 0 AND a.`status` = 1 AND '' <> a.`contact_name`" );
- 
 css( 'reaches/reach' );
 javascript( 'mammoth', 'reaches/reach' );
 
@@ -86,13 +82,14 @@ get_header();
 					<td><label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label></td>
 					<td>
 						<select id="sAssignedTo" class="dd" style="width: 150px">
-						<?php
-							foreach ( $assignable_users as $au ) {
-								$selected = ( $reach['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
-								
-								echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
-							}
-						?>
+                            <option value="">-- <?php echo _('Assign a User'); ?>--</option>
+                            <?php
+                                foreach ( $assignable_users as $au ) {
+                                    $selected = ( $reach['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
+
+                                    echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
+                                }
+                            ?>
 						</select>
 					</td>
 				</tr>

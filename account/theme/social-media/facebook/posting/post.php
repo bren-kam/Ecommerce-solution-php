@@ -33,16 +33,27 @@ add_footer( $v->js_validation() );
 
 // Get variables
 $posting = $sm->get_posting();
-$timezone = $w->get_setting( 'timezone' );
+$timezone = $w->get_setting('timezone');
 
 // Figure out what the time is
-$now = new DateTime;
-$now->setTimestamp( time() - $now->getOffset() + 3600 * $timezone );
+$now = new DateTime( dt::adjust_timezone( 'now', config::setting('server-timezone'), $timezone ) );
 
 // Get the posting variable if it exists
 if ( 0 != $posting['fb_page_id'] ) {
 	$fb->setAccessToken( $posting['access_token'] );
-	$accounts = $fb->api( '/' . $posting['fb_user_id'] . '/accounts' );
+	
+	try {
+		$accounts = $fb->api( '/' . $posting['fb_user_id'] . '/accounts' );
+	} catch( Exception $e ) {
+		$response = Response::fb_exception( $e );
+		
+		switch ( $response->error_code() ) {
+			case 190:
+				$errs = _('Due to a recent change to your Facebook account, your Online Specialist needs to reconnect your Posting App to Facebook.');
+			break;
+		}
+	}
+	
 	$pages = ar::assign_key( $accounts['data'], 'id' );
 } elseif ( !$posting ) {
 	$posting = array(
@@ -70,9 +81,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
         }
         
         // Adjust for time zone
-        $new_date_posted = new DateTime;
-        $new_date_posted->setTimestamp( strtotime( $date_posted ) - (  $timezone * 3600 ) + $now->getOffset() );
-        
+        $new_date_posted = new DateTime( dt::adjust_timezone( $date_posted, $timezone, config::setting('server-timezone') ) );
+
         // Make sure we don't have anything extra
         $_POST['taPost'] = str_replace( array( '“', '”', '’' ), array( '"', '"', "'" ), stripslashes( $_POST['taPost'] ) );
         
@@ -161,7 +171,7 @@ get_header();
 					</table>
 					<?php nonce::field('fb-post'); ?>
 				</form>
-			<?php } else { ?>
+			<?php } elseif ( empty( $errs ) ) { ?>
 				<p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
 			<?php 
 			} 

@@ -22,8 +22,10 @@ $mobile_subscriber_id = ( isset( $_GET['msid'] ) ) ? $_GET['msid'] : false;
 
 $v = new Validator();
 $v->form_name = 'fAddEditSubscriber';
-$v->add_validation( 'tPhone', 'req' , 'The "Phone" field is required' );
-$v->add_validation( 'tPhone', 'phone' , 'The "Phone" field may only contain a valid phone number' );
+$v->add_validation( 'tPhone', 'req' , _('The "Phone" field is required') );
+$v->add_validation( 'tPhone', 'minlen=10' , _('The "Phone" field must be at least 10 digits') );
+$v->add_validation( 'tPhone', 'phone' , _('The "Phone" field may only contain a valid phone number') );
+$v->add_validation( 'cbMobileLists', 'req', _('You must choose at least one list') );
 
 // Add validation
 add_footer( $v->js_validation() );
@@ -37,28 +39,22 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-sub
 	
 	// if there are no errors
 	if ( empty( $errs ) ) {
+        // We only want the number
+        $phone = preg_replace( '/[^0-9]/', '', $_POST['tPhone'] );
+
 		if ( $mobile_subscriber_id ) {
 			// Update subscriber
-			$success = $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'] );
-			
-			if ( $success )
-				$success = $m->update_mobile_lists_subscription( $mobile_subscriber_id, $_POST['cbMobileLists'] ) && $m->update_subscriber( $mobile_subscriber_id, $_POST['tPhone'] );
+			$success = $m->update_subscriber( $mobile_subscriber_id, $phone, $_POST['cbMobileLists'] );
 		} else {
 			// Add subscriber
-			if ( $subscriber = $m->subscriber_exists( $_POST['tPhone'] ) && '2' == $subscriber['status'] ) {
+			if ( $subscriber = $m->subscriber_exists( $phone ) && '2' == $subscriber['status'] ) {
 				$errs .= _('This subscriber has been unsubscribed by the user.') . '<br />';
 				$success = false;
 			} else {
-				$success = $m->create_subscriber( $_POST['tPhone'] );
+				$success = $m->create_subscriber( $phone, $_POST['cbMobileLists'] );
 				
-				if ( !$success ) {
+				if ( !$success )
 					$errs .= _('An error occurred while adding subscriber.') . '<br />';
-				} else {
-					$success = $m->update_mobile_lists_subscription( $success, $_POST['cbMobileLists'] );
-					
-					if ( !$success )
-						$errs .= _('An error occurred while adding subscriber.') . '<br />';
-				}
 			}
 		}
 	}
@@ -73,7 +69,7 @@ if ( $mobile_subscriber_id ) {
 } else {
 	// Initialize variable
 	$subscriber = array(
-		'name' => ''
+		'phone' => ''
 		, 'mobile_lists' => ''
 	);
 }
@@ -92,7 +88,7 @@ get_header();
 		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $mobile_subscriber_id ) ? _('Your subscriber has been updated successfully!') : _('Your subscriber has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/subscribers/" title="', _('Subscribers'), '">', _('view your subscribers'), '</a>.'; ?></p>
+			<p><?php echo '<a href="/mobile-marketing/subscribers/" title="', _('Subscribers'), '">', _('Click here to view your subscribers'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}
@@ -112,27 +108,20 @@ get_header();
 					<td><label for="tPhone"><?php echo _('Phone'); ?>:</label></td>
 					<td><input type="text" class="tb" name="tPhone" id="tPhone" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tPhone'] ) ) ? $_POST['tPhone'] : $subscriber['phone']; ?>" /></td>
 				</tr>
-				<tr><td colspan="2">&nbsp;</td></tr>
-				<tr><td colspan="2" class="title"><strong><?php echo _('Mobile List Subscriptions'); ?></strong></td></tr>
-				<tr>
-					<td>
-					<p>
-						<?php 
-						$selected_mobile_lists = ( !$success && isset( $_POST['cbMobileLists'] ) ) ? $_POST['cbMobileLists'] : $subscriber['mobile_lists'];
-						
-						if ( !is_array( $selected_mobile_lists ) )
-							$selected_mobile_lists = array();
-						
-						foreach ( $mobile_lists as $ml ) {
-							if ( 0 != $ml['mobile_keyword_id'] )
-								continue;
-							
-							$checked = ( in_array( $ml['mobile_list_id'], $selected_mobile_lists ) ) ? ' checked="checked"' : '';
-						?>
-						<input type="checkbox" class="cb" name="cbMobileLists[]" id="cbMobileList<?php echo $ml['mobile_list_id']; ?>" value="<?php echo $ml['mobile_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbMobileList<?php echo $ml['mobile_list_id']; ?>"><?php echo $ml['name']; ?></label>
-						<br />
-						<?php } ?>
-					</p>
+                <tr>
+                    <td class="top"><label><?php echo _('Lists'); ?></label>:</td>
+                    <td>
+                        <p>
+                            <?php
+                            $selected_mobile_lists = ( !$success && isset( $_POST['cbMobileLists'] ) ) ? $_POST['cbMobileLists'] : array_keys( $subscriber['mobile_lists'] );
+
+                            foreach ( $mobile_lists as $ml ) {
+                                $checked = ( in_array( $ml['mobile_list_id'], $selected_mobile_lists ) ) ? ' checked="checked"' : '';
+                            ?>
+                            <input type="checkbox" class="cb" name="cbMobileLists[]" id="cbMobileList<?php echo $ml['mobile_list_id']; ?>" value="<?php echo $ml['mobile_list_id']; ?>"<?php echo $checked; ?> /> <label for="cbMobileList<?php echo $ml['mobile_list_id']; ?>"><?php echo $ml['name']; ?></label>
+                            <br />
+                            <?php } ?>
+                        </p>
 					</td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>

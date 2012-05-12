@@ -18,14 +18,13 @@ class Attributes extends Base_Class {
 	/**
 	 * Creates an attribute and puts it into the database
 	 *
-     * @param int $brand_id
 	 * @param string $title
 	 * @param string $name
 	 * @param array $attribute_items
 	 * @return int
 	 */
-	public function create( $brand_id, $title, $name, $attribute_items ) {
-		$this->db->insert( 'attributes', array( 'brand_id' => $brand_id, 'title' => $title, 'name' => $name ), 'iss' );
+	public function create( $title, $name, $attribute_items ) {
+		$this->db->insert( 'attributes', array( 'title' => $title, 'name' => $name ), 'ss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -144,14 +143,13 @@ class Attributes extends Base_Class {
 	 * Updates an attribute
 	 *
 	 * @param int $attribute_id
-     * @param int $brand_id
 	 * @param string $title
 	 * @param string $name
 	 * @param array $attribute_items
 	 * @return int
 	 */
-	public function update( $attribute_id, $brand_id, $title, $name, $attribute_items ) {
-		$this->db->update( 'attributes', array( 'brand_id' => $brand_id, 'title' => $title, 'name' => $name ), array( 'attribute_id' => $attribute_id ), 'iss', 'i' );
+	public function update( $attribute_id, $title, $name, $attribute_items ) {
+		$this->db->update( 'attributes', array( 'title' => $title, 'name' => $name ), array( 'attribute_id' => $attribute_id ), 'ss', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -444,6 +442,7 @@ class Attributes extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

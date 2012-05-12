@@ -21,6 +21,7 @@ $dt->set_row_count( $e->count_email_messages( $dt->get_where() ) );
 $confirm = _('Are you sure you want to delete this email? This cannot be undone.');
 $delete_email_message_nonce = nonce::create( 'delete-email-message' );
 $statuses = array( 'Draft', 'Scheduled', 'Sent' );
+$timezone = $e->get_setting('timezone');
 
 // Initialize variable
 $data = array();
