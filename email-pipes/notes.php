@@ -1,6 +1,5 @@
 #!/usr/local/bin/php -q
 <?php
-error_reporting(E_ALL);
 require 'includes/rfc822_addresses.php';
 require 'includes/mime_parser_class.php';
 
@@ -21,7 +20,7 @@ $email = $emails[0];
 
 $subject = $email['Headers']['subject:'];
 $from = $email['ExtractedAddresses']['from:'][0];
-$to = $email['ExtractedAddresses']['to:'][0]['address'];
+$to = preg_replace( '/.+for ([^;]+).+/', '$1', $email['Headers']['received:'] );
 list( $username, $domain ) = explode ( '@', $to );
 list ( $username, $tag ) = explode( '+', $username );
 
@@ -29,10 +28,11 @@ $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'
 $body = nl2br( substr( $body, 0, strpos( $body, '>> ' ) ) );
 
 // Create MySQL DB Object
-$mysqli =  mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
+$mysqli = mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
 
 // Get the first website
-$website_domain = $mysqli->prepare( $tag );
+$website_domain = $mysqli->real_escape_string( $tag );
+
 $result = $mysqli->query( "SELECT `website_id` FROM `websites` WHERE `status` = 1 AND `domain` LIKE '%$website_domain%' LIMIT 1" );
 
 // Get the row
