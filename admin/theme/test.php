@@ -1,7 +1,11 @@
 <?php
 
 $b = new Base_Class();
-
+library('rb');
+R::setup('mysql:host=199.204.138.78;dbname=imaginer_system','imaginer_admin','rbDxn6kkj2e4');
+R::debug(true); //easy way
+R::freeze( true );
+exit;
 $normal_reads = new timer();
 
 for ( $i = 0; $i < 5000; $i++ ) {
@@ -13,14 +17,10 @@ echo 'Normal Reads: ' . $normal_reads->stop() . "\n<br />";
 $normal_writes = new timer();
 
 for ( $i = 0; $i < 5000; $i++ ) {
-    $b->db->insert( 'test', array( 'id' => 5, 'name' => 'Random Name', 'message' => 'Hello there! How are you? Im glad I could finally meet you!', 'date_created' => '2012-05-13 10:08:00' ), 'isss' );
+    $b->db->insert( 'test', array( 'name' => 'Random Name', 'message' => 'Hello there! How are you? Im glad I could finally meet you!', 'date_created' => '2012-05-13 10:08:00' ), 'sss' );
 }
 
 echo 'Normal Writes: ' . $normal_writes->stop() . "\n<br />";
-
-library('rb');
-R::freeze( true );
-R::setup('mysql:host=199.204.138.78;dbname=imaginer_system','imaginer_admin','rbDxn6kkj2e4');
 
 $rb_reads = new timer();
 
@@ -32,8 +32,8 @@ echo 'RedBean Reads: ' . $rb_reads->stop() . "\n<br />";
 
 $rb_writes = new timer();
 
-for ( $i = 0; $i < 5000; $i++ ) ) {
-    R::exec( "INSERT INTO `test` ( `id`, `name`, `message`, date_created` ) VALUES ( :id, :name, :message, :date_created)", array( ':id' => 5, ':name' => 'Random Name', ':message' => 'Hello there! How are you? Im glad I could finally meet you!', ':date_created' => '2012-05-13 10:08:00' ) );
+for ( $i = 0; $i < 5000; $i++ ) {
+    R::exec( "INSERT INTO `test` ( `name`, `message`, date_created` ) VALUES ( :name, :message, :date_created)", array(  ':name' => 'Random Name', ':message' => 'Hello there! How are you? Im glad I could finally meet you!', ':date_created' => '2012-05-13 10:08:00' ) );
 }
 
 echo 'RedBean Writes: ' . $rb_writes->stop() . "\n<br />";
