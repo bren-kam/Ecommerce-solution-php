@@ -30,6 +30,10 @@ foreach ( $settings as $k => &$v ) {
 
 $dimensions = $settings['banner-width'] . 'x' . $settings['banner-height'];
 
+// Figure out if they want to edit images - alt attributes
+$images_alt = '1' == $w->get_setting( 'images-alt' );
+
+
 // Update any new settings
 if ( isset( $new_settings ) && is_array( $new_settings ) )
 	$w->update_settings( $new_settings );
@@ -93,8 +97,13 @@ get_header();
 					<br />
 					
 					<form action="/ajax/website/sidebar/update-extra/" method="post" ajax="1">
-						<p id="pTempSuccess<?php echo $a['website_attachment_id']; ?>" class="success hidden"><?php echo _('Your banner link has been successfully updated.'); ?></p>
+						<p id="pTempSuccess<?php echo $a['website_attachment_id']; ?>" class="success hidden"><?php echo _('Your banner has been successfully updated.'); ?></p>
 						<input type="text" class="tb" name="extra" tmpval="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a['extra'] ) ) ? 'http://' : $a['extra']; ?>" />
+
+                        <?php if ( $images_alt ) { ?>
+                            <input type="text" class="tb" name="meta" tmpval="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a['meta'] ) ) echo $a['meta']; ?>" />
+                        <?php } ?>
+                        
 						<input type="submit" class="button" value="<?php echo _('Save'); ?>" />
 						
 						<input type="hidden" name="hWebsiteAttachmentID" value="<?php echo $a['website_attachment_id']; ?>" />

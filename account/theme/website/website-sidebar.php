@@ -27,6 +27,9 @@ $attachments = $wa->get_by_page( $page['website_page_id'] );
 //@temp
 $attachments_by_key = ar::assign_key( $attachments, 'key' );
 
+// Figure out if they want to edit images - alt attributes
+$images_alt = '1' == $w->get_setting( 'images-alt' );
+
 css( 'jquery.uploadify', 'website/website-sidebar' );
 javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'website/page', 'website/website-sidebar' );
 
@@ -180,9 +183,15 @@ get_header();
 								<div align="center">
 									<p><img src="<?php echo $image_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" /></p>
 									<p><a href="/ajax/website/sidebar/remove-attachment/?_nonce=<?php echo nonce::create('remove-attachment'); ?>&amp;waid=<?php echo $a['website_attachment_id']; ?>&amp;t=dAttachment_<?php echo $a['website_attachment_id']; ?>&amp;si=1" id="aRemove<?php echo $a['website_attachment_id']; ?>" title="<?php echo _('Remove Image'); ?>" ajax="1" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a></p>
-									<p><input type="text" class="tb" name="extra" id="tSidebarImage<?php echo $a['website_attachment_id']; ?>" tmpval="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a['extra'] ) ) ? 'http://' : $a['extra']; ?>" /></p>
-									<p id="pTempSidebarImage<?php echo $a['website_attachment_id']; ?>" class="success hidden"><?php echo _('Your Sidebar Image link has been successfully updated.'); ?></p>
-									<br />
+
+                                    <p><input type="text" class="tb" name="extra" id="tSidebarImage<?php echo $a['website_attachment_id']; ?>" tmpval="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a['extra'] ) ) ? 'http://' : $a['extra']; ?>" /></p>
+
+                                    <?php if ( $images_alt ) { ?>
+                                        <p><input type="text" class="tb" name="meta" tmpval="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a['meta'] ) ) echo $a['meta']; ?>" /></p>
+                                    <?php } ?>
+
+                                    <p id="pTempSidebarImage<?php echo $a['website_attachment_id']; ?>" class="success hidden"><?php echo _('Your Sidebar Image has been successfully updated.'); ?></p>
+                                    <br />
 									<p align="center"><input type="submit" class="button" value="<?php echo _('Save'); ?>" /></p>
 								</div>
 								

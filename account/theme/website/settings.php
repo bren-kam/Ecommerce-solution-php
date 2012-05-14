@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate Class
 $w = new Websites;
 
-$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'timezone' );
+$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'timezone', 'images-alt' );
 		
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -170,6 +170,10 @@ get_header();
 						</select>
 					</td>
 				</tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><input type="checkbox" class="cb" name="images-alt" id="images-alt" value="1" <?php $images_alt = ( isset( $success ) && !$success ) ? $_POST['images-alt'] : $settings['images-alt']; if ( '1' == $images_alt ) echo ' checked="checked"'; ?> /> <label for="images-alt"><?php echo _('Images - Alt Tags'); ?></label></td>
+                </tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td>&nbsp;</td>

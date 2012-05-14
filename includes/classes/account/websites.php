@@ -345,7 +345,7 @@ class Websites extends Base_Class {
 	/**
 	 * Gets the general settings
 	 * 
-	 * @param array $setting_1, $setting_2, $setting_3, etc.
+	 * @param array $settings,...
 	 * @return array
 	 */
 	public function get_settings() {
