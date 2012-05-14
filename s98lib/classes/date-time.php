@@ -91,5 +91,5 @@ class date_time extends Base_Class {
 		$seconds = $seconds % 60;
 		
 		return sprintf( "%d:%02d:%02d", $hours, $minutes, $seconds );
-	} 
+	}
 }

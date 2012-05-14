@@ -505,7 +505,7 @@ class Websites extends Base_Class {
 		global $user;
 		
 		// Must have the proper role
-		if ( $user['role'] < 8 )
+		if ( $user['role'] < 7 )
 			return false;
 		
 		// Delete the website page
