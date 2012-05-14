@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '165553963512320', 'b4957be2dbf78991750bfa13f844cb68' );
+$fb = new FB( '165553963512320', 'b4957be2dbf78991750bfa13f844cb68', 'op-email-sign-up' );
 $esu = new Email_Sign_Up;
 $v = new Validator;
 

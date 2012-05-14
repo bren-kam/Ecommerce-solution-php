@@ -30,7 +30,7 @@ if ( !empty( $_POST['tTime'] ) ) {
 }
 
 // Adjust for time zone
-$date_sent = date( 'Y-m-d H:i:s', strtotime( $date_sent ) - ( $e->get_setting( 'timezone' ) * 3600 ) - 18000 );
+$date_sent = dt::adjust_timezone( $date_sent, $e->get_setting( 'timezone' ), config::setting('server-timezone') );
 
 // Get email lists
 $email_list_ids = $_POST['email_lists'];

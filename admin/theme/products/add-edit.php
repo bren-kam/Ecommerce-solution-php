@@ -62,6 +62,7 @@ if ( !empty( $_GET['pid'] ) ) {
 	$categories_list = $products->get_categories( $pid );
 	$tags = $ta->get( 'product', $pid );
 	$attribute_items = $a->get_attribute_items_by_product( $pid );
+    $websites = $products->get_websites_related_to_product( $pid );
 }
 
 // Add Validation
@@ -301,9 +302,12 @@ get_header();
 						<tr>
 							<td><label for="sPublishVisibility"><?php echo _('Visibility'); ?>:</label></td>
 							<td>
-								<select name="sPublishVisibility" id="sPublishVisibility">
+								<select name="sPublishVisibility" id="sPublishVisibility" style="width:222px">
 									<option value="public"<?php if ( isset( $p['status'] ) && 'public' == $p['publish_visibility'] ) echo ' selected="selected"'; ?>><?php echo _('Public'); ?></option>
 									<option value="private"<?php if ( isset( $p['status'] ) && 'private' == $p['publish_visibility'] ) echo ' selected="selected"'; ?>><?php echo _('Private'); ?></option>
+                                    <?php if ( isset( $p ) ) { ?>
+    									<option value="deleted"<?php if ( 'deleted' == $p['publish_visibility'] ) echo ' selected="selected"'; ?>><?php echo _('Deleted'); ?></option>
+                                    <?php } ?>
 								</select>
 							</td>
 						</tr>
@@ -322,7 +326,10 @@ get_header();
 			<?php 
 			if ( isset( $errs ) )
 				echo "<p class='red'>$errs</p>";
-			?>
+
+            if ( 0 != $p['website_id'] )
+                echo '<h2 style="margin-top:0">', _('Custom Product'), ': ', $p['website'], '</h2>';
+            ?>
 			<input type="hidden" id="hProductID" name="hProductID" value="<?php echo ( isset( $p['product_id'] ) ) ? $p['product_id'] : ''; ?>" />
 			<div id="dNameContainer"><input type="text" name="tName" id="tName" title="<?php echo _('Product Name'); ?>" value="<?php echo ( isset( $p['name'] ) ) ? str_replace( '"', '&quot;', $p['name'] ) : _('Product Name'); ?>" maxlength="200" /></div>
 			<div id="dProductSlug" <?php echo ( isset( $p['slug'] ) ) ? '' : "class='hidden'"; ?>>
@@ -384,6 +391,18 @@ get_header();
 						<td><input type="text" class="tb" name="tWeight" id="tWeight" value="<?php echo ( isset( $p['weight'] ) ) ? $p['weight'] : _('Weight'); ?>" style="width:50%" /></td>
 					</tr>
 				</table>
+                <?php if ( isset( $p ) ) { ?>
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td><strong><?php echo _('Created by:'); ?></strong></td>
+                        <td><?php echo $p['created_user']; ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?php echo _('Updated by:'); ?></strong></td>
+                        <td><?php echo $p['updated_user']; ?></td>
+                    </tr>
+                </table>
+                <?php } ?>
 			</div>
 			<div class="divider"></div>
 			<div class="page-widget" id="dUploadImages">
@@ -411,7 +430,15 @@ get_header();
 				<br />
 			</div>
 			<br /><br />
-			<?php nonce::field( 'add-edit-product' ); ?>
+			<?php
+            nonce::field( 'add-edit-product' );
+            if ( isset( $websites ) && count( $websites ) > 0 ) {
+                ?>
+                <h2><?php echo _('Websites With Product'); ?></h2>
+                <ul>
+                    <li><?php echo implode( "</li>\n<li>", $websites ); ?></li>
+                </ul>
+            <?php } ?>
 		</div>
 		</form>
 		<br clear="all" />

@@ -49,7 +49,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-setting
 			if ( !isset( $_POST[$sk] ) )
 				continue;
 			
-			$settings[$sk] = $_POST[$sk];
+			$settings[$sk] = stripslashes( $_POST[$sk] );
 		}
 		
 		// Set settings
@@ -96,7 +96,7 @@ get_header();
 					<select name="timezone" id="timezone">
 						<?php
 						$timezone = ( !$success && !empty( $_POST['timezone'] ) ) ? $_POST['timezone'] : $settings['timezone'];
-						data::timezones( true, $timezone );
+						data::timezones( true, $timezone, true );
 						?>
 					</select>
 				</td>

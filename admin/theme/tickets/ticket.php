@@ -36,6 +36,21 @@ javascript( 'swfobject', 'validator', 'jquery', 'jquery.uploadify', 'jquery.auto
 
 $admin_users = $u->get_users( "AND `status` <> 0 AND `role` > 5 AND `status` = 1 AND '' <> `contact_name`" );
 
+// The Admin User Options
+$admin_user_options = '';
+$admin_user_ids = array();
+
+foreach ( $admin_users as $au ) {
+    $selected = ( $ticket['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
+
+    $admin_user_options .= '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
+
+    $admin_user_ids[] = $au['user_id'];
+}
+
+// Find out if the user is an admin user
+$user_is_admin = in_array( $ticket['user_id'], $admin_user_ids );
+
 $selected = 'tickets';
 $title = _('View Ticket') . ' | ' . _('Tickets') . ' | ' . TITLE;
 get_header();
@@ -58,18 +73,12 @@ get_header();
 	?>
 	<table cellpadding="0" cellspacing="0">
 		<tr>
-			<td><strong><?php echo _('Name'); ?>:</strong> <?php echo $ticket['name']; ?></td>
+			<td><strong><?php echo _('Name'); ?>:</strong> <?php if ( $user_is_admin ) { ?><a href="javascript:;" class="assign-to" rel="<?php echo $ticket['user_id']; ?>"><?php } echo $ticket['name']; if ( $user_is_admin ) { ?></a><?php } ?></td>
 			<td><strong><?php echo _('Browser'); ?>:</strong> <?php echo $ticket['browser_name'], ' ', $ticket['browser_version']; ?></td>
 			<td class="move">
 				<label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label>
 				<select id="sAssignedTo" class="dd" style="width: 150px">
-				<?php
-				foreach ( $admin_users as $au ) {
-					$selected = ( $ticket['assigned_to_user_id'] == $au['user_id'] ) ? ' selected="selected"' : '';
-					
-					echo '<option value="' . $au['user_id'] . '"' . $selected . '>' . $au['contact_name'] . "</option>\n";
-				}
-				?>
+				<?php echo $admin_user_options; ?>
 				</select>
 			</td>
 			<td class="move">
@@ -156,8 +165,14 @@ get_header();
 				<img src="/images/icons/tickets/lock.gif" width="11" height="15"0 alt="<?php echo _('Private'); ?>" class="private" />
 				<?php
 				}
-				
+
+                if ( in_array( $c['user_id'], $admin_user_ids ) )
+                    echo '<a href="javascript:;" class="assign-to" rel="', $c['user_id'], '">';
+
 				echo $c['name'];
+
+                if ( in_array( $c['user_id'], $admin_user_ids ) )
+                    echo '</a>';
 				?>
 				<span class="date"><?php echo dt::date( 'm/d/Y g:ia', $c['date'] ); ?></span>
 				

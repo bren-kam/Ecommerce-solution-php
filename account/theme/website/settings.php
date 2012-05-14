@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate Class
 $w = new Websites;
 
-$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-loading-color', 'timezone' );
+$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'timezone' );
 		
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -39,10 +39,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-setti
 		$new_settings = array();
 		
 		foreach ( $settings as $k ) {
-			// Don't need to update this one
-			if ( 'banner-loading-color' == $k )
-				continue;
-			
 			$new_settings[$k] = $_POST[$k];
 		}
 		
@@ -62,10 +58,6 @@ foreach ( $settings_array as $k => &$val ) {
 	switch ( $k ) {
 		case 'banner-background-color':
 			$val = 'FFFFFF';
-		break;
-		
-		case 'banner-loading-color':
-			$val = '4C86B0';
 		break;
 		
 		case 'banner-width':
@@ -129,6 +121,40 @@ get_header();
 					<td><label for="banner-speed"><?php echo _('Speed'); ?>:</label></td>
 					<td><input type="text" class="tb" name="banner-speed" id="banner-speed" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-speed'] : $settings['banner-speed']; ?>" maxlength="2" /></td>
 				</tr>
+                <tr>
+					<td><label for="banner-effect"><?php echo _('Effect'); ?>:</label></td>
+					<td>
+                        <select name="banner-effect" id="banner-effect">
+                            <?php
+                            $effect = ( isset( $success ) && !$success ) ? $_POST['banner-effect'] : $settings['banner-effect'];
+
+                            $effects = array(
+                                'random' => _('Random')
+                                , 'fade' => _('Fade')
+                                , 'fold' => _('Fold')
+                                , 'sliceDownRight' => _('Slice Down-Right')
+                                , 'sliceDownLeft' => _('Slice Down-Left')
+                                , 'sliceUpRight' => _('Slice Up-Right')
+                                , 'sliceUpLeft' => _('Slice Up-Left')
+                                , 'sliceUpDown' => _('Slice Up-Down')
+                                , 'sliceUpDownLeft' => _('Slice Up-Down-Left')
+                                , 'boxRandom' => _('Box Random')
+                                , 'boxRain' => _('Box Rain')
+                                , 'boxRainReverse' => _('Box Rain-Reverse')
+                                , 'boxRainGrow' => _('Box Rain-Grow')
+                                , 'boxRainGrowReverse' => _('Box Rain-Grow-Reverse')
+                            );
+
+                            foreach ( $effects as $key => $value ) {
+                                $selected = ( $key == $effect ) ? ' selected="selected"' : $value;
+                                ?>
+                                <option value="<?php echo $key; ?>"<?php echo $selected; ?>><?php echo $value; ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+					</td>
+				</tr>
 				<tr>
 					<td><label for="banner-background-color"><?php echo _('Background Color'); ?>:</label></td>
 					<td><input type="text" class="tb" name="banner-background-color" id="banner-background-color" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-background-color'] : $settings['banner-background-color']; ?>" maxlength="6" /></td>
@@ -139,7 +165,7 @@ get_header();
 						<select name="timezone" id="timezone">
 							<?php
 							$timezone = ( !$success && !empty( $_POST['timezone'] ) ) ? $_POST['timezone'] : $settings['timezone'];
-							data::timezones( true, $timezone );
+							data::timezones( true, $timezone, true );
 							?>
 						</select>
 					</td>

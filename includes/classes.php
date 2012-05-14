@@ -14,13 +14,15 @@ function __autoload( $class_name ) {
 	// Need to include the classes correctly
 	$shopping_cart = ( in_array( $class_name, array( 'cart', 'order', 'shipping', 'payment' ) ) ) ? 'shopping_cart/' : '';
 	
-	if ( ACCOUNT ) {
+	if ( defined('ACCOUNT') && ACCOUNT ) {
 		$folder = 'account';
-	} elseif ( ADMIN ) {
+	} elseif ( defined('ADMIN') && ADMIN ) {
 		$folder = 'admin';
-	} elseif ( APPS ) {
+	} elseif ( defined('APPS') && APPS ) {
 		$folder = 'apps';
-	}
+	} elseif( defined('API') && API ) {
+		$folder = 'api';
+    }
 	
 	if ( !inc( 'classes/' . $shopping_cart . $class_name ) && !inc( "classes/$folder/{$shopping_cart}{$class_name}" ) )
 		s98lib_classes( $class_name );

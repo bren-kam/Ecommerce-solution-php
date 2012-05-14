@@ -53,7 +53,7 @@ get_header();
 	<div id="subcontent">
 		<?php if ( 0 == $products['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the Products application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://www.facebook.com/apps/application.php?id=163636730371197" title="<?php echo _('Online Platform - Products'); ?>" target="_blank"><?php echo _('Products'); ?></a> <?php echo _('application page'); ?>.</p>
+			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-products/" title="<?php echo _('Online Platform - Products'); ?>" target="_blank"><?php echo _('Products'); ?></a> <?php echo _('application page'); ?>.</p>
 			<br /><br />
 			
 			<h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>

@@ -19,7 +19,7 @@ class format extends Base_Class {
 	 * @param array|string $value The array or string to be stripped
 	 * @return array|string Stripped array (or string in the callback).
 	 */
-	function stripslashes_deep( $value ) {
+	public static function stripslashes_deep( $value ) {
 		return is_array( $value ) ? array_map( array('self', 'stripslashes_deep'), $value ) : stripslashes( $value );
 	}
 	
@@ -302,6 +302,7 @@ class format extends Base_Class {
 	 * @param string $str
 	 * @param string $tags the tags to remove
 	 * @param bool $strip_content (optional|false) whether to remove the content in the tags or not
+     * @return string
 	 */
 	public static function strip_only( $str, $tags, $strip_content = false ) {
 		$content = '';
@@ -333,18 +334,17 @@ class format extends Base_Class {
 	 * Converts links in text to anchor tags that link to those links
 	 * This does not take into account that there may already be links
 	 *
-	 * @uses regexp::replace
-	 * 
 	 * @param string $string
-	 * @param bool $title_tag (optional|true) whether you want the "title" attribute to be there (will match the link)
+	 * @param bool $title_attribute (optional|true) whether you want the "title" attribute to be there (will match the link)
 	 * @param bool $new_window (optional|false) whether the link should open a new tab/window
 	 * @return string
 	 */
 	public static function links_to_anchors( $string, $title_attribute = true, $new_window = false ) {
 		$title = ( $title_attribute ) ? ' title="\\1"' : '';
 		$target = ( $new_window ) ? ' target="_blank"' : '';
-		
-		return regexp::replace( $string, 'url', '<a href="\\1"' . $title . $target . '>\\1</a>' );
+
+        // Tricket to make sure there is always an http://
+		return str_replace( 'http://http', 'http', regexp::replace( $string, 'url', '<a href="http://\\1"' . $title . $target . '>\\1</a>' ) );
 	}
 	
 	/**

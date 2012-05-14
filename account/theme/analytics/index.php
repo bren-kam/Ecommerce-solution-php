@@ -15,8 +15,12 @@ if ( !$user )
 if ( !$user['website']['live'] )
 	url::redirect('/');
 
+// Get start and end dates
+$date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : NULL;
+$date_end = (isset( $_GET['de'] ) ) ? $_GET['de'] : NULL;
+
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
+$a = new Analytics( $user['website']['ga_profile_id'], $date_start, $date_end );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'visits' );
@@ -156,7 +160,7 @@ get_header();
 						foreach ( $content_overview_pages as $top ) {
 						?>
 						<tr>
-							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
+							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo ( '/' == $top['page'] ) ? 'Home' : $top['page']; ?></a></td>
 							<td align="right"><?php echo number_format( $top['page_views'] ); ?></td>
 							<td align="right"><?php echo round( $top['page_views'] / $total['page_views'] * 100, 2 ); ?>%</td>
 						</tr>

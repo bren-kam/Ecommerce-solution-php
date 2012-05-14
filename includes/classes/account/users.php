@@ -205,14 +205,11 @@ class Users extends Base_Class {
 	 * Logs out
 	 */
 	public function logout() {
-		global $mc;
-
 		// Removing both of these cookies will destroy everything
 		remove_cookie( AUTH_COOKIE );
 		remove_cookie( SECURE_AUTH_COOKIE );
 		remove_cookie( 'action' );
-
-		$mc->delete( $this->encrypted_email );
+		remove_cookie( 'wid' );
 	}
 
 	/**
@@ -228,7 +225,7 @@ class Users extends Base_Class {
 
 		if ( $role > 1 ) {
 			// @Fix should `phone` and `logo` be removed and put in the websites:get_website function (meaning theme/website/top needs to change)
-			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
+			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
 
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -276,7 +273,7 @@ class Users extends Base_Class {
 	 */
 	public function forgot_password( $email ) {
 		// Get the user
-		$user = $this->db->prepare( "SELECT `user_id`, `account_type_id`, CONCAT( `first_name`, ' ', `last_name` ) AS name, `status` FROM `users` WHERE `email` = ?", 's', $email )->get_row( '', ARRAY_A );
+		$user = $this->db->prepare( "SELECT `user_id`, `contact_name` FROM `users` WHERE `email` = ?", 's', $email )->get_row( '', ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -287,17 +284,10 @@ class Users extends Base_Class {
 		if ( $user ) {
 			$e = new Emails();
 
-			if ( -1 == $user['status'] ) {
-				// This means their account was never activated, so send the same email
-				$e->send_confirmation( $user['user_id'], $email );
+			// This means it is a legitimate forgot password request
+			$e->reset_password( $user['user_id'], $user['contact_name'], $email );
 
-				return 1;
-			} else {
-				// This means it is a legitimate forgot password request
-				$e->reset_password( $user['user_id'], $user['name'], $email );
-
-				return 2;
-			}
+			return 1;
 		} else {
 			return 0;
 		}
@@ -312,22 +302,14 @@ class Users extends Base_Class {
 	 * @return object
 	 */
 	public function get_user( $user_id ) {
-		global $mc;
+        // Prepare the statement
+        $user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `products`, `role` FROM `users` WHERE `user_id` = ? AND `status` = 1', 'i', $user_id )->get_row( '', ARRAY_A );
 
-		$user = $mc->get( 'get_user > ' . $user_id );
-
-		if ( empty( $user ) ) {
-			// Prepare the statement
-			$user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `products`, `role` FROM `users` WHERE `user_id` = ? AND `status` = 1', 'i', $user_id )->get_row( '', ARRAY_A );
-
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get user.', __LINE__, __METHOD__ );
-				return false;
-			}
-
-			$mc->add( 'get_user > ' . $user_id, $user, 7200 );
-		}
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->err( 'Failed to get user.', __LINE__, __METHOD__ );
+            return false;
+        }
 
 		return $user;
 	}
@@ -392,6 +374,7 @@ class Users extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @return bool
 	 */
 	private function err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );

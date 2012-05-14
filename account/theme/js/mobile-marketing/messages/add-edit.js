@@ -11,10 +11,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		show24Hours: false
 	});
 	
-	$('#taMessage').charCount({
+	$('#taMessage').keyup( function() {
+        $(this).val( $(this).val().replace(/\n/, '') );
+    }).charCount({
         css : 'counter bold'
         , cssExceeded : 'error'
         , counterText : 'Characters Left: '
+        , allowed : 131
     });
 
     // Date Picker

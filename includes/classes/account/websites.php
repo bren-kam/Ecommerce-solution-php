@@ -26,7 +26,7 @@ class Websites extends Base_Class {
         $website_id = (int) $website_id;
 
 		$website = $this->db->get_row( "SELECT `website_id`, `os_user_id`, `user_id`, `domain`, `subdomain`, `title`, `theme`, `logo`, `phone`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `domain_registration`, `additional_email_addresses`, `ga_profile_id`, `ga_tracking_key`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `type`, `version`, `live`, `date_created`, `date_updated`  FROM `websites` WHERE `website_id` = $website_id AND `status` = 1", ARRAY_A );
-	
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website.', __LINE__, __METHOD__ );
@@ -91,11 +91,14 @@ class Websites extends Base_Class {
 	 * @param string $meta_keywords
 	 * @return bool
 	 */
-	public function update_page( $website_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords ) {
+	public function update_page( $website_page_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile = 0 ) {
 		global $user;
 		
+		//Type cast
+		$mobile = (int) $mobile;
+		
 		// Update existing request
-		$this->db->update( 'website_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssi', 'ii' );
+		$this->db->update( 'website_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'mobile' => $mobile, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssii', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -135,7 +138,7 @@ class Websites extends Base_Class {
 		$website_page_id = (int) $website_page_id;
 		
 		// Get the page
-		$page = $this->db->get_row( "SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords` FROM `website_pages` WHERE `website_page_id` = $website_page_id", ARRAY_A );
+		$page = $this->db->get_row( "SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_page_id` = $website_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -357,7 +360,7 @@ class Websites extends Base_Class {
 		} elseif ( !is_array( $settings ) ) {
 			return;
 		}
-		
+
 		// Typecast
 		$website_id = (int) $user['website']['website_id'];
 		
@@ -373,13 +376,13 @@ class Websites extends Base_Class {
 		
 		// Get the settings
 		$settings_array = $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $website_id AND `key` IN ($sql_settings) ORDER BY `key`", ARRAY_A );
-		
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to get website_settings.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		$new_settings = ar::assign_key( $settings_array, 'key', true );
 
 		// @Fix should not loop queries
@@ -502,7 +505,7 @@ class Websites extends Base_Class {
 		global $user;
 		
 		// Must have the proper role
-		if ( $user['role'] < 8 )
+		if ( $user['role'] < 7 )
 			return false;
 		
 		// Delete the website page

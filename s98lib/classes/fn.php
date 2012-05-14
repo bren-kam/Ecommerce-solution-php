@@ -120,7 +120,7 @@ class fn extends Base_Class {
 		if ( is_array( $b ) )
 			return $b;
 		
-		$user_agent = strtolower( $_SERVER['HTTP_USER_AGENT'] );
+		$user_agent = ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) ? strtolower( $_SERVER['HTTP_USER_AGENT'] ) : 'undefined';
 
 		// Identify the browser. Check Opera and Safari first in case of spoof. Let Google Chrome be identified as Safari.
 		if ( preg_match( '/opera/', $user_agent ) ) {

@@ -70,7 +70,7 @@ class Ashley_Feed extends Base_Class {
 		// Initialize variables
 		$folder = str_replace( 'CE_', '', $username );
 		
-		if ( '-' != substr( $folder, 0, -1 ) )
+		if ( '-' != substr( $folder, -1 ) )
 			$folder .= '-';
 		
         $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
@@ -85,7 +85,6 @@ class Ashley_Feed extends Base_Class {
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
 		$start = time();
-
 
 		// Set login information
 		$ftp->host     = self::FTP_URL;
@@ -126,7 +125,10 @@ class Ashley_Feed extends Base_Class {
                 continue;
 
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-
+			
+			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
+				continue;
+			
 			if ( !array_key_exists( $sku, $products ) ) {
 				$new_products[] = $sku;
 			}
@@ -157,6 +159,51 @@ class Ashley_Feed extends Base_Class {
 		
 		echo $this->scratchy_time();
 	}
+
+    /**
+     * Email Online Specialists
+     *
+     * @param int $website_id
+     * @return bool
+     */
+    public function email_online_specialists( $website_id ) {
+        $w = new Websites;
+
+        $website_id = (int) $website_id;
+        $website = $w->get_website( $website_id );
+
+        $title = $website['title'];
+        $ashley_feed_started = $w->get_setting( $website_id, 'ashley-feed-started' );
+
+        if ( '1' == $ashley_feed_started )
+            return true;
+
+        // Grab any authorized users that have ashley in their email
+        $emails = $this->db->get_col( "SELECT a.`email` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`user_id` = c.`user_id` OR a.`user_id` = c.`os_user_id` ) WHERE a.`status` = 1 AND ( b.`website_id` IS NULL AND c.`website_id` = $website_id OR a.`email` LIKE '%@ashleyfurniture.com' AND b.`website_id` = $website_id )" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get emails.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Get the company domain
+        $domain = $this->db->get_var( "SELECT a.`domain` FROM `companies` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get domain.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        $message = "This email is a notification that the Ashley Dealer Specific Feed has been run for $title and products have been added.";
+
+        // Send out the email
+        if ( fn::mail( implode( ',', $emails ), 'Ashley Dealer Specific Feed - Started', $message, "noreply@$domain" ) )
+            $w->update_settings( $website_id, array( 'ashley-feed-started' => 1 ) );
+
+        return true;
+    }
 	
 	/**
 	 * Gets the products SKUs of a website to determine what products they have
@@ -169,7 +216,7 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// Get Products
-		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 0", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 353", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

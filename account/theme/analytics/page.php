@@ -20,8 +20,12 @@ $page = $_GET['p'];
 if ( empty( $page ) )
 	url::redirect('/analytics/content-overview/');
 
+// Get start and end dates
+$date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : NULL;
+$date_end = (isset( $_GET['de'] ) ) ? $_GET['de'] : NULL;
+
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de']  );
+$a = new Analytics( $user['website']['ga_profile_id'], $date_start, $date_end );
 
 // Set global filter
 $filter = "pagePath==$page";
@@ -69,6 +73,10 @@ add_javascript_callback("$.plot($('#dLargeGraph'),[
 	
 	active_graph = 'Visits', percent = '', time = false;
 ");
+
+// Look niec
+if ( '/' == $page )
+    $page = 'Home';
 
 $selected = "analytics";
 $title = _('Page | Analytics') . ' | ' . TITLE;

@@ -1231,21 +1231,21 @@ class Email_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$messages = $this->db->get_results( "SELECT `email_message_id`, `mc_campaign_id`, `subject`, `status`, UNIX_TIMESTAMP( `date_sent` ) - 18000 AS date_sent FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `email_message_id`, `mc_campaign_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to list email messages.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		// @Fix should be done in query
 		// Modify the timezone
 		if ( is_array( $messages ) ) {
 			$timezone = $this->get_setting( 'timezone' );
-			
+
 			foreach ( $messages as &$m ) {
-				$m['date_sent'] -= $timezone * 3600;
+				$m['date_sent'] = strtotime( dt::adjust_timezone( $m['date_sent'], config::setting('server-timezone'), $timezone ) );
 			}
 		}
 		

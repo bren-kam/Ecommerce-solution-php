@@ -89,7 +89,7 @@ global $user;
 
 <!-- End: Footer -->
 <?php list( $javascript, $before_javascript, $callback ) = get_js( true ); ?>
-<script type="text/javascript"><?php echo $before_javascript; ?>head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js', '/js/?files=<?php echo $javascript; ?>'<?php if ( !empty( $callback ) ) echo ', function() {', $callback, '}'; ?>);</script>
+<script type="text/javascript"><?php echo $before_javascript; ?>head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '/js/?files=<?php echo $javascript; ?>'<?php if ( !empty( $callback ) ) echo ', function() {', $callback, '}'; ?>);</script>
 <?php footer(); ?>
 </body>
 </html>

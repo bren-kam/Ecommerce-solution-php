@@ -29,7 +29,7 @@
                     $url .= '/post';
                 break;
 
-                default:breka;
+                default:break;
             }
         ?>
         <a href="/social-media/facebook/<?php echo $url; ?>/" class="top" title="<?php echo $name; ?>"><?php echo $name; ?></a>

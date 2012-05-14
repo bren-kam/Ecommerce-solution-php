@@ -32,6 +32,7 @@ $v->add_validation( 'tGAProfileID', 'num', _('The "Google Analytics Profile ID" 
 
 // Initialize variable
 $success = false;
+$errs = '';
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-account' ) ) {
 	$errs = $v->validate();
@@ -76,17 +77,17 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
-			$fields['ftp_host'] = base64_encode( security::encrypt( $_POST['tFTPHost'], ENCRYPTION_KEY ) );
+			$fields['ftp_host'] = security::encrypt( $_POST['tFTPHost'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
 		if ( !empty( $_POST['tFTPUser'] ) ) {
-			$fields['ftp_username'] = base64_encode( security::encrypt( $_POST['tFTPUser'], ENCRYPTION_KEY ) );
+			$fields['ftp_username'] = security::encrypt( $_POST['tFTPUser'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
 		if ( !empty( $_POST['tFTPPassword'] ) ) {
-			$fields['ftp_password'] = base64_encode( security::encrypt( $_POST['tFTPPassword'], ENCRYPTION_KEY ) );
+			$fields['ftp_password'] = security::encrypt( stripslashes( $_POST['tFTPPassword'] ), ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
@@ -102,12 +103,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 			
 		// Extras
 		if ( !empty( $_POST['tWordPressUsername'] ) ) {
-			$fields['wordpress_username'] = base64_encode( security::encrypt( $_POST['tWordPressUsername'], ENCRYPTION_KEY ) );
+			$fields['wordpress_username'] = security::encrypt( $_POST['tWordPressUsername'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 
 		if ( !empty( $_POST['tWordPressPassword'] ) ) {
-			$fields['wordpress_password'] = base64_encode( security::encrypt( $_POST['tWordPressPassword'], ENCRYPTION_KEY ) );
+			$fields['wordpress_password'] = security::encrypt( $_POST['tWordPressPassword'], ENCRYPTION_KEY, true );
 			$fields_safety .= 's';
 		}
 		
@@ -119,21 +120,30 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		}
 		
 		$success = $w->update( $_GET['wid'], $fields, $fields_safety );
-		
+
+        $sm_add_ons = @unserialize( $w->get_setting( $_GET['wid'], 'social-media-add-ons' ) );
+
+        if ( is_array( $sm_add_ons ) ) {
+            $sm = new Social_Media();
+
+            foreach ( $sm_add_ons as $smao ) {
+                if ( !in_array( $smao, $_POST['sSocialMedia'] ) )
+                    $sm->reset( $_GET['wid'], $smao );
+            }
+        }
+
 		// Update Facebook settings
 		$w->update_settings( $_GET['wid'], array( 
 			'facebook-url' => $_POST['tFacebookURL']
 			, 'limited-products' => ( isset( $_POST['cbLimitedProducts'] ) ) ? 1 : 0
             , 'advertising-url' => $_POST['tAdvertisingURL']
-            , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY ) )
-            , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY ) )
-            , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY ) )
-            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY ) )
+            , 'ga-username' => ( empty( $_POST['tGAUsername'] ) ) ? '' : security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY, true )
+            , 'ga-password' => ( empty( $_POST['tGAPassword'] ) ) ? '' : security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY, true )
+            , 'ashley-ftp-username' => ( empty( $_POST['tAshleyFTPUsername'] ) ) ? '' : security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
+            , 'ashley-ftp-password' => ( empty( $_POST['tAshleyFTPPassword'] ) ) ? '' : security::encrypt( stripslashes( $_POST['tAshleyFTPPassword'] ), ENCRYPTION_KEY, true )
             , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
-            , 'avid-mobile-customer-id' => $_POST['tAvidMobileCustomerID']
-            , 'avid-mobile-username' => ( empty( $_POST['tAvidMobileUsername'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobileUsername'], ENCRYPTION_KEY ) )
-            , 'avid-mobile-password' => ( empty( $_POST['tAvidMobilePassword'] ) ) ? '' : base64_encode( security::encrypt( $_POST['tAvidMobilePassword'], ENCRYPTION_KEY ) )
+            , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
 		) );
 	}
 }
@@ -154,17 +164,19 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ashley-ftp-password'
     , 'ashley-alternate-folder'
     , 'social-media-add-ons'
-    , 'avid-mobile-customer-id'
-    , 'avid-mobile-username'
-    , 'avid-mobile-password'
+    , 'trumpia-api-key'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
 
 // We must strip slashes, since $_POST automatically inserts them!
-foreach ( $web as &$slot ){
+foreach ( $web as &$slot ) {
 	$slot = stripslashes( $slot );
 }
+
+// Do some error checking
+if ( '1' != $web['user_status'] )
+    $errs .= "The owner's account has been deactivated. This account will not work until it has an active owner.";
 
 css( 'form', 'accounts/edit' );
 javascript( 'validator', 'jquery', 'accounts/edit' );
@@ -181,27 +193,17 @@ get_header();
 	<div id="subcontent">
 		<?php 
 		if ( !isset( $success ) || !$success ) {
-			$main_form_class = '';
 			$success_class = ' class="hidden"';
-			
-			if ( isset( $errs ) )
-				echo "<p class='red'>$errs</p>";
-		} else {
+			$main_form_class = '';
+        } else {
 			$success_class = '';
 			$main_form_class = ' class="hidden"';
 		}
 		?>
 		<div id="dMainForm"<?php echo $main_form_class; ?>>
 			<?php
-			if ( isset( $errs ) && !empty( $errs ) ) {
-				$error_message = '';
-				
-				foreach ( $errs as $e ) {
-					$error_message .= ( !empty( $error_message ) ) ? "<br />$e" : $e;
-				}
-				
-				echo "<p class='red'>$error_message</p>";
-			}
+			if ( !empty( $errs ) )
+				echo "<p class='red'>$errs</p>";
 
             if ( $user['role'] >= 7 ) {
             ?>
@@ -344,11 +346,11 @@ get_header();
 							</p>
 							<p>
 								<label for="tFTPUser"><?php echo _('User Name'); ?>:</label>
-								<input type="text" name="tFTPUser" id="tFTPUser" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+								<input type="text" name="tFTPUser" id="tFTPUser" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY ); ?>" class="tb" autocomplete="off" />
 							</p>
 							<p>
 								<label for="tFTPPassword"><?php echo _('Password'); ?>:</label>
-								<input type="password" name="tFTPPassword" id="tFTPPassword" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+								<input type="password" name="tFTPPassword" id="tFTPPassword" value="<?php echo security::decrypt( base64_decode( $ftp['ftp_password'] ), ENCRYPTION_KEY ); ?>" class="tb" autocomplete="off" />
 							</p>
 						</div>
 						<br />
@@ -401,7 +403,7 @@ get_header();
                         </p>
                         <p>
                             <label for="tAshleyFTPPassword"><?php echo _('Ashley FTP Password'); ?>:</label>
-                            <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
+                            <input type="text" name="tAshleyFTPPassword" id="tAshleyFTPPassword" value="<?php if ( !empty( $settings['ashley-ftp-password'] ) ) echo htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ); ?>" class="tb" />
                         </p>
                         <p>
                             <input type="checkbox" class="cb" name="cbAshleyAlternateFolder" id="cbAshleyAlternateFolder" value="1"<?php if ( !empty( $settings['ashley-alternate-folder'] ) ) echo ' checked="checked"'; ?> />
@@ -425,17 +427,13 @@ get_header();
 							<input type="text" name="tMCListID" id="tMCListID" value="<?php echo $web['mc_list_id']; ?>" class="tb" />
 						</p>
                         <p>
-							<label for="tAvidMobileCustomerID"><?php echo _('Avid Mobile Client ID'); ?>:</label>
-							<input type="text" name="tAvidMobileCustomerID" id="tAvidMobileCustomerID" value="<?php if ( isset( $settings['avid-mobile-customer-id'] ) ) echo $settings['avid-mobile-customer-id']; ?>" class="tb" />
+							<label for="tTrumpiaAPIKey"><?php echo _('Trumpia API Key'); ?>:</label>
+                            <?php if ( empty( $settings['trumpia-api-key'] ) ) { ?>
+                                <a href="/accounts/create-mobile-account/?wid=<?php echo $_GET['wid']; ?>"><?php echo _('Create Trumpia Account'); ?></a>
+                            <?php } else { ?>
+							<input type="text" name="tTrumpiaAPIKey" id="tTrumpiaAPIKey" value="<?php if ( isset( $settings['trumpia-api-key'] ) ) echo $settings['trumpia-api-key']; ?>" class="tb" />
+                            <?php } ?>
 						</p>
-                        <p>
-                            <label for="tAvidMobileUsername"><?php echo _('Avid Mobile Username'); ?>:</label>
-                            <input type="text" name="tAvidMobileUsername" id="tAvidMobileUsername" value="<?php if ( !empty( $settings['avid-mobile-username'] ) ) echo security::decrypt( base64_decode( $settings['avid-mobile-username'] ), ENCRYPTION_KEY ); ?>" class="tb" />
-                        </p>
-                        <p>
-                            <label for="tAvidMobilePassword"><?php echo _('Avid Mobile Password'); ?>:</label>
-                            <input type="text" name="tAvidMobilePassword" id="tAvidMobilePassword" value="<?php if ( !empty( $settings['avid-mobile-password'] ) ) echo security::decrypt( base64_decode( $settings['avid-mobile-password'] ), ENCRYPTION_KEY ); ?>" class="tb" />
-                        </p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 
                             <label for="cbLive" class="inline"><?php echo _('Max image size for custom products:'); ?></label>&nbsp;

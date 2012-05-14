@@ -71,8 +71,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
 		// Finalize the locations to 10 at the max
 		$locations = array_slice( array_unique( $locations ), 0, 10 );
 
-        $locations =
-
 		// Add the store link
 		if ( 1 == $website['pages'] && !empty( $website['domain'] ) ) {
 			$url = 'http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $website['domain'] . '/';

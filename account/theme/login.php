@@ -21,7 +21,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'login' ) ) {
 	
 	if ( empty( $errs ) ) {
 		global $u;
-		if ( $u->login( $_POST['tEmail'], $_POST['tPassword'], ( ( 'yes' == $_POST['cbRememberMe'] ) ? true : false ) ) ) {
+
+		if ( $u->login( $_POST['tEmail'], $_POST['tPassword'], isset( $_POST['cbRememberMe'] ) ) ) {
 
 			url::redirect( '/' );
 		} else {
@@ -64,7 +65,7 @@ get_header();
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="referer" value="<?php echo $_SESSION['referer']; ?>" />
+        <input type="hidden" name="referer" value="<?php if ( isset( $_GET['r'] ) ) echo urldecode( $_GET['r'] ); ?>" />
         <?php nonce::field( 'login' ); ?>
 	</form>
 	<?php add_footer( $v->js_validation() ); ?>

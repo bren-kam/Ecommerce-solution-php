@@ -81,7 +81,7 @@ get_header();
 		<?php if ( $success ) { ?>
 		<div class="success">
 			<p><?php echo ( $mobile_autoresponder_id ) ? _('Your autoresponder has been updated successfully!') : _('Your autoresponder has been added successfully!'); ?></p>
-			<p><?php echo _('Click here to'), ' <a href="/mobile-marketing/autoresponders/" title="', _('Autoresponders'), '">', _('view your autoresponders'), '</a>.'; ?></p>
+			<p><?php echo '<a href="/mobile-marketing/autoresponders/" title="', _('Autoresponders'), '">', _('Click here to view your autoresponders'), '</a>.'; ?></p>
 		</div>
 		<?php 
 		}

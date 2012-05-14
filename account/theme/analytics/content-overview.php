@@ -15,8 +15,12 @@ if ( !$user )
 if ( !$user['website']['live'] )
 	url::redirect('/');
 
+// Get start and end dates
+$date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : NULL;
+$date_end = (isset( $_GET['de'] ) ) ? $_GET['de'] : NULL;
+
 // Instantiate class
-$a = new Analytics( $user['website']['ga_profile_id'], $_GET['ds'], $_GET['de'] );
+$a = new Analytics( $user['website']['ga_profile_id'], $date_start, $date_end );
 
 // Main Analytics
 $records = $a->get_metric_by_date( 'page_views' );
@@ -124,7 +128,7 @@ get_header();
 						$top['page'] = str_replace( '&', '&amp;', $top['page'] ); 
 					?>
 					<tr>
-						<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
+						<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo ( '/' == $top['page'] ) ? 'Home' : $top['page']; ?></a></td>
 						<td class="text-right"><?php echo number_format( $top['page_views'] ); ?></td>
 						<td class="text-right"><?php echo $top['time_on_page']; ?></td>
 						<td class="text-right"><?php echo number_format( $top['bounce_rate'], 2 ); ?>%</td>

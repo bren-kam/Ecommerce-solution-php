@@ -13,10 +13,6 @@ if ( !$user )
 
 $a = new Attributes;
 
-// Brands
-$b = new Brands();
-$brands = $b->get_all();
-
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-attribute' ) ) {
 	
 	// Parse attribute items
@@ -27,7 +23,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-attribu
 	}
 	
 	// Create the attribute
-	$attribute_id = $a->update( $_POST['hAttributeID'], $_POST['sBrandID'], $_POST['tAttributeTitle'], $_POST['tAttributeName'], $attribute_list );
+	$attribute_id = $a->update( $_POST['hAttributeID'], $_POST['tAttributeTitle'], $_POST['tAttributeName'], $attribute_list );
 	
 	// If successfull, send to attributes
 	if ( $attribute_id )
@@ -60,20 +56,6 @@ get_header();
             <div class="cell" style="width:15%;"><label for="tAttributeName"><?php echo _('Attribute Name'); ?>:</label></div>
             <div class="cell"><input type="text" name="tAttributeName" id="tAttributeName" maxlength="50" class="tb" value="<?php echo $attribute['name']; ?>" /></div>
 		</div>
-        <div class="row">
-            <div class="cell" style="width:15%;"><label for="sBrandID"><?php echo _('Brand (Optional)'); ?>:</label></div>
-            <div class="cell">
-                <select name="sBrandID" id="sBrandID">
-                    <option value="">-- <?php echo _('Select a Brand'); ?> --</option>
-                    <?php
-                    foreach ( $brands as $brand ) {
-                        $selected = ( $attribute['brand_id'] == $brand['brand_id'] ) ? ' selected="selected"' : '';
-                        ?>
-                        <option value="<?php echo $brand['brand_id']; ?>"<?php echo $selected; ?>><?php echo $brand['name']; ?></option>
-                    <?php } ?>
-                </select>
-            </div>
-        </div>
 		<br clear="left" /><br />
 		<div class="row">
 				<div class="cell" style="width:15%"><?php echo _('Attribute Items'); ?></div>

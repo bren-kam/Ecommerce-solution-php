@@ -131,7 +131,7 @@ class Websites extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-		$website = $this->db->get_row( "SELECT a.`website_id`, a.`os_user_id`, a.`user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`website_id`, a.`os_user_id`, a.`user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -234,7 +234,7 @@ class Websites extends Base_Class {
 		// Get the websites
 		// $websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		// Original version ^, version below omits counting because it's difficult to get a 100% accurate count
-		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where AND a.`status` = 1 AND b.`status` = 1 GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		foreach ( $websites as &$website ){
 			$website_id = $website['website_id'];
@@ -277,7 +277,7 @@ class Websites extends Base_Class {
 		
 		// @Fix -- shouldn't have to count the results
 		// Get the website count
-		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where AND a.`status` = 1 AND b.`status` = 1 GROUP BY a.`website_id`", ARRAY_A ) );
+		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id`", ARRAY_A ) );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -573,45 +573,14 @@ class Websites extends Base_Class {
 				}
 				
 				// Send .htaccess and config file
-				$web_domain = security::decrypt( base64_decode( $ftp_data['ftp_host'] ), ENCRYPTION_KEY );
 				$username = security::decrypt( base64_decode( $ftp_data['ftp_username'] ), ENCRYPTION_KEY );
-				$password = security::decrypt( base64_decode( $ftp_data['ftp_password'] ), ENCRYPTION_KEY );
-				
-				$ftp = new FTP( $website_id, "/public_html/" . $subdomain );
-				$ftp->cwd = "/public_html/" . $subdomain;
-				
-				if ( !$ftp->add( OPERATING_PATH . '/media/data/htaccess.txt', '', '.htaccess' ) )
-					return false;
 
-				if ( !$ftp->add( OPERATING_PATH . '/media/data/config.php', '' ) )
-					return false;
-				
-				
-				// Make the root directory writable
-				$ftp->chmod( 0777, '/public_html' . $subdomain2 );
-				
-				// Get data for SSH
-				//$svn['un_pw'] = '--username lacky --password KUWrq6RIO_r';
-				//$svn['repo_url'] = 'http://svn.codespaces.com/imagineretailer/system';
-				
-				// System version
-				//$system_version = trim( shell_exec( 'svn ls --no-auth-cache ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/tags | tail -n 1 | tr -d "/"' ) );
-				
 				// SSH Connection
-				$ssh_connection = ssh2_connect( '199.204.138.145', 22 );
-				ssh2_auth_password( $ssh_connection, 'root', 'GcK5oy29IiPi' );
+				$ssh_connection = ssh2_connect( '199.79.48.137', 22 );
+				ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
 				
-				// Checkout
-				//ssh2_exec( $ssh_connection, 'svn checkout ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . "/trunk /home/$username/public_html" . $subdomain2 );
-
                 // Copy files
-                ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/* /home/$username/public_html" . $subdomain2 );
-
-				// Install Cron
-				/*ssh2_exec( $ssh_connection, 'echo -e "MAILTO=\"systemadmin@imagineretailer.com\"
-0 03 * * * /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/daily.php > /dev/null
-0 23 * * 0 /usr/bin/php /home/' . $username . '/public_html/' . $subdomain . 'core/crons/weekly.php > /dev/null" | crontab' );
-				*/
+                ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" . $subdomain2 );
 
 				// Update config & .htaccess file
 				$document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
@@ -620,37 +589,15 @@ class Websites extends Base_Class {
 				ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
 				
 				// Must use FTP to assign folders under the right user
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/' . $web['theme'] );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/cache' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/cache/css' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/cache/js' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/files' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/images' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/pdf' );
-				$ftp->mkdir( '/public_html/' . $subdomain . 'custom/uploads/video' );
-				
-				// Change the cache directories to writeable
-				$ftp->chmod( 0777, '/public_html/' . $subdomain . 'custom/cache' );
-				$ftp->chmod( 0777, '/public_html/' . $subdomain . 'custom/cache/css' );
-				$ftp->chmod( 0777, '/public_html/' . $subdomain . 'custom/cache/js' );
-				
-				// Copy the shopping cart images
-				ssh2_exec( $ssh_connection, "cp -R {$document_root}/media/images/shopping_cart/ {$document_root}/custom/uploads/images/shopping_cart/" );
-				
-				// Copy the newsletter image
-				ssh2_exec( $ssh_connection, "cp -R {$document_root}/media/images/buttons/sign-up.png {$document_root}/custom/uploads/images/buttons/sign-up.png" );
-				
-				// Remove .svn/_notes folders
-				//ssh2_exec( $ssh_connection, "find {$document_root}/custom/uploads/images/shopping_cart/ -name '.svn' -o -name '_notes' -exec rm -rf {} \;" );
-				
-				// Change owner of shopping_cart folder
-				ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/custom/uploads/images/shopping_cart" );
-				
-				// Set to normal permissions
-				$ftp->chmod( 0755, '/public_html' . $subdomain2 );
-				
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom" );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/" . $web['theme'] );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache" );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/css" );
+                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/js" );
+
+                ssh2_exec( "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
+                ssh2_exec( "chown -R $username:$username /home/$username/public_html/{$subdomain}" );
+
 				// Updated website version
 				$this->update_website_version( '1', $website_id );
 				
@@ -679,18 +626,9 @@ class Websites extends Base_Class {
 					$this->err( 'Failed to insert website sidebar attachments.', __LINE__, __METHOD__ );
 					return false;
 				}
-				
-				// Create website settings
-				$this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( $website_id, 'page_room-planner-slug', 'plan-your-room' ), ( $website_id, 'page_room-planner-title', 'Plan Your Room' )" );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->err( 'Failed to insert website settings.', __LINE__, __METHOD__ );
-					return false;
-				}
-				
+
 				// Create default email list
-				$email_list_result = $this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+				$this->db->insert( 'email_lists', array( 'website_id' => $website_id, 'name' => 'Default', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
@@ -730,7 +668,7 @@ class Websites extends Base_Class {
 				}
 				
 				// Create default settings
-				$this->db->insert( 'email_settings', array( 'website_id' => $website_id, 'key' => 'timezone', 'value' => '-5.0' ), 'iss' );
+				$this->db->insert( 'email_settings', array( 'website_id' => $website_id, 'key' => 'timezone', 'value' => 'America/New_York' ), 'iss' );
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
@@ -1002,8 +940,9 @@ class Websites extends Base_Class {
 		$svn['repo_trunk'] = $svn['repo_url'] . '/trunk';
 		$svn['repo_tags'] =  $svn['repo_url'] . '/tags';
 
-		$connection = ssh2_connect( '199.204.138.145', 22 );
-        if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+		// SSH Connection
+        $connection = ssh2_connect( '199.79.48.137', 22 );
+        if ( !@ssh2_auth_password( $connection, 'root', 'WIxp2sDfRgLMDTL5' ) )
             return;
 
 		error_reporting( E_ALL );
@@ -1028,9 +967,9 @@ class Websites extends Base_Class {
 			$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
 
 			if ( !$stream ) {
-				$connection = ssh2_connect( '199.204.138.145', 22 );
+				$connection = ssh2_connect( '199.79.48.137', 22 );
 
-				if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+				if ( !@ssh2_auth_password( $connection, 'root', 'WIxp2sDfRgLMDTL5' ) )
 					die( "Couldn't connect to SSH Tunnel" );
 
 				$stream = ssh2_exec( $connection, 'svn update ' . $svn['un_pw'] . ' ' . $svn['repo_url'] . '/trunk' . " /home/$username/public_html" );
@@ -1043,9 +982,9 @@ class Websites extends Base_Class {
 
 
 			if ( !$stream ) {
-				$connection = ssh2_connect( '199.204.138.145', 22 );
+				$connection = ssh2_connect( '199.79.48.137', 22 );
 
-				if ( !@ssh2_auth_password( $connection, 'root', 'GcK5oy29IiPi' ) )
+				if ( !@ssh2_auth_password( $connection, 'root', 'WIxp2sDfRgLMDTL5' ) )
 					die( "Couldn't connect to SSH Tunnel" );
 
 				$stream = ssh2_exec( $connection, "chown -R $username:$username /home/$username/public_html/*" );
@@ -1090,6 +1029,7 @@ class Websites extends Base_Class {
 	 *
 	 * @param int $website_id
 	 * @param array $keys (an array of $key => $value to insert into the settings )
+     * @return bool
 	 */
 	public function update_settings( $website_id, $keys ) {
 		// Type Juggling

@@ -88,6 +88,7 @@ class Validator {
 									'email'			=> "/^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$/",
 									'float'			=> "/[^0-9\\.]/",
 									'img'			=> "/^[0-9A-Za-z_ \\-]+(.[jJ][pP][gG]|.[jJ][pP][eE][gG]|.[gG][iI][fF]|.[pP][nN][gG])\$/",
+									'ip'			=> "/^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:[.](?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/",
 									'num'			=> "/[^0-9]/",
 									'phone'			=> "/[^0-9\\- ()]/",
 									'URL'			=> "/(([\w]+:)?\\/\\/)?(([\\d\\w]|%[a-fA-f\\d]{2,2})+(:([\\d\\w]|%[a-fA-f\\d]{2,2})+)?@)?([\\d\\w][-\\d\\w]{0,253}[\\d\\w]\\.)+[\\w]{2,4}(:[\\d]+)?(\\/([-+_~.\\d\\w]|%[a-fA-f\\d]{2,2})*)*(\\?(&?([-+_~.\\d\\w]|%[a-fA-f\\d]{2,2})=?)*)?(#([-+_~.\\d\\w]|%[a-fA-f\\d]{2,2})*)?/",
@@ -211,14 +212,14 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must be alpha-numeric.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'alnumhyphen':
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['alnumhyphen'], $_POST[$element_name] ) > 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " may only contain alpha-numeric, hyphen and underscore characters.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'alphabetic': 
 			case 'alpha':
@@ -226,14 +227,14 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " may only contain letters (no symbols or numbers).\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'author':
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['author'], $_POST[$element_name] ) > 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " may only contain letters and a period.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'cc':
 			case 'credit':
@@ -283,35 +284,35 @@ class Validator {
 				} else {
 					return $cc_error;
 				}
-				break;
+			break;
 
 			case 'csv': 
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['csv'], $_POST[$element_name] ) > 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must only contain alpha-numeric characters, '-' and '_', separated by commas.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 			
 			case 'custom': 
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['custom'], $_POST[$element_name] ) > 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must only contain alpha-numeric, {'}, {,}, {.}, {&}, {/}, {-}, {\"}, {?}, {(}, {)}, {_} and {!} characters.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'date': 
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['date'], $_POST[$element_name] ) == 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must contain a valid date.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'email': 
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['email'], $_POST[$element_name] ) == 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must contain a valid email address.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'extension': 
 			case 'ext':
@@ -323,14 +324,14 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " may only contain the following file types: " . implode(", ", $accept) . ".\n<br />" : $err . ".\n<br />";
 				}
-				break; 
+			break;
 
 			case 'float':
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['float'], $_POST[$element_name] ) > 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " may only contain numbers and a period.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'gt': 
 			case 'greaterthan': 
@@ -343,7 +344,7 @@ class Validator {
 						return $element_name . " must be numeric.\n<br />";
 					}
 				}
-				break;
+			break;
 
 			case 'image':
 			case 'img':
@@ -353,7 +354,14 @@ class Validator {
 					return ( empty( $err ) ) ? $element_name . " may only hold an image with extensions jpg, jpeg, gif and png.\n<br />" : $err . ".\n<br />";
 					$this->highlight_error( $element_name );
 				}
-				break;
+			break;
+
+            case 'ip':
+				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['ip'], $_POST[$element_name] ) > 0) {
+					$this->highlight_error( $element_name );
+					return ( empty( $err ) ) ? $element_name . " must be a valid IP Address.\n<br />" : $err . ".\n<br />";
+				}
+            break;
 
 			case 'lt': 
 			case 'lessthan':
@@ -366,7 +374,7 @@ class Validator {
 						return $element_name . " must contain a number.\n<br />" ;
 					}
 				}
-				break;
+			break;
 
 			case 'match':
 				list( $element1, $element2 ) = explode( '|', $element_name );
@@ -375,7 +383,7 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element1 . " and " . $element2 . " must match.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'maxlength': 
 			case 'maxlen': 
@@ -384,7 +392,7 @@ class Validator {
 					$return_value = ( empty( $err ) ) ? $element_name . " may not be longer than " . $command_value . " characters" : $err;
 					return $return_value . ".<br />$t" . "[Current length = " . strlen( $_POST[$element_name] ) . "]<br />\n";
 				}
-				break;
+			break;
 
 			case 'maxwordlength': 
 			case 'maxwordlen': 
@@ -394,7 +402,7 @@ class Validator {
 					$return_value = ( empty( $err ) ) ? $element_name . " may not be longer than " . $command_value . " words" : $err;
 					return $return_value . ".<br />$t" . "[Current length = " . count( $words ) . "]<br />\n";
 				}
-				break;
+			break;
 
 			case 'minlength': 
 			case 'minlen': 
@@ -403,7 +411,7 @@ class Validator {
 					$return_value = ( empty( $err ) ) ? $element_name . " may not be shorter than " . $command_value . " characters" : $err;
 					return $return_value . ".<br />$t" . "[Current length = " . strlen( $_POST[$element_name] ) . "]<br />\n";
 				}
-				break;
+			break;
 
 			case 'minwordlength': 
 			case 'minwordlen': 
@@ -413,7 +421,7 @@ class Validator {
 					$return_value = ( empty( $err ) ) ? $element_name . " may not be shorter than " . $command_value . " words" : $err;
 					return $return_value . ".<br />$t" . "[Current length = " . count( $words ) . "]<br />\n";
 				}
-				break;
+			break;
 
 			case 'num': 
 			case 'numeric': 
@@ -421,21 +429,21 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must be a number.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'phone':
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['phone'], $_POST[$element_name] ) > 0) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must contain a valid phone number.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'regexp': 
 				if ( !empty( $_POST[$element_name] ) && !preg_match( '/' . $command_value . '/', $_POST[$element_name] ) > 0) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " contains invalid characters.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'req': 
 			case 'required': 
@@ -443,7 +451,7 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " is a required field.\n<br />" : $err . ".\n<br />";
 				}
-				break;       
+			break;
 
 			case 'URL': 
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['URL'], $_POST[$element_name] ) == 0) {
@@ -457,21 +465,21 @@ class Validator {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must contain the follow value " . $command_value . "\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 			
 			case '!val': 
 				if ( $_POST[$element_name] == $command_value && !empty( $_POST[$element_name] ) ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must not contain the follow value " . $command_value . "\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 			case 'zip': 
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['zip'], $_POST[$element_name] ) > 0) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must contain a valid zip code.\n<br />" : $err . ".\n<br />";
 				}
-				break;
+			break;
 
 				default: break;
 			}

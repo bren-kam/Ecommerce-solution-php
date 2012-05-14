@@ -29,14 +29,10 @@ if( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'forgot-your-p
 		switch( $response_code ) {
 			case 0:
 			default:
-				$response = _("The email you entered doesn't exist. Please <a href='http://www.realstatistics.com/get-started/' title='Sign Up'>sign up</a> first.");
+				$response = _("The email you entered doesn't exist. Please <a href='http://www." . DOMAIN . ".com/get-started/' title='Sign Up'>sign up</a> first.");
 			break;
 
 			case 1:
-				$response = _('The email you entered is not confirmed. You have been sent a new confirmation email.');
-			break;
-
-			case 2:
 				$response = _('You have been sent an email with further instructions to reset your password.');
 			break;
 		}
@@ -54,7 +50,7 @@ get_header();
 	
 	<?php
 	if( $response_code > 0 ) {
-		echo "<p>$response</p>";
+		echo "<p>$response</p><br /><br />";
 	} else {
 	?>
 	<p><?php echo _('If you have forgotten your password and would like to reset it, enter your email below:'); ?></p>
@@ -80,6 +76,7 @@ get_header();
         </table>
         <?php nonce::field( 'forgot-your-password' ); ?>
 	</form>
+	<?php } ?>
 </div>
 
 <?php get_footer(); ?>

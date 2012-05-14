@@ -44,7 +44,8 @@ if ( !$email ) {
 		'forwards' => 0,
 		'soft_bounces' => 0,
 		'hard_bounces' => 0,
-		'unsubscribes' => 0
+		'unsubscribes' => 0,
+        'subject' => ''
 	);
 }
 

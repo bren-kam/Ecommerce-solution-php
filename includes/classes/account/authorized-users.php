@@ -25,7 +25,7 @@ class Authorized_Users extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 		
-		$authorized_users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, b.`pages`, b.`products`, b.`analytics`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`role` = 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$authorized_users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, b.`pages`, b.`products`, b.`analytics`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 		// $authorized_users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, b.`pages`, b.`products`, b.`analytics`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`role` > 0 $where $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error

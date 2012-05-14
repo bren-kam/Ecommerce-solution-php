@@ -65,9 +65,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 	if ( empty( $errs ) ) {
         // Home page can't update their slug
         $slug = ( 'home' == $page['slug'] ) ? 'home' : $_POST['tPageSlug'];
+		
+		$mobile = (int) ( $_POST['cbIsMobile'] == "on" );
         
 		// Update the page
-		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ) );
+		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $mobile );
 		
 		// Update custom meta
 		switch ( $page['slug'] ) {
@@ -204,7 +206,12 @@ get_header();
                 <br />
             </div>
 
+            <?php if ( $user['website']['mobile_marketing'] ) { ?>
+                <p><input type="checkbox" class="cb" name="cbIsMobile" id="cbIsMobile" <?php if ( $page['mobile'] ) echo "checked"; ?> /> <label for="cbIsMobile"><?php echo _('Link to Mobile Website'); ?></label></p>
+                <br />
             <?php
+            }
+
             if ( in_array( $page['slug'], array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
                 require theme_inc( 'website/pages/' . $page['slug'] );
             ?>

@@ -70,7 +70,7 @@ class Users extends Base_Class {
 			$where = ( empty( $where ) ) ? ' AND a.`company_id` = ' . $user['company_id'] : $where . ' AND a.`company_id` = ' . $user['company_id'];
 		
 		// Get the users
-		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 AND ( b.`status` = 1 OR b.`status` IS NULL ) $where GROUP BY a.`user_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$users = $this->db->get_results( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`,'') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where GROUP BY a.`user_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -343,13 +343,15 @@ class Users extends Base_Class {
 	 */
 	public function get_user( $user_id ) {
         // Prepare the statement
-        $user = $this->db->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `work_phone`, `cell_phone`, `billing_first_name`, `billing_last_name`, `billing_address1`, `billing_city`, `billing_state`, `billing_zip`, `products`, `role`, `status`, `date_created` FROM `users` WHERE `user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
+        $user = $this->db->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`work_phone`, a.`cell_phone`, a.`billing_first_name`, a.`billing_last_name`, a.`billing_address1`, a.`billing_city`, a.`billing_state`, a.`billing_zip`, a.`products`, a.`role`, a.`status`, a.`date_created`, b.`name` AS company, b.`domain` FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = ?', 'i', $user_id )->get_row( '', ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
             $this->err( 'Failed to get user.', __LINE__, __METHOD__ );
             return false;
         }
+
+        $user['company'] = html_entity_decode( $user['company'], ENT_QUOTES );
 
 		return $user;
 	}
@@ -365,9 +367,9 @@ class Users extends Base_Class {
 		
 		// Make sure they can only see what they're supposed to
 		if ( $user['role'] < 8 )
-			$where .= ' AND `company_id` = ' . $user['company_id'];
+			$where .= ' AND ( `company_id` = ' . $user['company_id'] . ' OR `user_id` = 493 )';
 		
-		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE 1 $where ORDER BY `contact_name`", ARRAY_A );
+		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 $where ORDER BY `contact_name`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

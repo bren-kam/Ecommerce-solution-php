@@ -36,26 +36,25 @@ class security extends Base_Class {
 	/**
 	 * Determines whether SSL is enabled
 	 *
-	 * @since 1.0
-	 *
-	 * @param bool $enabled whether to redirect to enabled SSL or disabled
 	 * @return bool
 	 */
 	public static function is_ssl() {
-		return ( ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) || ( !isset( $_SERVER['HTTPS'] ) && 443 == $_SERVER['SERVER_PORT'] ) ) ? true : false;
+		return (
+            ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' )
+                || ( !isset( $_SERVER['HTTPS'] ) && 443 == $_SERVER['SERVER_PORT'] )
+                || ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && 'HTTPS' == $_SERVER['HTTP_X_FORWARDED_PROTO'] )
+            ) ? true : false;
 	}
 	
 	/**
 	 * Encrypts a string (256 bit)
 	 *
-	 * @uses config defined keys
-	 * @since 1.0.0
-	 *
-	 * @param string the string to be encrypted
-	 * @param hash_key a second hash key
+	 * @param string $string the string to be encrypted
+	 * @param string $hash_key a second hash key
+     * @param bool $base64_encode
 	 * @return string
 	 */
-	public static function encrypt( $string, $hash_key ) {
+	public static function encrypt( $string, $hash_key, $base64_encode = false ) {
 		
 		if ( !defined( 'ENCRYPTION_KEY' ) )
 			return false;
@@ -71,7 +70,10 @@ class security extends Base_Class {
 		
 		mcrypt_generic_deinit( $td );
 		mcrypt_module_close( $td );
-		
+
+        if ( $base64_encode )
+            $encrypted = base64_encode( $encrypted );
+
 		return $encrypted;
 	}
 	
@@ -80,13 +82,17 @@ class security extends Base_Class {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string the string to be decrypted
-	 * @param hash_key a second hash key
+	 * @param string $string the string to be decrypted
+	 * @param string $hash_key a second hash key
 	 * @param string $encryption_key (optional) will override encryption key within
+     * @param bool $base64_decode
 	 * @return string
 	 */
-	public static function decrypt( $string, $hash_key, $encryption_key = '' ) {
-		$ek = ( empty( $encryption_key ) && defined( 'ENCRYPTION_KEY' ) ) ? ENCRYPTION_KEY : $encryption_key;
+	public static function decrypt( $string, $hash_key, $encryption_key = '', $base64_decode = false ) {
+        if ( $base64_decode )
+		    $string = base64_decode( $string );
+
+        $ek = ( empty( $encryption_key ) && defined( 'ENCRYPTION_KEY' ) ) ? ENCRYPTION_KEY : $encryption_key;
 		
 		if ( empty( $ek ) )
 			return false;
@@ -149,7 +155,7 @@ class security extends Base_Class {
 	 * @return string password
 	 */
 	public static function generate_password( $length = 12 ) {
-		$possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@#$%^&*()_-+=|}]{[":;,.?/';
+		$possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_-+=|}]{[":;,.?/';
 		
 		for ( $i = 1; $i <= $length; $i++ ):
 			$char = $possible[mt_rand( 0, strlen( $possible ) - 1 )];

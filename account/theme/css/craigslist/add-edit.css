@@ -59,6 +59,7 @@ input.cb { width: 15px !important; }
 
 /* Make the headlines larger */
 .tb.headline { width: 390px }
+#sCraigslistMarkets { height: 100px }
 
 /******* Preview Window **********/
 #dPreviewArea { font:16px serif; line-height:20px; }
