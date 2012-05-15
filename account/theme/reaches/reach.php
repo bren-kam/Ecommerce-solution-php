@@ -81,7 +81,7 @@ get_header();
 			<table>
 				<tr>
 					<td><label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label></td>
-					<td>
+					<td width="250">
 						<select id="sAssignedTo" class="dd" style="width: 150px">
                             <option value="">-- <?php echo _('Assign a User'); ?>--</option>
                             <?php
