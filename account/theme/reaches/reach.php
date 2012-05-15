@@ -78,10 +78,10 @@ get_header();
 			</table>
 		</div>
 		<div class="reach-col float-left">
-			<table>
+			<table width="500">
 				<tr>
 					<td><label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label></td>
-					<td width="250">
+					<td width="300">
 						<select id="sAssignedTo" class="dd" style="width: 150px">
                             <option value="">-- <?php echo _('Assign a User'); ?>--</option>
                             <?php

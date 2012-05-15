@@ -31,7 +31,7 @@ $role = ( $user['role'] < 5 && $user['role'] >= 1 ) ? " AND a.`status` = 0 AND a
 // Set variables
 $dt->order_by( '`name`', 'b.`email`', '`assigned_to`', 'a.`status`', 'a.`priority`', 'a.`date_created`' );
 $dt->add_where( " AND a.`website_id` = " . $user['website']['website_id'] . $role );
-$dt->search( array( '`name`' => false, '`b.email`' => false, '`assigned_to`' => false ) );
+$dt->search( array( 'name' => false, 'b.`email`' => false, 'assigned_to' => false ) );
 
 $reaches = $r->list_reaches( $dt->get_variables() );
 $dt->set_row_count( $r->count_reaches( $dt->get_where() ) );
@@ -52,7 +52,7 @@ $data = array();
 
 foreach ( $reaches as $reach ) {
 	$data[] = array(
-		'<a href="/reaches/reach/?rid=' . $reach['website_reach_id'] . '">' .$reach['name'] . '</a>'
+		'<a href="/reaches/reach/?rid=' . $reach['website_reach_id'] . '">' . $reach['name'] . '</a>'
         , $reach['email']
 		, $reach['assigned_to']
 		, $statuses[ (int) $reach['status'] ]
