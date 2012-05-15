@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '233746136649331', '298bb76cda7b2c964e0bf752cf239799', true );
+$fb = new FB( '233746136649331', '298bb76cda7b2c964e0bf752cf239799', 'op-about-us', true );
 $au = new About_Us;
 
 // Get the signed request
