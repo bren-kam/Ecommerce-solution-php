@@ -92,7 +92,7 @@ get_header();
                                 }
                             ?>
 						</select>
-                        <?php echo $reach_date->format('f jS, Y'); ?>
+                        <?php echo $reach_date->format('F jS, Y'); ?>
 					</td>
 				</tr>
 				<tr>
