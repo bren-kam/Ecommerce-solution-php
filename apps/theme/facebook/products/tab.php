@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '163636730371197', '3dbe8bc58cf03523ad51603654ca50a6', true );
+$fb = new FB( '163636730371197', '3dbe8bc58cf03523ad51603654ca50a6', 'op-products', true );
 $p = new Products;
 
 // Get the signed request
