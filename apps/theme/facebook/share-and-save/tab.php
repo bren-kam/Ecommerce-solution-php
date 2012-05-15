@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '118945651530886', 'ef922d64f1f526079f48e0e0efa47fb7', true );
+$fb = new FB( '118945651530886', 'ef922d64f1f526079f48e0e0efa47fb7', 'share-and-save', true );
 $sas = new Share_and_Save;
 $v = new Validator;
 

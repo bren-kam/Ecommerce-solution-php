@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '245607595465926', 'b29a7efe3a1329bae0b425de96acd84b', true );
+$fb = new FB( '245607595465926', 'b29a7efe3a1329bae0b425de96acd84b', 'op-contact-us', true );
 $cu = new Contact_Us;
 
 // Get the signed request
