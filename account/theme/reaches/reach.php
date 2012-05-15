@@ -92,7 +92,7 @@ get_header();
                                 }
                             ?>
 						</select>
-                        <?php if ( '0000-00-00 00:00:00' != $reach['assigned_to_date'] ) echo $reach_date->format('F jS, Y'); ?>
+                        <?php if ( '0000-00-00 00:00:00' != $reach['assigned_to_date'] ) echo ' ', $reach_date->format('F jS, Y'); ?>
 					</td>
 				</tr>
 				<tr>
