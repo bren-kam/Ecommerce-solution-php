@@ -103,7 +103,7 @@ get_header();
                         <?php if ( $images_alt ) { ?>
                             <input type="text" class="tb" name="meta" tmpval="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a['meta'] ) ) echo $a['meta']; ?>" />
                         <?php } ?>
-                        
+
 						<input type="submit" class="button" value="<?php echo _('Save'); ?>" />
 						
 						<input type="hidden" name="hWebsiteAttachmentID" value="<?php echo $a['website_attachment_id']; ?>" />
