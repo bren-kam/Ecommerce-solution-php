@@ -21,6 +21,7 @@ $rc = new Reach_Comments();
 // Get reach, with meta
 $reach = $reaches->get( $_GET['rid'], true );
 $reach_info = $reaches->_get_friendly_info( $reach['meta'] );
+$reach_date = new DateTime( $reach['assigned_to_date'] );
 
 // TODO integrate ACL stuff
 // Don't want them to see this if they don't have the right role
@@ -91,6 +92,7 @@ get_header();
                                 }
                             ?>
 						</select>
+                        <?php echo $reach_date->format('f jS, Y'); ?>
 					</td>
 				</tr>
 				<tr>

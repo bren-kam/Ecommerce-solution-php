@@ -53,6 +53,7 @@ $data = array();
 foreach ( $reaches as $reach ) {
 	$data[] = array(
 		'<a href="/reaches/reach/?rid=' . $reach['website_reach_id'] . '">' .$reach['name'] . '</a>'
+        , $reach['email']
 		, $reach['assigned_to']
 		, $statuses[ (int) $reach['status'] ]
 		, $priorities[ (int) $reach['priority'] ]
