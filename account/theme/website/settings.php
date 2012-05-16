@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate Class
 $w = new Websites;
 
-$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'sidebar-image-width', 'timezone', 'images-alt' );
+$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt' );
 		
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -161,6 +161,10 @@ get_header();
 				<tr>
 					<td><label for="banner-background-color"><?php echo _('Background Color'); ?>:</label></td>
 					<td><input type="text" class="tb" name="banner-background-color" id="banner-background-color" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-background-color'] : $settings['banner-background-color']; ?>" maxlength="6" /></td>
+				</tr>
+				<tr>
+					<td><label for="banner-hide-scroller"><?php echo _('Hide Scroller'); ?>:</label></td>
+					<td><input type="text" class="tb" name="banner-hide-scroller" id="banner-hide-scroller" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-hide-scroller'] : $settings['banner-hide-scroller']; ?>" maxlength="6" /></td>
 				</tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr><td colspan="2" class="title"><strong><?php echo _('Sidebar Images'); ?></strong></td>

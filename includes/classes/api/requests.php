@@ -413,9 +413,8 @@ class Requests extends Base_Class {
                 $email = 'serveradmin@' . url::domain( $company['domain'], false );
                 $domain = $this->_unique_domain( $website['title'] );
                 $username = $this->_unique_username( $website['title'] );
-				
                 $password = security::generate_password();
-				
+
                 // Create the password
                 $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, '199.79.48.137' );
 
@@ -431,9 +430,16 @@ class Requests extends Base_Class {
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 					exit;
                 }
-				
-                // Now install
+
+                // Update the domain field
+                $this->db->update( 'websites', array( 'domain' => $domain ), array( 'website_id' => $website_id ), 's', 'i' );
+
+                // If there was a MySQL error -- don't stop the intallation
+                if( $this->db->errno() )
+                    $this->_err( "Failed to update website domain.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+
                 $w = new Websites();
+                // Now install
 
                 // Now, create the WHM API accounts
                 if ( !$w->install( $website_id, $username ) ) {
