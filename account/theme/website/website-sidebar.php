@@ -18,6 +18,10 @@ $wf = new Website_Files;
 
 // Get all the website files
 $website_files = $wf->get_all();
+$sidebar_image_width = $w->get_setting( 'sidebar-image-width' );
+
+if ( !empty( $sidebar_image_width ) )
+    $dimensions = _('Width') . ': ' . $sidebar_image_width;
 
 // Get the Page info
 $page = $w->get_page_by_slug( 'sidebar' );
@@ -174,8 +178,13 @@ get_header();
 					?>
 					<div class="contact-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a['website_attachment_id']; ?>">
 						<h2><?php echo _('Sidebar Image'); ?></h2>
-						
-						<?php echo $enable_disable_link; ?>
+                        <?php if ( isset( $dimensions ) ) { ?>
+                            <p><small><?php echo $dimensions; ?></small></p>
+                        <?php
+                        }
+
+                        echo $enable_disable_link;
+                        ?>
 						
 						<div id="dSidebarImage<?php echo $a['website_attachment_id']; ?>">
 							<br />

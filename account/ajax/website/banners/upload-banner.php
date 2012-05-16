@@ -47,11 +47,11 @@ $ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'banner', $uplo
 
 unlink( $banner_path ); // Delete file
 
-$settings = $w->get_settings( 'banner-width' );
+$settings = $w->get_settings( 'banner-width', 'banner-height' );
 
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '" style="width:' . $settings['banner-width'] . 'px">';
 $contact_box .= '<h2>' . _('Banner') . '</h2>';
-$contact_box .= '<p><small>' . $settings['banner-width'] . '</small></p>';
+$contact_box .= '<p><small>' . $settings['banner-width'] . 'x' . $settings['banner-height'] . '</small></p>';
 $contact_box .= '<a href="/ajax/website/sidebar/update-status/?_nonce=' . nonce::create( 'update-status' ) . '&amp;waid=' . $website_attachment_id . '&amp;s=0" id="aEnableDisable' . $website_attachment_id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this banner?') . '"><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
 $contact_box .= '<div id="dBanner' . $website_attachment_id . '" class="text-center">';
 $contact_box .= '<img src="' . $upload_url . '" alt="' . _('Banner Image') . '" />';
