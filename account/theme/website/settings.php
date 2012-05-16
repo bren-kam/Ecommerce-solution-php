@@ -164,7 +164,7 @@ get_header();
 				</tr>
 				<tr>
 					<td><label for="banner-hide-scroller"><?php echo _('Hide Scroller'); ?>:</label></td>
-					<td><input type="text" class="tb" name="banner-hide-scroller" id="banner-hide-scroller" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-hide-scroller'] : $settings['banner-hide-scroller']; ?>" maxlength="6" /></td>
+                    <td><input type="checkbox" class="cb" name="banner-hide-scroller" id="banner-hide-scroller" value="1" <?php $banner_hide_scroller = ( isset( $success ) && !$success ) ? $_POST['banner-hide-scroller'] : $settings['banner-hide-scroller']; if ( '1' == $banner_hide_scroller ) echo ' checked="checked"'; ?> /> <label for="banner-hide-scroller"><?php echo _('Hide Scroller'); ?></label></td>
 				</tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr><td colspan="2" class="title"><strong><?php echo _('Sidebar Images'); ?></strong></td>
