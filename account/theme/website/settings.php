@@ -27,7 +27,6 @@ $v->add_validation( 'banner-height', 'num', _('The "Banners - Height" field may 
 $v->add_validation( 'banner-speed', 'req', _('The "Banners - Speed" field is required') );
 $v->add_validation( 'banner-speed', 'num', _('The "Banners - Speed" field may only contain a number') );
 
-$v->add_validation( 'sidebar-image-width', 'req', _('The "Sidebar Image - Width" field is required') );
 $v->add_validation( 'sidebar-image-width', 'num', _('The "Sidebar Image - Width" field may only contain a number') );
 
 // Add validation
