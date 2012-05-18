@@ -65,11 +65,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 	if ( empty( $errs ) ) {
         // Home page can't update their slug
         $slug = ( 'home' == $page['slug'] ) ? 'home' : $_POST['tPageSlug'];
-		
+        $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : stripslashes( $_POST['tTitle'] );
 		$mobile = (int) ( $_POST['cbIsMobile'] == "on" );
         
 		// Update the page
-		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $mobile );
+		$success = $w->update_page( $website_page_id, $slug, $title, stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $mobile );
 		
 		// Update custom meta
 		switch ( $page['slug'] ) {
