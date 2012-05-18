@@ -32,9 +32,13 @@ $user['website'] = $w->get_website( $_POST['wid'] );
 $name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
 $banner_name = "$name.$file_extension";
 $banner_path = $dir . $banner_name;
+$settings = $w->get_settings( 'banner-width', 'banner-height' );
+
+$max_width = ( empty ( $settings['banner-width'] ) ) ? 1000 : $settings['banner-width'];
+$max_height = ( empty ( $settings['banner-height'] ) ) ? 1000 : $settings['banner-height'];
 
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $name, $max_width, $max_height ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
 
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $banner_path, $banner_name, $user['website']['website_id'], "banners/" ), _('An error occurred while trying to upload your logo to the website. Please refresh the page and try again') );
