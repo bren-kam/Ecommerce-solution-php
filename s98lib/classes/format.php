@@ -356,4 +356,17 @@ class format extends Base_Class {
 	public static function slug( $string ) {
 		return strtolower( preg_replace( array( '/[^-a-zA-Z0-9\s]/', '/[\s]/' ), array( '', '-' ), $string ) );
 	}
+
+    /**
+     * Turns a slug (only letters, numbers and dashes into a proper word)
+     *
+     * For instance: 'living-room' to 'Living Room'
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function slug_to_name( $string ) {
+        return ucwords( str_replace( '-', ' ', $string ) );
+    }
+
 }
