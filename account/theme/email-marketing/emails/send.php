@@ -262,7 +262,6 @@ get_header();
 				<div id="dCustom_product" class="custom-template<?php if ( empty( $em['type'] ) || 'product' != $em['type'] ) echo ' hidden'; ?>">
 					<br /><br />
 					
-					<h2 id="h2ProductCount"><?php echo _('Products Chosen'), ': '; echo ( isset( $em['type'] ) && 'product' == $em['type'] ) ? count( $em['meta'] ) : '0'; ?>/9</h2>
 					<h2 style="float:right;width:50%"><?php echo _('Products'); ?></h2>
 					<br clear="all" /><br />
 					

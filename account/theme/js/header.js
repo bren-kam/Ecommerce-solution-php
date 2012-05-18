@@ -47,7 +47,7 @@ jQuery(function(){
 				displayData	: 'speed',
 				buttonImg 	: '/images/buttons/add-attachment.png',
 				cancelImg 	: '/images/icons/x.png',
-				fileExt		: '*.pdf;*.mov;*.wmv;*.flv;*.swf;*.f4v;*.mp4;*.avi;*.mp3;*.aif;*.wma;*.wav;*.csv;*.doc;*.docx;*.rtf;*.xls;*.xlsx;*.wpd;*.txt;*.wps;*.pps;*.ppt;*.wks;*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.psd;*.eps;*.tif;*.zip;*.7z;*.rar;*.zipx;*.aiff;*.odt;',
+				fileExt		: '*.pdf;*.mov;*.wmv;*.flv;*.swf;*.f4v;*.mp4;*.avi;*.mp3;*.aif;*.wma;*.wav;*.csv;*.doc;*.docx;*.rtf;*.xls;*.xlsx;*.wpd;*.txt;*.wps;*.pps;*.ppt;*.wks;*.bmp;*.gif;*.jpg;*.jpeg;*.png;*.psd;*.ai;*.eps;*.tif;*.zip;*.7z;*.rar;*.zipx;*.aiff;*.odt;',
 				fileDesc	: 'Valid File Formats', // @Fix needs to be put in PHP
 				onComplete	: function( e, queueID, fileObj, response ) {
 					ajaxResponse( $.parseJSON( response ) );
