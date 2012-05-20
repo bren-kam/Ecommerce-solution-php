@@ -381,6 +381,18 @@ class Requests extends Base_Class {
             }
         }
 
+        // Set Industries if they got craigslist
+        if ( '1' == $website['craigslist'] ) {
+            $this->db->query( 'INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES ( $website_id, 1 ), ( $website_id, 2 ), ( $website_id, 3 )' );
+
+            // If there was a MySQL error
+            if( $this->db->errno() ) {
+                $this->_err( "Failed to create website industries.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+                $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                exit;
+            }
+        }
+
         // Create WHM account and setup Password
         if ( '1' == $website['pages'] ) {
             library('pm-api');

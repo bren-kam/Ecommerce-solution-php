@@ -8,20 +8,22 @@ a:hover, #nav-icons a:hover, #footer a:hover, #sidebar a.sub:hover { color: #283
 #description { color: #D66734 }
 .hightlight { color: #89DBF6 }
 
-.button { 
-	background-color: #414141;
-	border: 1px solid #282828;
-	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
-   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
-   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
-   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
+.button {
+    color: #D8DBDD;
+	background-color: #3350b0;
+	border: 1px solid #213370;
+	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #000A32, 0 0 3px #d5d4d4;
+   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #000A32, 0 0 3px #d5d4d4;
+   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #000A32, 0 0 3px #d5d4d4;
+   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #000A32, 0 0 3px #d5d4d4;
 }
 
 .small-button { 
+    color: #D8DBDD;
 	background-color: #414141;
-	border: 1px solid #282828;
-	box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
-   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
-   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
-   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
+	border: 1px solid #213370;
+	box-shadow: inset 0 1px 3px #fff, inset 0 -10px #000A32, 0 0 3px #d5d4d4;
+   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #000A32, 0 0 3px #d5d4d4;
+   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #000A32, 0 0 3px #d5d4d4;
+   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #000A32, 0 0 3px #d5d4d4;
 }

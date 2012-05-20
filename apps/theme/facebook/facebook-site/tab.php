@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '114243368669744', 'bad9a248b9126bdd62604ccd909f8d2d', true );
+$fb = new FB( '114243368669744', 'bad9a248b9126bdd62604ccd909f8d2d', 'op-facebook-site', true );
 $fs = new Facebook_Site;
 
 // Get the signed request

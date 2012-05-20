@@ -1,4 +1,3 @@
-#!/usr/local/bin/php -q
 <?php
 require 'includes/rfc822_addresses.php';
 require 'includes/mime_parser_class.php';
@@ -13,8 +12,6 @@ $headers = 'From: noreply@noreply.com' . "\r\n" .
 	"Reply-to: noreply@noreply.com" . "\r\n" . 
 	'X-Mailer: PHP/' . phpversion();
 	
-mail('kerry.jones@earthlink.net', 'made it', __LINE__, $headers );
-
 $mime->Decode( array( 'Data' => $email_content ), $emails );
 $email = $emails[0];
 
@@ -25,7 +22,9 @@ list( $username, $domain ) = explode ( '@', $to );
 list ( $username, $tag ) = explode( '+', $username );
 
 $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
-$body = nl2br( substr( $body, 0, strpos( $body, '>> ' ) ) );
+$length = strpos( $body, '>> ' );
+$body = ( $length ) ? substr( $body, 0, $length ) : substr( $body, 0 );
+$body = nl2br( $body );
 
 // Create MySQL DB Object
 $mysqli = mysqli_connect( '199.204.138.78', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
@@ -64,7 +63,7 @@ if ( is_null( $row ) ) {
 $website_id = (int) $row['website_id'];
 
 // Try to get the user that sent the email
-$user_email = $mysqli->prepare( $from['address'] );
+$user_email = $mysqli->real_escape_string( $from['address'] );
 
 // Try to get the user based off email
 $result = $mysqli->query( "SELECT `user_id` FROM `users` WHERE `status` = 1 AND `email` = '$user_email'" );
@@ -90,10 +89,10 @@ if ( is_null( $row ) ) {
 	$user_id = (int) $row['user_id'];
 }
 
-$message = $mysqli->real_escape_string( "Email: $subject<br /><br />$body" );
+$message = $mysqli->real_escape_string( "<strong>Email:</strong> $subject<br /><br />$body" );
 
 // Insert website note
-$mysqli->query( "INSERT INTO `website_note` ( `website_id`, `user_id`, `message`, `date_created` ) VALUES ( $website_id, $user_id, '$message', NOW() )");
+$mysqli->query( "INSERT INTO `website_notes` ( `website_id`, `user_id`, `message`, `date_created` ) VALUES ( $website_id, $user_id, '$message', NOW() )");
 
 // Close connection
 $mysqli->kill( $mysqli->thread_id );

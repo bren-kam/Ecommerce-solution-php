@@ -63,8 +63,12 @@ class AJAX {
 		if ( $success )
 			unset( $this->json_response['error'] );
 		
-		// Set the header
-		header::type('json');
+		// Set the header if it's not IE8 (IE8 is stupid and doesn't recognize json/application header types)
+        $browser = fn::browser();
+
+        if ( 'Msie' != $browser['name'] || version_compare( 8, $browser['version'], '>' ) )
+		    header::type('json');
+
 
 		// Spit out the code and exit;
 		echo json_encode( $this->json_response );

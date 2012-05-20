@@ -16,7 +16,6 @@ if ( !$user['website']['mobile_marketing'] )
 	url::redirect('/');
 
 // Get data
-$mobile_pages = 1;
 $selected = "mobile_marketing";
 $title = _('Mobile Pages') . ' | ' . TITLE;
 javascript( 'mammoth', '' );
