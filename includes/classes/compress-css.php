@@ -100,7 +100,7 @@ class Compress_CSS {
 		'-moz-border-radius-bottomleft', '-webkit-border-bottom-left-radius', 'border-bottom-left-radius', 
 		'-moz-border-radius-bottomright', '-webkit-border-bottom-right-radius', 'border-bottom-right-radius',
 		'-moz-box-shadow', '-webkit-box-shadow', 'box-shadow', '-o-box-shadow',
-		'src'
+		'src', '-ms-filter', '-pie-background', 'behavior'
 	);
 
 	/**
@@ -189,7 +189,7 @@ class Compress_CSS {
 				$declaration_key++;
 				
 				// Get the property and value
-				$d_array = explode( ':', $d );
+				$d_array = explode( ':', $d, 2 );
 				
 				$property = $d_array[0];
 				

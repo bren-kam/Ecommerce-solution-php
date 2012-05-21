@@ -219,7 +219,7 @@ class Users extends Base_Class {
 			return false;
 		
 		$expiration = ( $remember_me ) ? 1209600 : 172800; // Two Weeks : Two Days
-		$auth_cookie = ( security::is_ssl() ) ? AUTH_COOKIE : SECURE_AUTH_COOKIE;
+		$auth_cookie = ( security::is_ssl() ) ? SECURE_AUTH_COOKIE : AUTH_COOKIE;
 		set_cookie( $auth_cookie, base64_encode( security::encrypt( $email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
 		
 		// Record the login

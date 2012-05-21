@@ -94,7 +94,7 @@ class Website_Attachments extends Base_Class {
 		$website_page_id = (int) $website_page_id;
 		$website_id = (int) $user['website']['website_id'];
 		
-		$attachments = $this->db->get_results( "SELECT a.`website_attachment_id`, a.`key`, a.`value`, a.`extra`, a.`status` FROM `website_attachments` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) WHERE a.`website_page_id` = $website_page_id AND b.`website_id` = $website_id ORDER BY a.`sequence`", ARRAY_A );
+		$attachments = $this->db->get_results( "SELECT a.`website_attachment_id`, a.`key`, a.`value`, a.`extra`, a.`meta`, a.`status` FROM `website_attachments` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) WHERE a.`website_page_id` = $website_page_id AND b.`website_id` = $website_id ORDER BY a.`sequence`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -113,7 +113,7 @@ class Website_Attachments extends Base_Class {
 	 * @return array
 	 */
 	public function get_by_name( $website_page_id, $key ) {
-		$attachments = $this->db->prepare( 'SELECT `website_attachment_id`, `key`, `value`, `extra` FROM `website_attachments` WHERE `key` = ? AND `website_page_id` = ?', 'si', $key, $website_page_id )->get_results( '', ARRAY_A );
+		$attachments = $this->db->prepare( 'SELECT `website_attachment_id`, `key`, `value`, `extra`, `meta` FROM `website_attachments` WHERE `key` = ? AND `website_page_id` = ?', 'si', $key, $website_page_id )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -150,12 +150,13 @@ class Website_Attachments extends Base_Class {
 	 *
 	 * @param int $website_attachment_id
 	 * @param string $extra
+     * @param string $meta
 	 * @return bool
 	 */
-	public function update_extra( $website_attachment_id, $extra ) {
+	public function update_extra( $website_attachment_id, $extra, $meta = '' ) {
 		global $user;
 		
-		$this->db->prepare( 'UPDATE `website_attachments` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) SET a.`extra` = ? WHERE a.`website_attachment_id` = ? AND b.`website_id` = ?' , 'sii', $extra, $website_attachment_id, $user['website']['website_id'] )->query('');
+		$this->db->prepare( 'UPDATE `website_attachments` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) SET a.`extra` = ?, a.`meta` = ? WHERE a.`website_attachment_id` = ? AND b.`website_id` = ?' , 'ssii', $extra, $meta, $website_attachment_id, $user['website']['website_id'] )->query('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

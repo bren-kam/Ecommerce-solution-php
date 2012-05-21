@@ -34,8 +34,13 @@ $f = new Files;
 // Fill the global $user['website']
 $user['website'] = $w->get_website( $_POST['wid'] );
 
+// Get Sidebar Image Width
+$sidebar_image_width = $w->get_setting( 'sidebar-image-width' );
+
+$max_width = ( empty ( $sidebar_image_width ) ) ? 1000 : $sidebar_image_width;
+
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $file_name, 1000, 1000 ), _('An error occurred while trying to resize your image.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $file_name, $max_width, 1000 ), _('An error occurred while trying to resize your image.') );
 
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $file_path, $image_name, $user['website']['website_id'], 'sidebar/' ), _('An error occurred while trying to upload your image1. Please refresh the page and try again') );
@@ -55,6 +60,11 @@ if ( is_file( $file_path ) )
 		
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '">';
 $contact_box .= '<h2>' . _('Sidebar Image') . '</h2>';
+
+// Add Sidebar Image
+if ( !empty( $sidebar_image_width ) )
+    $contact_box .= '<p><small>' . _('Width') . " $sidebar_image_width</small></p>";
+
 $contact_box .= '<a href="/ajax/website/sidebar/update-status/?_nonce=' . nonce::create( 'update-status' ) . '&amp;waid=' . $website_attachment_id . '&amp;s=0" id="aEnableDisable' . $website_attachment_id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this sidebar element? This will remove it from the sidebar on your website.') . '"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>';
 $contact_box .= '<div id="dSidebarImage' . $website_attachment_id . '"><br />';
 $contact_box .= '<form action="/ajax/website/sidebar/update-extra/" method="post" ajax="1">';

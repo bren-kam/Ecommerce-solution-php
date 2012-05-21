@@ -37,7 +37,7 @@ foreach ( $pages as $p ) {
 	
 	$actions = ( $can_delete && !in_array( $p['slug'], $standard_pages ) ) ? ' | <a href="/ajax/website/delete-page/?wpid=' . $p['website_page_id'] . '&amp;_nonce=' . $delete_page_nonce . '" title="' . _('Delete Page') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' : '';
 
-    $title = ( empty( $p['title'] ) ) ? format::slug_to_name( $p['slug'] ) : $p['title'];
+    $title = ( empty( $p['title'] ) ) ? format::slug_to_name( $p['slug'] ) . ' (' . _('No Name') . ')' : $p['title'];
 
 	$data[] = array( $title . '<br />
 					<div class="actions">

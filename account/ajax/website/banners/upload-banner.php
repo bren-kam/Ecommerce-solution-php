@@ -32,9 +32,13 @@ $user['website'] = $w->get_website( $_POST['wid'] );
 $name = format::slug( format::strip_extension( $_FILES["Filedata"]['name'] ) );
 $banner_name = "$name.$file_extension";
 $banner_path = $dir . $banner_name;
+$settings = $w->get_settings( 'banner-width', 'banner-height' );
+
+$max_width = ( empty ( $settings['banner-width'] ) ) ? 1000 : $settings['banner-width'];
+$max_height = ( empty ( $settings['banner-height'] ) ) ? 1000 : $settings['banner-height'];
 
 // Resize the image
-$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $name, 1000, 1000 ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
+$ajax->ok( image::resize( $_FILES["Filedata"]['tmp_name'], $dir, $name, $max_width, $max_height ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
 
 // Transfer file to Amazon
 $ajax->ok( $f->upload_file( $banner_path, $banner_name, $user['website']['website_id'], "banners/" ), _('An error occurred while trying to upload your logo to the website. Please refresh the page and try again') );
@@ -47,11 +51,11 @@ $ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'banner', $uplo
 
 unlink( $banner_path ); // Delete file
 
-$settings = $w->get_settings( 'banner-width' );
+$settings = $w->get_settings( 'banner-width', 'banner-height' );
 
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '" style="width:' . $settings['banner-width'] . 'px">';
 $contact_box .= '<h2>' . _('Banner') . '</h2>';
-$contact_box .= '<p><small>' . $settings['banner-width'] . '</small></p>';
+$contact_box .= '<p><small>' . $settings['banner-width'] . 'x' . $settings['banner-height'] . '</small></p>';
 $contact_box .= '<a href="/ajax/website/sidebar/update-status/?_nonce=' . nonce::create( 'update-status' ) . '&amp;waid=' . $website_attachment_id . '&amp;s=0" id="aEnableDisable' . $website_attachment_id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this banner?') . '"><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
 $contact_box .= '<div id="dBanner' . $website_attachment_id . '" class="text-center">';
 $contact_box .= '<img src="' . $upload_url . '" alt="' . _('Banner Image') . '" />';
