@@ -175,7 +175,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	// Remove product
 	$('.remove-product').live( 'click', function() {
 		$(this).parents('.product').remove();
-		changeCount( -1 );
 	});
 	
 	// Remove box product
@@ -458,12 +457,3 @@ function selectTab( tabID ) {
 		$('#dStep' + tabID).fadeIn();
 	}, 250 );
 }
-
-// Decrease number of count of products
-function changeCount( count ) {
-	var h2ProductCount = $('#h2ProductCount'), productCountText = h2ProductCount.text(), productCount = productCountText.match( /[0-9]/ );
-	$('#h2ProductCount').text( productCountText.replace( /[0-9]/, ( parseInt( productCount[0] ) + parseInt( count ) ) ) );
-}
-
-// Make it possible to be called from jQuery
-$.fn.changeCount = changeCount;
