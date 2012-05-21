@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '113993535359575', '16937c136a9c5237b520b075d0ea83c8' );
+$fb = new FB( '113993535359575', '16937c136a9c5237b520b075d0ea83c8', 'op-sweepstakes' );
 $s = new Sweepstakes;
 $v = new Validator;
 

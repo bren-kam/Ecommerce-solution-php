@@ -26,6 +26,7 @@ class Requests extends Base_Class {
 		'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.',
 		'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.',
 		'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.',
+        'failed-add-note' => 'Add Note failed. Please verify you have sent the correct parameters.',
         'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.',
 		'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.',
 		'failed-set-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.',
@@ -36,6 +37,7 @@ class Requests extends Base_Class {
 		'success-create-order' => 'Create Order succeeded!',
 		'success-create-user' => 'Create User succeeded!',
 		'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.',
+        'success-add-note' => 'Add Note succeeded! You can see the information in the dashboard.',
         'success-update-social-media' => 'Update Social Media succeeded!',
 		'success-update-user' => 'Update User succeeded!',
 		'success-set-arb-subscription' => 'Update User ARB Subscription succeeded!'
@@ -51,6 +53,7 @@ class Requests extends Base_Class {
 		'create_order',
 		'create_user',
 		'create_website',
+        'add_note',
         'update-social-media',
 		'update_user',
 		'set_arb_subscription',
@@ -105,6 +108,13 @@ class Requests extends Base_Class {
         , 'X' => 669
         , 'Z' => 829
     );
+	
+	/**
+	 * Hold WHM object
+     *
+     * @var WHM_API
+	 */
+	private $whm;
 	
 	/**
 	 * Construct class will initiate and run everything
@@ -371,6 +381,18 @@ class Requests extends Base_Class {
             }
         }
 
+        // Set Industries if they got craigslist
+        if ( '1' == $website['craigslist'] ) {
+            $this->db->query( 'INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES ( $website_id, 1 ), ( $website_id, 2 ), ( $website_id, 3 )' );
+
+            // If there was a MySQL error
+            if( $this->db->errno() ) {
+                $this->_err( "Failed to create website industries.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+                $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
+                exit;
+            }
+        }
+
         // Create WHM account and setup Password
         if ( '1' == $website['pages'] ) {
             library('pm-api');
@@ -383,18 +405,16 @@ class Requests extends Base_Class {
 			
             if ( $group_id ) {
                 library('whm-api');
-                $whm = new WHM_API();
+                $this->whm = new WHM_API();
                 $c = new Companies();
 
                 // Make sure it's a unique username
-                $username = $this->_generate_username( $website['title'] );
-
-				while ( $whm->account_summary( $username ) ) {
-                    $username = $this->_generate_username( $website['title'], true );
-                }
-
+                $company = $c->get( $this->company_id );
+                $email = 'serveradmin@' . url::domain( $company['domain'], false );
+                $domain = $this->_unique_domain( $website['title'] );
+                $username = $this->_unique_username( $website['title'] );
                 $password = security::generate_password();
-				
+
                 // Create the password
                 $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, '199.79.48.137' );
 
@@ -403,21 +423,23 @@ class Requests extends Base_Class {
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
                     exit;
                 }
-
-                // Get the domain
-                $domain = preg_replace( '/[^a-z]/', '', strtolower( $website['title'] ) ) . '.blinkyblinky.me';
-                $company = $c->get( $this->company_id );
-                $email = 'serveradmin@' . url::domain( $company['domain'], false );
 				
                 // Now, create the WHM API accounts
-                if ( !$whm->create_account( $username, $domain, 'Basic No Shopping Cart', $email ) ) {
-                    $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $whm->message(), __LINE__, __METHOD__ );
+                if ( !$this->whm->create_account( $username, $domain, 'Basic No Shopping Cart', $email ) ) {
+                    $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $this->whm->message(), __LINE__, __METHOD__ );
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 					exit;
                 }
-				
-                // Now install
+
+                // Update the domain field
+                $this->db->update( 'websites', array( 'domain' => $domain ), array( 'website_id' => $website_id ), 's', 'i' );
+
+                // If there was a MySQL error -- don't stop the intallation
+                if( $this->db->errno() )
+                    $this->_err( "Failed to update website domain.\n\Website ID: $website_id", __LINE__, __METHOD__ );
+
                 $w = new Websites();
+                // Now install
 
                 // Now, create the WHM API accounts
                 if ( !$w->install( $website_id, $username ) ) {
@@ -440,6 +462,31 @@ class Requests extends Base_Class {
 		// Everything was successful
 		$this->_add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
+	}
+
+    /**
+	 * Add Note
+	 *
+	 * @param int $website_id
+     * @param int $user_id
+	 * @param string $message
+	 * @return int|bool
+	 */
+	private function add_note() {
+		// Gets parameters and errors out if something is missing
+		extract( $this->_get_parameters( 'website_id', 'user_id', 'message' ) );
+
+		$this->db->insert( 'website_notes', array( 'website_id' => $website_id, 'user_id' => $user_id, 'message' => $message, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
+
+		// If there was a MySQL error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to add website note', __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-add-note' ) );
+			exit;
+		}
+
+		$this->_add_response( array( 'success' => true, 'message' => 'success-add-note' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nWebsite ID: $website_id\nUser ID: $user_id", true );
 	}
 
     /**
@@ -589,7 +636,30 @@ class Requests extends Base_Class {
 	/***********************/
 	/* END: IR API Methods */
 	/***********************/
-
+	
+	/**
+	 * Unique Username
+	 *
+	 * Runs a loop and returns a unique username
+	 *
+	 * @param string $title
+	 * @return string
+	 */
+	public function _unique_username( $title ) {
+		$username = $this->_generate_username( $title );
+		$available = $this->whm->account_summary( $username );
+		
+		while ( false != $available ) {
+			$username = $this->_generate_username( $title, true );
+			$available = $this->whm->account_summary( $username );
+			
+			if ( false != $available )
+				break;
+		}
+		
+		return $username;
+	}
+	
     /**
      * Generate Username
      *
@@ -600,6 +670,9 @@ class Requests extends Base_Class {
      * @return string
      */
     private function _generate_username( $title, $complicated = false ) {
+		// Cant use test
+		$title = str_replace( 'test', 'tes', $title );
+		
         $pieces = explode( ' ', preg_replace( '/[^a-z0-9 ]/', '', strtolower( $title ) ) );
         $increment = ( $complicated ) ? 0 : 2;
 
@@ -615,6 +688,47 @@ class Requests extends Base_Class {
 
         return $username;
     }
+	
+	/**
+	 * Unique Domain
+	 *
+	 * Runs a loop and returns a unique domain
+	 *
+	 * @param string $title
+	 * @return string
+	 */
+	public function _unique_domain( $title ) {
+		$domain = $this->_generate_domain( $title );
+		
+		$available = $this->whm->domain_user_data( $domain );
+		
+		while ( false != $available ) {
+			$domain = $this->_generate_domain( $title, true );
+			$available = $this->whm->domain_user_data( $domain );
+			
+			if ( false != $available )
+				break;
+		}
+		
+		return $domain;
+	}
+	
+	/**
+	 * Generate Domain
+	 *
+	 * Generates a unique domain for WHM/cPnale
+	 *
+	 * @param string $domain
+	 */
+	public function _generate_domain( $title, $complicated = false ) {
+		$domain = preg_replace( '/[^a-z]/', '', strtolower( $title ) );
+		
+		if ( $complicated )
+            $domain .= rand( 1, 999 );
+		
+		return $domain . '.blinkyblinky.me';
+	}
+	
     /**
      * Check to make sure a website belongs to the company
      *
@@ -833,6 +947,8 @@ class Requests extends Base_Class {
 		// Make sure we haven't already logged something
 		if( !$this->logged )
 		if( $this->error ) {
+            $message = '';
+
 			foreach( $this->statuses as $status => $value ) {
 				// Set the message status name
 				$message_status = ucwords( str_replace( '_', ' ', $status ) );

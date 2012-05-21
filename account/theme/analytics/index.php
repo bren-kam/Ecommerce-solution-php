@@ -160,7 +160,7 @@ get_header();
 						foreach ( $content_overview_pages as $top ) {
 						?>
 						<tr>
-							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo $top['page']; ?></a></td>
+							<td><a href="/analytics/page/?p=<?php echo urlencode( $top['page'] ); ?>" title="<?php echo $top['page']; ?>"><?php echo ( '/' == $top['page'] ) ? 'Home' : $top['page']; ?></a></td>
 							<td align="right"><?php echo number_format( $top['page_views'] ); ?></td>
 							<td align="right"><?php echo round( $top['page_views'] / $total['page_views'] * 100, 2 ); ?>%</td>
 						</tr>

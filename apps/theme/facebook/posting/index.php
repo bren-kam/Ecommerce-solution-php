@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3', false, array( 'scope' => 'manage_pages,offline_access,publish_stream' ) );
+$fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3', 'op-posting', false, array( 'scope' => 'manage_pages,offline_access,publish_stream' ) );
 $p = new Posting;
 $v = new Validator;
 

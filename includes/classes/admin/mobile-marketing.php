@@ -189,6 +189,17 @@ class Mobile_Marketing extends Base_Class {
 
             $zone_id = $w->get_setting( $website_id, 'r53-zone-id' );
             $r53->changeResourceRecordSets( $zone_id, array( $r53->prepareChange( 'CREATE', 'm.' . url::domain( $website['domain'], false ) .'.', 'A', '14400', '199.79.48.138' ) ) );
+
+            // We need to create their subdomain
+            $ftp = $w->get_ftp_data( $_GET['wid'] );
+            $username = security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY );
+
+            // Load cPanel API
+            library('cpanel-api');
+            $cpanel = new cPanel_API( $username );
+
+            // Add the subdomain
+            $cpanel->add_subdomain( url::domain( $website['domain'], false ), 'm', 'public_html' );
         }
 
         return new Response( true );

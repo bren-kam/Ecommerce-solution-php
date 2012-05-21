@@ -7,7 +7,7 @@
 global $user;
 
 // Instantiate Classes
-$fb = new FB( '165348580198324', 'dbd93974b5b4ee0c48ae34cb3aab9c4a' );
+$fb = new FB( '165348580198324', 'dbd93974b5b4ee0c48ae34cb3aab9c4a', 'op-fan-offer' );
 $fo = new Fan_Offer;
 $v = new Validator;
 

@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 	
 if ( !empty( $user['website']['logo'] ) )
-	$logo = ( stristr( $user['website']['logo'], 'http' ) ) ? $user['website']['logo'] : 'http://' . ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain'] . '/' . 'custom/uploads/images/' . $user['website']['logo'];
+	$logo = ( stristr( $user['website']['logo'], 'http' ) ) ? $user['website']['logo'] : 'http://' . $user['website']['domain'] . '/' . 'custom/uploads/images/' . $user['website']['logo'];
 
 // Initialize variable
 $success = false;

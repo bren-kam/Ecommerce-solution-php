@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate Class
 $w = new Websites;
 
-$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'timezone' );
+$settings = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt' );
 		
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -26,6 +26,8 @@ $v->add_validation( 'banner-height', 'num', _('The "Banners - Height" field may 
 
 $v->add_validation( 'banner-speed', 'req', _('The "Banners - Speed" field is required') );
 $v->add_validation( 'banner-speed', 'num', _('The "Banners - Speed" field may only contain a number') );
+
+$v->add_validation( 'sidebar-image-width', 'num', _('The "Sidebar Image - Width" field may only contain a number') );
 
 // Add validation
 add_footer( $v->js_validation() );
@@ -54,7 +56,7 @@ $settings_array = $w->get_settings( $settings );
 foreach ( $settings_array as $k => &$val ) {
 	if ( !empty( $val ) )
 		continue;
-		
+
 	switch ( $k ) {
 		case 'banner-background-color':
 			$val = 'FFFFFF';
@@ -160,6 +162,18 @@ get_header();
 					<td><input type="text" class="tb" name="banner-background-color" id="banner-background-color" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['banner-background-color'] : $settings['banner-background-color']; ?>" maxlength="6" /></td>
 				</tr>
 				<tr>
+					<td>&nbsp;</td>
+                    <td><input type="checkbox" class="cb" name="banner-hide-scroller" id="banner-hide-scroller" value="1" <?php $banner_hide_scroller = ( isset( $success ) && !$success ) ? $_POST['banner-hide-scroller'] : $settings['banner-hide-scroller']; if ( '1' == $banner_hide_scroller ) echo ' checked="checked"'; ?> /> <label for="banner-hide-scroller"><?php echo _('Hide Scroller'); ?></label></td>
+				</tr>
+                <tr><td colspan="2">&nbsp;</td></tr>
+                <tr><td colspan="2" class="title"><strong><?php echo _('Sidebar Images'); ?></strong></td>
+                <tr>
+                    <td width="150"><label for="sidebar-image-width"><?php echo _('Width'); ?>:</label></td>
+                    <td><input type="text" class="tb" name="sidebar-image-width" id="sidebar-image-width" value="<?php echo ( isset( $success ) && !$success ) ? $_POST['sidebar-image-width'] : $settings['sidebar-image-width']; ?>" maxlength="4" /></td>
+                </tr>
+                <tr><td colspan="2">&nbsp;</td></tr>
+                <tr><td colspan="2" class="title"><strong><?php echo _('Other'); ?></strong></td>
+				<tr>
 					<td><label for="timezone"><?php echo _('Timezone'); ?>:</label></td>
 					<td>
 						<select name="timezone" id="timezone">
@@ -170,6 +184,10 @@ get_header();
 						</select>
 					</td>
 				</tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><input type="checkbox" class="cb" name="images-alt" id="images-alt" value="1" <?php $images_alt = ( isset( $success ) && !$success ) ? $_POST['images-alt'] : $settings['images-alt']; if ( '1' == $images_alt ) echo ' checked="checked"'; ?> /> <label for="images-alt"><?php echo _('Images - Alt Tags'); ?></label></td>
+                </tr>
 				<tr><td colspan="2">&nbsp;</td></tr>
 				<tr>
 					<td>&nbsp;</td>
