@@ -100,7 +100,7 @@ if ( !$sweepstakes ) {
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
 css( 'jquery.uploadify', 'jquery.timepicker' );
-javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/sweepstakes' );
+javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/dates' );
 
 $selected = "social_media";
 $title = _('Sweepstakes') . ' | ' . _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
