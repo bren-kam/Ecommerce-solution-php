@@ -406,7 +406,7 @@ class Products extends Base_Class {
 		// Instantiate new class
 		$i = new Industries;
 		
-		$image_url = 'http://' . $i->get_by_product( $product_id ) . '.retailcatalog.us/products/' . $product_id . '/' . $image;
+		$image_url = 'http://' . $i->get_by_product( $product_id ) . '.retailcatalog.us/products/' . $product_id . '/small/' . $image;
 		
 		$values = '';
 		
