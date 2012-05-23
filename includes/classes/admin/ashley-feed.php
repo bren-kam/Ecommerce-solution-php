@@ -103,9 +103,12 @@ class Ashley_Feed extends Base_Class {
 		}
 		
 		$local_folder = "/home/imaginer/public_html/admin/media/downloads/ashley/$username/";
-		
-		if ( !file_exists( $local_folder ) )
+
+		if ( !file_exists( $local_folder ) ) {
+            // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 			mkdir( $local_folder, 0777 );
+            chmod( $local_folder, 0777 );
+        }
 		
 		// Grab the latest file
 		if( file_exists( $local_folder . $file ) ) {

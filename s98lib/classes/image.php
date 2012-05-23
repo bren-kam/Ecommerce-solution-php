@@ -179,9 +179,12 @@ class image extends Base_Class {
 		imagecopyresampled( $resized_image, $new_image, $destination_x, $destination_y, 0, 0, $new_width, $new_height, $width, $height );
 		
 		// Make the directory if it doesn't exist
-		if ( !file_exists( $save_folder ) )
+		if ( !file_exists( $save_folder ) ) {
+            // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 			mkdir( $save_folder, 0777, true );
-		
+            chmod( $save_folder, 0777 );
+        }
+
 		$new_name = ( $name ) ? $name . '.' . $new_image_ext : format::slug( basename( $image_to_resize ) ) . '_resized.' . $new_image_ext;
 
 		$save_path = $save_folder . $new_name;
