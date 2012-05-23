@@ -278,11 +278,5 @@ function login() {
     if ( !empty( $_SERVER['QUERY_STRING'] ) )
         $referer .= '?' . $_SERVER['QUERY_STRING'];
 
-<<<<<<< Updated upstream
-    $redirect = ( !empty( $referer ) ) ? '/login/' . urlencode( $referer ) : '/login/';
-
-	url::redirect( $redirect );
-=======
 	url::redirect( '/login/?r=' . urlencode( $referer ) );
->>>>>>> Stashed changes
 }
