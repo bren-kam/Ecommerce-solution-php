@@ -602,7 +602,7 @@ class Email_Marketing extends Base_Class {
 	 *
 	 * @param string $email
 	 * @param int $email_message_id
-	 * @return bool
+	 * @return Response
 	 */
 	public function test_message( $email, $email_message_id ) {
 		// Get mailchimp
@@ -612,7 +612,13 @@ class Email_Marketing extends Base_Class {
 		$em = $this->get_email_message( $email_message_id );
 		
 		// If needed, create a new campaign
-		$mc_campaign_id = ( 0 == $em['mc_campaign_id'] ) ? $this->mc_create_campaign( $em ) : $em['mc_campaign_id'];
+		$response = ( 0 == $em['mc_campaign_id'] ) ? $this->mc_create_campaign( $em ) : $em['mc_campaign_id'];
+		
+		if ( !$response->success() )
+			return $response;
+
+
+        $mc_campaign_id = $response->get('mc_campaign_id');
 		
 		// Send a test
 		$mc->campaignSendTest( $mc_campaign_id, array( $email ) );
@@ -620,17 +626,17 @@ class Email_Marketing extends Base_Class {
 		// Handle errors
 		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to send Campaign Test email\n\nCampaign ID: " . $mc_campaign_id . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		} 
+			return new Response( false, $mc->errorMessage, $mc->errorCode );
+		}
 		
-		return true;
+		return new Response( true );
 	}
 	
 	/**
 	 * Creates a MailChimp Campaign Email
 	 *
 	 * @param array $email_message
-	 * @return int $mc_campaign_id
+	 * @return Response
 	 */
 	public function mc_create_campaign( $email_message ) {
 		global $user;
@@ -647,7 +653,7 @@ class Email_Marketing extends Base_Class {
 		// Handle Errors
 		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to get Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
+			return new Response( false, $mc->errorMessage, $mc->errorCode );
 		}
 		
 		foreach ( $email_message['email_lists'] as $el ) {
@@ -658,7 +664,7 @@ class Email_Marketing extends Base_Class {
 			
 			if ( $mc->errorCode ) {
 				$this->err( "MailChimp: Unable to add Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nInterest Group: " . $el . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-				return false;
+				return new Response( false, $mc->errorMessage, $mc->errorCode );
 			}
 		}
 		
@@ -676,7 +682,7 @@ class Email_Marketing extends Base_Class {
 		// Handle Errors
 		if ( !$mc->campaignSegmentTest( $user['website']['mc_list_id'], $segmentation_options ) ) {
 			$this->err( "MailChimp: Unable to Segment Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
+			return new Response( false, $mc->errorMessage, $mc->errorCode );
 		}
 		
 		$settings = $this->get_settings();
@@ -712,7 +718,7 @@ class Email_Marketing extends Base_Class {
 		// Handle Errors
 		if ( $mc->errorCode ) {
 			$this->err( "MailChimp: Unable to Create New Campaign\n\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
+			return new Response( false, $mc->errorMessage, $mc->errorCode );
 		}
 		
 		// Update our lists
@@ -721,10 +727,13 @@ class Email_Marketing extends Base_Class {
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to update email messages with campaign id.', __LINE__, __METHOD__ );
-			return false;
+			return new Response( false, $mc->errorMessage, $mc->errorCode );
 		}
 		
-		return $mc_campaign_id;
+		$response = new Response( true );
+		$response->add( 'mc_campaign_id', $mc_campaign_id );
+		
+		return $response;
 	}
 	
 	/**

@@ -16,10 +16,10 @@ class url extends Base_Class {
 	 * @since 1.0
 	 *
 	 * @param string $location The new location of the page
-	 * @param int $code (Optional) The HTTP Status code, defaults to 307 Temporary Redirect
+	 * @param int $code (Optional) The HTTP Status code, defaults to 302 Found
 	 * @returns bool
 	 */
-	public static function redirect( $location, $code = 307 ) {
+	public static function redirect( $location, $code = 302 ) {
 		// HTTP Status code
 		header::http_status( $code );
 		

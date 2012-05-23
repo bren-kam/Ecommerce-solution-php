@@ -273,12 +273,16 @@ function sidebar( $key ) {
  * Redirects to the login page with referer credentials
  */
 function login() {
-	$referer = ( isset( $_SERVER['REDIRECT_URL'] ) ) ? '?r=' . $_SERVER['REDIRECT_URL'] : '';
+	$referer = ( isset( $_SERVER['REDIRECT_URL'] ) ) ? $_SERVER['REDIRECT_URL'] : '';
 
     if ( !empty( $_SERVER['QUERY_STRING'] ) )
         $referer .= '?' . $_SERVER['QUERY_STRING'];
 
+<<<<<<< Updated upstream
     $redirect = ( !empty( $referer ) ) ? '/login/' . urlencode( $referer ) : '/login/';
 
 	url::redirect( $redirect );
+=======
+	url::redirect( '/login/?r=' . urlencode( $referer ) );
+>>>>>>> Stashed changes
 }
