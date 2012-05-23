@@ -935,7 +935,10 @@ class Email_Marketing extends Base_Class {
 	 */
 	public function update_email_list( $email_list_id, $name, $description ) {
 		global $user;
-		
+
+        // Type Juggling
+        $website_id = (int) $user['website_id'];
+
 		// Update MailChimp List Interest Group
 		if ( '0' != $user['website']['mc_list_id'] ) {
 			// Get original
