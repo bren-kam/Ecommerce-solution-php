@@ -664,7 +664,7 @@ class Email_Marketing extends Base_Class {
 			
 			if ( $mc->errorCode ) {
 				$this->_err( "MailChimp: Unable to add Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nInterest Group: " . $el . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-				return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage ) );
+				return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage, $el ) );
 			}
 		}
 		
@@ -937,7 +937,7 @@ class Email_Marketing extends Base_Class {
 		global $user;
 
         // Type Juggling
-        $website_id = (int) $user['website_id'];
+        $website_id = (int) $user['website']['website_id'];
 
 		// Update MailChimp List Interest Group
 		if ( '0' != $user['website']['mc_list_id'] ) {
@@ -2149,17 +2149,18 @@ class Email_Marketing extends Base_Class {
      * Debug Mailchimp Errors
      *
      * @param int $mc_code
-     * @param string, $mc_message
+     * @param string $mc_message
+     * @param string $extra [optional]
      * @return string
      */
-    private function _mc_message( $mc_code, $mc_message ) {
+    private function _mc_message( $mc_code, $mc_message, $extra = '' ) {
         switch ( $mc_code ) {
             case 200:
                 $message = _('Please see your Online Specialist about setting up or updating your email account.');
             break;
             
             case 270:
-                $message = _('You have a duplicate list. Please remove the duplicate list and try again.');
+                $message = _('You have a duplicate list') . ": $extra." . _('Please remove or rename the duplicate list and try again.');
             break;
             
             default:
