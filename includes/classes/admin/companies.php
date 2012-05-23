@@ -28,8 +28,8 @@ class Companies extends Base_Class {
         $company = $this->db->get_row( "SELECT `name`, `domain` FROM `companies` WHERE `company_id` = $company_id", ARRAY_A );
 
 		// Handle errors
-		if ( mysql_errno() ) {
-			$this->err( 'Failed to get company', __LINE__, __METHOD__ );
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get company', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -45,12 +45,63 @@ class Companies extends Base_Class {
 		$companies = $this->db->get_results( 'SELECT `company_id`, `name` FROM `companies`', ARRAY_A );
 		
 		// Handle errors
-		if ( mysql_errno() ) {
-			$this->err( 'Failed to get companies', __LINE__, __METHOD__ );
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get companies', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return $companies;
+	}
+
+    /**
+     * Get Packages based on Website ID
+     *
+     * @param int $website_id
+     * @return array
+     */
+    public function get_packages( $website_id ) {
+        // Type Juggling
+        $website_id = (int) $website_id;
+        
+        $packages = $this->db->get_results( "SELECT a.`company_package_id`, a.`name` FROM `company_packages` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id", ARRAY_A );
+        
+        // Handle errors
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get packages', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return ( is_array( $packages ) ) ? ar::assign_key( $packages, 'company_package_id', true ) : false;
+    }
+
+    /**
+	 * Gets the data for an autocomplete company packages
+	 *
+	 * @param string $query
+	 * @return bool
+	 */
+	public function autocomplete_packages( $query ) {
+        global $user;
+
+        if ( $user['role'] < 8 ) {
+            // Type Juggling
+            $company_id = $user['company_id'];
+
+            $where = "AND `company_id` = $company_id";
+        } else {
+            $where = '';
+        }
+
+		// Get results
+		$results = $this->db->prepare( "SELECT `company_package_id` AS object_id, `name` AS package FROM `company_packages` WHERE `name` $where LIKE ? ORDER BY `name` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get autocomplete company packages.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $results;
 	}
 
     /**
@@ -64,8 +115,8 @@ class Companies extends Base_Class {
         $this->db->insert( 'companies', array( 'name' => $name, 'domain' => $domain, 'date_created' => dt::date('Y-m-d H:i:s') ), 'sss' );
 
         // Handle errors
-		if ( mysql_errno() ) {
-			$this->err( 'Failed to create company', __LINE__, __METHOD__ );
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to create company', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -84,8 +135,8 @@ class Companies extends Base_Class {
         $this->db->update( 'companies', array( 'name' => $name, 'domain' => $domain ), array( 'company_id' => $company_id ), 'ss', 'i' );
 
         // Handle errors
-		if ( mysql_errno() ) {
-			$this->err( 'Failed to update company', __LINE__, __METHOD__ );
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to update company', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -106,7 +157,7 @@ class Companies extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to list companies.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to list companies.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -125,7 +176,7 @@ class Companies extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to count companies.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to count companies.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -146,7 +197,7 @@ class Companies extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -163,7 +214,7 @@ class Companies extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

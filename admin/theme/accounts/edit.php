@@ -14,6 +14,7 @@ if ( !$user )
 $w = new Websites;
 $i = new Industries;
 $v = new Validator;
+$c = new Companies;
 
 $industries = $i->get_all();
 
@@ -41,39 +42,40 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		// Start fields array
 		$fields = array( 
 			// Information
-			'user_id' => $_POST['sUserID'],
-			'os_user_id' => $_POST['sOSUserID'],
-			'domain' => $_POST['tDomain'],
-			'subdomain' => $_POST['tSubDomain'],
-			'title' => stripslashes( $_POST['tTitle'] ),
-            'plan_name' => stripslashes( $_POST['tPlanName'] ),
-            'plan_description' => stripslashes( $_POST['tPlanDescription'] ),
-			'theme' => $_POST['tTheme'],
-			'phone' => $_POST['tPhone'],
-			'products' => $_POST['tProducts'],
-			'ga_profile_id' => $_POST['tGAProfileID'],
-			'ga_tracking_key' => $_POST['tGATrackingKey'],
-			// Features
-			'pages' => $_POST['cbWebsite'], // Website/Page (same thing)
- 			'product_catalog' => $_POST['cbProductCatalog'],
-			'blog' => $_POST['cbBlog'],
-			'email_marketing' => $_POST['cbEmailMarketing'],
-            'mobile_marketing' => $_POST['cbMobileMarketing'],
-			'shopping_cart' => $_POST['cbShoppingCart'],
-			'seo' => $_POST['cbSEO'],
-			'room_planner' => $_POST['cbRoomPlanner'],
-			'craigslist' => $_POST['cbCraigslist'],
-			'social_media' => $_POST['cbSocialMedia'],
-			'domain_registration' => $_POST['cbDomainRegistration'],
-			'additional_email_addresses' => $_POST['cbAdditionalEmail'],
+            'company_package_id' => $_POST['sCompanyPackageID']
+			, 'user_id' => $_POST['sUserID']
+			, 'os_user_id' => $_POST['sOSUserID']
+			, 'domain' => $_POST['tDomain']
+			, 'subdomain' => $_POST['tSubDomain']
+			, 'title' => stripslashes( $_POST['tTitle'] )
+            , 'plan_name' => stripslashes( $_POST['tPlanName'] )
+            , 'plan_description' => stripslashes( $_POST['tPlanDescription'] )
+			, 'theme' => $_POST['tTheme']
+			, 'phone' => $_POST['tPhone']
+			, 'products' => $_POST['tProducts']
+			, 'ga_profile_id' => $_POST['tGAProfileID']
+			, 'ga_tracking_key' => $_POST['tGATrackingKey']
+			// Feature
+			, 'pages' => $_POST['cbWebsite'] // Website/Page (same thing)
+ 			, 'product_catalog' => $_POST['cbProductCatalog']
+			, 'blog' => $_POST['cbBlog']
+			, 'email_marketing' => $_POST['cbEmailMarketing']
+            , 'mobile_marketing' => $_POST['cbMobileMarketing']
+			, 'shopping_cart' => $_POST['cbShoppingCart']
+			, 'seo' => $_POST['cbSEO']
+			, 'room_planner' => $_POST['cbRoomPlanner']
+			, 'craigslist' => $_POST['cbCraigslist']
+			, 'social_media' => $_POST['cbSocialMedia']
+			, 'domain_registration' => $_POST['cbDomainRegistration']
+			, 'additional_email_addresses' => $_POST['cbAdditionalEmail']
 			// Extras
-			'mc_list_id' => $_POST['tMCListID'],
-			'type' => $_POST['tType'],
-			'live' => (isset( $_POST['cbLive'] ) ) ? 1 : 0
+			, 'mc_list_id' => $_POST['tMCListID']
+			, 'type' => $_POST['tType']
+			, 'live' => ( isset( $_POST['cbLive'] ) ) ? 1 : 0
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iisssssssiisiiiiiiiiiiiissi';
+		$fields_safety = 'iiisssssssiisiiiiiiiiiiiissi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -151,6 +153,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 $web = $w->get_website( $_GET['wid'] );
 $ftp = $w->get_ftp_data( $_GET['wid'] );
 $website_industries = $w->get_industries( $_GET['wid'] );
+$company_packages = $c->get_packages( $_GET['wid'] );
 $users = $u->get_users();
 
 $settings = $w->get_settings( $_GET['wid'], array(
@@ -277,6 +280,7 @@ get_header();
 						<p>
                         	<label for="tUserEmail"><?php echo _('Email'); ?>:</label>
                             <input type="text" class="tb read-only" name="tUserEmail" id="tUserEmail" readonly="readonly" value="<?php echo $user_email; ?>" />
+                        </p>
                         <p>
 							<label for="sOSUserID"><?php echo _('Online Specialist'); ?>:</label>
 							<select name="sOSUserID" id="sOSUserID" class="tb">
@@ -293,6 +297,20 @@ get_header();
 								<?php } ?>
 							</select>
 						</p>
+                        <p<?php if ( !is_array( $company_packages ) ) echo ' class="hidden"'; ?>>
+                        	<label for="sCompanyPackageID"><?php echo _('Package'); ?>:</label>
+                            <select name="sCompanyPackageID" id="sCompanyPackageID">
+                                <option value="">-- <?php echo _('Select a Package'); ?> --</option>
+                                <?php
+                                if ( is_array( $company_packages ) )
+                                foreach ( $company_packages as $cpid => $cp ) {
+                                    $selected = ( $cpid == $web['company_package_id'] ) ? ' selected="selected"' : '';
+                                    ?>
+                                    <option value="<?php echo $cpid; ?>"<?php echo $selected; ?>><?php echo $cp; ?></option>
+                                <?php } ?>
+                            </select>
+                        </p>
+
 					</td>
 					<td valign="top">
 						<h2><?php echo _('Features'); ?></h2>
