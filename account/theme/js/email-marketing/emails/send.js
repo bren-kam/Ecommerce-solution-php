@@ -337,12 +337,7 @@ function testMessage() {
 	
 	$.post( '/ajax/email-marketing/emails/test/', { _nonce : $('#_ajax_test_message').val(), 'email' : $('#tTestEmail').val(), emid : $('#hEmailMessageID').val() }, function( success ) {
 		$.unblockUI();
-		
-		if ( success ) {
-			$('#pSuccessMessage').show().delay(5000).hide();
-		} else {
-			alert( 'An error occurred while trying to send the test email. Please refresh the page and try again.' );
-		}
+		ajaxResponse( response );
 	}, 'json' );
 }
 
