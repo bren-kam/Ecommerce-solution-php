@@ -604,21 +604,31 @@ class Email_Marketing extends Base_Class {
 	 * @param int $email_message_id
 	 * @return Response
 	 */
+	/**
+	 * Sends a test email message (using MailChimp)
+	 *
+	 * @param string $email
+	 * @param int $email_message_id
+	 * @return Response
+	 */
 	public function test_message( $email, $email_message_id ) {
 		// Get mailchimp
 		$mc = $this->mailchimp_instance();
-		
+
 		// Get the email message
 		$em = $this->get_email_message( $email_message_id );
-		
+
 		// If needed, create a new campaign
-		$response = ( 0 == $em['mc_campaign_id'] ) ? $this->mc_create_campaign( $em ) : $em['mc_campaign_id'];
-		
-		if ( !$response->success() )
-			return $response;
+		if( 0 == $em['mc_campaign_id'] ) {
+			$response = $this->mc_create_campaign( $em );
 
+			if ( !$response->success() )
+				return $response;
 
-        $mc_campaign_id = $response->get('mc_campaign_id');
+			$mc_campaign_id = $response->get('mc_campaign_id');
+		} else {
+			$mc_campaign_id = $em['mc_campaign_id'];
+		}
 		
 		// Send a test
 		$mc->campaignSendTest( $mc_campaign_id, array( $email ) );
@@ -664,7 +674,7 @@ class Email_Marketing extends Base_Class {
 			
 			if ( $mc->errorCode ) {
 				$this->_err( "MailChimp: Unable to add Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nInterest Group: " . $el . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-				return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage, $el ) );
+				return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage, trim( $el ) ) );
 			}
 		}
 		
@@ -2160,7 +2170,7 @@ class Email_Marketing extends Base_Class {
             break;
             
             case 270:
-                $message = _('You have a duplicate list') . ": $extra." . _('Please remove or rename the duplicate list and try again.');
+                $message = _('You have a duplicate list') . ": $extra. " . _('Please remove or rename the duplicate list and try again.');
             break;
             
             default:

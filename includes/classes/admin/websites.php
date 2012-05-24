@@ -232,16 +232,8 @@ class Websites extends Base_Class {
 		$where = ( empty( $where ) ) ? "WHERE a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" : "WHERE 1 $where AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )";
 				
 		// Get the websites
-		// $websites = $this->db->get_results( "SELECT a.`website_id`, a.`domain`, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, SUM( IF( c.`active` = 1 OR c.`active` IS NULL, 1, 0 ) ) AS used_products FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
-		// Original version ^, version below omits counting because it's difficult to get a 100% accurate count
-		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, a.`products`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, d.`contact_name` AS online_specialist FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`os_user_id` = d.`user_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
-		
-		foreach ( $websites as &$website ){
-			$website_id = $website['website_id'];
-			$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`product_id` ) AS count FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND b.`publish_visibility` <> 'deleted' AND a.`website_id` = $website_id" );
-			$website['used_products'] = $count;
-		}
-		
+		$websites = $this->db->get_results( "SELECT a.`website_id`, IF( '' = a.`subdomain`, a.`domain`, CONCAT( a.`subdomain`, '.', a.`domain` ) ) AS domain, a.`title`, b.`user_id`, b.`company_id`, b.`contact_name`, b.`store_name`, IF ( '' = b.`cell_phone`, b.`work_phone`, b.`cell_phone` ) AS phone, c.`contact_name` AS online_specialist FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$user_info = '[ ' . implode( ",", $user ) . ' ]';
@@ -277,7 +269,7 @@ class Websites extends Base_Class {
 		
 		// @Fix -- shouldn't have to count the results
 		// Get the website count
-		$website_count = count( $this->db->get_results( "SELECT COUNT( a.`website_id` ) FROM `websites` as a INNER JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `website_products` AS c ON ( a.`website_id` = c.`website_id` ) $where GROUP BY a.`website_id`", ARRAY_A ) );
+		$website_count = $this->db->get_results( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) $where", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -589,14 +581,14 @@ class Websites extends Base_Class {
 				ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
 				
 				// Must use FTP to assign folders under the right user
-                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom" );
-                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/" . $web['theme'] );
-                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache" );
-                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/css" );
-                ssh2_exec( "mkdir /home/$username/public_html/{$subdomain}custom/cache/js" );
+                ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/{$subdomain}custom" );
+                ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/{$subdomain}custom/" . $web['theme'] );
+                ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/{$subdomain}custom/cache" );
+                ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/{$subdomain}custom/cache/css" );
+                ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/{$subdomain}custom/cache/js" );
 
-                ssh2_exec( "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
-                ssh2_exec( "chown -R $username:$username /home/$username/public_html/{$subdomain}" );
+                ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
+                ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/{$subdomain}" );
 
 				// Updated website version
 				$this->update_website_version( '1', $website_id );
@@ -682,6 +674,55 @@ class Websites extends Base_Class {
 			return false;
 		}
 	}
+
+    /**
+     * Install a Package
+     *
+     * @param int $website_id
+     * @return bool
+     */
+    public function install_package( $website_id ) {
+        $website = $this->get_website( $website_id );
+        $ftp = $this->get_ftp_data( $website_id );
+        $username = security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY );
+        $company_package_id = (int) $website['company_package_id'];
+
+        // Get the package
+        $package = $this->db->get_row( "SELECT `name`, `website_id` FROM `company_packages` WHERE `company_package_id` = $company_package_id", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get package.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Get the template website
+        $template_website = $this->get_website( $package['website_id'] );
+        $template_theme = $template_website['theme'];
+
+        // Set the theme of the current website
+        $this->update( $website_id, array( 'theme' => $template_theme ), 's' );
+
+        // Get the username
+        $template_ftp = $this->get_ftp_data( $package['website_id'] );
+        $template_username = security::decrypt( base64_decode( $template_ftp['ftp_username'] ), ENCRYPTION_KEY );
+
+        /* Copy over the folders */
+
+
+        // SSH Connection
+        $ssh_connection = ssh2_connect( '199.79.48.137', 22 );
+        ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
+
+        // Make The new theme directory
+        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/$template_theme" );
+
+        // Copy over all the theme files
+        ssh2_exec( $ssh_connection, "cp -R /home/$template_username/public_html/custom/. /home/$username/custom/" );
+
+
+        return true;
+    }
 	
 	/**
 	 * Removes a website
