@@ -269,15 +269,15 @@ class Websites extends Base_Class {
 		
 		// @Fix -- shouldn't have to count the results
 		// Get the website count
-		$website_count = $this->db->get_results( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) $where", ARRAY_A );
-		
+		$website_count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) $where" );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$user_info = '[ ' . implode( ",", $user ) . ' ]';
 			$this->err( 'Failed to count websites.  User info: ' . $user_info, __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $website_count;
 	}
 	
