@@ -222,7 +222,7 @@ get_header();
             <?php } ?>
 			<form action="/accounts/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditAccount">
 			<?php 
-			if ( '0' == $web['version'] )
+			if ( '0' == $web['version'] && $web['pages'] )
 				echo '<p>', _('Website has not been installed. Please verify domain and FTP data below and'), ' <a href="/accounts/install/?wid=', $web['website_id'], '" title="', _('Install Account'), '">', _('click here to install the account'), '</a>.</p>';
 			
 			if ( isset( $_GET['i'] ) )

@@ -29,6 +29,12 @@ class Analytics extends Base_Class {
      * @var string
      */
     private $ga_filter = NULL;
+	
+	/**
+	 * Contain the Response to instantiation
+	 * @var Response
+	 */
+	 private $response;
 
 	/**
 	 * Construct initializes data
@@ -42,6 +48,9 @@ class Analytics extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 
+	    $this->date_start = ( empty( $date_start ) ) ? dt::date( 'Y-m-d', time() - 2678400 ) : dt::date( 'Y-m-d', strtotime( $date_start ) ); // 30 days ago
+		$this->date_end = ( empty( $date_end ) ) ? dt::date( 'Y-m-d', time() - 86400 ) : dt::date( 'Y-m-d', strtotime( $date_end ) ); // Yesterday
+		
         // Only call if necessary
         if ( NULL != $ga_profile_id ) {
             // Call Google Analytics API
@@ -57,7 +66,12 @@ class Analytics extends Base_Class {
                 $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
 
                 if ( !empty( $ga_username )  && !empty( $ga_password ) ) {
-                    $this->ga = new GAPI( $ga_username, $ga_password );
+					try {
+	                    $this->ga = new GAPI( $ga_username, $ga_password );
+					} catch ( Exception $e ) {
+						$this->response = new Response( false, $e->getMessage(), $e->getCode() );
+						return false;
+					}
                 } else {
                     $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
                 }
@@ -66,9 +80,17 @@ class Analytics extends Base_Class {
             }
             $this->ga_profile_id = (int) $ga_profile_id;
         }
-
-	    $this->date_start = ( empty( $date_start ) ) ? dt::date( 'Y-m-d', time() - 2678400 ) : dt::date( 'Y-m-d', strtotime( $date_start ) ); // 30 days ago
-		$this->date_end = ( empty( $date_end ) ) ? dt::date( 'Y-m-d', time() - 86400 ) : dt::date( 'Y-m-d', strtotime( $date_end ) ); // Yesterday
+		
+		$this->response = new Response( true );
+	}
+	
+	/**
+	 * Get Response
+	 *
+	 * @return Response
+	 */
+	public function get_response() {
+		return $this->response;
 	}
 
     /**
