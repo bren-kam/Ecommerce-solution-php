@@ -2185,7 +2185,7 @@ class Products extends Base_Class {
 	 * Bulk Add categories
 	 *
 	 * @param array $category_ids
-	 * @param object $c (Category)
+	 * @param Categories $c (Category)
 	 * @return bool
 	 */
 	private function bulk_add_categories( $category_ids, $c ) {

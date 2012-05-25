@@ -1,8 +1,10 @@
 <?php
-library('ashley-api');
-$a = new Ashley_API();
-exit;
+//library('ashley-api');
+//$a = new Ashley_API();
 $b = new Base_Class();
+
+$w = new Websites;
+exit;
 
 $website_images = $b->db->get_col( "SELECT DISTINCT `image_url` FROM `website_categories` WHERE `status` <> 0 AND `image_url` NOT LIKE '%/small/%'" );
 
