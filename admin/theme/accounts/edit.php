@@ -310,7 +310,7 @@ get_header();
                                 <?php } ?>
                             </select>
                             <br />
-                            <a href="/ajax/accounts/install-package/" id="aInstallPackage" rel="<?php echo $web['website_id']; ?>" confirm="<?php echo _('WARNING: You are going to be overwriting all content on this website. There is no undoing this action. This means all product, text, images and content is going to be replaced with the content on the relevant demo site. Are you VERY SURE you want to proceed?'); ?>"><?php echo _('Install Package'); ?></a>
+                            <a href="javascript:;" id="aInstallPackage" rel="<?php echo $web['website_id']; ?>" confirm="<?php echo _('WARNING: You are going to be overwriting all content on this website. There is no undoing this action. This means all product, text, images and content is going to be replaced with the content on the relevant demo site. Are you VERY SURE you want to proceed?'); ?>"><?php echo _('Install Package'); ?></a>
                             <span class="green hidden" id="sPackageInstallationSuccess"> - <?php echo _('Successfully Installed!'); ?></span>
                             <?php nonce::field( 'install-package', '_ajax_install_package' ); ?>
                         </p>
