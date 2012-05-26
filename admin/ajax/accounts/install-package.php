@@ -20,7 +20,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'install-pack
     $success = $w->install_package( $_POST['wid'], $_POST['cpid'] );
 
 	// If there was an error, let them know
-	echo json_encode( array( 'success' => $success, 'message' => _('You have successfully installed the package!'), 'error' => _('An error occurred while trying to install a package. Please contact a system administrator.') ) );
+	echo json_encode( array( 'success' => $success, 'message' => _('You have successfully installed the package! Please make sure you "Save" at the bottom of the page.'), 'error' => _('An error occurred while trying to install a package. Please contact a system administrator.') ) );
 } else {
 	echo json_encode( array( 'success' => false, 'error' => _('A verification error occurred. Please refresh the page and try again.') ) );
 }
