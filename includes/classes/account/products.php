@@ -2100,7 +2100,7 @@ class Products extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1" );
+		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND c.`publish_visibility` = 'public'" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

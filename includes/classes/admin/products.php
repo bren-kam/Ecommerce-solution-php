@@ -896,6 +896,9 @@ class Products extends Base_Class {
 	 * @return bool
 	 */
 	public function dump_tag( $website_id, $tag ) {
+		if ( empty( $tag ) )
+			return true;
+		
         // Instantiate Classes
         $w = new Websites;
         
@@ -903,18 +906,19 @@ class Products extends Base_Class {
         $tag = $this->db->escape( $tag );
 
         // Get industries
-		$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $w->get_website_industries() ) );
-
+		$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $w->get_website_industries( $website_id ) ) );
+		
 		// Magical Query #2
 		// Insert website products
-		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) LEFT JOIN `tags` AS c ON ( a.`product_id` = c.`object_id` AND c.`type` = 'product' ) WHERE ( a.`website_id` = 0 OR a.`website_id` = $website_id ) AND a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND ( b.`product_id` IS NULL OR b.`active` = 0 ) AND c.`value` = `$tag` ON DUPLICATE KEY UPDATE `active` = 1" );
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) LEFT JOIN `tags` AS c ON ( a.`product_id` = c.`object_id` AND c.`type` = 'product' ) WHERE ( a.`website_id` = 0 OR a.`website_id` = $website_id ) AND a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND ( b.`product_id` IS NULL OR b.`active` = 0 ) AND c.`value` = '$tag' ON DUPLICATE KEY UPDATE `active` = 1" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to dump website products.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
+		
         // Adjust the categories properly
 		$this->reorganize_categories( $website_id );
 
@@ -932,18 +936,18 @@ class Products extends Base_Class {
         $website_id = (int) $website_id;
 
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1" );
-
+		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND c.`publish_visibility` = 'public'" );
+		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
 		// IF NULL exists, remove it
 		if ( $key = array_search( NULL, $category_ids ) )
 			unset( $category_ids[$key] );
-
+		
 		// Get website category IDs
 		$website_category_ids = $this->db->get_col( "SELECT DISTINCT `category_id` FROM `website_categories` WHERE `website_id` = $website_id" );
 
@@ -989,7 +993,7 @@ class Products extends Base_Class {
 					$new_category_ids[] = $pcid;
 			}
 		}
-
+		
 		// Only want the unique values
 		$product_category_ids = array_unique( $product_category_ids );
 
@@ -1003,12 +1007,12 @@ class Products extends Base_Class {
 			if ( !in_array( $wcid, $product_category_ids ) )
 				$remove_category_ids[] = $wcid;
 		}
-
+		
 		// Bulk add categories
-		$this->bulk_add_categories( $new_category_ids, $c );
+		$this->bulk_add_categories( $website_id, $new_category_ids, $c );
 
 		// Remove extra categoryes
-		$this->remove_categories( $remove_category_ids );
+		$this->remove_categories( $website_id, $remove_category_ids );
 
         return array( count( $remove_category_ids ), count( $new_category_ids ) );
 	}

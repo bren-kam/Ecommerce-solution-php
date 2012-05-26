@@ -777,7 +777,17 @@ class SQL {
         $where_sql = array();
 
         foreach ( $where as $key => $field ) {
-            $where_sql[] = "`$key` = $field";
+            if ( is_array( $field ) ) {
+                // Make sure the array is sql safe
+                foreach ( $field as &$i ) {
+                    if ( !is_int( $i ) && !is_float( $i ) )
+                        $i = "'" . $this->escape( $i ) . "'";
+                }
+
+                $where_sql[] = "`$key` IN (" . implode( ', ', $field ) . ')';
+            } else {
+                $where_sql[] = "`$key` = $field";
+            }
 		}
 
         return $this->query( "INSERT INTO $table ( $field_keys ) SELECT $field_values FROM $table WHERE " . IMPLODE ( ' AND ', $where_sql ) . ' ON DUPLICATE KEY UPDATE ' . implode( ', ', $duplicate_keys ) );

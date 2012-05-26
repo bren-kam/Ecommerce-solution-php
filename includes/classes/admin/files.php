@@ -75,7 +75,7 @@ class Files extends Base_Class {
         $uri = str_replace( 'http://' . $bucket . '/', '', $url );
         $new_uri = preg_replace( '/^([0-9]+)/', $website_id, $uri );
 
-		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri ) )
+		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri, S3::ACL_PUBLIC_READ ) )
             return false;
 
         return 'http://' . $bucket . '/' . $new_uri;

@@ -710,10 +710,8 @@ class Websites extends Base_Class {
      */
     public function install_package( $website_id ) {
         $website = $this->get_website( $website_id );
-        $ftp = $this->get_ftp_data( $website_id );
-        $username = security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY );
-        $company_package_id = (int) $website['company_package_id'];
-
+		$company_package_id = (int) $website['company_package_id'];
+		
         // Get the package
         $package = $this->db->get_row( "SELECT `name`, `tag`, `website_id` FROM `company_packages` WHERE `company_package_id` = $company_package_id", ARRAY_A );
 
@@ -722,31 +720,55 @@ class Websites extends Base_Class {
 			$this->_err( 'Failed to get package.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
+		return $this->copy_website( $package['website_id'], $website_id );
+	}
+	
+	/**
+	 * Copy a Website
+	 *
+	 * The original website will becalled the "Template website
+	 *
+	 * @param int $template_website_id
+	 * @param int $website_id
+     * @return bool
+	 */
+	public function copy_website( $template_website_id, $website_id ) {
+		$ftp = $this->get_ftp_data( $website_id );
+        $username = security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY );
+        
         // Get the template website
-        $template_website = $this->get_website( $package['website_id'] );
+        $template_website = $this->get_website( $template_website_id );
         $template_theme = $template_website['theme'];
-
+		
+		
         // Set the theme of the current website
-        $this->update( $website_id, array( 'theme' => $template_theme ), 's' );
+        $this->update( $website_id, array( 'theme' => $template_theme, 'logo' => $template_website['logo'] ), 'ss' );
 
         // Get the username
-        $template_ftp = $this->get_ftp_data( $package['website_id'] );
+        $template_ftp = $this->get_ftp_data( $template_website_id );
         $template_username = security::decrypt( base64_decode( $template_ftp['ftp_username'] ), ENCRYPTION_KEY );
-
+		
         /* Copy over the folders */
 
         // SSH Connection
         $ssh_connection = ssh2_connect( '199.79.48.137', 22 );
         ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
-
+		
         // Make The new theme directory
         ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/$template_theme" );
 
         // Copy over all the theme files
-        ssh2_exec( $ssh_connection, "cp -R /home/$template_username/public_html/custom/. /home/$username/custom/" );
+        ssh2_exec( $ssh_connection, "cp -Rf /home/$template_username/public_html/custom/. /home/$username/public_html/custom" );
 
+		// Copy over config file
+        ssh2_exec( $ssh_connection, "yes | cp -rf /home/$template_username/public_html/config.php /home/$username/public_html/config.php" );
+		
+		ssh2_exec( $ssh_connection, "sed -i 's/$template_username/$username/g' /home/$username/public_html/config.php" );
+		ssh2_exec( $ssh_connection, "sed -i 's/$template_website_id/$website_id/g' /home/$username/public_html/config.php" );
+		
         /***** Copy Website Pages *****/
+		
         $this->db->copy( 'website_pages', array(
             'website_id' => $website_id
             , 'slug' => NULL
@@ -756,47 +778,49 @@ class Websites extends Base_Class {
             , 'meta_description' => NULL
             , 'meta_keywords' => NULL
             , 'mobile' => NULL
-            , 'date_created' => dt::date('Y-m-d H:i:s')
-        ), array( 'website_id' => $package['website_id'] ) );
-
+            , 'date_created' => "'" . dt::date('Y-m-d H:i:s') . "'"
+        ), array( 'website_id' => $template_website_id ) );
+		
+		
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to copy website pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 
-        /***** Copy Website Attachments *****/
+		/***** Copy Website Attachments *****/
+		
         $website_pages = $this->db->get_results( "SELECT `website_page_id`, `slug` FROM `website_pages` WHERE `website_id` = $website_id" );
-
+		
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get website pages.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
         $website_pages = ar::assign_key( $website_pages, 'slug', true );
 
         // First get website pages
-        $template_website_pages = $this->db->get_results( 'SELECT `website_page_id`, `slug` FROM `website_pages` WHERE `website_id` = ' . (int) $package['website_id'] );
+        $template_website_pages = $this->db->get_results( "SELECT `website_page_id`, `slug` FROM `website_pages` WHERE `website_id` = $template_website_id" );
 
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get template website pages.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
         // Assigned the keys
         $template_website_pages = ar::assign_key( $template_website_pages, 'website_page_id', true );
 
         // Now, get the attachments
-        $template_website_attachments = $this->db->get_results( 'SELECT `website_page_id`, `key`, `value, `extra`, `meta`, `sequence` FROM `website_attachments` WHERE `status` = 1 AND `website_page_id` IN (' . implode( ', ', array_keys( $template_website_pages ) ) . ')' );
-
+        $template_website_attachments = $this->db->get_results( 'SELECT `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` FROM `website_attachments` WHERE `status` = 1 AND `website_page_id` IN (' . implode( ', ', array_keys( $template_website_pages ) ) . ')' );
+		
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get template website attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
         $new_website_attachments = array();
 
         if ( is_array( $template_website_attachments )  )
@@ -806,10 +830,19 @@ class Websites extends Base_Class {
             // Checks if its S# and uploads it
             $value = $this->_check_s3( $website_id, $twa['value'], 'websites' );
 
-            $new_website_attachments[] = "( $website_page_id, `" . $twa['key'] . '`, `' . $this->db->escape( $value ) . '`, `' . $this->db->escape( $twa['extra'] ) . '`, `' . $this->db->escape( $twa['meta'] ) . '`, ' . $twa['sequence'] . ' )';
+            $new_website_attachments[] = "( $website_page_id, '" . $twa['key'] . "', '" . $this->db->escape( $value ) . "', '" . $this->db->escape( $twa['extra'] ) . "', '" . $this->db->escape( $twa['meta'] ) . "', " . $twa['sequence'] . ' )';
         }
-
+		
         if ( 0 != count( $new_website_attachments ) ) {
+            // Delete certain sidebar elements that you can only have one of
+            $this->db->query( "DELETE FROM `website_attachments` WHERE `key` IN( 'video', 'search', 'email' ) AND `website_page_id` IN( " . implode( ", ", array_values( $website_pages ) ) . ")" );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->_err( 'Failed to delete old sidebar elements.', __LINE__, __METHOD__ );
+                return false;
+            }
+
             // Insert them into the database
             $this->db->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` ) VALUES " . implode( ', ', $new_website_attachments ) );
 
@@ -818,10 +851,12 @@ class Websites extends Base_Class {
                 $this->_err( 'Failed to insert website attachments.', __LINE__, __METHOD__ );
                 return false;
             }
+			
         }
 
         /***** Copy Website Industries *****/
-        $this->db->copy( 'website_industries', array( 'website_id' => $website_id, 'industry_id' => NULL ), array( 'website_id' => $package['website_id'] ) );
+		
+        $this->db->copy( 'website_industries', array( 'website_id' => $website_id, 'industry_id' => NULL ), array( 'website_id' => $template_website_id ) );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -830,25 +865,27 @@ class Websites extends Base_Class {
 		}
 
         /***** Copy Website PageMeta *****/
+		
         $pagemeta_keys = array( 'display-coupon', 'email-coupon', 'hide-all-maps' );
-
-        $template_pagemeta = $this->db->get_results( "SELECT `website_page_id`, `key`, `value` WHERE `key` IN( '" . implode ( "', '", $pagemeta_keys ) . "' )" );
-
+		$template_website_page_ids = implode( ', ', array_keys( $template_website_pages ) );
+		
+        $template_pagemeta = $this->db->get_results( "SELECT `website_page_id`, `key`, `value` FROM `website_pagemeta` WHERE `website_page_id` IN ( $template_website_page_ids ) AND `key` IN( '" . implode ( "', '", $pagemeta_keys ) . "' )" );
+		
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get template pagemeta.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
         $new_pagemeta = array();
 
         if ( is_array( $template_pagemeta )  )
         foreach ( $template_pagemeta as $tpm ) {
              $website_page_id = (int) $website_pages[$template_website_pages[$template_pagemeta['website_page_id']]];
 
-            $new_pagemeta[] = "( $website_page_id, `" . $tpm['key'] . '`, `' . $this->db->escape( $tpm['value'] ) . '` )';
+            $new_pagemeta[] = "( $website_page_id, '" . $tpm['key'] . "', '" . $this->db->escape( $tpm['value'] ) . "' )";
         }
-
+		
         if ( 0 != count( $new_pagemeta ) ) {
             // Insert them into the database
             $this->db->query( "INSERT INTO `website_pagemeta` ( `website_page_id`, `key`, `value` ) VALUES " . implode( ', ', $new_pagemeta ) );
@@ -861,7 +898,8 @@ class Websites extends Base_Class {
         }
 
         /***** Copy Website Brands *****/
-        $this->db->copy( 'website_top_brands', array( 'website_id' => $website_id, 'brand_id' => NULL, 'sequence' => NULL ), array( 'website_id' => $package['website_id'] ) );
+		
+        $this->db->copy( 'website_top_brands', array( 'website_id' => $website_id, 'brand_id' => NULL, 'sequence' => NULL ), array( 'website_id' => $template_website_id ) );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -869,11 +907,38 @@ class Websites extends Base_Class {
 			return false;
 		}
 
-        /***** Insert Tagged Products *****/
+        /***** Copy Website Products *****/
+		
+		$this->db->copy( 'website_products', array( 
+			'website_id' => $website_id
+			, 'product_id' => NULL
+			, 'status' => NULL
+			, 'on_sale' => NULL
+			, 'sequence' => NULL
+			, 'active' => 1
+		), array( 'website_id' => $template_website_id, 'active' => 1 ) );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to copy website products.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
         $p = new Products();
-        $p->dump_tag( $website, $package['tag'] );
+		
+        $p->reorganize_categories( $website_id );
 
-
+		/***** Copy Website Settings *****/
+		$website_settings_array = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' );
+		
+		$this->db->copy( 'website_settings', array( 'website_id' => $website_id, 'key' => NULL, 'value' => NULL ), array( 'website_id' => $template_website_id, 'key' => $website_settings_array ) );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to copy website settings.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
         return true;
     }
 
