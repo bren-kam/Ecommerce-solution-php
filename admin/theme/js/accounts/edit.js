@@ -110,7 +110,9 @@ function postLoad( $ ) {
     });
 
     // Make it possible to install a package
-    $('#aInstallPackage').click( function() {
+    $('#aInstallPackage').click( function(e) {
+		e.preventDefault();
+		
         if ( !confirm( $(this).attr('confirm') ) )
             return;
 
