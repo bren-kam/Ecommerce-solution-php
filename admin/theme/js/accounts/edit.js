@@ -120,8 +120,8 @@ function postLoad( $ ) {
                 return;
             }
 
-            alert( response['message'] )
-        }, 'ajax' );
+            alert( response['message'] );
+        }, 'json' );
     });
 }
 
