@@ -713,7 +713,7 @@ class Websites extends Base_Class {
 		$company_package_id = (int) $website['company_package_id'];
 		
         // Get the package
-        $package = $this->db->get_row( "SELECT `name`, `tag`, `website_id` FROM `company_packages` WHERE `company_package_id` = $company_package_id", ARRAY_A );
+        $package = $this->db->get_row( "SELECT `name`, `website_id` FROM `company_packages` WHERE `company_package_id` = $company_package_id", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -888,7 +888,7 @@ class Websites extends Base_Class {
 		
         if ( 0 != count( $new_pagemeta ) ) {
             // Insert them into the database
-            $this->db->query( "INSERT INTO `website_pagemeta` ( `website_page_id`, `key`, `value` ) VALUES " . implode( ', ', $new_pagemeta ) );
+            $this->db->query( "INSERT INTO `website_pagemeta` ( `website_page_id`, `key`, `value` ) VALUES " . implode( ', ', $new_pagemeta ) . " ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )" );
 
             // Handle any error
             if ( $this->db->errno() ) {
