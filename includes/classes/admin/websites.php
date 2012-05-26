@@ -134,10 +134,14 @@ class Websites extends Base_Class {
 	 * @return array
 	 */
 	public function get_website( $website_id ) {
+        global $user;
+
+        $where = ( $user['role'] < 8 ) ? ' AND c.`company_id` = ' . (int) $user['company_id'] : '';
+
         // Type Juggling
         $website_id = (int) $website_id;
 
-		$website = $this->db->get_row( "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id $where", ARRAY_A );
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -706,14 +710,29 @@ class Websites extends Base_Class {
      * Install a Package
      *
      * @param int $website_id
+     * @param int $company_package_id
      * @return bool
      */
-    public function install_package( $website_id ) {
+    public function install_package( $website_id, $company_package_id = NULL ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $website_id;
+
+        // They need to be able to get the website
         $website = $this->get_website( $website_id );
-		$company_package_id = (int) $website['company_package_id'];
-		
+
+        if ( !$website )
+            return false;
+
+        // Type Juggling
+        $company_package_id = ( is_null( $company_package_id ) ) ? (int) $website['company_package_id'] : (int) $company_package_id;
+
+        // Make sure people can only get packages they want
+        $where = ( $user['role'] < 8 ) ? ' AND `company_id` = ' . (int) $user['company_id'] : '';
+
         // Get the package
-        $package = $this->db->get_row( "SELECT `name`, `website_id` FROM `company_packages` WHERE `company_package_id` = $company_package_id", ARRAY_A );
+        $package = $this->db->get_row( "SELECT `name`, `website_id` FROM `company_packages` WHERE `company_package_id` = $company_package_id $where" );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -721,7 +740,7 @@ class Websites extends Base_Class {
 			return false;
 		}
 		
-		return $this->copy_website( $package['website_id'], $website_id );
+		return ( !$package || 0 == $package['website_id'] ) ? true : $this->copy_website( $package['website_id'], $website_id );
 	}
 	
 	/**
@@ -734,6 +753,10 @@ class Websites extends Base_Class {
      * @return bool
 	 */
 	public function copy_website( $template_website_id, $website_id ) {
+        // Type Juggling
+        $template_website_id = (int) $template_website_id;
+        $website_id = (int) $website_id;
+
 		$ftp = $this->get_ftp_data( $website_id );
         $username = security::decrypt( base64_decode( $ftp['ftp_username'] ), ENCRYPTION_KEY );
         
