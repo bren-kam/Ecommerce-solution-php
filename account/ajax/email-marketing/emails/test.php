@@ -12,7 +12,9 @@ $ajax->ok( $user, _('You must be signed in to send a test message') );
 $e = new Email_Marketing();
 
 // Add the response
-$e->test_message( $_POST['email'], $_POST['emid'] );
+$response = $e->test_message( $_POST['email'], $_POST['emid'] );
+
+$ajax->ok( $response->success(), _('An error occurred while trying to send out your test email: ') . $response->message() );
 
 // Send response
 $ajax->respond();

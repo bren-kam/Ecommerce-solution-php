@@ -71,7 +71,7 @@ class Response {
      * @param string $key
      * @return mixed
      */
-    public function get_response( $key ) {
+    public function get( $key ) {
         return ( isset( $this->data[$key] ) ) ? $this->data[$key] : false;
     }
 	

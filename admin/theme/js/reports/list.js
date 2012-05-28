@@ -13,8 +13,8 @@ jQuery( postLoad );
  * @param $ (jQuery shortcut)
  */
 function postLoad( $ ) {
-	criteria = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'checkboxes' : {} };
-	cache = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {} };
+	criteria = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'package' : {}, 'checkboxes' : {} };
+	cache = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'package' : {} };
 	
 	// Temporary Values
 	$('input[tmpval],textarea[tmpval]').each( function() {

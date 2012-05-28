@@ -26,7 +26,7 @@ class Products extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -44,7 +44,7 @@ class Products extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -65,7 +65,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product images.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product images.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -91,7 +91,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -159,7 +159,7 @@ class Products extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -181,7 +181,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website results.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website results.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -197,7 +197,7 @@ class Products extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to delete website product.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to delete website product.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -223,7 +223,7 @@ class Products extends Base_Class {
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to deleted website categories.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to deleted website categories.', __LINE__, __METHOD__ );
 					return false;
 				}
 			}
@@ -237,7 +237,7 @@ class Products extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to deleted parent website categories.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to deleted parent website categories.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -262,7 +262,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update website products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update website products.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -278,7 +278,7 @@ class Products extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get website categories.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to get website categories.', __LINE__, __METHOD__ );
 				return false;
 			}
 			
@@ -377,7 +377,7 @@ class Products extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add product images.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add product images.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -399,7 +399,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product image.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product image.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -421,7 +421,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add website category.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add website category.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -457,7 +457,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -475,7 +475,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get update website product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get update website product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -498,7 +498,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get websites without products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get websites without products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -538,7 +538,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get delete product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get delete product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -556,7 +556,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get delete product images.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get delete product images.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -578,7 +578,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -598,7 +598,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -623,7 +623,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -642,7 +642,7 @@ class Products extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to change product industry.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to change product industry.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -667,7 +667,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if product exists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if product exists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -680,7 +680,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to clone product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to clone product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -692,7 +692,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to clone product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to clone product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -701,7 +701,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to clone product group relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to clone product group relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -710,7 +710,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to clone product tags.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to clone product tags.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -719,7 +719,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to clone product attribute item relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to clone product attribute item relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -738,7 +738,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete product image.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete product image.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -756,7 +756,7 @@ class Products extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -773,7 +773,7 @@ class Products extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get old ashley product id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get old ashley product id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -793,7 +793,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -806,7 +806,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get new ashley product id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -824,7 +824,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete for new ashley products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete for new ashley products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -843,7 +843,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to replace product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to replace product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -864,7 +864,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get websitse related to a product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get websitse related to a product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -881,12 +881,246 @@ class Products extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( "Failed to get Ashley's incomplete products.", __LINE__, __METHOD__ );
+			$this->_err( "Failed to get Ashley's incomplete products.", __LINE__, __METHOD__ );
 			return false;
 		}
 
         return $products;
     }
+
+    /**
+	 * Dump Tag
+	 *
+     * @param int $website_id
+	 * @param string $tag
+	 * @return bool
+	 */
+	public function dump_tag( $website_id, $tag ) {
+		if ( empty( $tag ) )
+			return true;
+		
+        // Instantiate Classes
+        $w = new Websites;
+        
+        // Make it SQL Safe
+        $tag = $this->db->escape( $tag );
+
+        // Get industries
+		$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $w->get_website_industries( $website_id ) ) );
+		
+		// Magical Query #2
+		// Insert website products
+		$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, a.`product_id` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) LEFT JOIN `tags` AS c ON ( a.`product_id` = c.`object_id` AND c.`type` = 'product' ) WHERE ( a.`website_id` = 0 OR a.`website_id` = $website_id ) AND a.`industry_id` IN($industries) AND a.`publish_visibility` = 'public' AND a.`status` <> 'discontinued' AND ( b.`product_id` IS NULL OR b.`active` = 0 ) AND c.`value` = '$tag' ON DUPLICATE KEY UPDATE `active` = 1" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to dump website products.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		
+        // Adjust the categories properly
+		$this->reorganize_categories( $website_id );
+
+		return true;
+	}
+    
+    /**
+	 * Reorganize Categories
+	 *
+     * @param int $website_id
+	 * @return array( int, int ) removed categories, new categories
+	 */
+	public function reorganize_categories( $website_id ) {
+        // Type Juggling
+        $website_id = (int) $website_id;
+
+		// Get category IDs
+		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND c.`publish_visibility` = 'public'" );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get product categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		// IF NULL exists, remove it
+		if ( $key = array_search( NULL, $category_ids ) )
+			unset( $category_ids[$key] );
+		
+		// Get website category IDs
+		$website_category_ids = $this->db->get_col( "SELECT DISTINCT `category_id` FROM `website_categories` WHERE `website_id` = $website_id" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// IF NULL exists, remove it
+		if ( $key = array_search( NULL, $website_category_ids ) )
+			unset( $website_category_ids[$key] );
+
+		// Need to get the parent categories
+		$c = new Categories;
+
+		$new_category_ids = $product_category_ids = $remove_category_ids = array();
+
+		// Find out what categories we need to add
+		if ( is_array( $category_ids ) )
+		foreach ( $category_ids as $cid ) {
+			if ( empty( $cid ) )
+				continue;
+
+			// Start forming complete list of product categories
+			$product_category_ids[] = $cid;
+
+			// If the website does not already have the category and it has not already been added
+			if ( !in_array( $cid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) )
+				$new_category_ids[] = $cid;
+
+			// Get the parent categories of this category
+			$parent_category_ids = $c->get_parent_category_ids( $cid );
+
+			// Loop through parent ids
+			if ( is_array( $parent_category_ids ) )
+			foreach ( $parent_category_ids as $pcid ) {
+				// Forming complete list
+				$product_category_ids[] = $pcid;
+
+				// If the website does not already have it and it has not already been added
+				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) )
+					$new_category_ids[] = $pcid;
+			}
+		}
+		
+		// Only want the unique values
+		$product_category_ids = array_unique( $product_category_ids );
+
+		// IF NULL exists, remove it
+		if ( $key = array_search( NULL, $product_category_ids ) )
+			unset( $product_category_ids[$key] );
+
+		sort( $product_category_ids );
+
+		foreach ( $website_category_ids as $wcid ) {
+			if ( !in_array( $wcid, $product_category_ids ) )
+				$remove_category_ids[] = $wcid;
+		}
+		
+		// Bulk add categories
+		$this->bulk_add_categories( $website_id, $new_category_ids, $c );
+
+		// Remove extra categoryes
+		$this->remove_categories( $website_id, $remove_category_ids );
+
+        return array( count( $remove_category_ids ), count( $new_category_ids ) );
+	}
+
+	/**
+	 * Bulk Add categories
+	 *
+     * @param int $website_id
+	 * @param array $category_ids
+	 * @param Categories $c (Category)
+	 * @return bool
+	 */
+	private function bulk_add_categories( $website_id, $category_ids, $c ) {
+        if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
+			return;
+
+        global $user;
+
+		// Type Juggling
+		$website_id = (int) $website_id;
+
+		// If there are any categories that need to be added
+		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/small/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get website category images.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Create insert
+		$values = '';
+		$category_images = ar::assign_key( $category_images, 'category_id', true );
+
+		foreach ( $category_ids as $cid ) {
+			// If we have an image, use it
+			if ( isset( $category_images[$cid] ) ) {
+				$image = $this->db->escape( $category_images[$cid] );
+			} else {
+				// If not, that means it is a parent category. Choose the first child category with an image, and use it
+
+				// Get child categories
+				$child_categories = $c->get_child_categories( $cid );
+
+				// Find the first available image
+				foreach ( $child_categories as $cc ) {
+					if ( isset( $category_images[$cc['category_id']] ) ) {
+						// Assign the image
+						$image = $this->db->escape( $category_images[$cc['category_id']] );
+
+						// Don't need to loop any furhter
+						break;
+					}
+				}
+			}
+
+			// Create the CSV
+			if ( !empty( $values ) )
+				$values .= ',';
+
+			// Create the values
+			$values .= "( $website_id, $cid, '$image' )";
+		}
+
+		// Add the values
+		if ( !empty( $values ) ) {
+			$this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES $values ON DUPLICATE KEY UPDATE `category_id` = VALUES( `category_id` )" );
+
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->_err( 'Failed to add website categories.', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Remove Categories from a website
+	 *
+     * @param int $website_id
+	 * @param array $category_ids
+	 * @return bool
+	 */
+	private function remove_categories( $website_id, $category_ids ) {
+		// Type Juggling
+		$website_id = (int) $website_id;
+
+		// Make sure we're dealing with an array
+		if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
+			return true;
+
+		// Make sure they're MySQL safe
+		foreach ( $category_ids as &$cid ) {
+			$cid = (int) $cid;
+		}
+
+		$this->db->query( "DELETE FROM `website_categories` WHERE `website_id` = $website_id AND `category_id` IN(" . implode( ',', $category_ids ) . ')' );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return true;
+	}
 
 	/**
 	 * Report an error
@@ -897,7 +1131,7 @@ class Products extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

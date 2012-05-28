@@ -335,14 +335,9 @@ function resortProducts() {
 function testMessage() {
 	$.blockUI({ timeout: 0, message: '<h1><img src="/images/icons/ajax-loading.gif" alt="Sending Test Email..." width="28" height="28" /><br />Sending test email.<br />This may take 1-2 minutes...</h1>' }); 
 	
-	$.post( '/ajax/email-marketing/emails/test/', { _nonce : $('#_ajax_test_message').val(), 'email' : $('#tTestEmail').val(), emid : $('#hEmailMessageID').val() }, function( success ) {
+	$.post( '/ajax/email-marketing/emails/test/', { _nonce : $('#_ajax_test_message').val(), 'email' : $('#tTestEmail').val(), emid : $('#hEmailMessageID').val() }, function( response ) {
 		$.unblockUI();
-		
-		if ( success ) {
-			$('#pSuccessMessage').show().delay(5000).hide();
-		} else {
-			alert( 'An error occurred while trying to send the test email. Please refresh the page and try again.' );
-		}
+		ajaxResponse( response );
 	}, 'json' );
 }
 

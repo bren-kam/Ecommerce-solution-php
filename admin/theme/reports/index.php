@@ -52,6 +52,7 @@ get_header();
                                 <option value="marketing_specialist"><?php echo _('Marketing Specialist'); ?></option>
 								<?php if ( $user['role'] > 7 ) { ?><option value="company"><?php echo _('Company'); ?></option><?php } ?>
                                 <option value="billing_state"><?php echo _('State'); ?></option>
+                                <option value="package"><?php echo _('Package'); ?></option>
 							</select>
 						</td>
 						<td>
