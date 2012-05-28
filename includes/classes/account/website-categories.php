@@ -47,7 +47,7 @@ class Website_Categories extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get category.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get category.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -79,7 +79,7 @@ class Website_Categories extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get category ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get category ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -131,19 +131,31 @@ class Website_Categories extends Base_Class {
 		
 		// Type Juggling & Protecting
 		$category_id = (int) $category_id;
-		$image_url = $this->db->escape( $image_url );
+		$image_url = $this->db->escape( $this->_small_image( $image_url ) );
 		$website_id = (int) $user['website']['website_id'];
 		
 		$this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES ( $website_id, $category_id, '$image_url' ) ON DUPLICATE KEY UPDATE `image_url` = '$image_url'" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to set category image.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to set category image.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return true;
 	}
+    
+    /**
+     * Small Image
+     *
+     * Turns a product image to its small version (200x200)
+     *
+     * @param string $image
+     * @return string
+     */
+    private function _small_image( $image ) {
+        return preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", $image );
+    }
 	
 	/**
 	 * Report an error
@@ -154,7 +166,7 @@ class Website_Categories extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

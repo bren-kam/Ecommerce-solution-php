@@ -387,7 +387,7 @@ function postLoad( $ ) {
 			$('#dUploadedImages').append('<div class="product-image"><span id="sLoading' + queueID + '" class="image-loading"><br/><img src="/images/ajax-loader.gif"/><br/><br/><br/>Loading</span></div>');
 		},
 		'onComplete'	: function( e, queueID, fileObj, response ) {
-			var variables = response.split('|'), hiddenProductImageID = 'hProductImage_' + variables[1].replace( /\.[a-zA_Z]{3,4}$/, '' ).replace( /^[^\/]+\//, '' );
+			var variables = response.split('|'), hiddenProductImageID = 'hProductImage_' + variables[1].replace( /\.[a-zA_Z]{3,4}$/, '' ).replace( /^(?:[^\/]+\/|\/)/, '' );
 			
 			//$('#dUploadedImages').append('<div class="product-image"><img src="' + variables[0] + '" width="50" /><a href="' + variables[0].replace( 'thumbnail/', 'large/' ) + '" title="View Image" target="_blank">View</a><br /><a href="javascript:;" class="remove-product-image" title=\'Remove Image\' extra="' + hiddenProductImageID + '">Remove</a></div>');
 			$('#sLoading' + queueID ).replaceWith( '<img src="' + variables[0] + '" width="50" /><a href="' + variables[0].replace( 'thumbnail/', 'large/' ) + '" title="View Image" target="_blank">View</a><br /><a href="javascript:;" class="remove-product-image" title=\'Remove Image\' extra="' + hiddenProductImageID + '">Remove</a>' );

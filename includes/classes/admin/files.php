@@ -58,6 +58,28 @@ class Files extends Base_Class {
 		
 		return false;
 	}
+
+    /**
+	 * Copy File
+     *
+     * Uploads a file to Amazon S3
+	 *
+	 * @param int $website_id
+	 * @param string $url
+     * @param string $bucket
+	 * @return mixed
+	 */
+	public function copy_file( $website_id, $url, $bucket ) {
+        $bucket = $bucket . $this->bucket;
+
+        $uri = str_replace( 'http://' . $bucket . '/', '', $url );
+        $new_uri = preg_replace( '/^([0-9]+)/', $website_id, $uri );
+
+		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri, S3::ACL_PUBLIC_READ ) )
+            return false;
+
+        return 'http://' . $bucket . '/' . $new_uri;
+	}
 	
 	/**
 	 * Upload an attachment to Amazon S3

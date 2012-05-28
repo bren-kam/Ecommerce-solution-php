@@ -75,8 +75,8 @@ get_header();
 				<tr>
 					<th width="4%">&nbsp;</th>
 					<th width="55%"><?php echo _('Account'); ?></th>
-					<th width="18%"><?php echo _('User Name' ); ?></th>
-					<th width="13%"><?php echo _('Products'); ?></th>
+					<th width="16%"><?php echo _('User Name' ); ?></th>
+					<th width="15%"><?php echo _('Online Specialist'); ?></th>
 				</tr>
 			</thead>
 			<tbody>

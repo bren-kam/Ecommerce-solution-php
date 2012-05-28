@@ -53,6 +53,9 @@ class Websites extends Base_Class {
         ssh2_exec( "chmod -R 0777 /home/$username/public_html/custom/cache" );
         ssh2_exec( "chown -R $username:$username /home/$username/public_html/" );
 
+        // Make sure the public_html directory has the correct group
+        ssh2_exec( "chown $username:nobody /home/$username/public_html" );
+
         // Insert pages
         $this->db->query( Pre_Data::pages_sql( $website_id ) );
 

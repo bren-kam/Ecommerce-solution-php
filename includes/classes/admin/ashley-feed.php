@@ -103,9 +103,12 @@ class Ashley_Feed extends Base_Class {
 		}
 		
 		$local_folder = "/home/imaginer/public_html/admin/media/downloads/ashley/$username/";
-		
-		if ( !file_exists( $local_folder ) )
+
+		if ( !file_exists( $local_folder ) ) {
+            // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 			mkdir( $local_folder, 0777 );
+            chmod( $local_folder, 0777 );
+        }
 		
 		// Grab the latest file
 		if( file_exists( $local_folder . $file ) ) {
@@ -418,7 +421,7 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// If there are any categories that need to be added
-		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
+		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/small/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

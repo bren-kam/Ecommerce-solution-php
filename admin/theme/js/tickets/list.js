@@ -25,7 +25,7 @@ function postLoad( $ ) {
 			"sLengthMenu": 'Rows: <select><option value="30">30</option><option value="50">50</option><option value="100">100</option></select>',
 			"sInfo": "Records: _START_ - _END_ of _TOTAL_"
 		},
-		"aaSorting": [[3, 'asc'],[2, 'desc'],[5, 'asc']],
+		"aaSorting": [[3, 'desc'],[2, 'desc'],[5, 'asc']],
 		"sDom" : '<"top"lfr>t<"bottom"pi>',
 		'fnRowCallback' : function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
 			// Give the priority td its own class

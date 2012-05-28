@@ -11,7 +11,7 @@ class Base_Class {
 	 * Construct initializes data
 	 */
 	public function __construct() { 
-		$this->db = new SQL( 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system', 'localhost' );
+		$this->db = new SQL( 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system', '199.204.138.78' );
 		$this->b = fn::browser();
 
 		return true;
@@ -48,6 +48,7 @@ class Base_Class {
 			$website_id = 0;
 		
 		$section = ( ADMIN ) ? 'Admin' : 'Account';
+		$referer = ( is_null( $_SERVER['HTTP_REFERER'] ) ) ? '' : $_SERVER['HTTP_REFERER'];
 		
 		$input_data = array( 
 			'user_id' => $user_id,
@@ -58,7 +59,7 @@ class Base_Class {
 			'sql' => $this->db->last_query,
 			'sql_error' => $this->db->error(),
 			'page' => 'http://' . DOMAIN . $_SERVER['REQUEST_URI'] . '?' . $query_string,
-			'referer' => $_SERVER['HTTP_REFERER'],
+			'referer' => $referer,
 			'line' => $line,
 			'file' => $file,
 			'dir' => $dir,
