@@ -19,28 +19,30 @@ class Requests extends Base_Class {
 	 * @var array $messages
 	 */
 	private $messages = array(
-		'error' => 'An unknown error has occured. This has been reported to the Database Administrator. Please try again later.',
-		'failed-add-order-item' => 'Failed to add the order item. Please verify you have the correct parameters.',
-		'failed-craigslist-error' => 'Failed to report craigslist error. Please verify you have the correct parameters and try again.',
-		'failed-authentication' => 'Authentication failed. Please verify you have the correct Authorization Key.',
-		'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.',
-		'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.',
-		'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.',
-        'failed-add-note' => 'Add Note failed. Please verify you have sent the correct parameters.',
-        'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.',
-		'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.',
-		'failed-set-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.',
-		'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.',
-		'ssl-required' => 'You must make the call to the secured version of our website.',
-		'success-add-order-item' => 'Add Order Item succeeded!',
-		'success-craigslist-error' => 'Craigslist Error succeeded!',
-		'success-create-order' => 'Create Order succeeded!',
-		'success-create-user' => 'Create User succeeded!',
-		'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.',
-        'success-add-note' => 'Add Note succeeded! You can see the information in the dashboard.',
-        'success-update-social-media' => 'Update Social Media succeeded!',
-		'success-update-user' => 'Update User succeeded!',
-		'success-set-arb-subscription' => 'Update User ARB Subscription succeeded!'
+		'error' => 'An unknown error has occured. This has been reported to the Database Administrator. Please try again later.'
+		, 'failed-add-order-item' => 'Failed to add the order item. Please verify you have the correct parameters.'
+		, 'failed-craigslist-error' => 'Failed to report craigslist error. Please verify you have the correct parameters and try again.'
+		, 'failed-authentication' => 'Authentication failed. Please verify you have the correct Authorization Key.'
+		, 'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.'
+		, 'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.'
+		, 'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.'
+		, 'failed-install-package' => 'Failed to install a package. Please verify you have sent the correct parameters.'
+        , 'failed-add-note' => 'Add Note failed. Please verify you have sent the correct parameters.'
+        , 'failed-update-social-media' => 'Update Social media failed. Please verify you have sent the correct parameters.'
+		, 'failed-update-user' => 'Update User failed. Please verify you have sent the correct parameters.'
+		, 'failed-set-arb-subscription' => 'Update User ARB Subscription failed. Please verify you have sent the correct parameters.'
+		, 'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.'
+		, 'ssl-required' => 'You must make the call to the secured version of our website.'
+		, 'success-add-order-item' => 'Add Order Item succeeded!'
+		, 'success-craigslist-error' => 'Craigslist Error succeeded!'
+		, 'success-create-order' => 'Create Order succeeded!'
+		, 'success-create-user' => 'Create User succeeded!'
+		, 'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.'
+		, 'success-install-package' => 'Successfully installed package!'
+        , 'success-add-note' => 'Add Note succeeded! You can see the information in the dashboard.'
+        , 'success-update-social-media' => 'Update Social Media succeeded!'
+		, 'success-update-user' => 'Update User succeeded!'
+		 ,'success-set-arb-subscription' => 'Update User ARB Subscription succeeded!'
 	);
 	
 	/**
@@ -48,15 +50,16 @@ class Requests extends Base_Class {
 	 * @var array $messages
 	 */
 	private $methods = array(
-		'add_order_item',
-        'craigslist_error',
-		'create_order',
-		'create_user',
-		'create_website',
-        'add_note',
-        'update-social-media',
-		'update_user',
-		'set_arb_subscription',
+		'add_order_item'
+        , 'craigslist_error'
+		, 'create_order'
+		, 'create_user'
+		, 'create_website'
+		, 'install_package'
+        , 'add_note'
+        , 'update-social-media'
+		, 'update_user'
+		, 'set_arb_subscription'
 	);
 	
 	/**
@@ -463,6 +466,42 @@ class Requests extends Base_Class {
 		$this->_add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
 	}
+
+    /**
+     * Install Package
+     *
+     * @param int $website_id
+     * @param int $company_package_id
+     * @return bool
+     */
+    private function install_package() {
+        // Gets parameters and errors out if something is missing
+		extract( $this->_get_parameters( 'website_id', 'company_package_id' ) );
+
+        // Include Classes
+        inc('classes/admin/websites');
+        inc('classes/admin/products');
+        inc('classes/admin/files');
+        inc('classes/admin/categories');
+
+        // Generate fake user
+        global $user;
+        $user['role'] = 7;
+        $user['company_id'] = $this->company_id;
+
+        $w = new Websites();
+
+        $success = $w->install_package( $website_id, $company_package_id );
+
+        if ( !$success ) {
+            $this->_err( "Failed to install package", __LINE__, __METHOD__ );
+            $this->_add_response( array( 'success' => false, 'message' => 'failed-install-package' ) );
+        }
+
+        // Everything was successful
+        $this->_add_response( array( 'success' => true, 'message' => 'success-install-package', 'website_id' => $website_id ) );
+        $this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nWebsite ID: $website_id\nCompany Package ID: $company_package_id", true );
+    }
 
     /**
 	 * Add Note
