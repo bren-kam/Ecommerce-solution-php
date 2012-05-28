@@ -151,6 +151,20 @@ class GSR_API {
 	}
 
     /**
+     * Install Package
+     *
+     * @param int $website_id
+     * @param int $company_package_id
+     * @return bool
+     */
+    public function install_package( $website_id, $company_package_id ) {
+        // Execute the command
+		$this->_execute( 'install_package', compact( 'website_id', 'company_package_id' ) );
+
+        return $this->success;
+    }
+
+    /**
 	 * Add Note
 	 *
 	 * @param int $website_id
