@@ -120,6 +120,7 @@ function postLoad( $ ) {
                 return;
             }
 
+            $('#tTheme').val( response['theme'] );
             alert( response['message'] );
         }, 'json' );
     });

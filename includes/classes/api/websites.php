@@ -16,6 +16,27 @@ class Websites extends Base_Class {
 			return false;
 	}
 
+    /**
+	 * Get Website
+	 *
+	 * @param int $website_id
+	 * @return array
+	 */
+	public function get_website( $website_id ) {
+        // Type Juggling
+        $website_id = (int) $website_id;
+
+		$website = $this->db->get_row( "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = $website_id", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get website.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $website;
+	}
+
 	/**
 	 * Installs a website
 	 *
@@ -32,29 +53,32 @@ class Websites extends Base_Class {
 
 		// Typecast
 		$website_id = (int) $website_id;
-        
+
+        // Get website
+        $web = $this->get_website( $website_id );
+
         // SSH Connection
         $ssh_connection = ssh2_connect( '199.79.48.137', 22 );
         ssh2_auth_password( $ssh_connection, 'root', 'WIxp2sDfRgLMDTL5' );
 
-        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" . $subdomain2 );
+        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" );
 
         // Update config & .htaccess file
-        $document_root = '\/home\/' . $username . '\/public_html' . $subdomain2;
+        $document_root = '\/home\/' . $username . '\/public_html';
 
-        ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/{$subdomain}config.php" );
-        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/{$subdomain}config.php" );
+        ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/config.php" );
+        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/$website_id/g' /home/$username/public_html/config.php" );
 
         // Must use FTP to assign folders under the right user
-        ssh2_exec( "mkdir -p /home/$username/public_html/custom/cache/css" );
-        ssh2_exec( "mkdir /home/$username/public_html/custom/theme" );
-        ssh2_exec( "mkdir /home/$username/public_html/custom/cache/js" );
+        ssh2_exec( $ssh_connection, "mkdir -p /home/$username/public_html/custom/cache/css" );
+        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/theme" );
+        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache/js" );
 
-        ssh2_exec( "chmod -R 0777 /home/$username/public_html/custom/cache" );
-        ssh2_exec( "chown -R $username:$username /home/$username/public_html/" );
+        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
+        ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
-        ssh2_exec( "chown $username:nobody /home/$username/public_html" );
+        ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
 
         // Insert pages
         $this->db->query( Pre_Data::pages_sql( $website_id ) );
@@ -136,7 +160,7 @@ class Websites extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update website ftp username', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update website ftp username', __LINE__, __METHOD__ );
 			return false;
 		}
 			
