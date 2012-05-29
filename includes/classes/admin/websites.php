@@ -621,6 +621,9 @@ class Websites extends Base_Class {
                 ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
                 ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/{$subdomain}" );
 
+                // Make sure the public_html directory has the correct group
+                ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
+
 				// Updated website version
 				$this->update_website_version( '1', $website_id );
 				
@@ -711,7 +714,7 @@ class Websites extends Base_Class {
      *
      * @param int $website_id
      * @param int $company_package_id
-     * @return bool
+     * @return Response
      */
     public function install_package( $website_id, $company_package_id = NULL ) {
         global $user;
@@ -723,7 +726,7 @@ class Websites extends Base_Class {
         $website = $this->get_website( $website_id );
 
         if ( !$website )
-            return false;
+            return new Response( false );
 
         // Type Juggling
         $company_package_id = ( is_null( $company_package_id ) ) ? (int) $website['company_package_id'] : (int) $company_package_id;
@@ -737,10 +740,23 @@ class Websites extends Base_Class {
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get package.', __LINE__, __METHOD__ );
-			return false;
+			return new Response( false );
 		}
 		
-		return ( !$package || 0 == $package['website_id'] ) ? true : $this->copy_website( $package['website_id'], $website_id );
+		if ( !$package || 0 == $package['website_id'] ) {
+            $response = new Response( true );
+            $response->add( 'theme', $website['theme'] );
+        } else {
+            $success = $this->copy_website( $package['website_id'], $website_id );
+            $response = new Response( $success );
+
+            if ( $success ) {
+                $original_website = $this->get_website( $package['website_id'] );
+                $response->add( 'theme', $original_website['theme'] );
+            }
+        }
+
+        return $response;
 	}
 	
 	/**

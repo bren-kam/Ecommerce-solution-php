@@ -142,7 +142,7 @@ class GSR_API {
 		// We need to make sure there is a number there
 		if( !$additional_email_addresses )
 			$additional_email_addresses = 0;
-
+		
 		// Execute the command
 		$this->_execute( 'create_website', compact( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
 		
@@ -282,6 +282,7 @@ class GSR_API {
      *
      * @return string
      */
+
     public function raw_response() {
         return $this->raw_response;
     }
