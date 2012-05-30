@@ -582,8 +582,17 @@ class Websites extends Base_Class {
 			$ftp_data = $this->get_ftp_data( $website_id );
 			
 			if ( $ftp_data ) {
-				if ( mysql_errno() )
+				if ( $this->db->errno() )
 					return false;
+
+				// Create website industry
+				$this->db->query( "INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES ( $website_id, 1 ) ON DUPLICATE KEY UPDATE `industry_id` = 1" );
+
+				// Handle any error
+				if ( $this->db->errno() ) {
+					$this->_err( 'Failed to insert website industry (furniture).', __LINE__, __METHOD__ );
+					return false;
+				}
 
 				// Send .htaccess and config file
 				$username = security::decrypt( base64_decode( $ftp_data['ftp_username'] ), ENCRYPTION_KEY );
@@ -732,7 +741,16 @@ class Websites extends Base_Class {
 			$this->_err( 'Failed to get package.', __LINE__, __METHOD__ );
 			return new Response( false );
 		}
-		
+
+        // Make sure that the package is assigned to the right website
+        $this->db->update( 'websites', array( 'company_package_id' => $company_package_id ), array( 'website_id' => $website_id ), 'i', 'i' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to update website package.', __LINE__, __METHOD__ );
+			return new Response( false );
+		}
+
 		if ( !$package || 0 == $package['website_id'] ) {
             $response = new Response( true );
             $response->add( 'theme', $website['theme'] );
