@@ -85,19 +85,19 @@ class Companies extends Base_Class {
 
         if ( $user['role'] < 8 ) {
             // Type Juggling
-            $company_id = $user['company_id'];
+            $company_id = (int) $user['company_id'];
 
-            $where = "AND `company_id` = $company_id";
+            $where = " AND `company_id` = $company_id";
         } else {
             $where = '';
         }
 
 		// Get results
-		$results = $this->db->prepare( "SELECT `company_package_id` AS object_id, `name` AS package FROM `company_packages` WHERE `name` $where LIKE ? ORDER BY `name` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
+		$results = $this->db->prepare( "SELECT `company_package_id` AS object_id, `name` AS package FROM `company_packages` WHERE `name` LIKE ? $where ORDER BY `name` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete company packages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete company packages.', __LINE__, __METHOD__ );
 			return false;
 		}
 
