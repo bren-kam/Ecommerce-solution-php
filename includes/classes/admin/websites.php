@@ -563,10 +563,9 @@ class Websites extends Base_Class {
 	 * Installs a website
 	 *
 	 * @param int $website_id
-	 * @param int $industry_id (optional)
 	 * @return bool
 	 */
-	public function install( $website_id, $industry_id = 1 ) {
+	public function install( $website_id ) {
 		// Make sure it has enough memory to install
 		ini_set('memory_limit', '256M'); 
 		
@@ -585,16 +584,7 @@ class Websites extends Base_Class {
 			if ( $ftp_data ) {
 				if ( mysql_errno() )
 					return false;
-				
-				// Create website industry
-				$this->db->insert( 'website_industries', array( 'website_id' => $website_id, 'industry_id' => $industry_id ), 'ii' );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->_err( 'Failed to insert website industry.', __LINE__, __METHOD__ );
-					return false;
-				}
-				
+
 				// Send .htaccess and config file
 				$username = security::decrypt( base64_decode( $ftp_data['ftp_username'] ), ENCRYPTION_KEY );
 
