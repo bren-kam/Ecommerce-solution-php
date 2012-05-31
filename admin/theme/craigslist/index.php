@@ -1,2 +1,2 @@
 <?php
-url::redirect('/craigslist/headlines/');
+url::redirect('/craigslist/accounts/');
