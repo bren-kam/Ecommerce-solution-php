@@ -165,7 +165,7 @@ get_header();
                         ?>
                         <tr>
                             <td><?php echo $i + 1; ?>)</td>
-                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" maxlength="70" /> <a href="javascript:;" class="random-headline" title="<?php echo _('Random Title'); ?>" ajax="1"><?php echo _('Random Headline'); ?></a></td>
+                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" maxlength="70" /></td>
                         </tr>
                    <?php } ?>
                 </table>

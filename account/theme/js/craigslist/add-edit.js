@@ -81,11 +81,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
             setTimeout( refreshPreview, 1000 );
         });
     }
-
-    // Random Headline
-    $('.random-headline').click( function() {
-        $.post( '/ajax/craigslist/get-random-headline/', { _nonce : $('#_ajax_get_random_headline').val(), cid : $('#hProductCategoryID').val(), eid: $(this).prev().attr('id') }, ajaxResponse );
-    });
 });
 
 /**

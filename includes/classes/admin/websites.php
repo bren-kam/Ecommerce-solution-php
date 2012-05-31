@@ -896,6 +896,8 @@ class Websites extends Base_Class {
                 return false;
             }
 
+            fn::mail('kerry@greysuitretail.com', 'Website Attachments', implode( ', ', $new_website_attachments ) );
+
             // Insert them into the database
             $this->db->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` ) VALUES " . implode( ', ', $new_website_attachments ) );
 
