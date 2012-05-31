@@ -94,7 +94,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
 			$store['storephone'] = $website['phone'];
 		
         // Get the market id
-        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market'], $locations, $store );
+        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market_id'], $locations, $store );
 		
         // Link it in our database
         if ( $market_id )
@@ -160,7 +160,7 @@ get_header();
 
                             if ( is_array( $markets ) )
                             foreach ( $markets as $m ) {
-                                if ( array_key_exists( $m['craigslist_market_id'], $market_links ) )
+                                if ( array_key_exists( $m['craigslist_market_id'], $market_links ) || 0 == $m['market_id'] )
                                     continue;
                             ?>
                                 <option value="<?php echo $m['craigslist_market_id']; ?>"><?php echo $m['market']; ?></option>
