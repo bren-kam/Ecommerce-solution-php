@@ -448,7 +448,7 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_market_id = (int) $craigslist_market_id;
 
-        $market = $this->db->get_row( "SELECT `craigslist_market_id`, `state`, `city`, `area`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market FROM `craigslist_markets` WHERE `craigslist_market_id` = $craigslist_market_id AND `status` = 1", ARRAY_A );
+        $market = $this->db->get_row( "SELECT `craigslist_market_id`, `market_id`, `parent_market_id`, `state`, `city`, `area`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `craigslist_market_id` = $craigslist_market_id AND `status` = 1", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -503,7 +503,7 @@ class Craigslist extends Base_Class {
      * @return array
      */
     public function get_markets() {
-        $markets = $this->db->get_results( "SELECT `craigslist_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC", ARRAY_A );
+        $markets = $this->db->get_results( "SELECT `craigslist_market_id`, `market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {

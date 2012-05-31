@@ -63,7 +63,7 @@ class Companies extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
         
-        $packages = $this->db->get_results( "SELECT a.`company_package_id`, a.`name` FROM `company_packages` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id", ARRAY_A );
+        $packages = $this->db->get_results( "SELECT a.`company_package_id`, a.`name` FROM `company_packages` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id ORDER BY a.`name` ASC", ARRAY_A );
         
         // Handle errors
 		if ( $this->db->errno() ) {
