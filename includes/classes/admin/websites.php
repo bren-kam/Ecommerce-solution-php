@@ -813,7 +813,13 @@ class Websites extends Base_Class {
 		
 		ssh2_exec( $ssh_connection, "sed -i 's/$template_username/$username/g' /home/$username/public_html/config.php" );
 		ssh2_exec( $ssh_connection, "sed -i 's/$template_website_id/$website_id/g' /home/$username/public_html/config.php" );
-		
+
+        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
+        ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
+
+        // Make sure the public_html directory has the correct group
+        ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
+
         /***** Copy Website Pages *****/
 		
         $this->db->copy( 'website_pages', array(
