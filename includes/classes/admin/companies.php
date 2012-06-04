@@ -63,7 +63,7 @@ class Companies extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
         
-        $packages = $this->db->get_results( "SELECT a.`company_package_id`, a.`name` FROM `company_packages` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id", ARRAY_A );
+        $packages = $this->db->get_results( "SELECT a.`company_package_id`, a.`name` FROM `company_packages` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = $website_id ORDER BY a.`name` ASC", ARRAY_A );
         
         // Handle errors
 		if ( $this->db->errno() ) {
@@ -85,19 +85,19 @@ class Companies extends Base_Class {
 
         if ( $user['role'] < 8 ) {
             // Type Juggling
-            $company_id = $user['company_id'];
+            $company_id = (int) $user['company_id'];
 
-            $where = "AND `company_id` = $company_id";
+            $where = " AND `company_id` = $company_id";
         } else {
             $where = '';
         }
 
 		// Get results
-		$results = $this->db->prepare( "SELECT `company_package_id` AS object_id, `name` AS package FROM `company_packages` WHERE `name` $where LIKE ? ORDER BY `name` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
+		$results = $this->db->prepare( "SELECT `company_package_id` AS object_id, `name` AS package FROM `company_packages` WHERE `name` LIKE ? $where ORDER BY `name` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete company packages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete company packages.', __LINE__, __METHOD__ );
 			return false;
 		}
 

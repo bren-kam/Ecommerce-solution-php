@@ -52,7 +52,7 @@ class PM_API {
 	public function create_group( $title, $parent_group_id = 0, $icon = 'group.png' ) {
 		// Execute the command
 		$response = $this->_execute( 'create_group', compact( 'title', 'parent_group_id', 'icon' ) );
-
+		
 		// Return the new group id successful
 		return ( $this->success ) ? $response->group_id : false;
 	}

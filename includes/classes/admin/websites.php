@@ -563,10 +563,9 @@ class Websites extends Base_Class {
 	 * Installs a website
 	 *
 	 * @param int $website_id
-	 * @param int $industry_id (optional)
 	 * @return bool
 	 */
-	public function install( $website_id, $industry_id = 1 ) {
+	public function install( $website_id ) {
 		// Make sure it has enough memory to install
 		ini_set('memory_limit', '256M'); 
 		
@@ -583,18 +582,18 @@ class Websites extends Base_Class {
 			$ftp_data = $this->get_ftp_data( $website_id );
 			
 			if ( $ftp_data ) {
-				if ( mysql_errno() )
+				if ( $this->db->errno() )
 					return false;
-				
+
 				// Create website industry
-				$this->db->insert( 'website_industries', array( 'website_id' => $website_id, 'industry_id' => $industry_id ), 'ii' );
-				
+				$this->db->query( "INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES ( $website_id, 1 ) ON DUPLICATE KEY UPDATE `industry_id` = 1" );
+
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->_err( 'Failed to insert website industry.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to insert website industry (furniture).', __LINE__, __METHOD__ );
 					return false;
 				}
-				
+
 				// Send .htaccess and config file
 				$username = security::decrypt( base64_decode( $ftp_data['ftp_username'] ), ENCRYPTION_KEY );
 
@@ -620,6 +619,9 @@ class Websites extends Base_Class {
 
                 ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/{$subdomain}custom/cache" );
                 ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/{$subdomain}" );
+
+                // Make sure the public_html directory has the correct group
+                ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
 
 				// Updated website version
 				$this->update_website_version( '1', $website_id );
@@ -711,7 +713,7 @@ class Websites extends Base_Class {
      *
      * @param int $website_id
      * @param int $company_package_id
-     * @return bool
+     * @return Response
      */
     public function install_package( $website_id, $company_package_id = NULL ) {
         global $user;
@@ -723,7 +725,7 @@ class Websites extends Base_Class {
         $website = $this->get_website( $website_id );
 
         if ( !$website )
-            return false;
+            return new Response( false );
 
         // Type Juggling
         $company_package_id = ( is_null( $company_package_id ) ) ? (int) $website['company_package_id'] : (int) $company_package_id;
@@ -737,10 +739,32 @@ class Websites extends Base_Class {
         // Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get package.', __LINE__, __METHOD__ );
-			return false;
+			return new Response( false );
 		}
-		
-		return ( !$package || 0 == $package['website_id'] ) ? true : $this->copy_website( $package['website_id'], $website_id );
+
+        // Make sure that the package is assigned to the right website
+        $this->db->update( 'websites', array( 'company_package_id' => $company_package_id ), array( 'website_id' => $website_id ), 'i', 'i' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to update website package.', __LINE__, __METHOD__ );
+			return new Response( false );
+		}
+
+		if ( !$package || 0 == $package['website_id'] ) {
+            $response = new Response( true );
+            $response->add( 'theme', $website['theme'] );
+        } else {
+            $success = $this->copy_website( $package['website_id'], $website_id );
+            $response = new Response( $success );
+
+            if ( $success ) {
+                $original_website = $this->get_website( $package['website_id'] );
+                $response->add( 'theme', $original_website['theme'] );
+            }
+        }
+
+        return $response;
 	}
 	
 	/**
@@ -789,7 +813,13 @@ class Websites extends Base_Class {
 		
 		ssh2_exec( $ssh_connection, "sed -i 's/$template_username/$username/g' /home/$username/public_html/config.php" );
 		ssh2_exec( $ssh_connection, "sed -i 's/$template_website_id/$website_id/g' /home/$username/public_html/config.php" );
-		
+
+        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
+        ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
+
+        // Make sure the public_html directory has the correct group
+        ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
+
         /***** Copy Website Pages *****/
 		
         $this->db->copy( 'website_pages', array(

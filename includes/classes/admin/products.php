@@ -1029,8 +1029,6 @@ class Products extends Base_Class {
         if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
 			return;
 
-        global $user;
-
 		// Type Juggling
 		$website_id = (int) $website_id;
 
