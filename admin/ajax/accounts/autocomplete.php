@@ -11,7 +11,15 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete
 		case 'domain':
 			$w = new Websites;
 
-			$results = $w->autocomplete( $_POST['term'], 'domain' );
+            $where = '';
+
+            if ( isset( $_SESSION['accounts']['state'] ) ) {
+                $where .= ( -1 == $_SESSION['accounts']['state'] ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . $_SESSION['accounts']['state'];
+            } else {
+                $where .= ' AND a.`status` = 1';
+            }
+
+			$results = $w->autocomplete( $_POST['term'], 'domain', $where );
 		break;
 		
 		case 'store_name':
@@ -27,8 +35,16 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete
 		
 		case 'title':
 			$w = new Websites;
-			
-			$results = $w->autocomplete( $_POST['term'], 'title' );
+
+            $where = '';
+
+            if ( isset( $_SESSION['accounts']['state'] ) ) {
+                $where .= ( -1 == $_SESSION['accounts']['state'] ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . $_SESSION['accounts']['state'];
+            } else {
+                $where .= ' AND a.`status` = 1';
+            }
+
+			$results = $w->autocomplete( $_POST['term'], 'title', $where );
 			
 			if ( is_array( $results ) )
 			foreach ( $results as &$result ) {
