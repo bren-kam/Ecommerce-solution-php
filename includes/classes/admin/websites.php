@@ -563,10 +563,9 @@ class Websites extends Base_Class {
 	 * Installs a website
 	 *
 	 * @param int $website_id
-	 * @param int $industry_id (optional)
 	 * @return bool
 	 */
-	public function install( $website_id, $industry_id = 1 ) {
+	public function install( $website_id ) {
 		// Make sure it has enough memory to install
 		ini_set('memory_limit', '256M'); 
 		
@@ -583,18 +582,18 @@ class Websites extends Base_Class {
 			$ftp_data = $this->get_ftp_data( $website_id );
 			
 			if ( $ftp_data ) {
-				if ( mysql_errno() )
+				if ( $this->db->errno() )
 					return false;
-				
+
 				// Create website industry
-				$this->db->insert( 'website_industries', array( 'website_id' => $website_id, 'industry_id' => $industry_id ), 'ii' );
-				
+				$this->db->query( "INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES ( $website_id, 1 ) ON DUPLICATE KEY UPDATE `industry_id` = 1" );
+
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->_err( 'Failed to insert website industry.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to insert website industry (furniture).', __LINE__, __METHOD__ );
 					return false;
 				}
-				
+
 				// Send .htaccess and config file
 				$username = security::decrypt( base64_decode( $ftp_data['ftp_username'] ), ENCRYPTION_KEY );
 
@@ -742,7 +741,16 @@ class Websites extends Base_Class {
 			$this->_err( 'Failed to get package.', __LINE__, __METHOD__ );
 			return new Response( false );
 		}
-		
+
+        // Make sure that the package is assigned to the right website
+        $this->db->update( 'websites', array( 'company_package_id' => $company_package_id ), array( 'website_id' => $website_id ), 'i', 'i' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to update website package.', __LINE__, __METHOD__ );
+			return new Response( false );
+		}
+
 		if ( !$package || 0 == $package['website_id'] ) {
             $response = new Response( true );
             $response->add( 'theme', $website['theme'] );
@@ -887,8 +895,6 @@ class Websites extends Base_Class {
                 $this->_err( 'Failed to delete old sidebar elements.', __LINE__, __METHOD__ );
                 return false;
             }
-
-            fn::mail('kerry@greysuitretail.com', 'Website Attachments', implode( ', ', $new_website_attachments ) );
 
             // Insert them into the database
             $this->db->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` ) VALUES " . implode( ', ', $new_website_attachments ) );
