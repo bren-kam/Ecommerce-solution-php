@@ -3,7 +3,7 @@
  * Ashley - API Library
  *
  * Library based on documentation available on 04/26/2012 from
- * @url http://127.0.0.1:5901/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx
+ * @url http://api.ashleyfurniture.com/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx
  *
  */
 class Ashley_API {
@@ -30,7 +30,7 @@ class Ashley_API {
      * Construct to setup SOAP module
      */
     public function __construct() {
-        $this->client = new SoapClient('http://127.0.0.1:5901/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL');
+        $this->client = new SoapClient( self::URL_API . 'Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL');
 
         print_r( $this->client->GetPackages() );
     }

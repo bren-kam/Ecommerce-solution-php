@@ -1,5 +1,8 @@
 <?php
+library('ashley-api');
+$a = new Ashley_API();
 
+exit;
 // Load the library
 library( 'craigslist-api' );
 $b = new Base_Class();
