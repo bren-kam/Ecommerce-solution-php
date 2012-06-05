@@ -780,6 +780,9 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function create_posting_post( $access_token, $post, $link, $date_posted, $status = 0 ) {
+        if ( empty( $access_token ) || is_null( $access_token ) )
+            return false;
+
 		global $user;
 		
 		// Create the posting post
