@@ -30,9 +30,19 @@ class Ashley_API {
      * Construct to setup SOAP module
      */
     public function __construct() {
-        $this->client = new SoapClient( self::URL_API . 'Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL');
+        echo self::URL_API . 'Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL';
+        $this->client = new SoapClient( self::URL_API . 'Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL', array( 'trace' => 1 ) );
 
         print_r( $this->client->GetPackages() );
+        echo "\n---------\n";
+        print_r( $this->client->__getLastRequestHeaders() );
+        echo "\n---------\n";
+        print_r( $this->client->__getLastRequest() );
+        echo "\n---------\n";
+        print_r( $this->client->__getLastResponseHeaders() );
+        echo "\n---------\n";
+        print_r( $this->client->__getLastResponse() );
+
     }
 	/*************************/
 	/* Start: Ashley Methods */
