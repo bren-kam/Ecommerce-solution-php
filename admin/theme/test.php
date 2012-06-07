@@ -1,6 +1,9 @@
 <?php
-library('ashley-api');
+library('ashley-api/ashley-api');
 $a = new Ashley_API();
+$a->get_packages();
+
+echo "Message: " . $a->message();
 
 exit;
 // Load the library

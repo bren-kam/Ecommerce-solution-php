@@ -146,9 +146,9 @@ class Ashley_Feed extends Base_Class {
 			if ( !in_array( $sku, $skus ) )
 				$remove_products[] = (int) $product_id;
 		}
-		
+
 		echo '<p><strong>New Products:</strong> ' . count( $new_products ) . '</p>';
-		
+
 		// Add new products
 		$this->add_bulk( $website_id, $new_products );
 
