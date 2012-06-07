@@ -147,10 +147,10 @@ class Ashley_Feed extends Base_Class {
 				$remove_products[] = (int) $product_id;
 		}
 
-		echo '<p><strong>New Products:</strong> ' . count( $new_products ) . '</p>';
-
 		// Add new products
-		$this->add_bulk( $website_id, $new_products );
+		$product_count = $this->add_bulk( $website_id, $new_products );
+
+		echo "<p><strong>New Products:</strong> $product_count</p>";
 
 		echo '<p><strong>Old Products:</strong> ' . count( $remove_products ) . '</p>';
 		
@@ -274,7 +274,7 @@ class Ashley_Feed extends Base_Class {
 			}
 		}
 		
-		return true;
+		return $this->db->rows_affected;
 	}
 	
 	/**
