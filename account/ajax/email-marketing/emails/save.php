@@ -64,10 +64,10 @@ switch ( $email_type ) {
 
 // Find out if we need to add or update
 if ( 0 == $_POST['hEmailMessageID'] ) {
-	$ajax->ok( $email_message_id = $e->add_email_message( $email_template_id, stripslashes( $_POST['tSubject'] ), stripslashes( $_POST['taMessage'] ), $email_type, $date_sent, $email_list_ids, $message_meta ), _('An error occurred while trying to save your email. Please refresh the page and try again.') );
+	$ajax->ok( $email_message_id = $e->add_email_message( $email_template_id, $_POST['tSubject'], $_POST['taMessage'], $email_type, $date_sent, $email_list_ids, $message_meta ), _('An error occurred while trying to save your email. Please refresh the page and try again.') );
 	$ajax->add_response( 'email_message_id', $email_message_id );
 } else {
-	$ajax->ok( $e->update_email_message( $_POST['hEmailMessageID'], $email_template_id, stripslashes( $_POST['tSubject'] ), stripslashes( $_POST['taMessage'] ), $email_type, $date_sent, $email_list_ids, $message_meta ), _('An error occurred while trying to save your email message. Please refresh the page and try again.') );
+	$ajax->ok( $e->update_email_message( $_POST['hEmailMessageID'], $email_template_id, $_POST['tSubject'], $_POST['taMessage'], $email_type, $date_sent, $email_list_ids, $message_meta ), _('An error occurred while trying to save your email message. Please refresh the page and try again.') );
 	$ajax->add_response( 'email_message_id', $_POST['hEmailMessageID'] );
 }
 

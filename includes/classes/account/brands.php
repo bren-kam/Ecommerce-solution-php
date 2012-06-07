@@ -142,7 +142,7 @@ class Brands extends Base_Class {
 		 
 		// Type Juggle
 		$website_id = (int) $user['website']['website_id'];
-		 
+
 		// Prepare statement
 		$statement = $this->db->prepare( "UPDATE `website_top_brands` SET `sequence` = ? WHERE `brand_id` = ? AND `website_id` = $website_id" );
 		$statement->bind_param( 'ii', $count, $brand_id );

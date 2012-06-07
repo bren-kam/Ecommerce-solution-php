@@ -84,7 +84,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
         $new_date_posted = new DateTime( dt::adjust_timezone( $date_posted, $timezone, config::setting('server-timezone') ) );
 
         // Make sure we don't have anything extra
-        $_POST['taPost'] = str_replace( array( '“', '”', '’' ), array( '"', '"', "'" ), stripslashes( $_POST['taPost'] ) );
+        $_POST['taPost'] = str_replace( array( '“', '”', '’' ), array( '"', '"', "'" ), $_POST['taPost'] );
         
         // Get link
         preg_match( '/(?:(http|ftp|https):\/\/|www\.)[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?/', $_POST['taPost'], $matches );

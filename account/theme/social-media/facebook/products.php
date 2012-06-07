@@ -27,7 +27,7 @@ if ( $user['website']['product_catalog'] ) {
 
 	$website_files = $wf->get_all();
 } else if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'products' ) ) {
-	$success = $sm->update_products( stripslashes( $_POST['taContent'] ) );
+	$success = $sm->update_products( $_POST['taContent'] );
 }
 
 // Get variables 
