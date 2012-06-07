@@ -42,9 +42,3 @@ var mammoth = function(context) {
 		});
 	});
 }
-
-// After it has loaded
-head.ready( function() {
-	// Run mammoth
-	mammoth( $('body') );
-});

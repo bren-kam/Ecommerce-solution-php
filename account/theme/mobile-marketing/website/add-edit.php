@@ -46,9 +46,9 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-pag
             $slug = ( 'home' == $page['slug'] ) ? 'home' : $_POST['tSlug'];
 
 			// Update subscriber
-			$success = $m->update_mobile_page( $mobile_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ) );
+			$success = $m->update_mobile_page( $mobile_page_id, $slug, $_POST['tTitle'], $_POST['taContent'] );
 		} else {
-			$success = $m->create_mobile_page( $_POST['tSlug'], stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ) );
+			$success = $m->create_mobile_page( $_POST['tSlug'], $_POST['tTitle'], $_POST['taContent'] );
 
             $page = $m->get_mobile_page( $success );
 		}

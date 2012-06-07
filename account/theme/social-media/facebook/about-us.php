@@ -27,7 +27,7 @@ if ( $user['website']['pages'] ) {
 
 	$website_files = $wf->get_all();
 } else if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'about-us' ) ) {
-	$success = $sm->update_about_us( stripslashes( $_POST['taContent'] ) );
+	$success = $sm->update_about_us( $_POST['taContent'] );
 }
 
 // Get variables 

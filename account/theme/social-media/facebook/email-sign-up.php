@@ -36,7 +36,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'email-sign-u
 	
 	// if there are no errors
 	if ( empty( $errs ) )
-		$success = $sm->update_email_sign_up( stripslashes( $_POST['taEmailSignUp'] ), $_POST['sEmailList'] );
+		$success = $sm->update_email_sign_up( $_POST['taEmailSignUp'], $_POST['sEmailList'] );
 }
 
 // Get variables
