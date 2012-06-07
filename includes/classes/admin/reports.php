@@ -73,6 +73,34 @@ class Reports extends Base_Class {
 		
 		return $results;
 	}
+
+    /**
+     * Custom Report
+     *
+     * @param string $report
+     * @return array
+     */
+    public function custom_report( $report ) {
+        global $user;
+        $where = '';
+
+        switch ( $report ) {
+            case 'all-accounts':
+                if ( $user['role'] < 8 )
+                    $where .= ' AND b.`company_id` = ' . (int) $user['company_id'];
+
+                $report = $this->db->get_results( "SELECT a.`title` AS 'Website Title', b.`contact_name` AS 'Store Owner', b.`billing_state` AS State, CONCAT( 'http://', a.`domain`, '/' ) AS 'Link' FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE 1 $where ORDER BY b.`billing_state` ASC, a.`title` ASC" );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->err( 'Failed to get custom report - all accounts entries.', __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+        }
+
+        return $report;
+    }
 		
 	/**
 	 * Report an error
