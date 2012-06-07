@@ -36,7 +36,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'share-and-sa
 	
 	// if there are no errors
 	if ( empty( $errs ) )
-		$success = $sm->update_share_and_save( $_POST['sEmailList'], $_POST['sMaximumEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $_POST['tMinimum'], $_POST['tMaximum'], stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
+		$success = $sm->update_share_and_save( $_POST['sEmailList'], $_POST['sMaximumEmailList'], $_POST['taBefore'], $_POST['taAfter'], $_POST['tMinimum'], $_POST['tMaximum'], $_POST['tShareTitle'], $_POST['tShareImageURL'], $_POST['taShareText'] );
 }
 
 // Get variables
