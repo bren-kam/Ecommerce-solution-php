@@ -27,8 +27,6 @@ $v->add_validation( 'tTheme', 'req', _('The "Account Theme" field is required') 
 $v->add_validation( 'tProducts', 'req', _('The "Products" field is required') );
 $v->add_validation( 'tProducts', 'num', _('The "Products" field must contain a number') );
 
-$v->add_validation( 'tType', 'req', _('The "Account Type" is required') );
-
 $v->add_validation( 'tGAProfileID', 'num', _('The "Google Analytics Profile ID" field must contain a number') );
 
 // Initialize variable
@@ -70,12 +68,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 			, 'additional_email_addresses' => $_POST['cbAdditionalEmail']
 			// Extras
 			, 'mc_list_id' => $_POST['tMCListID']
-			, 'type' => $_POST['tType']
 			, 'live' => ( isset( $_POST['cbLive'] ) ) ? 1 : 0
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iiisssssssiisiiiiiiiiiiiissi';
+		$fields_safety = 'iiisssssssiisiiiiiiiiiiiisi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -390,10 +387,6 @@ get_header();
 					</td>
 					<td valign="top" class="block-labels">
 						<h2><?php echo _('Extras'); ?></h2>
-						<p>
-							<label for="tType"><?php echo _('Type'); ?>:</label>
-							<input type="text" name="tType" id="tType" value="<?php echo $web['type']; ?>" class="tb" />
-						</p>
 						<p>
 							<?php echo _('Logo'); ?>:
 							<strong><?php echo $web['logo']; ?></strong>

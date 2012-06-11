@@ -1,7 +1,9 @@
 <?php
-library('ashley-api');
+library('ashley-api/ashley-api');
 $a = new Ashley_API();
+$packages = $a->get_packages();
 
+//fn::info( $packages );
 exit;
 // Load the library
 library( 'craigslist-api' );
