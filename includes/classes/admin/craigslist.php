@@ -469,7 +469,7 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
+        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market, a.`market_id`, a.`cl_category_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -477,7 +477,7 @@ class Craigslist extends Base_Class {
 			return false;
 		}
 		
-        return ( $market_links ) ? ar::assign_key( $market_links, 'craigslist_market_id', true ) : array();
+        return ( $market_links ) ? ar::assign_key( $market_links, 'craigslist_market_id' ) : array();
     }
 
     /**
@@ -520,10 +520,11 @@ class Craigslist extends Base_Class {
      * @param int $website_id
      * @param int $craigslist_market_id
      * @param int $market_id
+     * @param int $cl_category_id
      * @return bool
      */
-    public function link_market( $website_id, $craigslist_market_id, $market_id ) {
-       $this->db->insert( 'craigslist_market_links', compact( 'website_id', 'craigslist_market_id', 'market_id'), 'iii' );
+    public function link_market( $website_id, $craigslist_market_id, $market_id, $cl_category_id ) {
+       $this->db->insert( 'craigslist_market_links', compact( 'website_id', 'craigslist_market_id', 'market_id', 'cl_category_id' ), 'iiii' );
 
          // Handle any error
 		if ( $this->db->errno() ) {

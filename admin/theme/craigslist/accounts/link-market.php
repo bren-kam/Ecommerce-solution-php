@@ -19,6 +19,12 @@ if ( !isset( $_GET['wid'] ) )
 $c = new Craigslist;
 $w = new Websites;
 
+// Load the library
+library( 'craigslist-api' );
+
+// Create API object
+$craigslist_api = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
+
 $website_id = (int) $_GET['wid'];
 $account = $c->get_account( $website_id );
 $market_links = $c->get_market_links( $website_id );
@@ -33,6 +39,7 @@ $v = new Validator();
 $v->form_name = 'fLinkMarket';
 
 $v->add_validation( 'sMarketID', 'req', _('The "Market" field is required') );
+$v->add_validation( 'sCLCategoryID', 'req', _('The "Category" field is required') );
 
 add_footer( $v->js_validation() );
 
@@ -48,12 +55,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
         $craigslist_market = $c->get_market( $_POST['sMarketID'] );
 		$website = $w->get_website( $website_id );
 
-        // Load the library
-        library( 'craigslist-api' );
-
-        // Create API object
-        $craigslist_api = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
-		
 		// Create as many locations as we can, up to 10;
 		if ( is_array( $addresses ) )
 		foreach ( $addresses as $addr ) {
@@ -94,15 +95,15 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
 			$store['storephone'] = $website['phone'];
 		
         // Get the market id
-        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market_id'], $locations, $store );
+        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market_id'], $locations, $_POST['sCLCategoryID'], $store );
 		
         // Link it in our database
         if ( $market_id )
-            $success = $c->link_market( $account['website_id'], $_POST['sMarketID'], $market_id );
+            $success = $c->link_market( $account['website_id'], $_POST['sMarketID'], $market_id, $_POST['sCLCategoryID'] );
     }
 }
 
-javascript( 'validator' );
+javascript( 'validator', 'jquery', 'craigslist/accounts/link-market' );
 
 $selected = 'craigslist';
 $title = _('Link Market') . ' | ' . _('Accounts') . ' | ' . _('Craigslist') . ' | ' . TITLE;
@@ -142,7 +143,12 @@ get_header();
 						<?php 
 						if ( is_array( $market_links ) ) {
 							foreach ( $market_links as $ml ) {
-								echo "<p>$ml</p>";
+                                $category_markets = $craigslist_api->get_cl_market_categories( $ml['market_id'] );
+                                $category = ( isset( $category_markets[$ml['category_id']] ) ) ? $category_markets[$ml['category_id']]->name : '' ;
+                                $market = $ml['market'] . ' / ';
+                                $market .= ( empty( $category ) ) ? '(No Category)' : $category;
+
+								echo "<p>$market</p>";
 							}
 						} else {
 							echo '<p>', _('You have not linked any markets yet.'), '</p>';
@@ -154,7 +160,7 @@ get_header();
                     <td><label for="sMarketID"><?php echo _('Market'); ?>:</label></td>
                     <td>
                         <select name="sMarketID" id="sMarketID">
-                            <option value="">--<?php echo _('Select a Market'); ?>--</option>
+                            <option value="">-- <?php echo _('Select a Market'); ?> --</option>
                             <?php
                             $plan = ( !$success && isset( $_POST['sPlan'] ) ) ? $_POST['sPlan'] : $plan;
 
@@ -168,6 +174,14 @@ get_header();
                         </select>
                     </td>
                 </tr>
+                <tr>
+                    <td><label for="sCLCategoryID">Category:</label></td>
+                    <td>
+                        <select name="sCLCategoryID" id="sCLCategoryID">
+                            <option value="">-- Select a Market --</option>
+                        </select>
+                    </td>
+                </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
                     <td>&nbsp;</td>
@@ -176,6 +190,7 @@ get_header();
 		    </table>
             <?php nonce::field('link-market'); ?>
 		</form>
+        <?php nonce::field( 'get-market-categories', '_ajax_get_market_categories' ); ?>
 		<br clear="all" />
 	</div>
 </div>
