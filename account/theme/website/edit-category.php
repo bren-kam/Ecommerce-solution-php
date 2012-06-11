@@ -40,7 +40,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-categor
     if ( _('Category Title...') == $_POST['tTitle'] )
         $_POST['tTitle'] = '';
     // Update the category
-    $success = $c->update_website_category( $category_id, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['tSlug'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $_POST['rPosition'] );
+    $success = $c->update_website_category( $category_id, $_POST['tTitle'], $_POST['tSlug'], $_POST['taContent'], $_POST['tMetaTitle'], $_POST['tMetaDescription'], $_POST['tMetaKeywords'], $_POST['rPosition'] );
 
     // Get new category
     $category = $c->get_website_category( $category_id );

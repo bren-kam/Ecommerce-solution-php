@@ -23,7 +23,7 @@ $sm = new Social_Media;
 $wf = new Website_Files;
 
 if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'facebook-site' ) )
-	$success = $sm->update_facebook_site( stripslashes( $_POST['taContent'] ) );
+	$success = $sm->update_facebook_site( $_POST['taContent'] );
 
 // Get variables 
 $facebook_site = $sm->get_facebook_site();

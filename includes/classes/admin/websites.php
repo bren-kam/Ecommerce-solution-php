@@ -317,16 +317,18 @@ class Websites extends Base_Class {
 	 *
 	 * @param string $query
 	 * @param string $field
+     * @param string $where [optional]
 	 * @return bool
 	 */
-	public function autocomplete( $query, $field ) {
+	public function autocomplete( $query, $field, $where = '' ) {
 		global $user;
 		
 		// Construct WHERE
-		$where = ( $user['role'] < 8 ) ? ' AND b.`company_id` = ' . $user['company_id'] : '';
+		if ( $user['role'] < 8 )
+            $where .= ' AND b.`company_id` = ' . $user['company_id'];
 		
 		// Get results
-		$results = $this->db->prepare( "SELECT DISTINCT( a.`$field` ) FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`$field` LIKE ? $where AND a.`website_id` NOT IN ( 96, 114, 115, 116 ) ORDER BY a.`$field`", 's', $query . '%' )->get_results( '', ARRAY_A );
+		$results = $this->db->prepare( "SELECT DISTINCT( a.`$field` ) FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`$field` LIKE ? $where AND a.`website_id` NOT IN ( 96, 114, 115, 116 ) ORDER BY a.`$field` LIMIT 10", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

@@ -195,7 +195,10 @@ class Craigslist extends Base_Class {
 	 */
 	public function delete( $craigslist_ad_id ) {
         global $user;
-
+		
+		if ( !$this->_delete_from_primus( $craigslist_ad_id ) )
+			return false;
+		
 		$this->db->update( 'craigslist_ads', array( 'active' => '0' ), array( 'craigslist_ad_id' => $craigslist_ad_id, 'website_id' => $user['website']['website_id'] ), 'i', 'ii' );
 		
 		// Handle any error
@@ -595,40 +598,11 @@ class Craigslist extends Base_Class {
 
         $primus_product_ids = array();
         $success = true;
-
-        // Delete old ads and upate the status so that
-        $old_primus_product_ids = $this->db->get_col( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
-
-        if ( is_array( $old_primus_product_ids ) )
-        foreach ( $old_primus_product_ids as $key => $oppid ) {
-            if ( empty( $oppid ) || '0' == $oppid )
-                unset( $old_primus_product_ids[$key] );
-        }
 		
-        if ( is_array( $old_primus_product_ids ) && count( $old_primus_product_ids ) > 0 ) {
-            // Make sure we successfully remove the old IDs
-            if ( !$craigslist->delete_ad_product( $old_primus_product_ids ) )
-                return false;
-
-            // Now update the database
-            $this->db->update( 'craigslist_ads', array( 'date_posted' => '0000-00-00 00:00:00' ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 's', 'i' );
-
-            // Handle any error
-            if( $this->db->errno() ) {
-                $this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
-                return false;
-            }
-
-            // Now remove the old primus product_ids
-            $this->db->update( 'craigslist_ad_markets', array( 'primus_product_id' => 0 ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'i', 'i' );
-
-            // Handle any error
-            if( $this->db->errno() ) {
-                $this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
-                return false;
-            }
-        }
-
+		// Delete add from Primus
+		if ( !$this->_delete_from_primus( $craigslist_ad_id, $craigslist ) )
+			return false;
+        
         // Post the ad in each market
         foreach ( $markets as $m ) {
             $response = (object) array( 'status' => 'RETRY' );
@@ -676,6 +650,85 @@ class Craigslist extends Base_Class {
 		
         return $success;
     }
+	
+	/**
+	 * Delete an ad from primus
+	 *
+	 * @param int $craigslist_ad_id
+	 * @param Craigslist_API $craigslist
+	 * @return bool
+	 */
+	private function _delete_from_primus( $craigslist_ad_id, $craigslist = NULL ) {
+		global $user;
+
+		// Type Juggling
+		$craigslist_ad_id = (int) $craigslist_ad_id;
+		$website_id = (int) $user['website']['website_id'];
+
+		// Make sure this users has permissions to this user
+		$valid = $this->db->get_var( "SELECT `craigslist_ad_id` FROM `craigslist_ads` WHERE `craigslist_ad_id` = $craigslist_ad_id AND `website_id` = $website_id" );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get craigslist ad id - validation check.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		if ( !$valid )
+			return false;
+		
+		if ( is_null( $craigslist ) ) {
+			// Load the library
+			library( 'craigslist-api' );
+	
+			// Create API object
+			$craigslist = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
+		}
+		
+		
+		// Delete old ads and upate the status so that
+        $old_primus_product_ids = $this->db->get_col( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+		
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to get old primus product ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+        if ( is_array( $old_primus_product_ids ) )
+        foreach ( $old_primus_product_ids as $key => $oppid ) {
+            if ( empty( $oppid ) || '0' == $oppid )
+                unset( $old_primus_product_ids[$key] );
+        }
+		
+		// See if we have anything to do
+        if ( !is_array( $old_primus_product_ids ) || 0 == count( $old_primus_product_ids ) )
+			return true;
+		
+		// Make sure we successfully remove the old IDs
+		if ( !$craigslist->delete_ad_product( $old_primus_product_ids ) )
+			return false;
+
+		// Now update the database
+		$this->db->update( 'craigslist_ads', array( 'date_posted' => '0000-00-00 00:00:00' ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 's', 'i' );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Now remove the old primus product_ids
+		$this->db->update( 'craigslist_ad_markets', array( 'primus_product_id' => 0 ), array( 'craigslist_ad_id' => $craigslist_ad_id ), 'i', 'i' );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
 	
 	/**
 	 * Report an error

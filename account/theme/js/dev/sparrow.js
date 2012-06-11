@@ -137,7 +137,7 @@ var sparrow = function(context) {
 
 		$.get( $(this).attr('href'), ajaxResponse, 'json' );
 	}).removeAttr('ajax'); // Prevent it from getting called again
-	
+
 	// If mammoth exists, call it
 	if( 'function' == typeof( mammoth ) )
 		mammoth( context );

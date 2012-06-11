@@ -27,7 +27,7 @@ if ( $user['website']['pages'] ) {
 
 	$website_files = $wf->get_all();
 } else if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'current-ad' ) ) {
-	$success = $sm->update_current_ad( stripslashes( $_POST['taContent'] ) );
+	$success = $sm->update_current_ad( $_POST['taContent'] );
 }
 
 // Get variables 

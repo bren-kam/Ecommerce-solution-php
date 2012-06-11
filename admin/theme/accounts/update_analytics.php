@@ -34,7 +34,7 @@ foreach ( $website_ids as $website_id ) {
 		$i++;
 		$ga->requestReportData( $gap_id, array( 'date', 'pagePath', 'source', 'medium', 'keyword' ), array( 'bounces', 'entrances', 'exits', 'newVisits', 'pageviews', 'timeOnPage', 'visits' ), array( 'date' ), NULL, $start_date, $start_date, 1, 10000 );
 		list( $pages, $dates ) = $a->get_date_pages( $gap_id );
-				
+
 		$j = 0;
 		switch ( $ga->getResults() as $result ) {
 			$metrics = $result->getMetrics();

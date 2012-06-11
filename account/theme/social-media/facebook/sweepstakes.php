@@ -66,7 +66,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'sweepstakes'
 		$end_date = dt::adjust_timezone( $end_date, $timezone, config::setting('server-timezone') );
 		
 		// Update Sweepstakes
-		$success = $sm->update_sweepstakes( $_POST['sEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $start_date, $end_date, $_POST['contest-rules'], stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
+		$success = $sm->update_sweepstakes( $_POST['sEmailList'], $_POST['taBefore'], $_POST['taAfter'], $start_date, $end_date, $_POST['contest-rules'], $_POST['tShareTitle'], $_POST['tShareImageURL'], $_POST['taShareText'] );
 	}
 }
 // Get variables
