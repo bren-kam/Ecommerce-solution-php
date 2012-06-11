@@ -1,10 +1,9 @@
 <?php
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
-$a->get_packages();
+$packages = $a->get_packages();
 
-echo "Message: " . $a->message();
-
+//fn::info( $packages );
 exit;
 // Load the library
 library( 'craigslist-api' );

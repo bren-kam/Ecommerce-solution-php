@@ -13,7 +13,7 @@ class Ashley_API {
 	 */
 	const URL_API = 'http://api.ashleyfurniture.com/';
     const URL_WSDL = 'http://api.ashleyfurniture.com/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL';
-	const DEBUG = true;
+	const DEBUG = false;
 
     /**
 	 * A few variables that will determine the basic status
@@ -59,13 +59,19 @@ class Ashley_API {
     public function get_packages() {
         // Setup the package request
         $package_request = new PackageRequest();
-        $package_request->ExecuteOptions = array( 'PackageExecuteOption' => 'LoadAllPackages' );
+        $package_request->ExecuteOptions = array( 'PackageExecuteOption' => 'LoadPackages' );
 
         // Execute the response
         $this->_execute( 'GetPackages', new GetPackages( $package_request ) );
 
-        // Give them the response if it succeeded
-        return ( $this->_success ) ? $this->_response : false;
+        if ( !$this->_success )
+            return false;
+
+        header::type('xml');
+        echo $this->_response->PackagesCollection->XmlData;
+        $packages = simplexml_load_string( $this->_response->PackagesCollection->XmlData );
+
+        return $packages;
     }
 
 	/***********************/

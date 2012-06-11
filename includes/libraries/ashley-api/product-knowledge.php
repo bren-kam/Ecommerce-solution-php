@@ -27,7 +27,7 @@ class PackageRequest extends BaseRequest {
 	 * @access public
 	 * @var PackageCriteria
 	 */
-	public $Criteria;
+	public $Criteria = '';
 
 	/**
 	 * @access public
