@@ -384,6 +384,38 @@ class Users extends Base_Class {
 	}
 
     /**
+	 * Gets all the "admin" users
+	 *
+	 * @param array $user_ids [optional] any additional user ids you want to be included
+	 * @return array
+	 */
+	public function admin_users( $user_ids = array() ) {
+		global $user;
+
+        $user_ids[] = 493;
+        $where = '';
+
+        // Type Juggline
+        foreach ( $user_ids as &$uid ) {
+            $uid = (int) $uid;
+        }
+
+		// Make sure they can only see what they're supposed to
+		if ( $user['role'] < 8 )
+			$where .= ' AND ( `company_id` = ' . $user['company_id'] . ' OR `user_id` IN( ' . implode( ', ', $user_ids ) . ' ) ) ';
+
+		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `role` > 5 AND '' <> `contact_name` $where ORDER BY `contact_name`", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get users.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $users;
+	}
+
+    /**
 	 * Deactivates a user
 	 *
 	 * @param int $user_id

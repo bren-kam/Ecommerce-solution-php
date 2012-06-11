@@ -27,6 +27,15 @@ if ( $user['role'] < $ticket['role'] && $user['user_id'] != $ticket['user_id'] )
 $tu = $u->get_user( $ticket['user_id'] );
 $comments = $tc->get( $_GET['tid'] );
 
+$comment_user_ids = array();
+
+// @Fix should probably only be done once
+foreach ( $comments as $c ) {
+    $comment_user_ids[] = $c['user_id'];
+}
+
+$comment_user_ids = array_unique( $comment_user_ids );
+
 // Auto assign feedback
 if ( 0 == $ticket['assigned_to_user_id'] )
 	$ticket['assigned_to_user_id'] = $tickets->update_assigned_to( $_GET['tid'], $user['user_id'] );
@@ -34,7 +43,7 @@ if ( 0 == $ticket['assigned_to_user_id'] )
 css( 'form', 'jquery.uploadify', 'tickets/ticket' );
 javascript( 'swfobject', 'validator', 'jquery', 'jquery.uploadify', 'jquery.autoresize', 'jquery.tmp-val', 'tickets/ticket' );
 
-$admin_users = $u->get_users( "AND `status` <> 0 AND `role` > 5 AND `status` = 1 AND '' <> `contact_name`" );
+$admin_users = $u->admin_users( $comment_user_ids );
 
 // The Admin User Options
 $admin_user_options = '';
