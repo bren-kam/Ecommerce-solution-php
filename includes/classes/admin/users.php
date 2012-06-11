@@ -137,8 +137,11 @@ class Users extends Base_Class {
 	 * @return bool|int
 	 */
 	public function create( $company_id, $email, $password, $contact_name, $store_name, $role ) {
-		$this->db->insert( 'users', array( 'company_id' => $company_id, 'email' => $email, 'password' => md5( $password ), 'contact_name' => $contact_name, 'store_name' => $store_name, 'role' => $role, 'date_created' => dt::now() ), 'issssis' );
-		
+        if ( $user = $this->get_user_by_email( $email ) )
+            return false;
+
+		$this->db->insert( 'users', array( 'company_id' => $company_id, 'email' => $email, 'password' => md5( $password ), 'contact_name' => $contact_name, 'store_name' => $store_name, 'role' => $role, 'status' => 1, 'date_created' => dt::now() ), 'issssiis', true );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->err( 'Failed to create user.', __LINE__, __METHOD__ );

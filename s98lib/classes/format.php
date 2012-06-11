@@ -20,7 +20,20 @@ class format extends Base_Class {
 	 * @return array|string Stripped array (or string in the callback).
 	 */
 	public static function stripslashes_deep( $value ) {
-		return is_array( $value ) ? array_map( array('self', 'stripslashes_deep'), $value ) : stripslashes( $value );
+		return is_array( $value ) ? array_map( array( 'self', 'stripslashes_deep' ), $value ) : stripslashes( $value );
+	}
+
+    /**
+	 * Navigates through an array and applies html special chars to the values.
+	 *
+	 * If an array is passed, the array_map() function causes a callback to pass the
+	 * value back to the function. The slashes from this value will removed.
+	 *
+	 * @param array|string $value The array or string to be stripped
+	 * @return array|string Stripped array (or string in the callback).
+	 */
+	public static function htmlspecialchars_deep( $value ) {
+		return is_array( $value ) ? array_map( array( 'self', 'htmlspecialchars_deep' ), $value ) : htmlspecialchars( $value );
 	}
 	
 	/**
@@ -33,7 +46,7 @@ class format extends Base_Class {
 	 * @return array|string $value The encoded array (or string from the callback).
 	 */
 	public static function urlencode_deep( $value ) {
-		return is_array($value) ? array_map( array('self', 'urlencode_deep'), $value) : urlencode($value);
+		return is_array($value) ? array_map( array( 'self', 'urlencode_deep' ), $value ) : urlencode( $value );
 	}
 
     /**

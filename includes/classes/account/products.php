@@ -630,7 +630,7 @@ class Products extends Base_Class {
 			$website_product['product_options'][$po['product_option_id']]['required'] = $po['required'];
 			$website_product['product_options'][$po['product_option_id']]['list_items'][$po['product_option_list_item_id']] = $po['list_item_price'];
 		}
-		
+
 		return $website_product;
 	}
 	

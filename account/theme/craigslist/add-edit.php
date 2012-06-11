@@ -41,7 +41,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
     $i = 1;
     foreach ( $_POST['tHeadlines'] as $hl ) {
         if ( empty( $hl ) )
-            $errs .= _('Headline') . ' #' . $i . ' is requied';
+            $errs .= _('Headline') . ' #' . $i . ' is required<br />';
 
         $i++;
     }
@@ -70,6 +70,9 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
             }
         }
     }
+
+    if ( !$success )
+        $_POST = format::htmlspecialchars_deep( $_POST );
 }
 
 // Get markets
@@ -81,7 +84,7 @@ if ( !is_array( $markets ) || 0 == count( $markets ) )
 
 // Get the email if necessary
 if ( $craigslist_ad_id ) {
-	$ad = $c->get( $craigslist_ad_id );
+	$ad = format::htmlspecialchars_deep( $c->get( $craigslist_ad_id ) );
 } else {
 	// Initialize variable
 	$ad = array(
@@ -148,7 +151,7 @@ get_header();
                     <option value="sku"><?php echo _('SKU'); ?></option>
                     <option value="product"><?php echo _('Product Name'); ?></option>
                 </select>
-                <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php if ( $success || !isset( $_POST['hProductSKU'] ) ) echo $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
+                <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php echo ( !$success || isset( $_POST['tAutoComplete'] ) ) ? $_POST['tAutoComplete'] : $ad['sku']; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
                 <br /><br />
             </div>
 
@@ -160,12 +163,12 @@ get_header();
                 <table>
                     <tr><th colspan="2"><label for="tHeadline0"><?php echo _('Headlines'); ?>:</label></th></tr>
                     <?php
-                   for ( $i = 0; $i < 10; $i++ ) {
+                    for ( $i = 0; $i < 10; $i++ ) {
                        $headline = ( isset( $ad['headlines'][$i] ) ) ? $ad['headlines'][$i] : '';
                         ?>
                         <tr>
                             <td><?php echo $i + 1; ?>)</td>
-                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines[' . $i . ']'] ) ) ? $_POST['tHeadlines[' . $i . ']'] : $headline; ?>" maxlength="70" /></td>
+                            <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines'][$i] ) ) ? $_POST['tHeadlines'][$i] : $headline; ?>" maxlength="70" /></td>
                         </tr>
                    <?php } ?>
                 </table>
