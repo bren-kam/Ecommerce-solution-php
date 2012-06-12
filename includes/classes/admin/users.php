@@ -105,24 +105,7 @@ class Users extends Base_Class {
 		
 		return $user_count;
 	}
-	
-	/**
-	 * Gets the users that have created or modified a product
-	 *
-	 * @return associative array/bool
-	 */
-	public function get_product_users() {
-		$users = $this->db->get_results( "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00'", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product users.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $users;
-	}
-	
+
 	/**
 	 * Creates a new user
 	 *
@@ -367,7 +350,7 @@ class Users extends Base_Class {
 		
 		// Make sure they can only see what they're supposed to
 		if ( $user['role'] < 8 )
-			$where .= ' AND ( `company_id` = ' . $user['company_id'] . ' OR `user_id` = 493 )';
+			$where .= ' AND ( `company_id` = ' . (int) $user['company_id'] . ' OR `user_id` = 493 )';
 		
 		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 $where ORDER BY `contact_name`", ARRAY_A );
 		
@@ -377,6 +360,28 @@ class Users extends Base_Class {
 			return false;
 		}
 		
+		return $users;
+	}
+
+    /**
+	 * Gets the users that have created or modified a product
+	 *
+	 * @return array
+	 */
+	public function get_product_users() {
+        global $user;
+
+        // Make sure they can only see what they're supposed to
+		$where = ( $user['role'] < 8 ) ? '' : ' AND a.`company_id` = ' . (int) $user['company_id'];
+
+		$users = $this->db->get_results( "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00' $where", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->err( 'Failed to get product users.', __LINE__, __METHOD__ );
+			return false;
+		}
+
 		return $users;
 	}
 

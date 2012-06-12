@@ -405,8 +405,14 @@ class Craigslist extends Base_Class {
 	 * @return array
 	 */
 	public function list_craigslist_accounts( $where, $order_by, $limit ) {
+        global $user;
+
+        // Make sure they can only see what they're supposed to
+        if ( $user['role'] < 8 )
+    		$where .= ' AND f.`company_id` = ' . (int) $user['company_id'];
+		
 		// Get the accounts
-		$accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title`, IF( c.`value` IS NULL, '', c.`value` ) AS plan, GROUP_CONCAT( CONCAT( IF( '' <> e.`area`, CONCAT( e.`area`, ' - ', e.`city` ), e.`city` ), ', ', e.`state` ) SEPARATOR '<br />' ) AS markets FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) LEFT JOIN `website_settings` AS c ON ( b.`website_id` = c.`website_id` AND c.`key` = 'craigslist-plan' ) LEFT JOIN `craigslist_market_links` AS d ON ( b.`website_id` = d.`website_id` ) LEFT JOIN `craigslist_markets` AS e ON ( d.`craigslist_market_id` = e.`craigslist_market_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NOT NULL AND ( e.`status` IS NULL OR e.`status` = 1 ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title`, IF( c.`value` IS NULL, '', c.`value` ) AS plan, GROUP_CONCAT( CONCAT( IF( '' <> e.`area`, CONCAT( e.`area`, ' - ', e.`city` ), e.`city` ), ', ', e.`state` ) SEPARATOR '<br />' ) AS markets FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) LEFT JOIN `website_settings` AS c ON ( b.`website_id` = c.`website_id` AND c.`key` = 'craigslist-plan' ) LEFT JOIN `craigslist_market_links` AS d ON ( b.`website_id` = d.`website_id` ) LEFT JOIN `craigslist_markets` AS e ON ( d.`craigslist_market_id` = e.`craigslist_market_id` ) LEFT JOIN `users` AS f ON ( a.`user_id` = f.`user_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NOT NULL AND ( e.`status` IS NULL OR e.`status` = 1 ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

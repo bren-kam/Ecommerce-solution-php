@@ -346,8 +346,13 @@ class Websites extends Base_Class {
 	 * @return bool
 	 */
 	public function autocomplete_online_specialists( $query ) {
+        global $user;
+
+        // Make sure they can only see what they're supposed to
+		$where = ( $user['role'] < 8 ) ? '' : ' AND a.`company_id` = ' . (int) $user['company_id'];
+
 		// Get results
-		$results = $this->db->prepare( "SELECT a.`user_id` AS object_id, a.`contact_name` AS online_specialist FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`os_user_id` ) WHERE a.`contact_name` LIKE ? GROUP BY a.`user_id` ORDER BY a.`contact_name`", 's', $query . '%' )->get_results( '', ARRAY_A );
+		$results = $this->db->prepare( "SELECT a.`user_id` AS object_id, a.`contact_name` AS online_specialist FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`os_user_id` ) WHERE a.`contact_name` LIKE ? $where GROUP BY a.`user_id` ORDER BY a.`contact_name`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
