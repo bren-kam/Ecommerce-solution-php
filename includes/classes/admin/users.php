@@ -407,7 +407,7 @@ class Users extends Base_Class {
         global $user;
 
         // Make sure they can only see what they're supposed to
-		$where = ( $user['role'] < 8 ) ? '' : ' AND a.`company_id` = ' . (int) $user['company_id'];
+		$where = ( $user['role'] < 8 ) ? ' AND a.`company_id` = ' . (int) $user['company_id'] : '';
 
 		$users = $this->db->get_results( "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00' $where", ARRAY_A );
 

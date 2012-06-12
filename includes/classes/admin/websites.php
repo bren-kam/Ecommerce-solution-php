@@ -349,7 +349,7 @@ class Websites extends Base_Class {
         global $user;
 
         // Make sure they can only see what they're supposed to
-		$where = ( $user['role'] < 8 ) ? '' : ' AND a.`company_id` = ' . (int) $user['company_id'];
+		$where = ( $user['role'] < 8 ) ? ' AND a.`company_id` = ' . (int) $user['company_id'] : '';
 
 		// Get results
 		$results = $this->db->prepare( "SELECT a.`user_id` AS object_id, a.`contact_name` AS online_specialist FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`os_user_id` ) WHERE a.`contact_name` LIKE ? $where GROUP BY a.`user_id` ORDER BY a.`contact_name`", 's', $query . '%' )->get_results( '', ARRAY_A );
