@@ -74,7 +74,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list users.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -99,30 +99,13 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count users.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return $user_count;
 	}
-	
-	/**
-	 * Gets the users that have created or modified a product
-	 *
-	 * @return associative array/bool
-	 */
-	public function get_product_users() {
-		$users = $this->db->get_results( "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00'", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product users.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $users;
-	}
-	
+
 	/**
 	 * Creates a new user
 	 *
@@ -144,7 +127,7 @@ class Users extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -170,7 +153,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update information for user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update information for user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -194,7 +177,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to activate user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to activate user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -213,7 +196,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to sign in user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to sign in user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -256,7 +239,7 @@ class Users extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to record login.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to record login.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -275,7 +258,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get user data.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get user data.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -310,7 +293,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if an email existed.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if an email existed.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -329,7 +312,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if a user existed.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if a user existed.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -350,7 +333,7 @@ class Users extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to get user.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to get user.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -370,13 +353,13 @@ class Users extends Base_Class {
 		
 		// Make sure they can only see what they're supposed to
 		if ( $user['role'] < 8 )
-			$where .= ' AND ( `company_id` = ' . $user['company_id'] . ' OR `user_id` = 493 )';
+			$where .= ' AND ( `company_id` = ' . (int) $user['company_id'] . ' OR `user_id` = 493 )';
 		
 		$users = $this->db->get_results( "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 $where ORDER BY `contact_name`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get users.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -408,7 +391,29 @@ class Users extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get users.', __LINE__, __METHOD__ );
+            return false;
+		}
+
+		return $users;
+	}
+
+	/** 
+     * Gets the users that have created or modified a product
+	 *
+	 * @return array
+	 */
+	public function get_product_users() {
+        global $user;
+
+        // Make sure they can only see what they're supposed to
+		$where = ( $user['role'] < 8 ) ? '' : ' AND a.`company_id` = ' . (int) $user['company_id'];
+
+		$users = $this->db->get_results( "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00' $where", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get product users.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -427,7 +432,7 @@ class Users extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to deactivate user.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to deactivate user.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -448,7 +453,7 @@ class Users extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get inactive user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get inactive user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -469,7 +474,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get inactive user by email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get inactive user by email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -491,7 +496,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get user by email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get user by email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -525,7 +530,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -548,7 +553,7 @@ class Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( "Failed to update user's password.", __LINE__, __METHOD__ );
+			$this->_err( "Failed to update user's password.", __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -562,7 +567,6 @@ class Users extends Base_Class {
 	 * @uses security::salt()
 	 *
 	 * @param string $password
-	 * @param string $secret_key (optional) the secret key
 	 * @return array( $salt, $hash )
 	 */
 	private function hash_password( $password ) {
@@ -594,7 +598,7 @@ class Users extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
