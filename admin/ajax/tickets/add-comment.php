@@ -22,11 +22,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 	$assigned_to_user = $u->get_user( $ticket['assigned_to_user_id'] );
 
 	// Define variables
-	$content = stripslashes( $_POST['c'] );
+    $content = nl2br( format::links_to_anchors( format::htmlentities( stripslashes( $_POST['c'] ), array('&') ), true, true ) );
 	$status = ( 0 == $ticket['status'] ) ? ' (Open)' : ' (Closed)';
-	
+
 	// Add it to the comments list
-	$result = $tc->add( $_POST['tid'], $user['user_id'], nl2br( format::links_to_anchors( htmlentities( $content ), true, true ) ), $_POST['p'], $_POST['a'] );
+	$result = $tc->add( $_POST['tid'], $user['user_id'], $content, $_POST['p'], $_POST['a'] );
 	
 	// If it's not private, send an email to the client
 	if ( '0' == $_POST['p'] && 1 == $ticket['status'] )

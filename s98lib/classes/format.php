@@ -62,6 +62,27 @@ class format extends Base_Class {
 		return is_array( $value ) ? array_map( array('self', 'trim_deep'), $value ) : trim( $value );
 	}
 
+    /**
+     * Does an HTML entities but allows you to remove items
+     *
+     * @param string $string
+     * @param array $tags = array()
+     * @return string
+     */
+    public static function htmlentities( $string, $tags = array() ) {
+        if ( !is_array( $tags ) || 0 == count( $tags ) )
+            return htmlentities( $string );
+
+        // Essentially a custom html entities
+        $html_entities = get_html_translation_table( HTML_ENTITIES );
+
+        foreach ( $tags as $t ) {
+            unset( $html_entities[$t] );
+        }
+
+        return str_replace( array_keys( $html_entities ), array_values( $html_entities ), $string );
+    }
+
 	/**
 	 * Limits a phrase to a given number of words.
 	 *
