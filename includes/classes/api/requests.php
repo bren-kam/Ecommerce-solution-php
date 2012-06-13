@@ -624,9 +624,10 @@ class Requests extends Base_Class {
 		}
 		
 		$personal_information['password'] = md5( $personal_information['password'] );
+		$personal_information['date_created'] = dt::date('Y-m-d H:i:s');
 		
 		// Update the user
-		$this->db->update( 'users', array_merge( $personal_information, array( 'date_created' => dt::date('Y-m-d H:i:s') ) ), array( 'user_id' => $user_id, 'company_id' => $this->company_id ), 'ssssssssssss', 'ii' );
+		$this->db->update( 'users', $personal_information, array( 'user_id' => $user_id, 'company_id' => $this->company_id ), str_repeat( 's', count( $personal_information ) ), 'ii' );
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
