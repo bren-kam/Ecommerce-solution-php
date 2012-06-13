@@ -141,11 +141,38 @@ class Users extends Base_Class {
 	 *
 	 * @param int $user_id used to identify the user
 	 * @param array $information (assumes all to be strings)
-	 * @return bool|int
+	 * @return Response
 	 */
 	public function update_information( $user_id, $information ) {
 		global $user;
-		
+
+        $old_user = $this->get_user( $user_id );
+        // Check to see if they are changing their email
+        if ( $old_user['email'] != $information['email'] ) {
+            // We need to make sure another user doesn't already have this address
+            $other_user = $this->db
+                ->prepare( 'SELECT `user_id`, `status` FROM `users` WHERE `email` = ?', 's', $information['email'] )
+                ->get_row('');
+
+            if ( $this->db->errno() ) {
+			    $this->_err( 'Failed to get other user.', __LINE__, __METHOD__ );
+                return new Response( false, _('An error occurred while trying to update this user. Please contact a system administrator.') );
+            }
+
+            if ( $other_user ) {
+                if ( $other_user['status'] == 0 ) {
+                    $this->db->prepare( 'DELETE FROM `users` WHERE `user_id` = ? LIMIT 1', 'i', $other_user['user_id'] )->query('');
+
+                    if ( $this->db->errno() ) {
+                        $this->_err( 'Failed to delete other user.', __LINE__, __METHOD__ );
+                        return new Response( false, _('An error occurred while trying to update this user. Please contact a system administrator.') );
+                    }
+                } else {
+                    return new Response( false, _('This email is already taken.') );
+                }
+            }
+        }
+
 		if ( isset( $information['password'] ) )
 			$information['password'] = md5( $information['password'] );
 		
@@ -154,14 +181,14 @@ class Users extends Base_Class {
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to update information for user.', __LINE__, __METHOD__ );
-			return false;
+            return new Response( false, _('An error occurred while trying to update this user. Please contact a system administrator.') );
 		}
 		
 		// If it was this user, update it
 		if ( $user['user_id'] == $user_id )
 			$user = array_merge( $user, $information );
 		
-		return $user_id;
+		return new Response( true );
 	}
 	
 	/**

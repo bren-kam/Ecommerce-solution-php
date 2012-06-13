@@ -242,7 +242,7 @@ class SQL {
 	 * @param string $query
 	 * @param string $format for what is being requested
 	 * @param unknown
-	 * @return this
+	 * @return Mysqli::statement
 	 */
 	public function prepare( $query, $format = '' ) {
 		$this->flush();
