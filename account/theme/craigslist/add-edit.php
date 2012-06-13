@@ -14,6 +14,12 @@ if( !$user )
 // How many craigslist headlines do we want?
 define( 'CRAIGSLIST_HEADLINES', 10 );
 
+// Load the library
+library( 'craigslist-api' );
+
+// Create API object
+$craigslist_api = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
+
 $c = new Craigslist();
 $v = new Validator();
 
@@ -194,10 +200,23 @@ get_header();
                 <label for="sCraigslistMarkets"><strong><?php echo _('Craigslist Markets'); ?>:</strong></label><br />
                 <select name="sCraigslistMarkets[]" id="sCraigslistMarkets" tabindex="15" multiple="multiple">
                     <?php
+                    $category_markets = array();
                     foreach ( $markets as $m ) {
+                        if ( !isset( $category_markets[$m['market_id']] ) )
+                            $category_markets[$m['market_id']] = $craigslist_api->get_cl_market_categories( $m['market_id'] );
+
+                        $category = '(No Category)';
+
+                        foreach ( $category_markets[$m['market_id']] as $cm ) {
+                            if ( $cm->cl_category_id == $m['cl_category_id'] ) {
+                                $category = $cm->name;
+                                break;
+                            }
+                        }
+
                         $selected = ( in_array( $m['craigslist_market_id'], $ad['craigslist_markets'] ) ) ? ' selected="selected"' : '';
                         ?>
-                        <option value="<?php echo $m['craigslist_market_id']; ?>"<?php echo $selected; ?>><?php echo $m['market']; ?></option>
+                        <option value="<?php echo $m['craigslist_market_id']; ?>"<?php echo $selected; ?>><?php echo $m['market']; ?> / <?php echo $category; ?></option>
                     <?php } ?>
                 </select>
                 <br /><br />

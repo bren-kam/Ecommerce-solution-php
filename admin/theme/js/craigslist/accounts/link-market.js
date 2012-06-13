@@ -9,7 +9,7 @@ jQuery(function($) {
 		// First let them know that it is loading
         sCategories.empty().append('<option value="">-- Loading --</option>');
 		
-		$.post( '/ajax/craigslist/accounts/get-market-categories/', { '_nonce' : $('#_ajax_get_market_categories').val(), mid : $(this).val() }, function( response ) {
+		$.post( '/ajax/craigslist/accounts/get-market-categories/', { _nonce : $('#_ajax_get_market_categories').val(), mid : $(this).val(), wid : $('#hWebsiteID').val() }, function( response ) {
 			// Handle any error
 			if ( !response['result'] ) {
 				alert( response['error'] );

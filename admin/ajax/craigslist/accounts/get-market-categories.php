@@ -16,12 +16,17 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'get-market-c
 
 	// Create API object
     $craigslist_api = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
+    $c = new Craigslist();
 
+    $cl_category_ids = $c->get_cl_category_ids( $_POST['wid'], $_POST['mid'] );
     $market_categories = $craigslist_api->get_cl_market_categories( $_POST['mid'] );
 	$categories = array();
 
     if ( is_array( $market_categories ) )
     foreach ( $market_categories as $mc ) {
+        if ( in_array( $mc->cl_category_id, $cl_category_ids ) )
+            continue;
+
         $categories[$mc->cl_category_id] = $mc->name;
     }
 

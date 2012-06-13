@@ -142,11 +142,22 @@ get_header();
                     <td>
 						<?php 
 						if ( is_array( $market_links ) ) {
+                            $category_markets = array();
+
 							foreach ( $market_links as $ml ) {
-                                $category_markets = $craigslist_api->get_cl_market_categories( $ml['market_id'] );
-                                $category = ( isset( $category_markets[$ml['category_id']] ) ) ? $category_markets[$ml['category_id']]->name : '' ;
-                                $market = $ml['market'] . ' / ';
-                                $market .= ( empty( $category ) ) ? '(No Category)' : $category;
+                                if ( !isset( $category_markets[$ml['market_id']] ) )
+                                    $category_markets[$ml['market_id']] = $craigslist_api->get_cl_market_categories( $ml['market_id'] );
+
+                                $category = '(No Category)';
+
+                                foreach ( $category_markets[$ml['market_id']] as $cm ) {
+                                    if ( $cm->cl_category_id == $ml['cl_category_id'] ) {
+                                        $category = $cm->name;
+                                        break;
+                                    }
+                                }
+
+                                $market = $ml['market'] . ' / ' . $category;
 
 								echo "<p>$market</p>";
 							}
@@ -166,7 +177,7 @@ get_header();
 
                             if ( is_array( $markets ) )
                             foreach ( $markets as $m ) {
-                                if ( array_key_exists( $m['craigslist_market_id'], $market_links ) || 0 == $m['market_id'] )
+                                if ( 0 == $m['market_id'] )
                                     continue;
                             ?>
                                 <option value="<?php echo $m['craigslist_market_id']; ?>"><?php echo $m['market']; ?></option>
@@ -189,6 +200,7 @@ get_header();
                 </tr>
 		    </table>
             <?php nonce::field('link-market'); ?>
+            <input type="hidden" id="hWebsiteID" value="<?php echo $website_id; ?>" />
 		</form>
         <?php nonce::field( 'get-market-categories', '_ajax_get_market_categories' ); ?>
 		<br clear="all" />
