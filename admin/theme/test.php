@@ -1,10 +1,10 @@
 <?php
-/*library('ashley-api/ashley-api');
+//
+library('ashley-api/ashley-api');
 $a = new Ashley_API();
 $packages = $a->get_packages();
-
 exit;
-
+/*
 // Load the library
 library( 'craigslist-api' );
 $b = new Base_Class();
@@ -23,7 +23,7 @@ foreach ( $markets as $m ) {
         }
     }
 }
-*/
+
 
 // Unique Ads
 $ads = array(
@@ -43,7 +43,7 @@ fn::info( array_unique_sort( $ads, 'sku' ) );
  * @param array $array
  * @param string $key [optional]
  * @return array( $unique_array, $duplicate_array )
- */
+
 function array_unique_sort( array $array, $key = NULL ) {
 	// Initialize variables
 	$last_value = '';
@@ -141,3 +141,4 @@ function array_unique_sort( array $array, $key = NULL ) {
 
     return array( $padded_elements, $identical_elements );
 }
+*/
