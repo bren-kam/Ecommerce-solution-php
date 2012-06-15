@@ -98,8 +98,11 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
         $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market_id'], $locations, $_POST['sCLCategoryID'], $store );
 		
         // Link it in our database
-        if ( $market_id )
+        if ( $market_id ) {
             $success = $c->link_market( $account['website_id'], $_POST['sMarketID'], $market_id, $_POST['sCLCategoryID'] );
+		} else {
+			$errs .= _('An error occurred while tring to link your market. Please contact a system administrator.');
+		}
     }
 }
 
@@ -180,7 +183,7 @@ get_header();
                                 if ( 0 == $m['market_id'] )
                                     continue;
                             ?>
-                                <option value="<?php echo $m['craigslist_market_id']; ?>"><?php echo $m['market']; ?></option>
+                                <option value="<?php echo $m['craigslist_market_id']; ?>" rel="<?php echo $m['market_id']; ?>"><?php echo $m['market']; ?></option>
                             <?php } ?>
                         </select>
                     </td>

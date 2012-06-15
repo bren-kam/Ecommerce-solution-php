@@ -27,7 +27,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 
 	// Add it to the comments list
 	$result = $tc->add( $_POST['tid'], $user['user_id'], $content, $_POST['p'], $_POST['a'] );
-	
+
+    // We need to strip the tags
+    $ticket['message'] = strip_tags( $ticket['message'] );
+
 	// If it's not private, send an email to the client
 	if ( '0' == $_POST['p'] && 1 == $ticket['status'] )
 		fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\n**Support Issue**\n" . $ticket['message'], $assigned_to_user['company'] . ' <support@' . $assigned_to_user['domain'] . '>' );

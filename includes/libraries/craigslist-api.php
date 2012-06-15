@@ -243,7 +243,7 @@ class Craigslist_API {
      */
     public function get_cl_market_categories( $market_id ) {
         // Get Craigslist Categories
-        $response = $this->_execute( 'getclmarketcategories', array( 'cl_categoryset_id' => $market_id ) );
+        $response = $this->_execute( 'getclmarketcategories', array( 'cl_market_id' => $market_id ) );
 
         return $response;
     }
