@@ -28,7 +28,7 @@ class Craigslist extends Base_Class {
 	
 		// Handle any error
 		if ( mysql_errno() ) {
-			$this->err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -50,7 +50,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create craigslist ad template.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create craigslist ad template.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -75,7 +75,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update craigslist template.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -100,7 +100,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist templates.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist templates.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -118,7 +118,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete craigslist template.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -144,7 +144,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -166,7 +166,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -225,135 +225,11 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get preview data.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get preview data.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return $results;
-	}
-
-    /***** HEADLINES *****/
-
-    /**
-     * Get Craigslist Headline
-     *
-     * @param int $craigslist_headline_id
-     * @return array
-     */
-    public function get_headline( $craigslist_headline_id ) {
-        // Type Juggling
-        $craigslist_headline_id = (int) $craigslist_headline_id;
-
-        $headline = $this->db->get_row( "SELECT `craigslist_headline_id`, `category_id`, `headline` FROM `craigslist_headlines` WHERE `craigslist_headline_id` = $craigslist_headline_id", ARRAY_A );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get headline.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return $headline;
-    }
-
-    /**
-     * Create Craigslist Headline
-     *
-     * @param int $category_id
-     * @param string $headline
-     * @return int
-     */
-    public function create_headline( $category_id, $headline ) {
-        $this->db->insert( 'craigslist_headlines', array( 'category_id' => $category_id, 'headline' => $headline, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create headline.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return $this->db->insert_id;
-    }
-
-    /**
-     * Delete a Craigslist Headline
-     *
-     * @param int $craigslist_headline_id
-     * @return bool
-     */
-    public function delete_headline( $craigslist_headline_id ) {
-        // Type Juggling
-        $craigslist_headline_id = (int) $craigslist_headline_id;
-
-        // Delete the market
-        $this->db->query( "DELETE FROM `craigslist_headlines` WHERE `craigslist_headline_id` = $craigslist_headline_id" );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete craigslist headline.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return true;
-    }
-
-    /**
-     * Update Craigslist Headlines
-     *
-     * @param int $craigslist_headline_id
-     * @param int $category_id
-     * @param string $headline
-     * @return bool
-     */
-    public function update_headline( $craigslist_headline_id, $category_id, $headline ) {
-        $this->db->update( 'craigslist_headlines', array( 'category_id' => $category_id, 'headline' => $headline ), array( 'craigslist_headline_id' => $craigslist_headline_id ), 'is', 'i' );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update headline.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return true;
-    }
-
-    /**
-	 * List Craigslist Headlines
-	 *
-	 * @param string $where
-	 * @param string $order_by
-	 * @param string $limit
-	 * @return array
-	 */
-	public function list_craigslist_headlines( $where, $order_by, $limit ) {
-		// Get the headlines
-		$headlines = $this->db->get_results( "SELECT a.`craigslist_headline_id`, a.`headline`, a.`date_created`, b.`name` AS category FROM `craigslist_headlines` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list craigslist headlines.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $headlines;
-	}
-
-    /**
-	 * Count the craigslist headlines
-	 *
-	 * @param string $where
-	 * @return array
-	 */
-	public function count_craigslist_headlines( $where ) {
-		// Get the craigslist market count
-		$headline_count = $this->db->get_var( "SELECT COUNT( a.`craigslist_headline_id` ) FROM `craigslist_headlines` AS a LEFT JOIN `categories` AS b ON ( a.`category_id` = b.`category_id` ) WHERE 1 $where" );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist headlines.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $headline_count;
 	}
 
     /***** ACCOUNTS *****/
@@ -372,7 +248,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist account.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist account.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -389,7 +265,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get unlinked craigslist accounts.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get unlinked craigslist accounts.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -405,12 +281,18 @@ class Craigslist extends Base_Class {
 	 * @return array
 	 */
 	public function list_craigslist_accounts( $where, $order_by, $limit ) {
+        global $user;
+
+        // Make sure they can only see what they're supposed to
+        if ( $user['role'] < 8 )
+    		$where .= ' AND f.`company_id` = ' . (int) $user['company_id'];
+		
 		// Get the accounts
-		$accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title`, IF( c.`value` IS NULL, '', c.`value` ) AS plan, GROUP_CONCAT( CONCAT( IF( '' <> e.`area`, CONCAT( e.`area`, ' - ', e.`city` ), e.`city` ), ', ', e.`state` ) SEPARATOR '<br />' ) AS markets FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) LEFT JOIN `website_settings` AS c ON ( b.`website_id` = c.`website_id` AND c.`key` = 'craigslist-plan' ) LEFT JOIN `craigslist_market_links` AS d ON ( b.`website_id` = d.`website_id` ) LEFT JOIN `craigslist_markets` AS e ON ( d.`craigslist_market_id` = e.`craigslist_market_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NOT NULL AND ( e.`status` IS NULL OR e.`status` = 1 ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
+		$accounts = $this->db->get_results( "SELECT a.`website_id`, a.`title`, IF( c.`value` IS NULL, '', c.`value` ) AS plan, GROUP_CONCAT( CONCAT( IF( '' <> e.`area`, CONCAT( e.`area`, ' - ', e.`city` ), e.`city` ), ', ', e.`state` ) SEPARATOR '<br />' ) AS markets FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) LEFT JOIN `website_settings` AS c ON ( b.`website_id` = c.`website_id` AND c.`key` = 'craigslist-plan' ) LEFT JOIN `craigslist_market_links` AS d ON ( b.`website_id` = d.`website_id` ) LEFT JOIN `craigslist_markets` AS e ON ( d.`craigslist_market_id` = e.`craigslist_market_id` ) LEFT JOIN `users` AS f ON ( a.`user_id` = f.`user_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NOT NULL AND ( e.`status` IS NULL OR e.`status` = 1 ) $where GROUP BY a.`website_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list craigslist accounts.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list craigslist accounts.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -424,12 +306,18 @@ class Craigslist extends Base_Class {
 	 * @return array
 	 */
 	public function count_craigslist_accounts( $where ) {
-		// Get the craigslist account count
-		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) LEFT JOIN `website_settings` AS c ON ( b.`website_id` = c.`website_id` AND c.`key` = 'craigslist-plan' ) LEFT JOIN `craigslist_market_links` AS d ON ( b.`website_id` = d.`website_id` ) LEFT JOIN `craigslist_markets` AS e ON ( d.`craigslist_market_id` = e.`craigslist_market_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NOT NULL AND ( e.`status` IS NULL OR e.`status` = 1 ) $where GROUP BY a.`website_id`" );
+        global $user;
 
+        // Make sure they can only see what they're supposed to
+        if ( $user['role'] < 8 )
+    		$where .= ' AND f.`company_id` = ' . (int) $user['company_id'];
+
+		// Get the craigslist account count
+		$count = $this->db->get_var( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` AND b.`key` = 'craigslist-customer-id' ) LEFT JOIN `website_settings` AS c ON ( b.`website_id` = c.`website_id` AND c.`key` = 'craigslist-plan' ) LEFT JOIN `craigslist_market_links` AS d ON ( b.`website_id` = d.`website_id` ) LEFT JOIN `craigslist_markets` AS e ON ( d.`craigslist_market_id` = e.`craigslist_market_id` ) LEFT JOIN `users` AS f ON ( a.`user_id` = f.`user_id` ) WHERE a.`status` = 1 AND b.`website_id` IS NOT NULL AND ( e.`status` IS NULL OR e.`status` = 1 ) $where" );
+        
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist accounts.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count craigslist accounts.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -452,7 +340,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get market.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -469,15 +357,38 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
+        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market, a.`market_id`, a.`cl_category_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get market.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-        return ( $market_links ) ? ar::assign_key( $market_links, 'craigslist_market_id', true ) : array();
+        return ( $market_links ) ? $market_links : array();
+    }
+    
+    /**
+     * Get CL_Category_ID's
+     *
+     * @param int $website_id
+     * @param int $market_id
+     * @return array
+     */
+    public function get_cl_category_ids( $website_id, $market_id ) {
+        // Type Juggling
+        $website_id = (int) $website_id;
+        $market_id = (int) $market_id;
+
+        $cl_category_ids = $this->db->get_col( "SELECT `cl_category_id` FROM `craigslist_market_links` WHERE `market_id` = $market_id AND `website_id` = $website_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( "Failed to get cl_category_id's.", __LINE__, __METHOD__ );
+			return false;
+		}
+		
+        return $cl_category_ids;
     }
 
     /**
@@ -490,7 +401,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get market.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -507,7 +418,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -520,14 +431,15 @@ class Craigslist extends Base_Class {
      * @param int $website_id
      * @param int $craigslist_market_id
      * @param int $market_id
+     * @param int $cl_category_id
      * @return bool
      */
-    public function link_market( $website_id, $craigslist_market_id, $market_id ) {
-       $this->db->insert( 'craigslist_market_links', compact( 'website_id', 'craigslist_market_id', 'market_id'), 'iii' );
+    public function link_market( $website_id, $craigslist_market_id, $market_id, $cl_category_id ) {
+       $this->db->insert( 'craigslist_market_links', compact( 'website_id', 'craigslist_market_id', 'market_id', 'cl_category_id' ), 'iiii' );
 
          // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add market link.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add market link.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -551,7 +463,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create market.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -572,7 +484,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update market.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -591,7 +503,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to deactivate craigslist market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to deactivate craigslist market.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -612,7 +524,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list craigslist markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list craigslist markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -631,7 +543,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count craigslist markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -667,7 +579,7 @@ class Craigslist extends Base_Class {
 			
             // Handle any error
             if ( $this->db->errno() ) {
-                $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
                 return false;
             }
         }
@@ -678,7 +590,7 @@ class Craigslist extends Base_Class {
 
              // Handle any error
             if ( $this->db->errno() ) {
-                $this->err( 'Failed to get product ids.', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to get product ids.', __LINE__, __METHOD__ );
                 return false;
             }
 
@@ -700,7 +612,7 @@ class Craigslist extends Base_Class {
 
                     // Handle any error
                     if ( $this->db->errno() ) {
-                        $this->err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
+                        $this->_err( 'Failed to add craigslist tags.', __LINE__, __METHOD__ );
                         return false;
                     }
                 }
@@ -721,7 +633,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to get unliked craigslist tags.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to get unliked craigslist tags.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -764,14 +676,11 @@ class Craigslist extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to get craigslist tags.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to get craigslist tags.', __LINE__, __METHOD__ );
             return false;
         }
 
         $unknown_tag_ids = array_diff( $tag_ids, $craiglist_tag_ids );
-
-        // Mail the report
-        fn::mail( 'kerry@greysuitretail.com', 'Unknown Tags', 'Total: ' . count( $unknown_tag_ids ) . "\n\n" . implode( "\n", $tag_ids ) );
 
         return true;
     }
@@ -788,7 +697,7 @@ class Craigslist extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

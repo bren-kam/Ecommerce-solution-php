@@ -38,7 +38,7 @@ if ( 'products' != $page['slug'] )
 // Custom validation
 switch ( $page['slug'] ) {
 	case 'financing':
-		$v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must conain a valid link') );
+		$v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must contain a valid link') );
 	break;
 	
 	case 'current-offer':

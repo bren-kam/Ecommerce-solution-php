@@ -242,7 +242,7 @@ class SQL {
 	 * @param string $query
 	 * @param string $format for what is being requested
 	 * @param unknown
-	 * @return this
+	 * @return Mysqli::statement
 	 */
 	public function prepare( $query, $format = '' ) {
 		$this->flush();
@@ -521,19 +521,32 @@ class SQL {
 	 * @param string $table table name
 	 * @param array $data Data to insert (in column => value pairs).  Both $data columns and $data values should be "raw" (neither should be SQL escaped).
 	 * @param string $format Format will be used for all of the values in $data. A format is one of 'sidb' (string, integer, double/float, blob).
+     * @param bool $override [optional]
 	 * @return int|false The number of rows inserted, or false on error.
 	 */
-	public function insert( $table, $data, $format ) {
-		$fields = array_keys( $data );
-		
+	public function insert( $table, $data, $format, $override = false ) {
+    	$fields = array_keys( $data );
+        $on_duplicate_key = '';
+
+        if ( $override )
+            $on_duplicate_key .= ' ON DUPLICATE KEY UPDATE `' . implode( '` = ?, `', $fields ) . '` = ?';
+
 		// Prepare the statement
-		$statement = $this->prepare( "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)' );
-		
+		$statement = $this->prepare( "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)' . $on_duplicate_key );
+
 		if ( !$statement )
 			return false;
-		
+
+        // References
+        $references = array_values( $data );
+
+        if ( $override ) {
+            $format .= $format;
+            $references = array_merge( $references, array_values( $data ) );
+        }
+
 		// Bind the parameters
-		call_user_func_array( array( $statement, 'bind_param' ), array_merge( array( $format ), ar::references( array_values( $data ) ) ) );
+		call_user_func_array( array( $statement, 'bind_param' ), array_merge( array( $format ), ar::references( $references ) ) );
 		
 		// Execute it
 		return $this->query();

@@ -236,6 +236,19 @@ class Craigslist_API {
     }
 
     /**
+     * Get Craiglist Market Categories
+     *
+     * @param int $market_id
+     * @return array
+     */
+    public function get_cl_market_categories( $market_id ) {
+        // Get Craigslist Categories
+        $response = $this->_execute( 'getclmarketcategories', array( 'cl_market_id' => $market_id ) );
+
+        return $response;
+    }
+
+    /**
      * Device Check
      *
      * @param array $devices

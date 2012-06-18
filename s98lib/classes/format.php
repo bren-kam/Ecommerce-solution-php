@@ -20,7 +20,20 @@ class format extends Base_Class {
 	 * @return array|string Stripped array (or string in the callback).
 	 */
 	public static function stripslashes_deep( $value ) {
-		return is_array( $value ) ? array_map( array('self', 'stripslashes_deep'), $value ) : stripslashes( $value );
+		return is_array( $value ) ? array_map( array( 'self', 'stripslashes_deep' ), $value ) : stripslashes( $value );
+	}
+
+    /**
+	 * Navigates through an array and applies html special chars to the values.
+	 *
+	 * If an array is passed, the array_map() function causes a callback to pass the
+	 * value back to the function. The slashes from this value will removed.
+	 *
+	 * @param array|string $value The array or string to be stripped
+	 * @return array|string Stripped array (or string in the callback).
+	 */
+	public static function htmlspecialchars_deep( $value ) {
+		return is_array( $value ) ? array_map( array( 'self', 'htmlspecialchars_deep' ), $value ) : htmlspecialchars( $value );
 	}
 	
 	/**
@@ -33,7 +46,7 @@ class format extends Base_Class {
 	 * @return array|string $value The encoded array (or string from the callback).
 	 */
 	public static function urlencode_deep( $value ) {
-		return is_array($value) ? array_map( array('self', 'urlencode_deep'), $value) : urlencode($value);
+		return is_array($value) ? array_map( array( 'self', 'urlencode_deep' ), $value ) : urlencode( $value );
 	}
 
     /**
@@ -48,6 +61,27 @@ class format extends Base_Class {
 	public static function trim_deep( $value ) {
 		return is_array( $value ) ? array_map( array('self', 'trim_deep'), $value ) : trim( $value );
 	}
+
+    /**
+     * Does an HTML entities but allows you to remove items
+     *
+     * @param string $string
+     * @param array $tags = array()
+     * @return string
+     */
+    public static function htmlentities( $string, $tags = array() ) {
+        if ( !is_array( $tags ) || 0 == count( $tags ) )
+            return htmlentities( $string );
+
+        // Essentially a custom html entities
+        $html_entities = get_html_translation_table( HTML_ENTITIES );
+
+        foreach ( $tags as $t ) {
+            unset( $html_entities[$t] );
+        }
+
+        return str_replace( array_keys( $html_entities ), array_values( $html_entities ), $string );
+    }
 
 	/**
 	 * Limits a phrase to a given number of words.

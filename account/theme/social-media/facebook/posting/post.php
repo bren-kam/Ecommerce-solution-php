@@ -125,58 +125,64 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/', 'posting' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $posting['fb_user_id'] ) { ?>
-			<h2 class="title"><?php echo _('Step 1: Go to the Posting application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Posting'); ?></a> <?php echo _('application page'); ?>.</p>
-			<br /><br />
-			
-			<h2 class="title"><?php echo _('Step 2: Connect the application with your dashboard account'); ?></h2>
-			<p><?php echo _('Copy the connection key listed below and paste into the Facebook app.'); ?></p>
-			<p><?php echo _('Facebook Connection Key'); ?>: <?php echo $posting['key']; ?></p>
-			<p><strong><?php echo _('NOTE'); ?></strong>: <?php echo _('You may see a request for permissions. If this is the case, you first need to Allow Permissions to the application before you will be able to move on.'); ?></p>
-			<br /><br />
-			
-		<?php } else { ?>
-			<h2 class="title"><?php echo _('Post To Your Pages'); ?></h2>
-			<?php if ( $success ) { ?>
-				<p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>
-			<?php
-			}
-        
-            if ( isset( $errs ) && !empty( $errs ) )
-                echo "<p class='red'>$errs</p>";
-			
-			if ( is_array( $pages ) ) { ?>
-				<form action="" method="post" name="fFBPost" id="fFBPost">
-					<table>
-						<tr>
-							<td><strong><?php echo _('Page'); ?>:</strong></td>
-							<td><?php echo $pages[$posting['fb_page_id']]['name']; ?></td>
-						</tr>
-						<tr>
-							<td class="top"><label for="taPost"><?php echo _('Post'); ?>:</label></td>
-							<td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
-						</tr>
-						<tr>
-							<td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-							<td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( isset( $new_date_posted ) && !$success ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
-							<td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-							<td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( isset( $new_date_posted ) && !$success ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" maxlength="8" /></td>
-						</tr>
-						<tr><td colspan="2">&nbsp;</td></tr>
-						<tr>
-							<td>&nbsp;</td>
-							<td><input type="submit" class="button" id="sSubmit" value="<?php echo _('Post to Facebook'); ?>" /></td>
-						</tr>
-					</table>
-					<?php nonce::field('fb-post'); ?>
-				</form>
-			<?php } elseif ( empty( $errs ) ) { ?>
-				<p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
-			<?php 
-			} 
-		}
-		?>
+		<?php if ( empty( $timezone ) ) { ?>
+            <p><?php echo _('Your timezone has not yet been set.'), ' <a href="/social-media/settings/" title="', _('Social Media Settings'), '">', _('Click here to set your timezone.'), '</a>'; ?></p>
+		<?php
+        } else {
+            if ( 0 == $posting['fb_user_id'] ) {
+            ?>
+                <h2 class="title"><?php echo _('Step 1: Go to the Posting application.'); ?></h2>
+                <p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Posting'); ?></a> <?php echo _('application page'); ?>.</p>
+                <br /><br />
+
+                <h2 class="title"><?php echo _('Step 2: Connect the application with your dashboard account'); ?></h2>
+                <p><?php echo _('Copy the connection key listed below and paste into the Facebook app.'); ?></p>
+                <p><?php echo _('Facebook Connection Key'); ?>: <?php echo $posting['key']; ?></p>
+                <p><strong><?php echo _('NOTE'); ?></strong>: <?php echo _('You may see a request for permissions. If this is the case, you first need to Allow Permissions to the application before you will be able to move on.'); ?></p>
+                <br /><br />
+
+            <?php } else { ?>
+                <h2 class="title"><?php echo _('Post To Your Pages'); ?></h2>
+                <?php if ( $success ) { ?>
+                    <p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>
+                <?php
+                }
+
+                if ( isset( $errs ) && !empty( $errs ) )
+                    echo "<p class='red'>$errs</p>";
+
+                if ( is_array( $pages ) ) { ?>
+                    <form action="" method="post" name="fFBPost" id="fFBPost">
+                        <table>
+                            <tr>
+                                <td><strong><?php echo _('Page'); ?>:</strong></td>
+                                <td><?php echo $pages[$posting['fb_page_id']]['name']; ?></td>
+                            </tr>
+                            <tr>
+                                <td class="top"><label for="taPost"><?php echo _('Post'); ?>:</label></td>
+                                <td><textarea name="taPost" id="taPost" rows="5" cols="50"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
+                                <td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( isset( $new_date_posted ) && !$success ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
+                                <td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
+                                <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( isset( $new_date_posted ) && !$success ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" maxlength="8" /></td>
+                            </tr>
+                            <tr><td colspan="2">&nbsp;</td></tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><input type="submit" class="button" id="sSubmit" value="<?php echo _('Post to Facebook'); ?>" /></td>
+                            </tr>
+                        </table>
+                        <?php nonce::field('fb-post'); ?>
+                    </form>
+                <?php } elseif ( empty( $errs ) ) { ?>
+                    <p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
+                <?php
+                }
+            }
+        }
+        ?>
 	</div>
 	<br /><br />
 </div>
