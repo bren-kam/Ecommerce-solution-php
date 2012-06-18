@@ -99,7 +99,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
 		
         // Link it in our database
         if ( $market_id ) {
-            $success = $c->link_market( $account['website_id'], $_POST['sMarketID'], $market_id, $_POST['sCLCategoryID'] );
+            $success = $c->link_market( $account['website_id'], $_POST['sMarketID'], $craigslist_market['market_id'], $_POST['sCLCategoryID'] );
+
+            // Need to update it
+            $market_links = $c->get_market_links( $website_id );
 		} else {
 			$errs .= _('An error occurred while tring to link your market. Please contact a system administrator.');
 		}

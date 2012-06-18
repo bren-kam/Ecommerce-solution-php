@@ -1,5 +1,12 @@
 <?php
-//
+/*
+$array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );
+
+foreach ( $array as $a ) {
+    fn::info( $a );
+    exit;
+}
+
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
 $packages = $a->get_packages();
@@ -24,13 +31,17 @@ foreach ( $markets as $m ) {
     }
 }
 
-
+*/
 // Unique Ads
 $ads = array(
 	array( 'unique_id' => 1, 'sku' => '1001' )
 	, array( 'unique_id' => 3, 'sku' => '1002' )
 	, array( 'unique_id' => 2, 'sku' => '1001' )
 	, array( 'unique_id' => 4, 'sku' => '1003' )
+	, array( 'unique_id' => 5, 'sku' => '1001' )
+	, array( 'unique_id' => 5, 'sku' => '1001' )
+	, array( 'unique_id' => 5, 'sku' => '1001' )
+	, array( 'unique_id' => 5, 'sku' => '1001' )
 	, array( 'unique_id' => 5, 'sku' => '1001' )
 );
 
@@ -43,7 +54,7 @@ fn::info( array_unique_sort( $ads, 'sku' ) );
  * @param array $array
  * @param string $key [optional]
  * @return array( $unique_array, $duplicate_array )
-
+ */
 function array_unique_sort( array $array, $key = NULL ) {
 	// Initialize variables
 	$last_value = '';
@@ -139,6 +150,47 @@ function array_unique_sort( array $array, $key = NULL ) {
         }
     }
 
-    return array( $padded_elements, $identical_elements );
+    // Now we know we've padded it as much as possible, now we just have to put any left overs in
+    $identical_element_count = count( $identical_elements );
+
+    while ( 0 != $identical_element_count ) {
+        $last_value = '';
+        $new_elements = array();
+
+        foreach ( $padded_elements as $padded_element ) {
+            $padded_value = ( is_null( $key ) ) ? $padded_element : $padded_element[$key];
+
+            // We need to start after the first one
+            if ( empty( $last_value ) ) {
+                $new_elements[] = $padded_element;
+                $last_value = $padded_value;
+                continue;
+            }
+
+            if ( $last_value == $padded_value )
+                continue;
+
+            // Insert any of elements that have been waiting to get inserted (if there are any)
+            foreach ( $identical_elements as $ik => $identical_element ) {
+                // Form the identical
+                $identical_value = ( is_null( $key ) ) ? $identical_element : $identical_element[$key];
+
+                if ( $last_value != $identical_value )
+                    continue;
+
+                $new_elements[] = $identical_element;
+                $last_value = $identical_value;
+                unset( $identical_elements[$ik] );
+                break;
+            }
+
+            $new_elements[] = $padded_element;
+            $last_value = $padded_value;
+        }
+
+        $padded_elements = $new_elements;
+        $identical_element_count = count( $identical_elements );
+    }
+
+    return $padded_elements;
 }
-*/

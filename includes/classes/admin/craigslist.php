@@ -364,8 +364,8 @@ class Craigslist extends Base_Class {
 			$this->_err( 'Failed to get market.', __LINE__, __METHOD__ );
 			return false;
 		}
-
-        return ( $market_links ) ? ar::assign_key( $market_links, 'craigslist_market_id' ) : array();
+		
+        return ( $market_links ) ? $market_links : array();
     }
     
     /**
@@ -681,9 +681,6 @@ class Craigslist extends Base_Class {
         }
 
         $unknown_tag_ids = array_diff( $tag_ids, $craiglist_tag_ids );
-
-        // Mail the report
-        fn::mail( 'kerry@greysuitretail.com', 'Unknown Tags', 'Total: ' . count( $unknown_tag_ids ) . "\n\n" . implode( "\n", $tag_ids ) );
 
         return true;
     }
