@@ -67,9 +67,8 @@ class Ashley_API {
         if ( !$this->_success )
             return false;
 
-        header::type('xml');
-        echo $this->_response->PackagesCollection->XmlData;
-        $packages = simplexml_load_string( $this->_response->PackagesCollection->XmlData );
+        // SimpleXML errors out if it thinks its reading utf-16
+        $packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->PackagesCollection->XmlData ) );
 
         return $packages;
     }

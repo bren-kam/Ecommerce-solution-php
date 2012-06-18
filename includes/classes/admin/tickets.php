@@ -28,7 +28,7 @@ class Tickets extends Base_Class {
 
         // Lets remove any characters that might be causing a problem
         $message = str_replace( array( '’', '‘', '”', '“' ), array( "'", "'", '"', '"' ), $message );
-        $message = nl2br( format::links_to_anchors( htmlentities( stripslashes( $message ) ), true , true ) );
+        $message = nl2br( format::links_to_anchors( format::htmlentities( stripslashes( $message ), array('&') ), true , true ) );
 
 		$this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => 493, 'website_id' => 0, 'summary' => stripslashes( $summary ), 'message' => $message, 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' );
 		

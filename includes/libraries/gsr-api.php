@@ -114,6 +114,21 @@ class GSR_API {
 		// Return the user id if successful
 		return ( $this->success ) ? $this->response->user_id : false;
 	}
+	
+	/**
+	 * Create Authorized Users
+	 *
+	 * @param int $website_id
+	 * @param array $emails
+	 * @return bool
+	 */
+	public function create_authorized_users( $website_id, $emails ) {
+		// Execute the command
+		$this->_execute( 'create_authorized_users', compact( 'website_id', 'emails' ) );
+		
+		// Return the success of the method
+		return $this->success;
+	}
 
 	/**
 	 * Create Website

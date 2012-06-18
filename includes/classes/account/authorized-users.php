@@ -71,7 +71,7 @@ class Authorized_Users extends Base_Class {
 	 */
 	public function create( $name, $email, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = 1 ) {
 		global $user, $u;
-		
+
 		if ( $au = $u->get_user_by_email( $email, false ) ) {
 			if ( $au['role'] > 1 ) return false;
 			

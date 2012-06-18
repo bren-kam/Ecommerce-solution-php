@@ -74,8 +74,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user'
 			$information['password'] = $_POST['pPassword'];
 		
 		if ( $user['role'] >= $us['role'] ) {
-			$success = $u->update_information( $_GET['uid'], $information );
-		}
+			$response = $u->update_information( $_GET['uid'], $information );
+            $success = $response->success();
+
+            if ( !$success )
+                $errs .= $response->message();
+        }
 	}
 }
 

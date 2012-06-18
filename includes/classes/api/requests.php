@@ -25,6 +25,7 @@ class Requests extends Base_Class {
 		, 'failed-authentication' => 'Authentication failed. Please verify you have the correct Authorization Key.'
 		, 'failed-create-order' => 'Create Order failed. Please verify you have sent the correct parameters.'
 		, 'failed-create-user' => 'Create User failed. Please verify you have sent the correct parameters.'
+		, 'failed-create-authorized-users' => 'Create Auhtorized Users failed. Please verify you have sent the correct parameters.'
 		, 'failed-create-website' => 'Create Website failed. Please verify you have sent the correct parameters.'
 		, 'failed-install-package' => 'Failed to install a package. Please verify you have sent the correct parameters.'
         , 'failed-add-note' => 'Add Note failed. Please verify you have sent the correct parameters.'
@@ -37,6 +38,7 @@ class Requests extends Base_Class {
 		, 'success-craigslist-error' => 'Craigslist Error succeeded!'
 		, 'success-create-order' => 'Create Order succeeded!'
 		, 'success-create-user' => 'Create User succeeded!'
+		, 'success-create-authorized-users' => 'Create Authorized Users succeeded!'
 		, 'success-create-website' => 'Create Website succeeded! The checklist and checklist items have also been created.'
 		, 'success-install-package' => 'Successfully installed package!'
         , 'success-add-note' => 'Add Note succeeded! You can see the information in the dashboard.'
@@ -54,6 +56,7 @@ class Requests extends Base_Class {
         , 'craigslist_error'
 		, 'create_order'
 		, 'create_user'
+		, 'create_authorized_users'
 		, 'create_website'
 		, 'install_package'
         , 'add_note'
@@ -304,6 +307,49 @@ class Requests extends Base_Class {
 		
 		$this->_add_response( array( 'success' => true, 'message' => 'success-create-user', 'user_id' => (int) $user_id ) );
 		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: $user_id", true );
+	}
+
+    /**
+	 * Create Authorized Users
+	 *
+     * @param int $website_id
+	 * @param string $emails
+	 * @return bool
+	 */
+	private function create_authorized_users() {
+		// Gets parameters and errors out if something is missing
+		extract( $this->_get_parameters( 'website_id', 'emails' ) );
+
+        $this->_verify_website( $website_id );
+
+        if ( count( $emails ) > 0 ) {
+            // Create authorized users
+
+            // Load other classes
+            inc('classes/account/users');
+            inc('classes/account/authorized-users');
+            inc('classes/account/emails');
+            inc('classes/account/tokens');
+            inc('classes/admin/websites');
+
+            $au = new Authorized_Users();
+            $w = new Websites();
+
+            // Need to change global users
+            global $user, $u;
+            $u = new Users(true);
+            $user['website'] = $w->get_website( $website_id );
+
+            // Create each authorized user
+            foreach ( $emails as $email ) {
+                $pieces = explode( '@', $email );
+
+                $au->create( $pieces[0], $email, 1, 1, 1, 0, 0, 0 );
+            }
+        }
+
+		$this->_add_response( array( 'success' => true, 'message' => 'success-authorized-users' ) );
+		$this->_log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}
 	
 	/**
@@ -624,9 +670,10 @@ class Requests extends Base_Class {
 		}
 		
 		$personal_information['password'] = md5( $personal_information['password'] );
+		$personal_information['date_created'] = dt::date('Y-m-d H:i:s');
 		
 		// Update the user
-		$this->db->update( 'users', array_merge( $personal_information, array( 'date_created' => dt::date('Y-m-d H:i:s') ) ), array( 'user_id' => $user_id, 'company_id' => $this->company_id ), 'ssssssssssss', 'ii' );
+		$this->db->update( 'users', $personal_information, array( 'user_id' => $user_id, 'company_id' => $this->company_id ), str_repeat( 's', count( $personal_information ) ), 'ii' );
 		
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
@@ -851,8 +898,8 @@ class Requests extends Base_Class {
 		}
 
         $auth_key = $this->db->escape( $_POST['auth_key'] );
-		$this->company_id = $this->db->get_var( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = '$auth_key'" );
-		
+		$this->company_id = (int) $this->db->get_var( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = '$auth_key'" );
+
 		// If there was a MySQL error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
@@ -868,7 +915,19 @@ class Requests extends Base_Class {
 			$this->error_message = 'There was no company to match API key';
 			exit;
 		}
-		
+
+        // Need to set domain
+        $domain = $this->db->get_var( 'SELECT `domain` FROM `companies` WHERE `company_id` = ' . $this->company_id );
+
+        // If there was a MySQL error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to get domain from companies', __LINE__, __METHOD__ );
+			$this->_add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
+			exit;
+		}
+
+        define( 'DOMAIN', $domain );
+
 		$this->statuses['auth'] = true;
 	}
 	

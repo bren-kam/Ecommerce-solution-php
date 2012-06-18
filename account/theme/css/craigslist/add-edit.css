@@ -70,5 +70,6 @@ input.cb { width: 15px !important; }
 
 #taCraigslistPublish { width:100% }
 #dCraigslistCustomPreview { background-color:#FFF; border:1px solid #666; padding:10px; }
-#dCraigslistPreview { margin:5px; padding:10px; border:1px solid #666; }
 
+#dCraigslistPreview { margin:5px; padding:10px; border:1px solid #666; }
+#dCraigslistCustomPreview h1, #dCraigslistCustomPreview h2, #dCraigslistCustomPreview h3, #dCraigslistCustomPreview h4, #dCraigslistCustomPreview h5, #dCraigslistCustomPreview h6 { float:  none; }

@@ -503,7 +503,7 @@ function postLoad( $ ) {
 			var imageArray = $(this).val().split('|'), industry =$('#hIndustryName').val(), productID = $('#hProductID').val();
 			
 			for ( var i in imageArray ) {
-				var imageName = imageArray[i], hiddenProductImageID = 'hProductImage_' + imageName.replace( /\.[a-zA_Z]{3,4}$/, '' ).replace( /^[^\/]+\//, '' );
+				var imageName = imageArray[i], hiddenProductImageID = 'hProductImage_' + imageName.replace( /\.[a-zA_Z]{0,4}$/, '' ).replace( /^[^\/]+\//, '' );
 				
 				var imagePath = 'http://' + industry + '.retailcatalog.us/products/' + productID + '/thumbnail/' + imageName;
 				$('#dUploadedImages').append('<div class="product-image"><div class="outer" style="height:50px;"><div class="middle"><div class="inner"><img src="' + imagePath + '" /></div></div></div><a href="' + imagePath.replace( 'thumbnail/', 'large/' ) + '" title="View Image" target="_blank">View</a><br /><a href="javascript:;" class="remove-product-image" title="Remove Image" extra="' + hiddenProductImageID + '">Remove</a></div>');

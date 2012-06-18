@@ -21,7 +21,7 @@ class Users extends Base_Class {
 	/**
 	 * Construct initializes data
 	 */
-	public function __construct() {
+	public function __construct( $bypass = false ) {
 		// Need to load the parent constructor
 		if ( !parent::__construct() )
 			return false;
@@ -33,7 +33,7 @@ class Users extends Base_Class {
             $this->encrypted_email = get_cookie( SECURE_AUTH_COOKIE );
         }
 
-		if ( !empty( $this->encrypted_email ) ) {
+		if ( !$bypass && !empty( $this->encrypted_email ) ) {
             global $user;
 
             $user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
