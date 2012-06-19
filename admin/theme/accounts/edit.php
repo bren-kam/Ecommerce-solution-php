@@ -120,17 +120,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		
 		$success = $w->update( $_GET['wid'], $fields, $fields_safety );
 
-        $sm_add_ons = @unserialize( $w->get_setting( $_GET['wid'], 'social-media-add-ons' ) );
-
-        if ( is_array( $sm_add_ons ) ) {
-            $sm = new Social_Media();
-
-            foreach ( $sm_add_ons as $smao ) {
-                if ( !in_array( $smao, $_POST['sSocialMedia'] ) )
-                    $sm->reset( $_GET['wid'], $smao );
-            }
-        }
-
 		// Update Facebook settings
 		$w->update_settings( $_GET['wid'], array( 
 			'facebook-url' => $_POST['tFacebookURL']

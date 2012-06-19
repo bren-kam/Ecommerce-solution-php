@@ -29,7 +29,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create product option.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create product option.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -56,7 +56,7 @@ class Product_Options extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create product option list items.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to create product option list items.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -82,7 +82,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update product option.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update product option.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -105,7 +105,7 @@ class Product_Options extends Base_Class {
 				
 					// Handle any error
 					if ( $this->db->errno() ) {
-						$this->err( 'Failed to create product option list item.', __LINE__, __METHOD__ );
+						$this->_err( 'Failed to create product option list item.', __LINE__, __METHOD__ );
 						return false;
 					}
 					
@@ -115,7 +115,7 @@ class Product_Options extends Base_Class {
 					
 					// Handle any error
 					if ( $this->db->errno() ) {
-						$this->err( 'Failed to update product option list item.', __LINE__, __METHOD__ );
+						$this->_err( 'Failed to update product option list item.', __LINE__, __METHOD__ );
 						return false;
 					}
 					
@@ -130,7 +130,7 @@ class Product_Options extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to delete product option list items.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to delete product option list items.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -152,7 +152,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list product options.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list product options.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -171,7 +171,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count product options.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count product options.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -193,7 +193,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product option.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product option.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -219,7 +219,7 @@ class Product_Options extends Base_Class {
 		$product_options = $this->db->get_results( 'SELECT * FROM `product_options`', ARRAY_A );
 		
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product options', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product options', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -238,7 +238,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle errors
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete product options', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete product options', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -260,7 +260,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle errors
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete product option', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete product option', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -269,7 +269,7 @@ class Product_Options extends Base_Class {
 		
 		// Handle errors
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete product option list items', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete product option list items', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -284,7 +284,7 @@ class Product_Options extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

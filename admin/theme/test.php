@@ -32,21 +32,21 @@ foreach ( $markets as $m ) {
 }
 
 */
-// Unique Ads
-$ads = array(
-	array( 'unique_id' => 1, 'sku' => '1001' )
-	, array( 'unique_id' => 3, 'sku' => '1002' )
-	, array( 'unique_id' => 2, 'sku' => '1001' )
-	, array( 'unique_id' => 4, 'sku' => '1003' )
-	, array( 'unique_id' => 5, 'sku' => '1001' )
-	, array( 'unique_id' => 5, 'sku' => '1001' )
-	, array( 'unique_id' => 5, 'sku' => '1001' )
-	, array( 'unique_id' => 5, 'sku' => '1001' )
-	, array( 'unique_id' => 5, 'sku' => '1001' )
-);
 
-// Hold new ads
-fn::info( array_unique_sort( $ads, 'sku' ) );
+// Declare classes
+$a = new Analytics();
+$c = new Craigslist;
+$m = new Mobile_Marketing();
+
+// Determine date range
+$date = new DateTime();
+$date->sub( new DateInterval('P2D') );
+
+// Update the stats
+$a->update_craigslist_stats( $date->format('Y-m-d') );
+
+// Update the tags for analytics of products
+$c->update_tags();
 
 /**
  * Organize the ads so unique products are not next to each other
@@ -54,7 +54,7 @@ fn::info( array_unique_sort( $ads, 'sku' ) );
  * @param array $array
  * @param string $key [optional]
  * @return array( $unique_array, $duplicate_array )
- */
+
 function array_unique_sort( array $array, $key = NULL ) {
 	// Initialize variables
 	$last_value = '';
@@ -193,4 +193,4 @@ function array_unique_sort( array $array, $key = NULL ) {
     }
 
     return $padded_elements;
-}
+}*/

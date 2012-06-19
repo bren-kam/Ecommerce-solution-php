@@ -36,7 +36,7 @@ class Emails extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list users.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -64,7 +64,7 @@ class Emails extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails for removal.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails for removal.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -78,7 +78,7 @@ class Emails extends Base_Class {
 			
 			// Error Handling
 			if ( $this->mc->errorCode )
-				$this->err( "Unable to get Unsubscribed Members\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage . "\nMembers returned: " . count( $unsubscribers ), __LINE__, __METHOD__ );
+				$this->_err( "Unable to get Unsubscribed Members\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage . "\nMembers returned: " . count( $unsubscribers ), __LINE__, __METHOD__ );
 			
 			$emails = ''; 
 			
@@ -96,7 +96,7 @@ class Emails extends Base_Class {
 			
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to remove unsubscribed emails.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to remove unsubscribed emails.', __LINE__, __METHOD__ );
 					return false;
 				}
 			}
@@ -106,7 +106,7 @@ class Emails extends Base_Class {
 			
 			// Error Handling
 			if ( $this->mc->errorCode )
-				$this->err( "Unable to get Cleaned Members\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage . "\nMembers returned: " . count( $cleaned ), __LINE__, __METHOD__ );
+				$this->_err( "Unable to get Cleaned Members\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage . "\nMembers returned: " . count( $cleaned ), __LINE__, __METHOD__ );
 			
 			$emails = '';
 			
@@ -124,7 +124,7 @@ class Emails extends Base_Class {
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to remove cleaned emails.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to remove cleaned emails.', __LINE__, __METHOD__ );
 					return false;
 				}
 			}
@@ -143,7 +143,7 @@ class Emails extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email results.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email results.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -154,7 +154,7 @@ class Emails extends Base_Class {
 		foreach ( $email_results as $er ) {
 			if ( !$er['mc_list_id'] ) {
 				// Do error stuff
-				//$this->err( 'There was no MailChimp List ID.', __LINE__, __METHOD__ );
+				//$this->_err( 'There was no MailChimp List ID.', __LINE__, __METHOD__ );
 				continue;
 			}
 			
@@ -180,7 +180,7 @@ class Emails extends Base_Class {
 			
 			// Error Handling
 			if ( $this->mc->errorCode )
-				$this->err( "Unable to get Interest Groups\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "Unable to get Interest Groups\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage, __LINE__, __METHOD__ );
 						
 			foreach ( $interests as $i ) {
 				if ( !in_array( $i, $groups_result['groups'] ) ) {
@@ -188,7 +188,7 @@ class Emails extends Base_Class {
 					
 					// Error Handling
 					if ( $this->mc->errorCode )
-						$this->err( "Unable to add Interest Group\n\nList_id: $mc_list_id\nInterest Group: $i\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage, __LINE__, __METHOD__ );
+						$this->_err( "Unable to add Interest Group\n\nList_id: $mc_list_id\nInterest Group: $i\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage, __LINE__, __METHOD__ );
 				}
 			}
 			
@@ -196,7 +196,7 @@ class Emails extends Base_Class {
 			$vals = $this->mc->listBatchSubscribe( $mc_list_id, $emails, false, true, true );
 						
 			if ( $this->mc->errorCode ) {
-				$this->err( "Unable to get Batch Subscribe\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "Unable to get Batch Subscribe\n\nList_id: $mc_list_id\nCode: " . $this->mc->errorCode . "\nError Message: " . $this->mc->errorMessage, __LINE__, __METHOD__ );
 			} else {
 				// Handle errors if there were any
 				if ( $vals['error_count'] > 0 ) {
@@ -206,7 +206,7 @@ class Emails extends Base_Class {
 						$errors .= "Email: " . $val['email'] . "\nCode: " . $val['code'] . "\nError Message: " . $val['message'] . "\n\n";
 					}
 					
-					$this->err( "List_id: $mc_list_id\n" . $vals['error_count'] . ' out of ' . $vals['error_count'] + $vals['success_count'] . " emails were unabled to be subscribed\n\n$errors", __LINE__, __METHOD__ );
+					$this->_err( "List_id: $mc_list_id\n" . $vals['error_count'] . ' out of ' . $vals['error_count'] + $vals['success_count'] . " emails were unabled to be subscribed\n\n$errors", __LINE__, __METHOD__ );
 				}
 				
 				$synced_email_ids = array_merge( $synced_email_ids, array_keys( $emails ) );
@@ -220,7 +220,7 @@ class Emails extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to set emails as synced.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to set emails as synced.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -248,7 +248,7 @@ class Emails extends Base_Class {
 		
 		// Handle any error
 		if ( mysql_errno() ) {
-			$this->err( 'Email Marketing', 'Failed to update default template', "Website ID: $website_id", __LINE__, __METHOD__ );
+			$this->_err( 'Email Marketing', 'Failed to update default template', "Website ID: $website_id", __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -260,7 +260,7 @@ class Emails extends Base_Class {
 				
 		// Handle any error
 		if ( mysql_errno() ) {
-			$this->err( 'Email Marketing Model', 'Failed to insert product offer email template', "Website ID: $website_id", __LINE__, __METHOD__ );
+			$this->_err( 'Email Marketing Model', 'Failed to insert product offer email template', "Website ID: $website_id", __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -269,7 +269,7 @@ class Emails extends Base_Class {
 		
 		// Handle any error
 		if ( mysql_errno() ) {
-			$this->err( 'Email Marketing Model', 'Failed to insert email template association', "Failed to insert email template association", __LINE__, __METHOD__ );
+			$this->_err( 'Email Marketing Model', 'Failed to insert email template association', "Failed to insert email template association", __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -298,7 +298,7 @@ class Emails extends Base_Class {
 		
 		// Handle errors
 		if ( mysql_errno() ) {
-			$this->err( 'Failed to delete email settings', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email settings', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -309,7 +309,7 @@ class Emails extends Base_Class {
 			$this->db->insert( 'email_settings', array( 'website_id' => $website_id, 'key' => $key, 'value' => $value ), 'iss' );
 			// Handle errors
 			if ( mysql_errno() ) {
-				$this->err( 'Failed to set email settings', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to set email settings', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -326,7 +326,7 @@ class Emails extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

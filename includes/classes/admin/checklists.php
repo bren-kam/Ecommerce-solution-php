@@ -26,7 +26,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get unlinked craigslist accounts.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get unlinked craigslist accounts.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -47,7 +47,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add checklist to website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add checklist to website.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -59,7 +59,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add website checklists items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add website checklists items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -76,7 +76,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create section.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create section.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -103,7 +103,7 @@ class Checklists extends Base_Class {
 			// Handle any error
 			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
-				$this->err( 'Failed to update checklist sections', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update checklist sections', __LINE__, __METHOD__ );
 				return false;
 			}
 
@@ -134,7 +134,7 @@ class Checklists extends Base_Class {
 
          // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to remove checklist sections.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to remove checklist sections.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -152,7 +152,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create item.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create item.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -184,7 +184,7 @@ class Checklists extends Base_Class {
                 // Handle any error
                 if ( $statement->errno ) {
                     $this->db->m->error = $statement->error;
-                    $this->err( 'Failed to update checklist items', __LINE__, __METHOD__ );
+                    $this->_err( 'Failed to update checklist items', __LINE__, __METHOD__ );
                     return false;
                 }
 
@@ -216,7 +216,7 @@ class Checklists extends Base_Class {
 
          // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to remove checklist items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to remove checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -243,7 +243,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list checklists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list checklists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -268,7 +268,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count checklists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count checklists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -287,7 +287,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get incomplete checklists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get incomplete checklists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -307,7 +307,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get checklist.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get checklist.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -328,7 +328,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -357,7 +357,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -410,7 +410,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check checklist items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -419,7 +419,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create checklist item notes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create checklist item notes.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -436,7 +436,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -453,7 +453,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get checklist items.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -482,7 +482,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add checklist item.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add checklist item.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -501,7 +501,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update website item note.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update website item note.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -522,7 +522,7 @@ class Checklists extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update website item.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update website item.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -540,7 +540,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get notes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get notes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -558,7 +558,7 @@ class Checklists extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete checklist note.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete checklist note.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -575,7 +575,7 @@ class Checklists extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

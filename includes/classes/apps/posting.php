@@ -37,7 +37,7 @@ class Posting extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -55,11 +55,11 @@ class Posting extends Base_Class {
 		$fb_user_id = (int) $fb_user_id;
 		
 		// See if there is a website_id associated with the user
-		$this->website_id = $this->db->get_var( "SELECT `website_id` FROM `sm_posting` WHERE `fb_user_id` = $fb_user_id" );
+		$this->website_id = $this->db->get_var( "SELECT a.`website_id` FROM `sm_facebook_page` AS a LEFT JOIN `sm_posting` AS b ON ( a.`id` = b.`sm_facebook_page_id` ) WHERE b.`fb_user_id` = $fb_user_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if website is connected.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if website is connected.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -81,7 +81,7 @@ class Posting extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get connected pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get connected pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -98,7 +98,7 @@ class Posting extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
