@@ -20,6 +20,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 	
 	// Get the user
 	$assigned_to_user = $u->get_user( $ticket['assigned_to_user_id'] );
+    $ticket_creator = $u->get_user( $ticket['user_id'] );
 
 	// Define variables
     $content = nl2br( format::links_to_anchors( format::htmlentities( stripslashes( $_POST['c'] ), array('&') ), true, true ) );
@@ -32,14 +33,14 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
     $ticket['message'] = strip_tags( $ticket['message'] );
 
 	// If it's not private, send an email to the client
-	if ( '0' == $_POST['p'] && 1 == $ticket['status'] )
-		fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\n**Support Issue**\n" . $ticket['message'], $assigned_to_user['company'] . ' <support@' . $assigned_to_user['domain'] . '>' );
+	if ( '0' == $_POST['p'] && ( 1 == $ticket['status'] || $ticket_creator['role'] < 8 ) )
+		fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\n**Support Issue**\n" . $ticket['message'], $ticket_creator['company'] . ' <support@' . $ticket_creator['domain'] . '>' );
 	
 	$ticket_comment = $tc->get_single( $result );
 	$ticket_comment['date'] = dt::date( 'm/d/Y g:ia', $ticket_comment['date'] );
 	
 	// Send the assigned user an email if they are not submitting the comment
-	if ( $ticket['assigned_to_user_id'] != $user['user_id'] && 1 == $ticket['status'] )
+	if ( $ticket['assigned_to_user_id'] != $user['user_id'] && $ticket['assigned_to_user_id'] != $ticket['user_id'] && 1 == $ticket['status'] )
 		fn::mail( $assigned_to_user['email'], 'New Comment on Ticket #' . $_POST['tid'] . ' - ' . $ticket['summary'], "******************* Reply Above This Line *******************\n\n" . $user['contact_name'] . ' has posted a new comment on Ticket #' . $_POST['tid'] . ".\n\nhttp://admin." . $assigned_to_user['domain'] . "/tickets/ticket/?tid=" . $_POST['tid'] . "**Comment**\n{$content}\n\n**Support Issue**\n" . $ticket['message'], $assigned_to_user['company'] . ' <support@' . $assigned_to_user['domain'] . '>' );
 
 	// If there was an error, let them know
