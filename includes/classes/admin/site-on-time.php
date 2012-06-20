@@ -32,6 +32,13 @@ class SiteOnTime extends Base_Class {
          */
 	}
 
+    /**
+     * Run
+     */
+    public function run() {
+
+    }
+
 	/**
 	 * Report an error
 	 *
