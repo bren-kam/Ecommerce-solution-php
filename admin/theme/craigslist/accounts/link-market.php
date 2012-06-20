@@ -95,7 +95,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'link-market'
 			$store['storephone'] = $website['phone'];
 		
         // Get the market id
-        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['market_id'], $locations, $_POST['sCLCategoryID'], $store );
+        $market_id = $craigslist_api->add_market( $account['craigslist_customer_id'], $craigslist_market['cl_market_id'], $locations, $_POST['sCLCategoryID'], $store );
 		
         // Link it in our database
         if ( $market_id ) {
@@ -151,12 +151,12 @@ get_header();
                             $category_markets = array();
 
 							foreach ( $market_links as $ml ) {
-                                if ( !isset( $category_markets[$ml['market_id']] ) )
-                                    $category_markets[$ml['market_id']] = $craigslist_api->get_cl_market_categories( $ml['market_id'] );
+                                if ( !isset( $category_markets[$ml['cl_market_id']] ) )
+                                    $category_markets[$ml['cl_market_id']] = $craigslist_api->get_cl_market_categories( $ml['cl_market_id'] );
 
                                 $category = '(No Category)';
 
-                                foreach ( $category_markets[$ml['market_id']] as $cm ) {
+                                foreach ( $category_markets[$ml['cl_market_id']] as $cm ) {
                                     if ( $cm->cl_category_id == $ml['cl_category_id'] ) {
                                         $category = $cm->name;
                                         break;
@@ -183,10 +183,10 @@ get_header();
 
                             if ( is_array( $markets ) )
                             foreach ( $markets as $m ) {
-                                if ( 0 == $m['market_id'] )
+                                if ( 0 == $m['cl_market_id'] )
                                     continue;
                             ?>
-                                <option value="<?php echo $m['craigslist_market_id']; ?>" rel="<?php echo $m['market_id']; ?>"><?php echo $m['market']; ?></option>
+                                <option value="<?php echo $m['craigslist_market_id']; ?>" rel="<?php echo $m['cl_market_id']; ?>"><?php echo $m['market']; ?></option>
                             <?php } ?>
                         </select>
                     </td>

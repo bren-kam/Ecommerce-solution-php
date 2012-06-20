@@ -336,7 +336,7 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $craigslist_market_id = (int) $craigslist_market_id;
 
-        $market = $this->db->get_row( "SELECT `craigslist_market_id`, `market_id`, `parent_market_id`, `state`, `city`, `area`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `craigslist_market_id` = $craigslist_market_id AND `status` = 1", ARRAY_A );
+        $market = $this->db->get_row( "SELECT `craigslist_market_id`, `cl_market_id`, `parent_market_id`, `state`, `city`, `area`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `craigslist_market_id` = $craigslist_market_id AND `status` = 1", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -357,7 +357,7 @@ class Craigslist extends Base_Class {
         // Type Juggling
         $website_id = (int) $website_id;
 
-        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market, a.`market_id`, a.`cl_category_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
+        $market_links = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( b.`city`, ', ', IF( '' <> b.`area`, CONCAT( b.`state`, ' - ', b.`area` ), b.`state` ) ) AS market, a.`market_id`, a.`cl_category_id`, b.`cl_market_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`status` = 1", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -372,15 +372,15 @@ class Craigslist extends Base_Class {
      * Get CL_Category_ID's
      *
      * @param int $website_id
-     * @param int $market_id
+     * @param int $cl_market_id
      * @return array
      */
-    public function get_cl_category_ids( $website_id, $market_id ) {
+    public function get_cl_category_ids( $website_id, $cl_market_id ) {
         // Type Juggling
         $website_id = (int) $website_id;
-        $market_id = (int) $market_id;
+        $cl_market_id = (int) $cl_market_id;
 
-        $cl_category_ids = $this->db->get_col( "SELECT `cl_category_id` FROM `craigslist_market_links` WHERE `market_id` = $market_id AND `website_id` = $website_id" );
+        $cl_category_ids = $this->db->get_col( "SELECT a.`cl_category_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = $website_id AND b.`cl_market_id` = $cl_market_id" );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -414,7 +414,7 @@ class Craigslist extends Base_Class {
      * @return array
      */
     public function get_markets() {
-        $markets = $this->db->get_results( "SELECT `craigslist_market_id`, `market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC", ARRAY_A );
+        $markets = $this->db->get_results( "SELECT `craigslist_market_id`, `cl_market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC", ARRAY_A );
 
         // Handle any error
 		if ( $this->db->errno() ) {
@@ -445,110 +445,6 @@ class Craigslist extends Base_Class {
 
         return true;
     }
-
-    /**
-     * Get Markets
-     */
-
-    /**
-     * Create Craigslist Market
-     *
-     * @param string $state
-     * @param string $city
-     * @param string $area
-     * @return int
-     */
-    public function create_market( $state, $city, $area ) {
-        $this->db->insert( 'craigslist_markets', array( 'state' => $state, 'city' => $city, 'area' => $area, 'date_created' => dt::date('Y-m-d H:i:s') ), 'ssss' );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to create market.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return $this->db->insert_id;
-    }
-
-    /**
-     * Update Craigslist Market
-     *
-     * @param int $craigslist_market_id
-     * @param string $state
-     * @param string $city
-     * @param string $area
-     * @return bool
-     */
-    public function update_market( $craigslist_market_id, $state, $city, $area ) {
-        $this->db->update( 'craigslist_markets', array( 'state' => $state, 'city' => $city, 'area' => $area ), array( 'craigslist_market_id' => $craigslist_market_id ), 'sss', 'i' );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to update market.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return true;
-    }
-
-    /**
-     * Delete a Craigslist Market
-     *
-     * @param int $craigslist_market_id
-     * @return bool
-     */
-    public function delete_market( $craigslist_market_id ) {
-        // Delete the market
-        $this->db->update( 'craigslist_markets', array( 'status' => 0 ), array( 'craigslist_market_id' => $craigslist_market_id ), 'i', 'i' );
-
-        // Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to deactivate craigslist market.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return true;
-    }
-
-    /**
-	 * List Craigslist Markets
-	 *
-	 * @param string $where
-	 * @param string $order_by
-	 * @param string $limit
-	 * @return array
-	 */
-	public function list_craigslist_markets( $where, $order_by, $limit ) {
-		// Get the markets
-		$markets = $this->db->get_results( "SELECT `craigslist_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `date_created` FROM `craigslist_markets` WHERE `status` = 1 $where ORDER BY $order_by LIMIT $limit", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to list craigslist markets.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $markets;
-	}
-
-    /**
-	 * Count the craigslist markets
-	 *
-	 * @param string $where
-	 * @return array
-	 */
-	public function count_craigslist_markets( $where ) {
-		// Get the craigslist market count
-		$market_count = $this->db->get_var( "SELECT COUNT(`craigslist_market_id`) FROM `craigslist_markets` WHERE `status` = 1 $where" );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to count craigslist markets.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-		return $market_count;
-	}
 
     /***** TAGS ****/
 
