@@ -202,12 +202,12 @@ get_header();
                     <?php
                     $category_markets = array();
                     foreach ( $markets as $m ) {
-                        if ( !isset( $category_markets[$m['market_id']] ) )
-                            $category_markets[$m['market_id']] = $craigslist_api->get_cl_market_categories( $m['market_id'] );
+                        if ( !isset( $category_markets[$m['cl_market_id']] ) )
+                            $category_markets[$m['cl_market_id']] = $craigslist_api->get_cl_market_categories( $m['cl_market_id'] );
 
                         $category = '(No Category)';
 
-                        foreach ( $category_markets[$m['market_id']] as $cm ) {
+                        foreach ( $category_markets[$m['cl_market_id']] as $cm ) {
                             if ( $cm->cl_category_id == $m['cl_category_id'] ) {
                                 $category = $cm->name;
                                 break;
@@ -216,7 +216,7 @@ get_header();
 
                         $selected = ( in_array( $m['craigslist_market_id'], $ad['craigslist_markets'] ) ) ? ' selected="selected"' : '';
                         ?>
-                        <option value="<?php echo $m['craigslist_market_id']; ?>"<?php echo $selected; ?>><?php echo $m['market']; ?> / <?php echo $category; ?></option>
+                        <option value="<?php echo $m['craigslist_market_id']; ?>"<?php echo $selected; ?>><?php echo $m['market'], ' / ', $category; ?></option>
                     <?php } ?>
                 </select>
                 <br /><br />
