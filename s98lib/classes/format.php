@@ -168,53 +168,7 @@ class format extends Base_Class {
 	public static function strip_extension( $file_name ) {
 		return str_replace( '.' . self::file_extension( $file_name ), '', $file_name );
 	}
-	
-	/**
-	 * XML Encode - Encodes array into XML
-	 *
-	 * XML Encode is json_encode counterpart, does the same thing for xml.
-	 *
-	 * @param mixed $mixed
-	 * @param object $domElement (optional) the dom element object
-	 * @param object $DOMDocument (optional) the dom document object
-	 * @return string the XML
-	 */
-	public static function xml_encode( $mixed, $domElement = NULL, $DOMDocument = NULL ){
-		if ( is_null( $DOMDocument ) ) {
-			$DOMDocument = new DOMDocument;
-			$DOMDocument->formatOutput = true;
-			self::xml_encode( array( 'xml' => $mixed ), $DOMDocument, $DOMDocument );
-			header('Content-type: text/xml');
-			echo $DOMDocument->saveXML();
-		} else {
-			if ( is_array( $mixed ) ) {
-				foreach ( $mixed as $index => $mixedElement ) {
-					if ( is_int( $index ) ) {
-						if ( 0 == $index ) {
-							$node = $domElement;
-						} else {
-							$node = $DOMDocument->createElement( $domElement->tagName );
-							$domElement->parentNode->appendChild( $node );
-						}
-					} else {
-						$plural = $DOMDocument->createElement( $index );
-						$domElement->appendChild( $plural );
-						$node = $plural;
-						
-						if ( rtrim( $index, 's' ) !== $index ) {
-							$singular = $DOMDocument->createElement( rtrim( $index, 's' ) );
-							$plural->appendChild( $singular );
-							$node = $singular;
-						}
-					}
-					self::xml_encode( $mixedElement, $node, $DOMDocument );
-				}
-			} else{
-				$domElement->appendChild( $DOMDocument->createTextNode( $mixed ) );
-			}
-		}
-	}
-	
+
 	/**
 	 * Converts string to HTML Entity equivalents of the characters
 	 *
