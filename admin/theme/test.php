@@ -7,11 +7,12 @@ foreach ( $array as $a ) {
     exit;
 }
 */
+
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
 //$package_templates = $a->get_package_templates( 'Bedaa', 'B128' );
 //fn::info( $package_templates );
-fn::info( $a->get_item_features() );
+fn::info( $a->get_items() );
 exit;
 /*
 // Load the library

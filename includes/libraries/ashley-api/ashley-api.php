@@ -169,6 +169,27 @@ class Ashley_API {
     }
 
     /**
+     * Get Items
+     *
+     * @return object
+     */
+    public function get_items() {
+        set_time_limit(300);
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'ItemExecuteOption' => 'LoadItems' );
+
+        // Execute the response
+        $this->_execute( 'GetItems', new GetItems( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->GetItemsCollection->XmlData ) );
+    }
+
+    /**
      * Get Item Features
      *
      * @return object

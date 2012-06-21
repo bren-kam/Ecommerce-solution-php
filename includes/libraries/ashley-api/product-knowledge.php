@@ -171,6 +171,26 @@ class GetFriendlyDescriptions {
 }
 
 /**
+ * GetItems
+ */
+class GetItems {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
  * GetItemFeatures
  */
 class GetItemFeatures {
