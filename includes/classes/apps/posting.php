@@ -55,7 +55,7 @@ class Posting extends Base_Class {
 		$fb_user_id = (int) $fb_user_id;
 		
 		// See if there is a website_id associated with the user
-		$this->website_id = $this->db->get_var( "SELECT a.`website_id` FROM `sm_facebook_page` AS a LEFT JOIN `sm_posting` AS b ON ( a.`id` = b.`sm_facebook_page_id` ) WHERE b.`fb_user_id` = $fb_user_id" );
+		$this->website_id = $this->db->get_var( "SELECT a.`website_id` FROM `sm_facebook_page` AS a LEFT JOIN `sm_posting` AS b ON ( a.`id` = b.`sm_facebook_page_id` ) WHERE a.`status` = 1 AND b.`fb_user_id` = $fb_user_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

@@ -132,6 +132,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
             , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
+            , 'facebook-pages' => $_POST['tFacebookPages']
 		) );
 	}
 }
@@ -154,6 +155,7 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ashley-alternate-folder'
     , 'social-media-add-ons'
     , 'trumpia-api-key'
+    , 'facebook-pages'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -440,6 +442,10 @@ get_header();
                             <?php } else { ?>
 							<input type="text" name="tTrumpiaAPIKey" id="tTrumpiaAPIKey" value="<?php if ( isset( $settings['trumpia-api-key'] ) ) echo $settings['trumpia-api-key']; ?>" class="tb" />
                             <?php } ?>
+						</p>
+                        <p>
+							<label for="tFacebookPages"><?php echo _('Facebook Pages'); ?>:</label>
+							<input type="text" name="tFacebookPages" id="tFacebookPages" value="<?php if ( isset( $settings['facebook-pages'] ) ) echo $settings['facebook-pages']; ?>" class="tb" />
 						</p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 

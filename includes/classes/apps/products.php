@@ -23,7 +23,7 @@ class Products extends Base_Class {
 	 */
 	public function get_tab( $fb_page_id ) {
 		// Get the tab
-		$tab_data = $this->db->prepare( "SELECT IF( 0 = c.`product_catalog`, a.`content`, 'no-catalog' ) AS content, b.`website_id`, c.`domain` FROM `sm_products` AS a `sm_facebook_page` AS b ON ( a.`sm_facebook_page_id` = b.`id` ) LEFT JOIN `websites` AS c ON ( b.`website_id` = c.`website_id` ) WHERE a.`fb_page_id` = ?", 's', $fb_page_id )->get_row( '', ARRAY_A );
+		$tab_data = $this->db->prepare( "SELECT IF( 0 = c.`product_catalog`, a.`content`, 'no-catalog' ) AS content, b.`website_id`, c.`domain` FROM `sm_products` AS a `sm_facebook_page` AS b ON ( a.`sm_facebook_page_id` = b.`id` ) LEFT JOIN `websites` AS c ON ( b.`website_id` = c.`website_id` ) WHERE a.`fb_page_id` = ? AND b.`status` = 1", 's', $fb_page_id )->get_row( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -141,7 +141,7 @@ class Products extends Base_Class {
 		$fb_page_id = (int) $fb_page_id;
 		
 		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_products` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE c.`fb_page_id` = $fb_page_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_products` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE b.`status` = 1 AND c.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

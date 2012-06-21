@@ -33,7 +33,7 @@ class About_Us extends Base_Class {
 		
 		if ( 0 != $tab_data['website_page_id'] ) {
 			// If there was a website page id, we need to get the content from elsewhere
-			$page = $this->db->prepare( "SELECT a.`title`, a.`content`, b.`domain` FROM `website_pages` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `sm_about_us` AS d ON ( c.`id` = d.`sm_facebook_page_id` ) WHERE a.`website_page_id` = ? AND d.`fb_page_id` = ?", 'is', $tab_data['website_page_id'], $fb_page_id )->get_row( '', ARRAY_A );
+			$page = $this->db->prepare( "SELECT a.`title`, a.`content`, b.`domain` FROM `website_pages` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `sm_about_us` AS d ON ( c.`id` = d.`sm_facebook_page_id` ) WHERE a.`website_page_id` = ? AND c.`status` = 1 AND d.`fb_page_id` = ?", 'is', $tab_data['website_page_id'], $fb_page_id )->get_row( '', ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {

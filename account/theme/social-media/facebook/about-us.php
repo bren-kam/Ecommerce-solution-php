@@ -11,15 +11,18 @@ global $user;
 if ( !$user )
 	login();
 
-// Make sure they have access to this page
-$w = new Websites;
-$social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
-
-if ( !is_array( $social_media_add_ons ) || !in_array( 'about-us', $social_media_add_ons ) )
+if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
     url::redirect('/social-media/facebook/');
 
-// Instantiate Classes
+// Make sure they have access to this page
 $sm = new Social_Media;
+$w = new Websites;
+$social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
+$facebook_page = $sm->get_facebook_page( $_SESSION['sm_facebook_page_id'] );
+
+if ( !$facebook_page || !is_array( $social_media_add_ons ) || !in_array( 'about-us', $social_media_add_ons ) )
+    url::redirect('/social-media/facebook/');
+
 
 if ( $user['website']['pages'] ) {
 	// We will need website files
@@ -47,7 +50,7 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('About Us'); ?></h1>
+	<h1><?php echo _('About Us'), ' - ', $facebook_page['name']; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">

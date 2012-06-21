@@ -33,7 +33,7 @@ class Contact_Us extends Base_Class {
 		
 		if ( 0 != $tab_data['website_page_id'] ) {
 			// If there was a website page id, we need to get the content from elsewhere
-			$page = $this->db->prepare( "SELECT a.`title`, a.`content`, b.`domain` FROM `website_pages` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `sm_contact_us` AS d ON ( c.`id` = d.`sm_facebook_page_id` ) WHERE a.`website_page_id` = ? AND d.`fb_page_id` = ?", 'is', $tab_data['website_page_id'], $fb_page_id )->get_row( '', ARRAY_A );
+			$page = $this->db->prepare( "SELECT a.`title`, a.`content`, b.`domain` FROM `website_pages` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `sm_contact_us` AS d ON ( c.`id` = d.`sm_facebook_page_id` ) WHERE a.`website_page_id` = ? AND c.`status` = 1 AND d.`fb_page_id` = ?", 'is', $tab_data['website_page_id'], $fb_page_id )->get_row( '', ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -42,7 +42,7 @@ class Contact_Us extends Base_Class {
 			}
 			
 			// Get pagemeta
-			$pagemeta = $this->db->prepare( 'SELECT a.`key`, a.`value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `sm_contact_us` AS d ON ( c.`id` = d.`sm_facebook_page_id` ) WHERE a.`website_page_id` = ? AND d.`fb_page_id` = ?', 'is', $tab_data['website_page_id'], $fb_page_id )->get_results( '', ARRAY_A );
+			$pagemeta = $this->db->prepare( 'SELECT a.`key`, a.`value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS b ON ( a.`website_page_id` = b.`website_page_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`website_id` = c.`website_id` ) LEFT JOIN `sm_contact_us` AS d ON ( c.`id` = d.`sm_facebook_page_id` ) WHERE a.`website_page_id` = ? AND c.`status` = 1 AND d.`fb_page_id` = ?', 'is', $tab_data['website_page_id'], $fb_page_id )->get_results( '', ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -194,7 +194,7 @@ class Contact_Us extends Base_Class {
 		$fb_page_id = (int) $fb_page_id;
 		
 		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_contact_us` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE c.`fb_page_id` = $fb_page_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_contact_us` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE b.`status` = 1 AND c.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

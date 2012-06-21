@@ -65,7 +65,7 @@ class Fan_Offer extends Base_Class {
 	/**
 	 * Get Connected Website
 	 *
-	 * @param int $fb_user_id
+	 * @param int $fb_page_id
 	 * @return array
 	 */
 	public function get_connected_website( $fb_page_id ) {
@@ -73,7 +73,7 @@ class Fan_Offer extends Base_Class {
 		$fb_page_id = (int) $fb_page_id;
 		
 		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_fan_offer` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE c.`fb_page_id` = $fb_page_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_fan_offer` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE b.`status` = 1 AND c.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -96,7 +96,7 @@ class Fan_Offer extends Base_Class {
 		$email = strtolower( $email );
 		
 		// We need to get the email_id
-		$email_data = $this->db->prepare( 'SELECT a.`email_id`, b.`website_id`, c.`email_list_id` FROM `emails` AS a LEFT JOIN `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_fan_offer` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE a.`email` = ? AND c.`fb_page_id` = ?', 'ss', $email, $fb_page_id )->get_row( '', ARRAY_A );
+		$email_data = $this->db->prepare( 'SELECT a.`email_id`, b.`website_id`, c.`email_list_id` FROM `emails` AS a LEFT JOIN `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_fan_offer` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE a.`email` = ? AND b.`status` = 1 AND c.`fb_page_id` = ?', 'ss', $email, $fb_page_id )->get_row( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -109,7 +109,7 @@ class Fan_Offer extends Base_Class {
 			// @Fix the above query should be able to grab the fields even if email_id is null
 			
 		 	// We need to get the email_id
-			$email_data = $this->db->prepare( 'SELECT a.`website_id`, b.`email_list_id` FROM `sm_facebook_page` AS a LEFT JOIN `sm_fan_offer` AS b ON ( a.`id` = b.`sm_facebook_page_id` ) WHERE b.`fb_page_id` = ?', 's', $fb_page_id )->get_row( '', ARRAY_A );
+			$email_data = $this->db->prepare( 'SELECT a.`website_id`, b.`email_list_id` FROM `sm_facebook_page` AS a LEFT JOIN `sm_fan_offer` AS b ON ( a.`id` = b.`sm_facebook_page_id` ) WHERE a.`status` = 1 AND b.`fb_page_id` = ?', 's', $fb_page_id )->get_row( '', ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {

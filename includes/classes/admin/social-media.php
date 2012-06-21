@@ -22,7 +22,7 @@ class Social_Media extends Base_Class {
 	 */
 	public function get_posting_posts() {
 		// Get the posting posts
-		$posts = $this->db->get_results( "SELECT a.`sm_posting_post_id`, a.`access_token`, a.`post`, a.`link`, b.`fb_page_id`, c.`website_id`, d.`title` AS account, e.`email`, g.`name` AS company, g.`domain` FROM `sm_posting_posts` AS a LEFT JOIN `sm_posting` AS b ON ( a.`sm_facebook_page_id` = b.`sm_facebook_page_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`sm_facebook_page_id` = c.`id` ) LEFT JOIN `websites` AS d ON ( c.`website_id` = d.`website_id` ) LEFT JOIN `users` AS e ON ( d.`os_user_id` = e.`user_id` ) LEFT JOIN `users` AS f ON ( d.`user_id` = f.`user_id` ) LEFT JOIN `companies` AS g ON ( f.`company_id` = g.`company_id` ) WHERE a.`status` = 0 AND NOW() > a.`date_posted`", ARRAY_A );
+		$posts = $this->db->get_results( "SELECT a.`sm_posting_post_id`, a.`access_token`, a.`post`, a.`link`, b.`fb_page_id`, c.`website_id`, d.`title` AS account, e.`email`, g.`name` AS company, g.`domain` FROM `sm_posting_posts` AS a LEFT JOIN `sm_posting` AS b ON ( a.`sm_facebook_page_id` = b.`sm_facebook_page_id` ) LEFT JOIN `sm_facebook_page` AS c ON ( b.`sm_facebook_page_id` = c.`id` ) LEFT JOIN `websites` AS d ON ( c.`website_id` = d.`website_id` ) LEFT JOIN `users` AS e ON ( d.`os_user_id` = e.`user_id` ) LEFT JOIN `users` AS f ON ( d.`user_id` = f.`user_id` ) LEFT JOIN `companies` AS g ON ( f.`company_id` = g.`company_id` ) WHERE a.`status` = 0 AND NOW() > a.`date_posted` AND c.`status` = 1", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
