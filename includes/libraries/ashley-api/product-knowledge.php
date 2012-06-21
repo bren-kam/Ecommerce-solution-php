@@ -68,10 +68,112 @@ class PackageRequest extends BaseRequest {
     }
 }
 
+/********** ALL THE METHODS **********/
+
 /**
  * GetPackages
  */
 class GetPackages {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
+ * GetPackageTemplates
+ */
+class GetPackageTemplates {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
+ * GetCategories
+ */
+class GetCategories {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
+ * GetDimensions
+ */
+class GetDimensions {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
+ * GetFriendlyDescriptions
+ */
+class GetFriendlyDescriptions {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
+ * GetItemFeatures
+ */
+class GetItemFeatures {
 	/**
 	 * @access public
 	 * @var PackageRequest
