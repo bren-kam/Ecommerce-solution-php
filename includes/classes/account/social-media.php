@@ -87,6 +87,71 @@ class Social_Media extends Base_Class {
         return $facebook_page;
     }
 
+    /**
+     * Create Facebook Page
+     *
+     * @param string $name
+     * @return int
+     */
+    public function create_facebook_page( $name ) {
+        global $user;
+
+        $this->db->insert( 'facebook_page', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->_err( 'Failed to create facebook page.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Update Facebook Page
+     *
+     * @param int $id
+     * @param string $name
+     * @return int
+     */
+    public function update_facebook_page( $id, $name ) {
+        global $user;
+
+        $this->db->update( 'facebook_page', array( 'name' => $name ), array( 'id' => $id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->_err( 'Failed to upadte facebook page.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete Facebook Page
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete_facebook_page( $id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $id = (int) $id;
+
+        $this->db->update( 'sm_facebook_page', array( 'status' => 0 ), array( 'id' => $id, 'website_id' => $website_id ), 'i', 'ii' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to delete facebook page.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
 	/***** EMAIL SIGN UP *****/
 	
 	/**
@@ -234,9 +299,7 @@ class Social_Media extends Base_Class {
 			$this->_err( 'Failed to create sweepstakes.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		echo 'here';
-		
+
 		return $key;
 	}
 	

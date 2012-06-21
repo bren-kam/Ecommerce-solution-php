@@ -11,15 +11,20 @@ global $user;
 if ( !$user )
 	login();
 
+// Make Sure they chose a facebook page
+if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+    url::redirect('/social-media/facebook/');
+
 // Make sure they have access to this page
+$sm = new Social_Media;
 $w = new Websites;
 $social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
+$facebook_page = $sm->get_facebook_page( $_SESSION['sm_facebook_page_id'] );
 
-if ( !is_array( $social_media_add_ons ) || !in_array( 'email-sign-up', $social_media_add_ons ) )
+if ( !$facebook_page || !is_array( $social_media_add_ons ) || !in_array( 'email-sign-up', $social_media_add_ons ) )
     url::redirect('/social-media/facebook/');
 
 // Instantiate Classes
-$sm = new Social_Media;
 $e = new Email_Marketing;
 $wf = new Website_Files;
 $v = new Validator;
@@ -58,7 +63,7 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Email Sign Up'); ?></h1>
+	<h1><?php echo _('Email Sign Up'), ' - ', $facebook_page['name']; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">

@@ -11,6 +11,7 @@ global $user;
 if ( !$user )
 	login();
 
+// Make Sure they chose a facebook page
 if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
     url::redirect('/social-media/facebook/');
 
@@ -22,7 +23,6 @@ $facebook_page = $sm->get_facebook_page( $_SESSION['sm_facebook_page_id'] );
 
 if ( !$facebook_page || !is_array( $social_media_add_ons ) || !in_array( 'about-us', $social_media_add_ons ) )
     url::redirect('/social-media/facebook/');
-
 
 if ( $user['website']['pages'] ) {
 	// We will need website files
