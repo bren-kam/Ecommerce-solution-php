@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 // Secure the section
-if ( !$user['website']['mobile_marketing'] )
+if ( !$user['website']['social_media'] )
     url::redirect('/');
 
 // Get the mobile subscriber id if there is one
@@ -55,7 +55,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-fac
 }
 
 // Get the Facebook Page if necessary
-if ( $sm_facebook_page_id ) {
+if ( $sm_facebook_page_id || $success ) {
+    $sm_facebook_page_id = ( !$sm_facebook_page_id && $success ) ? $success : $sm_facebook_page_id;
 	$facebook_page = $sm->get_facebook_page( $sm_facebook_page_id );
 } else {
 	// Initialize variable
@@ -94,12 +95,12 @@ get_header();
             if ( isset( $errs ) )
                 echo "<p class='red'>$errs</p>";
             ?>
-            <form name="fAddEditFacebookPage" action="/social-media/add-edit/<?php if ( $sm_facebook_page_id ) echo "?smfbpid=$sm_facebook_page_id"; ?>" method="post">
+            <form name="fAddEditFacebookPage" action="/social-media/facebook/add-edit/<?php if ( $sm_facebook_page_id ) echo "?smfbpid=$sm_facebook_page_id"; ?>" method="post">
                 <?php nonce::field( 'add-edit-facebook-page' ); ?>
                 <table cellpadding="0" cellspacing="0">
                     <tr>
                         <td><label for="tName"><?php echo _('Name'); ?>:</label></td>
-                        <td><input type="text" class="tb" name="tName" id="tName" maxlength="20" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $facebook_page['name']; ?>" /></td>
+                        <td><input type="text" class="tb" name="tName" id="tName" maxlength="100" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $facebook_page['name']; ?>" /></td>
                     </tr>
                     <tr><td colspan="2">&nbsp;</td></tr>
                     <tr>

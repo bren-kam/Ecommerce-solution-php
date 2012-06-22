@@ -11,6 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
+// Secure the section
+if ( !$user['website']['social_media'] )
+    url::redirect('/');
+
 $selected = "social_media";
 $title = _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
 get_header();
