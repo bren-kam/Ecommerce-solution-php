@@ -23,7 +23,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Facebook'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'social-media/' ); ?>
+	<?php get_sidebar( 'social-media/', 'facebook_pages' ); ?>
 	<div id="subcontent">
 		<table cellpadding="0" cellspacing="0" width="100%" perPage="25,50,100" ajax="/ajax/social-media/facebook/list-pages/">
 			<thead>
