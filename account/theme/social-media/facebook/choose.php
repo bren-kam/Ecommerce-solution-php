@@ -11,6 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
+// Secure the section
+if ( !$user['website']['social_media'] )
+    url::redirect('/');
+
 // Make Sure they can only get here when they select a page
 if ( !isset( $_GET['smfbpid'] ) )
     url::redirect('/social-media/facebook/');
