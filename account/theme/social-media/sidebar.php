@@ -1,9 +1,11 @@
 <div id="sidebar">
 	<h2><?php echo _('Sidebar'); ?></h2>
     <a href="/social-media/facebook/" class="top" title="<?php echo _('Pages'); ?>"><?php echo _('Pages'); ?></a>
-    <a href="/social-media/facebook/add-edit/" title="<?php echo _('Add a Page'); ?>" class="sub"><?php echo _('Add'); ?></a>
+    <?php if ( isset( $facebook_pages ) ) { ?>
+        <a href="/social-media/facebook/add-edit/" title="<?php echo _('Add a Page'); ?>" class="sub"><?php echo _('Add'); ?></a>
     <?php
-    if ( isset( $_SERVER['sm_facebook_page_id'] ) ) {
+    }
+    if ( isset( $_SESSION['sm_facebook_page_id'] ) ) {
         $w = new Websites;
         $settings = $w->get_settings( 'facebook-url', 'social-media-add-ons' );
 
