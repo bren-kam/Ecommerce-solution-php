@@ -27,7 +27,7 @@ class Facebook_Site extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get tab.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get tab.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -47,7 +47,7 @@ class Facebook_Site extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -57,7 +57,7 @@ class Facebook_Site extends Base_Class {
 	/**
 	 * Get Connected Website
 	 *
-	 * @param int $fb_user_id
+	 * @param int $fb_page_id
 	 * @return array
 	 */
 	public function get_connected_website( $fb_page_id ) {
@@ -65,11 +65,11 @@ class Facebook_Site extends Base_Class {
 		$fb_page_id = (int) $fb_page_id;
 		
 		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, b.`key` FROM `websites` AS a LEFT JOIN `sm_facebook_site` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`fb_page_id` = $fb_page_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_facebook_site` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE b.`status` = 1 AND c.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -85,7 +85,7 @@ class Facebook_Site extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
