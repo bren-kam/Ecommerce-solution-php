@@ -321,7 +321,7 @@ class Requests extends Base_Class {
 		extract( $this->_get_parameters( 'website_id', 'emails' ) );
 
         $this->_verify_website( $website_id );
-
+		
         if ( count( $emails ) > 0 ) {
             // Create authorized users
 
@@ -338,6 +338,8 @@ class Requests extends Base_Class {
             // Need to change global users
             global $user, $u;
             $u = new Users(true);
+			$user['company_id'] = $this->company_id;
+			$user['role'] = 7;
             $user['website'] = $w->get_website( $website_id );
 
             // Create each authorized user
