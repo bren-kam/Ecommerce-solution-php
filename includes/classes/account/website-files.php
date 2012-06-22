@@ -34,7 +34,7 @@ class Website_Files extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add website file.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add website file.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -53,7 +53,7 @@ class Website_Files extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website files.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website files.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -72,7 +72,7 @@ class Website_Files extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get file count.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get file count.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -92,7 +92,7 @@ class Website_Files extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website file by file path.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website file by file path.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -112,7 +112,7 @@ class Website_Files extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website file by id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website file by id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -130,7 +130,7 @@ class Website_Files extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website file.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website file.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -146,7 +146,7 @@ class Website_Files extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

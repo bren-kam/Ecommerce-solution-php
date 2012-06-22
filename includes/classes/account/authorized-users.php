@@ -30,7 +30,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list authorized users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list authorized users.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -48,7 +48,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count authorized users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count authorized users.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -145,7 +145,7 @@ class Authorized_Users extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update authorized user link.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update authorized user link.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -165,7 +165,7 @@ class Authorized_Users extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get authorized user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get authorized user.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -185,7 +185,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get stores.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get stores.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -204,7 +204,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if user is authorized.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if user is authorized.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -229,7 +229,7 @@ class Authorized_Users extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add authorized user link.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add authorized user link.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -248,7 +248,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete authorized user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete authorized user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -264,7 +264,7 @@ class Authorized_Users extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

@@ -32,7 +32,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product group.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product group.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -56,7 +56,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product group products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product group products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -78,7 +78,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create website product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create website product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -113,7 +113,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website product group products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website product group products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -132,7 +132,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add website product group relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add website product group relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -154,7 +154,7 @@ class Product_Groups extends Base_Class {
 		
 		// Failed to create coupon
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create website product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create website product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -178,7 +178,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list product groups.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list product groups.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -196,7 +196,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count website products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count website products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -219,7 +219,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website product group names.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website product group names.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -244,7 +244,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website product group relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website product group relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -252,7 +252,7 @@ class Product_Groups extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website product group.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website product group.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -268,7 +268,7 @@ class Product_Groups extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

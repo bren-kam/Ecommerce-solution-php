@@ -35,7 +35,7 @@ class Ashley_Feed extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website_ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website_ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -186,7 +186,7 @@ class Ashley_Feed extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -195,7 +195,7 @@ class Ashley_Feed extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get domain.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get domain.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -223,7 +223,7 @@ class Ashley_Feed extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -269,7 +269,7 @@ class Ashley_Feed extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to dump website products.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to dump website products.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -304,7 +304,7 @@ class Ashley_Feed extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to deactivate products.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to deactivate products.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -324,7 +324,7 @@ class Ashley_Feed extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -337,7 +337,7 @@ class Ashley_Feed extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -425,7 +425,7 @@ class Ashley_Feed extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website category images.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website category images.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -469,7 +469,7 @@ class Ashley_Feed extends Base_Class {
 
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to add website categories.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to add website categories.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -501,7 +501,7 @@ class Ashley_Feed extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -522,7 +522,7 @@ class Ashley_Feed extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -571,7 +571,7 @@ class Ashley_Feed extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
