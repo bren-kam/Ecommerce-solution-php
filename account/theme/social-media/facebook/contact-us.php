@@ -11,6 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
+// Secure the section
+if ( !$user['website']['social_media'] )
+    url::redirect('/');
+
 // Make Sure they chose a facebook page
 if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
     url::redirect('/social-media/facebook/');
@@ -20,7 +24,6 @@ $sm = new Social_Media;
 $w = new Websites;
 $social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
 $facebook_page = $sm->get_facebook_page( $_SESSION['sm_facebook_page_id'] );
-
 
 if ( !$facebook_page || !is_array( $social_media_add_ons ) || !in_array( 'contact-us', $social_media_add_ons ) )
     url::redirect('/social-media/facebook/');

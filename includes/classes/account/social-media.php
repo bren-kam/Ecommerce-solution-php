@@ -117,7 +117,7 @@ class Social_Media extends Base_Class {
     public function update_facebook_page( $id, $name ) {
         global $user;
 
-        $this->db->update( 'facebook_page', array( 'name' => $name ), array( 'id' => $id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
+        $this->db->update( 'sm_facebook_page', array( 'name' => $name ), array( 'id' => $id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
 
         // Handle any error
         if ( $this->db->errno() ) {
