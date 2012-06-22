@@ -28,7 +28,7 @@ class Fan_Offer extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -55,7 +55,7 @@ class Fan_Offer extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get tab.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get tab.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -65,7 +65,7 @@ class Fan_Offer extends Base_Class {
 	/**
 	 * Get Connected Website
 	 *
-	 * @param int $fb_user_id
+	 * @param int $fb_page_id
 	 * @return array
 	 */
 	public function get_connected_website( $fb_page_id ) {
@@ -73,11 +73,11 @@ class Fan_Offer extends Base_Class {
 		$fb_page_id = (int) $fb_page_id;
 		
 		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, b.`key` FROM `websites` AS a LEFT JOIN `sm_fan_offer` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`fb_page_id` = $fb_page_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_fan_offer` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE b.`status` = 1 AND c.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -96,11 +96,11 @@ class Fan_Offer extends Base_Class {
 		$email = strtolower( $email );
 		
 		// We need to get the email_id
-		$email_data = $this->db->prepare( 'SELECT a.`email_id`, b.`website_id`, b.`email_list_id` FROM `emails` AS a LEFT JOIN `sm_fan_offer` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`email` = ? AND b.`fb_page_id` = ?', 'ss', $email, $fb_page_id )->get_row( '', ARRAY_A );
+		$email_data = $this->db->prepare( 'SELECT a.`email_id`, b.`website_id`, c.`email_list_id` FROM `emails` AS a LEFT JOIN `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_fan_offer` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE a.`email` = ? AND b.`status` = 1 AND c.`fb_page_id` = ?', 'ss', $email, $fb_page_id )->get_row( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email data', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email data', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -109,11 +109,11 @@ class Fan_Offer extends Base_Class {
 			// @Fix the above query should be able to grab the fields even if email_id is null
 			
 		 	// We need to get the email_id
-			$email_data = $this->db->prepare( 'SELECT `website_id`, `email_list_id` FROM `sm_fan_offer` WHERE `fb_page_id` = ?', 's', $fb_page_id )->get_row( '', ARRAY_A );
+			$email_data = $this->db->prepare( 'SELECT a.`website_id`, b.`email_list_id` FROM `sm_facebook_page` AS a LEFT JOIN `sm_fan_offer` AS b ON ( a.`id` = b.`sm_facebook_page_id` ) WHERE a.`status` = 1 AND b.`fb_page_id` = ?', 's', $fb_page_id )->get_row( '', ARRAY_A );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get email data', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to get email data', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -124,7 +124,7 @@ class Fan_Offer extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email id', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email id', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -139,7 +139,7 @@ class Fan_Offer extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to update email', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update email', __LINE__, __METHOD__ );
 				return false;
 			}
 		} else {
@@ -147,7 +147,7 @@ class Fan_Offer extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to insert email', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to insert email', __LINE__, __METHOD__ );
 				return false;
 			}
 			
@@ -159,7 +159,7 @@ class Fan_Offer extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get default email list id', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get default email list id', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -167,7 +167,7 @@ class Fan_Offer extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add email to lists', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add email to lists', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -183,7 +183,7 @@ class Fan_Offer extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

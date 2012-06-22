@@ -258,7 +258,8 @@ class Ashley extends Base_Class {
 				$images = $product_images;
 				
 				
-				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+                    // mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image")
 					$identical = false;
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 					
@@ -329,7 +330,8 @@ class Ashley extends Base_Class {
                 $slug = $this->unique_slug( $slug );
 
 				// Upload image if it's not blank
-				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+                    //mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image")
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 					
 					if ( !in_array( $image_name, $images ) )
@@ -430,7 +432,7 @@ class Ashley extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -455,7 +457,7 @@ class Ashley extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get delete product images.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to get delete product images.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -519,7 +521,7 @@ class Ashley extends Base_Class {
 	
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to add product images.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to add product images.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -538,7 +540,7 @@ class Ashley extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to check slug.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check slug.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -630,7 +632,7 @@ class Ashley extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get product id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -682,7 +684,7 @@ class Ashley extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Ashley Bot: Failed to count added pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Ashley Bot: Failed to count added pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -690,7 +692,7 @@ class Ashley extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Ashley Bot: Failed to count page links.', __LINE__, __METHOD__ );
+			$this->_err( 'Ashley Bot: Failed to count page links.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -709,7 +711,7 @@ class Ashley extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( "Ashley Bot: Failed to check sku: $sku", __LINE__, __METHOD__ );
+			$this->_err( "Ashley Bot: Failed to check sku: $sku", __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -758,7 +760,7 @@ class Ashley extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

@@ -26,7 +26,7 @@ class Brands extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get brand.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -43,7 +43,7 @@ class Brands extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get brands.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get brands.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -65,7 +65,7 @@ class Brands extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website brands.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website brands.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -91,7 +91,7 @@ class Brands extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get brand.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -102,7 +102,7 @@ class Brands extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add website top brand.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add website top brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -124,7 +124,7 @@ class Brands extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get top brands.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get top brands.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -153,7 +153,7 @@ class Brands extends Base_Class {
 			// Handle any error
 			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
-				$this->err( 'Failed to update brand sequence', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update brand sequence', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -172,7 +172,7 @@ class Brands extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocompleted brands.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocompleted brands.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -192,7 +192,7 @@ class Brands extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocompleted brands.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocompleted brands.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -215,7 +215,7 @@ class Brands extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocompleted brands on owned products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocompleted brands on owned products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -239,7 +239,7 @@ class Brands extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to remove website top brand.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to remove website top brand.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -256,7 +256,7 @@ class Brands extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

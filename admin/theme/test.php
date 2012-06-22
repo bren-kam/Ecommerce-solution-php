@@ -13,7 +13,7 @@ $a = new Ashley_API();
 $packages = $a->get_packages();
 exit;
 
-*/
+
 // Load the library
 library( 'craigslist-api' );
 $b = new Base_Class();
@@ -32,3 +32,21 @@ foreach ( $markets as $m ) {
         }
     }
 }
+
+
+
+// Declare classes
+$a = new Analytics();
+$c = new Craigslist;
+$m = new Mobile_Marketing();
+
+// Determine date range
+$date = new DateTime();
+$date->sub( new DateInterval('P2D') );
+
+// Update the stats
+$a->update_craigslist_stats( $date->format('Y-m-d') );
+
+// Update the tags for analytics of products
+$c->update_tags();
+*/

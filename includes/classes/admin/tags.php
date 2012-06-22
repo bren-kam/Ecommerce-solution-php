@@ -51,7 +51,7 @@ class Tags extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add tags.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add tags.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -71,7 +71,7 @@ class Tags extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get tags.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get tags.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -91,7 +91,7 @@ class Tags extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete tags.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete tags.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -111,7 +111,7 @@ class Tags extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -127,7 +127,7 @@ class Tags extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

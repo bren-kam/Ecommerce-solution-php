@@ -110,7 +110,7 @@ class Files extends Base_Class {
 
 			return array( $ticket_upload_id, $attachment_name, 'http://s3.amazonaws.com/' . $this->bucket . "/attachments/{$directory}{$attachment_name}" );
 		} else {
-			$this->err( "Failed to upload attachment.\nDirectory: $directory\nAttachment Name: $attachment_name\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
+			$this->_err( "Failed to upload attachment.\nDirectory: $directory\nAttachment Name: $attachment_name\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
 			return false;
 		}
 	}
@@ -144,7 +144,7 @@ class Files extends Base_Class {
 
 			return array( $ticket_upload_id, $attachment_name );
 		} else {
-			$this->err( "Failed to upload attachment.\nDirectory: $directory\nAttachment Name: $attachment_name\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
+			$this->_err( "Failed to upload attachment.\nDirectory: $directory\nAttachment Name: $attachment_name\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
 			return false;
 		}
 	}
@@ -160,7 +160,7 @@ class Files extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add upload.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add upload.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -178,7 +178,7 @@ class Files extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get ticket upload key.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get ticket upload key.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -187,7 +187,7 @@ class Files extends Base_Class {
 		
 		// Delete the object
 		if ( !$this->s3->deleteObject( $this->bucket, "attachments/{$key}" ) ) {
-			$this->err( "Failed to remove upload.\nURI: $uri\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
+			$this->_err( "Failed to remove upload.\nURI: $uri\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -196,7 +196,7 @@ class Files extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete ticket upload.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete ticket upload.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -217,7 +217,7 @@ class Files extends Base_Class {
 		foreach ( $keys as $k ) {
 			// Delete the object
 			if ( !$this->s3->deleteObject( $this->bucket, "attachments/{$k}" ) ) {
-				$this->err( "Failed to remove upload.\nURI: $uri\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
+				$this->_err( "Failed to remove upload.\nURI: $uri\nBucket: " . $this->bucket, __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -246,7 +246,7 @@ class Files extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

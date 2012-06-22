@@ -30,7 +30,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -53,7 +53,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create empty reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create empty reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -80,7 +80,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -100,7 +100,7 @@ class Reaches extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create reach links.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to create reach links.', __LINE__, __METHOD__ );
 				return false;
 			}
 		} */
@@ -128,7 +128,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach priority.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach priority.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -151,7 +151,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach status.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach status.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -172,7 +172,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -194,7 +194,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -217,7 +217,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach date_due.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach date_due.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -236,7 +236,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -248,7 +248,7 @@ class Reaches extends Base_Class {
 			
 			// If there was an error
 			if ( $this->db->errno() ) {
-				$this->err( "Failed to get reach meta.", __LINE__, __METHOD__ );
+				$this->_err( "Failed to get reach meta.", __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -275,7 +275,7 @@ class Reaches extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to list reaches.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to list reaches.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -294,7 +294,7 @@ class Reaches extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to count reaches.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to count reaches.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -355,7 +355,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails to email for overdue reaches.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails to email for overdue reaches.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -381,7 +381,7 @@ class Reaches extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attachments.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -393,7 +393,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete reach upload.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete reach upload.', __LINE__, __METHOD__ );
 			return false;
 		}*/
 		
@@ -409,7 +409,7 @@ class Reaches extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

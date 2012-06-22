@@ -85,7 +85,7 @@ li { padding-top: 7px; }
 		
 		// Make sure it was sent
 		if( !$result )
-			$this->err( "Failed to send reset password email.\n\nError messsage: " . $m->ErrorInfo, __LINE__, __METHOD__ );
+			$this->_err( "Failed to send reset password email.\n\nError messsage: " . $m->ErrorInfo, __LINE__, __METHOD__ );
 		
 		return $result;
 	}
@@ -115,7 +115,7 @@ li { padding-top: 7px; }
 	 * @param string $method (optional) the class method that is being called
      * @return string
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
