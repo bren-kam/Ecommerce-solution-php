@@ -96,7 +96,7 @@ class Social_Media extends Base_Class {
     public function create_facebook_page( $name ) {
         global $user;
 
-        $this->db->insert( 'facebook_page', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+        $this->db->insert( 'sm_facebook_page', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 
         // Handle any error
         if ( $this->db->errno() ) {
