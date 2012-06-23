@@ -340,7 +340,7 @@ class Ashley extends Base_Class {
 				
 				$price = $list_price = 0;
 				$publish_visibility = 'private';
-				$publish_date = date_time::date( 'Y-m-d' );
+				$publish_date = dt::date( 'Y-m-d' );
 				
 				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
 				
@@ -358,6 +358,7 @@ class Ashley extends Base_Class {
 				}
 				
 				$this->p->add_product_images( $images, $product_id );
+                $products[$sku] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
 			}
 			
 			// Update the product
