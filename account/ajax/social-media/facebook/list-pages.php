@@ -28,8 +28,8 @@ foreach ( $facebook_pages as $fb_page ) {
 	// Set the actions
     $actions = '<br />
 	<div class="actions">
-		<a href="/social-media/facebook/add-edit/?smfbpid=' . $fb_page['id'] . '" title="' . _('Edit Page') . '">' . _('Edit') . '</a> |
 		<a href="/social-media/facebook/choose/?smfbpid=' . $fb_page['id'] . '" title="' . _('Select Page') . '">' . _('Select') . '</a> |
+		<a href="/social-media/facebook/add-edit/?smfbpid=' . $fb_page['id'] . '" title="' . _('Edit Page') . '">' . _('Edit') . '</a> |
 		<a href="/ajax/social-media/facebook/delete-page/?smfbpid=' . $fb_page['id'] . '&amp;_nonce=' . $delete_facebook_page_nonce . '" title="' . _('Delete Page') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>
 	</div>';
 	
