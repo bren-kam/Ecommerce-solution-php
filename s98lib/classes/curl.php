@@ -120,7 +120,7 @@ class curl {
 	 * Saves a file
 	 *
 	 * @param string $url the url of the page being called
-	 * @param pointer $fp file pointer
+	 * @param resource $fp file pointer
 	 * @return bool
 	 */
 	public static function save_file( $url, $fp ) {
