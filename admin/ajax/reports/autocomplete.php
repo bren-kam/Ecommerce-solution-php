@@ -45,6 +45,12 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'autocomplete
                 $r['object_id'] = $r['billing_state'];
             }
         break;
+
+        case 'package':
+            $c = new Companies;
+
+            $results = $c->autocomplete_packages( $_POST['term'] );
+        break;
 	}
 	
 	// Needs to return an array, even if nothing was gotten

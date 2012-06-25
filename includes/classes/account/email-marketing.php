@@ -29,7 +29,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get dashboard messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get dashboard messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -47,7 +47,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get dashboard subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get dashboard subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -154,7 +154,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -172,7 +172,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count email subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -193,7 +193,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -211,7 +211,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count email subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -237,7 +237,7 @@ class Email_Marketing extends Base_Class {
 
             // Handle any error
             if ( $this->db->errno() ) {
-                $this->err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
                 return false;
             }
         } else {
@@ -246,7 +246,7 @@ class Email_Marketing extends Base_Class {
 
             // Handle any error
             if ( $this->db->errno() ) {
-                $this->err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to export subscribers.', __LINE__, __METHOD__ );
                 return false;
             }
         }
@@ -270,7 +270,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -278,7 +278,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -296,7 +296,7 @@ class Email_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if email exists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if email exists.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -332,7 +332,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -341,7 +341,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to remove email from list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to remove email from list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -350,7 +350,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to unsubscribe email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to unsubscribe email.', __LINE__, __METHOD__ );
 			return false;
 		}
 				
@@ -372,7 +372,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -393,7 +393,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -415,7 +415,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email associations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -434,7 +434,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to insert email associations.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to insert email associations.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -462,7 +462,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get unsubscribed emails.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get unsubscribed emails.', __LINE__, __METHOD__ );
 			return false;
 		}
 				
@@ -485,7 +485,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to import emails.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to import emails.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -512,7 +512,7 @@ class Email_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to transfer imported subscribers to new table of subscribers.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to transfer imported subscribers to new table of subscribers.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -523,7 +523,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to add email assocations.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to add email assocations.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -547,7 +547,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete imported emails.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete imported emails.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -590,7 +590,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get templates.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get templates.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -602,35 +602,51 @@ class Email_Marketing extends Base_Class {
 	 *
 	 * @param string $email
 	 * @param int $email_message_id
-	 * @return bool
+	 * @return Response
+	 */
+	/**
+	 * Sends a test email message (using MailChimp)
+	 *
+	 * @param string $email
+	 * @param int $email_message_id
+	 * @return Response
 	 */
 	public function test_message( $email, $email_message_id ) {
 		// Get mailchimp
 		$mc = $this->mailchimp_instance();
-		
+
 		// Get the email message
 		$em = $this->get_email_message( $email_message_id );
-		
+
 		// If needed, create a new campaign
-		$mc_campaign_id = ( 0 == $em['mc_campaign_id'] ) ? $this->mc_create_campaign( $em ) : $em['mc_campaign_id'];
+		if( 0 == $em['mc_campaign_id'] ) {
+			$response = $this->mc_create_campaign( $em );
+
+			if ( !$response->success() )
+				return $response;
+
+			$mc_campaign_id = $response->get('mc_campaign_id');
+		} else {
+			$mc_campaign_id = $em['mc_campaign_id'];
+		}
 		
 		// Send a test
 		$mc->campaignSendTest( $mc_campaign_id, array( $email ) );
 		
 		// Handle errors
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to send Campaign Test email\n\nCampaign ID: " . $mc_campaign_id . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
-		} 
+			$this->_err( "MailChimp: Unable to send Campaign Test email\n\nCampaign ID: " . $mc_campaign_id . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage ) );
+		}
 		
-		return true;
+		return new Response( true );
 	}
 	
 	/**
 	 * Creates a MailChimp Campaign Email
 	 *
 	 * @param array $email_message
-	 * @return int $mc_campaign_id
+	 * @return Response
 	 */
 	public function mc_create_campaign( $email_message ) {
 		global $user;
@@ -646,8 +662,8 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle Errors
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
+			$this->_err( "MailChimp: Unable to get Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage ) );
 		}
 		
 		foreach ( $email_message['email_lists'] as $el ) {
@@ -657,8 +673,8 @@ class Email_Marketing extends Base_Class {
 			$mc->listInterestGroupAdd( $user['website']['mc_list_id'], $el );
 			
 			if ( $mc->errorCode ) {
-				$this->err( "MailChimp: Unable to add Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nInterest Group: " . $el . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-				return false;
+				$this->_err( "MailChimp: Unable to add Interest Groups\n\nList ID: " . $user['website']['mc_list_id'] . "\nInterest Group: " . $el . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage, trim( $el ) ) );
 			}
 		}
 		
@@ -675,8 +691,8 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle Errors
 		if ( !$mc->campaignSegmentTest( $user['website']['mc_list_id'], $segmentation_options ) ) {
-			$this->err( "MailChimp: Unable to Segment Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
+			$this->_err( "MailChimp: Unable to Segment Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage ) );
 		}
 		
 		$settings = $this->get_settings();
@@ -711,8 +727,8 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle Errors
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Create New Campaign\n\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
-			return false;
+			$this->_err( "MailChimp: Unable to Create New Campaign\n\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage ) );
 		}
 		
 		// Update our lists
@@ -720,11 +736,14 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email messages with campaign id.', __LINE__, __METHOD__ );
-			return false;
+			$this->_err( 'Failed to update email messages with campaign id.', __LINE__, __METHOD__ );
+			return new Response( false, $this->_mc_message( $mc->errorCode, $mc->errorMessage ) );
 		}
 		
-		return $mc_campaign_id;
+		$response = new Response( true );
+		$response->add( 'mc_campaign_id', $mc_campaign_id );
+		
+		return $response;
 	}
 	
 	/**
@@ -754,7 +773,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Still failing, now report an error
 			if ( 0 == $em['mc_campaign_id'] ) {
-				$this->err( "Failed to schedule email, no Campaign ID has been assigned.", __LINE__, __METHOD__ );
+				$this->_err( "Failed to schedule email, no Campaign ID has been assigned.", __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -765,7 +784,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle errors
 			if ( $mc->errorCode ) {
-				$this->err( "MailChimp: Unable to Schedule Campaign\n\nCampaign ID: " . $em['mc_campaign_id'] . "\nDate and Time: " . $em['date_sent'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "MailChimp: Unable to Schedule Campaign\n\nCampaign ID: " . $em['mc_campaign_id'] . "\nDate and Time: " . $em['date_sent'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 				return false;
 			}
 			
@@ -774,7 +793,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to update email messages status to scheduled.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update email messages status to scheduled.', __LINE__, __METHOD__ );
 				return false;
 			}
 		} else {
@@ -783,7 +802,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle errors
 			if ( $mc->errorCode ) {
-				$this->err( "MailChimp: Unable to Send Campaign Now\n\nCampaign ID: " . $em['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "MailChimp: Unable to Send Campaign Now\n\nCampaign ID: " . $em['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 				return false;
 			}
 			
@@ -792,7 +811,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to update email messages status to sent.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update email messages status to sent.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -816,7 +835,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list email messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list email messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -834,7 +853,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count email lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -853,7 +872,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -877,7 +896,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -898,7 +917,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create email list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -910,7 +929,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error, but don't stop
 			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Create Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nName: $name\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "MailChimp: Unable to Create Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nName: $name\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 		}
 		
 		return $this->db->insert_id;
@@ -926,7 +945,10 @@ class Email_Marketing extends Base_Class {
 	 */
 	public function update_email_list( $email_list_id, $name, $description ) {
 		global $user;
-		
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
 		// Update MailChimp List Interest Group
 		if ( '0' != $user['website']['mc_list_id'] ) {
 			// Get original
@@ -938,14 +960,14 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error, but don't stop
 			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Update Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nOld Name: " . $el['name'] . "\nNew Name: $name\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "MailChimp: Unable to Update Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nOld Name: " . $el['name'] . "\nNew Name: $name\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 		}
 		
 		$this->db->update( 'email_lists', array( 'name' => $name, 'description' => $description ), array( 'email_list_id' => $email_list_id, 'website_id' => $website_id ), 'ss', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update email list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -974,7 +996,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error, but don't stop
 			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Delete Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "MailChimp: Unable to Delete Email List\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 		}
 		
 		// Delete email list
@@ -982,7 +1004,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email list.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email list.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1010,7 +1032,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add email message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add email message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1049,7 +1071,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update email message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update email message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1076,7 +1098,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Do segment test to make sure it would work
 		if ( !$mc->campaignSegmentTest( $user['website']['mc_list_id'], $segmentation_options ) ) {
-			$this->err( "MailChimp: Unable to Segment Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to Segment Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1085,7 +1107,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Failed to Update Campaign - Segmentation Options\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Failed to Update Campaign - Segmentation Options\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1093,7 +1115,7 @@ class Email_Marketing extends Base_Class {
 		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'subject', $subject );
 		
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - Subject\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to Update Campaign - Subject\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1103,7 +1125,7 @@ class Email_Marketing extends Base_Class {
 		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'content', array( 'html' => $html_message ) );
 		
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - Message\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to Update Campaign - Message\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1114,7 +1136,7 @@ class Email_Marketing extends Base_Class {
 		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'from_email', $from_email );
 		
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - From Email\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to Update Campaign - From Email\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1124,7 +1146,7 @@ class Email_Marketing extends Base_Class {
 		$mc->campaignUpdate( $email_message['mc_campaign_id'], 'from_name', $from_name );
 		
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to Update Campaign - From Email\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to Update Campaign - From Email\n\nCampaign ID: " . $email_message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1149,7 +1171,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message assocations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email message assocations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1167,7 +1189,7 @@ class Email_Marketing extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create email message assocations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create email message assocations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1193,7 +1215,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete message meta.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete message meta.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1213,7 +1235,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create message meta.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to create message meta.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -1235,7 +1257,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list email messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list email messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1263,7 +1285,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count email messages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count email messages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1288,7 +1310,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1298,7 +1320,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to get email lists.', __LINE__, __METHOD__ );
 				return false;
 			}
 			
@@ -1311,7 +1333,7 @@ class Email_Marketing extends Base_Class {
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to get product email meta data (product_ids).', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to get product email meta data (product_ids).', __LINE__, __METHOD__ );
 					return false;
 				}
 				
@@ -1352,7 +1374,7 @@ class Email_Marketing extends Base_Class {
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to get offer email meta data.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to get offer email meta data.', __LINE__, __METHOD__ );
 					return false;
 				}
 				
@@ -1390,7 +1412,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Simply note the error, don't stop
 			if ( $mc->errorCode )
-				$this->err( "MailChimp: Unable to Delete Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCampaign ID: " . $message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+				$this->_err( "MailChimp: Unable to Delete Campaign\n\nList ID: " . $user['website']['mc_list_id'] . "\nCampaign ID: " . $message['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 		}
 		
 		// Delete the email message
@@ -1398,7 +1420,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email message.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1411,7 +1433,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message associations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email message associations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1420,7 +1442,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete email message meta.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete email message meta.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1443,7 +1465,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list autoresponders.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list autoresponders.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1461,7 +1483,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count autoresponders.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count autoresponders.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1481,7 +1503,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autoresponder.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1509,7 +1531,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create autoresponder.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1538,7 +1560,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update autoresponder.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1558,7 +1580,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email lists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email lists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1578,7 +1600,7 @@ class Email_Marketing extends Base_Class {
 		 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete autoresponder.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete autoresponder.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1830,7 +1852,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get template options.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get template options.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1852,7 +1874,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email settings.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email settings.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -1872,7 +1894,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email setting.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email setting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1902,7 +1924,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update all the email settings', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update all the email settings', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -1961,7 +1983,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Error Handling
 		if ( $this->mc->errorCode )
-			$this->err( "MailChimp: Unable to get Unsubscribed Members\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nMembers returned: " . count( $unsubscribers ), __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to get Unsubscribed Members\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nMembers returned: " . count( $unsubscribers ), __LINE__, __METHOD__ );
 		
 		$emails = '';
 				
@@ -1979,7 +2001,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to mark users as unsubscribed', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to mark users as unsubscribed', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -1989,7 +2011,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Error Handling
 		if ( $this->mc->errorCode )
-			$this->err( "MailChimp: Unable to get Cleaned Members\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $this->mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nMembers returned: " . count( $cleaned ), __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to get Cleaned Members\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $this->mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nMembers returned: " . count( $cleaned ), __LINE__, __METHOD__ );
 		
 		$emails = '';
 		
@@ -2007,7 +2029,7 @@ class Email_Marketing extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to mark users as cleaned', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to mark users as cleaned', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -2030,7 +2052,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails that need to be syncd', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails that need to be syncd', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -2066,7 +2088,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Error Handling
 		if ( $mc->errorCode )
-			$this->err( "MailChimp: Unable to get Interest Groups\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to get Interest Groups\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 		
 		if ( !isset( $groups_result['groups'] ) )
 			$groups_result['groups'] = array();
@@ -2077,7 +2099,7 @@ class Email_Marketing extends Base_Class {
 				
 				// Error Handling
 				if ( $mc->errorCode )
-					$this->err( "MailChimp: Unable to add Interest Group\n\nList_id: " . $user['website']['mc_list_id'] . "\nInterest Group: $i\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
+					$this->_err( "MailChimp: Unable to add Interest Group\n\nList_id: " . $user['website']['mc_list_id'] . "\nInterest Group: $i\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 			}
 		}
 		
@@ -2085,7 +2107,7 @@ class Email_Marketing extends Base_Class {
 		$vals = $mc->listBatchSubscribe( $user['website']['mc_list_id'], $emails, false, true, true );
 		
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Batch Subscribe\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nEmails:\n" . fn::info( $emails, false ) . fn::info( $email_results, false ), __LINE__, __METHOD__, false );
+			$this->_err( "MailChimp: Unable to get Batch Subscribe\n\nList_id: " . $user['website']['mc_list_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage . "\nEmails:\n" . fn::info( $emails, false ) . fn::info( $email_results, false ), __LINE__, __METHOD__, false );
 		} else {
 			// Handle errors if there were any
 			if ( $vals['error_count'] > 0 ) {
@@ -2095,7 +2117,7 @@ class Email_Marketing extends Base_Class {
 					$errors .= "Email: " . $val['row']['EMAIL'] . "\nCode: " . $val['code'] . "\nError Message: " . $val['message'] . "\n\n";
 				}
 				
-				$this->err( "MailChimp: \n\nList_id: " . $user['website']['mc_list_id'] . "\n" . $vals['error_count'] . ' out of ' . $vals['error_count'] + $vals['success_count'] . ' emails were unabled to be subscribed' . "\n\n$errors", __LINE__, __METHOD__, false );
+				$this->_err( "MailChimp: \n\nList_id: " . $user['website']['mc_list_id'] . "\n" . $vals['error_count'] . ' out of ' . $vals['error_count'] + $vals['success_count'] . ' emails were unabled to be subscribed' . "\n\n$errors", __LINE__, __METHOD__, false );
 			}
 			
 			$synced_email_ids = array_keys( $emails );
@@ -2108,7 +2130,7 @@ class Email_Marketing extends Base_Class {
 																										  
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to sync emails', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to sync emails', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -2132,6 +2154,32 @@ class Email_Marketing extends Base_Class {
 			}
 		}
 	}
+
+    /**
+     * Debug Mailchimp Errors
+     *
+     * @param int $mc_code
+     * @param string $mc_message
+     * @param string $extra [optional]
+     * @return string
+     */
+    private function _mc_message( $mc_code, $mc_message, $extra = '' ) {
+        switch ( $mc_code ) {
+            case 200:
+                $message = _('Please see your Online Specialist about setting up or updating your email account.');
+            break;
+            
+            case 270:
+                $message = _('You have a duplicate list') . ": $extra. " . _('Please remove or rename the duplicate list and try again.');
+            break;
+            
+            default:
+                $message = $mc_message;
+            break;
+        }
+        
+        return $message;
+    }
 	
 	/**
 	 * Report an error
@@ -2141,8 +2189,10 @@ class Email_Marketing extends Base_Class {
 	 * @param string $message the error message
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
+     * @param bool $debug [optional]
+     * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '', $debug = true ) {
+	private function _err( $message, $line = 0, $method = '', $debug = true ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method, $debug );
 	}
 }

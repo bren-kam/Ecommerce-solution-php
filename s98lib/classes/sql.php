@@ -242,7 +242,7 @@ class SQL {
 	 * @param string $query
 	 * @param string $format for what is being requested
 	 * @param unknown
-	 * @return this
+	 * @return Mysqli::statement
 	 */
 	public function prepare( $query, $format = '' ) {
 		$this->flush();
@@ -521,19 +521,32 @@ class SQL {
 	 * @param string $table table name
 	 * @param array $data Data to insert (in column => value pairs).  Both $data columns and $data values should be "raw" (neither should be SQL escaped).
 	 * @param string $format Format will be used for all of the values in $data. A format is one of 'sidb' (string, integer, double/float, blob).
+     * @param bool $override [optional]
 	 * @return int|false The number of rows inserted, or false on error.
 	 */
-	public function insert( $table, $data, $format ) {
-		$fields = array_keys( $data );
-		
+	public function insert( $table, $data, $format, $override = false ) {
+    	$fields = array_keys( $data );
+        $on_duplicate_key = '';
+
+        if ( $override )
+            $on_duplicate_key .= ' ON DUPLICATE KEY UPDATE `' . implode( '` = ?, `', $fields ) . '` = ?';
+
 		// Prepare the statement
-		$statement = $this->prepare( "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)' );
-		
+		$statement = $this->prepare( "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)' . $on_duplicate_key );
+
 		if ( !$statement )
 			return false;
-		
+
+        // References
+        $references = array_values( $data );
+
+        if ( $override ) {
+            $format .= $format;
+            $references = array_merge( $references, array_values( $data ) );
+        }
+
 		// Bind the parameters
-		call_user_func_array( array( $statement, 'bind_param' ), array_merge( array( $format ), ar::references( array_values( $data ) ) ) );
+		call_user_func_array( array( $statement, 'bind_param' ), array_merge( array( $format ), ar::references( $references ) ) );
 		
 		// Execute it
 		return $this->query();
@@ -622,7 +635,7 @@ class SQL {
 	 * @param int $y (optional) Row to return.  Indexed from 0.
 	 * @return mixed Database query result in format specifed by $output
 	 */
-	public function get_row( $query = NULL, $output = OBJECT, $y = 0) {
+	public function get_row( $query = NULL, $output = ARRAY_A, $y = 0) {
 		$this->func_call = "\$db->get_row(\"$query\",$output,$y)";
 		
 		if ( is_string( $query ) ) {
@@ -683,7 +696,7 @@ class SQL {
 	 * @param string $output (optional) ane of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.  With one of the first three, return an array of rows indexed from 0 by SQL result row number.  Each row is an associative array (column => value, ...), a numerically indexed array (0 => value, ...), or an object. ( ->column = value ), respectively.  With OBJECT_K, return an associative array of row objects keyed by the value of each row's first column's value.  Duplicate keys are discarded.
 	 * @return mixed Database query results
 	 */
-	public function get_results( $query = NULL, $output = OBJECT ) {
+	public function get_results( $query = NULL, $output = ARRAY_A ) {
 		$this->func_call = "\$db->get_results(\"$query\", $output)";
 
 		if ( is_string( $query ) ) {
@@ -749,7 +762,50 @@ class SQL {
 			}
 		}
 	}
-	
+
+    /**
+     * Copy a database table
+     *
+     * @param string $table
+     * @param array $fields the Fields to copy
+     * @param array $where the fields to base it on
+     * @return bool
+     */
+    public function copy( $table, $fields, $where ) {
+        $table = "`$table`";
+        $duplicate_keys = array();
+
+        foreach ( $fields as $key => &$field ) {
+            $key = "`$key`";
+
+            if ( is_null( $field ) )
+                $field = $key;
+
+            $duplicate_keys[] = "$key = VALUES( $key )";
+        }
+
+        $field_keys = '`' . implode( '`, `', array_keys( $fields ) ) . '`';
+        $field_values = implode( ',', array_values( $fields ) );
+
+        $where_sql = array();
+
+        foreach ( $where as $key => $field ) {
+            if ( is_array( $field ) ) {
+                // Make sure the array is sql safe
+                foreach ( $field as &$i ) {
+                    if ( !is_int( $i ) && !is_float( $i ) )
+                        $i = "'" . $this->escape( $i ) . "'";
+                }
+
+                $where_sql[] = "`$key` IN (" . implode( ', ', $field ) . ')';
+            } else {
+                $where_sql[] = "`$key` = $field";
+            }
+		}
+
+        return $this->query( "INSERT INTO $table ( $field_keys ) SELECT $field_values FROM $table WHERE " . IMPLODE ( ' AND ', $where_sql ) . ' ON DUPLICATE KEY UPDATE ' . implode( ', ', $duplicate_keys ) );
+    }
+
 	/**
 	 * Starts the timer, for debugging purposes.
 	 *

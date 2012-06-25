@@ -128,7 +128,7 @@ get_header();
 				<p class="col-2 text-right" style="position: absolute; right: 10px; top: 15px"><a href="javascript:;" id="aPreviousStep1" class="previous button" title="<?php echo _('Previous'); ?>"><?php echo _('Previous'); ?></a> <a href="javascript:;" class="save button" title="<?php echo _('Save'); ?>"><?php echo _('Save'); ?></a></p>
 				<br />
 				<div id="dChooseType" style="height: 170px">
-					<?php if ( $user['company_id'] != 4 ) { ?>
+					<?php /*if ( $user['company_id'] != 4 ) { ?>
 					<div class="choose-div">
 						<a href="javascript:;" id="aOffer" title="<?php echo _('Offer Email'); ?>" class="choose">
 							<img src="/images/icons/email-marketing/emails/email-offer.gif" width="162" height="131" alt="<?php echo _('Offer Email'); ?>" />
@@ -136,7 +136,7 @@ get_header();
 							<?php echo _('Offer'); ?>
 						</a>
 					</div>
-					<?php } ?>
+					<?php } */ ?>
 					<div class="choose-div">
 						<a href="javascript:;" id="aProduct" title="<?php echo _('Product Email'); ?>" class="choose">
 							<img src="/images/icons/email-marketing/emails/email-product.gif" width="162" height="131" alt="<?php echo _('Product Email'); ?>" />
@@ -262,7 +262,6 @@ get_header();
 				<div id="dCustom_product" class="custom-template<?php if ( empty( $em['type'] ) || 'product' != $em['type'] ) echo ' hidden'; ?>">
 					<br /><br />
 					
-					<h2 id="h2ProductCount"><?php echo _('Products Chosen'), ': '; echo ( isset( $em['type'] ) && 'product' == $em['type'] ) ? count( $em['meta'] ) : '0'; ?>/9</h2>
 					<h2 style="float:right;width:50%"><?php echo _('Products'); ?></h2>
 					<br clear="all" /><br />
 					

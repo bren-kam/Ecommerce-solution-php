@@ -19,11 +19,11 @@ class curl {
 	 * @param string $url the url of the page being called
 	 * @return str/bool
 	 */
-	public function get( $url ) {
+	public static function get( $url ) {
 		// Whether we should close
 		$close = true;
 		
-		if ( isset( $this->ch ) ) {
+		if ( isset( $this ) ) {
 			$ch = &$this->ch;
 			$close = false;
 		} else {
@@ -55,11 +55,11 @@ class curl {
 	 * @param array $post_fields an array of fields to be sent
 	 * @return str/bool
 	 */
-	public function post( $url, $post_fields ) {
+	public static function post( $url, $post_fields ) {
 		// Whether we should close
 		$close = true;
 		
-		if ( isset( $this->ch ) ) {
+		if ( isset( $this ) ) {
 			$ch = &$this->ch;
 			$close = false;
 		} else {
@@ -90,11 +90,11 @@ class curl {
 	 * @param string $url the url of the page being called
 	 * @return bool
 	 */
-	public function check_file( $url ) {
+	public static function check_file( $url ) {
 		// Whether we should close
 		$close = true;
 		
-		if ( isset( $this->ch ) ) {
+		if ( isset( $this ) ) {
 			$ch = &$this->ch;
 			$close = false;
 		} else {
@@ -120,11 +120,11 @@ class curl {
 	 * Saves a file
 	 *
 	 * @param string $url the url of the page being called
-	 * @param pointer $fp file pointer
+	 * @param resource $fp file pointer
 	 * @return bool
 	 */
-	public function save_file( $url, $fp ) {
-		if ( isset( $this->ch ) ) {
+	public static function save_file( $url, $fp ) {
+		if ( isset( $this ) ) {
 			$ch = &$this->ch;
 			$close = false;
 		} else {

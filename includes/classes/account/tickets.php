@@ -31,12 +31,15 @@ class Tickets extends Base_Class {
 			// Techincal : Online Specialist
 			$assigned_to_user_id = ( $user['role'] > 5 ) ? 493 : $user['website']['os_user_id']; 
 		}
-		
-		$result = $this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => nl2br( format::links_to_anchors( htmlentities( stripslashes( $message ) ), true , true ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' );
+
+        $message = str_replace( array( '’', '‘', '”', '“' ), array( "'", "'", '"', '"' ), $message );
+        $message = nl2br( format::links_to_anchors( format::htmlentities( $message, array('&') ), true , true ) );
+
+		$this->db->insert( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => $message, 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -63,7 +66,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -92,7 +95,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -112,7 +115,7 @@ class Tickets extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -134,7 +137,7 @@ class Tickets extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

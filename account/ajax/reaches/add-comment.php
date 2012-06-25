@@ -16,7 +16,7 @@ $rc = new Reach_Comments;
 $reach = $r->get( $_POST['rid'], true );
 	
 // Define variables
-$content = stripslashes( $_POST['taReachComment'] );
+$content = $_POST['taReachComment'];
 $status = ( 0 == $reach['status'] ) ? ' (Open)' : ' (Closed)';
 $private = ( $_POST['cbPrivate'] ) ? 1 : 0;
 	

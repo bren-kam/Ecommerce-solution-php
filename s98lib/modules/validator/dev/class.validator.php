@@ -126,9 +126,11 @@ class Validator {
 	 * @return string
 	 */
 	 public function validate() {
-		switch ( $this->elements as $element ) {
-			$error_string .= $this->check_validation( $element[0], $element[1], $element[2] );
-		}
+         $error_string = '';
+
+		 switch ( $this->elements as $element ) {
+		    $error_string .= $this->check_validation( $element[0], $element[1], $element[2] )  . '<br />';;
+         }
 
 		return $error_string;
 	 }

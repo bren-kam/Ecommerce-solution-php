@@ -14,7 +14,7 @@ if ( !$user )
 // Instantiate class
 $w = new Websites;
 
-$settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands' );
+$settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand' );
 
 $v = new Validator();
 $v->form_name = 'fSettings';
@@ -56,6 +56,7 @@ $checkboxes = array(
 	, 'hide-request-quote' 		=> _('Hide "Request a Quote" Button')
 	, 'hide-customer-ratings' 	=> _('Hide Customer Ratings')
 	, 'hide-product-brands' 	=> _('Hide Product Brands')
+	, 'hide-browse-by-brand' 	=> _('Hide Browse By Brand')
 );
 
 $title = _('Settings') . ' | ' . _('Product Catalog') . ' ' . TITLE;

@@ -22,7 +22,7 @@ $product_box .= '<p class="product-actions" id="pProductAction' . $product['prod
 $product_box .= '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' . $product['product_id'] . '" value="' . $product['product_id'] . '|' . $product['price'] . '" />';
 $product_box .= '</div>';
 	
-jQuery('#dSelectedProducts')->append( $product_box )->changeCount(1);
+jQuery('#dSelectedProducts')->append( $product_box );
 
 $ajax->add_response( 'jquery', jQuery::getResponse() );
 

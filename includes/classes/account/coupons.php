@@ -44,7 +44,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create coupon.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create coupon.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -86,7 +86,7 @@ class Coupons extends Base_Class {
 		
 		// Failed to create coupon
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update coupon.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update coupon.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -121,7 +121,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website coupon shipping methods.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website coupon shipping methods.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -140,7 +140,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create website coupon shipping methods.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create website coupon shipping methods.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -164,7 +164,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get coupon.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get coupon.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -183,7 +183,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get coupons.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get coupons.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -204,7 +204,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get free shipping methods', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get free shipping methods', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -225,7 +225,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list coupons.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list coupons.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -243,7 +243,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count coupons.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count coupons.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -267,7 +267,7 @@ class Coupons extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website coupon.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website coupon.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -283,7 +283,7 @@ class Coupons extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

@@ -26,72 +26,31 @@ head.ready(function() {
 		}
 		
 		var newTr = '<tr id="trTax' + abbr + '">'
-			+ '<td><a href="/dialogs/edit-tax-zip-codes/?state=' + abbr + '#dEditTaxZipCodes' + abbr + '" class="zip-codes" title="Edit Tax Zip Codes" rel="dialog" ajax="1" cache="0" ><span>' + name + '</span></a></td>'
+			+ '<td><a href="javascript:;" class="zip-codes" title="Edit Tax Zip Codes"><span>' + name + '</span></a><textarea name="zip_codes[' + abbr + ']" class="hidden" col="50" rows="3" tmpval="[Zip] [Cost]"></textarea></td>'
 			+ '<td><input id="tState' + abbr + '" name="states[' + abbr + ']" class="state tb" type="text" maxlength="5" value="' + tax + '" /></td>'
 			+ '<td><a href="javascript:;" class="delete-state" id="aDeleteTax' + abbr + '" title="Delete Tax"><img width="15" height="17" alt="Delete" src="/images/icons/x.png"></a></td></tr>';
 		
 		// Add it on to the end
 		$('#trAddTax').before( newTr );
 		$('#trTax' + abbr ).sparrow();
-		
+
 		// Hide the option
 		$(option).hide();
 		
 		// Reset the amounts
 		$('#sState, #tAmount').val('').blur();
 	});
-	
-	// Delete any states
-	$('.delete-state').live( 'click', function(){
-		var abbr = $(this).attr( 'id' ).replace( 'aDeleteTax', '' );
-		
+
+    // All the "Live"events
+    $('#tWebsiteTaxes').on( 'click', 'a.delete-state', function() { // Delete any states
+        var abbr = $(this).attr( 'id' ).replace( 'aDeleteTax', '' );
+
 		// Delete the row
 		$('#trTax' + abbr).remove();
-		
+
 		// Show the zip
 		$( '#sState option[value=' + abbr + ']' ).show();
-	});
-	
-	// Add new zip code
-	$('#aNewTaxZipCode').live( 'click', function(){
-		var abbr = $("#hState").val(), zip = $("#tNewTaxZipCode").val(), cost = $("#tNewTaxZipCost").val();
-		
-		// Validation
-		if ( !zip || !cost ) {
-			alert( $(this).attr('error') );
-			return false;
-		}
-		
-		var newTr = '<tr>';
-		newTr += '<td>' + zip + '</td>';
-		newTr += '<td><input type="text" class="tb zip-code-cost" id="tZipCost' + zip + '" value="' + cost + '" /></td>';
-		newTr += '<td><a href="javascript:;" class="remove-zip"><img src="/images/icons/x.png" width="15" height="17" alt="Delete" /></a></td>';
-		newTr += '</tr>';
-		
-		// Add the TR
-		$('#trAddZipCode').before(newTr);
-		
-		$("#tNewTaxZipCost, #tNewTaxZipCode").val('').blur();
-	});
-	
-	// Remove zip code
-	$('.remove-zip').live( 'click', function() {
-		$(this).parents('tr:first').remove();
-	});
-	
-	// Save Zip Codes
-	$('#aSaveTaxZips').live( 'click', function() {
-		var fTaxes = $('#fTaxes'), abbr = $("#hState").val();
-		
-		// Remove all existing zip codes
-		fTaxes.find('input.zip-' + abbr).remove();
-		
-		// Add a field to the form for each zip code
-		$('#tEditZipCodes input.zip-code-cost').each( function() {
-			fTaxes.append('<input type="hidden" class="zip-' + abbr + '" name="zip_codes[' + abbr + '][' + $(this).attr('id').replace( 'tZipCost', '' ) + ']" value="' + $(this).val() + '" />');
-		});
-		
-		// Close the dialog
-		$('a.close:first').click();
-	});
+    }).on( 'click', 'a.zip-codes', function() {// Make it show or hide the textarea
+        $(this).next().toggleClass('hidden');
+    });
 });

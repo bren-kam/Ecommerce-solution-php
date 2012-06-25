@@ -11,15 +11,24 @@ global $user;
 if ( !$user )
 	login();
 
+// Secure the section
+if ( !$user['website']['social_media'] )
+    url::redirect('/');
+
+// Make Sure they chose a facebook page
+if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+    url::redirect('/social-media/facebook/');
+
 // Make sure they have access to this page
+$sm = new Social_Media;
 $w = new Websites;
 $social_media_add_ons = @unserialize( $w->get_setting( 'social-media-add-ons' ) );
+$facebook_page = $sm->get_facebook_page( $_SESSION['sm_facebook_page_id'] );
 
-if ( !is_array( $social_media_add_ons ) || !in_array( 'fan-offer', $social_media_add_ons ) )
+if ( !$facebook_page || !is_array( $social_media_add_ons ) || !in_array( 'fan-offer', $social_media_add_ons ) )
     url::redirect('/social-media/facebook/');
 
 // Instantiate Classes
-$sm = new Social_Media;
 $e = new Email_Marketing;
 $wf = new Website_Files;
 
@@ -56,7 +65,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fan-offer' )
 	$start_date = dt::adjust_timezone( $start_date, $timezone, config::setting('server-timezone') );
 	$end_date = dt::adjust_timezone( $end_date, $timezone, config::setting('server-timezone') );
 		
-	$success = $sm->update_fan_offer( $_POST['sEmailList'], stripslashes( $_POST['taBefore'] ), stripslashes( $_POST['taAfter'] ), $start_date, $end_date, stripslashes( $_POST['tShareTitle'] ), stripslashes( $_POST['tShareImageURL'] ), stripslashes( $_POST['taShareText'] ) );
+	$success = $sm->update_fan_offer( $_POST['sEmailList'], $_POST['taBefore'], $_POST['taAfter'], $start_date, $end_date, $_POST['tShareTitle'], $_POST['tShareImageURL'], $_POST['taShareText'] );
 }
 
 // Get variables
@@ -86,7 +95,7 @@ if ( !$fan_offer ) {
 add_head( '<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css" />' );
 
 css( 'jquery.uploadify', 'jquery.timepicker' );
-javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/fan_offer' );
+javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'jquery.timepicker', 'website/page', 'social-media/facebook/dates' );
 
 $selected = "social_media";
 $title = _('Fan Offer') . ' | ' . _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
@@ -94,7 +103,7 @@ get_header();
 ?>
 
 <div id="content">
-	<h1><?php echo _('Fan Offer'); ?></h1>
+	<h1><?php echo _('Fan Offer'), ' - ', $facebook_page['name']; ?></h1>
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">

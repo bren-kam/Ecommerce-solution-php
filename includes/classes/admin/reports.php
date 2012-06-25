@@ -42,7 +42,7 @@ class Reports extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get all websites.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get all websites.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -67,12 +67,40 @@ class Reports extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get autocomplete entries.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
 		return $results;
 	}
+
+    /**
+     * Custom Report
+     *
+     * @param string $report
+     * @return array
+     */
+    public function custom_report( $report ) {
+        global $user;
+        $where = '';
+
+        switch ( $report ) {
+            case 'all-accounts':
+                if ( $user['role'] < 8 )
+                    $where .= ' AND b.`company_id` = ' . (int) $user['company_id'];
+
+                $report = $this->db->get_results( "SELECT a.`title` AS 'Website Title', b.`contact_name` AS 'Store Owner', b.`billing_state` AS State, CONCAT( 'http://', a.`domain`, '/' ) AS 'Link' FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` = 1 $where ORDER BY b.`billing_state` ASC, a.`title` ASC" );
+
+                // Handle any error
+                if ( $this->db->errno() ) {
+                    $this->_err( 'Failed to get custom report - all accounts entries.', __LINE__, __METHOD__ );
+                    return false;
+                }
+            break;
+        }
+
+        return $report;
+    }
 		
 	/**
 	 * Report an error
@@ -83,7 +111,7 @@ class Reports extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

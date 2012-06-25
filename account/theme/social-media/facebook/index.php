@@ -11,10 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
-$w = new Websites;
-$settings = $w->get_settings( 'facebook-url', 'social-media-add-ons' );
-	
-css('social-media/facebook/main');
+// Secure the section
+if ( !$user['website']['social_media'] )
+    url::redirect('/');
+
 $selected = "social_media";
 $title = _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
 get_header();
@@ -23,63 +23,18 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Facebook'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'social-media/' ); ?>
+	<?php get_sidebar( 'social-media/', 'facebook_pages' ); ?>
 	<div id="subcontent">
-        <?php
-        $social_media_add_ons = array(
-            'email-sign-up' => _('Email Sign Up')
-            , 'fan-offer' => _('Fan Offer')
-            , 'sweepstakes' => _('Sweepstakes')
-            , 'share-and-save' => _('Share and Save')
-            , 'facebook-site' => _('Facebook Site')
-            , 'contact-us' => _('Contact Us')
-            , 'about-us' => _('About Us')
-            , 'products' => _('Products')
-            , 'current-ad' => _('Current Ad')
-            , 'posting' => _('Posting')
-        );
-
-        $website_social_media_add_ons = @unserialize( $settings['social-media-add-ons'] );
-
-        foreach ( $social_media_add_ons as $url => $name ) {
-            if ( !is_array( $website_social_media_add_ons ) || !in_array( $url, $website_social_media_add_ons ) )
-                continue;
-
-            $image = $url;
-
-            switch ( $url ) {
-                case 'posting':
-                    $url .= '/post';
-                break;
-
-                default:break;
-            }
-            ?>
-            <p class="sm">
-                <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $image; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>
-                <br />
-                <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><?php echo $name; ?></a>
-            </p>
-            <?php
-        }
-
-        if ( !empty( $settings['facebook_url'] ) ) {
-        ?>
-		<p class="sm">
-			<a href="<?php echo $settings['facebook_url']; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><img src="/images/social-media/facebook/analytics.jpg" width="75" height="75" alt="<?php echo _('Analytics'); ?>" /></a>
-			<br />
-			<a href="<?php echo $settings['facebook_url']; ?>" title="<?php echo _('Analytics'); ?>" target="_blank"><?php echo _('Analytics'); ?></a>
-		</p>
-		<?php } ?>
-		<br clear="all" /><br />
-		<br /><br />
-		<br /><br />
-		<br /><br />
-		<br /><br />
-		<br /><br />
-		<br /><br />
-		<br /><br />
-		<br /><br />
+		<table cellpadding="0" cellspacing="0" width="100%" perPage="25,50,100" ajax="/ajax/social-media/facebook/list-pages/">
+			<thead>
+				<tr>
+					<th width="70%" sort="1 asc"><?php echo _('Name'); ?></th>
+					<th width="30%"><?php echo _('Date Posted'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
 	</div>
 	<br /><br />
 </div>

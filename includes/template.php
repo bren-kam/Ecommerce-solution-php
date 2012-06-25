@@ -277,6 +277,6 @@ function login() {
 
     if ( !empty( $_SERVER['QUERY_STRING'] ) )
         $referer .= '?' . $_SERVER['QUERY_STRING'];
-    
+
 	url::redirect( '/login/?r=' . urlencode( $referer ) );
 }

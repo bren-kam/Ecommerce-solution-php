@@ -20,7 +20,20 @@ class format extends Base_Class {
 	 * @return array|string Stripped array (or string in the callback).
 	 */
 	public static function stripslashes_deep( $value ) {
-		return is_array( $value ) ? array_map( array('self', 'stripslashes_deep'), $value ) : stripslashes( $value );
+		return is_array( $value ) ? array_map( array( 'self', 'stripslashes_deep' ), $value ) : stripslashes( $value );
+	}
+
+    /**
+	 * Navigates through an array and applies html special chars to the values.
+	 *
+	 * If an array is passed, the array_map() function causes a callback to pass the
+	 * value back to the function. The slashes from this value will removed.
+	 *
+	 * @param array|string $value The array or string to be stripped
+	 * @return array|string Stripped array (or string in the callback).
+	 */
+	public static function htmlspecialchars_deep( $value ) {
+		return is_array( $value ) ? array_map( array( 'self', 'htmlspecialchars_deep' ), $value ) : htmlspecialchars( $value );
 	}
 	
 	/**
@@ -33,7 +46,7 @@ class format extends Base_Class {
 	 * @return array|string $value The encoded array (or string from the callback).
 	 */
 	public static function urlencode_deep( $value ) {
-		return is_array($value) ? array_map( array('self', 'urlencode_deep'), $value) : urlencode($value);
+		return is_array($value) ? array_map( array( 'self', 'urlencode_deep' ), $value ) : urlencode( $value );
 	}
 
     /**
@@ -48,6 +61,27 @@ class format extends Base_Class {
 	public static function trim_deep( $value ) {
 		return is_array( $value ) ? array_map( array('self', 'trim_deep'), $value ) : trim( $value );
 	}
+
+    /**
+     * Does an HTML entities but allows you to remove items
+     *
+     * @param string $string
+     * @param array $tags = array()
+     * @return string
+     */
+    public static function htmlentities( $string, $tags = array() ) {
+        if ( !is_array( $tags ) || 0 == count( $tags ) )
+            return htmlentities( $string );
+
+        // Essentially a custom html entities
+        $html_entities = get_html_translation_table( HTML_ENTITIES );
+
+        foreach ( $tags as $t ) {
+            unset( $html_entities[$t] );
+        }
+
+        return str_replace( array_keys( $html_entities ), array_values( $html_entities ), $string );
+    }
 
 	/**
 	 * Limits a phrase to a given number of words.
@@ -134,53 +168,7 @@ class format extends Base_Class {
 	public static function strip_extension( $file_name ) {
 		return str_replace( '.' . self::file_extension( $file_name ), '', $file_name );
 	}
-	
-	/**
-	 * XML Encode - Encodes array into XML
-	 *
-	 * XML Encode is json_encode counterpart, does the same thing for xml.
-	 *
-	 * @param mixed $mixed
-	 * @param object $domElement (optional) the dom element object
-	 * @param object $DOMDocument (optional) the dom document object
-	 * @return string the XML
-	 */
-	public static function xml_encode( $mixed, $domElement = NULL, $DOMDocument = NULL ){
-		if ( is_null( $DOMDocument ) ) {
-			$DOMDocument = new DOMDocument;
-			$DOMDocument->formatOutput = true;
-			self::xml_encode( array( 'xml' => $mixed ), $DOMDocument, $DOMDocument );
-			header('Content-type: text/xml');
-			echo $DOMDocument->saveXML();
-		} else {
-			if ( is_array( $mixed ) ) {
-				foreach ( $mixed as $index => $mixedElement ) {
-					if ( is_int( $index ) ) {
-						if ( 0 == $index ) {
-							$node = $domElement;
-						} else {
-							$node = $DOMDocument->createElement( $domElement->tagName );
-							$domElement->parentNode->appendChild( $node );
-						}
-					} else {
-						$plural = $DOMDocument->createElement( $index );
-						$domElement->appendChild( $plural );
-						$node = $plural;
-						
-						if ( rtrim( $index, 's' ) !== $index ) {
-							$singular = $DOMDocument->createElement( rtrim( $index, 's' ) );
-							$plural->appendChild( $singular );
-							$node = $singular;
-						}
-					}
-					self::xml_encode( $mixedElement, $node, $DOMDocument );
-				}
-			} else{
-				$domElement->appendChild( $DOMDocument->createTextNode( $mixed ) );
-			}
-		}
-	}
-	
+
 	/**
 	 * Converts string to HTML Entity equivalents of the characters
 	 *

@@ -43,7 +43,7 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 			break;
 			
 			case 3:
-				$field = 'used_products';
+				$field = 'c.`contact_name`';
 			break;
 		}
 		
@@ -70,7 +70,8 @@ if ( isset( $_SESSION['accounts']['state'] ) ) {
 if ( isset( $_SESSION['accounts']['search'] ) ) {
 	$where .= " AND ( a.`title` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' OR " .
 					"a.`domain` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' OR " .
-					"b.`contact_name` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' )";
+					"b.`contact_name` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' OR " .
+					"c.`contact_name` LIKE '" . $w->db->escape( $_SESSION['accounts']['search'] ) . "%' )";
 }
 
 // Get accounts
@@ -111,7 +112,12 @@ foreach ( $websites as $web ) {
 	
 	$title .= '</span>';
 
-	$aaData[] = array( $image, $title, '<a href="/users/edit/?uid=' . $web['user_id'] . '" title="' . $contact_title . '">' . $web['contact_name'] . '</a>', $web['used_products'] . '/' . $web['products'] );
+	$aaData[] = array(
+        $image
+        , $title
+        , '<a href="/users/edit/?uid=' . $web['user_id'] . '" title="' . $contact_title . '">' . $web['contact_name'] . '</a>'
+        , $web['online_specialist']
+    );
 }
 
 echo json_encode( array( 

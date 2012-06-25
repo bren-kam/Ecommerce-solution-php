@@ -21,6 +21,7 @@ $rc = new Reach_Comments();
 // Get reach, with meta
 $reach = $reaches->get( $_GET['rid'], true );
 $reach_info = $reaches->_get_friendly_info( $reach['meta'] );
+$reach_date = new DateTime( $reach['assigned_to_date'] );
 
 // TODO integrate ACL stuff
 // Don't want them to see this if they don't have the right role
@@ -77,10 +78,10 @@ get_header();
 			</table>
 		</div>
 		<div class="reach-col float-left">
-			<table>
+			<table width="500">
 				<tr>
 					<td><label for="sAssignedTo"><?php echo _('Assigned To'); ?>:</label></td>
-					<td>
+					<td width="300">
 						<select id="sAssignedTo" class="dd" style="width: 150px">
                             <option value="">-- <?php echo _('Assign a User'); ?>--</option>
                             <?php
@@ -91,6 +92,7 @@ get_header();
                                 }
                             ?>
 						</select>
+                        <span style="position: relative; left: 5px; top: 3px;"><?php if ( '0000-00-00 00:00:00' != $reach['assigned_to_date'] ) echo ' ', $reach_date->format('F jS, Y g:ia'); ?></span>
 					</td>
 				</tr>
 				<tr>

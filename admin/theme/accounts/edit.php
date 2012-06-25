@@ -14,6 +14,7 @@ if ( !$user )
 $w = new Websites;
 $i = new Industries;
 $v = new Validator;
+$c = new Companies;
 
 $industries = $i->get_all();
 
@@ -25,8 +26,6 @@ $v->add_validation( 'tTheme', 'req', _('The "Account Theme" field is required') 
 
 $v->add_validation( 'tProducts', 'req', _('The "Products" field is required') );
 $v->add_validation( 'tProducts', 'num', _('The "Products" field must contain a number') );
-
-$v->add_validation( 'tType', 'req', _('The "Account Type" is required') );
 
 $v->add_validation( 'tGAProfileID', 'num', _('The "Google Analytics Profile ID" field must contain a number') );
 
@@ -41,39 +40,39 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		// Start fields array
 		$fields = array( 
 			// Information
-			'user_id' => $_POST['sUserID'],
-			'os_user_id' => $_POST['sOSUserID'],
-			'domain' => $_POST['tDomain'],
-			'subdomain' => $_POST['tSubDomain'],
-			'title' => stripslashes( $_POST['tTitle'] ),
-            'plan_name' => stripslashes( $_POST['tPlanName'] ),
-            'plan_description' => stripslashes( $_POST['tPlanDescription'] ),
-			'theme' => $_POST['tTheme'],
-			'phone' => $_POST['tPhone'],
-			'products' => $_POST['tProducts'],
-			'ga_profile_id' => $_POST['tGAProfileID'],
-			'ga_tracking_key' => $_POST['tGATrackingKey'],
-			// Features
-			'pages' => $_POST['cbWebsite'], // Website/Page (same thing)
- 			'product_catalog' => $_POST['cbProductCatalog'],
-			'blog' => $_POST['cbBlog'],
-			'email_marketing' => $_POST['cbEmailMarketing'],
-            'mobile_marketing' => $_POST['cbMobileMarketing'],
-			'shopping_cart' => $_POST['cbShoppingCart'],
-			'seo' => $_POST['cbSEO'],
-			'room_planner' => $_POST['cbRoomPlanner'],
-			'craigslist' => $_POST['cbCraigslist'],
-			'social_media' => $_POST['cbSocialMedia'],
-			'domain_registration' => $_POST['cbDomainRegistration'],
-			'additional_email_addresses' => $_POST['cbAdditionalEmail'],
+            'company_package_id' => $_POST['sCompanyPackageID']
+			, 'user_id' => $_POST['sUserID']
+			, 'os_user_id' => $_POST['sOSUserID']
+			, 'domain' => $_POST['tDomain']
+			, 'subdomain' => $_POST['tSubDomain']
+			, 'title' => stripslashes( $_POST['tTitle'] )
+            , 'plan_name' => stripslashes( $_POST['tPlanName'] )
+            , 'plan_description' => stripslashes( $_POST['tPlanDescription'] )
+			, 'theme' => $_POST['tTheme']
+			, 'phone' => $_POST['tPhone']
+			, 'products' => $_POST['tProducts']
+			, 'ga_profile_id' => $_POST['tGAProfileID']
+			, 'ga_tracking_key' => $_POST['tGATrackingKey']
+			// Feature
+			, 'pages' => $_POST['cbWebsite'] // Website/Page (same thing)
+ 			, 'product_catalog' => $_POST['cbProductCatalog']
+			, 'blog' => $_POST['cbBlog']
+			, 'email_marketing' => $_POST['cbEmailMarketing']
+            , 'mobile_marketing' => $_POST['cbMobileMarketing']
+			, 'shopping_cart' => $_POST['cbShoppingCart']
+			, 'seo' => $_POST['cbSEO']
+			, 'room_planner' => $_POST['cbRoomPlanner']
+			, 'craigslist' => $_POST['cbCraigslist']
+			, 'social_media' => $_POST['cbSocialMedia']
+			, 'domain_registration' => $_POST['cbDomainRegistration']
+			, 'additional_email_addresses' => $_POST['cbAdditionalEmail']
 			// Extras
-			'mc_list_id' => $_POST['tMCListID'],
-			'type' => $_POST['tType'],
-			'live' => (isset( $_POST['cbLive'] ) ) ? 1 : 0
+			, 'mc_list_id' => $_POST['tMCListID']
+			, 'live' => ( isset( $_POST['cbLive'] ) ) ? 1 : 0
 		);
 		
 		// Start DB safety preparation
-		$fields_safety = 'iisssssssiisiiiiiiiiiiiissi';
+		$fields_safety = 'iiisssssssiisiiiiiiiiiiiisi';
 		
 		// FTP data
 		if ( !empty( $_POST['tFTPHost'] ) ) {
@@ -121,17 +120,6 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 		
 		$success = $w->update( $_GET['wid'], $fields, $fields_safety );
 
-        $sm_add_ons = @unserialize( $w->get_setting( $_GET['wid'], 'social-media-add-ons' ) );
-
-        if ( is_array( $sm_add_ons ) ) {
-            $sm = new Social_Media();
-
-            foreach ( $sm_add_ons as $smao ) {
-                if ( !in_array( $smao, $_POST['sSocialMedia'] ) )
-                    $sm->reset( $_GET['wid'], $smao );
-            }
-        }
-
 		// Update Facebook settings
 		$w->update_settings( $_GET['wid'], array( 
 			'facebook-url' => $_POST['tFacebookURL']
@@ -144,6 +132,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
             , 'ashley-alternate-folder' => $_POST['cbAshleyAlternateFolder']
             , 'social-media-add-ons' => serialize( $_POST['sSocialMedia'] )
             , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
+            , 'facebook-pages' => $_POST['tFacebookPages']
 		) );
 	}
 }
@@ -151,6 +140,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-accou
 $web = $w->get_website( $_GET['wid'] );
 $ftp = $w->get_ftp_data( $_GET['wid'] );
 $website_industries = $w->get_industries( $_GET['wid'] );
+$company_packages = $c->get_packages( $_GET['wid'] );
 $users = $u->get_users();
 
 $settings = $w->get_settings( $_GET['wid'], array(
@@ -165,6 +155,7 @@ $settings = $w->get_settings( $_GET['wid'], array(
     , 'ashley-alternate-folder'
     , 'social-media-add-ons'
     , 'trumpia-api-key'
+    , 'facebook-pages'
 ));
 
 $web['custom_image_size'] = $settings['custom-image-size'];
@@ -219,7 +210,7 @@ get_header();
             <?php } ?>
 			<form action="/accounts/edit/?wid=<?php echo $_GET['wid']; ?>" method="post" name="fEditAccount">
 			<?php 
-			if ( '0' == $web['version'] )
+			if ( '0' == $web['version'] && $web['pages'] )
 				echo '<p>', _('Website has not been installed. Please verify domain and FTP data below and'), ' <a href="/accounts/install/?wid=', $web['website_id'], '" title="', _('Install Account'), '">', _('click here to install the account'), '</a>.</p>';
 			
 			if ( isset( $_GET['i'] ) )
@@ -277,6 +268,7 @@ get_header();
 						<p>
                         	<label for="tUserEmail"><?php echo _('Email'); ?>:</label>
                             <input type="text" class="tb read-only" name="tUserEmail" id="tUserEmail" readonly="readonly" value="<?php echo $user_email; ?>" />
+                        </p>
                         <p>
 							<label for="sOSUserID"><?php echo _('Online Specialist'); ?>:</label>
 							<select name="sOSUserID" id="sOSUserID" class="tb">
@@ -293,6 +285,27 @@ get_header();
 								<?php } ?>
 							</select>
 						</p>
+                        <p<?php if ( !is_array( $company_packages ) ) echo ' class="hidden"'; ?>>
+                        	<label for="sCompanyPackageID"><?php echo _('Package'); ?>:</label>
+                            <select name="sCompanyPackageID" id="sCompanyPackageID">
+                                <option value="">-- <?php echo _('Select a Package'); ?> --</option>
+                                <?php
+                                if ( is_array( $company_packages ) )
+                                foreach ( $company_packages as $cpid => $cp ) {
+                                    $selected = ( $cpid == $web['company_package_id'] ) ? ' selected="selected"' : '';
+                                    ?>
+                                    <option value="<?php echo $cpid; ?>"<?php echo $selected; ?>><?php echo $cp; ?></option>
+                                <?php } ?>
+                            </select>
+                            <br />
+                            <?php if ( '0' != $web['version'] && $web['pages'] ) { ?>
+                                <a href="javascript:;" id="aInstallPackage" rel="<?php echo $web['website_id']; ?>" confirm="<?php echo _('WARNING: You are going to be overwriting all content on this website. There is no undoing this action. This means all product, text, images and content is going to be replaced with the content on the relevant demo site. Are you VERY SURE you want to proceed?'); ?>"><?php echo _('Install Package'); ?></a>
+                                <span class="green hidden" id="sPackageInstallationSuccess"> - <?php echo _('Successfully Installed!'); ?></span>
+                                <?php
+                                nonce::field( 'install-package', '_ajax_install_package' );
+                            }
+                            ?>
+                        </p>
 					</td>
 					<td valign="top">
 						<h2><?php echo _('Features'); ?></h2>
@@ -366,10 +379,6 @@ get_header();
 					<td valign="top" class="block-labels">
 						<h2><?php echo _('Extras'); ?></h2>
 						<p>
-							<label for="tType"><?php echo _('Type'); ?>:</label>
-							<input type="text" name="tType" id="tType" value="<?php echo $web['type']; ?>" class="tb" />
-						</p>
-						<p>
 							<?php echo _('Logo'); ?>:
 							<strong><?php echo $web['logo']; ?></strong>
 						</p>
@@ -433,6 +442,10 @@ get_header();
                             <?php } else { ?>
 							<input type="text" name="tTrumpiaAPIKey" id="tTrumpiaAPIKey" value="<?php if ( isset( $settings['trumpia-api-key'] ) ) echo $settings['trumpia-api-key']; ?>" class="tb" />
                             <?php } ?>
+						</p>
+                        <p>
+							<label for="tFacebookPages"><?php echo _('Facebook Pages'); ?>:</label>
+							<input type="text" name="tFacebookPages" id="tFacebookPages" value="<?php if ( isset( $settings['facebook-pages'] ) ) echo $settings['facebook-pages']; ?>" class="tb" />
 						</p>
 						<p>
                         	<input type="checkbox" name="cbCustomImageSize" id="cbCustomImageSize" value="" class="cb"<?php if ( isset( $web['custom_image_size'] ) && $web['custom_image_size'] != 0 ) echo ' checked="checked"'; ?>/> 

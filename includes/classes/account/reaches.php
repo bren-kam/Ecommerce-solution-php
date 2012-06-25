@@ -30,7 +30,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -53,7 +53,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create empty reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create empty reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -80,7 +80,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -100,7 +100,7 @@ class Reaches extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create reach links.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to create reach links.', __LINE__, __METHOD__ );
 				return false;
 			}
 		} */
@@ -128,7 +128,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach priority.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach priority.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -151,7 +151,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach status.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach status.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -168,31 +168,25 @@ class Reaches extends Base_Class {
 	 * @return bool
 	 */
 	public function update_assigned_to( $reach_id, $assigned_to_user_id ) {
-		global $user;
-		
-		$this->db->update( 'website_reaches', array( 'assigned_to_user_id' => $assigned_to_user_id ), array( 'website_reach_id' => $reach_id ), 'i', 'i' );
+		$this->db->update( 'website_reaches', array( 'assigned_to_user_id' => $assigned_to_user_id, 'assigned_to_date' => dt::date('Y-m-d H:i:s') ), array( 'website_reach_id' => $reach_id ), 'is', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
-		return (int) $assigned_to_user_id;
+		return $assigned_to_user_id;
 	}
 	
 	/**
 	 * Update reach waiting
-	 *
-	 * @since 1.0.0
 	 *
 	 * @param int $reach_id
 	 * @param int $waiting
 	 * @return bool
 	 */
 	public function update_waiting( $reach_id, $waiting ) {
-		global $user;
-		
 		//Type cast
 		$waiting = (int) $waiting;
 		
@@ -200,7 +194,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach assigned_to_user_id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -223,7 +217,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update reach date_due.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update reach date_due.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -238,11 +232,11 @@ class Reaches extends Base_Class {
 	 * @return array
 	 */
 	public function get( $reach_id, $meta = false ) {
-		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', IF( b.`billing_last_name`,  b.`billing_last_name`, '' ) ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
+		$reach = $this->db->get_row( "SELECT a.`website_reach_id`, a.`website_user_id`, a.`assigned_to_user_id`, a.`message`, a.`priority`, a.`status`, a.`assigned_to_date`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, CONCAT( b.`billing_first_name`, ' ', IF( b.`billing_last_name`,  b.`billing_last_name`, '' ) ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`subdomain`, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `website_reaches` AS a LEFT JOIN `website_users` AS b ON ( a.`website_user_id` = b.`website_user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`website_reach_id` = " . (int) $reach_id, ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get reach.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get reach.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -254,7 +248,7 @@ class Reaches extends Base_Class {
 			
 			// If there was an error
 			if ( $this->db->errno() ) {
-				$this->err( "Failed to get reach meta.", __LINE__, __METHOD__ );
+				$this->_err( "Failed to get reach meta.", __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -281,7 +275,7 @@ class Reaches extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to list reaches.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to list reaches.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -300,7 +294,7 @@ class Reaches extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to count reaches.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to count reaches.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -361,7 +355,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails to email for overdue reaches.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails to email for overdue reaches.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -387,7 +381,7 @@ class Reaches extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attachments.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -399,7 +393,7 @@ class Reaches extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete reach upload.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete reach upload.', __LINE__, __METHOD__ );
 			return false;
 		}*/
 		
@@ -415,7 +409,7 @@ class Reaches extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

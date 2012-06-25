@@ -29,7 +29,7 @@ class Companies extends Base_Class {
 
 		// Handle errors
 		if ( mysql_errno() ) {
-			$this->err( 'Failed to get company', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get company', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -46,7 +46,7 @@ class Companies extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

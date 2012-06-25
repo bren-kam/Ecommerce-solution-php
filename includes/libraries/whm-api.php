@@ -13,7 +13,7 @@ class WHM_API {
 	const URL_API = 'https://199.79.48.137:2087/json-api/';
 	const DEBUG = false;
     const USERNAME = 'root';
-    CONST HASH = '9943eb7e9b6bfa89d7ddea127cdb0b6a
+    const HASH = '9943eb7e9b6bfa89d7ddea127cdb0b6a
 493a235756c165c95f009d1256aa66a2
 89f9cb5ac3d47cdc326c6f44b921918a
 3c606a91c08715af6903dc3625192ac2

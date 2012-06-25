@@ -35,7 +35,7 @@ class Ashley_Feed extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website_ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website_ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -103,9 +103,12 @@ class Ashley_Feed extends Base_Class {
 		}
 		
 		$local_folder = "/home/imaginer/public_html/admin/media/downloads/ashley/$username/";
-		
-		if ( !file_exists( $local_folder ) )
+
+		if ( !file_exists( $local_folder ) ) {
+            // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 			mkdir( $local_folder, 0777 );
+            chmod( $local_folder, 0777 );
+        }
 		
 		// Grab the latest file
 		if( file_exists( $local_folder . $file ) ) {
@@ -143,11 +146,11 @@ class Ashley_Feed extends Base_Class {
 			if ( !in_array( $sku, $skus ) )
 				$remove_products[] = (int) $product_id;
 		}
-		
-		echo '<p><strong>New Products:</strong> ' . count( $new_products ) . '</p>';
-		
+
 		// Add new products
-		$this->add_bulk( $website_id, $new_products );
+		$product_count = $this->add_bulk( $website_id, $new_products );
+
+		echo "<p><strong>New Products:</strong> $product_count</p>";
 
 		echo '<p><strong>Old Products:</strong> ' . count( $remove_products ) . '</p>';
 		
@@ -183,7 +186,7 @@ class Ashley_Feed extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -192,7 +195,7 @@ class Ashley_Feed extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get domain.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get domain.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -220,7 +223,7 @@ class Ashley_Feed extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get products.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -266,12 +269,12 @@ class Ashley_Feed extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to dump website products.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to dump website products.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
 		
-		return true;
+		return $this->db->rows_affected;
 	}
 	
 	/**
@@ -301,7 +304,7 @@ class Ashley_Feed extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to deactivate products.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to deactivate products.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -321,7 +324,7 @@ class Ashley_Feed extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -334,7 +337,7 @@ class Ashley_Feed extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -418,11 +421,11 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// If there are any categories that need to be added
-		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
+		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/small/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website category images.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website category images.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -466,7 +469,7 @@ class Ashley_Feed extends Base_Class {
 
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to add website categories.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to add website categories.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -498,7 +501,7 @@ class Ashley_Feed extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -519,7 +522,7 @@ class Ashley_Feed extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -568,7 +571,7 @@ class Ashley_Feed extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

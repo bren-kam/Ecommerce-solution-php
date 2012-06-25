@@ -29,7 +29,7 @@ class Websites extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -48,7 +48,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get industry ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -69,7 +69,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update website', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update website', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -102,7 +102,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get check if request exists.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get check if request exists.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -120,7 +120,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get FTP data.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get FTP data.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -142,7 +142,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -171,7 +171,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -208,7 +208,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get metadata.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get metadata.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -253,7 +253,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update all the website pagemeta', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update all the website pagemeta', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -274,7 +274,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -292,7 +292,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count pages.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count pages.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -312,7 +312,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get page by slug.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get page by slug.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -333,7 +333,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attachments by name.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attachments by name.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -345,7 +345,7 @@ class Websites extends Base_Class {
 	/**
 	 * Gets the general settings
 	 * 
-	 * @param array $setting_1, $setting_2, $setting_3, etc.
+	 * @param array $settings,...
 	 * @return array
 	 */
 	public function get_settings() {
@@ -379,7 +379,7 @@ class Websites extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website_settings.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website_settings.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -410,7 +410,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website setting.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website setting.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -431,7 +431,7 @@ class Websites extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create website setting.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create website setting.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -460,7 +460,7 @@ class Websites extends Base_Class {
 			// Handle any error
 			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
-				$this->err( "Failed to update website's settings.", __LINE__, __METHOD__ );
+				$this->_err( "Failed to update website's settings.", __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -488,7 +488,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create website page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create website page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -513,7 +513,7 @@ class Websites extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website page.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website page.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -533,7 +533,7 @@ class Websites extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete website image dimensions.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete website image dimensions.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -550,7 +550,7 @@ class Websites extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
