@@ -58,10 +58,10 @@ if ( !$full || isset( $_POST['_nonce'] ) ) {
         if ( empty( $errs ) ) {
             if ( $mobile_keyword_id ) {
                 // Update subscriber
-                $success = $m->update_keyword( $mobile_keyword_id, stripslashes( $_POST['taResponse'] ), $_POST['sMobileLists'] );
+                $success = $m->update_keyword( $mobile_keyword_id, $_POST['taResponse'], $_POST['sMobileLists'] );
             } else {
                 // Create Subscriber
-                $success = $m->create_keyword( stripslashes( $_POST['tKeyword'] ), stripslashes( $_POST['taResponse'] ), $_POST['sMobileLists'] );
+                $success = $m->create_keyword( $_POST['tKeyword'], $_POST['taResponse'], $_POST['sMobileLists'] );
             }
         }
     }

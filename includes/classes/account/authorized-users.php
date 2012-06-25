@@ -30,7 +30,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list authorized users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list authorized users.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -48,7 +48,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count authorized users.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count authorized users.', __LINE__, __METHOD__ );
 			return false;
 		}
 			
@@ -58,6 +58,7 @@ class Authorized_Users extends Base_Class {
 	/**
 	 * Create an authorized user
 	 *
+     * @param string $name
 	 * @param string $email
 	 * @param bool $pages
 	 * @param bool $products
@@ -68,19 +69,21 @@ class Authorized_Users extends Base_Class {
 	 * @param int $role (optional|1)
 	 * @return array
 	 */
-	public function create( $email, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = 1 ) {
+	public function create( $name, $email, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = 1 ) {
 		global $user, $u;
-		
+
 		if ( $au = $u->get_user_by_email( $email, false ) ) {
 			if ( $au['role'] > 1 ) return false;
 			
 			// If they are already authorized, nothing else to do
 			if ( $this->is_authorized( $au['user_id'], $user['website']['website_id'] ) )
-				return true;
+				return $au['user_id'];
 			
 			// Add the link
 			$this->add_link( $au['user_id'], $user['website']['website_id'], $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart );
-			
+
+            $user_id = $au['user_id'];
+
 			// @Translate
 			// @Fix very poorly translated email
 			// Send them an email letting them know they have a new authorized user
@@ -95,7 +98,7 @@ class Authorized_Users extends Base_Class {
 			return Emails::template( $email, $subject, $message , $from , $headers );
 		} else {
 			// Create the user
-			$user_id = $u->create_authorized_user( $email, $role );
+			$user_id = $u->create_authorized_user( $name, $email, $role );
 			
 			// Add the link
 			$this->add_link( $user_id, $user['website']['website_id'], $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart );
@@ -117,18 +120,10 @@ class Authorized_Users extends Base_Class {
 			if ( !Emails::template( $email, $subject, $message, $from, $headers ) )
 				$t->delete( $token );
 			
-			return true;
+			return $user_id;
 		}
 		
-		$authorized_user = $this->db->prepare( 'SELECT a.`user_id`, a.`email`, b.`pages`, b.`products`, b.`analytics`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`website_id` = ? a.`role` = 1 AND a.`user_id` = ?', 'ii', $user['website']['website_id'], $user_id )->get_row( '', ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get authorized user.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $authorized_user;
+		return $user_id;
 	}
 	
 	/**
@@ -150,7 +145,7 @@ class Authorized_Users extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update authorized user link.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update authorized user link.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -165,15 +160,15 @@ class Authorized_Users extends Base_Class {
 	 */
 	public function get( $user_id ) {
 		global $user;
-		
-		$authorized_user = $this->db->prepare( 'SELECT a.`user_id`, a.`email`, b.`pages`, b.`products`, b.`analytics`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`role` = 1 AND a.`user_id` = ? AND b.`website_id` = ?', 'ii', $user_id, $user['website']['website_id'] )->get_row( '', ARRAY_A );
-		
+
+		$authorized_user = $this->db->prepare( 'SELECT a.`user_id`, a.`contact_name`, a.`email`, b.`pages`, b.`products`, b.`analytics`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `users` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`role` = 1 AND a.`user_id` = ? AND b.`website_id` = ?', 'ii', $user_id, $user['website']['website_id'] )->get_row( '', ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get authorized user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get authorized user.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
 		return $authorized_user;
 	}
 	
@@ -190,7 +185,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get stores.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get stores.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -209,7 +204,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check if user is authorized.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check if user is authorized.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -234,7 +229,7 @@ class Authorized_Users extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add authorized user link.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add authorized user link.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -253,7 +248,7 @@ class Authorized_Users extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete authorized user.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete authorized user.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -269,7 +264,7 @@ class Authorized_Users extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

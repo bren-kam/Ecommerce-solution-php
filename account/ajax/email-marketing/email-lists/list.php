@@ -25,10 +25,12 @@ $delete_email_list_nonce = nonce::create( 'delete-email-list' );
 // Create output
 if ( is_array( $email_lists ) )
 foreach ( $email_lists as $el ) {
+    // Make the delete text
+    $delete = ( 'Default' == $el['name'] ) ? '' : ' | <a href="/ajax/email-marketing/email-lists/delete/?elid=' . $el['email_list_id'] . '&amp;_nonce=' . $delete_email_list_nonce . '" title="' . _('Delete Email List') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>';
+
 	$data[] = array( 
 		$el['name'] . ' (' . $el['count'] . ')<br /><div class="actions"><a href="/email-marketing/subscribers/?elid=' . $el['email_list_id'] . '" title="' . _('View Subscribers') . '">' . _('View Subscribers') . '</a> | 
-						<a href="/email-marketing/email-lists/add-edit/?elid=' . $el['email_list_id'] . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | 
-						<a href="/ajax/email-marketing/email-lists/delete/?elid=' . $el['email_list_id'] . '&amp;_nonce=' . $delete_email_list_nonce . '" title="' . _('Delete Email List') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a></div>',
+						<a href="/email-marketing/email-lists/add-edit/?elid=' . $el['email_list_id'] . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $delete,
 		format::limit_chars( $el['description'], 32, '...' ),
 		dt::date( 'F jS, Y g:i a', $el['date_created'] )
 	);

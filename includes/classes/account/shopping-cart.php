@@ -26,7 +26,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart users', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart users', __LINE__, __METHOD__ );
 			return false;
 		}
 	
@@ -47,7 +47,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list shopping cart users', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list shopping cart users', __LINE__, __METHOD__ );
 			return false;
 		}
 	
@@ -65,7 +65,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count users', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count users', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -83,7 +83,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart user', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart user', __LINE__, __METHOD__ );
 			return false;
 		}
 	
@@ -143,7 +143,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to edit shopping cart users', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to edit shopping cart users', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -161,7 +161,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart users', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart users', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -179,7 +179,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to check shopping cart email', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to check shopping cart email', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -241,7 +241,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add shopping cart user', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add shopping cart user', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -263,7 +263,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart orders', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart orders', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -282,7 +282,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart order', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart order', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -290,7 +290,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart order items', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart order items', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -325,7 +325,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count shopping cart orders', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count shopping cart orders', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -352,7 +352,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add shipping method', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add shipping method', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -371,7 +371,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete shipping method', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete shipping method', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -400,7 +400,7 @@ class Shopping_Cart extends Base_Class {
 																  
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shipping method zip codes', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shipping method zip codes', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -419,7 +419,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete shipping method', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete shipping method', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -443,7 +443,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shipping method', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shipping method', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -468,7 +468,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shipping methods', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shipping methods', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -489,7 +489,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list shipping methods', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list shipping methods', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -507,7 +507,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count shipping methods', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count shipping methods', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -535,7 +535,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update shipping method', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update shipping method', __LINE__, __METHOD__ );
 			return false;
 		}
 				
@@ -553,7 +553,7 @@ class Shopping_Cart extends Base_Class {
 	
 	// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get shopping cart product options', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get shopping cart product options', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -572,7 +572,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update order status', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update order status', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -588,7 +588,7 @@ class Shopping_Cart extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 
@@ -607,7 +607,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to perform autocomplete', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to perform autocomplete', __LINE__, __METHOD__ );
 			return false;
 		}
 				
@@ -632,7 +632,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -656,7 +656,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -674,7 +674,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count craigslist templates.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -720,7 +720,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist template.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -742,7 +742,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -778,7 +778,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -805,7 +805,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product info.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product info.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -823,7 +823,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get product image urls.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get product image urls.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -860,7 +860,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		return $result;
@@ -877,7 +877,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		return true;
@@ -897,7 +897,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to copy Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to copy Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		return true;
@@ -933,7 +933,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 		return $result;
@@ -950,7 +950,7 @@ class Shopping_Cart extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website info.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website info.', __LINE__, __METHOD__ );
 			return false;
 		}
 		

@@ -23,11 +23,11 @@ class Products extends Base_Class {
 	 */
 	public function get_tab( $fb_page_id ) {
 		// Get the tab
-		$tab_data = $this->db->prepare( "SELECT IF( 0 = b.`product_catalog`, a.`content`, 'no-catalog' ) AS content, a.`website_id`, IF( '' = b.`subdomain`, b.`domain`, CONCAT( b.`subdomain`, '.', b.`domain` ) ) AS domain FROM `sm_products` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`fb_page_id` = ?", 's', $fb_page_id )->get_row( '', ARRAY_A );
+		$tab_data = $this->db->prepare( "SELECT IF( 0 = c.`product_catalog`, a.`content`, 'no-catalog' ) AS content, b.`website_id`, c.`domain` FROM `sm_products` AS a LEFT JOIN `sm_facebook_page` AS b ON ( a.`sm_facebook_page_id` = b.`id` ) LEFT JOIN `websites` AS c ON ( b.`website_id` = c.`website_id` ) WHERE a.`fb_page_id` = ? AND b.`status` = 1", 's', $fb_page_id )->get_row( '' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get tab.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get tab.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -42,7 +42,7 @@ class Products extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to get top categories.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to get top categories.', __LINE__, __METHOD__ );
 				return false;
 			}
 			
@@ -75,7 +75,7 @@ class Products extends Base_Class {
 					
 						// Handle any error
 						if ( $this->db->errno() ) {
-							$this->err( 'Failed to insert website image dimensions.', __LINE__, __METHOD__ );
+							$this->_err( 'Failed to insert website image dimensions.', __LINE__, __METHOD__ );
 							return false;
 						}
 					}
@@ -123,7 +123,7 @@ class Products extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -141,11 +141,11 @@ class Products extends Base_Class {
 		$fb_page_id = (int) $fb_page_id;
 		
 		// Get the connected website
-		$website = $this->db->get_row( "SELECT a.`title`, b.`key` FROM `websites` AS a LEFT JOIN `sm_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`fb_page_id` = $fb_page_id", ARRAY_A );
+		$website = $this->db->get_row( "SELECT a.`title`, c.`key` FROM `websites` AS a `sm_facebook_page` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `sm_products` AS c ON ( b.`id` = c.`sm_facebook_page_id` ) WHERE b.`status` = 1 AND c.`fb_page_id` = $fb_page_id", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get connected website.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get connected website.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -162,7 +162,7 @@ class Products extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

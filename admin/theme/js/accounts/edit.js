@@ -108,6 +108,22 @@ function postLoad( $ ) {
         $('#cbSocialMedia').attr( 'checked' , false );
         $('#dSocialMedia').hide();
     });
+
+    // Make it possible to install a package
+    $('#aInstallPackage').click( function() {
+        if ( !confirm( $(this).attr('confirm') ) )
+            return;
+
+        $.post( '/ajax/accounts/install-package/', { _nonce : $('#_ajax_install_package').val(), wid : $(this).attr('rel'), cpid : $('#sCompanyPackageID').val() }, function ( response ) {
+            if ( !response['success'] ) {
+                alert( response['error'] );
+                return;
+            }
+
+            $('#tTheme').val( response['theme'] );
+            alert( response['message'] );
+        }, 'json' );
+    });
 }
 
 /**

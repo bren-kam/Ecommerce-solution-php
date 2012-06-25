@@ -143,7 +143,6 @@ function timer_stop( $time_start ) {
  * @param string $expire how long the cookie should last
  */
 function set_cookie( $name, $value, $expire ) {
-	$secure = ( LIVE ) ? true : false;
 	$secure = false;
 
     setcookie( COOKIE_ABBR . $name, $value, time() + $expire, '/', '.' . DOMAIN, $secure, true );

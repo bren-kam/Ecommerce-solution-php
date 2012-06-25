@@ -17,8 +17,20 @@ $w = new Websites;
 // Initialize variable
 $success = false;
 
-if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'taxes' )  )
-	$success = $w->update_settings( array( 'taxes' => serialize( array( 'states' => $_POST['states'], 'zip_codes' => $_POST['zip_codes'] ) ) ) );
+if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'taxes' )  ) {
+    $zip_codes = array();
+
+    if ( isset( $_POST['zip_codes'] ) )
+    foreach ( $_POST['zip_codes'] as $state => $taxes ) {
+        $rows = explode( "\n", $taxes );
+        foreach ( $rows as $r ) {
+            list( $zip, $cost ) = explode( ' ', str_replace("\t", ' ', $r ) );
+            $zip_codes[$state][$zip] = $cost;
+        }
+    }
+
+	$success = $w->update_settings( array( 'taxes' => serialize( array( 'states' => $_POST['states'], 'zip_codes' => $zip_codes ) ) ) );
+}
 
 // Define variables
 $taxes = $w->get_settings( 'taxes' );
@@ -47,7 +59,15 @@ get_header();
 				</tr>
 				<?php foreach ( $taxes['states'] as $abbr => $tax ) { ?>
 				<tr id="trTax<?php echo $abbr; ?>">
-					<td><a href="/dialogs/edit-tax-zip-codes/?state=<?php echo $abbr; ?>#dEditTaxZipCodes" title="<?php echo _('Edit Tax Zip Codes'); ?>" rel="dialog" ajax="1" cache="0"><span><?php echo $states[$abbr]; ?></span></a></td>
+					<td>
+                        <a href="javascript:;" class="zip-codes" title="<?php echo _('Edit Tax Zip Codes'); ?>"><span><?php echo $states[$abbr]; ?></span></a>
+                        <textarea name="zip_codes[<?php echo $abbr; ?>]" class="hidden" col="50" rows="3" tmpval="[Zip] [Cost]"><?php
+                            if ( isset( $taxes['zip_codes'][$abbr] ) )
+                            foreach ( $taxes['zip_codes'][$abbr] as $zip => $cost ) {
+                                echo $zip, ' ', $cost, "\n";
+                            }
+                        ?></textarea>
+                    </td>
 					<td><input type="text" class="tb" name="states[<?php echo $abbr; ?>]" id="tState<?php echo $abbr; ?>" value="<?php echo $tax; ?>" maxlength="5" /></td>
 					<td><a href="javascript:;" class="delete-state" id="aDeleteTax<?php echo $abbr; ?>" title="<?php echo _('Delete Tax'); ?>"><img width="15" height="17" alt="<?php echo _('Delete'); ?>" src="/images/icons/x.png"></a></td>
 				</tr>
@@ -69,17 +89,7 @@ get_header();
 			</table>
 			<br />
 			<input type="submit" class="button" value="<?php echo _('Save Changes'); ?>" />
-			<?php 
-			foreach ( $taxes['zip_codes'] as $state => $zip_codes ) {
-				foreach ( $zip_codes as $zip => $cost ) {
-					?>
-					<input type="hidden" class="zip-<?php echo $state; ?>" name="zip_codes[<?php echo $state; ?>][<?php echo $zip; ?>]" value="<?php echo $cost; ?>" />
-					<?php
-				}
-			}
-			
-			nonce::field('taxes');
-			?>
+			<?php nonce::field('taxes'); ?>
 		</form>
 		<br /><br />
 		<br /><br />

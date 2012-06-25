@@ -90,6 +90,10 @@ $cache = &$s98_cache; // Setting up a point to all cache functions
 /** Including the label information */
 require INC_PATH . 'labels/' . DOMAIN . '.php';
 
+// I believe in PHP 5.4 this is done by default, but there is no point in ever not stripping slashes
+if ( isset( $_POST ) && 0 != count( $_POST ) )
+    $_POST = format::stripslashes_deep( $_POST );
+
 /** Routing */
 require OPERATING_PATH . 'routing.php' ;
 

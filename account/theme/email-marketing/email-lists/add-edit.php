@@ -41,10 +41,10 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-ema
 	if ( empty( $errs ) ) {
 		if ( $email_list_id ) {
 			// Update email list
-			$success = $e->update_email_list( $email_list_id, stripslashes( $_POST['tName'] ), stripslashes( $_POST['taDescription'] ) );
+			$success = $e->update_email_list( $email_list_id, $_POST['tName'], $_POST['taDescription'] );
 		} else {
 			// Create email list
-			$success = $e->create_email_list( stripslashes( $_POST['tName'] ), stripslashes( $_POST['taDescription'] ) );
+			$success = $e->create_email_list( $_POST['tName'], $_POST['taDescription'] );
 		}
 	}
 }
@@ -92,7 +92,7 @@ get_header();
 					<td><input type="text" class="tb" name="tName" id="tName" maxlength="80" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $email_list['name']; ?>" /></td>
 				</tr>
 				<tr>
-					<td valign="top"><label for="taDescription"><?php echo _('Description'); ?>:</label></td>
+					<td class="top"><label for="taDescription"><?php echo _('Description'); ?>:</label></td>
 					<td><textarea name="taDescription" id="taDescription" cols="35" rows="6"><?php echo ( !$success && isset( $_POST['taDescription'] ) ) ? $_POST['taDescription'] : $email_list['description']; ?></textarea></td>
 				</tr>
 				<tr><td colspan="2">&nbsp;</td></tr>

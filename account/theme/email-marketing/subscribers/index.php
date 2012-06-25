@@ -22,7 +22,7 @@ get_header();
 	<?php get_sidebar( 'email-marketing/', 'subscribers' ); ?>
 	<div id="subcontent">
 		<?php if ( !$user['website']['email_marketing'] ) { ?>
-		<p class="warning"><?php echo _('You are only able to manage your subscribers. To have full use of the Email Marketing section you can sign up for it by calling our Online Specialists at (800) 549-9206.'); ?></p>
+		<p class="error"><?php echo _('You are only able to manage your subscribers. To have full use of the Email Marketing section you can sign up for it by calling our Online Specialists at (800) 549-9206.'); ?></p>
 		<br /><br />
 		<br /><br />	
 		<?php } ?>

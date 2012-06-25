@@ -49,7 +49,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-setting
 			if ( !isset( $_POST[$sk] ) )
 				continue;
 			
-			$settings[$sk] = stripslashes( $_POST[$sk] );
+			$settings[$sk] = $_POST[$sk];
 		}
 		
 		// Set settings

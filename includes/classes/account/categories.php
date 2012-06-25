@@ -46,7 +46,7 @@ class Categories extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -268,7 +268,7 @@ class Categories extends Base_Class {
         
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -286,7 +286,7 @@ class Categories extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -310,7 +310,7 @@ class Categories extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website category.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website category.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -337,7 +337,7 @@ class Categories extends Base_Class {
 
         // Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update website category.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update website category.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -354,7 +354,7 @@ class Categories extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

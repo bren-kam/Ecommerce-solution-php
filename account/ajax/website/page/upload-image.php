@@ -14,8 +14,11 @@ $file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'
 $dir = OPERATING_PATH . 'media/uploads/site_logos/' . $_POST['wid'] . '/';
 
 // Directory needs to exist
-if ( !is_dir( $dir ) )
+if ( !is_dir( $dir ) ) {
+    // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 	mkdir( $dir, 0777, true );
+    chmod( $dir, 0777 );
+}
 
 // User is blank, must fill website
 global $user;

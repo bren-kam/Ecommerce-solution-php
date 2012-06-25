@@ -114,6 +114,21 @@ class GSR_API {
 		// Return the user id if successful
 		return ( $this->success ) ? $this->response->user_id : false;
 	}
+	
+	/**
+	 * Create Authorized Users
+	 *
+	 * @param int $website_id
+	 * @param array $emails
+	 * @return bool
+	 */
+	public function create_authorized_users( $website_id, $emails ) {
+		// Execute the command
+		$this->_execute( 'create_authorized_users', compact( 'website_id', 'emails' ) );
+		
+		// Return the success of the method
+		return $this->success;
+	}
 
 	/**
 	 * Create Website
@@ -142,13 +157,27 @@ class GSR_API {
 		// We need to make sure there is a number there
 		if( !$additional_email_addresses )
 			$additional_email_addresses = 0;
-
+		
 		// Execute the command
 		$this->_execute( 'create_website', compact( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
 		
 		// Return the website id if successful
 		return ( $this->success ) ? $this->response->website_id : false;
 	}
+
+    /**
+     * Install Package
+     *
+     * @param int $website_id
+     * @param int $company_package_id
+     * @return bool
+     */
+    public function install_package( $website_id, $company_package_id ) {
+        // Execute the command
+		$this->_execute( 'install_package', compact( 'website_id', 'company_package_id' ) );
+
+        return $this->success;
+    }
 
     /**
 	 * Add Note
@@ -268,6 +297,7 @@ class GSR_API {
      *
      * @return string
      */
+
     public function raw_response() {
         return $this->raw_response;
     }

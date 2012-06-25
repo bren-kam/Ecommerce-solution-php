@@ -29,6 +29,12 @@ class Analytics extends Base_Class {
      * @var string
      */
     private $ga_filter = NULL;
+	
+	/**
+	 * Contain the Response to instantiation
+	 * @var Response
+	 */
+	 private $response;
 
 	/**
 	 * Construct initializes data
@@ -42,6 +48,9 @@ class Analytics extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 
+	    $this->date_start = ( empty( $date_start ) ) ? dt::date( 'Y-m-d', time() - 2678400 ) : dt::date( 'Y-m-d', strtotime( $date_start ) ); // 30 days ago
+		$this->date_end = ( empty( $date_end ) ) ? dt::date( 'Y-m-d', time() - 86400 ) : dt::date( 'Y-m-d', strtotime( $date_end ) ); // Yesterday
+		
         // Only call if necessary
         if ( NULL != $ga_profile_id ) {
             // Call Google Analytics API
@@ -57,7 +66,12 @@ class Analytics extends Base_Class {
                 $ga_password = security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY );
 
                 if ( !empty( $ga_username )  && !empty( $ga_password ) ) {
-                    $this->ga = new GAPI( $ga_username, $ga_password );
+					try {
+	                    $this->ga = new GAPI( $ga_username, $ga_password );
+					} catch ( Exception $e ) {
+						$this->response = new Response( false, $e->getMessage(), $e->getCode() );
+						return false;
+					}
                 } else {
                     $this->ga = new GAPI( 'web@imagineretailer.com', 'imagine1010' );
                 }
@@ -66,9 +80,17 @@ class Analytics extends Base_Class {
             }
             $this->ga_profile_id = (int) $ga_profile_id;
         }
-
-	    $this->date_start = ( empty( $date_start ) ) ? dt::date( 'Y-m-d', time() - 2678400 ) : dt::date( 'Y-m-d', strtotime( $date_start ) ); // 30 days ago
-		$this->date_end = ( empty( $date_end ) ) ? dt::date( 'Y-m-d', time() - 86400 ) : dt::date( 'Y-m-d', strtotime( $date_end ) ); // Yesterday
+		
+		$this->response = new Response( true );
+	}
+	
+	/**
+	 * Get Response
+	 *
+	 * @return Response
+	 */
+	public function get_response() {
+		return $this->response;
 	}
 
     /**
@@ -461,7 +483,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -473,7 +495,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -485,7 +507,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -524,7 +546,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -536,7 +558,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -548,7 +570,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -587,7 +609,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist market stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -597,7 +619,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist category stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -607,7 +629,7 @@ class Analytics extends Base_Class {
 
                 // Handle any error
                 if ( $this->db->errno() ) {
-                    $this->err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
+                    $this->_err( "Failed to get '$metric' from craigslist product stats.", __LINE__, __METHOD__ );
                     return false;
                 }
             break;
@@ -697,7 +719,7 @@ class Analytics extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails without statistics.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails without statistics.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -714,7 +736,7 @@ class Analytics extends Base_Class {
 				
 				// Handle errors
 				if ( $mc->errorCode ) {
-					$this->err( "MailChimp: Unable to get Campaign Statistics\n\nCampaign ID: " . $e['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
+					$this->_err( "MailChimp: Unable to get Campaign Statistics\n\nCampaign ID: " . $e['mc_campaign_id'] . "\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 					return false;
 				} 
 				
@@ -729,14 +751,14 @@ class Analytics extends Base_Class {
 			
 			// Handle SQL errors
 			if ( $this->db->errno() )
-				$this->err( 'Failed to add Analytics Email Statistics',  __LINE__, __METHOD__ );
+				$this->_err( 'Failed to add Analytics Email Statistics',  __LINE__, __METHOD__ );
 		}
 		
 		$emails = $this->db->get_results( 'SELECT b.`email_message_id`, a.`mc_campaign_id`, b.`subject`, a.`opens`, a.`clicks`, a.`emails_sent`, UNIX_TIMESTAMP( b.`date_sent` ) AS date_sent, UNIX_TIMESTAMP( a.`last_updated` ) AS last_updated FROM `analytics_emails` AS a INNER JOIN `email_messages` AS b ON ( a.`mc_campaign_id` = b.`mc_campaign_id` ) WHERE b.`status` = 2 AND b.`website_id` = ' . $user['website']['website_id'], ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get emails.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get emails.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -770,7 +792,7 @@ class Analytics extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -778,7 +800,7 @@ class Analytics extends Base_Class {
 		
 		// Handle errors
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Campaign Advice\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to get Campaign Advice\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -787,7 +809,7 @@ class Analytics extends Base_Class {
 		
 		// Handle errors
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Campaign Click Stats\n\nCampaign ID: $mc_campaign_id \nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to get Campaign Click Stats\n\nCampaign ID: $mc_campaign_id \nCode: " . $mc->errorCode . "\nError Message: " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -811,7 +833,7 @@ class Analytics extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update analytics.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update analytics.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -833,7 +855,7 @@ class Analytics extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get email message id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get email message id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -843,7 +865,7 @@ class Analytics extends Base_Class {
 		
 		// Handle errors
 		if ( $mc->errorCode ) {
-			$this->err( "MailChimp: Unable to get Campaign Content\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
+			$this->_err( "MailChimp: Unable to get Campaign Content\n\nCampaign ID: $mc_campaign_id\nCode: " . $mc->errorCode . "\nError Message:  " . $mc->errorMessage, __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -969,7 +991,7 @@ class Analytics extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

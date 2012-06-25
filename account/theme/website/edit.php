@@ -38,7 +38,7 @@ if ( 'products' != $page['slug'] )
 // Custom validation
 switch ( $page['slug'] ) {
 	case 'financing':
-		$v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must conain a valid link') );
+		$v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must contain a valid link') );
 	break;
 	
 	case 'current-offer':
@@ -65,16 +65,16 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-page' )
 	if ( empty( $errs ) ) {
         // Home page can't update their slug
         $slug = ( 'home' == $page['slug'] ) ? 'home' : $_POST['tPageSlug'];
-		
+        $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : $_POST['tTitle'];
 		$mobile = (int) ( $_POST['cbIsMobile'] == "on" );
         
 		// Update the page
-		$success = $w->update_page( $website_page_id, $slug, stripslashes( $_POST['tTitle'] ), stripslashes( $_POST['taContent'] ), stripslashes( $_POST['tMetaTitle'] ), stripslashes( $_POST['tMetaDescription'] ), stripslashes( $_POST['tMetaKeywords'] ), $mobile );
+		$success = $w->update_page( $website_page_id, $slug, $title, $_POST['taContent'], $_POST['tMetaTitle'], $_POST['tMetaDescription'], $_POST['tMetaKeywords'], $mobile );
 		
 		// Update custom meta
 		switch ( $page['slug'] ) {
 			case 'contact-us':
-				$pagemeta = array( 'addresses' => htmlspecialchars( stripslashes( $_POST['hAddresses'] ) ) );
+				$pagemeta = array( 'addresses' => htmlspecialchars( $_POST['hAddresses'] ) );
 			break;
 			
 			case 'current-offer':

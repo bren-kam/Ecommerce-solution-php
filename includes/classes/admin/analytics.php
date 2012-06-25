@@ -29,7 +29,7 @@ class Analytics extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get analytics data.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get analytics data.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -73,7 +73,7 @@ class Analytics extends Base_Class {
 
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add analytics data.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add analytics data.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -91,7 +91,7 @@ class Analytics extends Base_Class {
 
          // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to get craigslist website ids.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to get craigslist website ids.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -111,6 +111,8 @@ class Analytics extends Base_Class {
 
         // Get the stats
         $stats = $craigslist->get_stats( $date, $date_end );
+        fn::info( $stats );
+        echo $date . '|' . $date_end;exit;
 
         // Initialize variables
         $values = $tag_ids = array();
@@ -140,7 +142,7 @@ class Analytics extends Base_Class {
 
             // Handle any error
             if ( $this->db->errno() ) {
-                $this->err( 'Failed to add craigslist value chunks.', __LINE__, __METHOD__ );
+                $this->_err( 'Failed to add craigslist value chunks.', __LINE__, __METHOD__ );
                 return false;
             }
         }
@@ -161,7 +163,7 @@ class Analytics extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

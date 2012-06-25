@@ -1,16 +1,13 @@
 <?php
 /**
- * Studio98 Framework Config
+ * Studio98 Library Config
  *
- * @package Studio98 Framework
+ * @package Studio98 Library
  * @since 1.0
  */
 
-// Framework Path
-//define( 'FWPATH', 'replace_me' );
-
 // Framework URL
-define( 'FWURL', '/s98_fw/' );
+define( 'FWURL', '/s98lib/' );
 
 // Debug
 define( 'DEBUG', TRUE );
@@ -39,7 +36,7 @@ $modules = array( 'validator' );
 define( 'START_SESSIONS', TRUE ); // start sessions when included
 define( 'AUTOLOAD', FALSE ); // autoload these classes - if set to false, call s98_fw_classes( $class_name )
 define( 'SAVE_QUERIES', FALSE ); // this will save information about every SQL query
-define( 'COOKIE_PATH', '/home/develop4/public_html/includes/cookies.txt' );
+define( 'COOKIE_PATH', '/gsr/systems/backend/includes/cookies.txt' );
 
 /***** Don't edit below this line *****/
 // Definitions

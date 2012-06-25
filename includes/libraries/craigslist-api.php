@@ -11,7 +11,7 @@ class Craigslist_API {
 	 * Constant paths to include files
 	 */
 	const URL_API = 'http://plugcp.primusconcepts.com/greysuit/';
-	const DEBUG = false;
+	const DEBUG = true;
 
     /**
      * A few variables that will determine the basic status
@@ -87,12 +87,13 @@ class Craigslist_API {
      * Add Market
      *
      * @param int $customer_id
-     * @param string $name
+     * @param int $cl_market_id
      * @param array $locations
-     * @param array $replace (optional)
+     * @param int $cl_category_id [optional]
+     * @param array $replace [optional]
      * @return bool
      */
-    public function add_market( $customer_id, $name, $locations, $replace = array() ) {
+    public function add_market( $customer_id, $cl_market_id, $locations, $cl_category_id = 0, $replace = array() ) {
         $new_locations = array();
 
         if ( is_array( $locations ) )
@@ -107,7 +108,7 @@ class Craigslist_API {
         $replace = array_merge( $this->_arguments( $replace ), $new_locations );
 
         // Add customer
-        $response = $this->_execute( 'addmarket', compact( 'customer_id', 'name', 'replace' ) );
+        $response = $this->_execute( 'addmarket', compact( 'customer_id', 'cl_market_id', 'cl_category_id', 'name', 'replace' ) );
 
         return $response->market_id;
     }
@@ -206,6 +207,56 @@ class Craigslist_API {
     public function get_tags( array $tag_ids ) {
         // Add customer
         $response = $this->_execute( 'gettags', $tag_ids );
+
+        return $response;
+    }
+
+    /**
+     * Get Craiglist Markets
+     *
+     * @return array
+     */
+    public function get_cl_markets() {
+        // Get Craigslist Markets
+        $response = $this->_execute( 'getclmarkets' );
+
+        return $response;
+    }
+
+    /**
+     * Get Craiglist Categories
+     *
+     * @return array
+     */
+    public function get_cl_categories() {
+        // Get Craigslist Categories
+        $response = $this->_execute( 'getclcategories' );
+
+        return $response;
+    }
+
+    /**
+     * Get Craiglist Market Categories
+     *
+     * @param int $cl_market_id
+     * @return array
+     */
+    public function get_cl_market_categories( $cl_market_id ) {
+        // Get Craigslist Categories
+        $response = $this->_execute( 'getclmarketcategories', array( 'cl_market_id' => $cl_market_id ) );
+
+        return $response;
+    }
+
+    /**
+     * Device Check
+     *
+     * @param array $devices
+     * @return array
+     */
+    public function device_check( $devices ) {
+        // Check Devices
+        $response = $this->_execute( 'device-check', array( 'devices' => $devices ) );
 
         return $response;
     }

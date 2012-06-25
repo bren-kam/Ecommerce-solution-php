@@ -128,7 +128,7 @@ class Validator {
 	 */
 	public function validate() {
 		$error_string = '';
-		
+
 		foreach ( $this->elements as $element ) {
 			$error_string .= $this->check_validation( $element[0], $element[1], $element[2] );
 		}
