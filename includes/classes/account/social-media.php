@@ -869,7 +869,7 @@ class Social_Media extends Base_Class {
         $sm_posting_post_id = (int) $sm_posting_post_id;
 
         // Delete the post
-        $this->db->prepare( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `sm_facebook_page_id` = $sm_facebook_page_id AND `status` <> 1" );
+        $this->db->query( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `sm_facebook_page_id` = $sm_facebook_page_id AND `status` <> 1" );
 
         // Handle any error
 		if ( $this->db->errno() ) {
