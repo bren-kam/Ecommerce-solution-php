@@ -146,7 +146,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 				$( '#dProductOptionRow' + i ).slideDown();
 				
 				// Check the required checkbox if its required
-				$( '#cbRequired' + i ).attr( 'checked', ( 1 == p['product_options'][i]['required'] ) ? true : false );
+				$( '#cbRequired' + i ).attr( 'checked', 1 == p['product_options'][i]['required'] );
 				
 				option.attr( 'disabled', true );
 				

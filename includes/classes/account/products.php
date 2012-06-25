@@ -600,8 +600,8 @@ class Products extends Base_Class {
 		}		
 		
 		// @Fix - have to do this to grab the non-list ones.  There's a better way, I'm sure...
-		$product_options2 = $this->db->get_results( "SELECT a.`option_type`, a.`product_option_id`, c.`price`, c.`required` FROM `product_options` AS a LEFT JOIN `website_product_options` AS c ON ( a.`product_option_id` = c.`product_option_id` )  WHERE c.`website_id` = $website_id AND c.`product_id` = $product_id AND ( ( c.`price` != 0 AND c.`price` IS NOT NULL ) || ( a.`option_type` = 'text' ) ) GROUP BY c.`product_option_id`", ARRAY_A );
-		
+		$product_options2 = $this->db->get_results( "SELECT a.`option_type`, a.`product_option_id`, c.`price`, c.`required` FROM `product_options` AS a LEFT JOIN `website_product_options` AS c ON ( a.`product_option_id` = c.`product_option_id` )  WHERE c.`website_id` = $website_id AND c.`product_id` = $product_id GROUP BY c.`product_option_id`", ARRAY_A );
+
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to get website product options.', __LINE__, __METHOD__ );
