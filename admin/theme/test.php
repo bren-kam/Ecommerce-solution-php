@@ -13,7 +13,6 @@ $a = new Ashley_API();
 $packages = $a->get_packages();
 exit;
 
-
 // Load the library
 library( 'craigslist-api' );
 $b = new Base_Class();
@@ -32,6 +31,11 @@ foreach ( $markets as $m ) {
         }
     }
 }
+
+
+$s = new SiteOnTime();
+$s->run();
+
 
 
 

@@ -15,6 +15,13 @@ if ( !$user )
 if ( !$user['website']['social_media'] )
     url::redirect('/');
 
+// If they don't have any facebook pages
+$sm = new Social_Media();
+$facebook_page_count = $sm->count_facebook_pages('');
+
+if ( 0 == $facebook_page_count )
+    url::redirect('/social-media/facebook/add-edit/');
+
 $selected = "social_media";
 $title = _('Facebook') . ' | ' . _('Social Media') . ' | ' . TITLE;
 get_header();
@@ -29,7 +36,7 @@ get_header();
 			<thead>
 				<tr>
 					<th width="70%" sort="1 asc"><?php echo _('Name'); ?></th>
-					<th width="30%"><?php echo _('Date Posted'); ?></th>
+					<th width="30%"><?php echo _('Date Created'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
