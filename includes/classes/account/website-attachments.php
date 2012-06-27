@@ -30,7 +30,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get create website attachments.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get create website attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -50,7 +50,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update page attachment', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update page attachment', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -74,7 +74,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website page attachment.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website page attachment.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -98,7 +98,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website page attachments.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website page attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -117,7 +117,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get website attachments.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get website attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -138,7 +138,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update attachment value.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update attachment value.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -160,7 +160,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update attachment extra.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update attachment extra.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -181,7 +181,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update attachment status.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update attachment status.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -210,7 +210,7 @@ class Website_Attachments extends Base_Class {
 			// Handle any error
 			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
-				$this->err( 'Failed to update website attachments sequence', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update website attachments sequence', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -231,7 +231,7 @@ class Website_Attachments extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete a website attachment.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete a website attachment.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -247,7 +247,7 @@ class Website_Attachments extends Base_Class {
 	 * @param int $line (optional) the line number
 	 * @param string $method (optional) the class method that is being called
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

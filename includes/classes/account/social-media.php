@@ -14,7 +14,144 @@ class Social_Media extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 	}
-	
+
+    /***** FACEBOOK PAGES *****/
+
+    /**
+	 * List Facebook Pages
+	 *
+	 * @param array( $where, $order_by, $limit )
+	 * @return array
+	 */
+	public function list_facebook_pages( $variables ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+		// Get the variables
+		list( $where, $order_by, $limit ) = $variables;
+
+		$facebook_pages = $this->db->get_results( "SELECT `id`, `name`, `date_created` FROM `sm_facebook_page` WHERE `website_id` = $website_id AND `status` = 1 $where $order_by LIMIT $limit", ARRAY_A );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to list facebook pages.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $facebook_pages;
+	}
+
+	/**
+	 * Count Posting posts
+	 *
+	 * @param string $where
+	 * @return array
+	 */
+	public function count_facebook_pages( $where ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+        // Get the count
+		$count = $this->db->get_var( "SELECT COUNT( `id` ) FROM `sm_facebook_page` WHERE `website_id` = $website_id AND `status` = 1 $where" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to count posting posts.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $count;
+	}
+
+    /**
+     * Get Facebook Page
+     *
+     * @param int $id
+     * @return array
+     */
+    public function get_facebook_page( $id ) {
+        global $user;
+
+        $facebook_page = $this->db->prepare( 'SELECT `id`, `name` FROM `sm_facebook_page` WHERE `id` = ? AND `website_id` = ?', 'ii', $id, $user['website']['website_id'] )->get_row('');
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to count posting posts.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return $facebook_page;
+    }
+
+    /**
+     * Create Facebook Page
+     *
+     * @param string $name
+     * @return int
+     */
+    public function create_facebook_page( $name ) {
+        global $user;
+
+        $this->db->insert( 'sm_facebook_page', array( 'website_id' => $user['website']['website_id'], 'name' => $name, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->_err( 'Failed to create facebook page.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return $this->db->insert_id;
+    }
+
+    /**
+     * Update Facebook Page
+     *
+     * @param int $id
+     * @param string $name
+     * @return int
+     */
+    public function update_facebook_page( $id, $name ) {
+        global $user;
+
+        $this->db->update( 'sm_facebook_page', array( 'name' => $name ), array( 'id' => $id, 'website_id' => $user['website']['website_id'] ), 's', 'ii' );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->_err( 'Failed to upadte facebook page.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete Facebook Page
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function delete_facebook_page( $id ) {
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+        $id = (int) $id;
+
+        $this->db->update( 'sm_facebook_page', array( 'status' => 0 ), array( 'id' => $id, 'website_id' => $website_id ), 'i', 'ii' );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to delete facebook page.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
 	/***** EMAIL SIGN UP *****/
 	
 	/**
@@ -24,10 +161,10 @@ class Social_Media extends Base_Class {
 	 */
 	public function create_email_sign_up() {
 		global $user;
+
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
-		
-		$this->db->insert( 'sm_email_sign_up', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_email_sign_up', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -44,13 +181,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_email_sign_up() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the email sign up
-		$email_sign_up = $this->db->get_row( "SELECT `fb_page_id`, `email_list_id`, `key`, `tab` FROM `sm_email_sign_up` WHERE `website_id` = $website_id", ARRAY_A );
+		$email_sign_up = $this->db->prepare( 'SELECT `fb_page_id`, `email_list_id`, `key`, `tab` FROM `sm_email_sign_up` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -69,10 +201,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_email_sign_up( $tab, $email_list_id ) {
-		global $user;
-		
 		// Update the email sign up
-		$this->db->update( 'sm_email_sign_up', array( 'tab' => $tab, 'email_list_id' => $email_list_id ), array( 'website_id' => $user['website']['website_id'] ), 'si', 'i' );
+		$this->db->update( 'sm_email_sign_up', array( 'tab' => $tab, 'email_list_id' => $email_list_id ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 'si', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -93,9 +223,9 @@ class Social_Media extends Base_Class {
 	public function create_fan_offer() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$this->db->insert( 'sm_fan_offer', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_fan_offer', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -112,13 +242,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_fan_offer() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the fan offer
-		$fan_offer = $this->db->get_row( "SELECT `fb_page_id`, `email_list_id`, `key`, `before`, `after`, UNIX_TIMESTAMP( `start_date` ) AS start_date, UNIX_TIMESTAMP( `end_date` ) AS end_date, `share_title`, `share_image_url`, `share_text` FROM `sm_fan_offer` WHERE `website_id` = $website_id", ARRAY_A );
+		$fan_offer = $this->db->prepare( 'SELECT `fb_page_id`, `email_list_id`, `key`, `before`, `after`, UNIX_TIMESTAMP( `start_date` ) AS start_date, UNIX_TIMESTAMP( `end_date` ) AS end_date, `share_title`, `share_image_url`, `share_text` FROM `sm_fan_offer` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -143,10 +268,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_fan_offer( $email_list_id, $before, $after, $start_date, $end_date, $share_title, $share_image_url, $share_text ) {
-		global $user;
-		
 		// Update the fan offer
-		$this->db->update( 'sm_fan_offer', array( 'email_list_id' => $email_list_id, 'before' => $before, 'after' => $after, 'start_date' => $start_date, 'end_date' => $end_date, 'share_title' => $share_title, 'share_image_url' => $share_image_url, 'share_text' => $share_text ), array( 'website_id' => $user['website']['website_id'] ), 'isssssss', 'i' );
+		$this->db->update( 'sm_fan_offer', array( 'email_list_id' => $email_list_id, 'before' => $before, 'after' => $after, 'start_date' => $start_date, 'end_date' => $end_date, 'share_title' => $share_title, 'share_image_url' => $share_image_url, 'share_text' => $share_text ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 'isssssss', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -167,18 +290,16 @@ class Social_Media extends Base_Class {
 	public function create_sweepstakes() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$this->db->insert( 'sm_sweepstakes', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_sweepstakes', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to create sweepstakes.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		echo 'here';
-		
+
 		return $key;
 	}
 	
@@ -188,13 +309,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_sweepstakes() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the sweepstakes
-		$sweepstakes = $this->db->get_row( "SELECT `fb_page_id`, `email_list_id`, `key`, `before`, `after`, UNIX_TIMESTAMP( `start_date` ) AS start_date, UNIX_TIMESTAMP( `end_date` ) AS end_date, `contest_rules_url`, `share_title`, `share_image_url`, `share_text` FROM `sm_sweepstakes` WHERE `website_id` = $website_id", ARRAY_A );
+		$sweepstakes = $this->db->prepare( 'SELECT `fb_page_id`, `email_list_id`, `key`, `before`, `after`, UNIX_TIMESTAMP( `start_date` ) AS start_date, UNIX_TIMESTAMP( `end_date` ) AS end_date, `contest_rules_url`, `share_title`, `share_image_url`, `share_text` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -220,10 +336,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_sweepstakes( $email_list_id, $before, $after, $start_date, $end_date, $contest_rules_url, $share_title, $share_image_url, $share_text ) {
-		global $user;
-		
 		// Update the sweepstakes
-		$this->db->update( 'sm_sweepstakes', array( 'email_list_id' => $email_list_id, 'before' => $before, 'after' => $after, 'start_date' => $start_date, 'end_date' => $end_date, 'contest_rules_url' => $contest_rules_url, 'share_title' => $share_title, 'share_image_url' => $share_image_url, 'share_text' => $share_text ), array( 'website_id' => $user['website']['website_id'] ), 'issssssss', 'i' );
+		$this->db->update( 'sm_sweepstakes', array( 'email_list_id' => $email_list_id, 'before' => $before, 'after' => $after, 'start_date' => $start_date, 'end_date' => $end_date, 'contest_rules_url' => $contest_rules_url, 'share_title' => $share_title, 'share_image_url' => $share_image_url, 'share_text' => $share_text ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 'issssssss', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -243,10 +357,10 @@ class Social_Media extends Base_Class {
 	 */
 	public function create_share_and_save() {
 		global $user;
+
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
-		
-		$this->db->insert( 'sm_share_and_save', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_share_and_save', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -263,13 +377,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_share_and_save() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the fan offer
-		$share_and_save = $this->db->get_row( "SELECT `fb_page_id`, `email_list_id`, `maximum_email_list_id`, `key`, `before`, `after`, `minimum`, `maximum`, `share_title`, `share_image_url`, `share_text` FROM `sm_share_and_save` WHERE `website_id` = $website_id", ARRAY_A );
+		$share_and_save = $this->db->prepare( 'SELECT `fb_page_id`, `email_list_id`, `maximum_email_list_id`, `key`, `before`, `after`, `minimum`, `maximum`, `share_title`, `share_image_url`, `share_text` FROM `sm_share_and_save` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -295,10 +404,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_share_and_save( $email_list_id, $maximum_email_list_id, $before, $after, $minimum, $maximum, $share_title, $share_image_url, $share_text ) {
-		global $user;
-		
 		// Update the share and save
-		$this->db->update( 'sm_share_and_save', array( 'email_list_id' => $email_list_id, 'maximum_email_list_id' => $maximum_email_list_id, 'before' => $before, 'after' => $after, 'minimum' => $minimum, 'maximum' => $maximum, 'share_title' => $share_title, 'share_image_url' => $share_image_url, 'share_text' => $share_text ), array( 'website_id' => $user['website']['website_id'] ), 'iissiisss', 'i' );
+		$this->db->update( 'sm_share_and_save', array( 'email_list_id' => $email_list_id, 'maximum_email_list_id' => $maximum_email_list_id, 'before' => $before, 'after' => $after, 'minimum' => $minimum, 'maximum' => $maximum, 'share_title' => $share_title, 'share_image_url' => $share_image_url, 'share_text' => $share_text ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 'iissiisss', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -319,9 +426,9 @@ class Social_Media extends Base_Class {
 	public function create_facebook_site() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$this->db->insert( 'sm_facebook_site', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_facebook_site', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -338,13 +445,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_facebook_site() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the facebook site
-		$facebook_site = $this->db->get_row( "SELECT `fb_page_id`, `key`, `content` FROM `sm_facebook_site` WHERE `website_id` = $website_id", ARRAY_A );
+		$facebook_site = $this->db->prepare( 'SELECT `fb_page_id`, `key`, `content` FROM `sm_facebook_site` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -362,10 +464,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_facebook_site( $content ) {
-		global $user;
-		
 		// Update the facebook site
-		$this->db->update( 'sm_facebook_site', array( 'content' => $content ), array( 'website_id' => $user['website']['website_id'] ), 's', 'i' );
+		$this->db->update( 'sm_facebook_site', array( 'content' => $content ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 's', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -386,7 +486,7 @@ class Social_Media extends Base_Class {
 	public function create_contact_us() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
 		// Get the page id for their contact us page if they have it
 		if ( $user['website']['pages'] ) {
@@ -399,7 +499,7 @@ class Social_Media extends Base_Class {
 			$website_page_id = 0;
 		}
 		
-		$this->db->insert( 'sm_contact_us', array( 'website_id' => $user['website']['website_id'], 'website_page_id' => $website_page_id, 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
+		$this->db->insert( 'sm_contact_us', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'website_page_id' => $website_page_id, 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -416,13 +516,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_contact_us() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the contact us
-		$contact_us = $this->db->get_row( "SELECT `fb_page_id`, `key`, `content` FROM `sm_contact_us` WHERE `website_id` = $website_id", ARRAY_A );
+		$contact_us = $this->db->prepare( 'SELECT `fb_page_id`, `key`, `content` FROM `sm_contact_us` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -440,10 +535,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_contact_us( $content ) {
-		global $user;
-		
 		// Update the contact us page
-		$this->db->update( 'sm_contact_us', array( 'content' => $content ), array( 'website_id' => $user['website']['website_id'] ), 's', 'i' );
+		$this->db->update( 'sm_contact_us', array( 'content' => $content ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 's', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -464,7 +557,7 @@ class Social_Media extends Base_Class {
 	public function create_about_us() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
 		// Get the page id for their About Us page if they have it
 		if ( $user['website']['pages'] ) {
@@ -477,7 +570,7 @@ class Social_Media extends Base_Class {
 			$website_page_id = 0;
 		}
 		
-		$this->db->insert( 'sm_about_us', array( 'website_id' => $user['website']['website_id'], 'website_page_id' => $website_page_id, 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
+		$this->db->insert( 'sm_about_us', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'website_page_id' => $website_page_id, 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -494,13 +587,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_about_us() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the About Us
-		$about_us = $this->db->get_row( "SELECT `fb_page_id`, `key`, `content` FROM `sm_about_us` WHERE `website_id` = $website_id", ARRAY_A );
+		$about_us = $this->db->prepare( 'SELECT `fb_page_id`, `key`, `content` FROM `sm_about_us` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -518,10 +606,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_about_us( $content ) {
-		global $user;
-		
 		// Update the About Us page
-		$this->db->update( 'sm_about_us', array( 'content' => $content ), array( 'website_id' => $user['website']['website_id'] ), 's', 'i' );
+		$this->db->update( 'sm_about_us', array( 'content' => $content ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 's', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -542,9 +628,9 @@ class Social_Media extends Base_Class {
 	public function create_products() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$this->db->insert( 'sm_products', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_products', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -561,13 +647,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_products() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the products page
-		$products = $this->db->get_row( "SELECT `fb_page_id`, `key`, `content` FROM `sm_products` WHERE `website_id` = $website_id", ARRAY_A );
+		$products = $this->db->prepare( 'SELECT `fb_page_id`, `key`, `content` FROM `sm_products` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -585,10 +666,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_products( $content ) {
-		global $user;
-		
 		// Update the products page
-		$this->db->update( 'sm_products', array( 'content' => $content ), array( 'website_id' => $user['website']['website_id'] ), 's', 'i' );
+		$this->db->update( 'sm_products', array( 'content' => $content ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 's', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -609,7 +688,7 @@ class Social_Media extends Base_Class {
 	public function create_current_ad() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
 		// Get the page id for their Current Ad page if they have it
 		if ( $user['website']['pages'] ) {
@@ -622,7 +701,7 @@ class Social_Media extends Base_Class {
 			$website_page_id = 0;
 		}
 		
-		$this->db->insert( 'sm_current_ad', array( 'website_id' => $user['website']['website_id'], 'website_page_id' => $website_page_id, 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
+		$this->db->insert( 'sm_current_ad', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'website_page_id' => $website_page_id, 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -639,13 +718,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_current_ad() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the Current Ad
-		$current_ad = $this->db->get_row( "SELECT `fb_page_id`, `key`, `content` FROM `sm_current_ad` WHERE `website_id` = $website_id", ARRAY_A );
+		$current_ad = $this->db->prepare( 'SELECT `fb_page_id`, `key`, `content` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -663,10 +737,8 @@ class Social_Media extends Base_Class {
 	 * @return bool
 	 */
 	public function update_current_ad( $content ) {
-		global $user;
-		
 		// Update the Current Ad page
-		$this->db->update( 'sm_current_ad', array( 'content' => $content ), array( 'website_id' => $user['website']['website_id'] ), 's', 'i' );
+		$this->db->update( 'sm_current_ad', array( 'content' => $content ), array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'] ), 's', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -675,52 +747,6 @@ class Social_Media extends Base_Class {
 		}
 		
 		return true;
-	}
-	
-	/***** ANALYTICS *****/
-	
-	/**
-	 * Create Analytics
-	 *
-	 * @return string
-	 */
-	public function create_analytics() {
-		global $user;
-		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
-		
-		$this->db->insert( 'sm_analytics', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to create analytics.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $key;
-	}
-	
-	/**
-	 * Get Analytics
-	 *
-	 * @return array
-	 */
-	public function get_analytics() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
-		// Get the About Us
-		$analytics = $this->db->get_row( "SELECT `key`, `token` FROM `sm_analytics` WHERE `website_id` = $website_id", ARRAY_A );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to get the analytics.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return $analytics;
 	}
 	
 	/***** POSTING *****/
@@ -733,9 +759,9 @@ class Social_Media extends Base_Class {
 	public function create_posting() {
 		global $user;
 		
-		$key = md5( $user['user_id'] . microtime() . $user['website']['website_id'] );
+		$key = md5( $user['user_id'] . microtime() . $_SESSION['sm_facebook_page_id'] );
 		
-		$this->db->insert( 'sm_posting', array( 'website_id' => $user['website']['website_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
+		$this->db->insert( 'sm_posting', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'key' => $key, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -752,13 +778,8 @@ class Social_Media extends Base_Class {
 	 * @return array
 	 */
 	public function get_posting() {
-		global $user;
-		
-		// Type Juggling
-		$website_id = (int) $user['website']['website_id'];
-		
 		// Get the posting
-		$posting = $this->db->get_row( "SELECT `fb_user_id`, `fb_page_id`, `key`, `access_token` FROM `sm_posting` WHERE `website_id` = $website_id", ARRAY_A );
+		$posting = $this->db->prepare( 'SELECT `fb_user_id`, `fb_page_id`, `key`, `access_token` FROM `sm_posting` WHERE `sm_facebook_page_id` = ?', 'i', $_SESSION['sm_facebook_page_id'] )->get_row('');
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -786,7 +807,7 @@ class Social_Media extends Base_Class {
 		global $user;
 		
 		// Create the posting post
-		$this->db->insert( 'sm_posting_posts', array( 'website_id' => $user['website']['website_id'], 'access_token' => $access_token, 'post' => $post, 'link' => $link, 'status' => $status, 'date_posted' => $date_posted, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssiss' );
+		$this->db->insert( 'sm_posting_posts', array( 'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id'], 'access_token' => $access_token, 'post' => $post, 'link' => $link, 'status' => $status, 'date_posted' => $date_posted, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssiss' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -843,14 +864,12 @@ class Social_Media extends Base_Class {
      * @return bool
      */
     public function delete_posting_post( $sm_posting_post_id ) {
-        global $user;
-
         // Type Juggling
-        $website_id = (int) $user['website']['website_id'];
+        $sm_facebook_page_id = (int) $_SESSION['sm_facebook_page_id'];
         $sm_posting_post_id = (int) $sm_posting_post_id;
 
         // Delete the post
-        $this->db->query( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `website_id` = $website_id AND `status` <> 1" );
+        $this->db->prepare( "DELETE FROM `sm_posting_posts` WHERE  `sm_posting_post_id` = $sm_posting_post_id AND `sm_facebook_page_id` = $sm_facebook_page_id AND `status` <> 1" );
 
         // Handle any error
 		if ( $this->db->errno() ) {

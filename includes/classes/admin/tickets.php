@@ -34,7 +34,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -57,7 +57,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create empty ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -84,7 +84,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -104,7 +104,7 @@ class Tickets extends Base_Class {
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
-				$this->err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to create ticket links.', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -132,7 +132,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update ticket priority.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update ticket priority.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -155,7 +155,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update ticket status.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update ticket status.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -178,7 +178,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update ticket assigned_to_user_id.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update ticket assigned_to_user_id.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -197,7 +197,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get ticket.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -210,7 +210,7 @@ class Tickets extends Base_Class {
 		
 		// If there was an error
 		if ( $this->db->errno() ) {
-			$this->err( "Failed to get ticket attachments.", __LINE__, __METHOD__ );
+			$this->_err( "Failed to get ticket attachments.", __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -231,7 +231,7 @@ class Tickets extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to list tickets.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to list tickets.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -250,7 +250,7 @@ class Tickets extends Base_Class {
 
         // Handle any error
         if ( $this->db->errno() ) {
-            $this->err( 'Failed to count tickets.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to count tickets.', __LINE__, __METHOD__ );
             return false;
         }
 
@@ -270,7 +270,7 @@ class Tickets extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attachments.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attachments.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -282,7 +282,7 @@ class Tickets extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete ticket upload.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete ticket upload.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -299,7 +299,7 @@ class Tickets extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

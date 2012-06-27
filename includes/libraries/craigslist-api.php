@@ -11,7 +11,7 @@ class Craigslist_API {
 	 * Constant paths to include files
 	 */
 	const URL_API = 'http://plugcp.primusconcepts.com/greysuit/';
-	const DEBUG = false;
+	const DEBUG = true;
 
     /**
      * A few variables that will determine the basic status
@@ -238,12 +238,12 @@ class Craigslist_API {
     /**
      * Get Craiglist Market Categories
      *
-     * @param int $market_id
+     * @param int $cl_market_id
      * @return array
      */
-    public function get_cl_market_categories( $market_id ) {
+    public function get_cl_market_categories( $cl_market_id ) {
         // Get Craigslist Categories
-        $response = $this->_execute( 'getclmarketcategories', array( 'cl_market_id' => $market_id ) );
+        $response = $this->_execute( 'getclmarketcategories', array( 'cl_market_id' => $cl_market_id ) );
 
         return $response;
     }

@@ -28,7 +28,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create attribute.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -51,7 +51,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to create attribute items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -69,7 +69,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attribute items by product.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attribute items by product.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -104,7 +104,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add attribute item relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add attribute item relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -124,7 +124,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attribute.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -132,7 +132,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attribute items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -153,7 +153,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to update attribute.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -172,7 +172,7 @@ class Attributes extends Base_Class {
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to update attribute item.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to update attribute item.', __LINE__, __METHOD__ );
 					return false;
 				}
 			} else {
@@ -180,7 +180,7 @@ class Attributes extends Base_Class {
 				
 				// Handle any error
 				if ( $this->db->errno() ) {
-					$this->err( 'Failed to insert attribute item.', __LINE__, __METHOD__ );
+					$this->_err( 'Failed to insert attribute item.', __LINE__, __METHOD__ );
 					return false;
 				}
 				
@@ -195,7 +195,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete attribute items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -212,7 +212,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attributes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -232,7 +232,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete attribute.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete attribute.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -250,7 +250,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete attribute item relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete attribute item relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -268,7 +268,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete attribute items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -288,7 +288,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to delete attribute relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete attribute relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -322,7 +322,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to add attribute relations.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add attribute relations.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -340,7 +340,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get category attributes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get category attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -357,7 +357,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attribute items.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attribute items.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -381,7 +381,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to get attribute items by categories.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get attribute items by categories.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -408,7 +408,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to list attributes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to list attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -427,7 +427,7 @@ class Attributes extends Base_Class {
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
-			$this->err( 'Failed to count attributes.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count attributes.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -444,7 +444,7 @@ class Attributes extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }

@@ -18,8 +18,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'get-market-c
     $craigslist_api = new Craigslist_API( config::key('craigslist-gsr-id'), config::key('craigslist-gsr-key') );
     $c = new Craigslist();
 
-    $cl_category_ids = $c->get_cl_category_ids( $_POST['wid'], $_POST['mid'] );
-    $market_categories = $craigslist_api->get_cl_market_categories( $_POST['mid'] );
+    $cl_category_ids = $c->get_cl_category_ids( $_POST['wid'], $_POST['clmid'] );
+    $market_categories = $craigslist_api->get_cl_market_categories( $_POST['clmid'] );
 	$categories = array();
 
     if ( is_array( $market_categories ) )

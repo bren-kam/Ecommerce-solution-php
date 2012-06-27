@@ -29,7 +29,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -47,7 +47,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to count craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -74,7 +74,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist ads.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -86,7 +86,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist ad markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist ad markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -107,7 +107,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist headline.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist headline.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -140,7 +140,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to create Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to create Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -176,7 +176,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to update Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -203,7 +203,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to delete Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -227,7 +227,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to copy Craigslist Ad.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to copy Craigslist Ad.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -243,7 +243,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to copy Craigslist Ad Headlines.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to copy Craigslist Ad Headlines.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -269,7 +269,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to delete Craigslist Ad Headlines.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete Craigslist Ad Headlines.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -297,7 +297,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to add Craigslist Ad Headlines.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add Craigslist Ad Headlines.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -323,7 +323,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get Current Craigslist Markets IDs.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get Current Craigslist Markets IDs.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -350,7 +350,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to delete Craigslist Ad Markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to delete Craigslist Ad Markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -363,7 +363,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to add Craigslist Ad Markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to add Craigslist Ad Markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -383,11 +383,11 @@ class Craigslist extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
         $craigslist_market_id = (int) $craigslist_market_id;
 
-        $market = $this->db->get_row( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, b.`market_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`craigslist_market_id` = $craigslist_market_id AND b.`website_id` = $website_id", ARRAY_A );
+        $market = $this->db->get_row( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, a.`cl_market_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`craigslist_market_id` = $craigslist_market_id AND b.`website_id` = $website_id", ARRAY_A );
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get Craigslist Market.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get Craigslist Market.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -407,17 +407,17 @@ class Craigslist extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
         if ( is_null( $craigslist_ad_id ) ) {
-            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, b.`market_id`, b.`cl_category_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`website_id` = $website_id", ARRAY_A );
+            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, a.`cl_market_id`, b.`cl_category_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`website_id` = $website_id", ARRAY_A );
         } else {
             // Type Juggling
             $craigslist_ad_id = (int) $craigslist_ad_id;
 
-            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, c.`market_id`, c.`cl_category_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_ad_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) LEFT JOIN `craigslist_market_links` AS c ON ( b.`craigslist_market_id` = c.`craigslist_market_id` ) WHERE b.`craigslist_ad_id` = $craigslist_ad_id AND c.`website_id` = $website_id", ARRAY_A );
+            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, a.`cl_market_id`, c.`cl_category_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_ad_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) LEFT JOIN `craigslist_market_links` AS c ON ( b.`craigslist_market_id` = c.`craigslist_market_id` ) WHERE b.`craigslist_ad_id` = $craigslist_ad_id AND c.`website_id` = $website_id", ARRAY_A );
         }
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get Craigslist Markets.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get Craigslist Markets.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -469,7 +469,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get Craigslist Tags.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get Craigslist Tags.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -575,7 +575,7 @@ class Craigslist extends Base_Class {
 
                 // Handle any error
                 if( $this->db->errno() ) {
-                    $this->err( 'Failed to Insert Craigslist tags.', __LINE__, __METHOD__ );
+                    $this->_err( 'Failed to Insert Craigslist tags.', __LINE__, __METHOD__ );
                     return false;
                 }
             }
@@ -629,7 +629,7 @@ class Craigslist extends Base_Class {
 
         // Handle any error
         if( $this->db->errno() ) {
-            $this->err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
+            $this->_err( 'Failed to update primus product id and posted.', __LINE__, __METHOD__ );
             return false;
         }
 		
@@ -643,7 +643,7 @@ class Craigslist extends Base_Class {
 			// Handle any error
 			if ( $statement->errno ) {
 				$this->db->m->error = $statement->error;
-				$this->err( 'Failed to update craigslist - primus product id', __LINE__, __METHOD__ );
+				$this->_err( 'Failed to update craigslist - primus product id', __LINE__, __METHOD__ );
 				return false;
 			}
 		}
@@ -670,7 +670,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get craigslist ad id - validation check.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get craigslist ad id - validation check.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -691,7 +691,7 @@ class Craigslist extends Base_Class {
 		
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to get old primus product ids.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to get old primus product ids.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -714,7 +714,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
 			return false;
 		}
 
@@ -723,7 +723,7 @@ class Craigslist extends Base_Class {
 
 		// Handle any error
 		if( $this->db->errno() ) {
-			$this->err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
+			$this->_err( 'Failed to update craigslist ad date posted.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -740,7 +740,7 @@ class Craigslist extends Base_Class {
 	 * @param string $method (optional) the class method that is being called
      * @return bool
 	 */
-	private function err( $message, $line = 0, $method = '' ) {
+	private function _err( $message, $line = 0, $method = '' ) {
 		return $this->error( $message, $line, __FILE__, dirname(__FILE__), '', __CLASS__, $method );
 	}
 }
