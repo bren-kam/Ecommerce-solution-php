@@ -36,12 +36,20 @@ class SiteOnTime extends Base_Class {
      * Run
      */
     public function run() {
-        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
+        set_time_limit(300);
+        ini_set('memory_limit', '256M');
+
+        /*$arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
 
         // Get products
         $products = curl::get( self::FTP_URL . '?' . $arguments );
+        */
+        // Get features (joins by ProductGroupID
+        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'features' ) );;
 
-        echo $products;
+        $product_groups = curl::get( self::FTP_URL . '?' . $arguments );
+
+        fn::info( $product_groups );
     }
 
 	/**
