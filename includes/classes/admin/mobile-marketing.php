@@ -74,7 +74,7 @@ class Mobile_Marketing extends Base_Class {
 			, 'organization_name' => $website['title']
 			, 'firstname' => $first_name
 			, 'lastname' => $last_name
-			, 'email' => $user['email']
+			, 'email' => 'mobile@' . $website['domain']
 			, 'mobile' => $mobile
             , 'industry' => $industry
             , 'timezone' => $timezone
