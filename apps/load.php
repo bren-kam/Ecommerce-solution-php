@@ -40,12 +40,8 @@ define( 'INC_PATH', ABS_PATH . 'includes/' );
 /** Define THEME_PATH as the place with all the pages */
 define( 'THEME_PATH', OPERATING_PATH . 'theme/' );
 
-// Show us the errors
-if ( defined('E_RECOVERABLE_ERROR') ) {
-    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
-} else {
-    error_reporting( E_ERROR | E_PARSE | E_USER_ERROR | E_USER_WARNING );
-}
+// We don't want to show anything on facebook
+error_reporting(0);
 
 /** Error Handler */
 if ( extension_loaded('newrelic') )
