@@ -124,7 +124,7 @@ get_header('facebook/');
 	                    </ul>
 	                    <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="http://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
 	                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=165348580198324&pages=1'"title="Install this App" class="install-app"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
-	                    <p class="sml-text">gives you acces to ALL apps</p>
+	                    <p class="sml-text">gives you access to ALL apps</p>
 	                </div>
 	            </div>
 	        </div><!-- #apps-container .clear -->
@@ -136,14 +136,14 @@ get_header('facebook/');
 	<?php } else { ?>
 	</div>
 	<div id="content">
-		<form name="fConnect" method="post" action="/facebook/fan-offer/">
+		<form name="fConnect" id="fConnect" method="post" action="/facebook/fan-offer/">
 		<table cellpadding="0" cellspacing="0">
 			<tr>
-				<td width="200"><strong><?php echo _('Website'); ?>:</strong></td>
+				<td width="220" class="align-right"><strong><?php echo _('Website'); ?>:</strong></td>
 				<td><?php echo ( $website ) ? $website['title'] : 'N/A'; ?></td>
 			</tr>
 			<tr>
-				<td><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
+				<td class="align-right"><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
 				<td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="<?php echo ( $website ) ? $website['key'] : ''; ?>" /> <strong><?php echo ( $website ) ? '<span class="success">(' . _('Connected') . ')</span>' : '<span class="error">(' . _('Not Connected') . ')</span>'; ?></strong></td>
 			</tr>
 			<tr>
@@ -154,7 +154,6 @@ get_header('facebook/');
 		<?php nonce::field('connect-to-field'); ?>
         <input type="hidden" name="app_data" value="<?php echo $_REQUEST['app_data']; ?>" />
 		</form>
-	</div>
 	<?php } ?>
 </div>  <!-- #content -->
 
