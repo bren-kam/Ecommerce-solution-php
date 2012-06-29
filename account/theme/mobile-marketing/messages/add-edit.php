@@ -57,10 +57,7 @@ if ( !empty( $timezone ) ) {
     
         // Adjust for time zone
         $new_date_posted = new DateTime( dt::adjust_timezone( $date_posted, $timezone, config::setting('server-timezone') ) );
-    
-        // Make sure we don't have anything extra
-        $_POST['taMessage'] = $_POST['taMessage'];
-    
+
         // Do we future date?
         $future = $new_date_posted->getTimestamp() >= time();
     

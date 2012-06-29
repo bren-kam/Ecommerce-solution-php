@@ -1154,7 +1154,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `summary`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `title`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

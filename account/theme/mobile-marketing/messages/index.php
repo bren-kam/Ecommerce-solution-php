@@ -28,7 +28,7 @@ get_header();
 		<table cellpadding="0" cellspacing="0" width="100%" perPage="100,250,500" ajax="/ajax/mobile-marketing/messages/list/">
 			<thead>
 				<tr>
-					<th width="50%"><?php echo _('Summary'); ?></th>
+					<th width="50%"><?php echo _('Title'); ?></th>
 					<th width="20%"><?php echo _('Status'); ?></th>
 					<th width="30%" sort="1 desc"><?php echo _('Date Posted'); ?></th>
 				</tr>
