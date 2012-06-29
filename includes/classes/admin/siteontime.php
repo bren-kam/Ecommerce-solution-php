@@ -39,17 +39,23 @@ class SiteOnTime extends Base_Class {
         set_time_limit(300);
         ini_set('memory_limit', '256M');
 
-        //$arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
+        /*$product_timer = new timer();
+
+        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
 
         // Get products
-        //$products = curl::get( self::FTP_URL . '?' . $arguments );
+        $products = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
+
+        echo "Products: " . count( $products ) . ' / ' . $product_timer->stop() . " seconds<br /><br />\n\n";
+        */
+        $product_group_timer = new timer();
 
         // Get features (joins by ProductGroupID
-        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'features' ) );
+        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'filters' ) );
 
         $product_groups = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
 
-        fn::info( $product_groups );
+        echo "Product Groups: " . count( $product_groups ) . ' / ' . $product_group_timer->stop() . " seconds<br /><br />\n\n";
     }
 
 	/**
