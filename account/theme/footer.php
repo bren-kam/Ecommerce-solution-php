@@ -6,6 +6,7 @@
 global $user;
 ?>
 <div id="footer">
+        <input type="hidden" id="hPHPSESSID" value="<?php echo session_id(); ?>" />
 		<p>
 			<?php if ( $user ) { ?>
 			<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | 

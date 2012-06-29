@@ -53,7 +53,6 @@ get_header();
 		<p class="alert">(<?php echo _('Note: The changes you make to your sidebar are immediately live on your website'); ?>)</p>
 		<input type="hidden" id="hWebsiteID" value="<?php echo $user['website']['website_id']; ?>" />
 		<input type="hidden" id="hWebsitePageID" value="<?php echo $page['website_page_id']; ?>" />
-		<input type="hidden" id="hPHPSESSID" value="<?php echo session_id(); ?>" />
 		<?php
 		$remove_attachment_nonce = nonce::create( 'remove-attachment' );
 		nonce::field( 'update-sequence', '_ajax_update_sequence' );
