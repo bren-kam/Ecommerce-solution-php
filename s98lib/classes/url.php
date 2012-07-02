@@ -22,10 +22,9 @@ class url extends Base_Class {
 	public static function redirect( $location, $code = 302 ) {
 		// HTTP Status code
 		header::http_status( $code );
-		
+
 		/* Redirect to new location */
 		header::send( "Location: $location" );
-		exit;
 	}
 	
 	/**
@@ -169,8 +168,10 @@ class url extends Base_Class {
 	 */
 	public static function remove_query_arg( $key, $query=false ) {
 		if ( is_array( $key ) ) { // removing multiple keys
-			foreach ( $key as $k )
+			foreach ( $key as $k ) {
 				$query = self::add_query_arg( $k, false, $query );
+            }
+
 			return $query;
 		}
 		
