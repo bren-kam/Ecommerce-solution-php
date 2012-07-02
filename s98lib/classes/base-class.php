@@ -7,7 +7,7 @@
  * @package Studio98 Framework
  * @since 1.0
  */
-class Base_Class {
+abstract class Base_Class {
 	/**
 	 * Kill execution and display HTML message with error message.
 	 *
@@ -24,36 +24,6 @@ class Base_Class {
 	 * @param string|array $args Optional arguements to control behaviour.
 	 */
 	public function _die( $message, $title = '', $args = array() ) {
-		/*
-		if ( function_exists( 'is_wp_error' ) && is_wp_error( $message ) ) {
-			if ( empty( $title ) ) {
-				$error_data = $message->get_error_data();
-				if ( is_array( $error_data ) && isset( $error_data['title'] ) )
-					$title = $error_data['title'];
-			}
-			
-			$errors = $message->get_error_messages();
-			switch ( count( $errors ) ) :
-			case 0 :
-				$message = '';
-				break;
-			case 1 :
-				$message = "<p>{$errors[0]}</p>";
-				break;
-			default :
-				$message = "<ul>\n\t\t<li>" . join( "</li>\n\t\t<li>", $errors ) . "</li>\n\t</ul>";
-				break;
-			endswitch;
-		} elseif ( is_string( $message ) ) {
-			$message = "<p>$message</p>";
-		}
-		
-		if ( isset( $r['back_link'] ) && $r['back_link'] ) {
-			$back_text = $have_gettext? __('&laquo; Back') : '&laquo; Back';
-			$message .= "\n<p><a href='javascript:history.back()'>$back_text</p>";
-		}
-		*/
-	
 		if ( !headers_sent() ){
 			header::nocache();
 			header::send( 'Content-Type: text/html; charset=utf-8' );
@@ -77,25 +47,5 @@ class Base_Class {
 	</html>
 	<?php
 		die();
-	}
-
-	/**
-	 * Starts the timer, for debugging purposes.
-	 *
-	 * @since 1.0
-	 */
-	public function timer_start() {
-		$this->time_start = microtime( true );
-	}
-
-	/**
-	 * Stops the debugging timer.
-	 *
-	 * @since 1.0
-	 *
-	 * @return int Total time spent on the query, in milliseconds
-	 */
-	public function timer_stop() {
-		return microtime( true ) - $this->time_start;
 	}
 }

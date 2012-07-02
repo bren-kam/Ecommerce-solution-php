@@ -57,10 +57,7 @@ if ( !empty( $timezone ) ) {
     
         // Adjust for time zone
         $new_date_posted = new DateTime( dt::adjust_timezone( $date_posted, $timezone, config::setting('server-timezone') ) );
-    
-        // Make sure we don't have anything extra
-        $_POST['taMessage'] = $_POST['taMessage'];
-    
+
         // Do we future date?
         $future = $new_date_posted->getTimestamp() >= time();
     
@@ -100,7 +97,7 @@ get_header();
 <div id="content">
 	<h1><?php echo _('Create Message'); ?></h1>
 	<br clear="all" /><br />
-	<?php get_sidebar( 'mobile-marketing/' ); ?>
+	<?php get_sidebar( 'mobile-marketing/', 'send_message' ); ?>
 	<div id="subcontent">
         <?php if ( empty( $timezone ) ) { ?>
             <p><?php echo _('You must set your '), ' ', '<a href="/mobile-marketing/settings/" title="', _('Mobile Marketing Settings'), '">', _('timezone setting'), '</a> ', _('before you send a mobile message.'); ?></p>

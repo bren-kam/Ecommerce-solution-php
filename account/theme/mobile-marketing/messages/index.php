@@ -12,7 +12,7 @@ if ( !$user )
 	login();
 
 // Secure the section
-if ( !$user['website']['mobile-marketing'] )
+if ( !$user['website']['mobile_marketing'] )
     url::redirect('/');
 
 $selected = "mobile_marketing";
@@ -25,10 +25,10 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'mobile-marketing/' ); ?>
 	<div id="subcontent">
-		<table cellpadding="0" cellspacing="0" width="100%" perPage="100,250,500" ajax="/ajax/mobile-marketing/mobiles/list/">
+		<table cellpadding="0" cellspacing="0" width="100%" perPage="100,250,500" ajax="/ajax/mobile-marketing/messages/list/">
 			<thead>
 				<tr>
-					<th width="50%"><?php echo _('Summary'); ?></th>
+					<th width="50%"><?php echo _('Title'); ?></th>
 					<th width="20%"><?php echo _('Status'); ?></th>
 					<th width="30%" sort="1 desc"><?php echo _('Date Posted'); ?></th>
 				</tr>
