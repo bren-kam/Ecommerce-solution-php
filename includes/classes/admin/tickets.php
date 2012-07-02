@@ -37,10 +37,15 @@ class Tickets extends Base_Class {
 			$this->_err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+        // Mark statistic for created tickets
+        $stat = new Stat_API( config::key('rs-key') );
+        $date = new DateTime();
+        $stat->add_graph_value( 23423, 1, $date->format('Y-m-d') );
+
 		// Get the assigned to user
 		$assigned_to_user = $u->get_user( 493 );
-		
+
 		// Send an email
 		return fn::mail( $assigned_to_user['email'], 'New ' . stripslashes( $user['website']['title'] ) . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\nSummary: $summary\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $this->db->insert_id );
 	}
@@ -158,7 +163,14 @@ class Tickets extends Base_Class {
 			$this->_err( 'Failed to update ticket status.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+        // Mark statistic for created tickets
+        if ( 1 == $status && in_array( $user['user_id'], array( 493, 1, 814, 305, 85, 19 ) ) ) {
+            $stat = new Stat_API( config::key('rs-key') );
+            $date = new DateTime();
+            $stat->add_graph_value( 23424, 1, $date->format('Y-m-d') );
+        }
+
 		return true;
 	}
 	

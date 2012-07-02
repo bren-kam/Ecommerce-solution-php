@@ -29,7 +29,14 @@ class Tickets extends Base_Class {
 			$assigned_to_user_id = 73; // Chris @ the lively merchant
 		} else {
 			// Techincal : Online Specialist
-			$assigned_to_user_id = ( $user['role'] > 5 ) ? 493 : $user['website']['os_user_id']; 
+			$assigned_to_user_id = ( $user['role'] > 5 ) ? 493 : $user['website']['os_user_id'];
+
+            // Mark statistic for created tickets if assigned to "Technical"
+            if ( 493 == $assigned_to_user_id ) {
+                $stat = new Stat_API( config::key('rs-key') );
+                $date = new DateTime();
+                $stat->add_graph_value( 23423, 1, $date->format('Y-m-d') );
+            }
 		}
 
         $message = str_replace( array( '’', '‘', '”', '“' ), array( "'", "'", '"', '"' ), $message );
