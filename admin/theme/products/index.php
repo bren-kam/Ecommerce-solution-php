@@ -59,9 +59,10 @@ get_header();
 					<div style="float:right">
 						<label for="sVisibility"><?php echo _('View:'); ?></label>
 						<select id="sVisibility">
-							<option value="all"><?php echo _('All Products'); ?></option>
+							<option value=""><?php echo _('All Products'); ?></option>
 							<option value="public"><?php echo _('Public Products'); ?></option>
 							<option value="private"><?php echo _('Private Products'); ?></option>
+							<option value="deleted"><?php echo _('Deleted Products'); ?></option>
 						</select>
 					</div>
 					<br clear="left" />

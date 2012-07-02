@@ -68,7 +68,7 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 $p = new Products;
 
 /* Filtering  */
-$where = ( isset( $_SESSION['products']['visibility'] ) ) ? " AND `publish_visibility` = '" . $p->db->escape( $_SESSION['products']['visibility'] ) . "'" : " AND `publish_visibility` <> 'deleted'";
+$where = ( isset( $_SESSION['products']['visibility'] ) && !empty( $_SESSION['products']['visibility'] ) ) ? " AND `publish_visibility` = '" . $p->db->escape( $_SESSION['products']['visibility'] ) . "'" : " AND `publish_visibility` <> 'deleted'";
 
 if ( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['products']['user'] ) ) {
 	switch ( $_SESSION['products']['product-status'] ) {
