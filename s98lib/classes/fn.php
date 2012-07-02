@@ -29,7 +29,7 @@ class fn extends Base_Class {
 		global $user;
 		
 		if ( $user && $user['role'] < 10 )
-			return;
+			return false;
 		
 		$info = '<pre>' . var_export( $object, true ) . '</pre>';
 		

@@ -4,6 +4,7 @@
  * @package Grey Suit Retail
  * @subpackage Account
  */
+session_start();
 
 // Create new AJAX
 $ajax = new AJAX( $_POST['_nonce'], 'new-image' );

@@ -1,4 +1,9 @@
 <?php
+
+url::redirect('/');
+fn::info(headers_list());
+header_remove();
+exit;
 /*
 $array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );
 

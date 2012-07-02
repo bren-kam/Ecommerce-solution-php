@@ -9,6 +9,7 @@
 class Mobile_Marketing extends Base_Class {
     /**
      * Avid Mobile Customer ID
+     * @var Trumpia
      */
     private $trumpia;
 
@@ -338,7 +339,7 @@ class Mobile_Marketing extends Base_Class {
                 $mobile_list = $this->get_mobile_list( $ml );
 
                 // Update the trumpia data
-                $trumpia_contact_id = $this->trumpia->add_contact( $this->_format_mobile_list_name( $mobile_list['name'] ), '', '', '', 1, $phone );
+                $trumpia_contact_id = $this->trumpia->add_contact( 'Unknown', $this->_format_mobile_list_name( $mobile_list['name'] ), '', '', '', 1, $phone );
 
                 if ( !$trumpia_contact_id )
                     return false;
@@ -1153,7 +1154,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `summary`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `title`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
