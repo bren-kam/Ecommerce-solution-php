@@ -33,6 +33,7 @@ class Tickets extends Base_Class {
 
             // Mark statistic for created tickets if assigned to "Technical"
             if ( 493 == $assigned_to_user_id ) {
+                library('statistics-api');
                 $stat = new Stat_API( config::key('rs-key') );
                 $date = new DateTime();
                 $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );

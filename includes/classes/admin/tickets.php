@@ -39,6 +39,7 @@ class Tickets extends Base_Class {
 		}
 
         // Mark statistic for created tickets
+        library('statistics-api');
         $stat = new Stat_API( config::key('rs-key') );
         $date = new DateTime();
         $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
@@ -166,6 +167,7 @@ class Tickets extends Base_Class {
 
         // Mark statistic for updated tickets
         if ( 1 == $status && in_array( $user['user_id'], array( 493, 1, 814, 305, 85, 19 ) ) ) {
+            library('statistics-api');
             $stat = new Stat_API( config::key('rs-key') );
             $date = new DateTime();
             $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
