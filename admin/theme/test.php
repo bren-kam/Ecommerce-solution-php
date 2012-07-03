@@ -1,8 +1,6 @@
 <?php
 
-url::redirect('/');
-fn::info(headers_list());
-header_remove();
+echo format::string_to_entity( "<h1>Hello World!</h1>" );
 exit;
 /*
 $array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );

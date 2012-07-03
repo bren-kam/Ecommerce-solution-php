@@ -650,7 +650,7 @@ class Ashley extends Base_Class {
 	 */
 	public function upload_image( $image_url, $slug, $product_id ) {
 		$new_image_name = $slug;
-		$image_extension = strtolower( format::file_extension( $image_url ) );
+		$image_extension = strtolower( f::extension( $image_url ) );
 		
 		$image['name'] = "{$new_image_name}.{$image_extension}";
 		$image['tmp_name'] = '/home/imaginer/public_html/admin/media/downloads/scratchy/' . $image['name'];

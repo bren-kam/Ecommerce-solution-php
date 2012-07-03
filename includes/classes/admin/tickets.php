@@ -205,7 +205,7 @@ class Tickets extends Base_Class {
 		$attachments = $this->db->get_col( 'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_id` = ' . (int) $ticket_id );
 		
 		foreach ( $attachments as $link ) {
-			$ticket['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', format::file_name( $link ) ) ) );
+			$ticket['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', f::name( $link ) ) ) );
 		}
 		
 		// If there was an error

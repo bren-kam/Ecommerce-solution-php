@@ -30,7 +30,7 @@ class Brands extends Base_Class {
 		$image_slug = format::slug( $name );
 		
 		// Get the extension
-		$image_extension = strtolower( format::file_extension( $image['name'] ) );
+		$image_extension = strtolower( f::extension( $image['name'] ) );
 		
 		// Don't insert a picture if one wasn't uploaded
 		$image_link = ( !empty( $image['name'] ) ) ? 'http://brands.retailcatalog.us/' . $image_slug . '.' . $image_extension : '';
@@ -111,7 +111,7 @@ class Brands extends Base_Class {
 			$image_slug = format::slug( $name );
 	
 			// Get the extension
-			$image_extension = strtolower( format::file_extension( $image['name'] ) );
+			$image_extension = strtolower( f::extension( $image['name'] ) );
 			
 			// Don't insert a picture if one wasn't uploaded
 			$image_link = ( !empty( $image['name'] ) ) ? 'http://brands.retailcatalog.us/' . $image_slug . '.' . $image_extension : '';

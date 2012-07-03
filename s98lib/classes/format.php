@@ -136,38 +136,6 @@ class format extends Base_Class {
 
 		return rtrim( $matches[0] ) . ( strlen( $matches[0] ) == strlen( $str ) ? '' : $end_char );
 	}
-	
-	/**
-	 * Returns a file name
-	 *
-	 * @param string $path
-	 * @return string
-	 */
-	public static function file_name( $path ) {
-		$path_info = pathinfo( $path );
-		return $path_info['basename'];
-	}
-	
-	/**
-	 * Returns a file extension
-	 *
-	 * @param string $path the path to the file that has the extension yo uwant
-	 * @return string
-	 */
-	public static function file_extension( $path ) {
-		$path_info = pathinfo( $path );
-		return ( isset( $path_info['extension'] ) ) ? $path_info['extension'] : '';
-	}
-	
-	/**
-	 * Removes a file extension
-	 *
-	 * @param string $file_name the file name you want to strip of an extension
-	 * @return string
-	 */
-	public static function strip_extension( $file_name ) {
-		return str_replace( '.' . self::file_extension( $file_name ), '', $file_name );
-	}
 
 	/**
 	 * Converts string to HTML Entity equivalents of the characters
@@ -178,26 +146,25 @@ class format extends Base_Class {
 	 * @return string
 	 */
 	public static function string_to_entity( $string ) {
+        $new_string = '';
+
 		foreach ( str_split( $string ) as $char ) {
 			$new_string .= '&#' . ord( $char ) . ';';
 		}
 		
 		return $new_string;
 	}
-	
+
 	/**
-	 * Escapes a string to be used in regex
+	 * Prevent functions to be created in memory
 	 *
-	 * @param string $string the text to escape
+	 * @param array $matches
 	 * @return string
 	 */
-	public static function escape_string_for_regex( $string ) {
-			$patterns = array('/\//', '/\^/', '/\./', '/\$/', '/\|/', '/\(/', '/\)/', '/\[/', '/\]/', '/\*/', '/\+/', '/\?/', '/\{/', '/\}/', '/\,/');
-			$replace = array('\/', '\^', '\.', '\$', '\|', '\(', '\)', '\[', '\]', '\*', '\+', '\?', '\{', '\}', '\,');
-		   
-			return preg_replace( $patterns, $replace, $string );
+	public static function preserve_new_lines( $matches ) {
+		return str_replace( "\n", "<PreserveNewline />", $matches[0] );
 	}
-	
+
 	/**
 	 * Replaces double line-breaks with paragraph elements.
 	 *
@@ -263,16 +230,6 @@ class format extends Base_Class {
 	}
 	
 	/**
-	 * Prevent functions to be created in memory
-	 *
-	 * @param array $matches
-	 * @return string
-	 */
-	public static function preserve_new_lines( $matches ) {
-		return str_replace( "\n", "<PreserveNewline />", $matches[0] );
-	}
-	
-	/**
 	 * Reverses autop or turns paragraph and line breaks into newlines
 	 *
 	 * @param string $string
@@ -280,7 +237,7 @@ class format extends Base_Class {
 	 */
 	public static function unautop( $string ) {
 		$string  = str_replace('<br />', '', $string );
-		$string  = str_replace('<p>', "\n", $string );
+		$string  = ltrim( str_replace('<p>', "\n", $string ) );
 		return str_replace('</p>', '', $string );
 	}
 	

@@ -99,7 +99,7 @@ class Files extends Base_Class {
 		$directory = $user['user_id'] . '/' . $website_id . '/';
 		
 		// Get the file extension
-		$file_extension = format::file_extension( $attachment_name );
+		$file_extension = f::extension( $attachment_name );
 		
 		// Create the image name
 		$attachment_name = format::slug( str_replace( $file_extension, '', $attachment_name ) ) . '.' . $file_extension;
@@ -133,7 +133,7 @@ class Files extends Base_Class {
 		$directory = $user['user_id'] . '/' . $user['website']['website_id'] . '/' . $ticket_id . '/';
 		
 		// Get the file extension
-		$file_extension = format::file_extension( $attachment_name );
+		$file_extension = f::extension( $attachment_name );
 		
 		// Create the image name
 		$attachment_name = format::slug( str_replace( $file_extension, '', $attachment_name ) ) . '.' . $file_extension;

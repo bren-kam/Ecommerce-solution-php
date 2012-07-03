@@ -13,7 +13,7 @@ $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 error_reporting(E_ALL);
 
 // Get the file extension
-$file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+$file_extension = strtolower( f::extension( $_FILES["Filedata"]['name'] ) );
 
 $file_name = "video.$file_extension";
 

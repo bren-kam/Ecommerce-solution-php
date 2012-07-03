@@ -125,7 +125,7 @@ get_header();
 					$confirm = _('Are you sure you want to delete this file?');
 
 					foreach ( $website_files as $wf ) {
-						$file_name = format::file_name( $wf['file_path'] );
+						$file_name = f::name( $wf['file_path'] );
 						echo '<li id="li' . $wf['website_file_id'] . '"><a href="', $wf['file_path'], '" id="aFile', $wf['website_file_id'], '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
 					}
 				} else {
