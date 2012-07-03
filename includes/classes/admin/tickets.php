@@ -41,7 +41,7 @@ class Tickets extends Base_Class {
         // Mark statistic for created tickets
         $stat = new Stat_API( config::key('rs-key') );
         $date = new DateTime();
-        $stat->add_graph_value( 23423, 1, $date->format('Y-m-d') );
+        $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
 
 		// Get the assigned to user
 		$assigned_to_user = $u->get_user( 493 );
@@ -164,11 +164,16 @@ class Tickets extends Base_Class {
 			return false;
 		}
 
-        // Mark statistic for created tickets
+        // Mark statistic for updated tickets
         if ( 1 == $status && in_array( $user['user_id'], array( 493, 1, 814, 305, 85, 19 ) ) ) {
             $stat = new Stat_API( config::key('rs-key') );
             $date = new DateTime();
-            $stat->add_graph_value( 23424, 1, $date->format('Y-m-d') );
+            $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
+
+            // Get the ticket
+            $ticket = $this->get( $ticket_id );
+            $hours = ( $date->getTimestamp() - $ticket['date_created'] ) / 3600;
+            $stat->add_graph_value( 23454, 1, $hours );
         }
 
 		return true;

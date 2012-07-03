@@ -35,7 +35,7 @@ class Tickets extends Base_Class {
             if ( 493 == $assigned_to_user_id ) {
                 $stat = new Stat_API( config::key('rs-key') );
                 $date = new DateTime();
-                $stat->add_graph_value( 23423, 1, $date->format('Y-m-d') );
+                $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
             }
 		}
 
