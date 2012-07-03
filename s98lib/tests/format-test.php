@@ -189,7 +189,7 @@ class formatTest extends PHPUnit_Framework_TestCase {
     public function testStringToEntity() {
         $string = "<h1>Hello World!</h1>";
 
-        // htmlentities everything but the ampersand
+        // Turn a string into an html entity for every character
         $new_string = format::string_to_entity( $string );
 
         // Define the proper string
@@ -204,7 +204,7 @@ class formatTest extends PHPUnit_Framework_TestCase {
     public function testPreserveNewLines() {
         $string = "Hello World!\n\nHow are you doing today?\n";
 
-        // htmlentities everything but the ampersand
+        // Preserve new lines
         $new_string = format::preserve_new_lines( array( $string ) );
 
         // Define the proper string
@@ -221,7 +221,7 @@ class formatTest extends PHPUnit_Framework_TestCase {
     public function testAutoP() {
         $string = "Hello World!\n\nHow are you doing today?\n\nThe sun is up, the sky is blue\n";
 
-        // htmlentities everything but the ampersand
+        // Auto Paragraph
         $new_string = format::autop( $string );
 
         // Define the proper string
@@ -231,16 +231,91 @@ class formatTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Tests make line breaks out of paragaphs
+     * Tests making line breaks out of paragraphs
      */
     public function testUnAutoP() {
         $string = "<p>Hello World!</p><p>How are you doing today?</p><p>The sun is up, the sky is blue</p>";
 
-        // htmlentities everything but the ampersand
+        // Un Auto-Paragraph
         $new_string = format::unautop( $string );
 
         // Define the proper string
         $proper_string = "Hello World!\nHow are you doing today?\nThe sun is up, the sky is blue";
+
+        $this->assertEquals( $new_string, $proper_string );
+    }
+
+    /**
+     * Makes sure we can strip only tags
+     */
+    public function testStripOnlyA() {
+        $string = "<h1>Hello World!</h1><p>How are you doing today?</p><p>The sun is up, the sky is blue</p>";
+
+        // Strip only the h1 tag -- but leave content
+        $new_string = format::strip_only( $string, 'h1' );
+
+        // Define the proper string
+        $proper_string = "Hello World!<p>How are you doing today?</p><p>The sun is up, the sky is blue</p>";
+
+        $this->assertEquals( $new_string, $proper_string );
+    }
+
+    /**
+     * Tests make line breaks out of paragaphs
+     */
+    public function testStripOnlyB() {
+        $string = "<h1>Hello World!</h1><p>How are you doing today?</p><p>The sun is up, the sky is blue</p>";
+
+        // Strip only the h1 tag -- but take content
+        $new_string = format::strip_only( $string, 'h1', true );
+
+        // Define the proper string
+        $proper_string = "<p>How are you doing today?</p><p>The sun is up, the sky is blue</p>";
+
+        $this->assertEquals( $new_string, $proper_string );
+    }
+
+    /**
+     * Tests turning a link in a body of text into an anchor
+     */
+    public function testLinksToAnchors() {
+        $string = "Hello and welcome to www.studio98.com!";
+
+        // Turn www.studio98.com to a link
+        $new_string = format::links_to_anchors( $string );
+
+        // Define the proper string
+        $proper_string = 'Hello and welcome to <a href="http://www.studio98.com" title="www.studio98.com">www.studio98.com</a>!';
+
+        $this->assertEquals( $new_string, $proper_string );
+    }
+
+    /**
+     * Tests text into a slug
+     */
+    public function testSlug() {
+        $string = "Joe Smith's Library";
+
+        // Turn www.studio98.com to a link
+        $new_string = format::slug( $string );
+
+        // Define the proper string
+        $proper_string = 'joe-smiths-library';
+
+        $this->assertEquals( $new_string, $proper_string );
+    }
+
+    /**
+     * Tests turning a slug into a name
+     */
+    public function testSlugToName() {
+        $string = "joe-smiths-library";
+
+        // Turn www.studio98.com to a link
+        $new_string = format::slug_to_name( $string );
+
+        // Define the proper string
+        $proper_string = 'Joe Smiths Library';
 
         $this->assertEquals( $new_string, $proper_string );
     }

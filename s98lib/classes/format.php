@@ -245,7 +245,7 @@ class format extends Base_Class {
 	 * Opposite of strip_tags -- strips specific tags
 	 *
 	 * @param string $str
-	 * @param string $tags the tags to remove
+	 * @param string|array $tags the tags to remove
 	 * @param bool $strip_content (optional|false) whether to remove the content in the tags or not
      * @return string
 	 */
@@ -264,7 +264,7 @@ class format extends Base_Class {
 		
 		// Go through the tags
 		foreach ( $tags as $tag ) {
-			// Find out if we're removing the nner content
+			// Find out if we're removing the inner content
 			if ( $strip_content )
 				 $content = '(.+</' . $tag . '[^>]*>|)';
 			 

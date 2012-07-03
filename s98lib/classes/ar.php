@@ -172,7 +172,7 @@ class ar extends Base_Class {
      * @param string $key [optional]
      * @return array( $unique_array, $duplicate_array )
      */
-    public static function array_unique_sort( array $array, $key = NULL ) {
+    public static function unique_sort( array $array, $key = NULL ) {
         // Initialize variables
         $last_value = '';
         $identical_elements = $padded_elements = array();
