@@ -9,10 +9,10 @@ class Response {
     /**
      * Variables
      */
-    private $success;
-    private $message;
-    private $error_code;
-    private $data;
+    protected $_success;
+    protected $_message;
+    protected $_error_code;
+    protected $_data;
 
 	/**
 	 * Construct initializes data
@@ -22,9 +22,9 @@ class Response {
      * @param int $error_code
 	 */
 	public function __construct( $success, $message = '', $error_code = 0 ) {
-	    $this->success = $success;
-        $this->message = $message;
-        $this->error_code = $error_code;
+	    $this->_success = $success;
+        $this->_message = $message;
+        $this->_error_code = $error_code;
 	}
 
     /**
@@ -33,7 +33,7 @@ class Response {
      * @return bool
      */
     public function success() {
-        return $this->success;
+        return $this->_success;
     }
 
 	/**
@@ -42,7 +42,7 @@ class Response {
      * @return string
      */
     public function message() {
-        return $this->message;
+        return $this->_message;
     }
 
 	/**
@@ -51,7 +51,7 @@ class Response {
      * @return int
      */
     public function error_code() {
-        return $this->error_code;
+        return $this->_error_code;
     }
 
     /**
@@ -62,7 +62,7 @@ class Response {
 	 */
 	public function add( $key, $value ) {
 		// Set the variable
-		$this->data[$key] = $value;
+		$this->_data[$key] = $value;
 	}
 
     /**
@@ -72,7 +72,7 @@ class Response {
      * @return mixed
      */
     public function get( $key ) {
-        return ( isset( $this->data[$key] ) ) ? $this->data[$key] : false;
+        return ( isset( $this->_data[$key] ) ) ? $this->_data[$key] : false;
     }
 	
 	/**
