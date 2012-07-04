@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP Unit Test for date-time class
+ * PHP Unit Test for ar (array) class
  *
  * @package Studio98 Library
  * @since 1.0
@@ -134,5 +134,80 @@ class arTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals( $new_array, $proper_array );
 	}
 
+    /**
+     * Test comparing arrays
+     */
+    public function testCompare() {
+        // Create the two arrays for comparison
+        $array = array(
+            'color' => 'blue'
+            , 'fruit' => 'blueberry'
+            , 'environment' => 'sky'
+        );
 
+        $other_array = array(
+            'color' => 'green'
+            , 'fruit' => 'blueberry'
+            , 'environment' => 'sky'
+        );
+
+        // Compare the 2 arrays
+        $result_array = ar::compare( $array, $other_array );
+
+        // Should show the items that are differentiating of each array
+        $proper_array = array (
+            array( 'color' => 'blue' )
+            , array( 'color' => 'green' )
+        );
+
+        $this->assertEquals( $result_array, $proper_array );
+    }
+
+    /**
+     * Tests
+     */
+    public function testCompareDate() {
+        // Create base array
+        $array = array(
+            array(
+                'color' => 'blue'
+                , 'started' => '2012-07-03'
+                , 'environment' => 'sky'
+            )
+            , array(
+                'color' => 'green'
+                , 'started' => '2012-07-01'
+                , 'environment' => 'grass'
+            )
+            , array(
+                'color' => 'orange'
+                , 'started' => '2012-07-02'
+                , 'environment' => 'fire'
+            )
+        );
+
+        // Sorted array by date
+        $sorted_array = ar::sort_by_date( $array, 'started' );
+
+        // Define what the array should be
+        $correct_array = array(
+            array(
+                'color' => 'blue'
+                , 'started' => '2012-07-03'
+                , 'environment' => 'sky'
+            )
+            , array(
+                'color' => 'orange'
+                , 'started' => '2012-07-02'
+                , 'environment' => 'fire'
+            )
+            , array(
+                'color' => 'green'
+                , 'started' => '2012-07-01'
+                , 'environment' => 'grass'
+            )
+        );
+
+        $this->assertEquals( $sorted_array, $correct_array );
+    }
 }

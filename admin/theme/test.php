@@ -1,6 +1,6 @@
 <?php
 
-echo format::string_to_entity( "<h1>Hello World!</h1>" );
+echo format::string_to_entity( ".com" );
 exit;
 /*
 $array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );

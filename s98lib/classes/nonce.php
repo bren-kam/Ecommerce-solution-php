@@ -16,7 +16,7 @@ class nonce extends security {
 	 *
 	 * @return int
 	 */
-	public static function tick() {
+	private static function _tick() {
 		return ceil( time() / ( NONCE_DURATION / 2 ) );
 	}
 	
@@ -24,14 +24,14 @@ class nonce extends security {
 	 * Creates a nonce
 	 *
 	 * @since 1.0.0
-	 * @uses security:hash
+	 * @uses security::hash
 	 *
-	 * @param string $action (Optional) the action that the nonce is for
-	 * @param int $user_id (Optional) the user id
-	 * @returns string
+	 * @param string $action [optional] the action that the nonce is for
+	 * @param int $user_id [optional] the user id
+	 * @return string
 	 */
-	public static function create( $action = '' , $user_id = 0 ) {
-		$i = self::tick();
+	public static function create( $action = '', $user_id = 0 ) {
+		$i = self::_tick();
 		return substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 );
 	}
 	
@@ -44,10 +44,10 @@ class nonce extends security {
 	 * @param string $nonce the nonce to check it with
 	 * @param string $action (Optional) the action that the nonce is for
 	 * @param int $user_id (Optional) the user id
-	 * @returns string
+	 * @return string
 	 */
 	public static function verify( $nonce, $action = '' , $user_id = 0 ) {
-		$i = self::tick();
+		$i = self::_tick();
 		
 		// Nonce generated 0-6 hours ago
 		if ( $nonce == substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) )
@@ -70,20 +70,14 @@ class nonce extends security {
 	 * @param string $action Optional. Action name.
 	 * @param string $name Optional. Nonce name.
 	 * @param bool $echo Optional, default true. Whether to display or return hidden form field.
-	 * @param bool $referer Optional, default false. Whether to set the referer field for validation.
 	 * @return string Nonce field.
 	 */
-	public static function field( $action = '', $name = "_nonce", $echo = true, $referer = false ) {
+	public static function field( $action = '', $name = "_nonce", $echo = true ) {
 		$nonce_field = '<input type="hidden" id="' . $name . '" name="' . $name . '" value="' . self::create( $action ) . '" />';
 		
 		if ( $echo )
 			echo $nonce_field;
-	
-		if ( $referer && $echo ) {
-			$ref = $_SERVER['REQUEST_URI'];
-			echo '<input type="hidden" name="_http_referer" value="', $ref, '" />';
-		}
-		
+
 		return $nonce_field;
 	}
 	
@@ -96,6 +90,7 @@ class nonce extends security {
 	 *
 	 * @param string $action_url URL to add nonce action
 	 * @param string $action Optional. Nonce action name
+     * @param int $uid [optional]
 	 * @return string URL with nonce action added.
 	 */
 	public static function url( $action_url, $action = -1, $uid = 0 ) {

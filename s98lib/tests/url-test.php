@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP Unit Test for urlclass
+ * PHP Unit Test for url class
  *
  * @package Studio98 Library
  * @since 1.0
