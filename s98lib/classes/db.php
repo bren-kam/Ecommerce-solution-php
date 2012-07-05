@@ -72,7 +72,6 @@ class DB {
         } else {
             return false;
         }
-
     }
 }
 ?>
