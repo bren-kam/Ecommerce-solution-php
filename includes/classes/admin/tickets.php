@@ -175,7 +175,7 @@ class Tickets extends Base_Class {
             // Get the ticket
             $ticket = $this->get( $ticket_id );
             $hours = ( $date->getTimestamp() - $ticket['date_created'] ) / 3600;
-            $stat->add_graph_value( 23454, 1, $hours );
+            $stat->add_graph_value( 23453, 1, $hours );
         }
 
 		return true;
