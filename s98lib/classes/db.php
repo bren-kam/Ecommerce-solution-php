@@ -40,9 +40,7 @@ class DB {
         try {
     		$this->_db = new PDO( "mysql:host=$host;dbname=$name", $user, $password );
         } catch ( PDOException $e ) {
-            $this->_error_message = $e->getMessage();
-            $this->_error_code = $e->getCode();
-            return false;
+            throw new DatabaseException( $e->getMessage(), $e->getCode(), $e );
         }
 
         return true;
