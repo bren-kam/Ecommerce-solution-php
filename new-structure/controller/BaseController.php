@@ -18,7 +18,7 @@ abstract class BaseController {
         if ( sizeof( $this->availableActions ) < 2 ) {//2 because this method will count
             throw new ControllerException( "No actions registered for controller " . get_class( $this ) );
         }
-        $actionName = $_REQUEST['nonce'];
+        $actionName = $_REQUEST['_nonce'];
         $methodName = $this->availableActions[$actionName];
         if ( NULL == $methodName ) {
             throw new ControllerException( "There is no such action" );
