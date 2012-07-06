@@ -1,9 +1,6 @@
 <?php
 
-require_once 'response.php';
-
 class AjaxResponse extends Response {
-
     /**
      * JSON Response
      * @var array
@@ -27,32 +24,43 @@ class AjaxResponse extends Response {
         $this->json_response[$key] = $value;
     }
 
-
-    public function is_valid_value( $assertion, $error ) {
+    /**
+     * Checks to make sure something is not false
+     *
+     * @param mixed $assertion
+     * @param string $error
+     * @return mixed
+     */
+    public function check( $assertion, $error ) {
         if ( $assertion )
             return;
 
+        // Add the error response
         $this->add_response( 'error', $error );
         $this->error = true;
     }
 
-    protected  function has_error() {
+    /**
+     * Check to see if we have an error
+     * @return bool
+     */
+    protected function has_error() {
         return $this->error;
     }
 
+    /**
+     * Spit out the json response
+     */
     protected function respond() {
+        // Let them know we were sucessful
+        $this->add_response( 'success', !$this->has_error() );
 
-        $this->add_response( 'success', ! $this->has_error() );
-        if ( ! $this->has_error() ) {
+        // If we don't have a problem, unset it
+        if ( !$this->has_error() )
             unset( $this->json_response['error'] );
-        }
 
-        // Set the header if it's not IE8 (IE8 is stupid and doesn't recognize json/application header types)
-        $browser = fn::browser();
-
-        if ( 'Msie' != $browser['name'] || version_compare( 8, $browser['version'], '>' ) )
-            header::type('json');
-
+        // Set it to JSON
+        header::type('json');
 
         // Spit out the code and exit;
         echo json_encode( $this->json_response );
