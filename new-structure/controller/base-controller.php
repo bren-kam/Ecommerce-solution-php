@@ -1,4 +1,7 @@
 <?php
+
+require_once 'new-structure/lib/response.php';
+
 /**
  * The base class for all other controllers
  */
@@ -39,7 +42,11 @@ abstract class BaseController {
         if ( is_null( $methodName ) )
             throw new ControllerException( "There is no such action" );
 
-        $this->$methodName();
+        /**
+         * @var Response
+         */
+        $response = $this->$methodName();
+        $response->send_response();
     }
 }
 
