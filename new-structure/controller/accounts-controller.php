@@ -15,7 +15,7 @@ class AccountsController extends BaseController {
             $error_message = _('Some Error message here');
         }
 
-        return new TemplateResponse( '/view/account/new-account.php', is_null( $error_message ) );
+        return new TemplateResponse( '/view/account/new-account.php', $error_message );
     }
 
 }
