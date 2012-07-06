@@ -44,13 +44,24 @@ class header extends Base_Class {
 	 * @since 1.0
 	 *
 	 * @param string $type The type of content
-	 * @returns bool
+     * @return bool;
 	 */
 	public static function type( $type ) {
+        // We don't want to do JSON if the browser doesn't support it
+        if ( 'json' == $type ) {
+            // Set the header if it's not IE8 (IE8 is stupid and doesn't recognize json/application header types)
+            $browser = fn::browser();
+
+            if ( 'Msie' == $browser['name'] && version_compare( 8, $browser['version'], '<=' ) )
+                return false;
+        }
+
 		$content_type = self::$content_types[$type];
 		
 		if ( !empty( $content_type ) )
 			header( 'Content-type: ' . $content_type );
+
+        return true;
 	}
 	
 	/**

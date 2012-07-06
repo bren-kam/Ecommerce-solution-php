@@ -1,7 +1,5 @@
 <?php
 
-require_once 'new-structure/lib/response.php';
-
 /**
  * The base class for all other controllers
  */

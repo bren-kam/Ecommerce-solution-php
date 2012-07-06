@@ -43,6 +43,7 @@ class DB {
     private $not_connected_message = "The Connection object was not created. Did you call parent::__construct(\$table) ?";
 
     public function __construct( $table ) {
+        // The table the object uses
         $this->table = $table;
 
         // Make sure we're connected
@@ -76,7 +77,7 @@ class DB {
      * @param bool $on_duplicate_key [optional]
      * @return int
      */
-    public function insert( array $data, $format, $on_duplicate_key ) {
+    public function insert( array $data, $format, $on_duplicate_key = false ) {
         // Separate fields from values
         $fields = array_keys( $data );
         $values = array_values( $data );
@@ -307,6 +308,8 @@ class DB {
 
     /**
      * Begin Transaction
+     *
+     * @static
      */
     public static function begin_transaction() {
         Registry::get('pdo')->beginTransaction();
@@ -314,6 +317,8 @@ class DB {
 
     /**
      * Commit
+     *
+     * @static
      */
     public static function commit() {
         Registry::get('pdo')->commit();
@@ -321,8 +326,10 @@ class DB {
 
     /**
      * Roll back
+     *
+     * @static
      */
-    public function roll_back() {
+    public static function roll_back() {
         Registry::get('pdo')->rollBack();
     }
 
