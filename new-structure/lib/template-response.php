@@ -53,7 +53,7 @@ class TemplateResponse extends Response {
      * Including the file
      */
     public function respond() {
-        require_once $this->file_to_render;
+        require_once OPERATING_PATH . $this->file_to_render . '.php';
     }
 
 }
