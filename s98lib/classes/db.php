@@ -9,6 +9,14 @@
 
 class DB {
     /**
+     * Define connection parameters
+     */
+    CONST DB_HOST = '199.204.138.78';
+    CONST DB_USER = 'imaginer_admin';
+    CONST DB_PASSWORD = 'rbDxn6kkj2e4';
+    CONST DB_NAME = 'imaginer_system';
+
+    /**
      * Hold the PDO object
      * @var PDO
      */
@@ -36,7 +44,9 @@ class DB {
 
     public function __construct( $table ) {
         $this->table = $table;
-        $this->_pdo = Registry::getConnection();
+
+        // Make sure we're connected
+        $this->_connect();
     }
 
     /**
@@ -293,9 +303,6 @@ class DB {
      * @throws InvalidParametersException|ModelException
      */
     public function query( $query ) {
-        // Make sure we are connected
-        $this->_connected();
-
         // We Now have a statement
         $this->_statement = $this->_clean_statement( $query );
 
@@ -304,14 +311,32 @@ class DB {
     }
 
     /**
+     * Begin Transaction
+     */
+    public static function begin_transaction() {
+        Registry::get('pdo')->beginTransaction();
+    }
+
+    /**
+     * Commit
+     */
+    public static function commit() {
+        Registry::get('pdo')->commit();
+    }
+
+    /**
+     * Roll back
+     */
+    public function roll_back() {
+        Registry::get('pdo')->rollBack();
+    }
+
+    /**
      * Get insert ID
      *
      * @return int
      */
     public function get_insert_id() {
-        // Make sure we're connected
-        $this->_connected();
-
         return $this->_pdo->lastInsertId();
     }
 
@@ -338,14 +363,28 @@ class DB {
     }
 
     /**
-     * Make sure we are connected
+     * Connect to PDO
      *
      * @throws ModelException
      */
-    private function _connected() {
+    private function _connect() {
         // Make sure we can do a query
-        if ( !$this->_pdo instanceof PDO )
-            throw new ModelException( $this->not_connected_message );
+        if ( !$this->_pdo instanceof PDO ) {
+            // Try to get it from the registry
+            $this->_pdo = Registry::get('pdo');
+
+            // Doesn't exist, then create it
+            if ( !$this->_pdo ) {
+                try {
+                    $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
+                } catch( PDOException $e ) {
+                    throw new ModelException( $exception->getMessage(), $e );
+                }
+
+                // Set it in the registry
+                Registry::set( 'pdo', $this->_pdo );
+            }
+        }
     }
 
     /**

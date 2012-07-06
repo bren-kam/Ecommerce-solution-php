@@ -1,8 +1,18 @@
 <?php
+/**
+ * The base class for all other controllers
+ */
 abstract class BaseController {
 
+    /**
+     * Contain the available methods for subclass
+     * @var array
+     */
     private $availableActions;
 
+    /**
+     * Setup standard reflection
+     */
     public function __construct() {
         $this->availableActions = array();
         $reflectionClass = new ReflectionClass( get_class( $this ) );
@@ -13,27 +23,42 @@ abstract class BaseController {
         }
     }
 
-    //Cant be changed, every Controller will have a method for each possible action
+    /**
+     * Cant be changed, every Controller will have a method for each possible action
+     *
+     * @throws ControllerException
+     */
     public final function run() {
-        if ( sizeof( $this->availableActions ) < 2 ) {//2 because this method will count
+        // 2 because this method will count
+        if ( sizeof( $this->availableActions ) < 2 )
             throw new ControllerException( "No actions registered for controller " . get_class( $this ) );
-        }
-        $actionName = $_REQUEST['nonce'];
+
+        $actionName = $_REQUEST['_nonce'];
         $methodName = $this->availableActions[$actionName];
-        if ( NULL == $methodName ) {
+
+        if ( is_null( $methodName ) )
             throw new ControllerException( "There is no such action" );
-        }
+
         $this->$methodName();
     }
 
+    /**
+     * Begin a transaction
+     */
     protected function beginTransaction() {
         Registry::getConnection()->beginTransaction();
     }
 
+    /**
+     * Commit the transaction to be changed
+     */
     protected function commit() {
         Registry::getConnection()->commit();
     }
 
+    /**
+     * If it failed, roll bakc
+     */
     protected function rollback() {
         Registry::getConnection()->rollBack();
     }
