@@ -26,6 +26,18 @@ abstract class BaseController {
         $this->$methodName();
     }
 
+    protected function beginTransaction() {
+        Registry::getConnection()->beginTransaction();
+    }
+
+    protected function commit() {
+        Registry::getConnection()->commit();
+    }
+
+    protected function rollback() {
+        Registry::getConnection()->rollBack();
+    }
+
 
 }
 
