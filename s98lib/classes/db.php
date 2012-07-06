@@ -12,19 +12,19 @@ class DB {
      * Hold the PDO object
      * @var PDO
      */
-    private $_db;
+    private $_pdo;
 
     /**
-     * Hold the last error messages
+     * Hold the last statement
+     * @var PDOStatement
+     */
+    private $_statement = NULL;
+
+    /**
+     * Hold the last query
      * @var string
      */
-    private $_error_message = NULL;
-
-    /**
-     * Hold the last error code
-     * @var int
-     */
-    private $_error_code = NULL;
+    private $_last_query = NULL;
 
 	/**
 	 * Connects to the database server and selects a database
@@ -33,27 +33,261 @@ class DB {
 	 * @param string $password MySQL database password
 	 * @param string $name MySQL database name
 	 * @param string $host MySQL database host
-     * @return bool
+     * @throws ModelException
 	 */
 	public function connect( $user, $password, $name, $host ) {
         // Connect
         try {
-    		$this->_db = new PDO( "mysql:host=$host;dbname=$name", $user, $password );
+    		$this->_pdo = new PDO( "mysql:host=$host;dbname=$name", $user, $password );
         } catch ( PDOException $e ) {
             throw new ModelException( $e->getMessage(), $e->getCode(), $e );
         }
-
-        return true;
    	}
 
     /**
      * Prepares a statement
      *
-     * @param string $sql You can either use ":variable" or "?"
-     * @return PDOStatement
+     * Example:
+     * ...->prepare('SELECT `id` FROM `users` WHERE `email` LIKE :email', 's', array( ':email' => $email ) )->query();
+     *
+     * @param string $sql
+     * @param string $format (i for integer, s for string )
+     * @param mixed $values Used just to ensure they included this parameter
+     * @throws ModelException
+     * @return DB_Statement
      */
-    public function prepare( $sql ) {
-        return $this->_db->prepare( $sql );
+    public function prepare( $sql, $format, $values ) {
+        // Get the arguments
+        $values = array_slice( func_get_args(), 2 );
+
+        return new DB_Statement( $this, $this->_get_statement( $sql, $format, $values ) );
+    }
+
+    /**
+     * Insert something into the database
+     *
+     * @param string $table
+     * @param array $data
+     * @param string $format
+     * @param bool $on_duplicate_key [optional]
+     * @return int
+     */
+    public function insert( $table, array $data, $format, $on_duplicate_key ) {
+        // Separate fields from values
+        $fields = array_keys( $data );
+        $values = array_values( $data );
+
+        // Create the SQL
+        $sql = "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)';
+
+        // Handle the on duplicate key
+        if ( $on_duplicate_key ) {
+            // We need to add on duplicate key
+            $sql .= ' ON DUPLICATE KEY UPDATE `' . implode( '` = ?, `', $fields ) . '` = ?';
+
+            // Double the format and values
+            $format .= $format;
+            $values = array_merge( $values, $values );
+        }
+
+        // Prepare the statement
+        $statement = $this->_get_statement( $sql, $format, $values );
+
+        // Execute query
+        $this->query( $statement );
+
+        return $this->get_insert_id();
+    }
+
+    /**
+     * Update a table
+     *
+     * @param string $table
+     * @param array $data
+     * @param array $where
+     * @param string $format
+     * @param string $where_format
+     */
+    public function update( $table, array $data, array $where, $format, $where_format ) {
+        // Make sure we have base arrays
+        $fields = $criteria = array();
+
+        // Setup the fields and criteria
+        foreach ( array_keys( $data ) as $field ) {
+			$fields[] = "`$field` = ?";
+		}
+
+        foreach ( (array) array_keys( $where ) as $field ) {
+			$criteria[] = "`$field` = ?";
+		}
+
+        // Create the values for a statement
+        $sql = "UPDATE `$table` SET " . implode( ', ', $fields ) . ' WHERE ' . implode( ' AND ', $criteria );
+        $format .= $where_format;
+        $values = array_merge( array_values( $data ), array_values( $where ) );
+
+        // Prepare the statement
+        $statement = $this->_get_statement( $sql, $format, $values );
+
+        // Execute query
+        $this->query( $statement );
+    }
+
+    /**
+     * Delete
+     *
+     * @param string $table
+     * @param array $where
+     * @param string $where_format
+     */
+    public function delete( $table, array $where, $where_format ) {
+        // Make sure we have base arrays
+        $criteria = array();
+
+         // Setup the fields and criteria
+        foreach ( (array) array_keys( $where ) as $field ) {
+			$criteria[] = "`$field` = ?";
+		}
+
+        // Create the values for a statement
+        $sql = "DELETE FROM `$table` WHERE " . implode( ' AND ', $criteria );
+
+        // Prepare the statement
+        $statement = $this->_get_statement( $sql, $where_format, array_values( $where ) );
+
+        // Execute query
+        $this->query( $statement );
+    }
+
+    /**
+     * Get Results
+     *
+     * Defaults to fetching as an object
+     *
+     * @param string|PDOStatement $query [optional]
+     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC,
+     * @return mixed
+     */
+    public function get_results( $query = NULL, $style = PDO::FETCH_OBJ ) {
+        // Make sure we have a statement
+        if ( !is_null( $query ) )
+            $this->query( $query );
+
+        // Make sure we have a statement
+        $this->_statement();
+
+        return $this->_statement->fetchAll( $style );
+    }
+
+    /**
+     * Get a single Row
+     *
+     * Defaults to fetching as an object
+     *
+     * @param string|PDOStatement $query [optional]
+     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC,
+     * @return mixed
+     */
+    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ ) {
+        // Make sure we have a statement
+        if ( !is_null( $query ) )
+            $this->query( $query );
+
+        // Make sure we have a statement
+        $this->_statement();
+
+        return $this->_statement->fetch( $style );
+    }
+
+    /**
+     * Get a single column
+     *
+     * @param string|PDOStatement $query [optional]
+     * @return mixed
+     */
+    public function get_col( $query = NULL ) {
+        // Make sure we have a statement
+        if ( !is_null( $query ) )
+            $this->query( $query );
+
+        // Make sure we have a statement
+        $this->_statement();
+
+        return $this->_statement->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+
+    /**
+     * Get a single variable
+     *
+     * @param string|PDOStatement $query [optional]
+     * @return mixed
+     */
+    public function get_var( $query = NULL ) {
+        // Make sure we have a statement
+        if ( !is_null( $query ) )
+            $this->query( $query );
+
+        // Make sure we have a statement
+        $this->_statement();
+
+        return $this->_statement->fetchColumn( 0 );
+    }
+
+    /**
+     * Copy data from one table to another
+     *
+     * @param string $table
+     * @param array $fields the Fields to copy
+     * @param array $where the fields to base it on
+     * @return bool
+     */
+    public function copy( $table, $fields, $where ) {
+        // Initialize variables
+        $table = "`$table`";
+        $duplicate_keys = array();
+
+        // Determine the fields that need to be copied over
+        foreach ( $fields as $key => &$field ) {
+            $key = "`$key`";
+
+            if ( is_null( $field ) )
+                $field = $key;
+
+            $duplicate_keys[] = "$key = VALUES( $key )";
+        }
+
+        // Define field keys and values
+        $field_keys = '`' . implode( '`, `', array_keys( $fields ) ) . '`';
+        $field_values = implode( ',', array_values( $fields ) );
+
+        // Begin sql and the values
+        $where_sql = $where_values = array();
+
+        // Build the where -- if it's an int or a float, we don't need to protect it
+        foreach ( $where as $key => $field ) {
+            if ( is_array( $field ) ) {
+                // Make sure the array is sql safe
+                foreach ( $field as &$i ) {
+                    if ( !is_int( $i ) && !is_float( $i ) ) {
+                        $field_values = $i;
+                        $i = '?';
+                    }
+                }
+
+                $where_sql[] = "`$key` IN (" . implode( ', ', $field ) . ')';
+            } else {
+                $where_sql[] = "`$key` = $field";
+            }
+		}
+
+        // Define SQL
+        $sql = "INSERT INTO $table ( $field_keys ) SELECT $field_values FROM $table WHERE " . IMPLODE ( ' AND ', $where_sql ) . ' ON DUPLICATE KEY UPDATE ' . implode( ', ', $duplicate_keys );
+
+        // Prepare statement
+        $statement = $this->_get_statement( $sql, NULL, $field_values );
+
+        // Query it
+        $this->query( $statement );
     }
 
     /**
@@ -61,15 +295,281 @@ class DB {
      *
      * @param string|PDOStatement $query
      * @return bool|PDOStatement
+     * @throws InvalidParametersException|ModelException
      */
     public function query( $query ) {
-        if ( is_string( $query ) ) {
-            return $this->_db->query( $query );
-        } else if ( $query instanceof PDOStatement ) {
-            return $query->execute();
+        // Make sure we are connected
+        $this->_connected();
+
+        // We Now have a statement
+        $this->_statement = $this->_clean_statement( $query );
+
+        // Do the actual Database call
+        $this->_statement->execute();
+    }
+
+    /**
+     * Get insert ID
+     *
+     * @return int
+     */
+    public function get_insert_id() {
+        // Make sure we're connected
+        $this->_connected();
+
+        return $this->_pdo->lastInsertId();
+    }
+
+    /**
+     * Get row count
+     *
+     * @throws ModelException
+     * @return int
+     */
+    public function get_row_count() {
+        // Make sure we can do a query
+        $this->_statement();
+
+        return $this->_statement->rowCount();
+    }
+
+    /**
+     * Get Last Query
+     *
+     * @return string $query
+     */
+    public function get_last_query() {
+        return $this->_last_query;
+    }
+
+    /**
+     * Make sure we are connected
+     *
+     * @throws ModelException
+     */
+    private function _connected() {
+        // Make sure we can do a query
+        if ( !$this->_pdo instanceof PDO )
+            throw new ModelException( 'DB::connect() was not called');
+    }
+
+    /**
+     * Make sure we have a statement
+     *
+     * @throws ModelException
+     */
+    private function _statement() {
+        // Make sure we can do a query
+        if ( !$this->_statement instanceof PDOStatement )
+            throw new ModelException( 'DB::_prepare() was not called');
+    }
+
+    /**
+     * Makes sure that we have a statement
+     *
+     * @param string|PDOStatement
+     * @throws InvalidParametersException
+     * @return PDOStatement
+     */
+    private function _clean_statement( $query ) {
+        // If it's valid, then return it
+        if ( $query instanceof PDOStatement )
+            return $query;
+
+        // If it's not a string or PDO Statement, we have a problem
+        if ( !is_string( $query ) )
+            throw new InvalidParametersException('$query expected to be a string');
+
+        // Return the statement
+        return $this->_prepare( $query );
+    }
+
+    /**
+     * Get Statement
+     *
+     * @param string $sql
+     * @param string $format
+     * @param array $values
+     * @return PDOStatement
+     */
+    private function _get_statement( $sql, $format, $values ) {
+        // Reset everything -- last query data is no longer last
+        $this->_flush();
+
+        // Create the statement
+        $statement = $this->_prepare( $sql );
+
+        // Get the proper format
+        $format = $this->_format( $format, count( $values ) );
+
+        // Bind the values
+        $this->_bind( $statement, $values, $format );
+
+        return $statement;
+    }
+
+    /**
+     * Prepare SQL
+     *
+     * @param string $sql
+     * @throws ModelException
+     * @return PDOStatement
+     */
+    private function _prepare( $sql ) {
+        try {
+            $statement = $this->_pdo->prepare( $sql );
+        } catch ( PDOException $e ) {
+            throw new ModelException( $e->getMessage(), $e );
+        }
+
+        return $statement;
+    }
+
+    /**
+     * Create the right format
+     *
+     * @param string|null $old_format
+     * @param int $count
+     * @throws InvalidParametersException
+     * @return string
+     */
+    private function _format( $old_format, $count ) {
+        if ( is_null( $old_format ) ) {
+            // If they didn't put in a format, default to string
+            $format = array_fill( 0, $count, PDO::PARAM_STR );
+        } else if ( is_string( $old_format ) ) {
+            // If they did put in a format, translate it
+            $format = array();
+
+            // Assign every one
+            foreach ( $old_format as $letter ) {
+                $format[] = ( 'i' == $letter ) ? PDO::PARAM_INT : PDO::PARAM_STR;
+            }
+
+            // Make sure that they have reached their limit
+            while ( count( $format ) < $count ) {
+                $format[] = PDO::PARAM_STR;
+            }
         } else {
-            return false;
+            throw new InvalidParametersException( '$old_format must be a string or null' );
+        }
+
+        // Assign the format
+        return $format;
+    }
+
+    /**
+     * Bind the values
+     *
+     * @param PDOStatement $statement
+     * @param array $values
+     * @param string $format
+     * @throws ModelException
+     */
+    private function _bind( $statement, array $values, $format ) {
+        // To keep track of the format
+        $i = 0;
+
+        // Loop through values and bind the value
+        foreach ( $values as $key => $value ) {
+            // Get the proper format
+            $format = $format[$i];
+
+            // If it's a string, then let's hope they did it correctly, if it's not, use the integer version
+            $key = ( is_string( $key ) ) ? $key : $key + 1;
+
+            $replacement = ( is_int( $key ) ) ? $key : '?';
+            $this->_last_query = preg_replace( '/' . regexp::escape_string( $replacement ) . '/', $this->_pdo->quote( $value ), $this->_last_query, 1 );
+
+            // Bind the value
+            try {
+                $statement->bindValue( $key, $value, $format );
+            } catch ( PDOException $e ) {
+                throw new ModelException( $e->getMessage(), $e );
+            }
         }
     }
+
+    /**
+     * Flush all the private information
+     */
+    private function _flush() {
+        $this->_last_query = NULL;
+    }
 }
-?>
+
+
+/**
+ * DB Statement
+ */
+class DB_Statement {
+    /**
+     * Hold the database object
+     * @var DB
+     */
+    private $_db;
+
+    /**
+     * Hold the statement
+     * @var PDOStatement
+     */
+    private $_statement;
+
+    /**
+     * Hold the DB Object
+     *
+     * @param DB $db
+     * @param PDOStatement $statement
+     */
+    public function __construct( DB $db, PDOStatement $statement ) {
+        $this->_db = $db;
+        $this->_statement = $statement;
+    }
+
+    /**
+     * Query the database
+     *
+     * @return DB
+     */
+    public function query() {
+        $this->_db->query( $this->_statement );
+
+        return $this->_db;
+    }
+
+    /**
+     * Get Results
+     *
+     * @return object
+     */
+    public function get_results() {
+        return $this->_db->get_results( $this->_statement );
+    }
+
+    /**
+     * Get Row
+     *
+     * @return object
+     */
+    public function get_row() {
+        return $this->_db->get_row( $this->_statement );
+    }
+
+    /**
+     * Get Column
+     *
+     * @return object
+     */
+    public function get_col() {
+        return $this->_db->get_col( $this->_statement );
+    }
+
+    /**
+     * Get Variable
+     *
+     * @return object
+     */
+    public function get_var() {
+        return $this->_db->get_var( $this->_statement );
+    }
+}
