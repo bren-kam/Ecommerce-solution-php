@@ -1,44 +1,46 @@
 <?php
+/**
+ * The base class for all other controllers
+ */
 abstract class BaseController {
 
-    private $available_actions;
+    /**
+     * Contain the available methods for subclass
+     * @var array
+     */
+    private $availableActions;
 
+    /**
+     * Setup standard reflection
+     */
     public function __construct() {
-        $this->available_actions = array();
-        $reflection_class = new ReflectionClass( get_class( $this ) );
-        foreach ( $reflection_class->getMethods() as $method ) { //All methods from any Controller inheriting from BaseController
-            $method_name = $method->getName();
-            $nonce = nonce::create( $method_name );
-            $this->available_actions[$nonce] = $method_name;
+        $this->availableActions = array();
+        $reflectionClass = new ReflectionClass( get_class( $this ) );
+        foreach ( $reflectionClass->getMethods() as $method ) { //All methods from any Controller inheriting from BaseController
+            $methodName = $method->getName();
+            $nonce = nonce::create( $methodName );
+            $this->availableActions[$nonce] = $methodName;
         }
     }
 
-    //Cant be changed, every Controller will have a method for each possible action
+    /**
+     * Cant be changed, every Controller will have a method for each possible action
+     *
+     * @throws ControllerException
+     */
     public final function run() {
-        if ( sizeof( $this->available_actions ) < 2 ) {//2 because this method will count
+        // 2 because this method will count
+        if ( sizeof( $this->availableActions ) < 2 )
             throw new ControllerException( "No actions registered for controller " . get_class( $this ) );
-        }
+
         $actionName = $_REQUEST['_nonce'];
-        $method_name = $this->available_actions[$actionName];
-        if ( NULL == $method_name ) {
+        $methodName = $this->availableActions[$actionName];
+
+        if ( is_null( $methodName ) )
             throw new ControllerException( "There is no such action" );
-        }
-        $this->$method_name();
+
+        $this->$methodName();
     }
-
-    protected function begin_transaction() {
-        Registry::getConnection()->beginTransaction();
-    }
-
-    protected function commit() {
-        Registry::getConnection()->commit();
-    }
-
-    protected function rollback() {
-        Registry::getConnection()->rollBack();
-    }
-
-
 }
 
 //Not sure if this will work, if not, we just need to apply it on each controller

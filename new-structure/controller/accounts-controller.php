@@ -1,7 +1,5 @@
 <?php
 class AccountsController extends BaseController {
-
-
     protected function new_account() {
         //Here I'll prepare the objects, getting HTTP data(GET,POST,etc) and creating objects(filling required data) from it
 
