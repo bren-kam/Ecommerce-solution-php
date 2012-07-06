@@ -41,29 +41,6 @@ abstract class BaseController {
 
         $this->$methodName();
     }
-
-    /**
-     * Begin a transaction
-     */
-    protected function beginTransaction() {
-        Registry::getConnection()->beginTransaction();
-    }
-
-    /**
-     * Commit the transaction to be changed
-     */
-    protected function commit() {
-        Registry::getConnection()->commit();
-    }
-
-    /**
-     * If it failed, roll bakc
-     */
-    protected function rollback() {
-        Registry::getConnection()->rollBack();
-    }
-
-
 }
 
 //Not sure if this will work, if not, we just need to apply it on each controller
