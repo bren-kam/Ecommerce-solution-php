@@ -71,19 +71,18 @@ class DB {
     /**
      * Insert something into the database
      *
-     * @param string $table
      * @param array $data
      * @param string $format
      * @param bool $on_duplicate_key [optional]
      * @return int
      */
-    public function insert( $table, array $data, $format, $on_duplicate_key ) {
+    public function insert( array $data, $format, $on_duplicate_key ) {
         // Separate fields from values
         $fields = array_keys( $data );
         $values = array_values( $data );
 
         // Create the SQL
-        $sql = "INSERT INTO `$table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)';
+        $sql = "INSERT INTO `$this->table` (`" . implode( '`,`', $fields ) . "`) VALUES (" . str_repeat( '?,', count( $fields ) - 1 ) . '?)';
 
         // Handle the on duplicate key
         if ( $on_duplicate_key ) {
@@ -107,13 +106,12 @@ class DB {
     /**
      * Update a table
      *
-     * @param string $table
      * @param array $data
      * @param array $where
      * @param string $format
      * @param string $where_format
      */
-    public function update( $table, array $data, array $where, $format, $where_format ) {
+    public function update( array $data, array $where, $format, $where_format ) {
         // Make sure we have base arrays
         $fields = $criteria = array();
 
@@ -127,7 +125,7 @@ class DB {
 		}
 
         // Create the values for a statement
-        $sql = "UPDATE `$table` SET " . implode( ', ', $fields ) . ' WHERE ' . implode( ' AND ', $criteria );
+        $sql = "UPDATE `$this->table` SET " . implode( ', ', $fields ) . ' WHERE ' . implode( ' AND ', $criteria );
         $format .= $where_format;
         $values = array_merge( array_values( $data ), array_values( $where ) );
 
@@ -140,12 +138,10 @@ class DB {
 
     /**
      * Delete
-     *
-     * @param string $table
      * @param array $where
      * @param string $where_format
      */
-    public function delete( $table, array $where, $where_format ) {
+    public function delete( array $where, $where_format ) {
         // Make sure we have base arrays
         $criteria = array();
 
@@ -155,7 +151,7 @@ class DB {
 		}
 
         // Create the values for a statement
-        $sql = "DELETE FROM `$table` WHERE " . implode( ' AND ', $criteria );
+        $sql = "DELETE FROM `$this->table` WHERE " . implode( ' AND ', $criteria );
 
         // Prepare the statement
         $statement = $this->_get_statement( $sql, $where_format, array_values( $where ) );
@@ -241,14 +237,13 @@ class DB {
     /**
      * Copy data from one table to another
      *
-     * @param string $table
      * @param array $fields the Fields to copy
      * @param array $where the fields to base it on
      * @return bool
      */
-    public function copy( $table, $fields, $where ) {
+    public function copy( $fields, $where ) {
         // Initialize variables
-        $table = "`$table`";
+        $table = "`$this->table`";
         $duplicate_keys = array();
 
         // Determine the fields that need to be copied over
