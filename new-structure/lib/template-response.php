@@ -36,8 +36,8 @@ class TemplateResponse extends Response {
      *
      * @param string $error
      */
-    protected function add_error( $error ) {
-        $this->errors[] = $error;
+    public function add_error( $error ) {
+        $this->errors[] = _($error);
     }
 
     /**
