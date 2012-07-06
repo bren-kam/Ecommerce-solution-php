@@ -312,6 +312,8 @@ class DB {
 
     /**
      * Begin Transaction
+     *
+     * @static
      */
     public static function begin_transaction() {
         Registry::get('pdo')->beginTransaction();
@@ -319,6 +321,8 @@ class DB {
 
     /**
      * Commit
+     *
+     * @static
      */
     public static function commit() {
         Registry::get('pdo')->commit();
@@ -326,8 +330,10 @@ class DB {
 
     /**
      * Roll back
+     *
+     * @static
      */
-    public function roll_back() {
+    public static function roll_back() {
         Registry::get('pdo')->rollBack();
     }
 
