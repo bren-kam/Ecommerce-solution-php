@@ -26,23 +26,18 @@ class DB {
      */
     private $_last_query = NULL;
 
-	/**
-	 * Connects to the database server and selects a database
-	 *
-	 * @param string $user MySQL database user
-	 * @param string $password MySQL database password
-	 * @param string $name MySQL database name
-	 * @param string $host MySQL database host
-     * @throws ModelException
-	 */
-	public function connect( $user, $password, $name, $host ) {
-        // Connect
-        try {
-    		$this->_pdo = new PDO( "mysql:host=$host;dbname=$name", $user, $password );
-        } catch ( PDOException $e ) {
-            throw new ModelException( $e->getMessage(), $e->getCode(), $e );
-        }
-   	}
+    /**
+     * Table name, case sensitive
+     * @var string
+     */
+    private $table = NULL;
+
+    private $not_connected_message = "The Connection object was not created. Did you call parent::__construct(\$table) ?";
+
+    public function __construct( $table ) {
+        $this->table = $table;
+        $this->_pdo = Registry::getConnection();
+    }
 
     /**
      * Prepares a statement
@@ -350,7 +345,7 @@ class DB {
     private function _connected() {
         // Make sure we can do a query
         if ( !$this->_pdo instanceof PDO )
-            throw new ModelException( 'DB::connect() was not called');
+            throw new ModelException( $this->not_connected_message );
     }
 
     /**
@@ -361,7 +356,7 @@ class DB {
     private function _statement() {
         // Make sure we can do a query
         if ( !$this->_statement instanceof PDOStatement )
-            throw new ModelException( 'DB::_prepare() was not called');
+            throw new ModelException( $this->not_connected_message );
     }
 
     /**
