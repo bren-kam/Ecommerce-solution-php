@@ -8,7 +8,6 @@ class TemplateResponse extends Response {
      * @var string
      */
     private $file_to_render = NULL;
-
     /**
      * Hold the errors that we will be including
      * @var array
@@ -37,8 +36,8 @@ class TemplateResponse extends Response {
      *
      * @param string $error
      */
-    protected function add_error( $error ) {
-        $this->errors[] = $error;
+    public function add_error( $error ) {
+        $this->errors[] = _($error);
     }
 
     /**
