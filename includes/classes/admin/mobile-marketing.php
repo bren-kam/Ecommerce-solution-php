@@ -63,7 +63,9 @@ class Mobile_Marketing extends Base_Class {
 
         if ( empty( $mobile ) )
             $mobile = '8185551234';
-
+		
+		$email = 'mobile@' . url::domain( $website['domain'], false );
+		
 		$post_fields = array(
             'wlw_uid' => 7529
             , 'mode' => 'signup'
@@ -74,7 +76,7 @@ class Mobile_Marketing extends Base_Class {
 			, 'organization_name' => $website['title']
 			, 'firstname' => $first_name
 			, 'lastname' => $last_name
-			, 'email' => 'mobile@' . url::domain( $website['domain'], false )
+			, 'email' => $email
 			, 'mobile' => $mobile
             , 'industry' => $industry
             , 'timezone' => $timezone
@@ -88,16 +90,16 @@ class Mobile_Marketing extends Base_Class {
 
         if ( !$success )
             return new Response( false, _('Failed to create Trumpia customer') );
-
+		
         // Get Member's User ID
-        $list_page = $c->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $user['email'] ) . '&x=28&y=15' );
+        $list_page = $c->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $email ) . '&x=28&y=15' );
 
         // Isolate the user ID
         preg_match( "/uid=([0-9]+)/", $list_page, $matches );
 
         // Get USER ID
         $user_id = $matches[1];
-
+		
         // Get mobile plan
         $plan = $this->get_plan( $mobile_plan_id );
 
