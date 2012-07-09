@@ -666,8 +666,9 @@ class Ashley extends Base_Class {
 		
 		$this->file->upload_image( $image, $new_image_name, 320, 320, 'furniture', 'products/' . $product_id . '/' );
 		$this->file->upload_image( $image, $new_image_name, 46, 46, 'furniture', 'products/' . $product_id  . '/thumbnail/' );
-		$this->file->upload_image( $image, $new_image_name, 500, 500, 'furniture', 'products/' . $product_id . '/large/' );
-		
+		$this->file->upload_image( $image, $new_image_name, 200, 200, 'furniture', 'products/' . $product_id . '/small/' );
+		$this->file->upload_image( $image, $new_image_name, 700, 700, 'furniture', 'products/' . $product_id . '/large/' );
+
 		if( file_exists( $image['tmp_name'] ) )
 			@unlink( $image['tmp_name'] );
 		
