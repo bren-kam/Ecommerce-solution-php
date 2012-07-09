@@ -57,3 +57,6 @@ $a->update_craigslist_stats( $date->format('Y-m-d') );
 // Update the tags for analytics of products
 $c->update_tags();
 */
+
+$sot = new SiteOnTime();
+$sot->run();

@@ -127,7 +127,7 @@ class Products extends Base_Class {
 		$product_specs = array();
 		
 		$ps_array = explode( '|', stripslashes( $product_specifications ) );
-		
+
 		// serialize product specificatons
 		foreach ( $ps_array as $ps ) {
 			if ( '' != $ps ) {
