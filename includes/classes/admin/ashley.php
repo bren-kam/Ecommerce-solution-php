@@ -11,7 +11,13 @@ class Ashley extends Base_Class {
 	const PASSWORD = 'gRwfUn#';
 	
 	private $images = array();
-	
+
+    /**
+     * Hold Ashley Package Description translations
+     * @var array
+     */
+    private $_package_descriptions = array();
+
 	/**
 	 * Creates new Database instance
 	 */
@@ -25,6 +31,220 @@ class Ashley extends Base_Class {
 		$this->p = new Products();
 		$this->file = new Files();
 	}
+
+    /**
+     * Load Packages
+     */
+    public function load_packages() {
+        library('ashley-api/ashley-api');
+        $a = new Ashley_API();
+        exit;
+        $packages = $a->get_packages();
+        $old_package_templates = $a->get_package_templates();
+        $package_templates = array();
+
+        // Arrange these by template ID
+        foreach ( $old_package_templates as $pt ) {
+            $package_templates[$pt->TemplateId] = $pt;
+        }
+
+        $i = 0;
+
+        // Generate array of our items
+		foreach ( $packages as $item ) {
+			$i++;
+			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
+			$sku = $item->PackageId;
+
+			$product_specs = $this->_package_descriptions[$item->PackageDescription];
+			$weight = $volume = 0;
+
+			$name = $item->SeriesName . ' ' . $item->SeriesColor . ' ' . $package_templates[$item->TemplateId];
+			$slug = str_replace( '---', '-', format::slug( $name ) );
+			$description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
+
+            // "Ashley Furniture" brand
+			$brand_id = 8;
+
+			$image = $item->Image;
+
+			$images = array();
+
+			////////////////////////////////////////////////
+			// Get/Create the product
+			if( array_key_exists( $sku, $products ) ) {
+				$identical = true;
+
+				$product = $products[$sku];
+				$product_id = $product['product_id'];
+
+				$product_images = explode( '|', $product['images'] );
+
+				// Override data with existing data
+				if( empty( $name ) ) {
+					$name = $product['name'];
+				} elseif ( $name != $product['name'] ) {
+					$identical = false;
+				}
+
+				if( empty( $slug ) ) {
+					$slug = $product['slug'];
+				} elseif ( $slug != $product['slug'] ) {
+					$slug = $this->unique_slug( $slug );
+
+					if ( $slug != $product['slug'] )
+						$identical = false;
+				}
+
+				if( empty( $description ) ) {
+					$description = format::autop( format::unautop( $product['description'] ) );
+				} elseif ( $description != format::autop( format::unautop( $product['description'] ) ) ) {
+					$identical = false;
+				}
+
+				$images = $product_images;
+
+
+				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+					$identical = false;
+					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
+
+					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
+						$images[] = $image_name;
+				}
+
+				$price = 0;//$product_information['price'];
+				$list_price = 0;//$product_information['list_price'];
+				$product_specifications = '';
+
+				$product['product_specifications'] = unserialize( $product['product_specifications'] );
+				if( is_array( $product['product_specifications'] ) )
+				foreach( $product['product_specifications'] as $ps ) {
+					if( !empty( $product_specifications ) )
+						$product_specifications .= '|';
+
+					$product_specifications .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
+				}
+
+				if( empty( $product_specs ) ) {
+					$product_specs = $product_specifications;
+				} elseif ( $product_specs != $product_specifications ) {
+					$identical = false;
+				}
+
+				if( empty( $brand_id ) ) {
+					$brand_id = $product['brand_id'];
+				} elseif ( $brand_id != $product['brand_id'] ) {
+					$identical = false;
+				}
+
+				if( empty( $product_status ) ) {
+					$product_status = $product['status'];
+					$links['updated-product'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+				} else {
+					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+
+					if ( $product_status != $product['status'] )
+						$identical = false;
+				}
+
+				$publish_visibility = $product['publish_visibility'];
+				$publish_date = $product['publish_date'];
+
+				if( empty( $weight ) ) {
+					$weight = $product['weight'];
+				} elseif ( $weight != $product['weight'] ) {
+					$identical = false;
+				}
+
+				if( empty( $volume ) ) {
+					$volume = $product['volume'];
+				} elseif ( $volume != $product['volume'] ) {
+					$identical = false;
+				}
+
+				// If everything is identical, we don't want to do anything
+				if ( $identical ) {
+					$skipped++;
+					$products_string .= $name . "\n";
+					continue;
+				}
+			} else {
+                // User "Ashley Packages"
+				$product_id = $this->p->create( 1477 );
+
+                // Make sure it's a unique slug
+                $slug = $this->unique_slug( $slug );
+
+				// Upload image if it's not blank
+				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
+
+					if ( !in_array( $image_name, $images ) )
+						$images[] = $image_name;
+				}
+
+				$price = $list_price = 0;
+				$publish_visibility = 'private';
+				$publish_date = date_time::date( 'Y-m-d' );
+
+				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+
+				// Add images
+				$this->p->empty_product_images( $product_id );
+
+				// Makes the images have the right sequence if they exist
+				if ( is_array( $images ) ) {
+					$j = 0;
+
+					foreach ( $images as &$image ) {
+						$image .= "|$j";
+						$j++;
+					}
+				}
+
+				$this->p->add_product_images( $images, $product_id );
+			}
+
+			// Update the product
+			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
+
+			// Add images
+			//$product_ids[] = (int) $product_id;
+
+			/* Makes the images have the right sequence if they exist
+			if ( is_array( $images ) ) {
+				$j = 0;
+
+				foreach ( $images as &$image ) {
+					$image .= "|$j";
+					$j++;
+				}
+			}
+
+			$this->commit_product_images( $images, $product_id );
+			*/
+
+			$products_string .= $name . "\n";
+
+			// We don't want to carry them around in the next loop
+			unset( $images );
+
+			if ( $i % 1000 == 0 ) {
+				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
+
+				foreach ( $links as $section => $link_array ) {
+					$message .= ucwords( str_replace( '-', ' ', $section ) ) . ": " . count( $link_array ) . "\n";
+				}
+
+				$message .= "\n\nSkipped: " . $skipped;
+
+				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
+			}
+			//$i++;
+
+		}
+    }
 
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.

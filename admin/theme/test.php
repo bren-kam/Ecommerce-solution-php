@@ -8,11 +8,8 @@ foreach ( $array as $a ) {
 }
 */
 
-library('ashley-api/ashley-api');
-$a = new Ashley_API();
-$package_templates = $a->get_package_templates( 'Bedaa', 'B128' );
-fn::info( $package_templates );
-//fn::info( $a->get_items() );
+$a = new Ashley();
+$a->load_packages();
 exit;
 /*
 // Load the library

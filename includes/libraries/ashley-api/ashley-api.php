@@ -13,7 +13,7 @@ class Ashley_API {
 	 */
 	const URL_API = 'http://api.ashleyfurniture.com/';
     const URL_WSDL = 'http://api.ashleyfurniture.com/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL';
-	const DEBUG = true;
+	const DEBUG = false;
 
     /**
 	 * A few variables that will determine the basic status
@@ -57,6 +57,10 @@ class Ashley_API {
      * @return object
      */
     public function get_packages() {
+        // Give it time to load
+
+        set_time_limit(300);
+
         // Setup the package request
         $package_request = new PackageRequest();
         $package_request->ExecuteOptions = array( 'PackageExecuteOption' => 'LoadPackages' );
@@ -103,7 +107,9 @@ class Ashley_API {
         $template_packages = ( $all ) ? $this->_response->PackageTemplatesCollection->XmlData : $this->_response->PackageTemplate->XmlData;
 
         // SimpleXML errors out if it thinks its reading utf-16
-        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $template_packages ) );
+        $template_packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $template_packages ) );
+
+        return ( $all ) ? $template_packages->PackageTemplate : $template_packages;
     }
 
     /**
