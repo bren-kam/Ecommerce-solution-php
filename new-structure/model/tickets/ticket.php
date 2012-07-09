@@ -44,11 +44,7 @@ final class Ticket extends ActiveRecordBase {
         $message = $this->_clean_message( $message );
         $b = fn::browser();
 
-        try {
-            $this->insert( array( 'user_id' => $user->id, 'assigned_to_user_id' => self::TECHNICAL_USER_ID, 'website_id' => 0, 'summary' => $summary, 'message' => $message, 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $b['platform'], 'browser_user_agent' => $b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' );
-        } catch ( ModelException $e ) { // DIfferent exceptions can be thrown -- how do I handle that?
-            // What do I do here?
-        }
+        $this->insert( array( 'user_id' => $user->id, 'assigned_to_user_id' => self::TECHNICAL_USER_ID, 'website_id' => 0, 'summary' => $summary, 'message' => $message, 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $b['platform'], 'browser_user_agent' => $b['user_agent'], 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiisssssss' );
 
 		// Get the assigned to user
 		$assigned_to_user = new User();
