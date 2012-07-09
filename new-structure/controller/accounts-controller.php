@@ -1,15 +1,11 @@
 <?php
 class AccountsController extends BaseController {
     /**
-     * Define the base for including classes
-     */
-    CONST VIEW_BASE = 'account/';
-
-    /**
      * Setup the base for creating template responses
      */
     public function __construct() {
-
+        // Pass in the base for all the views
+        parent::__construct( 'account/' );
     }
     /**
      * Setup a new account
@@ -33,16 +29,6 @@ class AccountsController extends BaseController {
         }
 
         return $template_response;
-    }
-
-    /**
-     * Return a new template response with the right path
-     *
-     * @param string $file
-     * @return TemplateResponse
-     */
-    protected function get_template_response( $file ) {
-        return new TemplateResponse( self::VIEW_BASE . $file );
     }
 }
 
