@@ -2,7 +2,7 @@
 /**
  * Method to handle an account
  */
-class Account extends DB {
+class Account extends ActiveRecordBase {
     /**
      * Setup the account initial data
      */

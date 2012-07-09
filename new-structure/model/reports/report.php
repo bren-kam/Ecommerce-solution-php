@@ -1,4 +1,4 @@
 <?php
-class Report extends DB {
+class Report extends ActiveRecordBase {
 
 }

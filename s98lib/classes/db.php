@@ -7,7 +7,7 @@
  * @package Studio98 Library
  */
 
-class DB {
+class ActiveRecordBase {
     /**
      * Define connection parameters
      */
@@ -60,13 +60,13 @@ class DB {
      * @param string $format (i for integer, s for string )
      * @param mixed $values Used just to ensure they included this parameter
      * @throws ModelException
-     * @return DB_Statement
+     * @return ActiveRecordStatement
      */
     public function prepare( $sql, $format, $values ) {
         // Get the arguments
         $values = array_slice( func_get_args(), 2 );
 
-        return new DB_Statement( $this, $this->_get_statement( $sql, $format, $values ) );
+        return new ActiveRecordStatement( $this, $this->_get_statement( $sql, $format, $values ) );
     }
 
     /**
@@ -536,14 +536,14 @@ class DB {
 
 
 /**
- * DB Statement
+ * ActiveRecordStatement
  */
-class DB_Statement {
+class ActiveRecordStatement {
     /**
      * Hold the database object
-     * @var DB
+     * @var ActiveRecordBase
      */
-    private $_db;
+    private $_ar;
 
     /**
      * Hold the statement
@@ -552,25 +552,25 @@ class DB_Statement {
     private $_statement;
 
     /**
-     * Hold the DB Object
+     * Hold the ActiveRecord Object
      *
-     * @param DB $db
+     * @param ActiveRecordBase $ar
      * @param PDOStatement $statement
      */
-    public function __construct( DB $db, PDOStatement $statement ) {
-        $this->_db = $db;
+    public function __construct( ActiveRecordBase $ar, PDOStatement $statement ) {
+        $this->_ar = $ar;
         $this->_statement = $statement;
     }
 
     /**
      * Query the database
      *
-     * @return DB
+     * @return ActiveRecordBase
      */
     public function query() {
-        $this->_db->query( $this->_statement );
+        $this->_ar->query( $this->_statement );
 
-        return $this->_db;
+        return $this->_ar;
     }
 
     /**
@@ -579,7 +579,7 @@ class DB_Statement {
      * @return object
      */
     public function get_results() {
-        return $this->_db->get_results( $this->_statement );
+        return $this->_ar->get_results( $this->_statement );
     }
 
     /**
@@ -588,7 +588,7 @@ class DB_Statement {
      * @return object
      */
     public function get_row() {
-        return $this->_db->get_row( $this->_statement );
+        return $this->_ar->get_row( $this->_statement );
     }
 
     /**
@@ -597,7 +597,7 @@ class DB_Statement {
      * @return object
      */
     public function get_col() {
-        return $this->_db->get_col( $this->_statement );
+        return $this->_ar->get_col( $this->_statement );
     }
 
     /**
@@ -606,6 +606,6 @@ class DB_Statement {
      * @return object
      */
     public function get_var() {
-        return $this->_db->get_var( $this->_statement );
+        return $this->_ar->get_var( $this->_statement );
     }
 }

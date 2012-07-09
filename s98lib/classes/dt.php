@@ -35,6 +35,12 @@ class dt extends Base_Class {
 		, 'month_name' => 'F'
 		, 'month_abbr' => 'M'
 	);
+
+    /**
+     * Hold an instantiated date time
+     * @var DateTime
+     */
+    public static $datetime;
 	
 	/**
 	 * Cached date function
@@ -46,6 +52,8 @@ class dt extends Base_Class {
 	 * @return string
 	 */
 	public static function date( $format, $timestamp = -1 ) {
+        $datetime = self::get_datetime();
+
 		global $s98_cache;
 		
 		// Check to see if it's human readable
@@ -57,16 +65,33 @@ class dt extends Base_Class {
 		$date = $s98_cache->get( $format . $timestamp, 'date' );
 		
 		if ( empty( $date ) ) {
-			if ( -1 == $timestamp )
-				$timestamp = time();
+			if ( -1 != $timestamp )
+				$datetime->setTimestamp( $timestamp );
 			
-			$date = date( $format, $timestamp );
+			$date = $datetime->format( $format );
+
+            // Reset it
+			if ( -1 != $timestamp )
+                $datetime->setTimestamp( time() );
+
 			
 			$s98_cache->add( $format . $timestamp, $date, 'date' );
 		}
-		
+
 		return $date;
 	}
+
+    /**
+     * Get the date time
+     * @static
+     * @return DateTime
+     */
+    public static function get_datetime() {
+        if ( !self::$datetime instanceof DateTime )
+            self::$datetime = new DateTime();
+
+        return self::$datetime;
+    }
 	
 	/**
 	 * Same as the doing dt::date('now')

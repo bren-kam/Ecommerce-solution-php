@@ -2,7 +2,7 @@
 /**
  * Method to handle a Product
  */
-class Product extends DB {
+class Product extends ActiveRecordBase {
     /**
      * Setup the account initial data
      */
