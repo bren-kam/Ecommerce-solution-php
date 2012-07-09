@@ -2,7 +2,7 @@
 /**
  * Method to handle a Ticket
  */
-final class Ticket extends ActiveRecordBase {
+class Ticket extends ActiveRecordBase {
     /**
      * Constants
      */
