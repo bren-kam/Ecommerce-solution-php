@@ -12,7 +12,7 @@ class Ticket extends ActiveRecordBase {
      * Hold the Ticket ID
      * @var int
      */
-    private $_ticket_id;
+    private $_ticket_id = NULL;
 
     /**
      * Translations for certain characters
@@ -49,6 +49,9 @@ class Ticket extends ActiveRecordBase {
 		// Get the assigned to user
 		$assigned_to_user = new User();
         $assigned_to_user->get( 493 );
+
+        // Assign ticket ID
+        $this->_ticket_id = $this->get_insert_id();
 
 		// Needs to be moved to the controller, right?
 		return fn::mail( $assigned_to_user['email'], 'New ' . $user->website->title . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\nSummary: $summary\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $this->get_insert_id() );
