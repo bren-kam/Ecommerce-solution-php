@@ -1,6 +1,7 @@
 <?php
 
-echo format::string_to_entity( ".com" );
+$s = new SiteOnTime();
+$s->run();
 exit;
 /*
 $array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );

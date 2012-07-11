@@ -190,8 +190,10 @@ get_header();
 						<div id="dSpecificationsList">
 						<?php
 						if ( !empty( $p['product_specifications'] ) ) {
-							$specifications = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES, 'UTF-8' ) );
-							$new_slugs = 0;
+							$specifications = unserialize( $p['product_specifications'] );
+							
+							if ( !$specifications ) 
+								$specifications = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES, 'UTF-8' ) );
 							
 							if ( is_array( $specifications ) && count( $specifications ) > 0 )
 							foreach ( $specifications as $ps ) {

@@ -1621,7 +1621,7 @@ class Email_Marketing extends Base_Class {
 		
 		$settings = $this->get_settings();
 		
-		$from = ( empty( $settings['from_email'] ) ) ? $settings['from_name'] . '<noreply@' . $user['website']['domain'] . '>' : $settings['from_name'] . $settings['from_email'];
+		$from = ( empty( $settings['from_email'] ) ) ? $settings['from_name'] . '<noreply@' . $user['website']['domain'] . '>' : $settings['from_name'] . '<' . $settings['from_email'] . '>';
 		
 		// Check if we need to append the current offer
 		if ( $current_offer ) {

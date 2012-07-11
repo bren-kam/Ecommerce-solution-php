@@ -55,7 +55,13 @@ class SiteOnTime extends Base_Class {
         $arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
 
         $products = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
-        
+
+        $categories = array();
+        foreach ( $products as $p ) {
+            $p = $p->{'stdClass Object'};
+            $categories[] = $p->Category . ' > ' . $p->SubCategory;
+        }
+
         // Get existing products
         $existing_products = $this->_get_existing_products();
 
@@ -78,10 +84,12 @@ class SiteOnTime extends Base_Class {
             switch ( $product->MenuHeading ) {
                 case 'Appliances':
                     $industry_id = 3;
+					$industry = 'appliances';
                 break;
 
                 case 'Electronics':
                     $industry_id = 2;
+					$industry = 'electronics';
                 break;
 
                 default:
@@ -171,7 +179,7 @@ class SiteOnTime extends Base_Class {
 
 				if ( 0 == count( $images ) && !empty( $image ) && curl::check_file( $image ) ) {
 					$identical = false;
-					$image_name = $this->upload_image( $image, $slug, $product_id );
+					$image_name = $this->upload_image( $image, $slug, $product_id, $industry );
 
 					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
 						$images[] = $image_name;
@@ -239,7 +247,7 @@ class SiteOnTime extends Base_Class {
 
 				// Upload image if it's not blank
 				if ( !empty( $image ) && curl::check_file( $image ) ) {
-                    $image_name = $this->upload_image( $image, $slug, $product_id );
+                    $image_name = $this->upload_image( $image, $slug, $product_id, $industry );
 
 					if ( !in_array( $image_name, $images ) )
 						$images[] = $image_name;
@@ -287,6 +295,7 @@ class SiteOnTime extends Base_Class {
 
 				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
 			}
+			exit;
 		}
 
         echo "Skipped: $skipped<br />\n";
@@ -315,33 +324,34 @@ class SiteOnTime extends Base_Class {
 	 * @param string $image_url
 	 * @param string $slug
 	 * @param int $product_id
+	 * @param string $industry
      * @return string
 	 */
-	public function upload_image( $image_url, $slug, $product_id ) {
+	public function upload_image( $image_url, $slug, $product_id, $industry ) {
 		$new_image_name = $slug;
-		$image_extension = strtolower( format::file_extension( $image_url ) );
-
+		$image_extension = strtolower( f::extension( $image_url ) );
+		
 		$image['name'] = "{$new_image_name}.{$image_extension}";
-		$image['tmp_name'] = '/home/gsr/admin/media/downloads/scratchy/' . $image['name'];
+		$image['tmp_name'] = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $image['name'];
 
-		if( is_file( $image['tmp_name'] ) && curl::check_file( "http://furniture.retailcatalog.us/products/$product_id/thumbnail/$new_image_name.$image_extension" ) )
+		if( is_file( $image['tmp_name'] ) && curl::check_file( 'http://' . $industry . ".retailcatalog.us/products/$product_id/thumbnail/$new_image_name.$image_extension" ) )
 			return "$new_image_name.$image_extension";
-
+		
 		$fp = fopen( $image['tmp_name'], 'wb' );
-
+		
 		$this->curl->save_file( $image_url, $fp );
-
+		
 		fclose( $fp );
-
-		$this->file->upload_image( $image, $new_image_name, 320, 320, 'furniture', 'products/' . $product_id . '/' );
-		$this->file->upload_image( $image, $new_image_name, 46, 46, 'furniture', 'products/' . $product_id  . '/thumbnail/' );
-		$this->file->upload_image( $image, $new_image_name, 200, 200, 'furniture', 'products/' . $product_id . '/small/' );
-		$this->file->upload_image( $image, $new_image_name, 700, 700, 'furniture', 'products/' . $product_id . '/large/' );
+		
+		$this->file->upload_image( $image, $new_image_name, 320, 320, $industry, 'products/' . $product_id . '/' );
+		$this->file->upload_image( $image, $new_image_name, 46, 46, $industry, 'products/' . $product_id  . '/thumbnail/' );
+		$this->file->upload_image( $image, $new_image_name, 200, 200, $industry, 'products/' . $product_id . '/small/' );
+		$new_image_name = $this->file->upload_image( $image, $new_image_name, 700, 700, $industry, 'products/' . $product_id . '/large/' );
 
 		if( file_exists( $image['tmp_name'] ) )
 			@unlink( $image['tmp_name'] );
 
-		return "$new_image_name.$image_extension";
+		return $new_image_name;
 	}
 
     /**
