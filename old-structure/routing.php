@@ -10,13 +10,10 @@
 
 // If it's the home page
 if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) {
-	$type = 'home';
-
-    // Define the method
-    method('index');
-
     // Set the transaction name
-    $transaction_name = controller('home');
+    $transaction_name = theme_inc( 'index' );
+    
+	require $transaction_name;
 } else {
 	// We know it's not the home page, continue
 	
