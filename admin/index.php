@@ -1,16 +1,12 @@
 <?php
 /**
- * Front to Imagine Retailer - Admin. This file doesn't do anything, but loads
- * load.php which does and tells RS what to do next.
+ * Front to Grey Suit Retail - Admin. This file doesn't do anything, but loads
+ * load.php which does and defines what to do next.
  *
- * Be aware that the Studio98 Framework is included by default
+ * Be aware that the Studio98 Library is included by default
  *
  * @package Grey Suit Retail
  */
 
-// This is not a cron job
-define( 'CRON', false );
-
 // Loads the setup process for the whole website
-require_once( './load.php' );
-
+require '../load.php';
