@@ -58,45 +58,52 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( !isset( $about_us['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) { ?>
-		    <h2 class="title"><?php echo _('Step 1: Go to the About Us application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-about-us/" title="<?php echo _('Online Platform - About Us'); ?>" target="_blank"><?php echo _('About Us'); ?></a> <?php echo _('application page'); ?>.</p>
-			<br /><br />
+		<?php
+        if ( !isset( $about_us['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) {
+            // Define instructions
+            $instructions = array(
+                1 => array(
+                    'title' => _('Go to the About Us application')
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-about-us/" title="' . _('Online Platform - About Us') . '" target="_blank">' . _('About Us') . '</a> ' . _('application page') . '.'
+                    , 'image' => false
+                )
+                , 2 => array(
+                    'title' => _('Install The App')
+                    , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
+                )
+                , 3 => array(
+                    'title' => _('Choose Your Page')
+                    , 'text' => _('(Note - You must first be an admin of the page to install the App)')
+                )
+                , 4 => array(
+                    'title' => _('Click Add Online Platform - About Us')
+                )
+                , 5 => array(
+                    'title' => _('Click on the About Us App')
+                    , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
+                )
+                , 6 => array(
+                    'title' => _('Click on the Update Settings')
+                )
+                , 7 => array(
+                    'title' => _('Click Add Online Platform - About Us')
+                    , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
+                )
+            );
 
-            <h2 class="title"><?php echo _('Step 2: Install The App'); ?></h2>
-            <p><?php echo _('Click'); ?> <strong><?php echo _('Install This App.'); ?></strong> <?php echo _('on the page shown below:'); ?></p>
-			<br />
-            <p><a href="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Capture16.jpg"><img alt="" class="aligncenter size-full wp-image-2475" height="720" src="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Capture16.jpg" title="Capture" width="740" /></a></p>
-            <br /><br />
+            foreach ( $instructions as $step => $data ) {
+                echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
 
-            <h2 class="title"><?php echo _('Step 3: Choose Your Page'); ?></h2>
-            <p><?php echo _('(Note - You must first be an admin of the page to install the App)'); ?></p>
-            <br />
-            <p><a href="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Capture17.jpg"><img alt="" class="aligncenter size-full wp-image-2476" height="176" src="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Capture17.jpg" title="Capture" width="796" /></a></p>
-            <br /><br />
+                if ( isset( $data['text'] ) )
+                    echo '<p>', $data['text'], '</p>';
 
-            <h2 class="title"><?php echo _('Step 4: Click Add Online Platform - About Us'); ?></h2>
-            <br />
-            <p><a href="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Untitled12.jpg"><img alt="" class="aligncenter size-full wp-image-2484" height="277" src="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Untitled12.jpg" title="Untitled" width="787" /></a></p>
-            <br /><br />
+                if ( !isset( $data['image'] ) || $data['image'] != false )
+                    echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/about-us/', $step, '.jpg"><img src="http://admin.imagineretailer.com/images/social-media/facebook/about-us/', $step, '.jpg" alt="', $data['title'], '" width="750" /></a></p>';
 
-            <h2 class="title"><?php echo _('Step 5: Click on the Fan Offer App'); ?></h2>
-            <p><?php echo _("Click on the Fan Offer App on Your Facebook Page</strong> Scroll down below the banner, and you&#39;ll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us"); ?></p>
-            <br />
-            <p><a href="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Untitled9.jpg"><img alt="" class="aligncenter size-full wp-image-2477" height="337" src="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Untitled9.jpg" title="Untitled" width="517" /></a></p>
-            <br /><br />
-
-            <h2 class="title"><?php echo _('Step 6: Click on the Update Settings'); ?></h2>
-            <br />
-            <p><a href="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Capture4.jpg"><img alt="" class="aligncenter size-full wp-image-2456" height="25" src="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Capture4.jpg" title="Capture" width="172" /></a></p>
-            <br /><br />
-
-            <h2 class="title"><?php echo _('Step 7: Copy and Paste'); ?></h2>
-            <p><?php echo _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)'); ?></p>
-            <br />
-            <p><a href="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Untitled2.jpg"><img alt="" class="aligncenter size-full wp-image-2458" height="409" src="http://admin.imagineretailer.com/help/wp-content/uploads/2012/06/Untitled2.jpg" title="Untitled" width="787" /></a></p>
-            <br /><br />
-		<?php } else { ?>
+                echo '<br /><br />';
+            }
+         } else {
+            ?>
 			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $about_us['fb_page_id']; ?>?sk=app_233746136649331" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your about us page has been successfully updated!'); ?></p>

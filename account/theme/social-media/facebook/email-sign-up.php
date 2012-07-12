@@ -71,51 +71,52 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
-		<?php if ( 0 == $email_sign_up['fb_page_id'] ) { ?>
-			<h2 class="title"><?php echo _('Step 1: Go to the Email Sign Up application.'); ?></h2>
-			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-email-sign-up/" title="<?php echo _('Online Platform - Email Sign Up'); ?>" target="_blank"><?php echo _('Email Sign Up'); ?></a> <?php echo _('application page'); ?>.</p>
-			<br /><br />
-			
-			<h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>
-			<p><?php echo _('Click'); ?> <strong><?php echo _('Add to my Page (bottom left of your page).'); ?></strong></p>
-			<p><strong><?php echo _('NOTE'); ?>:</strong> <?php echo _("If you do not see this link, it means you either don't have administrative access to any fan pages, or you already have this application installed. (If it is already installed, please ahead skip to Step 4.)"); ?></p>
-			<br />
-			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/step2.jpg" class="image-border" width="750" height="434" alt="<?php echo _('Step 2'); ?>" /></p>
-			<br /><br />
-			
-			<h2 class="title"><?php echo _('Step 3: Click on the Add to Page Button.'); ?></h2>
-			<p><?php echo _('Choose the Facebook Fan Page you want to add your app to by clicking on the'); ?> <strong><?php echo _('Add to Page'); ?></strong> <?php echo _('button to the right of the Fan Page name.'); ?></p>
-			<br />
-			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/step3.jpg" class="image-border" width="750" height="236" alt="<?php echo _('Step 3'); ?>" /></p>
-			<br /><br />
-			
-			<h2 class="title"><?php echo _('Step 4: Click on the App.'); ?></h2>
-			<p><?php echo _('Go to your Fan Page and click on the App you are installing from the list on the left.'); ?></p>
-			<br />
-			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/step4.jpg" class="image-border" width="750" height="559" alt="<?php echo _('Step 4 - 1'); ?>" /></p>
-			<br />
-			<p><?php echo _('Click on'); ?> <strong><?php echo _('Update Settings'); ?></strong> <?php echo _('right under the app name. Note: This is only visible to you because you are the admin for this page.'); ?></p>
-			<br />
-			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/step4-1.jpg" class="image-border" width="905" height="131" alt="<?php echo _('Step 4 - 2'); ?>" /></p>
-			<br /><br />
-			
-			<h2 class="title"><?php echo _('Step 5: Connect the application with your dashboard account'); ?></h2>
-			<p><?php echo _('Copy the connection key listed below and paste into the Facebook app.'); ?></p>
-			<p><?php echo _('Facebook Connection Key'); ?>: <?php echo $email_sign_up['key']; ?></p>
-			<p><strong><?php echo _('NOTE'); ?></strong>: <?php echo _('You may see a request for permissions. If this is the case, you first need to Allow Permissions to the application before you will be able to move on.'); ?></p>
-			<br />
-			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/step5.jpg" class="image-border" width="773" height="189" alt="<?php echo _('Step 5'); ?>" /></p>
-			<br />
-			<p><?php echo _('When you click Connect, you will see'); ?> <span class="error"><?php echo _('(Not Connected)'); ?></span> <?php echo _('in red change to'); ?> <span class="success"><?php echo _('(Connected)'); ?></span> <?php echo _('in green.'); ?></p>
-			<br /><br />
-			
-			<h2 class="title"><?php echo _('Step 6: Final App Activation.'); ?></h2>
-			<p><?php echo _('Click the activate link to complete the installation process. You will then be able to control all the content for the app from this dashboard.'); ?></p>
-			<p><a href="/social-media/facebook/email-sign-up/" title="<?php echo _('Activate'); ?>"><?php echo _('Activate'); ?></a></p>
-			<br />
-			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/step6.jpg" class="image-border" width="492" height="192" alt="<?php echo _('Step 6'); ?>" /></p>
-			<br /><br />
-		<?php } else { ?>
+		<?php
+        if ( !isset( $about_us['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) {
+            // Define instructions
+            $instructions = array(
+                1 => array(
+                    'title' => _('Go to the Email Sign Up application')
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/email-sign-up/" title="' . _('Online Platform - Email Sign Up') . '" target="_blank">' . _('Email Sign Up') . '</a> ' . _('application page') . '.'
+                    , 'image' => false
+                )
+                , 2 => array(
+                    'title' => _('Install The App')
+                    , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
+                )
+                , 3 => array(
+                    'title' => _('Choose Your Page')
+                    , 'text' => _('(Note - You must first be an admin of the page to install the App)')
+                )
+                , 4 => array(
+                    'title' => _('Click Add Online Platform - Email Sign Up')
+                )
+                , 5 => array(
+                    'title' => _('Click on the Email Sign Up App')
+                    , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
+                )
+                , 6 => array(
+                    'title' => _('Click on the Update Settings')
+                )
+                , 7 => array(
+                    'title' => _('Click Add Online Platform - Email Sign Up')
+                    , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
+                )
+            );
+
+            foreach ( $instructions as $step => $data ) {
+                echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
+
+                if ( isset( $data['text'] ) )
+                    echo '<p>', $data['text'], '</p>';
+
+                if ( !isset( $data['image'] ) || $data['image'] != false )
+                    echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/', $step, '.jpg"><img src="http://admin.imagineretailer.com/images/social-media/facebook/about-us/', $step, '.jpg" alt="', $data['title'], '" width="750" /></a></p>';
+
+                echo '<br /><br />';
+            }
+         } else {
+            ?>
 			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $email_sign_up['fb_page_id']; ?>?sk=app_165553963512320" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<form name="fEmailSignUp" action="/social-media/facebook/email-sign-up/" method="post">
                 <?php if ( $success ) { ?>
