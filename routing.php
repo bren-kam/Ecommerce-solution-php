@@ -42,7 +42,8 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
     try {
         $transaction_name = controller( implode( '/', $slug_parts ) );
     } catch ( ControllerException $e ) {
-        $transaction_name = controller( '404' );
+        method('http_404');
+        $transaction_name = controller( 'error' );
     }
 }
 
