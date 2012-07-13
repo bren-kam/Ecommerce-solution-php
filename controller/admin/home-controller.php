@@ -13,11 +13,7 @@ class HomeController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        // Redirect to accounts
-        url::redirect('/accounts/');
-
-        // Seems redundant
-        return new HeaderResponse();
+        return new RedirectResponse( '/accounts/' );
     }
 }
 
