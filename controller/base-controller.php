@@ -14,7 +14,7 @@ abstract class BaseController {
      * Define the base for the views
      * @param string
      */
-    private $_view_base;
+    protected $view_base;
 
     /**
      * The model path for the current controller
@@ -23,14 +23,33 @@ abstract class BaseController {
     protected $model_path = '';
 
     /**
-     * Setup standard reflection
-     *
-     * @param string $view_base [optional]
+     * Hold the user
+     * @var User
      */
-    public function __construct( $view_base = '') {
-        // Define the view base
-        $this->_view_base = $view_base;
+    protected $user;
 
+    /**
+     * Setup standard reflection
+     */
+    public function __construct() {
+        $this->_available_actions = array();
+        $reflectionClass = new ReflectionClass( get_class( $this ) );
+
+        // All methods from any Controller inheriting from BaseController
+        foreach ( $reflectionClass->getMethods() as $method ) {
+            $methodName = $method->getName();
+            $nonce = nonce::create( $methodName );
+            $this->_available_actions[$nonce] = $methodName;
+        }
+
+        // Any initialization things, such as checking user login
+        $this->_init();
+    }
+
+    /**
+     * Initialize Controller
+     */
+    private function _init() {
         // Autoload different classes
         spl_autoload_register( array( $this, '_load_exception' ) );
 
@@ -41,15 +60,12 @@ abstract class BaseController {
         // Load models
         spl_autoload_register( array( $this, '_load_model' ) );
 
-        $this->_available_actions = array();
-        $reflectionClass = new ReflectionClass( get_class( $this ) );
+        // Load Registry
+        lib('registry');
 
-        // All methods from any Controller inheriting from BaseController
-        foreach ( $reflectionClass->getMethods() as $method ) {
-            $methodName = $method->getName();
-            $nonce = nonce::create( $methodName );
-            $this->_available_actions[$nonce] = $methodName;
-        }
+        // Make sure the user is logged in
+        if ( !$this->get_logged_in_user() )
+            $this->login();
     }
 
     /**
@@ -82,7 +98,49 @@ abstract class BaseController {
      * @return TemplateResponse
      */
     protected function get_template_response( $file ) {
-        return new TemplateResponse( $this->_view_base . $file );
+        return new TemplateResponse( $this->view_base . $file );
+    }
+
+    /**
+     * Get the logged in user if we can
+     *
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        if ( !$encrypted_email = get_cookie( AUTH_COOKIE ) )
+			return false;
+
+        // Get the email
+        $email = security::decrypt( base64_decode( $encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) );
+
+        // Create new user
+        $this->user = new User();
+        $this->user->get_by_email( $email );
+
+        // Check what permission needs to be checked
+        $permission = ( defined('ADMIN') ) ? 6 : 1;
+
+        // See if we can get the user
+        if ( !$this->user->has_permission( $permission ) )
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Force user to login
+     */
+    protected function login() {
+        // Remove any cookie that might exist
+        remove_cookie( AUTH_COOKIE );
+
+        // Check if we have a referer
+        $referer = ( isset( $_SERVER['REDIRECT_URL'] ) ) ? $_SERVER['REDIRECT_URL'] : '';
+
+        if ( !empty( $_SERVER['QUERY_STRING'] ) )
+            $referer .= '?' . $_SERVER['QUERY_STRING'];
+
+        url::redirect( '/login/?r=' . urlencode( $referer ) );
     }
 
     /**
@@ -95,35 +153,12 @@ abstract class BaseController {
             return;
 
         // Form the model name, i.e., AccountListing to account-listing.php
-        $exception_file = strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $exception ) ) . '.php';
+        $exception_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $exception ) ) . '.php', 1 );
 
         $full_path = LIB_PATH . 'exceptions/' . $exception_file;
 
         if ( is_file( $full_path ) )
             require $full_path;
-    }
-
-    /**
-     * Load a model
-     *
-     * @var string $model
-     */
-    private function _load_model( $model ) {
-        // Form the model name, i.e., AccountListing to account-listing.php
-        $model_file = strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $model ) ) . '.php';
-
-        // Define the paths to search
-    	$paths = array( MODEL_PATH, LIB_PATH . 'models/' );
-
-        // Loop through each path and see if it exists
-        foreach ( $paths as $path ) {
-            $full_path = $path . $this->model_path . '/';
-
-            if ( is_file( $full_path . $model_file ) ) {
-                require $full_path;
-                break;
-            }
-        }
     }
 
     /**
@@ -142,5 +177,28 @@ abstract class BaseController {
 
         if ( is_file( $full_path ) )
             require $full_path;
+    }
+
+    /**
+     * Load a model
+     *
+     * @var string $model
+     */
+    private function _load_model( $model ) {
+        // Form the model name, i.e., AccountListing to account-listing.php
+        $model_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $model ) ) . '.php', 1 );
+
+        // Define the paths to search
+    	$paths = array( MODEL_PATH, LIB_PATH . 'models/' );
+
+        // Loop through each path and see if it exists
+        foreach ( $paths as $path ) {
+            $full_path = $path . $this->model_path . '/' . $model_file;
+
+            if ( is_file( $full_path ) ) {
+                require $full_path;
+                break;
+            }
+        }
     }
 }

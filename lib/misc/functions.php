@@ -12,13 +12,14 @@
  * Include a controller
  *
  * @param string $path
+ * @throws ControllerException
  * @return string
  */
 function controller( $path ) {
 	$file_path = CONTROLLER_PATH . $path . '-controller.php';
 
 	if ( !file_exists( $file_path ) )
-        return;
+        throw new ControllerException( 'Controller does not exist' );
 
     // Include the controller
 	require $file_path;

@@ -16,7 +16,7 @@ class Registry {
      * @return PDO
      */
     public static function get( $entry ) {
-        if ( !isset( self::$$entry ) )
+        if ( !property_exists( 'Registry', $entry ) )
             throw new LibraryException('Registry entry does not exist');
 
         return self::$$entry;
@@ -31,7 +31,7 @@ class Registry {
      * @throws LibraryException
      */
     public static function set( $entry, $value ) {
-        if ( !isset( self::$$entry ) )
+        if ( !property_exists( 'Registry', $entry ) )
             throw new LibraryException('Registry entry does not exist');
 
         self::$$entry = $value;
