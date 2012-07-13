@@ -16,6 +16,91 @@ class SiteOnTime extends Base_Class {
      */
     private $_brand_ids = NULL;
 
+    /**
+     * Category translation array
+     */
+    private $_category_translation = array(
+        'Trash Compactors > Trash Compactors' => 387 // Appliances > Trash Compactors
+        , 'Cooktops > Electric' => 290 // Appliances > Ranges & Ovens
+        , 'Cooktops > Electric: Downdraft' => 290 // Appliances > Ranges & Ovens
+        , 'Cooktops > Gas' => 290 // Appliances > Ranges & Ovens
+        , 'Cooktops > Gas: DownDraft' => 290 // Appliances > Ranges & Ovens
+        , 'Dishwashers > Built-In' => 292 // Appliances > Dishwashers
+        , 'Dishwashers > Dish Drawer' => 292 // Appliances > Dishwashers
+        , 'Dishwashers > Portable' => 292 // Appliances > Dishwashers
+        , 'Garbage Disposers > Disposers' => 654 // Appliances > Garbage Disposers
+        , 'Dryers > Electric: Match Top Load' => 286 // Appliances > Dryers
+        , 'Dryers > Gas: Match Top Load' => 286 // Appliances > Dryers
+        , 'Dryers > Compact & Portable Dryers' => 286 // Appliances > Dryers
+        , 'Dryers > Electric: Match Front Load' => 286 // Appliances > Dryers
+        , 'Dryers > Gas: Match Front Load' => 286 // Appliances > Dryers
+        , 'Blu Ray > Blu-Ray Players' => 295 // Electronics > TV & Video
+        , 'Freezers > All Freezer - Matches Refrigerator' => 289 // Appliances > Freezers
+        , 'Freezers > Chest' => 289 // Appliances > Freezers
+        , 'Freezers > Upright: No Defrost' => 289 // Appliances > Freezers
+        , 'Freezers > Upright: Frost Free' => 289 // Appliances > Freezers
+        , 'LCD TVs > LCD HDTV 11" - 19"' => 295 // Electronics > TV & Video
+        , 'LCD TVs > LCD HDTV 20" - 29"' => 295 // Electronics > TV & Video
+        , 'LCD TVs > LCD HDTV 30" - 39"' => 295 // Electronics > TV & Video
+        , 'LCD TVs > LCD HDTV 40" - 49"' => 295 // Electronics > TV & Video
+        , 'LCD TVs > LCD HDTV 50" - 59"' => 295 // Electronics > TV & Video
+        , 'LED TVs > LED 11" - 29"' => 295 // Electronics > TV & Video
+        , 'LED TVs > LED 30" - 39"' => 295 // Electronics > TV & Video
+        , 'LED TVs > LED 40" - 49"' => 295 // Electronics > TV & Video
+        , 'LED TVs > LED 50" - 59"' => 295 // Electronics > TV & Video
+        , 'LED TVs > LED 60" UP' => 295 // Electronics > TV & Video
+        , 'Microwaves > Countertop' => 291 // Appliances > Microwaves
+        , 'Microwaves > Over The Range' => 291 // Appliances > Microwaves
+        , 'Microwaves > Built-In' => 291 // Appliances > Microwaves
+        , 'Microwaves > Specialty Cooking' => 291 // Appliances > Microwaves
+        , 'Wine & Beverage > Beer Dispensers' => 655// Appliances > Wine and beverage
+        , 'Ovens > Electric: Single' => 290 // Appliances > Ranges & Ovens
+        , 'Ovens > Electric: Double' => 290 // Appliances > Ranges & Ovens
+        , 'Ovens > Electric: with Microwave' => 290 // Appliances > Ranges & Ovens
+        , 'Ovens > Gas: Single' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Electric: Freestanding' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Electric: Slide-In' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Electric: Drop-In' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Gas: Freestanding' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Gas: Slide-In' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Dual Fuel Ranges' => 290 // Appliances > Ranges & Ovens
+        , 'Ranges > Range Accessories' => 290 // Appliances > Ranges & Ovens
+        , 'Refrigerators > Refrigerator: No Freezer' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Compact' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Under The Counter' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Top Freezer' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Bottom Freezer' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > French Door: Bottom Freezer' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Side x Side: No Dispenser' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Side x Side: with Dispenser' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Cabinet Depth: French Door' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Built-In: Side x Side' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Cabinet Depth: Bottom Freezer' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Cabinet Depth: SxS' => 288 // Appliances > Refrigerators
+        , 'TV Accessories > TV Accessories' => 295 // Electronics > TV & Video//accessories
+        , 'TV Video Combos > TV - DVD Combo' => 295 // Electronics > TV & Video
+        , 'TV Furniture > TV Stands' => 295 // Electronics > TV & Video//accessories
+        , 'TV Furniture > TV Mounts' => 295 // Electronics > TV & Video//accessories
+        , 'Warming Drawers > Warming Drawers' => 656 // Appliances > Warming Drawers
+        , 'Washers > Front Load' => 285 // Appliances > Washers
+        , 'Washers > Top Load' => 285 // Appliances > Washers
+        , 'Washers > High Efficiency Top Load Washers' => 285 // Appliances > Washers
+        , 'Washers > Compact & Portable Washers' => 285 // Appliances > Washers
+        , 'Washers > Stack Pair' => 285 // Appliances > Washers
+        , 'Washers > Laundry Accessories' => 285 // Appliances > Washers
+        , 'Wine & Beverage > Wine Storage' => 655 // Appliances > Wine and beverage
+        , 'Wine & Beverage > Beverage Coolers' => 655 // Appliances > Wine and beverage
+        , 'Plasma TVs > Plasma 50" - 59"' => 295 // Electronics > TV & Video
+        , 'Plasma TVs > Plasma 40" - 49"' => 295 // Electronics > TV & Video
+        , 'DLP TVs > DLP 60" -  69"' => 295 // Electronics > TV & Video
+        , 'DLP TVs > DLP 70" & UP' => 295 // Electronics > TV & Video
+        , 'Plasma TVs > Plasma 60" - 69' => 295 // Electronics > TV & Video
+        , 'LCD TVs > LCD 60" & UP' => 295 // Electronics > TV & Video
+        , 'Cooktops > Electric Induction Cooktops' => 290 // Appliances > Ranges & Ovens
+        , 'Refrigerators > Icemaker Kits' => 288 // Appliances > Refrigerators
+        , 'Refrigerators > Refrigerator Accessories' => 288 // Appliances > Refrigerators
+    );
+
 	/**
 	 * Creates new Database instance
 	 */
@@ -27,20 +112,6 @@ class SiteOnTime extends Base_Class {
 		$this->curl = new curl();
 		$this->p = new Products();
 		$this->file = new Files();
-        /*
-         * SeriesName & ModelDescription > Title
-            MenuHeading > Industry
-            Category > Sub Category | Sub Category
-            Brand > Brand
-
-            SeriesName & ModelDescription > Description
-            KeyFeature1 & KeyFeature2 & KeyFeature3 & KeyFeature4 & KeyFeature5 > Description
-            StandardColor > Description
-            KeyFeature1 & KeyFeature2 & KeyFeature3 & KeyFeature4 & KeyFeature5 > Product Specs
-            SKU > SKU
-            LargeImage > Images
-
-         */
 	}
 
     /**
@@ -56,11 +127,38 @@ class SiteOnTime extends Base_Class {
 
         $products = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
 
-        $categories = array();
-        foreach ( $products as $p ) {
-            $p = $p->{'stdClass Object'};
-            $categories[] = $p->Category . ' > ' . $p->SubCategory;
+        // Get Features
+        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'features' ) );
+
+        $product_features = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
+        $features = array();
+
+        // Organize features
+        foreach ( $product_features as $pf ) {
+            $f = $pf->{'stdClass Object'};
+
+            $features[$f->ProductGroupID][$f->FeatureCategory][] = $f->Feature;
         }
+
+        // We don't want that to take up any more memory
+        unset( $product_features );
+
+        // Get Assets
+        $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'assets' ) );
+        $product_assets = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
+        $assets = array();
+
+        // Organize Assets
+        foreach ( $product_assets as $pa ) {
+            $a = $pa->{'stdClass Object'};
+
+            if ( !in_array( $a->AssetName, array( 'EnergyGuide', 'SpecPage' ) ) )
+                continue;
+
+            $assets[$a->SKU][$a->AssetName] = $a->AssetURL;
+        }
+
+        unset( $product_assets );
 
         // Get existing products
         $existing_products = $this->_get_existing_products();
@@ -74,14 +172,16 @@ class SiteOnTime extends Base_Class {
         // Any new products get al ink
         $links = array();
 
-		foreach( $products as $product ) {
+		foreach( $products as $item ) {
             // Get the item
-            $product = $product->{'stdClass Object'};
+            $item = $item->{'stdClass Object'};
 
-            // Prevent freezes
-			echo '                    ';
+            $product_features = $features[$item->ProductGroupID];
+            $product_assets = $assets[$item->SKU];
 
-            switch ( $product->MenuHeading ) {
+            set_time_limit(5);
+
+            switch ( $item->MenuHeading ) {
                 case 'Appliances':
                     $industry_id = 3;
 					$industry = 'appliances';
@@ -100,46 +200,74 @@ class SiteOnTime extends Base_Class {
             // Increment product count
 			$i++;
 
-            // Create product description
-			$item_description = $product->SeriesName . ' ' . $product->ModelDescription;
-
             // Add key features
-            $item_description .= "\n\n\n" . $product->KeyFeature1;
-            $item_description .= "\n" . $product->KeyFeature2;
-            $item_description .= "\n" . $product->KeyFeature3;
-            $item_description .= "\n" . $product->KeyFeature4;
-            $item_description .= "\n" . $product->KeyFeature5;
+            $item_description = "<strong>Features</strong>";
+            $item_description .= "\n" . $item->KeyFeature1;
+            $item_description .= "\n" . $item->KeyFeature2;
+            $item_description .= "\n" . $item->KeyFeature3;
+            $item_description .= "\n" . $item->KeyFeature4;
+            $item_description .= "\n" . $item->KeyFeature5;
 
-            // Add Color
-            $item_description .= "\n\n\n" . $product->StandardColor;
+            // Add Dimensions
+            if ( isset( $product_features['DIMENSIONS'] ) ) {
+                $item_description .= "\n\n\n<strong>Dimensions</strong>";
 
-            // Add Category
-            $item_description .= "\n\n\nCategory: " . $product->Category . ' > ' . $product->SubCategory;
+                foreach ( $product_features['DIMENSIONS'] as $dimension ) {
+                    $item_description .= "\n" . $dimension;
+                }
+            }
+
+            // Add other items
+            $item_description .= "\n\n\n<strong>Other</strong>";
+            $item_description .= "\nColor: " . $item->StandardColor;
+            $item_description .= "\nModel No: " . $item->StandardColor;
+
+            // If they have a spec page
+            if ( isset( $product_assets['SpecPage'] ) )
+                $item_description .= "\n\n\n<a href='" . $product_assets['SpecPage'] . "' title='Product Specifications' target='_blank'>Click here to download the product specifications for this product.</a>";
+
+            // If they have an energy guide
+            if ( isset( $product_assets['EnergyGuide'] ) )
+                $item_description .= "\n\n\n<a href='" . $product_assets['EnergyGuide'] . "' title='Energy Guide' target='_blank'>Click here to download the energy guide for this product.</a>";
 
             // Define the description as it needs to be
 			$description = format::autop( format::unautop( '<p>' . $item_description . '</p>' ) );
 
-			$sku = $product->SKU;
+			$sku = $item->SKU;
 
-            // This is serialized -- first field is name, second is content (name is optional) third is sequence
-			$product_specs = '`' . htmlentities( $product->KeyFeature1, ENT_QUOTES, 'UTF-8' ) . '`0';
-			$product_specs .= '|`' . htmlentities( $product->KeyFeature2, ENT_QUOTES, 'UTF-8' ) . '`1';
-			$product_specs .= '|`' . htmlentities( $product->KeyFeature3, ENT_QUOTES, 'UTF-8' ) . '`2';
-			$product_specs .= '|`' . htmlentities( $product->KeyFeature4, ENT_QUOTES, 'UTF-8' ) . '`3';
-			$product_specs .= '|`' . htmlentities( $product->KeyFeature5, ENT_QUOTES, 'UTF-8' ) . '`4';
+            if ( is_array( $product_features ) ) {
+                $product_specs = '';
+                $i = 0;
+
+                foreach ( $product_features as $section => $section_features ) {
+                    // Make sure we have a divider
+                    if ( !empty( $product_specs ) )
+                        $product_specs .= '|';
+
+                    // Show all the section title on a line of its own
+                    $product_specs .= $section . '``' . $i;
+                    $i++;
+
+                    // Show all the features, indented
+                    foreach ( $section_features as $f ) {
+                        $product_specs .= '|&nbsp;`' . htmlentities( $f, ENT_QUOTES, 'UTF-8' ) . '`' . $i;
+                        $i++;
+                    }
+                }
+            }
 
             // No reporting for weight and volume
 			$weight = $volume = $price = $list_price = 0;
 
             // Get name and slug
-			$name = $product->SeriesName . ' ' . $product->ModelDescription;
+			$name = $item->SeriesName . ' ' . $item->ModelDescription;
 			$slug = str_replace( '---', '-', format::slug( $name ) );
 
             // Get the brand ID -- create it if necessary
-			$brand_id = $this->_get_brand_id( $product->Brand );
+			$brand_id = $this->_get_brand_id( $item->Brand );
             
             // Let's hope it's big!
-			$image = $product->LargeImage;
+			$image = $item->LargeImage;
 
 			$images = array();
 
@@ -254,7 +382,6 @@ class SiteOnTime extends Base_Class {
 				}
 
 				$price = $list_price = 0;
-				$publish_visibility = 'private';
 				$publish_date = dt::date( 'Y-m-d' );
 
 				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
@@ -274,6 +401,17 @@ class SiteOnTime extends Base_Class {
 
 				$this->p->add_product_images( $images, $product_id );
                 $products[$sku] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
+
+
+                // Add category
+                $category_id = $this->_category_translation[$item->Category . ' > ' . $item->SubCategory];
+
+                if ( $category_id ) {
+                    $this->p->add_categories( $product_id, array( $category_id ) );
+                    $publish_visibility = 'public';
+                } else {
+                    $publish_visibility = 'private';
+                }
 			}
 
 			// Update the product
