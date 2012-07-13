@@ -158,7 +158,7 @@ abstract class BaseController {
         $full_path = LIB_PATH . 'exceptions/' . $exception_file;
 
         if ( is_file( $full_path ) )
-            require $full_path;
+            require_once $full_path;
     }
 
     /**
@@ -176,7 +176,7 @@ abstract class BaseController {
         $full_path = LIB_PATH . 'responses/' . $response_file;
 
         if ( is_file( $full_path ) )
-            require $full_path;
+            require_once $full_path;
     }
 
     /**
@@ -195,8 +195,8 @@ abstract class BaseController {
         foreach ( $paths as $path ) {
             $full_path = $path . $this->model_path . '/' . $model_file;
 
-            if ( is_file( $full_path ) ) {
-                require $full_path;
+            if ( is_file( $full_path . $model_file ) ) {
+                require_once $full_path;
                 break;
             }
         }
