@@ -10,7 +10,7 @@ class compress extends Base_Class {
 	 * Compresses CSS
 	 *
 	 * @param string $input the css to compress
-	 * @returns string
+	 * @return string
 	 */
 	public static function css( $input ) {
 		// Remove comments
@@ -33,7 +33,7 @@ class compress extends Base_Class {
 	 * Compresses Javascript
 	 *
 	 * @param string $input the javascript to compress
-	 * @returns string
+	 * @return string
 	 */
 	public static function javascript( $input ) {
 		return JSMin::minify( $input );
