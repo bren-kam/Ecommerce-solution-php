@@ -152,7 +152,7 @@ get_header();
                 )
             );
 
-            if ( !isset( $sweepstakes['fb_page_id'] ) || 0 == $sweepstakes['fb_page_id'] ) {
+            if ( !isset( $posting['fb_page_id'] ) || 0 == $posting['fb_page_id'] ) {
                 foreach ( $instructions as $step => $data ) {
                     echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
 

@@ -72,7 +72,7 @@ get_header();
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
 		<?php
-        if ( !isset( $about_us['fb_page_id'] ) || 0 == $about_us['fb_page_id'] ) {
+        if ( !isset( $email_sign_up['fb_page_id'] ) || 0 == $email_sign_up['fb_page_id'] ) {
             // Define instructions
             $instructions = array(
                 1 => array(
