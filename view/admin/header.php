@@ -1,16 +1,16 @@
 <?php
 /**
- * @package Real Statistics
+ * @package Imagine Retailer
  * @page Header
+ *
+ * Declare the variables we have available from other sources
+ * @var Resources $resources
  */
 
-css( 'form', 'jquery.ui' );
-javascript( 'swfobject', 'jquery', 'jquery.ui', 'jquery.qtip', 'jquery.boxy', 'jquery.form', 'jquery.uploadify', 'header' );
+$resources->css('style');
+$resources->javascript( 'sparrow', 'header' );
 
 // Encoded data to get css
-list( $css, $ie8 ) = get_css();
-global $title, $meta_description, $meta_keywords, $selected, $dynamic, $u, $user;
-
 if ( !empty( $selected ) )
 	$$selected = ' class="selected"';
 ?>
@@ -21,12 +21,7 @@ if ( !empty( $selected ) )
 <title><?php echo $title; ?></title>
 <meta name="description" content="<?php echo $meta_description; ?>" />
 <meta name="keywords" content="<?php echo $meta_keywords; ?>" />
-<link type="text/css" rel="stylesheet" href="/css/?files=<?php echo $css; ?>" />
-<?php if ( $ie8 ) { ?>
-<!--[if IE 8]>
-<link type="text/css" rel="stylesheet" href="/css/?files=<?php echo $ie8; ?>" />
-<![endif]-->
-<?php } ?>
+<link type="text/css" rel="stylesheet" href="/css/<?php echo $resources->get_css_file(); ?>" />
 <link rel="icon" href="<?php echo ( 'imagineretailer.com' == DOMAIN ) ? '/favicon.ico' : '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
 <?php head(); ?>
 </head>

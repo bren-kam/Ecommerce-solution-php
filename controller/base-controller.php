@@ -57,11 +57,11 @@ abstract class BaseController {
         lib('responses/response');
         spl_autoload_register( array( $this, '_load_response' ) );
 
+        // Autoload different classes
+        spl_autoload_register( array( $this, '_load_helper' ) );
+
         // Load models
         spl_autoload_register( array( $this, '_load_model' ) );
-
-        // Load Registry
-        lib('registry');
 
         // Make sure the user is logged in
         if ( !$this->get_logged_in_user() )
@@ -174,6 +174,21 @@ abstract class BaseController {
         $response_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $response ) ) . '.php', 1 );
 
         $full_path = LIB_PATH . 'responses/' . $response_file;
+
+        if ( is_file( $full_path ) )
+            require_once $full_path;
+    }
+
+    /**
+     * Load helpers
+     *
+     * @var string $helper
+     */
+    private function _load_helper( $helper ) {
+        // Form the model name, i.e., AccountListing to account-listing.php
+        $helper_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $helper ) ) . '.php', 1 );
+
+        $full_path = LIB_PATH . 'helpers/' . $helper_file;
 
         if ( is_file( $full_path ) )
             require_once $full_path;

@@ -8,5 +8,3 @@ class AccountsController extends BaseController {
         parent::__construct( 'account/' );
     }
 }
-
-

@@ -53,6 +53,9 @@ class TemplateResponse extends Response {
      * Including the file
      */
     public function respond() {
+        // Define defaults for resources
+        $resources = new Resources();
+
         require VIEW_PATH . 'header.php';
         require VIEW_PATH . $this->file_to_render . '.php';
         require VIEW_PATH . 'footer.php';
