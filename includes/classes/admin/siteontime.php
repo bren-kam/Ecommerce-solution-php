@@ -132,7 +132,7 @@ class SiteOnTime extends Base_Class {
 
         $product_features = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
         $features = array();
-
+        echo memory_get_peak_usage();exit;
         // Organize features
         foreach ( $product_features as $pf ) {
             $f = $pf->{'stdClass Object'};
