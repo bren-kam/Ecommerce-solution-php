@@ -407,7 +407,7 @@ class Craigslist extends Base_Class {
         $website_id = (int) $user['website']['website_id'];
 
         if ( is_null( $craigslist_ad_id ) ) {
-            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, a.`cl_market_id`, c.`market_id`, b.`cl_category_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`website_id` = $website_id", ARRAY_A );
+            $markets = $this->db->get_results( "SELECT a.`craigslist_market_id`, CONCAT( a.`city`, ', ', IF( '' <> a.`area`, CONCAT( a.`state`, ' - ', a.`area` ), a.`state` ) ) AS market, a.`cl_market_id`, b.`market_id`, b.`cl_category_id` FROM `craigslist_markets` AS a LEFT JOIN `craigslist_market_links` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE b.`website_id` = $website_id", ARRAY_A );
         } else {
             // Type Juggling
             $craigslist_ad_id = (int) $craigslist_ad_id;
