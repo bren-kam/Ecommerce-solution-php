@@ -93,7 +93,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-pro
 		$product_id = (int)$_POST['hProductID'];
 
 		// Update the product
-		$success = $products->update( $_POST['tName'], $_POST['tProductSlug'], $_POST['taDescription'], $_POST['sProductStatus'],
+		$success = $products->update( $_POST['tName'], $_POST['tProductSlug'], stripslashes( $_POST['taDescription'] ), $_POST['sProductStatus'],
 				$_POST['tSKU'], $_POST['tPrice'], $_POST['tListPrice'], $_POST['hSpecs'], $_POST['sBrand'], $_POST['sIndustry'],  $_POST['sPublishVisibility'],
 				$_POST['tPublishDate'], $product_id, $_POST['tWeight'] );
 		
