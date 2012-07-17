@@ -191,10 +191,10 @@ get_header();
 						<?php
 						if ( !empty( $p['product_specifications'] ) ) {
 							$specifications = unserialize( $p['product_specifications'] );
-							
-							if ( !$specifications ) 
+
+							if ( !$specifications )
 								$specifications = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES, 'UTF-8' ) );
-							
+
 							if ( is_array( $specifications ) && count( $specifications ) > 0 )
 							foreach ( $specifications as $ps ) {
 								$ps_slug = str_replace( ' ', '-', strtolower( $ps[0] ) );
