@@ -476,6 +476,7 @@ class Craigslist extends Base_Class {
         // Declare variables
         $product_tag_id = $category_tag_id = $parent_category_tag_id = $tags = false;
 
+
         if ( is_array( $craigslist_tags ) )
         foreach ( $craigslist_tags as $ct ) {
             switch ( $ct['type'] ) {

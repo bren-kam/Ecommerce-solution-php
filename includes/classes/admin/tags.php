@@ -63,7 +63,7 @@ class Tags extends Base_Class {
 	 *
 	 * @param string $type the type of tag
 	 * @param int $object_id the object of whatever type of tag it is
-	 * @return bool true
+	 * @return array
 	 */
 	public function get( $type, $object_id ) {
 		// Get tags
