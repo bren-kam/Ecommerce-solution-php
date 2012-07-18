@@ -58,6 +58,7 @@ get_header();
 	<br clear="all" /><br />
 	<?php get_sidebar( 'social-media/' ); ?>
 	<div id="subcontent">
+<<<<<<< Updated upstream
 		<?php if ( 0 == $current_ad['fb_page_id'] ) { ?>
 		<h2 class="title"><?php echo _('Step 1: Go to the Current Ad application.'); ?></h2>
 			<p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/current-ad/" title="<?php echo _('Online Platform - Current Ad'); ?>" target="_blank"><?php echo _('Current Ad'); ?></a> <?php echo _('application page'); ?>.</p>
@@ -103,6 +104,54 @@ get_header();
 			<p><img src="http://account.imagineretailer.com/images/social-media/facebook/current-ad/step6.jpg" class="image-border" width="489" height="187" alt="<?php echo _('Step 6'); ?>" /></p>
 			<br /><br />
 		<?php } else { ?>
+=======
+		<?php
+        if ( !isset( $current_ad['fb_page_id'] ) || 0 == $current_ad['fb_page_id'] ) {
+            // Define instructions
+            $instructions = array(
+                1 => array(
+                    'title' => _('Go to the Current Ad application')
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/current-ad/" title="' . _('Online Platform - Current Ad') . '" target="_blank">' . _('Current Ad') . '</a> ' . _('application page') . '.'
+                    , 'image' => false
+                )
+                , 2 => array(
+                    'title' => _('Install The App')
+                    , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
+                )
+                , 3 => array(
+                    'title' => _('Choose Your Page')
+                    , 'text' => _('(Note - You must first be an admin of the page to install the App)')
+                )
+                , 4 => array(
+                    'title' => _('Click Add Online Platform - Current Ad')
+                )
+                , 5 => array(
+                    'title' => _('Click on the Current Ad App')
+                    , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
+                )
+                , 6 => array(
+                    'title' => _('Click on the Update Settings')
+                )
+                , 7 => array(
+                    'title' => _('Click Add Online Platform - Current Ad')
+                    , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
+                )
+            );
+
+            foreach ( $instructions as $step => $data ) {
+                echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
+
+                if ( isset( $data['text'] ) )
+                    echo '<p>', $data['text'], '</p>';
+
+                if ( !isset( $data['image'] ) || $data['image'] != false )
+                    echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/current-ad/', $step, '.jpg"><img src="http://admin.imagineretailer.com/images/social-media/facebook/about-us/', $step, '.jpg" alt="', $data['title'], '" width="750" /></a></p>';
+
+                echo '<br /><br />';
+            }
+         } else {
+            ?>
+>>>>>>> Stashed changes
 			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $current_ad['fb_page_id']; ?>?sk=app_186618394735117" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 			<?php if ( $success ) { ?>
 				<p class="success"><?php echo _('Your Current Ad page has been successfully updated!'); ?></p>

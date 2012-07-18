@@ -233,12 +233,12 @@ get_header();
 					<div id="dTagList">
 					<?php
 					if ( isset( $tags ) && is_array( $tags ) )
-					foreach ( $tags as $t ) {
-						$t_name = ucwords( $t )
+					foreach ( $tags as $tag ) {
+						$tag_name = ucwords( $tag )
 						?>
-						<div id="dTag_<?php echo $t; ?>" class="product-tag">
-							<?php echo $t_name; ?>
-							<a href="javascript:;" class="delete-tag" id="aDel_<?php echo $t; ?>" title='<?php echo _('Delete'); ?> "<?php echo $t_name; ?>"'><img class="delete-tag" src="/images/icons/x.png" alt='<?php echo _('Delete'); ?> "<?php echo $t_name; ?>"' /></a>
+						<div id="dTag_<?php echo $tag; ?>" class="product-tag">
+							<?php echo $tag_name; ?>
+							<a href="javascript:;" class="delete-tag" id="aDel_<?php echo $tag; ?>" title='<?php echo _('Delete'); ?> "<?php echo $tag_name; ?>"'><img class="delete-tag" src="/images/icons/x.png" alt='<?php echo _('Delete'); ?> "<?php echo $tag_name; ?>"' /></a>
 						</div>
 					<?php } ?>
 					</div>
