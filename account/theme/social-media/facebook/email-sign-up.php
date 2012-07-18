@@ -118,7 +118,7 @@ get_header();
          } else {
             ?>
 			<p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $email_sign_up['fb_page_id']; ?>?sk=app_165553963512320" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
-			<form name="fEmailSignUp" action="/social-media/facebook/email-sign-up/" method="post">
+			<form name="fEmailSignUp" action="/social-media/facebook/op-email-sign-up/" method="post">
                 <?php if ( $success ) { ?>
                 <p class="success"><?php echo _('Your email sign up page has been successfully updated!'); ?></p>
                 <?php

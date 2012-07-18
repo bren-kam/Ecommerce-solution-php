@@ -94,8 +94,8 @@ get_header();
             // Define instructions
             $instructions = array(
                 1 => array(
-                    'title' => _('Go to the Email Sign Up application')
-                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/email-sign-up/" title="' . _('Online Platform - Email Sign Up') . '" target="_blank">' . _('Email Sign Up') . '</a> ' . _('application page') . '.'
+                    'title' => _('Go to the Current Ad application')
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/current-ad/" title="' . _('Online Platform - Current Ad') . '" target="_blank">' . _('Current Ad') . '</a> ' . _('application page') . '.'
                     , 'image' => false
                 )
                 , 2 => array(
@@ -107,17 +107,17 @@ get_header();
                     , 'text' => _('(Note - You must first be an admin of the page to install the App)')
                 )
                 , 4 => array(
-                    'title' => _('Click Add Online Platform - Email Sign Up')
+                    'title' => _('Click Add Online Platform - Current Ad')
                 )
                 , 5 => array(
-                    'title' => _('Click on the Email Sign Up App')
+                    'title' => _('Click on the Current Ad App')
                     , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
                 )
                 , 6 => array(
                     'title' => _('Click on the Update Settings')
                 )
                 , 7 => array(
-                    'title' => _('Click Add Online Platform - Email Sign Up')
+                    'title' => _('Click Add Online Platform - Current Ad')
                     , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
                 )
             );
