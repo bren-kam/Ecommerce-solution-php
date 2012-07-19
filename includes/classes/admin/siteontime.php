@@ -129,7 +129,7 @@ class SiteOnTime extends Base_Class {
         $arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
 
         $products = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
-		/*
+		
         // Get Features
         $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'features' ) );
 
@@ -162,7 +162,7 @@ class SiteOnTime extends Base_Class {
         }
 
         unset( $product_assets );
-		*/
+		
         // Get existing products
         $existing_products = $this->_get_existing_products();
 
@@ -330,9 +330,12 @@ class SiteOnTime extends Base_Class {
 
 					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
 						$images[] = $image_name;
+					
+					$this->p->add_product_images( $images, $product_id );
 				}
 				
 				if ( 0 == count( $images ) && 'private' != $publish_visibility ) {
+					echo 'images';
 					$identical = false;
 					$publish_visibility = 'private';
 				}
