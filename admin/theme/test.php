@@ -1,8 +1,7 @@
 <?php
 
-url::redirect('/');
-fn::info(headers_list());
-header_remove();
+$s = new SiteOnTime();
+$s->run();
 exit;
 /*
 $array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );
@@ -59,3 +58,6 @@ $a->update_craigslist_stats( $date->format('Y-m-d') );
 // Update the tags for analytics of products
 $c->update_tags();
 */
+
+$sot = new SiteOnTime();
+$sot->run();

@@ -11,7 +11,7 @@ $ajax = new AJAX( $_POST['_nonce'], 'new-image' );
 $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 
 // Get the file extension
-$file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+$file_extension = strtolower( f::extension( $_FILES["Filedata"]['name'] ) );
 
 $file_name = $_POST['name'];
 $image_name = "$file_name.$file_extension";

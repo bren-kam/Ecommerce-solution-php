@@ -14,7 +14,25 @@ class Brands extends Base_Class {
 		if ( !parent::__construct() )
 			return false;
 	}
-	
+
+    /**
+     * Create a brand simply
+     *
+     * @param string $name
+     * @return int
+     */
+    public function create_simple( $name ) {
+        // Create the brand
+		$this->db->insert( 'brands', array( 'name' => $name, 'slug' => format::slug( $name ) ), 'ss' );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to create brand.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $this->db->insert_id;
+    }
 	/**
 	 * Creates a brand and puts it into the database
 	 *
@@ -23,14 +41,14 @@ class Brands extends Base_Class {
 	 * @param string $link the link to the brand's website
 	 * @param file $image the product image file
 	 * @param string $product_options
-	 * @return bool
+	 * @return int
 	 */
 	public function create( $name, $slug, $link, $image, $product_options ) {
 		// Get rid of the slashes and another other characters in the slug
 		$image_slug = format::slug( $name );
 		
 		// Get the extension
-		$image_extension = strtolower( format::file_extension( $image['name'] ) );
+		$image_extension = strtolower( f::extension( $image['name'] ) );
 		
 		// Don't insert a picture if one wasn't uploaded
 		$image_link = ( !empty( $image['name'] ) ) ? 'http://brands.retailcatalog.us/' . $image_slug . '.' . $image_extension : '';
@@ -84,7 +102,7 @@ class Brands extends Base_Class {
 			}
 		}
 		
-		return true;
+		return $brand_id;
 	}
 	
 	/**
@@ -111,7 +129,7 @@ class Brands extends Base_Class {
 			$image_slug = format::slug( $name );
 	
 			// Get the extension
-			$image_extension = strtolower( format::file_extension( $image['name'] ) );
+			$image_extension = strtolower( f::extension( $image['name'] ) );
 			
 			// Don't insert a picture if one wasn't uploaded
 			$image_link = ( !empty( $image['name'] ) ) ? 'http://brands.retailcatalog.us/' . $image_slug . '.' . $image_extension : '';
