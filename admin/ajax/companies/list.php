@@ -60,6 +60,9 @@ if ( $_GET['sSearch'] != "" ) {
 					"`domain` LIKE '%" . $t->db->escape( $_GET['sSearch'] ) . "%' )";
 }
 
+if ( $user['role'] < 8 )
+    $where .= " AND `company_id` = " . (int) $user['company_id'];
+
 $companies = $c->list_companies( $limit, $where, $order_by );
 $company_count = $c->count_companies( $where );
 

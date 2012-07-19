@@ -11,6 +11,10 @@ global $user;
 if ( !$user )
 	login();
 
+// Make sure they have permission
+if ( $user['role'] < 8 )
+    url::redirect('/');
+
 css( 'companies/list', 'data-tables/TableTools.css', 'data-tables/ui.css' );
 javascript( 'jquery', 'data-tables/jquery.dataTables', 'data-tables/ZeroClipboard/ZeroClipboard.js', 'data-tables/jquery.tableTools.js', 'companies/list' );
 
