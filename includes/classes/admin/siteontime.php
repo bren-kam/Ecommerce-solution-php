@@ -118,21 +118,24 @@ class SiteOnTime extends Base_Class {
      * Run
      */
     public function run() {
+		global $user;
+		$user['user_id'] = self::USER_ID;
+		
         // We need to up the limit
         set_time_limit(300);
         ini_set('memory_limit', '256M');
-
+		
         // Get products
         $arguments = http_build_query( array( 'cid' => self::COMPANY_ID ) );
 
         $products = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
-
+		/*
         // Get Features
         $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'features' ) );
 
         $product_features = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
         $features = array();
-        echo memory_get_peak_usage();exit;
+        
         // Organize features
         foreach ( $product_features as $pf ) {
             $f = $pf->{'stdClass Object'};
@@ -154,12 +157,12 @@ class SiteOnTime extends Base_Class {
 
             if ( !in_array( $a->AssetName, array( 'EnergyGuide', 'SpecPage' ) ) )
                 continue;
-
+			
             $assets[$a->SKU][$a->AssetName] = $a->AssetURL;
         }
 
         unset( $product_assets );
-
+		*/
         // Get existing products
         $existing_products = $this->_get_existing_products();
 
@@ -171,15 +174,28 @@ class SiteOnTime extends Base_Class {
 
         // Any new products get al ink
         $links = array();
-
-		foreach( $products as $item ) {
+		
+		foreach ( $products as $item ) {
             // Get the item
             $item = $item->{'stdClass Object'};
-
+			
+            // Get name and slug
+			$name = $item->SeriesName . ' ' . $item->ModelDescription . ' - ' . $item->StandardColor;
+			$slug = str_replace( '---', '-', format::slug( $name ) );
+			
+			if ( ' - ' == $name )
+				continue;
+			
+			// Get features and assets
             $product_features = $features[$item->ProductGroupID];
             $product_assets = $assets[$item->SKU];
-
-            set_time_limit(5);
+			
+			// Arrange the features so that they are always in the same order
+			ksort( $product_features );
+			
+			echo '                                                   ';
+            set_time_limit(30);
+			flush();
 
             switch ( $item->MenuHeading ) {
                 case 'Appliances':
@@ -232,12 +248,12 @@ class SiteOnTime extends Base_Class {
 
             // Define the description as it needs to be
 			$description = format::autop( format::unautop( '<p>' . $item_description . '</p>' ) );
-
+			
 			$sku = $item->SKU;
 
             if ( is_array( $product_features ) ) {
                 $product_specs = '';
-                $i = 0;
+                $j = 0;
 
                 foreach ( $product_features as $section => $section_features ) {
                     // Make sure we have a divider
@@ -245,23 +261,19 @@ class SiteOnTime extends Base_Class {
                         $product_specs .= '|';
 
                     // Show all the section title on a line of its own
-                    $product_specs .= $section . '``' . $i;
-                    $i++;
+                    $product_specs .= $section . '``' . $j;
+                    $j++;
 
                     // Show all the features, indented
                     foreach ( $section_features as $f ) {
-                        $product_specs .= '|&nbsp;`' . htmlentities( $f, ENT_QUOTES, 'UTF-8' ) . '`' . $i;
-                        $i++;
+                        $product_specs .= '|&amp;nbsp;`' . htmlentities( $f, ENT_QUOTES, 'UTF-8' ) . '`' . $j;
+                        $j++;
                     }
                 }
             }
 
             // No reporting for weight and volume
 			$weight = $volume = $price = $list_price = 0;
-
-            // Get name and slug
-			$name = $item->SeriesName . ' ' . $item->ModelDescription;
-			$slug = str_replace( '---', '-', format::slug( $name ) );
 
             // Get the brand ID -- create it if necessary
 			$brand_id = $this->_get_brand_id( $item->Brand );
@@ -273,11 +285,14 @@ class SiteOnTime extends Base_Class {
 
 			////////////////////////////////////////////////
 			// Get/Create the product
-			if ( array_key_exists( $sku, $existing_products ) ) {
+			if ( array_key_exists( $item->ProductID, $existing_products ) ) {
 				$identical = true;
-
-				$product = $existing_products[$sku];
+				
+				$product = $existing_products[$item->ProductID];
 				$product_id = $product['product_id'];
+				
+				$publish_visibility = $product['publish_visibility'];
+				$publish_date = $product['publish_date'];
 
 				$product_images = explode( '|', $product['images'] );
 
@@ -285,6 +300,7 @@ class SiteOnTime extends Base_Class {
 				if( empty( $name ) ) {
 					$name = $product['name'];
 				} elseif ( $name != $product['name'] ) {
+					echo 'name';
 					$identical = false;
 				}
 
@@ -293,26 +309,34 @@ class SiteOnTime extends Base_Class {
 				} elseif ( $slug != $product['slug'] ) {
 					$slug = $this->_unique_slug( $slug );
 
-					if ( $slug != $product['slug'] )
+					if ( $slug != $product['slug'] ) {
+						echo $slug . '/' . $product['slug'] , '|slug';
 						$identical = false;
+					}
 				}
 
 				if( empty( $description ) ) {
 					$description = format::autop( format::unautop( $product['description'] ) );
 				} elseif ( $description != format::autop( format::unautop( $product['description'] ) ) ) {
+					echo 'description';
 					$identical = false;
 				}
 
 				$images = $product_images;
 
-				if ( 0 == count( $images ) && !empty( $image ) && curl::check_file( $image ) ) {
+				if ( ( 0 == count( $images ) || !empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
 					$identical = false;
 					$image_name = $this->upload_image( $image, $slug, $product_id, $industry );
 
 					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
 						$images[] = $image_name;
 				}
-
+				
+				if ( 0 == count( $images ) && 'private' != $publish_visibility ) {
+					$identical = false;
+					$publish_visibility = 'private';
+				}
+				
 				$product_specifications = '';
 
 				$product['product_specifications'] = unserialize( $product['product_specifications'] );
@@ -321,18 +345,20 @@ class SiteOnTime extends Base_Class {
 					if( !empty( $product_specifications ) )
 						$product_specifications .= '|';
 
-					$product_specifications .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
+					$product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
 				}
 
 				if( empty( $product_specs ) ) {
 					$product_specs = $product_specifications;
 				} elseif ( $product_specs != $product_specifications ) {
+					echo 'specs:' . $product_specs . '~' . $product_specifications;
 					$identical = false;
 				}
 
 				if( empty( $brand_id ) ) {
 					$brand_id = $product['brand_id'];
 				} elseif ( $brand_id != $product['brand_id'] ) {
+					echo 'brand';
 					$identical = false;
 				}
 
@@ -342,25 +368,26 @@ class SiteOnTime extends Base_Class {
 				} else {
 					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
 
-					if ( $product_status != $product['status'] )
+					if ( $product_status != $product['status'] ) {
+						echo $product_status, ',', $product['status'], '|status';
 						$identical = false;
+					}
 				}
-
-				$publish_visibility = $product['publish_visibility'];
-				$publish_date = $product['publish_date'];
 
 				if( empty( $weight ) ) {
 					$weight = $product['weight'];
 				} elseif ( $weight != $product['weight'] ) {
+					echo 'weight';
 					$identical = false;
 				}
 
 				if( empty( $volume ) ) {
 					$volume = $product['volume'];
 				} elseif ( $volume != $product['volume'] ) {
+					echo 'volume';
 					$identical = false;
 				}
-
+				
 				// If everything is identical, we don't want to do anything
 				if ( $identical ) {
 					$skipped++;
@@ -369,6 +396,9 @@ class SiteOnTime extends Base_Class {
 				}
 			} else {
 				$product_id = $this->p->create( self::USER_ID );
+			
+				// Insert the feed product ID
+				$this->_insert_feed_product_id( $product_id, $item->ProductID );
 
                 // Make sure it's a unique slug
                 $slug = $this->_unique_slug( $slug );
@@ -400,8 +430,7 @@ class SiteOnTime extends Base_Class {
 				}
 
 				$this->p->add_product_images( $images, $product_id );
-                $products[$sku] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
-
+                $products[$item->ProductID] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
 
                 // Add category
                 $category_id = $this->_category_translation[$item->Category . ' > ' . $item->SubCategory];
@@ -413,10 +442,10 @@ class SiteOnTime extends Base_Class {
                     $publish_visibility = 'private';
                 }
 			}
-
+			
 			// Update the product
 			$this->p->update( $name, $slug, $description, 'in-stock', $sku, $price, $list_price, $product_specs, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight, $volume );
-
+			
 			$products_string .= $name . "\n";
 
 			// We don't want to carry them around in the next loop
@@ -433,7 +462,6 @@ class SiteOnTime extends Base_Class {
 
 				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
 			}
-			exit;
 		}
 
         echo "Skipped: $skipped<br />\n";
@@ -545,15 +573,38 @@ class SiteOnTime extends Base_Class {
 	 * @return array
 	 */
 	private function _get_existing_products() {
-		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, pm.`feed_product_id` FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_meta` AS pm ON ( a.`product_id` = pm.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
 
 		// Handle any error
 		if( $this->db->errno() ) {
 			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
 			return false;
 		}
+		
+		return ar::assign_key( $products, 'feed_product_id' );
+	}
+	
+	/**
+	 * Insert Feed Product ID
+	 *
+	 * @param int $product_id
+	 * @param int $feed_product_id
+	 * @return bool
+	 */
+	private function _insert_feed_product_id( $product_id, $feed_product_id ) {
+		// Type Juggling
+		$product_id = (int) $product_id;
+		$feed_product_id = (int) $feed_product_id;
+		
+		$this->db->query( "INSERT INTO `product_meta` VALUES ( $product_id, $feed_product_id ) ON DUPLICATE KEY UPDATE `feed_product_id` = $feed_product_id" );
 
-		return ar::assign_key( $products, 'sku' );
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to insert feed product ID.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
 	}
 
     /**

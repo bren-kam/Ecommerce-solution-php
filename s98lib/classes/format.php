@@ -314,4 +314,20 @@ class format extends Base_Class {
         return ucwords( str_replace( '-', ' ', $string ) );
     }
 
+    /**
+     * String Last Replace
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     * @return string
+     */
+    public static function str_lreplace( $search, $replace, $subject ) {
+        $pos = strrpos( $subject, $search );
+
+        if ( false !== $pos )
+            $subject = substr_replace( $subject, $replace, $pos, strlen( $search ) );
+
+        return $subject;
+    }
 }

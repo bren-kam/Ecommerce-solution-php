@@ -165,7 +165,7 @@ get_header();
                         echo '<p>', $data['text'], '</p>';
     
                     if ( !isset( $data['image'] ) || $data['image'] != false )
-                        echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.jpg"><img src="http://admin.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.jpg" alt="', $data['title'], '" width="750" /></a></p>';
+                        echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/sweepstakes/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
     
                     echo '<br /><br />';
                 }
