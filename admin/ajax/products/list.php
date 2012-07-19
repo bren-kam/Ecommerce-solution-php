@@ -38,23 +38,27 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 			break;
 
 			case 1:
-				$field = 'd.`name`';
+				$field = 'e.`contact_name`';
 			break;
 
 			case 2:
-				$field = 'a.`sku`';
+				$field = 'f.`contact_name`';
 			break;
 
 			case 3:
+				$field = 'd.`name`';
+			break;
+
+			case 4:
+				$field = 'a.`sku`';
+			break;
+
+			case 5:
 				$field = 'c.`name`';
 			break;
 			
-			case 4:
+			case 6:
 				$field = 'a.`status`';
-			break;
-			
-			case 5:
-				$field = 'a.`publish_date`';
 			break;
 		}
 			
@@ -132,7 +136,7 @@ foreach ( $products as $product ) {
 			<a href="/products/add-edit/?pid=' . $product['product_id'] . '" title=\'' . _('Edit') . ' "' . $product['name'] . '"\' class="edit-product">' . _('Edit') . '</a> |
 			<a href="javascript:;" id="aDelete' . $product['product_id'] . '" title=\'' . _('Delete') . ' "' . $product['name'] . '"\' class="delete-product">' . _('Delete') . '</a> | 
 			<a href="/products/clone/?pid=' . $product['product_id'] . '" title=\'' . _('Clone') . ' "' . $product['name'] . '"\' target="_blank">' . _('Clone') . '</a>
-		</div>', $product['brand'], $product['sku'], ucwords( $product['status'] ), $product['publish_date'] );
+		</div>', $product['created_by'], $product['updated_by'], $product['brand'], $product['sku'], ucwords( $product['status'] ) );
 }
 
 echo json_encode( array( 

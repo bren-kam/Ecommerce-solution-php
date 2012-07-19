@@ -43,7 +43,7 @@ switch ( $page['slug'] ) {
 	case 'current-offer':
 		$name = $key = 'coupon';
 		$width = 405;
-		$height = 245;
+		$height = 450;
 	break;
 	
 	case 'financing':

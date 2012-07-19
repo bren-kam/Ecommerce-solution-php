@@ -574,7 +574,7 @@ class Products extends Base_Class {
 	public function list_products( $where, $order_by, $limit ) {
         $sql_limit = ( 0 === $limit ) ? '' : "LIMIT $limit";
 
-		$products = $this->db->get_results( "SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, a.`status`, DATE( a.`publish_date` ) AS publish_date, c.`name` AS category FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) WHERE 1 $where ORDER BY $order_by $sql_limit", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, a.`status`, DATE( a.`publish_date` ) AS publish_date, c.`name` AS category, e.`contact_name` AS created_by, f.`contact_name` AS updated_by FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `users` AS e ON ( a.`user_id_created` = e.`user_id` ) LEFT JOIN `users` AS f ON ( a.`user_id_modified` = f.`user_id` )  WHERE 1 $where ORDER BY $order_by $sql_limit", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -594,7 +594,7 @@ class Products extends Base_Class {
 	public function count_products( $where ) {
 		// @Fix shouldn't need to do the count function
 		// Get the product count
-		$product_count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) WHERE 1 $where" );
+		$product_count = $this->db->get_col( "SELECT a.`product_id` FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `users` AS e ON ( a.`user_id_created` = e.`user_id` ) LEFT JOIN `users` AS f ON ( a.`user_id_modified` = f.`user_id` ) WHERE 1 $where" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
