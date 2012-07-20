@@ -75,7 +75,11 @@ class Resources {
             }
 
             // Compress the CSS with initial settings
-            $compress_css = new Compress_CSS( $css, false, true );
+
+            // @Pedro -- this caused a fatal error, I can't figure out why it wouldn't be autoincluded
+            lib('helpers/compress-css');
+
+            $compress_css = new CompressCSS( $css, false, true );
 
             // Get the compressed css
             $css = $compress_css->css;

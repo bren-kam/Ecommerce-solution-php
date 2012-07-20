@@ -98,7 +98,9 @@ abstract class BaseController {
      * @return TemplateResponse
      */
     protected function get_template_response( $file ) {
-        return new TemplateResponse( $this->view_base . $file );
+        $template_response = new TemplateResponse( $this->view_base . $file );
+        $template_response->set_user( $this->user );
+        return $template_response;
     }
 
     /**
@@ -208,9 +210,9 @@ abstract class BaseController {
 
         // Loop through each path and see if it exists
         foreach ( $paths as $path ) {
-            $full_path = $path . $this->model_path . '/' . $model_file;
+            $full_path = $path . $this->model_path . $model_file;
 
-            if ( is_file( $full_path . $model_file ) ) {
+            if ( is_file( $full_path ) ) {
                 require_once $full_path;
                 break;
             }

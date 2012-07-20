@@ -1,5 +1,7 @@
 <?php
 class User extends ActiveRecordBase {
+    public $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
+
     /**
      * Setup the account initial data
      */
@@ -13,7 +15,13 @@ class User extends ActiveRecordBase {
      * @param string $email
      */
     public function get_by_email( $email ) {
-        // Do stuff
+        $columns = $this->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `products`, `role` FROM `users` WHERE `status` = 1 AND `email` = :email', 's', $email )->get_row();
+
+        foreach ( $columns as $col => $value ) {
+            $this->{$col} = $value;
+        }
+
+        $this->id = $columns->user_id;
     }
 
     /**
@@ -23,6 +31,9 @@ class User extends ActiveRecordBase {
      * @return bool
      */
     public function has_permission( $permission ) {
+        if ( $this->role >= $permission )
+            return true;
+
         return false;
     }
 }

@@ -2,21 +2,25 @@
 /**
  * @package Grey Suit Retail
  * @page Footer
+ *
+ * @var Resources $resources
+ * @var Template $template
+ * @var User $user
  */
 global $user;
 ?>
 <div id="footer">
 		<p>
 			<?php if ( $user ) { ?>
-			<!--<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | -->
-			<a href="/accounts/" title="<?php echo _('Accounts'); ?>"><?php echo _('Accounts'); ?></a> |
-			<a href="/products/" title="<?php echo _('Product Catalog'); ?>"><?php echo _('Product Catalog'); ?></a> | 
-			<a href="/users/" title="<?php echo _('Users'); ?>"><?php echo _('Users'); ?></a> | 
-			<a href="/checklists/" title="<?php echo _('Checklists'); ?>"><?php echo _('Checklists'); ?></a> | 
-			<?php if ( $user['role'] >= 8 ) { ?>
-			<a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a> |
-			<?php } ?>
-			<a href="/help/" title="<?php echo _('Help'); ?>"><?php echo _('Help'); ?></a>
+                <!--<a href="/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> | -->
+                <a href="/accounts/" title="<?php echo _('Accounts'); ?>"><?php echo _('Accounts'); ?></a> |
+                <a href="/products/" title="<?php echo _('Product Catalog'); ?>"><?php echo _('Product Catalog'); ?></a> |
+                <a href="/users/" title="<?php echo _('Users'); ?>"><?php echo _('Users'); ?></a> |
+                <a href="/checklists/" title="<?php echo _('Checklists'); ?>"><?php echo _('Checklists'); ?></a> |
+                <?php if ( $user->has_permission(8) ) { ?>
+                    <a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a> |
+                <?php } ?>
+                <a href="/help/" title="<?php echo _('Help'); ?>"><?php echo _('Help'); ?></a>
 			<?php } ?>
 		</p>
 		<br /><br />
@@ -42,15 +46,7 @@ global $user;
 </div>
 
 <!-- End: Footer -->
-<?php
-
-$javascript = get_js();
-if ( 'eNpLtDKwqq4FXDAGTwH-' != $javascript ) { // That string means it's empty ?>
-<script type="text/javascript" src="/js/?files=<?php echo $javascript; ?>"></script>
-<?php
-}
-
-footer();
-?>
+<script type="text/javascript" src="/js/<?php $resources->get_javascript_file(); ?>"></script>
+<?php $template->get_footer(); ?>
 </body>
 </html>
