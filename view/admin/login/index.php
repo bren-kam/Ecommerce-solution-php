@@ -30,5 +30,5 @@
         <input type="hidden" name="referer" value="<?php if ( isset( $_GET['r'] ) ) echo urldecode( $_GET['r'] ); ?>" />
 	    <?php nonce::field( 'login' ); ?>
 	</form>
-	<?php echo $v->js_validation(); ?>
+	<?php //echo $v->js_validation(); ?>
 </div>
