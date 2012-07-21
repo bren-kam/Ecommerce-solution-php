@@ -16,25 +16,33 @@ class TemplateResponse extends Response {
 
     /**
      * Hold other variables
+     * @var array
      */
-    protected $_user;
+    protected $variables = array( 'title' => '' );
 
     /**
      * Pass in which file will be the View
      *
      * @param string $file_to_render
+     * @param string $title
      */
-    public function __construct( $file_to_render ) {
+    public function __construct( $file_to_render, $title ) {
         $this->_file_to_render = $file_to_render;
+        $this->add( 'title', $title . ' | ' . TITLE );
     }
 
     /**
-     * Set User
+     * Add data to variables
      *
-     * @param User $user
+     * @param string|array $key
+     * @param string $value [optional]
      */
-    public function set_user( $user ) {
-        $this->_user = $user;
+    public function add( $key, $value = '' ) {
+        if ( is_array( $key ) ) {
+            $this->variables = array_merge( $this->variables, $key );
+        } else {
+            $this->variables[$key] = $value;
+        }
     }
 
     /**
@@ -68,9 +76,11 @@ class TemplateResponse extends Response {
      */
     public function respond() {
         // Define defaults for resources
-        $resources = new Resources();
-        $template = new Template();
-        $user = $this->_user;
+        $this->add( 'resources', new Resources() );
+        $this->add( 'template', new Template() );
+
+        // Make available the variables
+        extract( $this->variables );
 
         require VIEW_PATH . 'header.php';
         require VIEW_PATH . $this->_file_to_render . '.php';
