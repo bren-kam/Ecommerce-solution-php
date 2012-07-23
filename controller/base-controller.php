@@ -80,10 +80,6 @@ abstract class BaseController {
      * @throws ControllerException
      */
     public final function run() {
-        // 2 because this method will count
-        if ( sizeof( $this->_available_actions ) < 2 )
-            throw new ControllerException( "No actions registered for controller " . get_class( $this ) );
-
         $actionName = $_REQUEST['_nonce'];
         $methodName = $this->_available_actions[$actionName];
 
