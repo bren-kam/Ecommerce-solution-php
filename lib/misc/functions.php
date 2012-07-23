@@ -56,7 +56,7 @@ function lib( $path, $require = true ) {
 
 	if ( file_exists( $file_path ) ) {
 		if ( $require )
-			require( $file_path );
+			require_once ( $file_path );
 
 		return $file_path;
 	}
