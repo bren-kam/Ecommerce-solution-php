@@ -1,24 +1,28 @@
 <?php
-class LoginController extends BaseController {
+class ResourcesController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
     public function __construct() {
         parent::__construct( );
-
-        // Tell what is the base for all login
-        $this->view_base = 'login/';
-        $this->section = 'Login';
     }
 
     /**
-     * Login Page
+     * Handle CSS
      *
      * @return TemplateResponse
      */
-    protected function index() {
-        $template_response = $this->get_template_response('index');
-        return $template_response;
+    protected function css() {
+        return new CssResponse( $_GET['f'] );
+    }
+
+    /**
+     * Handle JS
+     *
+     * @return bool
+     */
+    protected function js() {
+        return new JavascriptResponse( $_GET['f'] );
     }
 
     /**

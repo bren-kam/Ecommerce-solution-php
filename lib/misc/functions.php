@@ -16,9 +16,18 @@
  * @return string
  */
 function controller( $path ) {
-	$file_path = CONTROLLER_PATH . $path . '-controller.php';
+    // Each path that needs to be checked for a controller
+    $controller_paths = array( CONTROLLER_PATH, ABS_PATH . 'controller/' );
+    $exists = false;
 
-	if ( !file_exists( $file_path ) )
+    foreach ( $controller_paths as $controller_path ) {
+        $file_path = $controller_path . $path . '-controller.php';
+
+        if ( $exists = file_exists( $file_path ) )
+            break;
+    }
+
+    if ( !$exists )
         throw new ControllerException( 'Controller does not exist' );
 
     // Include the controller
@@ -26,6 +35,7 @@ function controller( $path ) {
 
     // Instantiate and run
     $controller_name = str_replace( ' ', '', ucwords( str_replace( '-', ' ', basename( $file_path, '.php' ) ) ) );
+
     $controller = new $controller_name;
     $controller->run();
 

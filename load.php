@@ -78,6 +78,9 @@ require LIB_PATH . 'labels/' . DOMAIN . '.php';
 /** Load the Base Controller */
 require ABS_PATH . 'controller/base-controller.php';
 
+/** Load the Loaders */
+require LIB_PATH . 'misc/loaders.php';
+
 /** Routing */
 require ABS_PATH . 'routing.php';
 

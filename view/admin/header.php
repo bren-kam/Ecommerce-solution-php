@@ -21,8 +21,9 @@ if ( !empty( $selected ) )
 <head profile="http://gmpg.org/xfn/11">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><?php echo $title; ?></title>
-<link type="text/css" rel="stylesheet" href="/css/<?php echo $resources->get_css_file(); ?>" />
-<link rel="icon" href="<?php echo ( 'imagineretailer.com' == DOMAIN ) ? '/favicon.ico' : '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
+<link type="text/css" rel="stylesheet" href="<?php echo $resources->get_css_file(); ?>" />
+<script type="text/javascript" src="<?php echo $resources->get_javascript_file( 'head' ); ?>"></script>
+    <link rel="icon" href="<?php echo ( 'imagineretailer.com' == DOMAIN ) ? '/favicon.ico' : '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
 <?php $template->get_head(); ?>
 </head>
 <body>

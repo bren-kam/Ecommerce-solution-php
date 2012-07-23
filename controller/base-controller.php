@@ -17,6 +17,12 @@ abstract class BaseController {
     protected $view_base;
 
     /**
+     * Define the section name for views
+     * @param string
+     */
+    protected $section;
+
+    /**
      * The model path for the current controller
      * @var string
      */
@@ -95,11 +101,17 @@ abstract class BaseController {
      * Return a new template response with the right path
      *
      * @param string $file
+     * @param string $title [optional]
      * @return TemplateResponse
      */
-    protected function get_template_response( $file ) {
-        $template_response = new TemplateResponse( $this->view_base . $file );
-        $template_response->set_user( $this->user );
+    protected function get_template_response( $file, $title = '' ) {
+        // Determine title
+        $title = ( empty( $title ) ) ? $this->section : $title . ' | ' . $this->section;
+
+        // Setup new template response
+        $template_response = new TemplateResponse( $this->view_base . $file, $title );
+        $template_response->add( 'user', $this->user );
+
         return $template_response;
     }
 
