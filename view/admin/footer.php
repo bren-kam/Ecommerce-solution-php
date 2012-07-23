@@ -46,7 +46,7 @@ global $user;
 </div>
 
 <!-- End: Footer -->
-<script type="text/javascript" src="/cache/js/<?php $resources->get_javascript_file(); ?>"></script>
+<script type="text/javascript">head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '<?php echo $resources->get_javascript_file(); ?>');</script>
 <?php $template->get_footer(); ?>
 </body>
 </html>

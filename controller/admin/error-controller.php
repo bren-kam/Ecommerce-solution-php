@@ -16,4 +16,12 @@ class ErrorController extends BaseController {
     protected function http_404() {
         return $this->get_template_response('404');
     }
+
+    /**
+     * Override login function
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        return true;
+    }
 }

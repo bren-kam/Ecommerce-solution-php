@@ -6,9 +6,6 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 
-RewriteRule ^css/(.*) /gsr/systems/backend/cache/css/$1 [L]
-RewriteRule ^js/(.*) /gsr/systems/backend/cache/js/$1 [L]
-
 # 1 YEAR
 <FilesMatch '\.(ico|pdf|flv)$'>
 Header set Cache-Control 'max-age=29030400, public'
