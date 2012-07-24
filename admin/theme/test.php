@@ -1,22 +1,12 @@
 <?php
 
-$s = new SiteOnTime();
-$s->run();
-exit;
-/*
-$array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );
-
-echo count( $array );
-foreach ( $array as $a ) {
-    fn::info( $a );
-    exit;
-}
 
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
 $packages = $a->get_packages();
+fn::info( $packages );
 exit;
-
+/*
 // Load the library
 library( 'craigslist-api' );
 $b = new Base_Class();
