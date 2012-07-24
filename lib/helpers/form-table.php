@@ -9,25 +9,33 @@ class FormTable {
     /**
      * Hold variables
      */
-    private $name;
-    private $action;
-    private $method;
-    private $fields;
-    private $v;
-    private $errs = '';
-    private $submit;
-    private $submit_classes = 'button';
-    private $attributes = array();
-    private $end_columns = '';
+    protected $name;
+    protected $action;
+    protected $method;
+    protected $fields;
+    protected $v;
+    protected $errs = '';
+    protected $submit;
+    protected $submit_classes = 'button';
+    protected $attributes = array();
+    protected $end_columns = '';
+
+    /**
+     * Hold Resources object
+     * @var Resources
+     */
+    protected $resources;
 
     /**
      * Constructor -- Create the name
      *
+     * @param Resources $resources
      * @param string $name
      * @param string $action [optional]
      * @param string $method [optional]
      */
-    public function __construct( $name, $action = '', $method = 'post' ) {
+    public function __construct( $resources, $name, $action = '', $method = 'post' ) {
+        $this->resources = $resources;
         $this->name = $name;
         $this->action = $action;
         $this->method = $method;
@@ -166,7 +174,7 @@ class FormTable {
      */
     private function _validator() {
         if ( is_null( $this->v ) ) {
-            $this->v = new Validator( $this->name );
+            $this->v = new Validator( $this->resources, $this->name );
 
             foreach ( $this->fields as $f ) {
                $f->validation( $this->v );

@@ -21,7 +21,7 @@ class LoginController extends BaseController {
         $template_response = $this->get_template_response('index');
 
         // Instantiate a new form table
-        $ft = $template_response->form_table( 'fLogin' );
+        $ft = new FormTable( $this->resources, 'fLogin' );
 
         // Choose login button
         $ft->submit( _('Login') );
