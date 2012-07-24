@@ -74,7 +74,7 @@ class nonce extends security {
 	 */
 	public static function field( $action = '', $name = "_nonce", $echo = true ) {
 		$nonce_field = '<input type="hidden" id="' . $name . '" name="' . $name . '" value="' . self::create( $action ) . '" />';
-		
+
 		if ( $echo )
 			echo $nonce_field;
 

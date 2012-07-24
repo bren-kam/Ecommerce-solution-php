@@ -6,7 +6,7 @@
  * @since 1.0
  */
 
-class Template extends Base_Class {
+class Template2 extends Base_Class {
 	/**
 	 * Sets the variable to hold CSS files
 	 * @var array

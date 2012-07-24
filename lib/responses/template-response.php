@@ -28,7 +28,16 @@ class TemplateResponse extends Response {
      */
     public function __construct( $file_to_render, $title ) {
         $this->_file_to_render = $file_to_render;
-        $this->add( 'title', $title . ' | ' . TITLE );
+        $this->add( array(
+            'title' => $title . ' | ' . TITLE
+            , 'resources' => new Resources()
+        ) );
+
+        if ( isset( $_POST ) )
+            $this->add( format::camel_case_to_underscore_deep( $_POST ) );
+
+        if ( isset( $_GET ) )
+            $this->add( format::camel_case_to_underscore_deep( $_GET ) );
     }
 
     /**
@@ -72,12 +81,43 @@ class TemplateResponse extends Response {
     }
 
     /**
+     * Return Resources
+     *
+     * @return Resources
+     */
+    public function resources() {
+        return $this->variables['resources'];
+    }
+
+    /**
+     * Create a new validator
+     *
+     * @param string $form_name
+     * @return Validator
+     */
+    public function validator( $form_name ) {
+        $this->variables['resources']->javascript('validator');
+
+        return new Validator( $form_name );
+    }
+
+    /**
+     * Create a form table
+     *
+     * @param string $form_name
+     * @return FormTable
+     */
+    public function form_table( $form_name ) {
+        $this->variables['resources']->javascript('validator');
+
+        return new FormTable( $form_name );
+    }
+
+    /**
      * Including the file
      */
     public function respond() {
-        // Define defaults for resources
-        $this->add( 'resources', new Resources() );
-        $this->add( 'template', new Template() );
+        $this->add( 'template', new Template( $this->variables ) );
 
         // Make available the variables
         extract( $this->variables );

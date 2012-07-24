@@ -7,4 +7,12 @@ class AccountsController extends BaseController {
         // Pass in the base for all the views
         parent::__construct( 'account/' );
     }
+
+    /**
+     * Login Page
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function index() {
+    }
 }

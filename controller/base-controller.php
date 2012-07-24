@@ -56,9 +56,6 @@ abstract class BaseController {
      * Initialize Controller
      */
     private function _init() {
-        // Autoload different classes
-        spl_autoload_register( array( $this, '_load_exception' ) );
-
         // This always needs to be included
         lib('responses/response');
         spl_autoload_register( array( $this, '_load_response' ) );
@@ -151,24 +148,6 @@ abstract class BaseController {
             $referer .= '?' . $_SERVER['QUERY_STRING'];
 
         url::redirect( '/login/?r=' . urlencode( $referer ) );
-    }
-
-    /**
-     * Load an exception
-     *
-     * @var string $exception
-     */
-    private function _load_exception( $exception ) {
-        if ( !stristr( $exception, 'Exception' ) )
-            return;
-
-        // Form the model name, i.e., AccountListing to account-listing.php
-        $exception_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $exception ) ) . '.php', 1 );
-
-        $full_path = LIB_PATH . 'exceptions/' . $exception_file;
-
-        if ( is_file( $full_path ) )
-            require_once $full_path;
     }
 
     /**
