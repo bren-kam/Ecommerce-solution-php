@@ -7,6 +7,7 @@
  */
 class Ashley extends Base_Class {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
+    const IMAGE_URL = 'https://www.ashleydirect.com/graphics/';
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
 	
@@ -49,32 +50,11 @@ class Ashley extends Base_Class {
     }
 
     /**
-     * Sorts images and finds out if any exist
-     *
-     * @param array $images
-     * @param array $original_skus
-     * @return array
-     */
-    private function _sort_images( $images, $original_skus ) {
-        list ( $series, $skus ) = explode( '/', preg_replace( '/\([^)]*\)/', '', $original_skus ), 2 );
-        $skus = explode ( '/', $skus );
-        $image_urls = array();
-
-        foreach ( $skus as $sku ) {
-            $key = $this->search_array( array_keys( $images ), $series );
-
-            if ( $key )
-                $image_urls[] = $images[$key];
-        }
-
-        return $image_urls;
-    }
-    /**
      * Load Packages
      */
     public function load_packages() {
         global $user;
-        $user['user_id'] = 1506;
+        $user['user_id'] = 1477;
 
         library('ashley-api/ashley-api');
         $a = new Ashley_API();
@@ -89,24 +69,15 @@ class Ashley extends Base_Class {
             $package_templates[$pt->TemplateId] = $pt;
         }
 
-        $images = $this->_get_images_by_sku();
         $i = 0;
 
         foreach ( $packages as $item ) {
-            $image_skus = $this->_sort_images( $images, $item->PackageName );
-
-            if ( empty( $image_skus[0] ) )
+            // We don't care if they don't have an image
+            if ( empty( $item->Image ) || !curl::check_file( self::IMAGE_URL . $item->Image ) )
                 continue;
 
-            $i++;
-            echo $item->SeriesNo . " - "  . $item->PackageName . "<br />\n";
-        }
-
-        echo $i;exit;
-
-        foreach ( $packages as $item ) {
-            exit;
 			$i++;
+
 			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
 			$sku = $item->PackageId;
 
@@ -911,23 +882,6 @@ class Ashley extends Base_Class {
 		return $product_id;
 	}
 
-    /**
-     * Get the images and return an array with them by SKU
-     *
-     * @return array
-     */
-    private function _get_images_by_sku() {
-        $images = $this->db->get_results( "SELECT CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/large/', pi.`image` ) AS image_url, p.`sku` FROM `product_images` AS pi LEFT JOIN `products` AS p ON ( pi.`product_id` = p.`product_id` ) LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) WHERE pi.`sequence` = 0 AND p.`user_id_created` = 353" );
-
-        // Handle any error
-		if( $this->db->errno() ) {
-			$this->err( 'Failed to get images.', __LINE__, __METHOD__ );
-			return false;
-		}
-
-        return ar::assign_key( $images, 'sku', true );
-    }
-	
 	/**
 	 * Upload image
 	 *
