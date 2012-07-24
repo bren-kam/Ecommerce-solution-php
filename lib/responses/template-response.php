@@ -23,14 +23,15 @@ class TemplateResponse extends Response {
     /**
      * Pass in which file will be the View
      *
+     * @param Resources $resources
      * @param string $file_to_render
      * @param string $title
      */
-    public function __construct( $file_to_render, $title ) {
+    public function __construct( $resources, $file_to_render, $title ) {
         $this->_file_to_render = $file_to_render;
         $this->add( array(
             'title' => $title . ' | ' . TITLE
-            , 'resources' => new Resources()
+            , 'resources' => $resources
         ) );
 
         if ( isset( $_POST ) )
@@ -78,39 +79,6 @@ class TemplateResponse extends Response {
      */
     protected function get_errors() {
         return $this->_errors;
-    }
-
-    /**
-     * Return Resources
-     *
-     * @return Resources
-     */
-    public function resources() {
-        return $this->variables['resources'];
-    }
-
-    /**
-     * Create a new validator
-     *
-     * @param string $form_name
-     * @return Validator
-     */
-    public function validator( $form_name ) {
-        $this->variables['resources']->javascript('validator');
-
-        return new Validator( $form_name );
-    }
-
-    /**
-     * Create a form table
-     *
-     * @param string $form_name
-     * @return FormTable
-     */
-    public function form_table( $form_name ) {
-        $this->variables['resources']->javascript('validator');
-
-        return new FormTable( $form_name );
     }
 
     /**

@@ -93,9 +93,12 @@ class Validator {
 	 * PHP5 Constructor
 	 * Includes Javascript
      *
+     * @param Resources $resources
      * @param string $form_name
 	 */
-	function __construct( $form_name ) {
+	function __construct( $resources, $form_name ) {
+        $resources->javascript('validator');
+
         $this->form_name = $form_name;
 		$this->random = mt_rand(0, 1000);
 	}

@@ -35,6 +35,12 @@ abstract class BaseController {
     protected $user;
 
     /**
+     * Hold the resources
+     * @var Resources
+     */
+    protected $resources;
+
+    /**
      * Setup standard reflection
      */
     public function __construct() {
@@ -69,6 +75,9 @@ abstract class BaseController {
         // Make sure the user is logged in
         if ( !$this->get_logged_in_user() )
             $this->login();
+
+        // Set the resources up
+        $this->resources = new Resources();
     }
 
     /**
@@ -102,7 +111,7 @@ abstract class BaseController {
         $title = ( empty( $title ) ) ? $this->section : $title . ' | ' . $this->section;
 
         // Setup new template response
-        $template_response = new TemplateResponse( $this->view_base . $file, $title );
+        $template_response = new TemplateResponse( $this->resources, $this->view_base . $file, $title );
         $template_response->add( 'user', $this->user );
 
         return $template_response;
