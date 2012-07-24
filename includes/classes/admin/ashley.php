@@ -10,6 +10,7 @@ class Ashley extends Base_Class {
     const IMAGE_URL = 'https://www.ashleydirect.com/graphics/';
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
+    const USER_ID = 1477;
 	
 	private $images = array();
 
@@ -25,9 +26,10 @@ class Ashley extends Base_Class {
 	public function __construct() {
 		// Load database library into $this->db (can be omitted if not required)
 		parent::__construct();
+
+        set_time_limit(300);
 		
 		// Time how long we've been on this page
-		$this->timer_start();
 		$this->curl = new curl();
 		$this->p = new Products();
 		$this->file = new Files();
@@ -53,14 +55,18 @@ class Ashley extends Base_Class {
      * Load Packages
      */
     public function load_packages() {
+        // Sets who is updating the products
         global $user;
         $user['user_id'] = 1477;
 
+        // Get librarys
         library('ashley-api/ashley-api');
         $a = new Ashley_API();
 
+        // Get packages
         $packages = $a->get_packages();
 
+        // Get templates for descriptions
         $unrefined_package_templates = $a->get_package_templates();
         $package_templates = array();
 
@@ -69,37 +75,57 @@ class Ashley extends Base_Class {
             $package_templates[$pt->TemplateId] = $pt;
         }
 
-        $i = 0;
+        // Get existing products
+        $existing_products = $this->_get_existing_products();
+
+        // Generate array of our items
+        $i = $skipped = 0;
+
+        // Initiate product string
+        $products_string = '';
+
+        // Any new products get al ink
+        $links = array();
 
         foreach ( $packages as $item ) {
             // We don't care if they don't have an image
-            if ( empty( $item->Image ) || !curl::check_file( self::IMAGE_URL . $item->Image ) )
+            if ( empty( $item->Image ) || !curl::check_file( self::IMAGE_URL . $item->Image ) ) {
+                $skipped++;
                 continue;
+            }
 
+            // Count how many products we're dealing with
 			$i++;
 
-			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
-			$sku = $item->PackageId;
+            // Ensure that we can keep running
+            echo '                                                   ';
+            set_time_limit(30);
+			flush();
 
-			$product_specs = $this->_package_descriptions[$item->PackageDescription];
-			$weight = $volume = 0;
-
+            // Start collecting data
 			$name = $item->SeriesName . ' ' . $item->SeriesColor . ' ' . $package_templates[$item->TemplateId];
 			$slug = str_replace( '---', '-', format::slug( $name ) );
+            $sku = $item->PackageId;
+			$image = $item->Image;
+			$weight = $volume = 0;
+
+            // Set item description
+			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
 			$description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
+
+            // Will have to format this
+			$product_specs = $this->_package_descriptions[$item->PackageDescription];
 
             // "Ashley Furniture" brand
 			$brand_id = 8;
-
-			$image = $item->Image;
 
 			$images = array();
 
 			////////////////////////////////////////////////
 			// Get/Create the product
-			if( array_key_exists( $sku, $products ) ) {
+			if( array_key_exists( $sku, $existing_products ) ) {
 				$identical = true;
-
+                
 				$product = $products[$sku];
 				$product_id = $product['product_id'];
 
@@ -960,37 +986,23 @@ class Ashley extends Base_Class {
 		
 		return !$result;
 	}
-	
-	/**
-	 * Logs in
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return true
-	 */
-	private function login() {
-		$this->curl->post( $this->login_url, $this->login_post_fields );
-		return true;
-	}
-	
-	/**
-	 * Starts the timer, for debugging purposes.
-	 *
-	 * @since 1.0.0
-	 */
-	private function timer_start() {
-		$this->time_start = microtime( true );
-	}
 
-	/**
-	 * Stops the debugging timer.
+    /**
+	 * Get Existing Products
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return int Total time spent on the query, in seconds
+	 * @return array
 	 */
-	private function scratchy_time() {
-		return microtime( true ) - $this->time_start;}
+	private function _get_existing_products() {
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return ar::assign_key( $products, 'sku' );
+	}
 
 	
 	/**
