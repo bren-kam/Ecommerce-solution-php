@@ -64,7 +64,8 @@ class ActiveRecordBase {
      */
     public function prepare( $sql, $format, $values ) {
         // Get the arguments
-        $values = array_slice( func_get_args(), 2 );
+        if ( !is_array( $values ) )
+            $values = array_slice( func_get_args(), 2 );
 
         return new ActiveRecordStatement( $this, $this->_get_statement( $sql, $format, $values ) );
     }
@@ -428,7 +429,7 @@ class ActiveRecordBase {
      * @param array $values
      * @return PDOStatement
      */
-    private function _get_statement( $sql, $format, $values ) {
+    private function _get_statement( $sql, $format, array $values ) {
         // Reset everything -- last query data is no longer last
         $this->_flush();
 
@@ -476,6 +477,7 @@ class ActiveRecordBase {
         } else if ( is_string( $old_format ) ) {
             // If they did put in a format, translate it
             $format = array();
+            $old_format = str_split( $old_format );
 
             // Assign every one
             foreach ( $old_format as $letter ) {

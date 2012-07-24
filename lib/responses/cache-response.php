@@ -13,6 +13,10 @@ class CacheResponse extends Response {
     protected $file;
 
     /**
+     * Hold the path
+     */
+
+    /**
      * Handle URL Redirect parameters
      *
      * @param string $cache_type
@@ -21,6 +25,9 @@ class CacheResponse extends Response {
     public function __construct( $cache_type, $file ) {
         $this->cache_type = $cache_type;
         $this->file = $file;
+
+        // This can be overridden if necessary
+        $this->path = CACHE_PATH . $this->cache_type . '/' . $this->file;
     }
 
     /**
@@ -36,6 +43,6 @@ class CacheResponse extends Response {
      * Send Header information
      */
     protected function respond() {
-        readfile( CACHE_PATH . $this->cache_type . '/' . $this->file );
+        readfile( $this->path );
     }
 }

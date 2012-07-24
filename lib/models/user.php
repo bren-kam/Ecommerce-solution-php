@@ -1,6 +1,8 @@
 <?php
 class User extends ActiveRecordBase {
-    public $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
+    // The columsn we will have access to
+    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
+    private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role' );
 
     /**
      * Setup the account initial data
@@ -10,19 +12,48 @@ class User extends ActiveRecordBase {
     }
 
     /**
+     * Login
+     *
+     * @param string $email
+     * @param string $password
+     * @return bool
+     */
+    public function login( $email, $password ) {
+        $role_requirement = ( defined('ADMIN') ) ? 6 : 1;
+
+		// Prepare the statement
+		$columns = $this->prepare( 'SELECT ' . $this->get_columns() . " FROM `users` WHERE `role` >= $role_requirement AND `status` = 1 AND `email` = :email AND `password` = MD5(:password)",
+            'ss',
+            array(
+                ':email' => $email
+                , ':password' => $password
+            )
+        )->get_row();
+
+		// If no user was found, return false
+		if ( !$columns )
+			return false;
+
+        // Assign values to this user
+        $this->assign_values( $columns );
+
+		// Record the login
+        $this->record_login();
+
+        return true;
+	}
+
+    /**
      * Get By Email
      *
      * @param string $email
      */
     public function get_by_email( $email ) {
-        $columns = $this->prepare( 'SELECT `user_id`, `company_id`, `email`, `contact_name`, `store_name`, `products`, `role` FROM `users` WHERE `status` = 1 AND `email` = :email', 's', $email )->get_row();
+        $columns = $this->prepare( 'SELECT ' . $this->get_columns() . ' FROM `users` WHERE `status` = 1 AND `email` = :email', 's', array( ':email' => $email ) )->get_row();
 
-        foreach ( $columns as $col => $value ) {
-            $this->{$col} = $value;
-        }
-
-        $this->id = $columns->user_id;
+        $this->assign_values( $columns );
     }
+
 
     /**
      * Check if the user has permissions
@@ -35,5 +66,38 @@ class User extends ActiveRecordBase {
             return true;
 
         return false;
+    }
+
+    /**
+     * Assign values
+     *
+     * @param stdClass $columns
+     */
+    protected function assign_values( $columns ) {
+        foreach ( $columns as $col => $value ) {
+            $this->{$col} = $value;
+        }
+
+        $this->id = $this->user_id;
+    }
+
+    /**
+     * Gets the columns
+     *
+     * @param string $prefix [optional]
+     * @return string
+     */
+    protected function get_columns( $prefix = '' ) {
+        if ( !empty( $prefix ) )
+            $prefix .= '.';
+
+        return "{$prefix}`" . implode( "`, {$prefix}`", $this->_columns ) . '`';
+    }
+
+    /**
+     * Record login
+     */
+    protected function record_login() {
+        $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 }

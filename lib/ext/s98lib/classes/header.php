@@ -18,6 +18,12 @@ class header extends Base_Class {
 		'json' => 'application/json'
         , 'text' => 'text/plain'
         , 'xml' => 'text/xml'
+        , 'gif' => 'image/gif'
+        , 'jpg' => 'image/jpeg'
+        , 'png' => 'image/png'
+        , 'css' => 'text/css; charset=utf-8'
+        , 'js' => 'text/javascript; charset=utf-8'
+        , 'javascript' => 'text/javascript; charset=utf-8'
 	);
 	
 	/**
@@ -118,6 +124,19 @@ class header extends Base_Class {
 			'Expires' => gmdate( "D, d M Y H:i:s", time() + 864000 ) . ' GMT'
 		) );
 	}
+
+    /**
+     * Sets the headers for an image
+     *
+     * @param string $extension
+     * @return bool
+     */
+    public static function image( $extension ) {
+        if ( !isset( self::$content_types[$extension] ) )
+            return false;
+
+        return self::type( $extension );
+    }
 	
 	/**
 	 * Sends a header of an HTTP Status code

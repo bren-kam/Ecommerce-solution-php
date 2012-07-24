@@ -14,6 +14,8 @@ class Resources {
 
     /**
      * Allow people to include whatever CSS files they want without duplicates
+     *
+     * @return Resources
      */
 	public function css() {
         $files = func_get_args();
@@ -22,10 +24,14 @@ class Resources {
             if ( !in_array( $f, $this->_css ) )
                 $this->_css[] = $f;
         }
+
+        return $this;
 	}
 
     /**
      * Allow people to include whatever JS files they want without duplicates
+     *
+     * @return Resources
      */
 	public function javascript() {
         $files = func_get_args();
@@ -34,6 +40,8 @@ class Resources {
             if ( !in_array( $f, $this->_javascript ) )
                 $this->_javascript[] = $f;
         }
+
+        return $this;
 	}
 
 

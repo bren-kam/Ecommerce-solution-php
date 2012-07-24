@@ -26,6 +26,15 @@ class ResourcesController extends BaseController {
     }
 
     /**
+     * Need different things for an image
+     *
+     * @return bool
+     */
+    protected function image() {
+        return new ImageResponse( $_SERVER['REQUEST_URI'] );
+    }
+
+    /**
      * Override login function
      * @return bool
      */

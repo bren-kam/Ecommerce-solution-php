@@ -10,6 +10,37 @@
  */
 
 class format extends Base_Class {
+    /**
+     * Camel case to underscore
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function camel_case_to_underscore( $string ) {
+        return strtolower( preg_replace( '/([a-z])([A-Z])/', "$1_$2", preg_replace( '/^[a-z]+([A-Z])/', "$1", $string ) ) );
+    }
+
+    /**
+     * Camel case to underscore
+     *
+     * @param array $array
+     * @return array
+     */
+    public static function camel_case_to_underscore_deep( $array ) {
+        // Support strings too
+        if ( !is_array( $array ) )
+            return self::camel_case_to_underscore( $array );
+
+        $new_array = array();
+
+        // Loop through the array
+        foreach ( $array as $key => $value ) {
+            $new_array[self::camel_case_to_underscore($key)] = is_array( $value ) ? array_map( array( 'self', 'camel_case_to_underscore_deep' ), $value ) : $value;
+        }
+
+        return $new_array;
+    }
+
 	/**
 	 * Navigates through an array and removes slashes from the values.
 	 *
