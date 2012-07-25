@@ -5,7 +5,7 @@ require_once 'PHPUnit/Extensions/Database/TestCase.php';
 /**
  * Base classe for all tests that needs to connect to Database
  */
-class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
+abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
 
     private static $pdo = null;
 
