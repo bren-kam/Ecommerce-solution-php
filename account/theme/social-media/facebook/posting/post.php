@@ -148,7 +148,7 @@ get_header();
                 )
                 , 2 => array(
                     'title' => _('Install The App')
-                    , 'text' => _('Enter your Facebook Connection Key (shown below) into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page.')
+                    , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $posting['key']
                 )
             );
 
