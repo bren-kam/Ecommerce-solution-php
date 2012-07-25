@@ -22,6 +22,4 @@ class UserTest extends BaseDatabaseTest {
     public function tearDown() {
         $this->user = null;
     }
-
-
 }
