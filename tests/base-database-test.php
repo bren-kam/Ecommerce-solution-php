@@ -26,14 +26,6 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
         return $this->createDefaultDBConnection( self::$pdo, ActiveRecordBase::DB_NAME );
     }
 
-    /**
-     * @return PHPUnit_Extensions_Database_DataSet_IDataSet
-     */
-    public function getDataSet() {
-        // How does this work?
-        return $this->createFlatXMLDataSet(dirname(__FILE__).'/_files/guestbook-seed.xml');
-    }
-
     public function getDataSet() {
         return new PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
     }
