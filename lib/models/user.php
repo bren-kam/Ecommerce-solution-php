@@ -14,8 +14,8 @@ class User extends ActiveRecordBase {
      * Setup the account initial data
      */
     public function __construct( $admin = 0 ) {
-        $this->_admin = $admin;
         parent::__construct( 'users' );
+        $this->_admin = $admin;
     }
 
     /**
