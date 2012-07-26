@@ -47,6 +47,9 @@ class LoginController extends BaseController {
         if ( $ft->posted() ) {
             // Try to login
             if ( $this->user->login( $_POST['tEmail'], $_POST['tPassword'] ) ) {
+                // Record the login
+                $this->user->record_login();
+
                 // Two Weeks : Two Days
                 $expiration = ( isset( $_POST['cbRememberMe'] ) ) ? 1209600 : 172800;
                 set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );

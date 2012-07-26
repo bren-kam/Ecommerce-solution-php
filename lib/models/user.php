@@ -31,14 +31,13 @@ class User extends ActiveRecordBase {
         )->get_row();
 
 		// If no user was found, return false
-		if ( !$columns )
+		if ( !$columns ) {
+            $this->unset_values();
 			return false;
+        }
 
         // Assign values to this user
         $this->assign_values( $columns );
-
-		// Record the login
-        $this->record_login();
 
         return true;
 	}
@@ -71,7 +70,7 @@ class User extends ActiveRecordBase {
     /**
      * Assign values
      *
-     * @param stdClass $columns
+     * @param stdClass|array $columns
      */
     protected function assign_values( $columns ) {
         foreach ( $columns as $col => $value ) {
@@ -79,6 +78,13 @@ class User extends ActiveRecordBase {
         }
 
         $this->id = $this->user_id;
+    }
+
+    /**
+     * Unset Values
+     */
+    protected function unset_values() {
+        $this->assign_values( array_fill_keys( $this->_columns, NULL ) );
     }
 
     /**
@@ -97,7 +103,8 @@ class User extends ActiveRecordBase {
     /**
      * Record login
      */
-    protected function record_login() {
-        $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
+    public function record_login() {
+        if ( $this->id )
+            $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 }

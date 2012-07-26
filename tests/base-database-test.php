@@ -13,6 +13,7 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
     /**
      * Retrieve a valid database connection
      * @override
+     * @return PHPUnit_Extensions_Database_DB_IDatabaseConnection
      */
     final public function getConnection() {
         if ( self::$pdo == null ) {
@@ -21,7 +22,16 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
                 , ActiveRecordBase::DB_USER, ActiveRecordBase::DB_PASSWORD
             );
         }
-        return $this->createDefaultDBConnection(self::$pdo, ActiveRecordBase::DB_NAME);
+
+        return $this->createDefaultDBConnection( self::$pdo, ActiveRecordBase::DB_NAME );
+    }
+
+    /**
+     * @return PHPUnit_Extensions_Database_DataSet_IDataSet
+     */
+    public function getDataSet() {
+        // How does this work?
+        return $this->createFlatXMLDataSet(dirname(__FILE__).'/_files/guestbook-seed.xml');
     }
 
     public function getDataSet() {
