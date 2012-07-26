@@ -77,7 +77,7 @@ get_header();
             $instructions = array(
                 1 => array(
                     'title' => _('Go to the Email Sign Up application')
-                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/email-sign-up/" title="' . _('Online Platform - Email Sign Up') . '" target="_blank">' . _('Email Sign Up') . '</a> ' . _('application page') . '.'
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-email-sign-up/" title="' . _('Online Platform - Email Sign Up') . '" target="_blank">' . _('Email Sign Up') . '</a> ' . _('application page') . '.'
                     , 'image' => false
                 )
                 , 2 => array(
