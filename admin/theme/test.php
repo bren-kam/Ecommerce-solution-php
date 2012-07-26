@@ -1,15 +1,19 @@
 <?php
-/*
-$array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );
+//$a = new Ashley();
+//$a->load_packages();
 
-foreach ( $array as $a ) {
-    fn::info( $a );
-    exit;
+library('ashley-api/ashley-api');
+$a = new Ashley_API();
+//fn::info( $a->get_items('LoadAllItemCategories') );
+$packages = $a->get_packages();
+
+$i = 0;
+foreach ( $packages as $package ) {
+    $i++;
+    if ( $i < 2000 )
+        continue;
+    fn::info( $package );exit;
 }
-*/
-
-$a = new Ashley();
-$a->load_packages();
 exit;
 /*
 // Load the library

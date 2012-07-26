@@ -177,13 +177,19 @@ class Ashley_API {
     /**
      * Get Items
      *
+     * Other options for item execute option
+     *      LoadItems
+     *      LoadAllItemCategories
+     *
+     * @param string $item_execute_option [optional]
      * @return object
      */
-    public function get_items() {
+    public function get_items( $item_execute_option = 'LoadItems' ) {
+        ini_set( 'memory_limit', '256M' );
         set_time_limit(300);
         // Setup the package request
         $package_request = new PackageRequest();
-        $package_request->ExecuteOptions = array( 'ItemExecuteOption' => 'LoadItems' );
+        $package_request->ExecuteOptions = array( 'ItemExecuteOption' => $item_execute_option );
 
         // Execute the response
         $this->_execute( 'GetItems', new GetItems( $package_request ) );
@@ -214,7 +220,6 @@ class Ashley_API {
         // SimpleXML errors out if it thinks its reading utf-16
         return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->ItemFeaturesCollection->XmlData ) );
     }
-
 
 	/***********************/
 	/* END: Ashley Methods */
