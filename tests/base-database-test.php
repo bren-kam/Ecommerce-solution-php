@@ -1,6 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Extensions/Database/TestCase.php';
+require_once 'PHPUnit/Extensions/Database/DataSet/QueryDataSet.php';
 
 /**
  * Base classe for all tests that needs to connect to Database
@@ -25,12 +26,8 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
         return $this->createDefaultDBConnection( self::$pdo, ActiveRecordBase::DB_NAME );
     }
 
-    /**
-     * @return PHPUnit_Extensions_Database_DataSet_IDataSet
-     */
     public function getDataSet() {
-        // How does this work?
-        return $this->createFlatXMLDataSet(dirname(__FILE__).'/_files/guestbook-seed.xml');
+        return new PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
     }
-
+    
 }
