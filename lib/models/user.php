@@ -1,5 +1,11 @@
 <?php
 class User extends ActiveRecordBase {
+    /**
+     * Hold whether admin is active or not
+     * @var int
+     */
+    private  $_admin;
+
     // The columsn we will have access to
     public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
     private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role' );
@@ -7,7 +13,8 @@ class User extends ActiveRecordBase {
     /**
      * Setup the account initial data
      */
-    public function __construct() {
+    public function __construct( $admin = 0 ) {
+        $this->_admin = $admin;
         parent::__construct( 'users' );
     }
 
@@ -19,7 +26,7 @@ class User extends ActiveRecordBase {
      * @return bool
      */
     public function login( $email, $password ) {
-        $role_requirement = ( defined('ADMIN') ) ? 6 : 1;
+        $role_requirement = ( 1 == $this->_admin ) ? 6 : 1;
 
 		// Prepare the statement
 		$columns = $this->prepare( 'SELECT ' . $this->get_columns() . " FROM `users` WHERE `role` >= $role_requirement AND `status` = 1 AND `email` = :email AND `password` = MD5(:password)",

@@ -11,7 +11,7 @@ class ActiveRecordBase {
     /**
      * Define connection parameters
      */
-    CONST DB_HOST = '199.204.138.78';
+    CONST DB_HOST = 'localhost';
     CONST DB_USER = 'imaginer_admin';
     CONST DB_PASSWORD = 'rbDxn6kkj2e4';
     CONST DB_NAME = 'imaginer_system';

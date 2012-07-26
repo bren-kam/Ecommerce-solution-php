@@ -7,7 +7,7 @@
  * @package Studio98 Library
  */
 
-class ActiveRecordBase {
+class DB {
     /**
      * Define connection parameters
      */
@@ -538,7 +538,7 @@ class ActiveRecordBase {
 /**
  * ActiveRecordStatement
  */
-class ActiveRecordStatement {
+class DBStatement {
     /**
      * Hold the database object
      * @var ActiveRecordBase
