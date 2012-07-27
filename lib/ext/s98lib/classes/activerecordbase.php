@@ -359,7 +359,7 @@ class ActiveRecordBase {
     /**
      * Get Last Query
      *
-     * @return string $query
+     * @return string
      */
     public function get_last_query() {
         return $this->_last_query;
@@ -459,6 +459,9 @@ class ActiveRecordBase {
             throw new ModelException( $e->getMessage(), $e );
         }
 
+        // Mark the last query
+        $this->_last_query = $sql;
+
         return $statement;
     }
 
@@ -516,7 +519,7 @@ class ActiveRecordBase {
             // If it's a string, then let's hope they did it correctly, if it's not, use the integer version
             $key = ( is_string( $key ) ) ? $key : $key + 1;
 
-            $replacement = ( is_int( $key ) ) ? $key : '?';
+            $replacement = ( is_string( $key ) ) ? $key : '?';
             $this->_last_query = preg_replace( '/' . regexp::escape_string( $replacement ) . '/', $this->_pdo->quote( $value ), $this->_last_query, 1 );
 
             // Bind the value

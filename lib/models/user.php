@@ -75,11 +75,22 @@ class User extends ActiveRecordBase {
     }
 
     /**
+     * Record login
+     */
+    public function record_login() {
+        if ( $this->id )
+            $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
+    }
+
+    /**
      * Assign values
      *
      * @param stdClass|array $columns
      */
     protected function assign_values( $columns ) {
+        if ( !is_array( $columns ) && !$columns instanceof stdClass )
+            return;
+
         foreach ( $columns as $col => $value ) {
             $this->{$col} = $value;
         }
@@ -105,13 +116,5 @@ class User extends ActiveRecordBase {
             $prefix .= '.';
 
         return "{$prefix}`" . implode( "`, {$prefix}`", $this->_columns ) . '`';
-    }
-
-    /**
-     * Record login
-     */
-    public function record_login() {
-        if ( $this->id )
-            $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 }
