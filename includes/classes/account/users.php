@@ -227,7 +227,7 @@ class Users extends Base_Class {
 
 		if ( $role > 1 ) {
 			// @Fix should `phone` and `logo` be removed and put in the websites:get_website function (meaning theme/website/top needs to change)
-			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1", ARRAY_A );
+			$websites = $this->db->get_results( "SELECT `website_id`, `os_user_id`, IF( '' = `subdomain`, `domain`, CONCAT( `subdomain`, '.', `domain` ) ) AS domain, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `seo`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`,  `ga_profile_id`, `mc_list_id`, `live`, `type` FROM `websites` WHERE `user_id` = $user_id AND `status` = 1 ORDER BY `title` ASC", ARRAY_A );
 
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -236,7 +236,7 @@ class Users extends Base_Class {
 			}
 		} else {
 			// @Fix -- look off `products` or `product_catalog`
-			$websites = $this->db->get_results( "SELECT a.`website_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`product_catalog`, a.`link_brands`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`live`, a.`type`, a.`pages`, ( b.`products` * a.`products` * a.`product_catalog` ) AS products, a.`ga_profile_id`, b.`blog`, b.`email_marketing`, b.`shopping_cart` FROM `websites` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`user_id` = $user_id AND `status` = 1", ARRAY_A );
+			$websites = $this->db->get_results( "SELECT a.`website_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`product_catalog`, a.`link_brands`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`live`, a.`type`, a.`pages`, ( b.`products` * a.`products` * a.`product_catalog` ) AS products, a.`ga_profile_id`, IF ( 1 = a.`blog`, b.`blog`, 0 ) AS blog, IF( 1 = a.`email_marketing`, b.`email_marketing`, 0 ) AS email_marketing, IF( 1 = a.`shopping_cart`, b.`shopping_cart`, 0 ) AS shopping_cart FROM `websites` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`user_id` = $user_id AND `status` = 1  ORDER BY a.`title` ASC", ARRAY_A );
 
 			// Handle any error
 			if ( $this->db->errno() ) {
