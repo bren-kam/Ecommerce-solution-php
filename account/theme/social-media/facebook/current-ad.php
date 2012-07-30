@@ -45,37 +45,6 @@ if ( !$current_ad ) {
 	$current_ad['content'] = '';
 }
 
-// Define instructions
-$instructions = array(
-    1 => array(
-        'title' => _('Go to the Current Ad application')
-        , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/current-ad/" title="' . _('Online Platform - Current Ad') . '" target="_blank">' . _('Current Ad') . '</a> ' . _('application page') . '.'
-        , 'image' => false
-    )
-    , 2 => array(
-        'title' => _('Install The App')
-        , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
-    )
-    , 3 => array(
-        'title' => _('Choose Your Page')
-        , 'text' => _('(Note - You must first be an admin of the page to install the App)')
-    )
-    , 4 => array(
-        'title' => _('Click Add Online Platform - Current Ad')
-    )
-    , 5 => array(
-        'title' => _('Click on the Current Ad App')
-        , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
-    )
-    , 6 => array(
-        'title' => _('Click on the Update Settings')
-    )
-    , 7 => array(
-        'title' => _('Click Add Online Platform - Current Ad')
-        , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
-    )
-);
-
 css( 'jquery.uploadify' );
 javascript( 'mammoth', 'swfobject', 'jquery.uploadify', 'website/page' );
 
@@ -118,7 +87,7 @@ get_header();
                 )
                 , 7 => array(
                     'title' => _('Click Add Online Platform - Current Ad')
-                    , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
+                   , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $current_ad['key']
                 )
             );
 

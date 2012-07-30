@@ -113,7 +113,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-pro
 			$ta = new Tags;
 		
 		$ta->delete( 'product', $product_id );
-		$ta->add( 'product', $product_id, explode( '|', substr( $_POST['hTags'], 0, -1 ) ) );
+		$ta->add( 'product', $product_id, explode( '|', $_POST['hTags'] ) );
 		
 		// Add attributes
 		$a->delete_item_relations( $product_id );

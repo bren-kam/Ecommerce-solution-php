@@ -128,7 +128,8 @@ class Ashley_Feed extends Base_Class {
                 continue;
 
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-			
+
+            // Prevent SKUs not sold in America or only in containers
 			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
 				continue;
 			
