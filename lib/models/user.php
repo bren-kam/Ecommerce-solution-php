@@ -1,5 +1,11 @@
 <?php
 class User extends ActiveRecordBase {
+    /**
+     * Hold whether admin is active or not
+     * @var int
+     */
+    private  $_admin;
+
     // The columsn we will have access to
     public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
     private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role' );
@@ -7,8 +13,9 @@ class User extends ActiveRecordBase {
     /**
      * Setup the account initial data
      */
-    public function __construct() {
+    public function __construct( $admin = 0 ) {
         parent::__construct( 'users' );
+        $this->_admin = $admin;
     }
 
     /**
@@ -19,7 +26,7 @@ class User extends ActiveRecordBase {
      * @return bool
      */
     public function login( $email, $password ) {
-        $role_requirement = ( defined('ADMIN') ) ? 6 : 1;
+        $role_requirement = ( 1 == $this->_admin ) ? 6 : 1;
 
 		// Prepare the statement
 		$columns = $this->prepare( 'SELECT ' . $this->get_columns() . " FROM `users` WHERE `role` >= $role_requirement AND `status` = 1 AND `email` = :email AND `password` = MD5(:password)",
@@ -68,11 +75,22 @@ class User extends ActiveRecordBase {
     }
 
     /**
+     * Record login
+     */
+    public function record_login() {
+        if ( $this->id )
+            $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
+    }
+
+    /**
      * Assign values
      *
      * @param stdClass|array $columns
      */
     protected function assign_values( $columns ) {
+        if ( !is_array( $columns ) && !$columns instanceof stdClass )
+            return;
+
         foreach ( $columns as $col => $value ) {
             $this->{$col} = $value;
         }
@@ -98,13 +116,5 @@ class User extends ActiveRecordBase {
             $prefix .= '.';
 
         return "{$prefix}`" . implode( "`, {$prefix}`", $this->_columns ) . '`';
-    }
-
-    /**
-     * Record login
-     */
-    public function record_login() {
-        if ( $this->id )
-            $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 }
