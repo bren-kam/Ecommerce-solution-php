@@ -86,7 +86,7 @@ get_header();
                 )
                 , 7 => array(
                     'title' => _('Click Add Online Platform - Facebook Site')
-                    , 'text' => _('Copy and paste the connection code below into the Facebook Connection Key box shown below (when done it will say Connected)')
+                    , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $facebook_site['key']
                 )
             );
 

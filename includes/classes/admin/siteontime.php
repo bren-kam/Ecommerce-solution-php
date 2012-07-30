@@ -34,21 +34,21 @@ class SiteOnTime extends Base_Class {
         , 'Dryers > Compact & Portable Dryers' => 286 // Appliances > Dryers
         , 'Dryers > Electric: Match Front Load' => 286 // Appliances > Dryers
         , 'Dryers > Gas: Match Front Load' => 286 // Appliances > Dryers
-        , 'Blu Ray > Blu-Ray Players' => 295 // Electronics > TV & Video
+        , 'Blu Ray > Blu-Ray Players' => 659 // Electronics > BluRay
         , 'Freezers > All Freezer - Matches Refrigerator' => 289 // Appliances > Freezers
         , 'Freezers > Chest' => 289 // Appliances > Freezers
         , 'Freezers > Upright: No Defrost' => 289 // Appliances > Freezers
         , 'Freezers > Upright: Frost Free' => 289 // Appliances > Freezers
-        , 'LCD TVs > LCD HDTV 11" - 19"' => 295 // Electronics > TV & Video
-        , 'LCD TVs > LCD HDTV 20" - 29"' => 295 // Electronics > TV & Video
-        , 'LCD TVs > LCD HDTV 30" - 39"' => 295 // Electronics > TV & Video
-        , 'LCD TVs > LCD HDTV 40" - 49"' => 295 // Electronics > TV & Video
-        , 'LCD TVs > LCD HDTV 50" - 59"' => 295 // Electronics > TV & Video
-        , 'LED TVs > LED 11" - 29"' => 295 // Electronics > TV & Video
-        , 'LED TVs > LED 30" - 39"' => 295 // Electronics > TV & Video
-        , 'LED TVs > LED 40" - 49"' => 295 // Electronics > TV & Video
-        , 'LED TVs > LED 50" - 59"' => 295 // Electronics > TV & Video
-        , 'LED TVs > LED 60" UP' => 295 // Electronics > TV & Video
+        , 'LCD TVs > LCD HDTV 11" - 19"' => 660 // Electronics > LCD TVs
+        , 'LCD TVs > LCD HDTV 20" - 29"' => 660 // Electronics > LCD TVs
+        , 'LCD TVs > LCD HDTV 30" - 39"' => 660 // Electronics > LCD TVs
+        , 'LCD TVs > LCD HDTV 40" - 49"' => 660 // Electronics > LCD TVs
+        , 'LCD TVs > LCD HDTV 50" - 59"' => 660 // Electronics > LCD TVs
+        , 'LED TVs > LED 11" - 29"' => 661 // Electronics > LED TVs
+        , 'LED TVs > LED 30" - 39"' => 661 // Electronics > LED TVs
+        , 'LED TVs > LED 40" - 49"' => 661 // Electronics > LED TVs
+        , 'LED TVs > LED 50" - 59"' => 661 // Electronics > LED TVs
+        , 'LED TVs > LED 60" UP' => 661 // Electronics > LED TVs
         , 'Microwaves > Countertop' => 291 // Appliances > Microwaves
         , 'Microwaves > Over The Range' => 291 // Appliances > Microwaves
         , 'Microwaves > Built-In' => 291 // Appliances > Microwaves
@@ -77,10 +77,10 @@ class SiteOnTime extends Base_Class {
         , 'Refrigerators > Built-In: Side x Side' => 288 // Appliances > Refrigerators
         , 'Refrigerators > Cabinet Depth: Bottom Freezer' => 288 // Appliances > Refrigerators
         , 'Refrigerators > Cabinet Depth: SxS' => 288 // Appliances > Refrigerators
-        , 'TV Accessories > TV Accessories' => 295 // Electronics > TV & Video//accessories
-        , 'TV Video Combos > TV - DVD Combo' => 295 // Electronics > TV & Video
-        , 'TV Furniture > TV Stands' => 295 // Electronics > TV & Video//accessories
-        , 'TV Furniture > TV Mounts' => 295 // Electronics > TV & Video//accessories
+        , 'TV Accessories > TV Accessories' => 662 // Electronics > TV Acccessories
+        , 'TV Video Combos > TV - DVD Combo' => 663 // Electronics > TV Video Combos
+        , 'TV Furniture > TV Stands' => 664 // Electronics > TV Furniture
+        , 'TV Furniture > TV Mounts' => 664 // Electronics > TV Furniture
         , 'Warming Drawers > Warming Drawers' => 656 // Appliances > Warming Drawers
         , 'Washers > Front Load' => 285 // Appliances > Washers
         , 'Washers > Top Load' => 285 // Appliances > Washers
@@ -90,12 +90,12 @@ class SiteOnTime extends Base_Class {
         , 'Washers > Laundry Accessories' => 285 // Appliances > Washers
         , 'Wine & Beverage > Wine Storage' => 655 // Appliances > Wine and beverage
         , 'Wine & Beverage > Beverage Coolers' => 655 // Appliances > Wine and beverage
-        , 'Plasma TVs > Plasma 50" - 59"' => 295 // Electronics > TV & Video
-        , 'Plasma TVs > Plasma 40" - 49"' => 295 // Electronics > TV & Video
-        , 'DLP TVs > DLP 60" -  69"' => 295 // Electronics > TV & Video
-        , 'DLP TVs > DLP 70" & UP' => 295 // Electronics > TV & Video
-        , 'Plasma TVs > Plasma 60" - 69' => 295 // Electronics > TV & Video
-        , 'LCD TVs > LCD 60" & UP' => 295 // Electronics > TV & Video
+        , 'Plasma TVs > Plasma 50" - 59"' => 665 // Electronics > Plasma TVs
+        , 'Plasma TVs > Plasma 40" - 49"' => 665 // Electronics > Plasma TVs
+        , 'DLP TVs > DLP 60" -  69"' => 666 // Electronics > DLP TVs
+        , 'DLP TVs > DLP 70" & UP' => 666 // Electronics > DLP TVs
+        , 'Plasma TVs > Plasma 60" - 69' => 665 // Electronics > Plasma TVs
+        , 'LCD TVs > LCD 60" & UP' => 660 // Electronics > LCD TVs
         , 'Cooktops > Electric Induction Cooktops' => 290 // Appliances > Ranges & Ovens
         , 'Refrigerators > Icemaker Kits' => 288 // Appliances > Refrigerators
         , 'Refrigerators > Refrigerator Accessories' => 288 // Appliances > Refrigerators
@@ -170,7 +170,7 @@ class SiteOnTime extends Base_Class {
         $i = $skipped = 0;
 
         // Initiate product string
-        $products_string = '';
+        $products_string = $non_existent_categories = '';
 
         // Any new products get al ink
         $links = array();
@@ -283,6 +283,14 @@ class SiteOnTime extends Base_Class {
 
 			$images = array();
 
+            // Add category
+            $category_id = $this->_category_translation[$item->Category . ' > ' . $item->SubCategory];
+
+            if ( !$category_id ) {
+                $non_existent_categories .= $item->Category . ' > ' . $item->SubCategory . "\n";
+                continue;
+            }
+
 			////////////////////////////////////////////////
 			// Get/Create the product
 			if ( array_key_exists( $item->ProductID, $existing_products ) ) {
@@ -310,7 +318,7 @@ class SiteOnTime extends Base_Class {
 					$slug = $this->_unique_slug( $slug );
 
 					if ( $slug != $product['slug'] ) {
-						echo $slug . '/' . $product['slug'] , '|slug';
+						echo 'slug';
 						$identical = false;
 					}
 				}
@@ -325,13 +333,17 @@ class SiteOnTime extends Base_Class {
 				$images = $product_images;
 
 				if ( ( 0 == count( $images ) || !empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
-					$identical = false;
 					$image_name = $this->upload_image( $image, $slug, $product_id, $industry );
 
-					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
+					if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+						echo 'images';
+						$identical = false;
 						$images[] = $image_name;
+						echo $image_name;exit;
 					
-					$this->p->add_product_images( $images, $product_id );
+						fn::info( $images );
+						$this->p->add_product_images( $images, $product_id );
+					}
 				}
 				
 				if ( 0 == count( $images ) && 'private' != $publish_visibility ) {
@@ -354,7 +366,7 @@ class SiteOnTime extends Base_Class {
 				if( empty( $product_specs ) ) {
 					$product_specs = $product_specifications;
 				} elseif ( $product_specs != $product_specifications ) {
-					echo 'specs:' . $product_specs . '~' . $product_specifications;
+					echo 'specs';
 					$identical = false;
 				}
 
@@ -372,7 +384,7 @@ class SiteOnTime extends Base_Class {
 					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
 
 					if ( $product_status != $product['status'] ) {
-						echo $product_status, ',', $product['status'], '|status';
+						echo 'status';
 						$identical = false;
 					}
 				}
@@ -390,12 +402,21 @@ class SiteOnTime extends Base_Class {
 					echo 'volume';
 					$identical = false;
 				}
-				
+
+                if ( $category_id != $product['category_id'] ) {
+                    echo 'category';
+                    echo $category_id . '|' . $product['category_id'];
+                    exit;
+                    $identical = false;
+                }
+
 				// If everything is identical, we don't want to do anything
 				if ( $identical ) {
 					$skipped++;
 					$products_string .= $name . "\n";
 					continue;
+				} else {
+					exit;
 				}
 			} else {
 				$product_id = $this->p->create( self::USER_ID );
@@ -434,21 +455,18 @@ class SiteOnTime extends Base_Class {
 
 				$this->p->add_product_images( $images, $product_id );
                 $products[$item->ProductID] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
-
-                // Add category
-                $category_id = $this->_category_translation[$item->Category . ' > ' . $item->SubCategory];
-
-                if ( $category_id ) {
-                    $this->p->add_categories( $product_id, array( $category_id ) );
-                    $publish_visibility = 'public';
-                } else {
-                    $publish_visibility = 'private';
-                }
 			}
 			
 			// Update the product
 			$this->p->update( $name, $slug, $description, 'in-stock', $sku, $price, $list_price, $product_specs, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight, $volume );
+
+            // Empty the categories
+            $this->p->empty_categories( $product_id );
 			
+			// Add any category
+            if ( $category_id )
+                $this->p->add_categories( $product_id, array( $category_id ) );
+
 			$products_string .= $name . "\n";
 
 			// We don't want to carry them around in the next loop
@@ -476,6 +494,9 @@ class SiteOnTime extends Base_Class {
 			"X-Mailer: PHP/" . phpversion();
 
 		mail( 'kerry@studio98.com', 'Site On Time - ', $products_string, $headers );
+
+        if ( !empty ( $non_existent_categories ) )
+    		mail( 'kerry@studio98.com', 'Site On Time - Non Existent Categories', $non_existent_categories, $headers );
 
 		if ( is_array( $links['new-products'] ) ) {
 			$message = '';
@@ -576,7 +597,7 @@ class SiteOnTime extends Base_Class {
 	 * @return array
 	 */
 	private function _get_existing_products() {
-		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, pm.`feed_product_id` FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_meta` AS pm ON ( a.`product_id` = pm.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, pm.`feed_product_id`, COALESCE( pc.`category_id`, 0 ) AS category_id FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_meta` AS pm ON ( a.`product_id` = pm.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( a.`product_id` = pc.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
 
 		// Handle any error
 		if( $this->db->errno() ) {

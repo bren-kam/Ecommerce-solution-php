@@ -44,7 +44,7 @@ if ( !empty( $selected ) )
 	</div>
 	<div id="nav">
 		<div id="nav-links">
-			<?php if ( $user ) { ?>
+			<?php if ( $user && '/select-website/' != $_SERVER['REQUEST_URI'] ) { ?>
 				<a href="/" title="<?php echo _('Home'); ?>"<?php if ( isset( $home ) ) echo $home; ?>><?php echo _('Home'); ?></a>
 				<?php
 				if ( isset( $user['website'] ) ) { 
@@ -87,7 +87,7 @@ if ( !empty( $selected ) )
 		</div>
 		<div id="site">
 			<?php 
-			if ( $user && $user['website'] ) {
+			if ( $user && $user['website'] && '/select-website/' != $_SERVER['REQUEST_URI'] ) {
 				?> 
 				<a href="http://<?php echo $user['website']['domain']; ?>/" title="<?php echo $user['website']['title']; ?>" target="_blank"><?php echo '<span class="highlight">', _('Site:'), '</span> ', $user['website']['title']; ?></a>
 				<?php if ( count( $user['websites'] ) > 1 ) { ?>

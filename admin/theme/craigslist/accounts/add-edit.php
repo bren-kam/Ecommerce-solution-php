@@ -25,8 +25,6 @@ $v->form_name = 'fAddEditAccount';
 if ( !$website_id )
     $v->add_validation( 'sWebsiteID', 'req', _('The "Account" field is required') );
 
-$v->add_validation( 'sPlan', 'req', _('The "Plan" field is required') );
-
 add_footer( $v->js_validation() );
 
 // Initialize variable
