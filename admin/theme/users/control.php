@@ -18,7 +18,7 @@ set_cookie( $auth_cookie, base64_encode( security::encrypt( $new_user['email'], 
 set_cookie( 'wid', $websites[0]['website_id'], 172800 ); // 2 days
 set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
 
-$url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : 'account.imagineretailer.com' ) . '/';
+$url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) ) . '/';
 
 url::redirect( $url );
 ?>
