@@ -83,7 +83,7 @@ get_header();
 	<div id="subcontent">
         <?php 
 		if ( isset( $errs ) )
-				echo "<p class='error'>$errs</p>";
+			echo "<p class='error'>$errs</p>";
 		?>
         <form name="fAddEditShipping" id="fAddEditShipping" action="/shopping-cart/shipping/add-edit-custom/" method="post">
             <table class="form">
