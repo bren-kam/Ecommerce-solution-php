@@ -297,7 +297,7 @@ class ActiveRecordBase {
      *
      * @param string|PDOStatement $query
      * @return bool|PDOStatement
-     * @throws InvalidParametersException|ModelException
+     * @throws ModelException
      */
     public function query( $query ) {
         // We Now have a statement
@@ -305,6 +305,12 @@ class ActiveRecordBase {
 
         // Do the actual Database call
         $this->_statement->execute();
+
+        // Throw an error if it doesn't work
+        if ( 00000 != $this->_statement->errorCode() ) {
+            $error_info = $this->_statement->errorInfo();
+            throw new ModelException( $error_info[2] );
+        }
     }
 
     /**

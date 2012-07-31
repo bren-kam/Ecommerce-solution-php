@@ -99,27 +99,38 @@ class UserAdminTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test and valid record login
-     */
-    public function testValidRecordLogin() {
-        // Setup ID
-        $this->user->id = 514;
-
-        // Record login
-        $this->user->record_login();
-
-        $this->assertTrue( false != stristr( $this->user->get_last_query(), 'UPDATE `users` SET `last_login`' ) );
-        $this->assertEquals( $this->user->get_row_count(), 1 );
-    }
-
-    /**
      * Test and invalid record login
      */
     public function testInvalidRecordLogin() {
+        // Setup variables
+        $datetime = new DateTime();
+
         // Record login
         $this->user->record_login();
 
-        $this->assertFalse( stristr( $this->user->get_last_query(), 'UPDATE `users` SET `last_login`' ) );
+        // Get the last login as a date time
+        $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = 514' ) );
+
+        // It should be more recent
+        $this->assertLessThan( $datetime->getTimestamp() - 1, $last_login->getTimestamp() );
+    }
+
+    /**
+     * Test and valid record login
+     */
+    public function testValidRecordLogin() {
+        // Setup variables
+        $this->user->id = 514;
+        $datetime = new DateTime();
+
+        // Record login
+        $this->user->record_login();
+
+        // Get the last login as a date time
+        $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
+
+        // It should be more recent
+        $this->assertGreaterThan( $datetime->getTimestamp() - 1, $last_login->getTimestamp() );
     }
 
     /**

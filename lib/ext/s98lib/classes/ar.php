@@ -30,7 +30,9 @@ class ar extends Base_Class {
 	public static function assign_key( $array, $key, $remove = false ) {
 		if ( !is_array( $array ) )
 			return $array;
-		
+
+        $new_array = array();
+
 		foreach ( $array as $a ) {
 			// Get the value
 			$value = $a[$key];
@@ -38,7 +40,7 @@ class ar extends Base_Class {
 			// If we need to remove it
 			if ( $remove ) {
 				unset( $a[$key] );
-				
+
 				$new_array[$value] = ( 1 == count( $a ) ) ? array_shift( $a ) : $a;
 			} else {
 				$new_array[$value] = $a;

@@ -10,19 +10,37 @@ class ResourcesController extends BaseController {
     /**
      * Handle CSS
      *
-     * @return TemplateResponse
+     * @return CssResponse
      */
     protected function css() {
         return new CssResponse( $_GET['f'] );
     }
 
     /**
+     * Handle CSS Single File
+     *
+     * @return CssResponse
+     */
+    protected function css_single() {
+        return new CssResponse( $this->resources->get_css_file( $_GET['f'] ) );
+    }
+
+    /**
      * Handle JS
      *
-     * @return bool
+     * @return JavascriptResponse
      */
     protected function js() {
         return new JavascriptResponse( $_GET['f'] );
+    }
+
+    /**
+     * Handle single JS
+     *
+     * @return JavascriptResponse
+     */
+    protected function js_single() {
+        return new JavascriptResponse( $this->resources->get_javascript_file( $_GET['f'] ) );
     }
 
     /**
