@@ -89,7 +89,7 @@ get_header();
             <table class="form">
                 <tr>
                     <td><label for="tName"><?php echo _('Name: '); ?></label></td>
-                    <td><input name="tName" id="tName" tmpval="<?php echo _('Method Name'); ?>..." class="tb" maxlength="25" type="text" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $name; ?>" /></td>
+                    <td><input name="tName" id="tName" tmpval="<?php echo _('Method Name'); ?>..." class="tb" maxlength="50" type="text" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $name; ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="sMethod"><?php echo _('Method: '); ?></label></td>
