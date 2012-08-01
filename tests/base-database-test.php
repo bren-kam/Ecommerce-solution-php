@@ -8,12 +8,27 @@ define('LIB_PATH', realpath( $_SERVER['DOCUMENT_ROOT'] . '../' ) . '/lib/' );
 // Need registry for Database
 require LIB_PATH . 'helpers/registry.php';
 
+// DB class for helping
+require LIB_PATH . 'test/db.php';
+
 /**
  * Base classe for all tests that needs to connect to Database
  */
 abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
+    /**
+     * Hold the database variable
+     * @var DB
+     */
+    protected $db;
 
     private static $pdo = null;
+
+    /**
+     * Initialize DB
+     */
+    public function __construct() {
+        $this->db = new DB();
+    }
 
     /**
      * Retrieve a valid database connection

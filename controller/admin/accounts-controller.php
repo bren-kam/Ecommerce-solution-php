@@ -5,14 +5,21 @@ class AccountsController extends BaseController {
      */
     public function __construct() {
         // Pass in the base for all the views
-        parent::__construct( 'account/' );
+        parent::__construct();
+
+        // Tell what is the base for all login
+        $this->view_base = 'accounts/';
+        $this->section = 'Accounts';
     }
 
     /**
-     * Login Page
+     * List Accounts
      *
-     * @return TemplateResponse|RedirectResponse
+     * @return TemplateResponse
      */
     protected function index() {
+        $template_response = $this->get_template_response( 'index' );
+
+        return $template_response;
     }
 }

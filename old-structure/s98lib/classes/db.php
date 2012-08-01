@@ -7,7 +7,7 @@
  * @package Studio98 Library
  */
 
-class DB {
+class DB2 {
     /**
      * Define connection parameters
      */

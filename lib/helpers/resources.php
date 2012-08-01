@@ -106,7 +106,7 @@ class Resources {
             }
         }
 
-        return '/resources/css/?f=' . $cached_file;
+        return $cached_file;
     }
 
     /**
@@ -168,6 +168,6 @@ class Resources {
             }
         }
 
-        return '/resources/js/?f=' . $cached_file;
+        return $cached_file;
     }
 }
