@@ -1,5 +1,5 @@
 <?php
-class AccountsController extends BaseController {
+class AccountsAjaxController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
