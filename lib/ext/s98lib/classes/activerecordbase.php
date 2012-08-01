@@ -168,10 +168,11 @@ class ActiveRecordBase {
      * Defaults to fetching as an object
      *
      * @param string|PDOStatement $query [optional]
-     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC,
+     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC
+     * @param mixed $fetch_argument [optional]
      * @return mixed
      */
-    public function get_results( $query = NULL, $style = PDO::FETCH_OBJ ) {
+    public function get_results( $query = NULL, $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
         // Make sure we have a statement
         if ( !is_null( $query ) )
             $this->query( $query );
@@ -179,7 +180,7 @@ class ActiveRecordBase {
         // Make sure we have a statement
         $this->_statement();
 
-        return $this->_statement->fetchAll( $style );
+        return ( !is_null( $fetch_argument ) ) ? $this->_statement->fetchAll( $style, $fetch_argument ) : $this->_statement->fetchAll( $style );
     }
 
     /**
@@ -188,16 +189,21 @@ class ActiveRecordBase {
      * Defaults to fetching as an object
      *
      * @param string|PDOStatement $query [optional]
-     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC,
+     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC, FETCH_CLASS
+     * @param string $class_name [optional] NULL
      * @return mixed
      */
-    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ ) {
+    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ, $class_name = NULL ) {
         // Make sure we have a statement
         if ( !is_null( $query ) )
             $this->query( $query );
 
         // Make sure we have a statement
         $this->_statement();
+
+        // Make it possible to do the FETCH_CLASS
+        if ( PDO::FETCH_CLASS == $style && !is_null( $class_name ) )
+            $this->_statement->setFetchMode( $style, $class_name );
 
         return $this->_statement->fetch( $style );
     }
@@ -587,19 +593,23 @@ class ActiveRecordStatement {
     /**
      * Get Results
      *
+     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC
+     * @param mixed $fetch_argument [optional] NULL
      * @return object
      */
-    public function get_results() {
-        return $this->_ar->get_results( $this->_statement );
+    public function get_results( $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
+        return $this->_ar->get_results( $this->_statement, $style, $fetch_argument );
     }
 
     /**
      * Get Row
      *
+     * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC, FETCH_CLASS
+     * @param string $class_name [optional]
      * @return object
      */
-    public function get_row() {
-        return $this->_ar->get_row( $this->_statement );
+    public function get_row( $style = PDO::FETCH_OBJ, $class_name = null ) {
+        return $this->_ar->get_row( $this->_statement, $style, $class_name );
     }
 
     /**

@@ -12,10 +12,11 @@
  * Include a controller
  *
  * @param string $path
+ * @param string $method
  * @throws ControllerException
  * @return string
  */
-function controller( $path ) {
+function controller( $path, $method ) {
     // Each path that needs to be checked for a controller
     $controller_paths = array( CONTROLLER_PATH, ABS_PATH . 'controller/' );
     $exists = false;
@@ -37,20 +38,10 @@ function controller( $path ) {
     $controller_name = str_replace( ' ', '', ucwords( str_replace( '-', ' ', basename( $file_path, '.php' ) ) ) );
 
     $controller = new $controller_name;
-    $controller->run();
+    $controller->run( $method );
 
     return $file_path;
 }
-
-/**
- * Choose the method to run
- *
- * @param string $method
- */
-function method( $method ) {
-    $_REQUEST['_nonce'] = nonce::create( $method );
-}
-
 
 /**
  * Inc - properly includes a file

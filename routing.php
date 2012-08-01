@@ -10,11 +10,8 @@
 
 // If it's the home page
 if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) {
-    // Define the method
-    method('index');
-
     // Set the transaction name
-    $transaction_name = controller('home');
+    $transaction_name = controller( 'home', 'index' );
 } else {
 	// Force a trailing slash
 	if ( $_SERVER['REQUEST_URI'][strlen( $_SERVER['REQUEST_URI'] ) - 1] != '/' ) {
@@ -50,13 +47,12 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
         $controller = implode( '/', $slug_parts );
     }
 
-    method( $method );
+    $method = str_replace( '-', '_', $method );
 
     try {
-        $transaction_name = controller( $controller );
+        $transaction_name = controller( $controller, $method );
     } catch ( ControllerException $e ) {
-        method('http_404');
-        $transaction_name = controller( 'error' );
+        $transaction_name = controller( 'error', 'http_404' );
     }
 }
 

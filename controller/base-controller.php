@@ -5,20 +5,20 @@
  */
 abstract class BaseController {
     /**
-     * Contain the available methods for subclass
-     * @var array
+     * Hold the method that was called
+     * @var string
      */
-    private $_available_actions;
+    protected $method;
 
     /**
      * Define the base for the views
-     * @param string
+     * @var string
      */
     protected $view_base;
 
     /**
      * Define the section name for views
-     * @param string
+     * @var string
      */
     protected $section;
 
@@ -45,14 +45,6 @@ abstract class BaseController {
      */
     public function __construct() {
         $this->_available_actions = array();
-        $reflectionClass = new ReflectionClass( get_class( $this ) );
-
-        // All methods from any Controller inheriting from BaseController
-        foreach ( $reflectionClass->getMethods() as $method ) {
-            $methodName = $method->getName();
-            $nonce = nonce::create( $methodName );
-            $this->_available_actions[$nonce] = $methodName;
-        }
 
         // Any initialization things, such as checking user login
         $this->_init();
@@ -85,18 +77,22 @@ abstract class BaseController {
      *
      * @throws ControllerException
      */
-    public final function run() {
-        $actionName = $_REQUEST['_nonce'];
-        $methodName = $this->_available_actions[$actionName];
-
-        if ( is_null( $methodName ) )
-            throw new ControllerException( "There is no such action" );
-
+    public final function run( $method ) {
         /**
-         * @var Response
+         * @var Response $response
          */
-        $response = $this->$methodName();
+        $this->method = $method;
+        $response = $this->$method();
         $response->send_response();
+    }
+
+    /**
+     * Determine if this page has been verified
+     *
+     * @return bool
+     */
+    protected function verified() {
+        return ( isset( $_REQUEST['_nonce'] ) ) ? nonce::verify( $_REQUEST['_nonce'], $this->method ) : false;
     }
     
     /**

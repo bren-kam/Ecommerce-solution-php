@@ -4,7 +4,7 @@ require_once 'base-database-test.php';
 
 class AccountTest extends BaseDatabaseTest {
     /**
-     * @var Checklist
+     * @var Account
      */
     private $account;
 
@@ -19,7 +19,7 @@ class AccountTest extends BaseDatabaseTest {
      * Test listing all accounts
      */
     public function testListAll() {
-        // Do Stuff
+        //$accounts = $this->account->list_all( $user);
     }
 
     /**
