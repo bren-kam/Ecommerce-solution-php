@@ -57,7 +57,7 @@ echo $template->start( _('Accounts') );
     <br clear="left" /><br />
     <br />
 
-    <table ajax="/ajax/accounts/list_all/" perPage="30,50,100">
+    <table ajax="/ajax/accounts-ajax/list-all/" perPage="30,50,100">
         <thead>
             <tr>
                 <th width="4%">&nbsp;</th>

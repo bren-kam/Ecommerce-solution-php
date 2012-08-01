@@ -48,7 +48,7 @@ function controller( $path ) {
  * @param string $method
  */
 function method( $method ) {
-    $_REQUEST['_nonce'] = nonce::create( $method );
+    $_REQUEST['_nonce'] = nonce::create( str_replace( '-', '_', $method ) );
 }
 
 

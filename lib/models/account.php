@@ -39,9 +39,9 @@ class Account extends ActiveRecordBase {
 
         if ( 0 == count( $values ) ) {
             // Get the websites
-            $accounts = $this->get_results( $sql );
+            $accounts = $this->get_results( $sql, PDO::FETCH_CLASS, 'account' );
         } else {
-            $accounts = $this->prepare( $sql, 's', $values )->get_results();
+            $accounts = $this->prepare( $sql, 's', $values )->get_results( PDO::FETCH_CLASS, 'account' );
         }
 
 		return $accounts;

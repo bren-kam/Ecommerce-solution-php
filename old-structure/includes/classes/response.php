@@ -5,7 +5,7 @@
  * @package Studio98 Framework
  * @since 1.0
  */
-class Response {
+class Response2 {
     /**
      * Variables
      */
