@@ -32,12 +32,12 @@ class Users extends Base_Class {
         } else if ( get_cookie( SECURE_AUTH_COOKIE ) ) {
             $this->encrypted_email = get_cookie( SECURE_AUTH_COOKIE );
         }
-
+		
 		if ( !$bypass && !empty( $this->encrypted_email ) ) {
             global $user;
 
             $user = $this->get_user_by_email( security::decrypt( base64_decode( $this->encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) ), security::hash( COOKIE_KEY, 'secure-auth' ) );
-
+			
             // Get website
             $user['websites'] = ar::assign_key( $this->get_websites( $user['user_id'], $user['role'] ), 'website_id' );
 
@@ -109,8 +109,8 @@ class Users extends Base_Class {
 	public function create_authorized_user( $contact_name, $email, $role = 1 ) {
 		global $user;
 
-        $this->db->prepare( "INSERT INTO `users` ( `contact_name`, `email`, `company_id`, `role`, `status`, `date_created` ) VALUES ?, ?, ?, ?, 1, ? ON DUPLICATE KEY UPDATE `role` = IF ( 1 = `status`, `role`, 1 ), `status` = 1", 'ssiis', $contact_name, $email, $user['company_id'], $role, dt::date('Y-m-d H:i:s') )->query('');
-
+        $this->db->prepare( "INSERT INTO `users` ( `contact_name`, `email`, `company_id`, `role`, `status`, `date_created` ) VALUES ( ?, ?, ?, ?, 1, ? ) ON DUPLICATE KEY UPDATE `role` = IF ( 1 = `status`, `role`, 1 ), `status` = 1", 'ssiis', $contact_name, $email, $user['company_id'], $role, dt::date('Y-m-d H:i:s') )->query('');
+		
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to create authorized user.', __LINE__, __METHOD__ );
