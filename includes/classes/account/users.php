@@ -109,7 +109,7 @@ class Users extends Base_Class {
 	public function create_authorized_user( $contact_name, $email, $role = 1 ) {
 		global $user;
 
-		$this->db->insert( 'users', array( 'contact_name' => $contact_name, 'email' => $email, 'company_id' => $user['company_id'], 'role' => $role, 'status' => 1, 'date_created' => ( dt::date('Y-m-d H:i:s') ) ), 'ssiiis' );
+        $this->db->prepare( "INSERT INTO `users` ( `contact_name`, `email`, `company_id`, `role`, `status`, `date_created` ) VALUES ?, ?, ?, ?, 1, ? ON DUPLICATE KEY UPDATE `role` = IF ( 1 = `status`, `role`, 1 ), `status` = 1", 'ssiis', $contact_name, $email, $user['company_id'], $role, dt::date('Y-m-d H:i:s') )->query('');
 
 		// Handle any error
 		if ( $this->db->errno() ) {
