@@ -1,0 +1,34 @@
+/******************************/
+/* Label - GreySuitRetail.com */
+/******************************/
+body { background-color: #A2AAB0 }
+#log-out, #log-out a { color: #4B4F51 }
+#nav { border-bottom-color: #9AC600; }
+#nav-right a { color: #9AC600 }
+#footer, #footer a { color: #DADFE3 }
+#footer a:hover { color:  #fff }
+#sidebar a.sub.first { border-top-color: #ACDB00 }
+#sidebar a.sub { border-top-color: #ACDB00; border-bottom-color: #88AD00; background-color: #9AC600 !important; }
+
+a { color: #282828; }
+a:hover, #sidebar a.sub:hover { color: #a9c800 }
+#nav, .box h2 { background-color: #7a7b7d }
+#description { color: #a9c800 }
+
+.button { 
+	background-color: #414141;
+	border: 1px solid #282828;
+	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
+   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
+   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
+   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #282828, 0 0 3px #d5d4d4;
+}
+
+.small-button { 
+	background-color: #414141;
+	border: 1px solid #282828;
+	box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
+   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
+   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
+   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -10px #282828, 0 0 3px #d5d4d4;
+}

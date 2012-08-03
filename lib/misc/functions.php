@@ -38,6 +38,10 @@ function controller( $path, $method ) {
     $controller_name = str_replace( ' ', '', ucwords( str_replace( '-', ' ', basename( $file_path, '.php' ) ) ) );
 
     $controller = new $controller_name;
+
+    if ( !method_exists( $controller , $method ) )
+        throw new ControllerException('Method does not exist');
+
     $controller->run( $method );
 
     return $file_path;

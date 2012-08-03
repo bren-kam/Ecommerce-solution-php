@@ -29,6 +29,22 @@ class Resources {
 	}
 
     /**
+     * Allow people to include whatever CSS files they want without duplicates -- before
+     *
+     * @return Resources
+     */
+	public function css_before() {
+        $files = func_get_args();
+
+        foreach ( $files as $f ) {
+            if ( !in_array( $f, $this->_css ) )
+                array_unshift( $this->_css, $f );
+        }
+
+        return $this;
+	}
+
+    /**
      * Allow people to include whatever JS files they want without duplicates
      *
      * @return Resources

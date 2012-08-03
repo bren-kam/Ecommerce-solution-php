@@ -57,7 +57,7 @@ class LoginController extends BaseController {
                 if( !isset( $_POST['referer'] ) || isset( $_POST['referer'] ) && empty( $_POST['referer'] ) ) {
                     return new RedirectResponse('/');
                 } else {
-                    return new RedirectResponse('/');
+                    return new RedirectResponse( $_POST['referer'] );
                 }
             } else {
                 $ft->error( _('Your email and password do not match. Please try again.') );

@@ -63,13 +63,13 @@ class AccountsAjaxController extends BaseController {
             $contact_title = ( empty( $a->phone ) ) ? _('No Phone') : $a->phone;
 
             $title = '<a href="http://' . $a->domain . '/" target="_blank"><strong title="' . $a->domain . ' - ' . $a->online_specialist . '">' . $a->title . $store_name . '</strong></a><br />';
-            $title .= '<span class="web-actions" style="display: block"><a href="/accounts/edit/?wid=' . $a->website_id . '" title="' . _('Edit') . ' ' . $a->title . '">' . _('Edit') . '</a> | ';
-            $title .= '<a href="/accounts/control/?wid=' . $a->website_id . '" title="' . _('Control') . ' ' . $a->title . '" target="_blank">' . _('Control Account') . '</a> | ';
+            $title .= '<span class="web-actions" style="display: block"><a href="/accounts/edit/?aid=' . $a->id . '" title="' . _('Edit') . ' ' . $a->title . '">' . _('Edit') . '</a> | ';
+            $title .= '<a href="/accounts/control/?aid=' . $a->id . '" title="' . _('Control') . ' ' . $a->title . '" target="_blank">' . _('Control Account') . '</a> | ';
             $title .= '<a href="/users/control/?uid=' . $a->user_id . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
-            $title .= '<a href="/accounts/notes/?wid=' . $a->website_id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
+            $title .= '<a href="/accounts/notes/?aid=' . $a->id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
 
-            if ( isset( $incomplete_checklists[$a->website_id] ) )
-                $title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$a->website_id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
+            if ( isset( $incomplete_checklists[$a->id] ) )
+                $title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
 
             $title .= '</span>';
 

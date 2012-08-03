@@ -119,10 +119,11 @@ get_header();
 			<thead>
 				<tr>
 					<th width="40%"><?php echo _('Name'); ?></th>
+					<th><?php echo _('Created'); ?></th>
+					<th><?php echo _('Updated'); ?></th>
 					<th><?php echo _('Brand'); ?></th>
 					<th width="10%"><?php echo _('SKU'); ?></th>
 					<th width="8%"><?php echo _('Status'); ?></th>
-					<th width="12%"><?php echo _('Published'); ?></th>
 				</tr>
 			</thead>
 			<tbody>

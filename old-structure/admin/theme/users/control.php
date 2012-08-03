@@ -12,13 +12,13 @@ if ( $user['role'] <= $new_user['role'] )
 // Get the websites that user controls
 $websites = $w->get_user_websites( $_GET['uid'] );
 
-$auth_cookie = ( security::is_ssl() ) ? AUTH_COOKIE : SECURE_AUTH_COOKIE;
+$auth_cookie = ( security::is_ssl() ) ? SECURE_AUTH_COOKIE : AUTH_COOKIE;
 
 set_cookie( $auth_cookie, base64_encode( security::encrypt( $new_user['email'], security::hash( COOKIE_KEY, 'secure-auth' ) ) ), 172800 );
 set_cookie( 'wid', $websites[0]['website_id'], 172800 ); // 2 days
 set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
 
-$url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : 'account.imagineretailer.com' ) . '/';
+$url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) ) . '/';
 
 url::redirect( $url );
 ?>

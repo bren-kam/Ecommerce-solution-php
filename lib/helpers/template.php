@@ -11,6 +11,9 @@ class Template {
      */
     public function __construct( $variables ) {
         $this->variables = $variables;
+
+        if ( isset( $this->variables['section'] ) )
+            $this->variables[$this->variables['section']] = ' class="selected"';
     }
 
     /**
@@ -19,8 +22,22 @@ class Template {
      * @param string $title
      * @return string
      */
-    public function start( $title ) {
-        return '<div id="content"><h1>' . $title . '</h1><br clear="all" /><br />';
+    public function start( $title = '' ) {
+        $start_html = '<div id="content">';
+
+        if ( !empty( $title ) )
+            $start_html .= '<h1>' . $title . '</h1><br clear="all" /><br />';
+
+        return $start_html;
+    }
+
+    /**
+     * Start sub content
+     *
+     * @return string
+     */
+    public function start_subcontent() {
+        return '<div id="subcontent-wrapper"><div id="subcontent">';
     }
 
     /**
@@ -30,6 +47,15 @@ class Template {
      */
     public function end() {
         return '</div>';
+    }
+
+    /**
+     * End sub content
+     *
+     * @return string
+     */
+    public function end_subcontent() {
+        return '</div></div>';
     }
 
     /**
@@ -82,6 +108,16 @@ class Template {
      */
     public function get_top() {
         // Do stuff
+    }
+
+    /**
+     * Get Sidebar
+     *
+     * @param string $sidebar_file [optional]
+     */
+    public function get_sidebar( $sidebar_file = 'sidebar' ) {
+        extract( $this->variables );
+        require VIEW_PATH . $this->variables['view_base'] . $sidebar_file . '.php';
     }
 
     /**

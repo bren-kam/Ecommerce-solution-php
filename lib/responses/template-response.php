@@ -30,7 +30,7 @@ class TemplateResponse extends Response {
     public function __construct( $resources, $file_to_render, $title ) {
         $this->_file_to_render = $file_to_render;
         $this->add( array(
-            'title' => $title . ' | ' . TITLE
+            'title' => $title
             , 'resources' => $resources
         ) );
 
@@ -91,8 +91,9 @@ class TemplateResponse extends Response {
         extract( $this->variables );
 
         require VIEW_PATH . 'header.php';
+
         require VIEW_PATH . $this->_file_to_render . '.php';
+
         require VIEW_PATH . 'footer.php';
     }
-
 }

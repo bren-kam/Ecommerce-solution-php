@@ -5,7 +5,9 @@ class ErrorController extends BaseController {
      */
     public function __construct() {
         // Pass in the base for all the views
-        parent::__construct( 'error/' );
+        parent::__construct();
+
+        $this->view_base = '../error/';
     }
 
     /**
@@ -15,6 +17,15 @@ class ErrorController extends BaseController {
      */
     protected function http_404() {
         return $this->get_template_response('404');
+    }
+
+    /**
+     * Handle 403 Error
+     *
+     * @return TemplateResponse
+     */
+    protected function http_403() {
+        return $this->get_template_response('403');
     }
 
     /**

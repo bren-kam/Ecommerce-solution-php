@@ -7,7 +7,7 @@
  * @package Studio98 Library
  */
 
-class ActiveRecordBase {
+abstract class ActiveRecordBase {
     /**
      * Define connection parameters
      */
@@ -190,10 +190,10 @@ class ActiveRecordBase {
      *
      * @param string|PDOStatement $query [optional]
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC, FETCH_CLASS
-     * @param string $class_name [optional] NULL
+     * @param mixed $fetch_argument [optional]
      * @return mixed
      */
-    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ, $class_name = NULL ) {
+    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
         // Make sure we have a statement
         if ( !is_null( $query ) )
             $this->query( $query );
@@ -202,8 +202,8 @@ class ActiveRecordBase {
         $this->_statement();
 
         // Make it possible to do the FETCH_CLASS
-        if ( PDO::FETCH_CLASS == $style && !is_null( $class_name ) )
-            $this->_statement->setFetchMode( $style, $class_name );
+        if ( in_array( $style, array( PDO::FETCH_CLASS, PDO::FETCH_INTO ) ) && !is_null( $fetch_argument ) )
+            $this->_statement->setFetchMode( $style, $fetch_argument );
 
         return $this->_statement->fetch( $style );
     }
@@ -594,7 +594,7 @@ class ActiveRecordStatement {
      * Get Results
      *
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC
-     * @param mixed $fetch_argument [optional] NULL
+     * @param mixed $fetch_argument [optional]
      * @return object
      */
     public function get_results( $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
@@ -605,11 +605,11 @@ class ActiveRecordStatement {
      * Get Row
      *
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC, FETCH_CLASS
-     * @param string $class_name [optional]
+     * @param mixed $fetch_argument [optional]
      * @return object
      */
-    public function get_row( $style = PDO::FETCH_OBJ, $class_name = null ) {
-        return $this->_ar->get_row( $this->_statement, $style, $class_name );
+    public function get_row( $style = PDO::FETCH_OBJ, $fetch_argument = null ) {
+        return $this->_ar->get_row( $this->_statement, $style, $fetch_argument );
     }
 
     /**

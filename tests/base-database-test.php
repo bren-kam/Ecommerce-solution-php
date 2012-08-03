@@ -75,3 +75,23 @@ function load_model( $model ) {
     }
 }
 spl_autoload_register( 'load_model' );
+
+/**
+ * Load a model
+ *
+ * @var string $model
+ */
+function load_response( $response ) {
+    if ( !stristr( $response, 'Response' ) )
+        return;
+
+    // Form the model name, i.e., AccountListing to account-listing.php
+    $response_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $response ) ) . '.php', 1 );
+
+    $full_path = LIB_PATH . 'responses/' . $response_file;
+
+    if ( is_file( $full_path ) )
+        require_once $full_path;
+}
+
+spl_autoload_register( 'load_response' );

@@ -24,11 +24,18 @@ $v = new Validator();
 $w = new Websites();
 
 $us = $u->get_user( $_GET['uid'] );
+
+// Make sure they have permission
+if ( $user['role'] < 8 && $us['company_id'] != $user['company_id'] )
+    url::redirect('/users/');
+
 $websites = $w->get_user_websites( $_GET['uid'] );
 $companies = $c->get_all();
 
 $v->form_name = 'fEditUser';
-$v->add_validation( 'sCompany', 'req', _('The "Company" field is required') );
+
+if ( $user['role'] >= 8 )
+    $v->add_validation( 'sCompany', 'req', _('The "Company" field is required') );
 
 $v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
 $v->add_validation( 'tEmail', 'email', _('The "Email" must contain a valid email') );
@@ -52,6 +59,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user'
 	$errs = $v->validate();
 	
 	if ( empty( $errs ) ) {
+        $company_id = ( $user['role'] < 8 ) ? $us['company_id'] : $_POST['sCompany'];
+
 		$information = array(
 			'company_id'			=> $_POST['sCompany']
 			, 'email'				=> $_POST['tEmail']
@@ -123,6 +132,7 @@ get_header();
 			<form action="/users/edit/?uid=<?php echo $_GET['uid']; ?>" name="fEditUser" id="fEditUser" method="post">
 			<table cellpadding="0" cellspacing="0" style="float:left;padding-right: 20px">
 				<tr><td colspan="2"><strong><?php echo _('Personal Information'); ?></strong></td></tr>
+                <?php if ( $user['role'] >= 8 ) { ?>
 				<tr>
 					<td><label for="sCompany"><?php echo _('Company'); ?>: <span class="red">*</span></label></td>
 					<td>
@@ -138,6 +148,7 @@ get_header();
 						</select>
 					</td>
 				</tr>
+                <?php } ?>
 				<tr>
 					<td><label for="tEmail"><?php echo _('Email'); ?>: <span class="red">*</span></label></td>
 					<td><input type="text" name="tEmail" id="tEmail" maxlength="100" value="<?php echo ( empty( $_POST['tEmail'] ) ) ? $us['email'] : $_POST['tEmail']; ?>" class="tb" /></td>

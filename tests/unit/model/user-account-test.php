@@ -96,7 +96,7 @@ class UserAccountTest extends BaseDatabaseTest {
         $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = 513' ) );
 
         // It should be more recent
-        $this->assertLessThan( $datetime->getTimestamp() - 1, $last_login->getTimestamp() );
+        $this->assertLessThan( $datetime->getTimestamp() - 5, $last_login->getTimestamp() );
     }
 
     /**
@@ -114,7 +114,7 @@ class UserAccountTest extends BaseDatabaseTest {
         $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
 
         // It should be more recent
-        $this->assertGreaterThan( $datetime->getTimestamp() - 1, $last_login->getTimestamp() );
+        $this->assertGreaterThan( $datetime->getTimestamp() - 5, $last_login->getTimestamp() );
     }
 
     /**

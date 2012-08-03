@@ -34,7 +34,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-comment'
 
 	// If it's not private, send an email to the client
 	if ( '0' == $_POST['p'] && ( 1 == $ticket['status'] || $ticket_creator['role'] < 8 ) )
-		fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status, "******************* Reply Above This Line *******************\n\n{$content}\n\n**Support Issue**\n" . $ticket['message'], $ticket_creator['company'] . ' <support@' . $ticket_creator['domain'] . '>' );
+		fn::mail( $ticket['email'], 'Ticket #' . $_POST['tid'] . $status . ' - ' . $ticket['summary'], "******************* Reply Above This Line *******************\n\n{$content}\n\n**Support Issue**\n" . $ticket['message'], $ticket_creator['company'] . ' <support@' . $ticket_creator['domain'] . '>' );
 	
 	$ticket_comment = $tc->get_single( $result );
 	$ticket_comment['date'] = dt::date( 'm/d/Y g:ia', $ticket_comment['date'] );
