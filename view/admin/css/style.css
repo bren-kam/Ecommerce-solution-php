@@ -126,7 +126,11 @@ input.button {
     filter: dropshadow(color=#000000, offx=0, offy=-1);
 }
 
-#nav-links a.selected, #nav-links a:hover { color: #fff; background: url(/images/backgrounds/nav-selected.png) 50% 100% no-repeat }
+#nav-links a.selected, #nav-links a:hover { color: #fff;
+    background-image: url(/images/nav-divider.png), url(/images/backgrounds/nav-selected.png);
+    background-position: 100% 0, 50% 100%;
+    background-repeat: no-repeat;
+}
 #nav-right { height: 43px; float:right; background: url(/images/nav-divider.png) 0 0 no-repeat; }
 
 #sidebar { margin-top: 47px; width: 150px; background: #282829 url(/images/backgrounds/sidebar.png) 0 0 no-repeat; padding: 5px; position: absolute; }
