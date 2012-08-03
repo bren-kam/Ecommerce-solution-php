@@ -104,6 +104,7 @@ input.button {
 .top { vertical-align: top }
 .relative { position: relative; }
 .clr { clear: both; }
+.tmpval { color: #929292 }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 
@@ -246,11 +247,6 @@ input.button {
 	width: 1px;
 	height: 3px;
 }
-
-/* Temporary Values */
-.tmpval { color: #929292 }
-.float-right { float: right }
-.clr { clear: both }
 
 /***************/
 /* Form Styles */
