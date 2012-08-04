@@ -19,7 +19,7 @@ class AccountsController extends BaseController {
      */
     protected function index() {
         $template_response = $this->get_template_response( 'index' );
-        $template_response->select( 'Accounts', 'view' );
+        $template_response->select( 'accounts', 'view' );
 
         return $template_response;
     }

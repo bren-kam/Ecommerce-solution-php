@@ -98,10 +98,31 @@ class TemplateResponse extends Response {
      * Including the file
      */
     public function respond() {
-        $this->set( 'template', new Template( $this->variables ) );
-
-        // Make available the variables
+        /**
+         * @var User $user
+         */
         extract( $this->variables );
+
+        // Create template function class
+        $template = new Template( $this->variables );
+
+        // Get notifications
+        $notification = new Notification();
+        $notifications = $notification->get_by_user( $user->user_id );
+
+        if ( is_array( $notifications ) ) {
+            // We ony want to show them once
+            $notification->delete_by_user( $user->user_id );
+
+            foreach ( $notifications as $n ) {
+                $notification_html = '<div class="notification sticky hidden">';
+                $notification_html .= '<a class="close" href="#"><img src="/images/icons/close.png" alt="' . _('Close') . '" /></a>';
+                $notification_html .= '<p>' . $n->message . '</p>';
+                $notification_html .= '</div>';
+
+                $template->add_top( $notification_html );
+            }
+        }
 
         require VIEW_PATH . 'header.php';
 

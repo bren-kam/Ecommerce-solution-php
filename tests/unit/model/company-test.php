@@ -144,5 +144,3 @@ class CompanyTest extends BaseDatabaseTest {
         $this->company = null;
     }
 }
-
-$model_path = '';

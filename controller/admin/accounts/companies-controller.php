@@ -9,7 +9,7 @@ class CompaniesController extends BaseController {
 
         // Tell what is the base for all login
         $this->view_base = 'accounts/companies/';
-        $this->section = 'Accounts';
+        $this->section = 'accounts';
     }
 
     /**
@@ -50,6 +50,8 @@ class CompaniesController extends BaseController {
         // Create new form table
         $ft = new FormTable( $this->resources, 'fAddEditCompany' );
 
+        $ft->submit( ( $company_id ) ? _('Save') : _('Add') );
+
         $ft->add_field( 'text', _('Name'), 'tName', $company->name )
             ->attribute( 'maxlength', 80 )
             ->add_validation( 'req', _('The "Name" field is required') );
@@ -58,6 +60,7 @@ class CompaniesController extends BaseController {
             ->attribute( 'maxlength', 200 )
             ->add_validation( 'URL', _('The "Domain" field must contain a valid domain name') );
 
+
         // Update the company if posted
         if ( $ft->posted() ) {
             $company->name = $_POST['tName'];
@@ -65,13 +68,14 @@ class CompaniesController extends BaseController {
 
             if ( $company_id ) {
                 $company->update();
+                $this->notify( _('The company was successfully updated!') );
             } else {
                 $company->create();
-                $company_id = $company->id;
+                $this->notify( _('Your company was successfully created!') );
             }
-        }
 
-        $ft->submit( ( $company_id ) ? _('Save') : _('Add') );
+            return new RedirectResponse('/accounts/companies/');
+        }
 
         $template_response->set( 'form', $ft->generate_form() );
 

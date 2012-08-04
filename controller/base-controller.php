@@ -87,6 +87,18 @@ abstract class BaseController {
     }
 
     /**
+     * Create a notification
+     *
+     * @param string $message
+     */
+    public function notify( $message ) {
+        $notification = new Notification();
+        $notification->user_id = $this->user->user_id;
+        $notification->message = $message;
+        $notification->create();
+    }
+
+    /**
      * Determine if this page has been verified
      *
      * @return bool

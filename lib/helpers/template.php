@@ -7,6 +7,12 @@ class Template {
     protected $variables;
 
     /**
+     * Hold anything to be spit out in the top
+     * @var string
+     */
+    protected $top = '';
+
+    /**
      * Hold available variables
      */
     public function __construct( $variables ) {
@@ -100,6 +106,15 @@ class Template {
     }
 
     /**
+     * Add Top
+     *
+     * @param string $string
+     */
+    public function add_top( $string ) {
+        $this->top .= $string;
+    }
+
+    /**
      * Get Head
      */
     public function get_head() {
@@ -110,7 +125,7 @@ class Template {
      * Get Top
      */
     public function get_top() {
-        // Do stuff
+        echo $this->top;
     }
 
     /**
