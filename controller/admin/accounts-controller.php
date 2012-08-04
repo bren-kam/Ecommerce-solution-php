@@ -19,6 +19,7 @@ class AccountsController extends BaseController {
      */
     protected function index() {
         $template_response = $this->get_template_response( 'index' );
+        $template_response->select( 'Accounts', 'view' );
 
         return $template_response;
     }
@@ -39,7 +40,8 @@ class AccountsController extends BaseController {
         $this->resources->css('accounts/edit');
 
         $template_response = $this->get_template_response('edit');
-        $template_response->add( 'account', $account );
+        $template_response->select( 'accounts', 'edit' );
+        $template_response->set( 'account', $account );
 
         return $template_response;
     }

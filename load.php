@@ -84,6 +84,10 @@ require ABS_PATH . 'controller/base-controller.php';
 /** Load the Loaders */
 require LIB_PATH . 'misc/loaders.php';
 
+// Clear all posts of slashes!
+if ( isset( $_POST ) && 0 != count( $_POST ) )
+    $_POST = format::stripslashes_deep( $_POST );
+
 /** Routing */
 require ABS_PATH . 'routing.php';
 

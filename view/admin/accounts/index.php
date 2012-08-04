@@ -9,9 +9,8 @@
  * @var User $user
  */
 
-$template->get_sidebar();
+$template->set( 'view', true );
 echo $template->start();
-echo $template->start_subcontent();
 ?>
 
 <div id="dNarrowSearch">
@@ -70,7 +69,4 @@ echo $template->start_subcontent();
 </tbody>
 </table>
 
-<?php
-echo $template->end_subcontent();
-echo $template->end();
-?>
+<?php echo $template->end(); ?>

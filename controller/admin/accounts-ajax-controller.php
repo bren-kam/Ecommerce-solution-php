@@ -6,10 +6,6 @@ class AccountsAjaxController extends BaseController {
     public function __construct() {
         // Pass in the base for all the views
         parent::__construct();
-
-        // Tell what is the base for all login
-        $this->view_base = 'accounts/';
-        $this->section = 'Accounts';
     }
 
     /**
@@ -42,9 +38,24 @@ class AccountsAjaxController extends BaseController {
             $dt->search( array( 'a.`title`' => false, 'a.`domain`' => false, 'b.`contact_name`' => false, 'c.`contact_name`' => false ) );
         }
 
+        if ( 251 == $this->user->id ) {
+            $dt->add_where( ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $this->user->company_id . ' )' );
+        } else {
+            // If they are below 8, that means they are a partner
+            if ( !$this->user->has_permission(8) )
+                $dt->add_where( ' AND b.`company_id` = ' . $this->user->company_id );
+        }
+
+		// What other sites we might need to omit
+		$omit_sites = ( !$this->user->has_permission(8) ) ? ', 96, 114, 115, 116' : '';
+
+		// Form the where
+		$dt->add_where( " AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" );
+
+
         // Get accounts
-        $accounts = $account->list_all( $this->user, $dt->get_variables() );
-        $dt->set_row_count( $account->count_all( $this->user, $dt->get_count_variables() ) );
+        $accounts = $account->list_all( $dt->get_variables() );
+        $dt->set_row_count( $account->count_all( $dt->get_count_variables() ) );
 
         // Get account ids with incomplete checklists
         $incomplete_checklists = $checklist->get_incomplete();

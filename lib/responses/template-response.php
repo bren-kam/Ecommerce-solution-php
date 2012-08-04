@@ -29,30 +29,43 @@ class TemplateResponse extends Response {
      */
     public function __construct( $resources, $file_to_render, $title ) {
         $this->_file_to_render = $file_to_render;
-        $this->add( array(
+        $this->set( array(
             'title' => $title
             , 'resources' => $resources
         ) );
 
         if ( isset( $_POST ) )
-            $this->add( format::camel_case_to_underscore_deep( $_POST ) );
+            $this->set( format::camel_case_to_underscore_deep( $_POST ) );
 
         if ( isset( $_GET ) )
-            $this->add( format::camel_case_to_underscore_deep( $_GET ) );
+            $this->set( format::camel_case_to_underscore_deep( $_GET ) );
     }
 
     /**
-     * Add data to variables
+     * Set data to variables
      *
      * @param string|array $key
      * @param string $value [optional]
      */
-    public function add( $key, $value = '' ) {
+    public function set( $key, $value = '' ) {
         if ( is_array( $key ) ) {
             $this->variables = array_merge( $this->variables, $key );
         } else {
             $this->variables[$key] = $value;
         }
+    }
+
+    /**
+     * Select section/page
+     *
+     * @param $section
+     * @param $page [optional]
+     */
+    public function select( $section, $page = '' ) {
+        $this->set( $section, true );
+
+        if ( !empty( $page ) )
+            $this->set( $page, true );
     }
 
     /**
@@ -85,7 +98,7 @@ class TemplateResponse extends Response {
      * Including the file
      */
     public function respond() {
-        $this->add( 'template', new Template( $this->variables ) );
+        $this->set( 'template', new Template( $this->variables ) );
 
         // Make available the variables
         extract( $this->variables );

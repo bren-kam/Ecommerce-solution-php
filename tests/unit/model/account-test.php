@@ -46,7 +46,7 @@ class AccountTest extends BaseDatabaseTest {
         $dt->order_by( 'b.`company_id`', 'a.`title`', 'b.`contact_name`', 'c.`contact_name`' );
         $dt->add_where( ' AND a.`status` = 1' );
 
-        $accounts = $this->account->list_all( $user, $dt->get_variables() );
+        $accounts = $this->account->list_all( $dt->get_variables() );
 
         // Make sure we have an array
         $this->assertTrue( is_array( $accounts ) );
@@ -86,7 +86,7 @@ class AccountTest extends BaseDatabaseTest {
         $dt->order_by( 'b.`company_id`', 'a.`title`', 'b.`contact_name`', 'c.`contact_name`' );
         $dt->add_where( ' AND a.`status` = 1' );
 
-        $accounts_count = $this->account->count_all( $user, $dt->get_count_variables() );
+        $accounts_count = $this->account->count_all( $dt->get_count_variables() );
 
         // Make sure they exist
         $this->assertGreaterThan( 1, $accounts_count );

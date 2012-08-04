@@ -79,6 +79,18 @@ abstract class ActiveRecordBase {
      * @return int
      */
     public function insert( array $data, $format, $on_duplicate_key = false ) {
+        $i = 0;
+
+        // Make sure we don't insert null values
+        foreach ( $data as $key => $value ) {
+            if ( is_null( $value ) ) {
+                unset( $data[$key] );
+                $format = substr( $format, 0, $i ) . substr( $format, $i + 1 );
+            }
+
+            $i++;
+        }
+
         // Separate fields from values
         $fields = array_keys( $data );
         $values = array_values( $data );
@@ -315,7 +327,7 @@ abstract class ActiveRecordBase {
         // Throw an error if it doesn't work
         if ( 00000 != $this->_statement->errorCode() ) {
             $error_info = $this->_statement->errorInfo();
-            throw new ModelException( $error_info[2] );
+            throw new ModelException( 'SQL Error: ' . $error_info[2] );
         }
     }
 

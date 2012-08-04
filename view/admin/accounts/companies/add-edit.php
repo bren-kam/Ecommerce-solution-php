@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Login
+ * @page Add/Edit Company
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -9,6 +9,7 @@
  * @var User $user
  */
 
-echo $template->start( _('Login'), false );
+echo $template->start( '', '../sidebar' );
 echo $template->v('form');
 echo $template->end();
+?>

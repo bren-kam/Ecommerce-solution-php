@@ -11,33 +11,30 @@ class Template {
      */
     public function __construct( $variables ) {
         $this->variables = $variables;
-
-        if ( isset( $this->variables['section'] ) )
-            $this->variables[$this->variables['section']] = ' class="selected"';
     }
 
     /**
      * Start of the template
      *
-     * @param string $title
+     * @param string $title [optional]
+     * @param string|bool $sidebar_file [optional]
      * @return string
      */
-    public function start( $title = '' ) {
+    public function start( $title = '', $sidebar_file = 'sidebar' ) {
         $start_html = '<div id="content">';
 
         if ( !empty( $title ) )
             $start_html .= '<h1>' . $title . '</h1><br clear="all" /><br />';
 
-        return $start_html;
-    }
+        $start_html .= '<div id="subcontent-wrapper"><div id="subcontent">';
 
-    /**
-     * Start sub content
-     *
-     * @return string
-     */
-    public function start_subcontent() {
-        return '<div id="subcontent-wrapper"><div id="subcontent">';
+        // Get the sidebar if it's not false
+        if ( $sidebar_file ) {
+            extract( $this->variables );
+            require VIEW_PATH . $this->variables['view_base'] . $sidebar_file . '.php';
+        }
+
+        return $start_html;
     }
 
     /**
@@ -46,16 +43,21 @@ class Template {
      * @return string
      */
     public function end() {
-        return '</div>';
+        return '</div></div></div>';
     }
 
     /**
-     * End sub content
+     * Set data to variables
      *
-     * @return string
+     * @param string|array $key
+     * @param string $value [optional]
      */
-    public function end_subcontent() {
-        return '</div></div>';
+    public function set( $key, $value = '' ) {
+        if ( is_array( $key ) ) {
+            $this->variables = array_merge( $this->variables, $key );
+        } else {
+            $this->variables[$key] = $value;
+        }
     }
 
     /**
@@ -79,13 +81,14 @@ class Template {
     }
 
     /**
-     * Spit out the checked status if it exists
+     * Spit of selected if something is selected
      *
      * @param string $string
+     * @param bool $class [optional] Whether to include class attribute
      */
-    public function checked( $string ) {
-        if ( isset( $this->variables[$string] ) )
-            echo ' checked="checked"';
+    public function select( $string, $class = false ) {
+        if ( isset( $this->variables[$string] ) && true === $this->variables[$string] )
+            echo ( $class ) ? ' class="selected"' : ' selected';
     }
 
     /**
@@ -108,16 +111,6 @@ class Template {
      */
     public function get_top() {
         // Do stuff
-    }
-
-    /**
-     * Get Sidebar
-     *
-     * @param string $sidebar_file [optional]
-     */
-    public function get_sidebar( $sidebar_file = 'sidebar' ) {
-        extract( $this->variables );
-        require VIEW_PATH . $this->variables['view_base'] . $sidebar_file . '.php';
     }
 
     /**

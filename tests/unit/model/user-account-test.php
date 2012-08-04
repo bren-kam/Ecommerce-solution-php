@@ -1,6 +1,5 @@
 <?php
 
-define( 'MODEL_PATH', '' );
 require_once 'base-database-test.php';
 
 class UserAccountTest extends BaseDatabaseTest {

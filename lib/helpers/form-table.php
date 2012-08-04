@@ -45,6 +45,15 @@ class FormTable {
     }
 
     /**
+     * Set the action dynamically
+     *
+     * @param string $action
+     */
+    public function set_action ( $action ) {
+        $this->action = $action;
+    }
+
+    /**
      * Add a field
      *
      * @param string $type

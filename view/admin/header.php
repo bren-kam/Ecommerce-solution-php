@@ -12,9 +12,7 @@
 $resources->css_before( 'labels/' . 'greysuitretail.com', 'style' );
 $resources->javascript( 'sparrow', 'header' );
 
-// Encoded data to get css
-if ( !empty( $selected ) )
-	$$selected = ' class="selected"';
+$template->set( 'section_' . $template->v('section'), ' class="selected"');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -42,19 +40,19 @@ if ( !empty( $selected ) )
 	<div id="nav">
 		<div id="nav-links">
 			<?php if ( $user && $user->id ) { ?>
-                <a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php echo $template->v('accounts'); ?>><?php echo _('Accounts'); ?></a>
-                <a href="/products/" title="<?php echo _('Products'); ?>"<?php echo $template->v('products'); ?>><?php echo _('Products'); ?></a>
+                <a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php echo $template->v('section_accounts'); ?>><?php echo _('Accounts'); ?></a>
+                <a href="/products/" title="<?php echo _('Products'); ?>"<?php echo $template->v('section_products'); ?>><?php echo _('Products'); ?></a>
                 <?php if ( $user->has_permission(7) ) { ?>
-                    <a href="/users/" title="<?php echo _('Users'); ?>"<?php echo $template->v('users'); ?>><?php echo _('Users'); ?></a>
+                    <a href="/users/" title="<?php echo _('Users'); ?>"<?php echo $template->v('section_users'); ?>><?php echo _('Users'); ?></a>
                 <?php } ?>
-                <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('checklists'); ?>><?php echo _('Checklists'); ?></a>
-                <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('tickets'); ?>><?php echo _('Tickets'); ?></a>
-                <a href="/craigslist/" title="<?php echo _('Craigslist'); ?>"<?php echo $template->v('craigslist'); ?>><?php echo _('Craigslist'); ?></a>
+                <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
+                <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
+                <a href="/craigslist/" title="<?php echo _('Craigslist'); ?>"<?php echo $template->v('section_craigslist'); ?>><?php echo _('Craigslist'); ?></a>
                 <?php if ( $user->has_permission(7) ) { ?>
-                <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('reports'); ?>><?php echo _('Reports'); ?></a>
+                <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
                 <?php } ?>
                 <div id="nav-right">
-                    <a href="/support/" title="<?php echo _('Support'); ?>"<?php echo $template->v('support'); ?>><?php echo _('Support'); ?></a>
+                    <a href="/support/" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support'); ?></a>
                 </div>
 			<?php } ?>
 		</div>

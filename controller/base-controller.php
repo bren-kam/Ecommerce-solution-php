@@ -108,9 +108,9 @@ abstract class BaseController {
 
         // Setup new template response
         $template_response = new TemplateResponse( $this->resources, $this->view_base . $file, $title );
-        $template_response->add( 'user', $this->user );
-        $template_response->add( 'section', $this->section );
-        $template_response->add( 'view_base', $this->view_base );
+        $template_response->set( 'user', $this->user );
+        $template_response->set( 'section', $this->section );
+        $template_response->set( 'view_base', $this->view_base );
 
         return $template_response;
     }

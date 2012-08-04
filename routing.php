@@ -13,6 +13,8 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
     // Set the transaction name
     $transaction_name = controller( 'home', 'index' );
 } else {
+    $need_controller = true;
+
 	// Force a trailing slash
 	if ( $_SERVER['REQUEST_URI'][strlen( $_SERVER['REQUEST_URI'] ) - 1] != '/' ) {
         if ( '/images/' == substr( $_SERVER['REQUEST_URI'], 0, 8 ) ) {
@@ -41,18 +43,34 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
         // We need to get the slug parts
         $slug_parts = explode( '/', preg_replace( '/\/([^?]+)\/(?:\?.*)?/', '$1', str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) );
 
-        // Find out what method we need to use
-        $method = ( 1 == count( $slug_parts ) ) ? 'index' : array_pop( $slug_parts );
-
         $controller = implode( '/', $slug_parts );
+
+        try {
+            $transaction_name = controller( $controller, 'index' );
+            $need_controller = false;
+        } catch ( ControllerException $e ) {
+            $need_controller = true;
+
+            $slug_parts = explode( '/', $controller );
+
+            // Find out what method we need to use
+            $method = ( 1 == count( $slug_parts ) ) ? 'index' : array_pop( $slug_parts );
+
+            // Make them proper
+            $controller = implode( '/', $slug_parts );
+        }
     }
 
-    $method = str_replace( '-', '_', $method );
+    // If Still need to include
+    if ( $need_controller ) {
+        $method = str_replace( '-', '_', $method );
 
-    try {
-        $transaction_name = controller( $controller, $method );
-    } catch ( ControllerException $e ) {
-        $transaction_name = controller( 'error', 'http_404' );
+        // Try again
+        try {
+            $transaction_name = controller( $controller, $method );
+        } catch ( ControllerException $e ) {
+            $transaction_name = controller( 'error', 'http_404' );
+        }
     }
 }
 

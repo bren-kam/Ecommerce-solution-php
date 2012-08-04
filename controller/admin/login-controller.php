@@ -65,7 +65,7 @@ class LoginController extends BaseController {
         }
 
         // Add the form
-        $template_response->add( 'form', $ft->generate_form() );
+        $template_response->set( 'form', $ft->generate_form() );
 
         return $template_response;
     }

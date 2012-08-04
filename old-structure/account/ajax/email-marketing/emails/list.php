@@ -39,7 +39,7 @@ foreach ( $messages as $m ) {
 	$data[] = array( 
 		format::limit_chars( $m['subject'], 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
 		$statuses[$m['status']],
-		dt::date( 'F jS, Y g:i a', $m['date_sent'] )
+		dt::date( 'F jS, Y g:ia', $m['date_sent'] )
 	);
 }
 

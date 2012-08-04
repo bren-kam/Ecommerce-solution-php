@@ -22,9 +22,7 @@
 </div>
 
 <?php
-$template->get_sidebar();
 echo $template->start();
-echo $template->start_subcontent();
 ?>
 
 <form name="fEditAccount" action="" method="post">
@@ -61,7 +59,4 @@ echo $template->start_subcontent();
 </table>
 </form>
 
-<?php
-echo $template->end_subcontent();
-echo $template->end();
-?>
+<?php echo $template->end(); ?>
