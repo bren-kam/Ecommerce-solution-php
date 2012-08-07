@@ -157,13 +157,8 @@ class SQL {
 	 * Connects to the database server and selects a database
 	 *
 	 * @since 1.0
-	 *
-	 * @param string $db_user MySQL database user
-	 * @param string $db_password MySQL database password
-	 * @param string $db_name MySQL database name
-	 * @param string $db_host MySQL database host
 	 */
-	function __construct( $db_user, $db_password, $db_name, $db_host ) {
+	function __construct() {
 		if ( true == DEBUG )
 			$this->show_errors();
 
@@ -173,9 +168,19 @@ class SQL {
 		if ( defined('DB_COLLATE') )
 			$this->collate = DB_COLLATE;
 
-		$this->m = new mysqli($db_host, $db_user, $db_password, $db_name);
+        require '/gsr/systems/db.php';
+
+		$this->m = new mysqli( DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME );
+
 		if ( $this->m->connect_error ) {
-			$this->bail( sprintf( "
+            // Switch to Slave
+            unlink('/gsr/systems/db.php');
+            symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
+            require '/gsr/systems/db.php';
+
+            $this->m = new mysqli( DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME );
+
+            $this->bail( sprintf( "
 <h1>Error establishing a database connection</h1>
 <p>This either means that the username and password information is incorrect or we can't contact the database server at <code>%s</code>. This could mean your host's database server is down. The connection error is:\n%s</p>
 <ul>
