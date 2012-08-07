@@ -28,11 +28,10 @@ class Template {
      */
     public function start( $title = '', $sidebar_file = 'sidebar' ) {
         $start_html = '<div id="content">';
+        $start_html .= '<div id="subcontent-wrapper"><div id="subcontent">';
 
         if ( !empty( $title ) )
             $start_html .= '<h1>' . $title . '</h1><br clear="all" /><br />';
-
-        $start_html .= '<div id="subcontent-wrapper"><div id="subcontent">';
 
         // Get the sidebar if it's not false
         if ( $sidebar_file ) {

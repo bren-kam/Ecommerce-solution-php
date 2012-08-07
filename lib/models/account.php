@@ -1,7 +1,7 @@
 <?php
 class Account extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $website_id, $title;
+    public $id, $website_id, $title, $domain;
 
     /**
      * Setup the account initial data
@@ -60,11 +60,77 @@ class Account extends ActiveRecordBase {
 		list( $where, $values ) = $variables;
 
 		// Get the website count
-        $website_count = $this->prepare( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) WHERE 1 $where"
+        $count = $this->prepare( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) WHERE 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values 
         )->get_var();
 
-		return $website_count;
+		return $count;
 	}
+
+    /***** Account Settings *****/
+
+
+    /**
+     * Get Settings
+     *
+     * @param string $key1, $key2
+     * @return mixed
+     */
+    public function get_settings() {
+        $arguments = func_get_args();
+
+        if ( 0 == count( $arguments ) )
+            return false;
+
+        // Determine the keys
+        if ( 1 == count( $arguments ) ) {
+            // Getting one value -- return it
+            return $this->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = :website_id AND `key` = :key'
+                , 'is'
+                , array(
+                    ':website_id' => $this->id
+                    , ':key' => $arguments[0]
+                )
+            )->get_var();
+        } else {
+            $keys = $arguments;
+        }
+
+        $count = count( $keys );
+
+        // Getting multiple values, return them
+        $values = $this->prepare( 'SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = ? AND `key` IN( ?' . str_repeat( ', ?', $count - 1 ) . ')'
+            , 'i' . str_repeat( 's', $count )
+            , array_merge( array( $this->id ), $keys )
+        )->get_results( PDO::FETCH_ASSOC );
+
+        return ar::assign_key( $values, 'key', true );
+    }
+
+    /**
+     * Set Settings
+     *
+     * @param array $settings
+     */
+    public function set_settings( array $settings ) {
+        // How many settings are we dealing with?
+        $settings_count = count( $settings );
+
+        // Get the setting values
+        $setting_values = array();
+
+        foreach ( $settings as $k => $v ) {
+            $setting_values[] = $this->id;
+            $setting_values[] = $k;
+            $setting_values[] = $v;
+        }
+
+		// Insert it or update it
+		$this->prepare(
+            'INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ' . str_repeat( '( ?, ?, ? )', $settings_count ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
+            , str_repeat( 'iss', $settings_count )
+            , $setting_values
+        )->query();
+    }
 }

@@ -52,7 +52,7 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
                 <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
                 <?php } ?>
                 <div id="nav-right">
-                    <a href="/support/" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support'); ?></a>
+                    <a href="#" id="aTicket" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support'); ?></a>
                 </div>
 			<?php } ?>
 		</div>

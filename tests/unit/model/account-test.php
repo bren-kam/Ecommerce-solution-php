@@ -63,7 +63,7 @@ class AccountTest extends BaseDatabaseTest {
         }
 
         // Make sure they exist
-        $this->assertTrue ( $rent_king_exists );
+        $this->assertTrue( $rent_king_exists );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $accounts, $account, $rent_king_exists );
@@ -93,6 +93,88 @@ class AccountTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $accounts_count );
+    }
+
+    /**
+     * Test getting one setting
+     *
+     * @depends testGet
+     */
+    public function testGetOneSetting() {
+        // Fill up a user
+        $user = new User();
+        $user->role = 8;
+
+        // Get the account
+        $this->account->get( $user, 160 );
+
+        $email_receipt = $this->account->get_settings( 'email-receipt' );
+
+        $this->assertEquals( 'info@connells.com', $email_receipt );
+    }
+
+    /**
+     * Test setting a setting
+     */
+    public function testSetSettings() {
+        // Fill up a user
+        $user = new User();
+        $user->role = 8;
+
+        // Get the account
+        $this->account->get( $user, 160 );
+
+        // Set it wrong in the first place
+        $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( 160, 'test-settings', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
+
+        // Set it with the method
+        $this->account->set_settings( array( 'test-settings' => '3.14159' ) );
+
+        // Get the value
+        $setting_value = $this->db->get_var( "SELECT `value` FROM `website_settings` WHERE `website_id` = 160 AND `key` = 'test-settings'" );
+
+        // Make sure they equal each other
+        $this->assertEquals( '3.14159', $setting_value );
+    }
+
+    /**
+     * Test getting multiple setting
+     *
+     * @depends testGet
+     */
+    public function testGettingMultipleSettings() {
+        // Fill up a user
+        $user = new User();
+        $user->role = 8;
+
+        // Get the account
+        $this->account->get( $user, 160 );
+
+        $settings = $this->account->get_settings( 'ga-password', 'ga-username' );
+
+        $this->assertTrue( is_array( $settings ) );
+        $this->assertEquals( count( $settings ), 2 );
+        $this->assertEquals( 'ODqMw5JF97ke9qGphfDiPsN/xOftzziAcv1ZEdM=', $settings['ga-username'] );
+    }
+
+    /**
+     * Test getting multiple setting
+     *
+     * @depends testGet
+     */
+    public function testGettingMultipleSettingsFromArray() {
+        // Fill up a user
+        $user = new User();
+        $user->role = 8;
+
+        // Get the account
+        $this->account->get( $user, 160 );
+
+        $settings = $this->account->get_settings( 'ga-password', 'ga-username' );
+
+        $this->assertTrue( is_array( $settings ) );
+        $this->assertEquals( count( $settings ), 2 );
+        $this->assertEquals( 'ODqMw5JF97ke9qGphfDiPsN/xOftzziAcv1ZEdM=', $settings['ga-username'] );
     }
 
     /**

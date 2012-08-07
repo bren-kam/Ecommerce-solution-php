@@ -122,13 +122,13 @@ switch ( $_GET['a'] ) {
 function dns_sort( $a, $b ) {
     if ( $a['Type'] == $b['Type'] )
         return 0;
-	
+
 	if ( 'SOA' == $b['Type'] && 'SOA' != $a['Type'] || 'NS' == $b['Type'] && 'NS' != $a['Type'] )
 		return 1;
-	
+
 	if ( 'SOA' == $a['Type'] && 'SOA' != $b['Type'] || 'NS' == $a['Type'] && 'NS' != $b['Type'] )
 		return -1;
-	
+
     return strcmp( $a['Type'], $b['Type'] );
 }
 

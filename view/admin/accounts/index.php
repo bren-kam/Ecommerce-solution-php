@@ -9,7 +9,6 @@
  * @var User $user
  */
 
-$template->set( 'view', true );
 echo $template->start();
 ?>
 

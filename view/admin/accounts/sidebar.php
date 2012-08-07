@@ -5,7 +5,6 @@
  */
 ?>
 <div id="sidebar">
-	<h2><?php echo _('Actions'); ?></h2>
     <div id="actions">
         <a href="/accounts/" title="<?php echo _('Accounts'); ?>" class="top first<?php $this->select('accounts'); ?>"><?php echo _('Accounts'); ?></a>
         <?php if ( isset( $accounts ) && true === $accounts ) { ?>

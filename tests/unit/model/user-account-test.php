@@ -117,6 +117,70 @@ class UserAccountTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test listing all accounts
+     */
+    public function testListAll() {
+        $this->user->get_by_email('test@studio98.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $this->user );
+        $dt->order_by( 'a.`contact_name`', 'a.`email`', 'phone', 'b.`domain`', 'a.`role`' );
+        $dt->search( array( 'a.`contact_name`' => true, 'a.`email`' => true, 'b.`domain`' => true ) );
+
+        $users = $this->user->list_all( $dt->get_variables() );
+
+        // Make sure we have an array
+        $this->assertTrue( is_array( $users ) );
+
+        // Joe Schmoe is a user with ID 496
+        $joe_schmoe_exists = false;
+
+        if ( is_array( $users ) )
+        foreach ( $users as $user ) {
+            if ( 496 == $user->id ) {
+                $joe_schmoe_exists = true;
+                break;
+            }
+        }
+
+        // Make sure they exist
+        $this->assertTrue( $joe_schmoe_exists );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $users, $account, $joe_schmoe_exists );
+    }
+
+    /**
+     * Test counting the accounts
+     */
+    public function testCountAll() {
+        $this->user->get_by_email('test@studio98.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $this->user );
+        $dt->order_by( 'a.`contact_name`', 'a.`email`', 'phone', 'b.`domain`', 'a.`role`' );
+        $dt->search( array( 'a.`contact_name`' => true, 'a.`email`' => true, 'b.`domain`' => true ) );
+
+        $count = $this->user->count_all( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 1, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

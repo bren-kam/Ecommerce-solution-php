@@ -16,6 +16,10 @@ class User extends ActiveRecordBase {
     public function __construct( $admin = 0 ) {
         parent::__construct( 'users' );
         $this->_admin = $admin;
+
+        // We want to make sure they match
+        if ( isset( $this->user_id ) )
+            $this->id = $this->user_id;
     }
 
     /**
@@ -81,6 +85,43 @@ class User extends ActiveRecordBase {
         if ( $this->id )
             $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
     }
+
+    /**
+	 * Get all information of the users
+	 *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+	 * @return array
+	 */
+	public function list_all( $variables ) {
+		// Get the variables
+		list( $where, $values, $order_by, $limit ) = $variables;
+
+        $users = $this->prepare( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`, '') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where GROUP BY a.`user_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'User' );
+
+		return $users;
+	}
+
+	/**
+	 * Count all the websites
+	 *
+	 * @param array $variables
+	 * @return int
+	 */
+	public function count_all( $variables ) {
+        // Get the variables
+		list( $where, $values ) = $variables;
+
+		// Get the website count
+        $count = $this->prepare( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+
+		return $count;
+	}
 
     /**
      * Assign values
