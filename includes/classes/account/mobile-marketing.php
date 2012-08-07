@@ -676,7 +676,7 @@ class Mobile_Marketing extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-        $keyword_usage = $this->db->get_row( "SELECT COUNT(a.`mobile_keyword_id`) AS used_keywords, c.`keywords` FROM `mobile_keywords` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `mobile_plans` AS c ON ( b.`value` = c.`mobile_plan_id` ) WHERE a.`website_id` = $website_id AND b.`key` = 'mobile-plan-id'", ARRAY_A );
+        $keyword_usage = $this->db->get_row( "SELECT mp.`keywords`, COUNT( mk.`mobile_keyword_id`) AS used_keywords FROM `mobile_plans` AS mp LEFT JOIN `website_settings` AS ws ON ( mp.`mobile_plan_id` = ws.`value` ) LEFT JOIN `mobile_keywords` AS mk ON ( ws.`website_id` = mk.`website_id` ) WHERE ws.`website_id` = $website_id AND ws.`key` = 'mobile-plan-id'", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
