@@ -11,7 +11,7 @@
 echo $template->start( _('Companies'), '../sidebar' );
 ?>
 
-<table ajax="/accounts/companies-ajax/list-all/" perPage="30,50,100">
+<table ajax="/accounts/companies/list-all/" perPage="30,50,100">
     <thead>
         <tr>
             <th width="50%" sort="1"><?php echo _('Name'); ?></th>

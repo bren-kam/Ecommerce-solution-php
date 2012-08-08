@@ -56,6 +56,13 @@ class TemplateResponse extends Response {
     }
 
     /**
+     * Add Title
+     */
+    public function add_title( $title ) {
+        $this->variables['title'] = $title . ' | ' . $this->variables['title'];
+    }
+
+    /**
      * Select section/page
      *
      * @param $section

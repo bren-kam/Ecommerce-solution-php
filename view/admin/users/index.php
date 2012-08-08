@@ -12,7 +12,7 @@
 echo $template->start();
 ?>
 
-<table ajax="/users-ajax/list-all/" perPage="30,50,100">
+<table ajax="/users/list-all/" perPage="30,50,100">
 <thead>
     <tr>
         <th width="23%" sort="1"><?php echo _('Name'); ?></th>

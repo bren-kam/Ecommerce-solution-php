@@ -19,14 +19,30 @@ class AccountTest extends BaseDatabaseTest {
      * Test getting an account
      */
     public function testGet() {
-        // Fill up a user
-        $user = new User();
-        $user->role = 8;
-
         // Get the account
-        $this->account->get( $user, 160 );
+        $this->account->get( 160 );
 
         $this->assertEquals( 160, $this->account->id );
+    }
+
+    /**
+     * Test creating an account
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        $this->account->title = 'Meridith Retail';
+        $this->account->create();
+
+        $this->assertTrue( !is_null( $this->account->id ) );
+
+        // Make sure it's in the database
+        $this->account->get( $this->account->id );
+
+        $this->assertTrue( !is_null( $this->account->user_id ) );
+
+        // Delete the account
+        $this->db->delete( 'websites', array( 'website_id' => $this->account->id ), 'i' );
     }
 
     /**
@@ -101,12 +117,8 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGetOneSetting() {
-        // Fill up a user
-        $user = new User();
-        $user->role = 8;
-
         // Get the account
-        $this->account->get( $user, 160 );
+        $this->account->get( 160 );
 
         $email_receipt = $this->account->get_settings( 'email-receipt' );
 
@@ -117,12 +129,8 @@ class AccountTest extends BaseDatabaseTest {
      * Test setting a setting
      */
     public function testSetSettings() {
-        // Fill up a user
-        $user = new User();
-        $user->role = 8;
-
         // Get the account
-        $this->account->get( $user, 160 );
+        $this->account->get( 160 );
 
         // Set it wrong in the first place
         $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( 160, 'test-settings', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
@@ -143,12 +151,8 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGettingMultipleSettings() {
-        // Fill up a user
-        $user = new User();
-        $user->role = 8;
-
         // Get the account
-        $this->account->get( $user, 160 );
+        $this->account->get( 160 );
 
         $settings = $this->account->get_settings( 'ga-password', 'ga-username' );
 
@@ -163,12 +167,8 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGettingMultipleSettingsFromArray() {
-        // Fill up a user
-        $user = new User();
-        $user->role = 8;
-
         // Get the account
-        $this->account->get( $user, 160 );
+        $this->account->get( 160 );
 
         $settings = $this->account->get_settings( 'ga-password', 'ga-username' );
 

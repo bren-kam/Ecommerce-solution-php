@@ -93,12 +93,9 @@ class Validator {
 	 * PHP5 Constructor
 	 * Includes Javascript
      *
-     * @param Resources $resources
      * @param string $form_name
 	 */
-	function __construct( $resources, $form_name ) {
-        $resources->javascript('validator');
-
+	function __construct( $form_name ) {
         $this->form_name = $form_name;
 		$this->random = mt_rand(0, 1000);
 	}
@@ -161,8 +158,8 @@ class Validator {
 	 * @return string
 	 */
 	 public function js_validation() {
-		if ($this->js) {
-			$start = '<script type="text/javascript" language="javascript">head.js( "/js2/?f=jquery.validator", function() {';
+		if ( $this->js ) {
+			$start = '<script type="text/javascript" language="javascript">head.js( "/resources/js_single/?f=validator", function() {';
 			$trigger = ($this->trigger) ? ', true' : '';
 			$start .= ($this->form_name != 'document.forms[0].name') ? 'var fv' . $this->random . '=new Validator("' . $this->form_name . '"' . $trigger . ');document.' . $this->form_name . '.validator="fv' . $this->random . '";' : 'var fv' . $this->random . '=new Validator(' . $this->form_name . $trigger . ');document.forms[0].validator="fv' . $this->random . '";' ;
 			$end = "});</script>\n";

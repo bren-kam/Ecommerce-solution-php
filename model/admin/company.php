@@ -26,6 +26,18 @@ class Company extends ActiveRecordBase {
     }
 
     /**
+     * Get all the companies
+     *
+     * @param int $style [optional]
+     * @return array
+     */
+    public function get_all( $style = PDO::FETCH_CLASS ) {
+        $class = ( PDO::FETCH_CLASS == $style ) ? 'Company' : NULL;
+
+        return $this->get_results( 'SELECT `company_id`, `name` FROM `companies`', $style, $class );
+    }
+
+    /**
      * Create a company
      */
     public function create() {

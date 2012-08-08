@@ -23,6 +23,12 @@ abstract class BaseController {
     protected $section;
 
     /**
+     * Define the title of the section
+     * @var string
+     */
+    protected $title;
+
+    /**
      * The model path for the current controller
      * @var string
      */
@@ -122,6 +128,11 @@ abstract class BaseController {
         $template_response = new TemplateResponse( $this->resources, $this->view_base . $file, $title );
         $template_response->set( 'user', $this->user );
         $template_response->set( 'section', $this->section );
+
+        if ( is_null( $this->title ) )
+            $this->title = ucwords( $this->section );
+
+        $template_response->set( 'title', $this->title );
         $template_response->set( 'view_base', $this->view_base );
 
         return $template_response;

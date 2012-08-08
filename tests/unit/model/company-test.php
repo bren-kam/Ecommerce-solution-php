@@ -25,6 +25,24 @@ class CompanyTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test getting the companies as a clas
+     */
+    public function testGetAllClass() {
+        $companies = $this->company->get_all();
+
+        $this->assertTrue( $companies[0] instanceof Company );
+    }
+
+    /**
+     * Test getting the companies as an array
+     */
+    public function testGetAllArray() {
+        $companies = $this->company->get_all( PDO::FETCH_ASSOC );
+
+        $this->assertTrue( is_array( $companies[0] ) );
+    }
+
+    /**
      * Test getting the company
      *
      * @depends testGet

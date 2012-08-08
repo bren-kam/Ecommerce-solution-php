@@ -13,12 +13,17 @@ class FormTable {
     protected $action;
     protected $method;
     protected $fields;
-    protected $v;
     protected $errs = '';
     protected $submit;
     protected $submit_classes = 'button';
     protected $attributes = array();
     protected $end_columns = '';
+
+    /**
+     * Hold Validator
+     * @var Validator
+     */
+    protected $v;
 
     /**
      * Hold Resources object
@@ -29,13 +34,11 @@ class FormTable {
     /**
      * Constructor -- Create the name
      *
-     * @param Resources $resources
      * @param string $name
      * @param string $action [optional]
      * @param string $method [optional]
      */
-    public function __construct( $resources, $name, $action = '', $method = 'post' ) {
-        $this->resources = $resources;
+    public function __construct( $name, $action = '', $method = 'post' ) {
         $this->name = $name;
         $this->action = $action;
         $this->method = $method;
@@ -49,7 +52,7 @@ class FormTable {
      *
      * @param string $action
      */
-    public function set_action ( $action ) {
+    public function set_action( $action ) {
         $this->action = $action;
     }
 
@@ -160,6 +163,8 @@ class FormTable {
         $html .= $hidden;
         $html .= '</form>';
 
+        $html .= $this->v->js_validation();
+
         return $html;
     }
 
@@ -183,7 +188,7 @@ class FormTable {
      */
     private function _validator() {
         if ( is_null( $this->v ) ) {
-            $this->v = new Validator( $this->resources, $this->name );
+            $this->v = new Validator( $this->name );
 
             foreach ( $this->fields as $f ) {
                $f->validation( $this->v );
@@ -557,5 +562,56 @@ class FormTable_Hidden extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         return '<input type="hidden" name="' . $this->name . '" id="' . $this->name . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+    }
+}
+
+/**
+ * Title Row
+ */
+class FormTable_Title extends FormTable_Field {
+    /**
+     * Constructor -- Create a title row
+     *
+     * @param string $name
+     */
+    public function __construct( $name ) {
+        parent::__construct( $name );
+
+        $this->type = 'title';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<tr><td>&nbsp;</td><td><strong>' . $this->nice_name . '</strong></td></tr>';
+    }
+}
+
+/**
+ * Blank Row
+ */
+class FormTable_Blank extends FormTable_Field {
+    /**
+     * Constructor -- Create a title row
+     *
+     */
+    public function __construct() {
+        parent::__construct( '' );
+
+        $this->type = 'blank';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<tr><td colspan="2">&nbsp;</td></tr>';
     }
 }

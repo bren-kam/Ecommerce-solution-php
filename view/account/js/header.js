@@ -20,7 +20,7 @@ jQuery(function($) {
 			return;
 		}
 
-		head.js( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', '/resources/js_single/?f=swfobject', '/resources/js_single/?f=jquery.uploadify', function() {
+		head.js( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', function() {
 			a.addClass('loaded');
 
 			// If exists, and they want to cache it use it
@@ -54,17 +54,5 @@ jQuery(function($) {
     // Submit a form
     $('#bCreateTicket').click( function() {
         $('#fCreateTicket').submit();
-    });
-
-    // Expandercontractor
-    $('#dTicketPopup .expander').click( function() {
-        if ( $(this).hasClass('open') ) {
-            $(this).removeClass('open').addClass('close');
-
-            $('#' + $(this).attr('rel')).show();
-        } else {
-            $(this).removeClass('close').addClass('open');
-            $('#' + $(this).attr('rel')).hide();
-        }
     });
 });

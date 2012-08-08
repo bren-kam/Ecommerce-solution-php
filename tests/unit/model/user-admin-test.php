@@ -19,6 +19,112 @@ class UserAdminTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting a user
+     */
+    public function testGet() {
+        $user_id = 514;
+        $email = 'test@greysuitretail.com';
+
+        $this->user->get( $user_id );
+
+        $this->assertEquals( $this->user->email, $email );
+    }
+
+
+
+    /**
+     * Test Getting Users
+     */
+    public function testGetAll() {
+        $this->user->role = 8;
+        $this->user->company_id = 1;
+
+        $users = $this->user->get_all();
+
+        // Make sure that it returned users
+        $this->assertTrue( $users[0] instanceof User );
+
+        $same_company = false;
+
+        // Make sure that they're only the same company
+        foreach ( $users as $user ) {
+            if ( $user->company_id != $this->user->company_id ){
+                $same_company = true;
+                break;
+            }
+        }
+
+        $this->assertTrue( $same_company );
+    }
+
+    /**
+     * Test creating a user
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        $new_email = 'test' . rand( 0, 10000 ) . '@phpunit-test.com';
+        $this->user->email = $new_email;
+        $this->user->create();
+
+        $this->assertTrue( !is_null( $this->user->id ) );
+
+        // Make sure it's in the database
+        $this->user->get( $this->user->id );
+
+        $this->assertEquals( $new_email, $this->user->email );
+
+        // Delete the user
+        $this->db->delete( 'users', array( 'user_id' => $this->user->id ), 'i' );
+    }
+
+    /**
+     * Test updating a user
+     *
+     * @depends testCreate
+     */
+    public function testUpdate() {
+        // Create test
+        $new_email = 'test' . rand( 0, 10000 ) . '@phpunit-test.com';
+        $this->user->email = $new_email;
+        $this->user->create();
+
+        // Update test
+        $this->user->contact_name = 'Jiminy Cricket';
+        $this->user->email = 'jiminy@cricket.com';
+        $this->user->update();
+
+        // Make sure we have an ID still
+        $this->assertTrue( !is_null( $this->user->id ) );
+
+        // Now check it!
+        $this->user->get( $this->user->id );
+
+        $this->assertEquals( 'jiminy@cricket.com', $this->user->email );
+
+        // Delete the company
+        $this->db->delete( 'users', array( 'user_id' => $this->user->id ), 'i' );
+    }
+
+    /**
+     * Test Setting the password
+     *
+     * @depends testGet
+     */
+    public function testSetPassword() {
+        $new_password = 'Hello world!';
+
+        $this->user->get(514);
+        $this->user->set_password( $new_password );
+
+        $password = $this->db->get_var( 'SELECT `password` FROM `users` WHERE `user_id` = 514' );
+
+        $this->assertEquals( md5($new_password), $password );
+
+        $this->db->update( 'users', array( 'password' => md5('sapp123') ), array( 'user_id' => 514 ), 's', 'i' );
+    }
+
+    /**
      * Tests invalid login
      */
     public function testInvalidLogin() {

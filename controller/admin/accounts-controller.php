@@ -25,6 +25,80 @@ class AccountsController extends BaseController {
     }
 
     /**
+     * Add account
+     *
+     * @return TemplateResponse
+     */
+    protected function add() {
+        $template_response = $this->get_template_response( 'add' );
+        $template_response->select( 'accounts', 'add' );
+        $template_response->add_title( _('Add') );
+
+        // Instantiate Objects
+        $account = new Account();
+
+        $user_array = $this->user->get_all();
+        $os_users[''] = _('-- Select Online Specialist --');
+        $users[''] = _('-- Select User --');
+
+        /**
+         * @var User $user
+         */
+        foreach ( $user_array as $user ) {
+            if ( $user->role >= 7 )
+                $os_users[$user->id] = $user->contact_name;
+
+            $users[$user->id] = $user->contact_name;
+        }
+
+        // Create new form table
+        $ft = new FormTable( 'fAddAccount' );
+
+        $ft->submit( _('Add') );
+
+        $ft->add_field( 'text', _('Title'), 'tTitle' )
+            ->attribute( 'maxlength', 80 )
+            ->add_validation( 'req', _('The "Name" field is required') );
+
+        $ft->add_field( 'text', _('Domain'), 'tDomain' )
+            ->attribute( 'maxlength', 100 );
+
+        $ft->add_field( 'select', _('User'), 'sUserID' )
+            ->options( $users )
+            ->add_validation( 'req', _('The "User" field is required') );
+
+        $ft->add_field( 'select', _('Online Specialist'), 'sOnlineSpecialistID' )
+            ->options( $os_users )
+            ->add_validation( 'req', _('The "Online Specialist" field is required') );
+
+        $ft->add_field( 'select', _('Type'), 'sType' )
+            ->options( array(
+                _('Furniture') => _('Furniture')
+                , _('RTO') => _('RTO')
+                , _('EVR') => _('EVR')
+                , _('High Impact') => _('High Impact')
+            ));
+
+        // Update the account if posted
+        if ( $ft->posted() ) {
+            $account->user_id = $_POST['sUserID'];
+            $account->os_user_id = $_POST['sOnlineSpecialistID'];
+            $account->domain = $_POST['tDomain'];
+            $account->title = $_POST['tTitle'];
+            $account->type = $_POST['sType'];
+            $account->create();
+
+            $this->notify( _('Your account was successfully created!') );
+
+            return new RedirectResponse('/accounts/');
+        }
+
+        $template_response->set( 'form', $ft->generate_form() );
+
+        return $template_response;
+    }
+
+    /**
      * Edit Account
      *
      * @return TemplateResponse|RedirectResponse
@@ -34,7 +108,10 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         $account = new Account;
-        $account->get( $this->user, $_GET['aid'] );
+        $account->get( $_GET['aid'] );
+
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
 
         $this->resources->javascript('accounts/edit');
         $this->resources->css('accounts/edit');
@@ -61,12 +138,16 @@ class AccountsController extends BaseController {
 
         // Initialize classes
         $account = new Account;
-        $account->get( $this->user, $_GET['aid'] );
+        $account->get( $_GET['aid'] );
+
+        // Make sure they have permission
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
 
         library('r53');
         $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
 
-        $v = new Validator( $this->resources, 'fEditDNS' );
+        $v = new Validator( 'fEditDNS' );
 
         // Declare variables
         $domain_name = url::domain( $account->domain, false );
@@ -190,5 +271,97 @@ class AccountsController extends BaseController {
         $template_response->set( compact( 'account', 'zone_id', 'errs', 'domain_name', 'full_domain_name', 'records' ) );
 
         return $template_response;
+    }
+
+    /***** AJAX *****/
+
+    /**
+     * List Accounts
+     *
+     * @return DataTableResponse
+     */
+    protected function list_all() {
+        // Get Models
+        $account = new Account();
+        $checklist = new Checklist();
+
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+
+        // Set Order by
+        $dt->order_by( 'b.`company_id`', 'a.`title`', 'b.`contact_name`', 'c.`contact_name`' );
+
+        // Add Where's
+        if ( isset( $_SESSION['accounts']['state'] ) ) {
+            // Live accounts
+            $dt->add_where( ( -1 == $_SESSION['accounts']['state'] ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . $_SESSION['accounts']['state'] );
+        } else {
+            $dt->add_where( ' AND a.`status` = 1' );
+        }
+
+        // Add search
+        if ( isset( $_SESSION['accounts']['search'] ) ) {
+            $_GET['sSearch'] = $_SESSION['accounts']['search'];
+            $dt->search( array( 'a.`title`' => false, 'a.`domain`' => false, 'b.`contact_name`' => false, 'c.`contact_name`' => false ) );
+        }
+
+        if ( 251 == $this->user->id ) {
+            $dt->add_where( ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $this->user->company_id . ' )' );
+        } else {
+            // If they are below 8, that means they are a partner
+            if ( !$this->user->has_permission(8) )
+                $dt->add_where( ' AND b.`company_id` = ' . $this->user->company_id );
+        }
+
+		// What other sites we might need to omit
+		$omit_sites = ( !$this->user->has_permission(8) ) ? ', 96, 114, 115, 116' : '';
+
+		// Form the where
+		$dt->add_where( " AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" );
+
+
+        // Get accounts
+        $accounts = $account->list_all( $dt->get_variables() );
+        $dt->set_row_count( $account->count_all( $dt->get_count_variables() ) );
+
+        // Get account ids with incomplete checklists
+        $incomplete_checklists = $checklist->get_incomplete();
+
+        // Set initial data
+        $data = false;
+
+        if ( is_array( $accounts ) )
+        foreach ( $accounts as $a ) {
+            $image = '<img src="/images/icons/companies/' . $a->company_id . '.gif" alt="" width="24" height="24" />';
+
+            // Get the store name if necessary
+            $store_name = ( $a->title == $a->store_name || empty( $a->store_name ) ) ? '' : ' (' . $a->store_name . ')';
+
+            // Get the phone
+            $contact_title = ( empty( $a->phone ) ) ? _('No Phone') : $a->phone;
+
+            $title = '<a href="http://' . $a->domain . '/" target="_blank"><strong title="' . $a->domain . ' - ' . $a->online_specialist . '">' . $a->title . $store_name . '</strong></a><br />';
+            $title .= '<span class="web-actions" style="display: block"><a href="/accounts/edit/?aid=' . $a->id . '" title="' . _('Edit') . ' ' . $a->title . '">' . _('Edit') . '</a> | ';
+            $title .= '<a href="/accounts/control/?aid=' . $a->id . '" title="' . _('Control') . ' ' . $a->title . '" target="_blank">' . _('Control Account') . '</a> | ';
+            $title .= '<a href="/users/control/?uid=' . $a->user_id . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
+            $title .= '<a href="/accounts/notes/?aid=' . $a->id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
+
+            if ( isset( $incomplete_checklists[$a->id] ) )
+                $title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
+
+            $title .= '</span>';
+
+            $data[] = array(
+                $image
+                , $title
+                , '<a href="/users/edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
+                , $a->online_specialist
+            );
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
     }
 }
