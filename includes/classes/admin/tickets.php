@@ -245,6 +245,11 @@ class Tickets extends Base_Class {
 	 * @return array
 	 */
 	public function list_tickets( $limit, $where, $order_by ) {
+        global $user;
+
+        if ( $user['role'] < 8 )
+            $where .= ' AND c.`company_id` = ' . (int) $user['company_id'];
+
         // Get linked tickets
         $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, d.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 
