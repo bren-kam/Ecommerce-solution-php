@@ -33,6 +33,7 @@ class ErrorController extends BaseController {
      * @return bool
      */
     protected function get_logged_in_user() {
+        $this->user = new User();
         return true;
     }
 }

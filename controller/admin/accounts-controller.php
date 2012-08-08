@@ -124,6 +124,75 @@ class AccountsController extends BaseController {
     }
 
     /**
+     * Website Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function website_settings() {
+        // Make sure they can be here
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        $template_response = $this->get_template_response('website-settings');
+        $template_response->select('accounts');
+        $this->resources->css('accounts/edit');
+
+        // Initialize classes
+        $account = new Account;
+        $account->get( $_GET['aid'] );
+
+        $template_response->set( compact( 'account' ) );
+
+        return $template_response;
+    }
+
+    /**
+     * Other Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function other_settings() {
+        // Make sure they can be here
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        $template_response = $this->get_template_response('other-settings');
+        $template_response->select('accounts');
+        $this->resources->css('accounts/edit');
+
+        // Initialize classes
+        $account = new Account;
+        $account->get( $_GET['aid'] );
+
+        $template_response->set( compact( 'account' ) );
+
+        return $template_response;
+    }
+
+    /**
+     * Actions
+     *
+     * @return TemplateResponse
+     */
+    protected function actions() {
+        // Make sure they can be here
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        $template_response = $this->get_template_response('actions');
+        $template_response->select('accounts');
+        $this->resources->css('accounts/edit');
+
+        // Initialize classes
+        $account = new Account;
+        $account->get( $_GET['aid'] );
+
+        $template_response->set( compact( 'account' ) );
+
+        return $template_response;
+    }
+
+    /**
      * Edit DNS for an account
      *
      * @return TemplateResponse|RedirectResponse
@@ -264,7 +333,7 @@ class AccountsController extends BaseController {
 
         // Keep the resources that we need
         $this->resources->javascript('accounts/dns');
-        $this->resources->css('accounts/dns');
+        $this->resources->css('accounts/edit', 'accounts/dns');
 
         $template_response = $this->get_template_response('dns');
         $template_response->select( 'accounts', 'edit' );
@@ -272,6 +341,8 @@ class AccountsController extends BaseController {
 
         return $template_response;
     }
+
+    /***** REDIRECTS *****/
 
     /**
      * Control
@@ -282,7 +353,7 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        set_cookie( 'wid', $_GET['aid'], 172800 ); // 2 days
+        set_cookie( 'aid', $_GET['aid'], 172800 ); // 2 days
         set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
 
         $url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) );

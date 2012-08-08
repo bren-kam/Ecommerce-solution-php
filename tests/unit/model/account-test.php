@@ -42,7 +42,7 @@ class AccountTest extends BaseDatabaseTest {
                 break;
             }
         }
-        
+
         $this->asserttrue( $testing_account_exists );
     }
 

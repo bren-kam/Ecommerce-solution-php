@@ -28,7 +28,11 @@ class Template {
      */
     public function start( $title = '', $sidebar_file = 'sidebar' ) {
         $start_html = '<div id="content">';
-        $start_html .= '<div id="subcontent-wrapper"><div id="subcontent">';
+
+        if ( is_string( $sidebar_file ) )
+            $start_html .= '<div id="subcontent-wrapper">';
+
+        $start_html .= '<div id="subcontent">';
 
         if ( !empty( $title ) )
             $start_html .= '<h1>' . $title . '</h1><br clear="all" /><br />';
@@ -45,10 +49,11 @@ class Template {
     /**
      * End of the template
      *
+     * @param int $div_count [optional]
      * @return string
      */
-    public function end() {
-        return '</div></div></div>';
+    public function end( $div_count = 3 ) {
+        return str_repeat( '</div>', $div_count );
     }
 
     /**

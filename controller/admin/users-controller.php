@@ -180,6 +180,8 @@ class UsersController extends BaseController {
         return $template_response;
     }
 
+     /***** REDIRECTS *****/
+
     /**
      * Control
      *
@@ -204,7 +206,7 @@ class UsersController extends BaseController {
         $accounts = $account->get_by_user( $_GET['uid'] );
 
         set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), 172800 );
-        set_cookie( 'wid', $accounts[0]->id, 172800 ); // 2 days
+        set_cookie( 'aid', $accounts[0]->id, 172800 ); // 2 days
         set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
 
         $url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) ) . '/';

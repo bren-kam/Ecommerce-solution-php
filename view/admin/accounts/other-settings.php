@@ -13,7 +13,7 @@
 ?>
 
 <div id="tabs">
-    <div class="tab-link"><a href="/accounts/?aid=<?php echo $account->id; ?>" title="<?php echo _('Account'); ?>"><?php echo _('Account'); ?></a></div>
+    <div class="tab-link"><a href="/accounts/edit/?aid=<?php echo $account->id; ?>" title="<?php echo _('Account'); ?>"><?php echo _('Account'); ?></a></div>
     <div class="tab-link"><a href="/accounts/website-settings/?aid=<?php echo $account->id; ?>" title="<?php echo _('Website Settings'); ?>"><?php echo _('Website Settings'); ?></a></div>
     <div class="tab-link"><a href="/accounts/other-settings/?aid=<?php echo $account->id; ?>" class="selected" title="<?php echo _('Other Settings'); ?>"><?php echo _('Other Settings'); ?></a></div>
     <div class="tab-link"><a href="/accounts/actions/?aid=<?php echo $account->id; ?>" title="<?php echo _('Actions'); ?>"><?php echo _('Actions'); ?></a></div>
@@ -22,15 +22,6 @@
     <?php } ?>
 </div>
 
-<?php
-$template->get_sidebar( '../sidebar' );
-echo $template->start();
-echo $template->start_subcontent();
-?>
+<?php echo $template->start( _('Other Settings') ); ?>
 
-<h3><?php echo _('Other Settings'); ?></h3>
-
-<?php
-echo $template->end_subcontent();
-echo $template->end();
-?>
+<?php echo $template->end(); ?>

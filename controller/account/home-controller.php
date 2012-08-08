@@ -6,14 +6,17 @@ class HomeController extends BaseController {
     public function __construct() {
         // Pass in the base for all the views
         parent::__construct();
+
+        $this->view_base = 'home/';
+        $this->title = 'Home';
     }
 
     /**
      * Setup a new account
-     * @return RedirectResponse
+     * @return TemplateResponse
      */
     protected function index() {
-        return new RedirectResponse( '/accounts/' );
+        return $this->get_template_response( 'index' );
     }
 }
 
