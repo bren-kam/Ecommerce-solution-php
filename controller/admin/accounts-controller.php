@@ -273,6 +273,23 @@ class AccountsController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Control
+     *
+     * @return RedirectResponse
+     */
+    protected function control() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        set_cookie( 'wid', $_GET['aid'], 172800 ); // 2 days
+        set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
+
+        $url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) );
+
+        return new RedirectResponse( $url );
+    }
+
     /***** AJAX *****/
 
     /**

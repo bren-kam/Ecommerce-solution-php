@@ -180,6 +180,38 @@ class UsersController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Control
+     *
+     * @return RedirectResponse
+     */
+    protected function control() {
+        if ( !isset( $_GET['uid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Instantiate Class
+        $account = new Account;
+
+        // Get the user they are trying to control
+        $user = new User();
+        $user->get( $_GET['uid'] );
+
+        // Make sure they're not trying to control someone with the same role or a higher role
+        if ( $this->user->role <= $user->role || ( !$this->user->has_permission(8) && $this->user->company_id != $user->company_id ) )
+            return new RedirectResponse( '/accounts/' );
+
+        // Get the websites that user controls
+        $accounts = $account->get_by_user( $_GET['uid'] );
+
+        set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), 172800 );
+        set_cookie( 'wid', $accounts[0]->id, 172800 ); // 2 days
+        set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
+
+        $url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) ) . '/';
+
+        return new RedirectResponse( $url );
+    }
+
     /***** AJAX *****/
 
     /**

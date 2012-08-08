@@ -35,6 +35,19 @@ class Account extends ActiveRecordBase {
     }
 
     /**
+     * Get Accounts by User
+     *
+     * @param int $user_id
+     * @return array
+     */
+    public function get_by_user( $user_id ) {
+        return $this->prepare( "SELECT `website_id`, `title`, `domain` FROM `websites` WHERE `user_id` = :user_id AND `status` = 1"
+            , 'i'
+            , array( ':user_id' => $user_id )
+        )->get_results( PDO::FETCH_CLASS, 'Account' );
+    }
+
+    /**
      * Create a company
      */
     public function create() {
