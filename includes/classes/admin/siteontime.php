@@ -293,10 +293,10 @@ class SiteOnTime extends Base_Class {
 
 			////////////////////////////////////////////////
 			// Get/Create the product
-			if ( array_key_exists( $item->ProductID, $existing_products ) ) {
+			if ( array_key_exists( $sku, $existing_products ) ) {
 				$identical = true;
 				
-				$product = $existing_products[$item->ProductID];
+				$product = $existing_products[$sku];
 				$product_id = $product['product_id'];
 				
 				$publish_visibility = $product['publish_visibility'];
@@ -339,9 +339,7 @@ class SiteOnTime extends Base_Class {
 						echo 'images';
 						$identical = false;
 						$images[] = $image_name;
-						echo $image_name;exit;
-					
-						fn::info( $images );
+
 						$this->p->add_product_images( $images, $product_id );
 					}
 				}
@@ -405,8 +403,6 @@ class SiteOnTime extends Base_Class {
 
                 if ( $category_id != $product['category_id'] ) {
                     echo 'category';
-                    echo $category_id . '|' . $product['category_id'];
-                    exit;
                     $identical = false;
                 }
 
@@ -419,6 +415,7 @@ class SiteOnTime extends Base_Class {
 					exit;
 				}
 			} else {
+                echo 'new Product: ' . $sku;exit;
 				$product_id = $this->p->create( self::USER_ID );
 			
 				// Insert the feed product ID
@@ -597,7 +594,7 @@ class SiteOnTime extends Base_Class {
 	 * @return array
 	 */
 	private function _get_existing_products() {
-		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, pm.`feed_product_id`, COALESCE( pc.`category_id`, 0 ) AS category_id FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_meta` AS pm ON ( a.`product_id` = pm.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( a.`product_id` = pc.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images, COALESCE( pc.`category_id`, 0 ) AS category_id FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( a.`product_id` = pc.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
 
 		// Handle any error
 		if( $this->db->errno() ) {
@@ -605,7 +602,7 @@ class SiteOnTime extends Base_Class {
 			return false;
 		}
 		
-		return ar::assign_key( $products, 'feed_product_id' );
+		return ar::assign_key( $products, 'sku' );
 	}
 	
 	/**
