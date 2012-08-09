@@ -4,7 +4,7 @@ $timer = new Timer();
 
 // Check slave
 require '/gsr/systems/db.slave.php';
-$m = new mysqli( DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME );
+$m = new mysqli( $db_host, $db_username, $db_password, $db_name );
 $message = ( $m->connect_error ) ? 'FAIL' : 'OK';
 
 // Mark the page as XML

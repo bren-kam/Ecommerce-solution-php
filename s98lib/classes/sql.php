@@ -170,7 +170,7 @@ class SQL {
 
         require '/gsr/systems/db.php';
 
-		$this->m = new mysqli( DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME );
+		$this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
 
 		if ( $this->m->connect_error ) {
             // Switch to Slave
@@ -178,19 +178,22 @@ class SQL {
             symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
             require '/gsr/systems/db.php';
 
-            $this->m = new mysqli( DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME );
+            $this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
 
-            $this->bail( sprintf( "
+            if ( $this->m->connect_error ) {
+                $this->bail( sprintf( "
+>>>>>>> hotfix-1.4.2.1
 <h1>Error establishing a database connection</h1>
 <p>This either means that the username and password information is incorrect or we can't contact the database server at <code>%s</code>. This could mean your host's database server is down. The connection error is:\n%s</p>
 <ul>
-	<li>Are you sure you have the correct username and password?</li>
-	<li>Are you sure that you have typed the correct hostname?</li>
-	<li>Are you sure that the database server is running?</li>
+    <li>Are you sure you have the correct username and password?</li>
+    <li>Are you sure that you have typed the correct hostname?</li>
+    <li>Are you sure that the database server is running?</li>
 </ul>
 <p>If you're unsure what these terms mean you should probably contact your host.</p>
 ", $db_host, mysqli_connect_error() ) );
-			return;
+                return;
+            }
 		}
 
 		$this->ready = true;
