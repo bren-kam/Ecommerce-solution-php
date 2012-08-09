@@ -402,10 +402,29 @@ abstract class ActiveRecordBase {
 
             // Doesn't exist, then create it
             if ( !$this->_pdo ) {
-                try {
-                    $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
-                } catch( PDOException $e ) {
-                    throw new ModelException( $exception->getMessage(), $e );
+                if ( stristr( $_SERVER['DOCUMENT_ROOT'], '/gsr/systems/' ) ) {
+                    require '/gsr/systems/db.php';
+
+                    try {
+                        $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                    } catch( PDOException $e ) {
+                         // Switch to Slave
+                        unlink('/gsr/systems/db.php');
+                        symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
+                        require '/gsr/systems/db.php';
+
+                        try {
+                            $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                        } catch( PDOException $e ) {
+                            throw new ModelException( $exception->getMessage(), $e );
+                        }
+                    }
+                } else {
+                    try {
+                        $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
+                    } catch( PDOException $e ) {
+                        throw new ModelException( $exception->getMessage(), $e );
+                    }
                 }
 
                 // Set it in the registry

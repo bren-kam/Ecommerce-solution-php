@@ -25,20 +25,20 @@
 	</div>
 </div>
 <div id="dTicketPopup" class="hidden" title="<?php echo _('Create Ticket'); ?>">
-	<form action="/ajax/support/create-ticket/" id="fCreateTicket" method="post" enctype="application/x-www-form-urlencoded">
-		<input type="text" class="tb" name="tTicketSummary" id="tTicketSummary" maxlength="140" style="width:360px" tmpval="<?php echo _('Enter summary'); ?>..." error="<?php echo _('You must enter in a summary'); ?>" />
+	<form action="/tickets/create/" id="fCreateTicket" method="post">
+		<input type="text" class="tb" name="tTicketSummary" id="tTicketSummary" maxlength="140" style="width:348px" tmpval="<?php echo _('Enter summary'); ?>..." error="<?php echo _('You must enter in a summary'); ?>" />
 		<br />
-		<textarea name="taTicket" id="taTicket" rows="5" cols="50" style="width:360px" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
+		<textarea name="taTicket" id="taTicket" rows="5" cols="50" style="width:348px" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
 		<br /><br />
-		<div id="ticket-attachments"></div>
 		<input type="hidden" name="hTicketID" id="hTicketID" value="0" />
-		<?php nonce::field( 'create-ticket', '_ajax_create_ticket' ); ?>
-		<p class="col-2 float-right text-right"><input type="submit" class="button" value="<?php echo _('Create Ticket'); ?>" /></p>
+		<?php nonce::field( 'create', '_ajax_create_ticket' ); ?>
 	</form>
-	<p class="col-2 float-left"><input type="file" id="fTicketUpload" class="hidden" /></p>
 	<input type="hidden" id="hTicketWebsiteID" value="<?php if ( isset( $user->website ) ) echo $user->website->website_id; ?>" />
 	<input type="hidden" id="hUserID" value="<?php echo $user->id; ?>" />
-	<?php nonce::field( 'ticket-upload', '_ajax_ticket_upload' ); ?>
+	<div class="boxy-footer hidden">
+        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Cancel'); ?></a></p>
+        <p class="text-right col-2 float-right"><input type="submit" class="button" id="bCreateTicket" value="<?php echo _('Create Ticket'); ?>" /></p>
+    </div>
 </div>
 
 <!-- End: Footer -->

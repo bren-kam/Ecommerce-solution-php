@@ -9,6 +9,7 @@ body { background-color: #A2AAB0 }
 #footer a:hover { color:  #fff }
 #sidebar a.sub { color: #9AC600 }
 #sidebar a.sub:hover, #sidebar a.sub.selected { background-color: #9AC600 !important; border-top-color: #ACDB00; border-bottom-color: #88AD00; }
+.boxy-wrapper .title-bar, .boxy-footer { background-color: #3C3D40 }
 
 .button { 
 	background-color: #414141;
