@@ -18,8 +18,11 @@ class ChecklistsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' );
-        $template_response->select( 'checklists', 'view' );
+        $template_response = $this->get_template_response( 'index' )
+            ->select( 'checklists', 'view' );
+
+        $this->resources->css( 'checklists/list' );
+        $this->resources->javascript( 'checklists/list' );
 
         // Reset any defaults
         unset( $_SESSION['checklists'] );
@@ -41,7 +44,10 @@ class ChecklistsController extends BaseController {
         // Set Order by
         $dt->order_by( 'days_left', 'b.`title`', 'a.`type`', 'a.`date_created`' );
         $dt->search( array( 'b.`title`' => false ) );
-        $dt->add_where( ' AND a.`checklist_id` IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )' );
+
+        $not = ( isset( $_SESSION['checklists']['completed'] ) && '1' == $_SESSION['checklists']['completed'] ) ? 'NOT ' : '';
+
+        $dt->add_where( " AND a.`checklist_id` {$not}IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )" );
 
         // If they are below 8, that means they are a partner
 		if ( !$this->user->has_permission(8) )

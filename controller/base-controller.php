@@ -181,6 +181,33 @@ abstract class BaseController {
     }
 
     /**
+     * Store Session
+     *
+     * @return AjaxResponse
+     */
+    protected function store_session() {
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() || !isset( $_POST['keys'] ) || !isset( $_POST['value'] ) )
+            return $response;
+
+        // Create array
+        $session = &$_SESSION;
+
+        foreach ( $_POST['keys'] as $key ) {
+            if ( !isset( $session[$key] ) )
+                $session[$key] = array();
+
+            $session = &$session[$key];
+        }
+
+        $session = $_POST['value'];
+
+        return $response;
+    }
+
+    /**
      * Load a response
      *
      * @var string $response

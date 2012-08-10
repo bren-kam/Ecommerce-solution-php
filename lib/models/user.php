@@ -30,7 +30,7 @@ class User extends ActiveRecordBase {
     }
 
     /**
-     * Create a company
+     * Create a user
      */
     public function create() {
         $this->insert( array(
@@ -212,6 +212,8 @@ class User extends ActiveRecordBase {
 
 		return $count;
 	}
+
+    /***** PROTECTED *****/
 
     /**
      * Gets the columns

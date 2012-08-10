@@ -27,8 +27,6 @@ class Checklist extends ActiveRecordBase {
 		return ar::assign_key( $checklist_ids, 'website_id', true );
 	}
 
-
-
     /**
 	 * Get all information of the checklists
 	 *
