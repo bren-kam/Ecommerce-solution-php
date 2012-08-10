@@ -7,8 +7,10 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var User $owner
+ * @var Account $account
+ * @var array $checkboxes
  */
-
 ?>
 
 <div id="tabs">
@@ -24,37 +26,78 @@
 <?php echo $template->start(); ?>
 
 <form name="fEditAccount" action="" method="post">
-<h3><?php echo _('Information'); ?></h3>
-<table>
-    <tr>
-        <td>
-            <label for="tTitle"><?php echo _('Title'); ?></label>
-            <br />
-            <input type="text" class="tb" name="tTitle" id="tTitle" value="<?php echo $account->title; ?>" />
-        </td>
-        <td>
-            <label for="sOwner"><?php echo _('Owner'); ?></label>
-            <br />
-            <select name="sOwner" id="sOwner">
-                <option value="">-- <?php echo _('Select Owner'); ?> --</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>replace</td>
-        <td>replace</td>
-    </tr>
-    <tr>
-        <td>replace</td>
-        <td>
-            <label for="sOnlineSpecialist"><?php echo _('Online Specialist'); ?></label>
-            <br />
-            <select name="sOnlineSpecialist" id="sOnlineSpecialist">
-                <option value="">-- <?php echo _('Select Online Specialist'); ?> --</option>
-            </select>
-        </td>
-    </tr>
-</table>
+    <h3><?php echo _('Information'); ?></h3>
+    <table>
+        <tr>
+            <td>
+                <label for="tTitle"><?php echo _('Title'); ?></label>
+                <br />
+                <?php echo $account_title; ?>
+            </td>
+            <td>
+                <label for="sUserID"><?php echo _('Owner'); ?></label>
+                <br />
+                <?php echo $users; ?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="tPhone"><?php echo _('Phone'); ?></label>
+                <br />
+                <?php echo $phone; ?>
+            </td>
+            <td>
+                <strong><?php echo _('Email'); ?></strong>
+                <br />
+                <?php echo $owner->email; ?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="tProducts"><?php echo _('Products'); ?></label>
+                <br />
+                <?php echo $products; ?>
+            </td>
+            <td>
+                <label for="sOSUserID"><?php echo _('Online Specialist'); ?></label>
+                <br />
+                <?php echo $os_users; ?>
+            </td>
+        </tr>
+    </table>
+    <br /><br />
+
+    <h3><?php echo _('Features'); ?></h3>
+    <table id="tFeatures">
+        <?php
+        $i = 0;
+        $open = false;
+
+        foreach ( $checkboxes as $feature => $cb ) {
+            $selected = $cb['selected'] ? ' selected' : '';
+            $i++;
+
+            if ( !$open ) {
+                echo '<tr>';
+                $open = true;
+            }
+            ?>
+            <td><label for="<?php echo $cb['form_name']; ?>"><?php echo $cb['name']; ?></label></td>
+            <td><a href="#" class="on-off<?php echo $selected; ?>"></a><?php echo $cb['checkbox']; ?></td>
+            <?php
+            if ( 0 == $i % 2 ) {
+                echo '</tr>';
+                $open = false ;
+            }
+        }
+
+        if ( $open )
+            echo '</tr>';
+        ?>
+    </table>
+
+    <p class="float-right"><input type="submit" class="button" value="<?php echo _('Save'); ?>" /></p>
+    <br clear="right" />
 </form>
 
 <?php echo $template->end(); ?>

@@ -18,8 +18,8 @@ class AccountsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' );
-        $template_response->select( 'accounts', 'view' );
+        $template_response = $this->get_template_response( 'index' )
+            ->select( 'accounts', 'view' );
 
         return $template_response;
     }
@@ -30,9 +30,9 @@ class AccountsController extends BaseController {
      * @return TemplateResponse
      */
     protected function add() {
-        $template_response = $this->get_template_response( 'add' );
-        $template_response->select( 'accounts', 'add' );
-        $template_response->add_title( _('Add') );
+        $template_response = $this->get_template_response( 'add' )
+            ->select( 'accounts', 'add' )
+            ->add_title( _('Add') );
 
         // Instantiate Objects
         $account = new Account();
@@ -107,18 +107,102 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
+        // Get Form Table for the elements
+        lib('helpers/form-table');
+
+        // Instantiate
         $account = new Account;
         $account->get( $_GET['aid'] );
 
+        // Make sure he has permission
         if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
+        $v = new Validator( _('fEditAccount') );
+
+        // Define fields
+        $fields = array( 'account_title', 'users', 'phone', 'products', 'os_users' );
+
+        // Get users
+        $user_array = $this->user->get_all();
+        $os_users[''] = _('-- Select Online Specialist --');
+        $users[''] = _('-- Select User --');
+
+        /**
+         * @var User $user
+         */
+        foreach ( $user_array as $user ) {
+            if ( $user->role >= 7 )
+                $os_users[$user->id] = $user->contact_name;
+
+            $users[$user->id] = $user->contact_name;
+        }
+
+        // Create form elements
+        $account_title = new FormTable_Text( false, _('tTitle'), $account->title );
+        $account_title->add_validation('req', _('The "Title" field is required') );
+
+        $fts = new FormTable_Select( false, 'sUserID', $account->user_id );
+        $users = $fts->options( $users );
+
+        $phone = new FormTable_Text( false, _('tPhone'), $account->phone );
+
+        $products = new FormTable_Text( false, _('tProducts'), $account->products );
+
+        $fts = new FormTable_Select( false, 'sOSUserID', $account->os_user_id );
+        $os_users = $fts->options( $os_users );
+
+        foreach ( $fields as $field ) {
+            $$field->validation( $v );
+        }
+
+        $owner = new User();
+        $owner->get( $account->user_id );
+
+        // Features
+        $features = array(
+            'website'
+            , 'shopping_cart'
+            , 'product_catalog'
+            , 'limited_products'
+            , 'room_planner'
+            , 'blog'
+            , 'craigslist'
+            , 'email_marketing'
+            , 'domain_registration'
+            , 'mobile_marketing'
+            , 'email_addresses'
+            , 'social_media'
+        );
+
+        foreach ( $features as $feature ) {
+            $checkbox_form_name = format::underscore_to_camel_case( 'cb_' . $feature );
+            $checkbox_name = ( 'email_addresses' == $feature ) ? _('Additional Email Addresses') : ucwords( str_replace( '_', ' ', $feature ) );
+
+            $selected = isset( $_POST[$checkbox_form_name] ) || !isset( $_POST ) && $account->$feature;
+            $checked = ( $selected ) ? ' checked="checked"' : '';
+
+            $checkboxes[$feature] = array(
+                'name' => $checkbox_name
+                , 'form_name' => $checkbox_form_name
+                , 'checkbox' => '<input type="checkbox" name="' . $checkbox_form_name . '" id="' . $checkbox_form_name . '" class="hidden" value="1"' . $checked . ' />'
+                , 'selected' => $selected
+            );
+        }
+
+        // Include Resources
         $this->resources->javascript('accounts/edit');
         $this->resources->css('accounts/edit');
 
-        $template_response = $this->get_template_response('edit');
-        $template_response->select( 'accounts', 'edit' );
-        $template_response->set( 'account', $account );
+        $template_response = $this->get_template_response('edit')
+            ->select( 'accounts' )
+            ->add_title('Edit')
+            ->set( compact( 'account', 'owner', 'checkboxes' ) );
+
+        foreach ( $fields as $field ) {
+            $template_response->set( $field, $$field->generate() );
+        }
+
 
         return $template_response;
     }
@@ -133,13 +217,17 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response('website-settings');
-        $template_response->select('accounts');
-        $this->resources->css('accounts/edit');
-
         // Initialize classes
         $account = new Account;
         $account->get( $_GET['aid'] );
+
+        // Make sure he has permission
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
+
+        $template_response = $this->get_template_response('website-settings')
+            ->select('accounts');
+        $this->resources->css('accounts/edit');
 
         $template_response->set( compact( 'account' ) );
 
@@ -156,13 +244,18 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response('other-settings');
-        $template_response->select('accounts');
-        $this->resources->css('accounts/edit');
-
         // Initialize classes
         $account = new Account;
         $account->get( $_GET['aid'] );
+
+        // Make sure he has permission
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
+
+        $template_response = $this->get_template_response('other-settings')
+            ->select('accounts');
+
+        $this->resources->css('accounts/edit');
 
         $template_response->set( compact( 'account' ) );
 
@@ -179,13 +272,17 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response('actions');
-        $template_response->select('accounts');
-        $this->resources->css('accounts/edit');
-
         // Initialize classes
         $account = new Account;
         $account->get( $_GET['aid'] );
+
+        // Make sure he has permission
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
+
+        $template_response = $this->get_template_response('actions')
+            ->select('accounts');
+        $this->resources->css('accounts/edit');
 
         $template_response->set( compact( 'account' ) );
 
@@ -202,12 +299,16 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        if ( !$this->user->has_permission(10) )
-            return new RedirectResponse('/accounts/edit/?aid=' . $_GET['aid']);
-
         // Initialize classes
         $account = new Account;
         $account->get( $_GET['aid'] );
+
+        // Make sure he has permission
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
+
+        if ( !$this->user->has_permission(10) )
+            return new RedirectResponse('/accounts/edit/?aid=' . $_GET['aid']);
 
         // Make sure they have permission
         if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
@@ -335,9 +436,9 @@ class AccountsController extends BaseController {
         $this->resources->javascript('accounts/dns');
         $this->resources->css('accounts/edit', 'accounts/dns');
 
-        $template_response = $this->get_template_response('dns');
-        $template_response->select( 'accounts', 'edit' );
-        $template_response->set( compact( 'account', 'zone_id', 'errs', 'domain_name', 'full_domain_name', 'records' ) );
+        $template_response = $this->get_template_response('dns')
+            ->select( 'accounts', 'edit' )
+            ->set( compact( 'account', 'zone_id', 'errs', 'domain_name', 'full_domain_name', 'records' ) );
 
         return $template_response;
     }
@@ -376,9 +477,10 @@ class AccountsController extends BaseController {
         // Get notes
         $notes = $account_note->get_all( $_GET['aid'] );
 
-        $template_response = $this->get_template_response('notes');
-        $template_response->select( 'accounts' );
-        $template_response->set( compact( 'account', 'notes', 'v' ) );
+        $template_response = $this->get_template_response('notes')
+            ->select( 'accounts' )
+            ->set( compact( 'account', 'notes', 'v' ) );
+
         $this->resources->css('accounts/notes');
 
         return $template_response;

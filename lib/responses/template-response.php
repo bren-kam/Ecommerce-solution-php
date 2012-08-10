@@ -46,6 +46,7 @@ class TemplateResponse extends Response {
      *
      * @param string|array $key
      * @param string $value [optional]
+     * @return Template Response
      */
     public function set( $key, $value = '' ) {
         if ( is_array( $key ) ) {
@@ -53,13 +54,20 @@ class TemplateResponse extends Response {
         } else {
             $this->variables[$key] = $value;
         }
+
+        return $this;
     }
 
     /**
      * Add Title
+     *
+     * @param string $title
+     * @return TemplateResponse
      */
     public function add_title( $title ) {
         $this->variables['title'] = $title . ' | ' . $this->variables['title'];
+
+        return $this;
     }
 
     /**
@@ -67,12 +75,15 @@ class TemplateResponse extends Response {
      *
      * @param $section
      * @param $page [optional]
+     * @return TemplateResponse
      */
     public function select( $section, $page = '' ) {
         $this->set( $section, true );
 
         if ( !empty( $page ) )
             $this->set( $page, true );
+
+        return $this;
     }
 
     /**

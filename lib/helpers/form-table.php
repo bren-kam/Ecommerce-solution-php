@@ -331,6 +331,15 @@ class FormTable_Text extends FormTable_Field {
     }
 
     /**
+     * Generate just the HTML
+     *
+     * @return string
+     */
+    public function generate() {
+        return '<input type="text" class="tb" name="' . $this->name . '" id="' . $this->name . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+    }
+
+    /**
      * Generate HTML
      *
      * @param int $count [optional]
@@ -345,7 +354,7 @@ class FormTable_Text extends FormTable_Field {
 
         $html .= '</label>';
         $html .= '</td><td>';
-        $html .= '<input type="text" class="tb" name="' . $this->name . '" id="' . $this->name . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+        $html .= $this->generate();
         $html .= '</td></tr>';
 
         return $html;
@@ -412,6 +421,8 @@ class FormTable_Select extends FormTable_Field {
         parent::__construct( $nice_name, $name, $value );
 
         $this->type = 'select';
+
+        return $this;
     }
 
     /**
@@ -424,6 +435,22 @@ class FormTable_Select extends FormTable_Field {
         $this->options = $options;
 
         return $this;
+    }
+
+    /**
+     * Generate Select
+     *
+     * @return string
+     */
+    public function generate() {
+        $html = '<select name="' . $this->name . '" id="' . $this->name . '"' . $this->format_attributes() . '>';
+
+        foreach ( $this->options as $option_value => $option_name ) {
+            $selected = ( $this->value == $option_value ) ? ' selected="selected"' : '';
+            $html .= '<option value="' . $option_value . '"' . $selected . '>' . $option_name . '</option>';
+        }
+
+        return $html;
     }
 
     /**
@@ -441,12 +468,7 @@ class FormTable_Select extends FormTable_Field {
 
         $html .= '</label>';
         $html .= '</td><td>';
-        $html .= '<select name="' . $this->name . '" id="' . $this->name . '"' . $this->format_attributes() . '>';
-
-        foreach ( $this->options as $option_value => $option_name ) {
-            $selected = ( $this->value == $option_value ) ? ' selected="selected"' : '';
-            $html .= '<option value="' . $option_value . '"' . $selected . '>' . $option_name . '</option>';
-        }
+        $html .= $this->generate();
 
         $html .= '</td></tr>';
 

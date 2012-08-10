@@ -362,7 +362,7 @@ table.format tr.last td { border-bottom: 0 }
 
 .dt {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
 .dt th, .dt td { font-weight: bold; vertical-align:middle; }
-.dt th { font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
+.dt th { text-align: left; font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
 .dt th img { float: right; margin: 8px 5px 0 0; }
 .dt th.sorting_asc img { background: url(/images/data-tables/arrow-up.png) 0 0 no-repeat }
 .dt th.sorting_desc img { background: url(/images/data-tables/arrow-down.png) 0 0 no-repeat }

@@ -41,6 +41,31 @@ class format extends Base_Class {
         return $new_array;
     }
 
+
+    /**
+     * Underscore to Camel Case
+     *
+     * @param string $string
+     * @return string
+     */
+    public static function underscore_to_camel_case( $string ) {
+        // Split string in words.
+        $words = explode( '_', strtolower( $string ) );
+
+        $return = '';
+
+        foreach ( $words as $word ) {
+            $word = trim( $word );
+
+            if ( !empty( $return ) )
+                $word = ucfirst( $word );
+
+            $return .= $word;
+        }
+
+        return $return;
+    }
+
 	/**
 	 * Navigates through an array and removes slashes from the values.
 	 *
