@@ -214,13 +214,6 @@ class User extends ActiveRecordBase {
 	}
 
     /**
-     * Unset Values
-     */
-    protected function unset_values() {
-        $this->assign_values( array_fill_keys( $this->_columns, NULL ) );
-    }
-
-    /**
      * Gets the columns
      *
      * @param string $prefix [optional]

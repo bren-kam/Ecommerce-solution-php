@@ -342,6 +342,48 @@ class AccountsController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Notes page
+     *
+     * @return RedirectResponse|TemplateResponse
+     */
+    protected function notes() {
+        // Make sure they can be here
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Setup
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Make sure they have access
+        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+            return new RedirectResponse('/accounts/');
+
+        $account_note = new AccountNote();
+
+        // More setup
+        $v = new Validator( _('fAddNote') );
+        $v->add_validation( 'taNote', 'req', _('The note may not be empty') );
+
+        if ( $this->verified() ) {
+            $account_note->website_id = $_GET['aid'];
+            $account_note->user_id = $this->user->id;
+            $account_note->message = $_POST['taNote'];
+            $account_note->create();
+        }
+
+        // Get notes
+        $notes = $account_note->get_all( $_GET['aid'] );
+
+        $template_response = $this->get_template_response('notes');
+        $template_response->select( 'accounts' );
+        $template_response->set( compact( 'account', 'notes', 'v' ) );
+        $this->resources->css('accounts/notes');
+
+        return $template_response;
+    }
+
     /***** REDIRECTS *****/
 
     /**
@@ -451,5 +493,38 @@ class AccountsController extends BaseController {
         $dt->set_data( $data );
 
         return $dt;
+    }
+
+    /**
+     * Delete a note
+     *
+     * @return AjaxResponse
+     */
+    protected function delete_note() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() || !isset( $_GET['anid'] ) )
+            return $response;
+
+        // Get the user
+        $account_note = new AccountNote();
+        $account_note->get( $_GET['anid'] );
+
+        // Deactivate user
+        if ( $account_note->id ) {
+            // Delete the note
+            jQuery('#dNote' . $account_note->id )->remove();
+            jQuery('#dNotes .note.first')->removeClass('first');
+            jquery('#dNotes .note:first')->addClass('first');
+
+            $account_note->delete();
+
+            // Add the response
+            $response->add_response( 'jquery', jQuery::getResponse() );
+        }
+
+        return $response;
     }
 }

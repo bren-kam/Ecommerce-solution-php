@@ -58,6 +58,7 @@ h2 { font-size:22px; color: #404040; }
 h3 { font-size: 18px; color: #404040; }
 textarea { font-family:Arial, Helvetica, sans-serif; color:#63656B; font-size:14px; }
 li { padding-bottom: 7px }
+strong { font-weight: bold }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }
@@ -257,14 +258,14 @@ input.button {
 /***************/
 form td { padding: 0 10px 7px 0; }
 label { font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold; }
-input.tb, select {
+.dataTables_filter input, input.tb, select {
 	border: 1px solid #B3B3B3;
 	height: 19px;
 	padding: 6px 8px 7px;
 	width: 352px;
 }
 
-form select { height:34px; width: 370px;
+select { height:34px; width: 370px;
     background-image: linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
     / -o-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
     / -moz-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
@@ -272,7 +273,7 @@ form select { height:34px; width: 370px;
     / -ms-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
     / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(247,248,250)), color-stop(0.56, rgb(235,237,239)) );
 }
-form select option {
+select option {
     background-color: #F4F5F7;
     padding: 8px 8px 10px;
 }
@@ -281,9 +282,6 @@ form select option {
 select.multiple { height: 150px }
 textarea {
 	border: 1px solid #B3B3B3;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
 	padding: 5px 8px;
 	width: 350px;
 }
@@ -295,101 +293,6 @@ table.format tr.last td { border-bottom: 0 }
 
 
 /***** Data Tables *****/
-.TableTools {
-	padding: 3px 0 3px 3px;
-	border: 1px solid #d0d0d0;
-	background-color: #f0f0f0;
-	position:absolute;
-	right: 0;
-}
-
-.TableTools_button {
-	position: relative;
-	float: left;
-	margin-right: 3px;
-}
-
-.TableTools_csv {
-	background: url(/images/data-tables/csv.png) no-repeat center center;
-	border: 1px solid #f0f0f0;
-}
-
-.TableTools_csv_hover {
-	background: url(/images/data-tables/csv_hover.png) no-repeat center center;
-	border: 1px solid #d0d0d0;
-	background-color: #fdfdfd;
-}
-
-.TableTools_xls {
-	background: url(/images/data-tables/xls.png) no-repeat center center;
-	border: 1px solid #f0f0f0;
-}
-
-.TableTools_xls_hover {
-	background: url(/images/data-tables/xls_hover.png) no-repeat center center;
-	border: 1px solid #d0d0d0;
-	background-color: #fdfdfd;
-}
-
-.TableTools_clipboard {
-	background: url(/images/data-tables/copy.png) no-repeat center center;
-	border: 1px solid #f0f0f0;
-}
-
-.TableTools_clipboard_hover {
-	background: url(/images/data-tables/copy_hover.png) no-repeat center center;
-	border: 1px solid #d0d0d0;
-	background-color: #fdfdfd;
-}
-
-.TableTools_print {
-	background: url(/images/data-tables/print.png) no-repeat center center;
-	border: 1px solid #f0f0f0;
-}
-
-.TableTools_print_hover {
-	background: url(/images/data-tables/print_hover.png) no-repeat center center;
-	border: 1px solid #d0d0d0;
-	background-color: #fdfdfd;
-}
-
-.TableTools_PrintInfo {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 400px;
-	height: 150px;
-	margin-left: -200px;
-	margin-top: -75px;
-	text-align: center;
-	background-color: #3f3f3f;
-	color: white;
-	padding: 10px 30px;
-
-	opacity: 0.9;
-
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-
-	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-	-webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-}
-
-.TableTools_PrintInfo h6 {
-	font-weight: normal;
-	font-size: 28px;
-	line-height: 28px;
-	margin: 1em;
-}
-
-.TableTools_PrintInfo p {
-	font-size: 14px;
-	line-height: 20px;
-}
-
-
 .dataTables_processing {
 	position: absolute;
 	top: 50%;
@@ -408,8 +311,10 @@ table.format tr.last td { border-bottom: 0 }
 }
 
 
-.dataTables_length { width: 320px; position:absolute; right: 350px; top: 2px }
-.dataTables_filter { position: absolute; width: 300px !important; right: 155px; top: 2px; }
+.dataTables_length { width: 150px; position:absolute; top: -44px; font-weight: bold; }
+.dataTables_length select { width: 100px; }
+.dataTables_filter { position: absolute; width: 300px !important; left: 170px; top: -44px; font-weight: bold; }
+.dataTables_filter input { width: 200px; }
 .dataTables_info { width: 20%; padding-right: 20px; }
 
 .dataTables_paginate {
@@ -452,30 +357,15 @@ table.format tr.last td { border-bottom: 0 }
 	text-align: center;
 }
 
-.dataTables_wrapper { padding: 1px; background:#fff; border: 1px solid #b5b5b9; position: relative; margin-bottom: 20px;  }
-.dataTables_wrapper .top { position:absolute; width: 100%; top: -50px;}
-.dataTables_filter input {
-	font-size: 12px; padding: 8px 11px 9px; border: 1px solid #c8d2d6; width: 217px; color: #808b9d; font-weight: bold;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-}
+.dataTables_wrapper { padding: 1px; background:#fff; border: 1px solid #b5b5b9; position: relative; margin-bottom: 20px; margin-top: 44px; }
 
-.dataTables_length select { padding: 7px 5px 7px 17px; width: 148px; height: 35px; border: 1px solid #c8d2d6; font-size: 12px; font-weight: bold; color: #808b9d;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-}
-.dataTables_length option {
-	padding: 7px 17px;
-}
 
 .dt {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
 .dt th, .dt td { font-weight: bold; vertical-align:middle; }
 .dt th { font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
 .dt th img { float: right; margin: 8px 5px 0 0; }
-.dt th.sorting_asc img { background: #8F919B url(/images/backgrounds/tickets/arrow-up.png) 0 0 no-repeat }
-.dt th.sorting_desc img { background: #8F919B url(/images/backgrounds/tickets/arrow-down.png) 0 0 no-repeat }
+.dt th.sorting_asc img { background: url(/images/data-tables/arrow-up.png) 0 0 no-repeat }
+.dt th.sorting_desc img { background: url(/images/data-tables/arrow-down.png) 0 0 no-repeat }
 .bottom { position: relative; top: 7px }
 
 .dt td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 7px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
