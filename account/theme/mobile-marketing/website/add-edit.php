@@ -104,7 +104,7 @@ get_header();
             </div>
             <?php if ( 'home' != $page['slug'] ) { ?>
             <div id="dSlug">
-            	<span><strong><?php echo _('Link:'); ?></strong> http://m.<?php echo url::domain( $user['website']['domain'], false ); ?>/<span id="sSlug"><?php $slug = ( !$success && isset( $_POST['tSlug'] ) ) ? $_POST['tSlug'] : $page['slug']; echo $slug; ?></span><input type="text" name="tSlug" id="tSlug" maxlength="50" class="tb hidden" value="<?php echo $slug; ?>" />/</span>
+            	<span><strong><?php echo _('Link:'); ?></strong> http://m.<?php echo str_replace( 'www.', '', url::domain( $user['website']['domain'] ) ); ?>/<span id="sSlug"><?php $slug = ( !$success && isset( $_POST['tSlug'] ) ) ? $_POST['tSlug'] : $page['slug']; echo $slug; ?></span><input type="text" name="tSlug" id="tSlug" maxlength="50" class="tb hidden" value="<?php echo $slug; ?>" />/</span>
                 &nbsp;
                 <a href="javascript:;" id="aCancelSlug" title="Cancel" class="hidden"><?php echo _('Cancel'); ?></a>
                 <a href="javascript:;" id="aEditSlug" title="<?php echo _('Edit Link'); ?>"><?php echo _('Edit'); ?></a>&nbsp;
