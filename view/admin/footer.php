@@ -26,9 +26,9 @@
 </div>
 <div id="dTicketPopup" class="hidden" title="<?php echo _('Create Ticket'); ?>">
 	<form action="/tickets/create/" id="fCreateTicket" method="post">
-		<input type="text" class="tb" name="tTicketSummary" id="tTicketSummary" maxlength="140" style="width:348px" tmpval="<?php echo _('Enter summary'); ?>..." error="<?php echo _('You must enter in a summary'); ?>" />
+		<input type="text" class="tb" name="tTicketSummary" id="tTicketSummary" maxlength="140" tmpval="<?php echo _('Enter summary'); ?>..." error="<?php echo _('You must enter in a summary'); ?>" />
 		<br />
-		<textarea name="taTicket" id="taTicket" rows="5" cols="50" style="width:348px" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
+		<textarea name="taTicket" id="taTicket" rows="5" cols="50" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
 		<br /><br />
 		<input type="hidden" name="hTicketID" id="hTicketID" value="0" />
 		<?php nonce::field( 'create', '_ajax_create_ticket' ); ?>
