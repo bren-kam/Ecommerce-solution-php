@@ -1,6 +1,7 @@
 <?php
-
-
+$s = new SiteOnTime();
+$s->run();
+/*
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
 $packages = $a->get_packages();
@@ -26,13 +27,6 @@ foreach ( $markets as $m ) {
     }
 }
 
-
-$s = new SiteOnTime();
-$s->run();
-
-
-
-
 // Declare classes
 $a = new Analytics();
 $c = new Craigslist;
@@ -48,6 +42,3 @@ $a->update_craigslist_stats( $date->format('Y-m-d') );
 // Update the tags for analytics of products
 $c->update_tags();
 */
-
-$sot = new SiteOnTime();
-$sot->run();
