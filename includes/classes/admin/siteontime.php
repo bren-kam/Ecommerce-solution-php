@@ -165,7 +165,7 @@ class SiteOnTime extends Base_Class {
 		
         // Get existing products
         $existing_products = $this->_get_existing_products();
-
+		
         // Generate array of our items
         $i = $skipped = 0;
 
@@ -179,8 +179,11 @@ class SiteOnTime extends Base_Class {
             // Get the item
             $item = $item->{'stdClass Object'};
 			
+			$category_name = $item->Category . ' > ' . $item->SubCategory;
+			
+			
             // Get name and slug
-			$name = $item->SeriesName . ' ' . $item->ModelDescription . ' - ' . $item->StandardColor;
+			$name = trim( preg_replace( '/-+$/', '', $item->SeriesName . ' ' . $item->ModelDescription . ' - ' . $item->StandardColor ) );
 			$slug = str_replace( '---', '-', format::slug( $name ) );
 			
 			if ( ' - ' == $name )
@@ -332,7 +335,7 @@ class SiteOnTime extends Base_Class {
 
 				$images = $product_images;
 
-				if ( ( 0 == count( $images ) || !empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
+				if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
 					$image_name = $this->upload_image( $image, $slug, $product_id, $industry );
 
 					if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
@@ -411,11 +414,8 @@ class SiteOnTime extends Base_Class {
 					$skipped++;
 					$products_string .= $name . "\n";
 					continue;
-				} else {
-					exit;
 				}
 			} else {
-                echo 'new Product: ' . $sku;exit;
 				$product_id = $this->p->create( self::USER_ID );
 			
 				// Insert the feed product ID
@@ -453,7 +453,10 @@ class SiteOnTime extends Base_Class {
 				$this->p->add_product_images( $images, $product_id );
                 $products[$item->ProductID] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
 			}
-			
+
+            if ( !isset( $publish_visibility ) || empty( $publish_visibility ) )
+                $publish_visibility = 'public';
+
 			// Update the product
 			$this->p->update( $name, $slug, $description, 'in-stock', $sku, $price, $list_price, $product_specs, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight, $volume );
 
