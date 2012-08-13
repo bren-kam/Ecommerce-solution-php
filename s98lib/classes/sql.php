@@ -157,11 +157,6 @@ class SQL {
 	 * Connects to the database server and selects a database
 	 *
 	 * @since 1.0
-	 *
-	 * @param string $db_user MySQL database user
-	 * @param string $db_password MySQL database password
-	 * @param string $db_name MySQL database name
-	 * @param string $db_host MySQL database host
 	 */
 	function __construct() {
 		if ( true == DEBUG )
@@ -187,6 +182,7 @@ class SQL {
 
             if ( $this->m->connect_error ) {
                 $this->bail( sprintf( "
+>>>>>>> hotfix-1.4.2.1
 <h1>Error establishing a database connection</h1>
 <p>This either means that the username and password information is incorrect or we can't contact the database server at <code>%s</code>. This could mean your host's database server is down. The connection error is:\n%s</p>
 <ul>

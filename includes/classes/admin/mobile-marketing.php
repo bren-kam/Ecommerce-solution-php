@@ -279,7 +279,7 @@ class Mobile_Marketing extends Base_Class {
         );
 		
         $c->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
-
+		
         foreach ( $user_ids as $website_id => $uid ) {
 			// Trying to set timeout limit
 			set_time_limit(300);
@@ -288,10 +288,11 @@ class Mobile_Marketing extends Base_Class {
             $c->get( "http://greysuitmobile.com/main/action/action_main.php?mode=x__admin_signin&uid=$uid" );
 
             $page = $c->get( 'http://greysuitmobile.com/manageContacts/export_contacts_step1.php' );
+			
             preg_match_all( '/option value="([^"]+)"/', $page, $matches );
 
             $list_ids = $matches[1];
-
+			
             if ( !is_array( $list_ids ) || 0 == count( $list_ids ) )
                 continue;
 
@@ -323,9 +324,9 @@ class Mobile_Marketing extends Base_Class {
             $page = $c->post( 'greysuitmobile.com/manageContacts/action/action_contacts_export.php', $post_fields );
 
             $success = preg_match( '/action="[^"]+"/', $page );
-
+			
             if ( !$success )
-                //return false;
+                return false;
 			
 			// This is done to create a lag between export and download -- see function for more information
 			if ( isset( $values ) && isset( $last_website_id ) && $last_website_id )
@@ -344,11 +345,12 @@ class Mobile_Marketing extends Base_Class {
 			}
 			
             $excel_file = tempnam( sys_get_temp_dir(), 'gsr_' );
+			chmod( $excel_file, 0777 );
             $excel_file_handle = fopen( $excel_file, 'w+' );
 			
 			$page = $c->save_file( "http://greysuitmobile.com/manageContacts/action/action_export_download.php?uid=$export_id", $excel_file_handle );
-            
-            // Load excel reader
+			
+			// Load excel reader
             library('Excel_Reader/Excel_Reader');
             $er = new Excel_Reader();
             // Set the basics and then read in the rows
@@ -371,7 +373,7 @@ class Mobile_Marketing extends Base_Class {
 							unset( $lists[$key] );
 						}
 						
-						$l = preg_replace( '/^[0-9]+\s/', '', $l );
+						$l = trim( preg_replace( '/^[0-9]+\s/', '', $l ) );
 					}
 					
 					$values[$this->db->escape( $mobile_number )] = array_values( $lists );
@@ -380,16 +382,16 @@ class Mobile_Marketing extends Base_Class {
 			
 			// Set the last website_id
 			$last_website_id = $website_id;
+		
+			// Do the last one
+			if ( isset( $values ) && isset( $last_website_id ) && $last_website_id )
+				$this->_update_mobile_subscribers( $last_website_id, $values, $w );
 		}
 		
 		if ( isset( $excel_file_handle ) ) {
 			fclose( $excel_file_handle );
 			unlink( $excel_file );
 		}
-		
-		// Do the last one
-		if ( isset( $values ) && isset( $last_website_id ) && $last_website_id )
-			$this->_update_mobile_subscribers( $last_website_id, $values, $w );
     }
 
     /**
@@ -501,7 +503,8 @@ class Mobile_Marketing extends Base_Class {
 		
 		// Setup Trumpia
         $trumpia = new Trumpia( $api_key );
-
+		
+		$i = 0;
 		
 		// Now we have to readd them
 		foreach ( $values as $mobile_number => $lists ) {
@@ -513,6 +516,7 @@ class Mobile_Marketing extends Base_Class {
 			}
 			
 			foreach( $lists as $list ) {
+				$i++;
 				if ( !isset( $mobile_lists[$list] ) ) {
 					$this->db->insert( 'mobile_lists', array( 'website_id' => $website_id, 'name' => $list, 'frequency' => 10, 'description' => 'Unknown', 'date_created' => dt::date('Y-m-d H:i:s') ), 'isiss' );
 					
@@ -535,18 +539,35 @@ class Mobile_Marketing extends Base_Class {
 					$trumpia_contact_id = (int) $trumpia->get_contact_id( $this->_format_mobile_list_name( $list ), 2, $mobile_number );
 				
 				$association_values[] = "( $mobile_subscriber_id, $mobile_list_id, $trumpia_contact_id )";
+				
+				if ( 0 == $i % 10 ) {
+					$association_values_string = implode( ',', $association_values );
+					
+					// Insert all the mobile lists
+					$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id`, `trumpia_contact_id` ) VALUES $association_values_string ON DUPLICATE KEY UPDATE `trumpia_contact_id` = VALUES( `trumpia_contact_id` )" );
+					
+					// Handle any error
+					if ( $this->db->errno() ) {
+						$this->_err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
+						return false;
+					}
+					
+					$association_values = array();
+				}
 			}
 		}
 		
-		$association_values_string = implode( ',', $association_values );
-		
-		// Insert all the mobile lists
-		$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id`, `trumpia_contact_id` ) VALUES $association_values_string ON DUPLICATE KEY UPDATE `trumpia_contact_id` = VALUES( `trumpia_contact_id` )" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
-			return false;
+		if ( 0 != count( $association_values ) ) {
+			$association_values_string = implode( ',', $association_values );
+			
+			// Insert all the mobile lists
+			$this->db->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id`, `trumpia_contact_id` ) VALUES $association_values_string ON DUPLICATE KEY UPDATE `trumpia_contact_id` = VALUES( `trumpia_contact_id` )" );
+			
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->_err( 'Failed to insert mobile associations.', __LINE__, __METHOD__ );
+				return false;
+			}
 		}
 		
 		return true;

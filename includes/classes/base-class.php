@@ -10,7 +10,7 @@ class Base_Class {
 	/**
 	 * Construct initializes data
 	 */
-	public function __construct() { 
+	public function __construct() {
 		$this->db = new SQL();
 		$this->b = fn::browser();
 
