@@ -111,8 +111,6 @@ class Analytics extends Base_Class {
 
         // Get the stats
         $stats = $craigslist->get_stats( $date, $date_end );
-        fn::info( $stats );
-        echo $date . '|' . $date_end;exit;
 
         // Initialize variables
         $values = $tag_ids = array();
