@@ -22,6 +22,8 @@
     <?php } ?>
 </div>
 
-<?php echo $template->start( _('Other Settings') ); ?>
-
-<?php echo $template->end(); ?>
+<?php
+echo $template->start( _('Other Settings') );
+echo $template->v('form');
+echo $template->end();
+?>

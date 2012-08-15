@@ -24,4 +24,47 @@
 
 <?php echo $template->start( _('Actions') ); ?>
 
+<table class="col-2">
+    <?php if ( 0 == $account->version ) { ?>
+        <tr>
+            <td><?php echo _('Install Website'); ?>:</td>
+            <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_website' ), '/accounts/install-website/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></td>
+        </tr>
+    <?php
+    }
+
+    if ( 0 != $account->version ) {
+    ?>
+        <tr>
+            <td><?php echo _('Install Package'); ?>:</td>
+            <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/install-package/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></td>
+        </tr>
+    <?php } ?>
+    <tr>
+        <td><?php echo _('Delete Categories and Products'); ?>:</td>
+        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Reset Social Media'); ?>:</td>
+        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Create Trumpia Account'); ?>:</td>
+        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Reset Social Media'); ?>:</td>
+        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Cancel Account'); ?>:</td>
+        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Run Ashley FTP'); ?>:</td>
+        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
+    </tr>
+</table>
+
+
 <?php echo $template->end(); ?>

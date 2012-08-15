@@ -20,8 +20,16 @@ class Industry extends ActiveRecordBase {
 	 * @return array
 	 */
 	public function get_all() {
-		$industries = $this->get_results( 'SELECT `industry_id`, `name` FROM `industries` ORDER BY `name` ASC', PDO::FETCH_CLASS, 'Industry' );
+		return $this->get_results( 'SELECT `industry_id`, `name` FROM `industries` ORDER BY `name` ASC', PDO::FETCH_CLASS, 'Industry' );
+	}
 
-		return $industries;
+    /**
+	 * Get all industries by an account
+	 *
+     * @param int $account_id
+	 * @return array
+	 */
+	public function get_by_account( $account_id ) {
+		return $this->prepare( 'SELECT `industry_id` FROM `industries` ORDER BY `name` ASC', PDO::FETCH_CLASS, 'Industry' );
 	}
 }

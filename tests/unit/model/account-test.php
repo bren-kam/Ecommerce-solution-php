@@ -67,6 +67,28 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test updating an account
+     *
+     * @depends testCreate
+     */
+    public function testUpdate() {
+        // Get test account
+        $this->account->get(96);
+
+        // Update test
+        $this->account->title = 'Piglatin';
+        $this->account->update();
+
+        // Get title
+        $title = $this->db->get_var( 'SELECT `title` FROM `websites` WHERE `website_id` = 96' );
+
+        $this->assertEquals( 'Piglatin', $title );
+
+        // Rename the account
+        $this->db->update( 'websites', array( 'title' => 'Testing' ), array( 'website_id' => 96 ), 's', 'i' );
+    }
+
+    /**
      * Test listing all accounts
      */
     public function testListAll() {
@@ -196,6 +218,58 @@ class AccountTest extends BaseDatabaseTest {
         $this->assertTrue( is_array( $settings ) );
         $this->assertEquals( count( $settings ), 2 );
         $this->assertEquals( 'ODqMw5JF97ke9qGphfDiPsN/xOftzziAcv1ZEdM=', $settings['ga-username'] );
+    }
+
+    /**
+     * Test getting industries by account
+     *
+     * @depends testGet
+     */
+    public function testGetIndustries() {
+        // Get the testing account
+        $this->account->get(96);
+
+        // Get the industries
+        $industries = $this->account->get_industries();
+
+        // House Plans industry
+        $this->assertTrue( in_array( 5, $industries ) );
+    }
+
+    /**
+     * Delete Industries
+     *
+     * @depends testGet
+     */
+    public function testDeleteIndustries() {
+        // Get test account
+        $this->account->get(96);
+
+        // Delete
+        $this->account->delete_industries();
+
+        // See if we have industries right now
+        $count_industries = $this->db->get_var( 'SELECT COUNT(`industry_id`) FROM `website_industries` WHERE `website_id` = 96' );
+
+        $this->assertEquals( 0, $count_industries );
+    }
+
+    /**
+     * Test Adding industries
+     *
+     * @depends testGet
+     * @depends testDeleteIndustries
+     */
+    public function testAddIndustries() {
+        // Get test account
+        $this->account->get(96);
+
+        $this->account->add_industries( array( 1, 2, 3, 4, 5, 6, 7, 8, 10, 11 ) );
+
+        // See if we have industries right now
+        $count_industries = $this->db->get_var( 'SELECT COUNT(`industry_id`) FROM `website_industries` WHERE `website_id` = 96' );
+
+        $this->assertEquals( 10, $count_industries );
     }
 
     /**

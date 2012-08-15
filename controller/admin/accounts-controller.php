@@ -119,9 +119,42 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         $v = new Validator( _('fEditAccount') );
+        $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
+        $v->add_validation( 'tProducts', 'req', _('The "Products" field is required') );
+        $v->add_validation( 'tProducts', 'num', _('The "Products" field must contain a number') );
+
+        $errs = false;
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $account->title = $_POST['tTitle'];
+                $account->user_id = $_POST['sUserID'];
+                $account->os_user_id = $_POST['sOSUserID'];
+                $account->phone = $_POST['tPhone'];
+                $account->products = $_POST['tProducts'];
+                $account->plan_name = $_POST['tPlan'];
+                $account->plan_description = $_POST['taPlanDescription'];
+                $account->pages = (int) isset( $_POST['cbPages'] );
+                $account->shopping_cart = (int) isset( $_POST['cbShoppingCart'] );
+                $account->product_catalog = (int) isset( $_POST['cbProductCatalog'] );
+                $account->room_planner = (int) isset( $_POST['cbRoomPlanner'] );
+                $account->blog = (int) isset( $_POST['cbBlog'] );
+                $account->craigslist = (int) isset( $_POST['cbCraigslist'] );
+                $account->email_marketing = (int) isset( $_POST['cbEmailMarketing'] );
+                $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
+                $account->mobile_marketing = (int) isset( $_POST['cbMobileMarketing'] );
+                $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
+                $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+
+                $account->update();
+                $this->notify( _('This account has been successfully updated!') );
+            }
+        }
 
         // Define fields
-        $fields = array( 'account_title', 'users', 'phone', 'products', 'os_users' );
+        $fields = array( 'account_title', 'users', 'phone', 'products', 'os_users', 'plan', 'plan_description' );
 
         // Get users
         $user_array = $this->user->get_all();
@@ -140,7 +173,6 @@ class AccountsController extends BaseController {
 
         // Create form elements
         $account_title = new FormTable_Text( false, _('tTitle'), $account->title );
-        $account_title->add_validation('req', _('The "Title" field is required') );
 
         $fts = new FormTable_Select( false, 'sUserID', $account->user_id );
         $users = $fts->options( $users );
@@ -152,6 +184,9 @@ class AccountsController extends BaseController {
         $fts = new FormTable_Select( false, 'sOSUserID', $account->os_user_id );
         $os_users = $fts->options( $os_users );
 
+        $plan = new FormTable_Text( _('Plan'), 'tPlan', $account->plan_name );
+        $plan_description = new FormTable_Textarea( _('Plan Description'), 'taPlanDescription', $account->plan_description );
+
         foreach ( $fields as $field ) {
             $$field->validation( $v );
         }
@@ -161,25 +196,33 @@ class AccountsController extends BaseController {
 
         // Features
         $features = array(
-            'website'
+            'pages'
             , 'shopping_cart'
             , 'product_catalog'
-            , 'limited_products'
             , 'room_planner'
             , 'blog'
             , 'craigslist'
             , 'email_marketing'
             , 'domain_registration'
             , 'mobile_marketing'
-            , 'email_addresses'
+            , 'additional_email_addresses'
             , 'social_media'
         );
 
         foreach ( $features as $feature ) {
             $checkbox_form_name = format::underscore_to_camel_case( 'cb_' . $feature );
-            $checkbox_name = ( 'email_addresses' == $feature ) ? _('Additional Email Addresses') : ucwords( str_replace( '_', ' ', $feature ) );
 
-            $selected = isset( $_POST[$checkbox_form_name] ) || !isset( $_POST ) && $account->$feature;
+            switch ( $feature ) {
+                case 'pages':
+                    $checkbox_name = _('Website');
+                break;
+
+                default:
+                    $checkbox_name = ucwords( str_replace( '_', ' ', $feature ) );
+                break;
+            }
+
+            $selected = isset( $_POST[$checkbox_form_name] ) || ( !isset( $_POST ) || empty( $POST ) ) && $account->$feature;
             $checked = ( $selected ) ? ' checked="checked"' : '';
 
             $checkboxes[$feature] = array(
@@ -197,12 +240,11 @@ class AccountsController extends BaseController {
         $template_response = $this->get_template_response('edit')
             ->select( 'accounts' )
             ->add_title('Edit')
-            ->set( compact( 'account', 'owner', 'checkboxes' ) );
+            ->set( compact( 'account', 'owner', 'checkboxes', 'errs' ) );
 
         foreach ( $fields as $field ) {
             $template_response->set( $field, $$field->generate() );
         }
-
 
         return $template_response;
     }
@@ -225,11 +267,90 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response('website-settings')
-            ->select('accounts');
-        $this->resources->css('accounts/edit');
+        // Setup objects
+        $cp = new CompanyPackage();
+        $industry = new Industry();
+        $ft = new FormTable( 'fWebsiteSettings' );
 
-        $template_response->set( compact( 'account' ) );
+        // Get variables
+        $industries = $industry->get_all();
+        $account_industries = $account->get_industries();
+
+        $company_packages = $cp->get_all( $account->id );
+        $packages = array( '' => _('Select a Package') );
+
+        $settings = $account->get_settings( 'facebook-pages', 'custom-image-size' );
+
+        // Start adding fields
+        $ft->add_field( 'text', _('Domain'), 'tDomain', $account->domain )
+            ->add_validation( 'tDomain', 'req', _('The "Domain" field is required') );
+
+        $ft->add_field( 'text', _('Theme'), 'tTheme', $account->theme )
+            ->add_validation( 'req', _('The "Theme" field is required') );
+
+        // Get company packages
+
+        if ( is_array( $company_packages ) )
+        foreach ( $company_packages as $package ) {
+            $packages[$package->id] = $package->name;
+        }
+
+        $ft->add_field( 'select', _('Package'), 'sPackage', $account->company_package_id )
+            ->options( $packages );
+
+        // Setup Industries
+
+        $industry_list = array();
+
+        foreach ( $industries as $i ) {
+            $industry_list[$i->id] = $i->name;
+        }
+
+        $ft->add_field( 'select', _('Industries'), 'sIndustries[]', $account_industries )
+            ->attribute( 'multiple', 'multiple')
+            ->options( $industry_list );
+
+        // Facebook pages
+        $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
+
+        // Max Image Size
+        $ft->add_field( 'text', _('Max Image Size For Custom Products'), 'tCustomImageSize', $settings['custom-image-size'] );
+
+        // Is the site live?
+        $ft->add_field( 'checkbox', _('Live'), 'cbLive', $account->live );
+
+        // Update account
+        if ( $ft->posted() ) {
+            // Update account
+            $account->company_package_id = $_POST['sPackage'];
+            $account->domain = $_POST['tDomain'];
+            $account->theme = $_POST['tTheme'];
+            $account->live = (int) isset( $_POST['cbLive'] ) && $_POST['cbLive'];
+            $account->update();
+
+            // Update the settings
+            $account->set_settings( array(
+                'facebook-pages' => $_POST['tFacebookPages']
+                , 'custom-image-size' => $_POST['tCustomImageSize']
+            ));
+
+            // Add the industries
+            $account->add_industries( $_POST['sIndustries'] );
+
+            // Let them know it was done
+            $this->notify( _('The Website Settings have been updated!') );
+
+            // Redirect to main page
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/edit/' ) );
+        }
+
+        // Create Form
+        $form = $ft->generate_form();
+
+        $template_response = $this->get_template_response('website-settings')
+            ->select('accounts')
+            ->set( compact( 'account', 'form' ) );
+        $this->resources->css('accounts/edit');
 
         return $template_response;
     }
@@ -252,12 +373,73 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
+        // Setup objects
+        $ft = new FormTable( _('fOtherSettings') );
+
+        // Get variables
+        $settings = $account->get_settings(
+            'ga-username'
+            , 'ga-password'
+            , 'ashley-ftp-username'
+            , 'ashley-ftp-password'
+            , 'ashley-alternate-folder'
+            , 'facebook-url'
+            , 'advertising-url'
+            , 'trumpia-api-key'
+        );
+
+        // Start adding fields
+        $ft->add_field( 'text', _('FTP Username'), 'tFTPUsername', security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Google Analytics Username'), 'tGAUsername', security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Google Analytics Password'), 'tGAPassword', security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Google Analytics Profile ID'), 'tGAProfileID', $account->ga_profile_id );
+        $ft->add_field( 'text', _('Google Analytics Tracking Key'), 'tGATrackingKey', $account->ga_tracking_key );
+        $ft->add_field( 'text', _('WordPress Username'), 'tWPUsername', security::decrypt( base64_decode( $account->wordpress_username ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('WordPress Password'), 'tWPPassword', security::decrypt( base64_decode( $account->wordpress_password ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Ashley FTP Username'), 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
+        $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
+        $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
+        $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
+        $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
+        $ft->add_field( 'text', _('Trumpia API Key'), 'tTrumpiaAPIKey', $settings['trumpia-api-key'] );
+
+        if ( $ft->posted() ) {
+            $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
+            $account->ga_profile_id = $_POST['tGAProfileID'];
+            $account->ga_tracking_key = $_POST['tGATrackingKey'];
+            $account->wordpress_username = security::encrypt( $_POST['tWPUsername'], ENCRYPTION_KEY, true );
+            $account->wordpress_password = security::encrypt( $_POST['tWPPassword'], ENCRYPTION_KEY, true );
+            $account->mc_list_id = $_POST['tMCListID'];
+
+            $account->update();
+
+            // Update settings
+            $account->set_settings( array(
+                'ga-username' => security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY, true )
+                , 'ga-password' => security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY, true )
+                , 'ashley-ftp-username' => security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
+                , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
+                , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']
+                , 'facebook-url' => $_POST['tFacebookURL']
+                , 'advertising-url' => $_POST['tAdvertisingURL']
+                , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
+            ));
+
+            $this->notify( _('This account\'s "Other Settings" has been updated!') );
+
+            // Redirect to main page
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/edit/' ) );
+        }
+
+        // Create Form
+        $form = $ft->generate_form();
+
         $template_response = $this->get_template_response('other-settings')
-            ->select('accounts');
+            ->select('accounts')
+            ->set( compact( 'account', 'form' ) );
 
         $this->resources->css('accounts/edit');
-
-        $template_response->set( compact( 'account' ) );
 
         return $template_response;
     }

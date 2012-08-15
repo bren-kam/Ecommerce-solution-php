@@ -23,7 +23,12 @@
     <?php } ?>
 </div>
 
-<?php echo $template->start(); ?>
+<?php
+echo $template->start();
+
+if ( $errs )
+    echo '<p class="red">' . $errs . '</p><br />';
+?>
 
 <form name="fEditAccount" action="" method="post">
     <h3><?php echo _('Information'); ?></h3>
@@ -64,6 +69,18 @@
                 <?php echo $os_users; ?>
             </td>
         </tr>
+        <tr>
+            <td>
+                <label for="tPlan"><?php echo _('Plan'); ?></label>
+                <br />
+                <?php echo $plan; ?>
+            </td>
+            <td>
+                <label for="taPlanDescription"><?php echo _('Plan Description'); ?></label>
+                <br />
+                <?php echo $plan_description; ?>
+            </td>
+        </tr>
     </table>
     <br /><br />
 
@@ -98,6 +115,7 @@
 
     <p class="float-right"><input type="submit" class="button" value="<?php echo _('Save'); ?>" /></p>
     <br clear="right" />
+    <?php nonce::field('edit'); ?>
 </form>
 
 <?php echo $template->end(); ?>

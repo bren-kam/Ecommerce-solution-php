@@ -22,6 +22,8 @@
     <?php } ?>
 </div>
 
-<?php echo $template->start( _('Website Settings') ); ?>
-
-<?php echo $template->end(); ?>
+<?php
+echo $template->start( _('Website Settings') );
+echo $form;
+echo $template->end();
+?>

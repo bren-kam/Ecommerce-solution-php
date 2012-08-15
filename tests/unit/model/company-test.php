@@ -63,7 +63,7 @@ class CompanyTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test getting the company
+     * Test updating a company
      *
      * @depends testCreate
      */

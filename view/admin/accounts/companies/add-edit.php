@@ -9,7 +9,7 @@
  * @var User $user
  */
 
-echo $template->start( 'Edit Company', '../sidebar' );
+echo $template->start( _('Edit Company'), '../sidebar' );
 echo $template->v('form');
 echo $template->end();
 ?>

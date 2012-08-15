@@ -1,7 +1,11 @@
 <?php
 class Account extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $website_id, $user_id, $os_user_id, $title, $domain, $phone, $products, $type, $status;
+    public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
+        , $plan_description, $theme, $phone, $products, $pages, $shopping_cart, $product_catalog
+        , $room_planner, $blog, $craigslist, $email_marketing, $domain_registration, $mobile_marketing
+        , $additional_email_Addresses, $social_media, $ftp_username, $ga_profile_id, $ga_tracking_key
+        , $wordpress_username, $wordpress_password, $mc_list_id, $version, $live, $type, $status;
 
     // Columns belonging to another table but which may reside here
     public $company_id;
@@ -25,7 +29,7 @@ class Account extends ActiveRecordBase {
     public function get( $account_id ) {
         // Get the account
 		$this->prepare(
-            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
+            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ftp_username`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -48,7 +52,7 @@ class Account extends ActiveRecordBase {
     }
 
     /**
-     * Create a company
+     * Create an account
      */
     public function create() {
         $this->insert( array(
@@ -61,6 +65,43 @@ class Account extends ActiveRecordBase {
             , 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisssis' );
 
         $this->website_id = $this->id = $this->get_insert_id();
+    }
+
+    /**
+     * Update an account
+     */
+    public function update() {
+        parent::update( array(
+            'company_package_id' => $this->company_package_id
+            , 'user_id' => $this->user_id
+            , 'os_user_id' => $this->os_user_id
+            , 'domain' => $this->domain
+            , 'title' => $this->title
+            , 'plan_name' => $this->plan_name
+            , 'plan_description' => $this->plan_description
+            , 'theme' => $this->theme
+            , 'phone' => $this->phone
+            , 'products' => $this->products
+            , 'pages' => $this->pages
+            , 'product_catalog' => $this->product_catalog
+            , 'blog' => $this->blog
+            , 'email_marketing' => $this->email_marketing
+            , 'mobile_marketing' => $this->mobile_marketing
+            , 'shopping_cart' => $this->shopping_cart
+            , 'room_planner' => $this->room_planner
+            , 'craigslist' => $this->craigslist
+            , 'social_media' => $this->social_media
+            , 'domain_registration' => $this->domain_registration
+            , 'additional_email_addresses' => $this->additional_email_Addresses
+            , 'ftp_username' => $this->ftp_username
+            , 'ga_profile_id' => $this->ga_profile_id
+            , 'ga_tracking_key' => $this->ga_tracking_key
+            , 'wordpress_username' => $this->wordpress_username
+            , 'wordpress_password' => $this->wordpress_password
+            , 'mc_list_id' => $this->mc_list_id
+            , 'live' => $this->live
+        ), array( 'website_id' => $this->id )
+        , 'iiissssssiiiiiiiiiiisissssi', 'i' );
     }
 
     /**
@@ -137,7 +178,16 @@ class Account extends ActiveRecordBase {
             , array_merge( array( $this->id ), $keys )
         )->get_results( PDO::FETCH_ASSOC );
 
-        return ar::assign_key( $values, 'key', true );
+
+
+        $settings = ar::assign_key( $values, 'key', true );
+
+        foreach ( $arguments as $arg ) {
+            if ( !isset( $settings[$arg] ) )
+                $settings[$arg] = '';
+        }
+
+        return $settings;
     }
 
     /**
@@ -160,9 +210,53 @@ class Account extends ActiveRecordBase {
 
 		// Insert it or update it
 		$this->prepare(
-            'INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ' . str_repeat( '( ?, ?, ? )', $settings_count ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
+            'INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ' . substr( str_repeat( ', ( ?, ?, ? )', $settings_count ), 2 ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
             , str_repeat( 'iss', $settings_count )
             , $setting_values
         )->query();
+    }
+
+    /**
+     * Get Industries by account
+     *
+     * @return array
+     */
+    public function get_industries() {
+        return $this->prepare(
+            'SELECT `industry_id` FROM `website_industries` WHERE `website_id` = :account_id'
+            , 'i'
+            , array( ':account_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
+     * Delete Industries
+     */
+    public function delete_industries() {
+        $this->prepare( 'DELETE FROM `website_industries` WHERE `website_id` = :account_id'
+            , 'i'
+            , array( ':account_id' => $this->id )
+        )->query();
+    }
+
+    /**
+     * Add Industries
+     *
+     * @param array $industry_ids
+     */
+    public function add_industries( array $industry_ids ) {
+        if ( 0 == count( $industry_ids ) )
+            return;
+
+        $account_id = (int) $this->id;
+        $values = array();
+
+        foreach ( $industry_ids as $iid ) {
+            $iid = (int) $iid;
+
+            $values[] = "( $account_id, $iid )";
+        }
+
+        $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) );
     }
 }
