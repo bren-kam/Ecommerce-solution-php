@@ -22,7 +22,28 @@ body { background-color: #A2AAB0 }
     / -webkit-linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
     / -ms-linear-gradient(top, rgb(73,74,78) 11%, rgb(59,60,63) 56%)
     / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(73,74,78)), color-stop(0.56, rgb(59,60,63)) );
+    text-shadow: 0px 1px 0px #000000;
+    filter: dropshadow(color=#000000, offx=0, offy=1);
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(108, 110, 115, 1);
+    box-shadow: inset 0px 1px 0px 0px rgba(108, 110, 115, 1);
 }
+
+.login-button {
+	background-color: #414141;
+	border: 1px solid #A0CA0D;
+
+    /* Setup Gradient */
+    background-image: linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -o-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -moz-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -webkit-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -ms-linear-gradient(top, rgb(159,199,6) 11%, rgb(130,165,3) 56%)
+    / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(159,199,6)), color-stop(0.56, rgb(130,165,3)) );
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(213, 239, 123, 1);
+    box-shadow: inset 0px 1px 0px 0px rgba(213, 239, 123, 1);
+}
+
+#login-logo { margin-bottom: 0; margin-top: 90px }
 
 /**** OLD ****/
 a { color: #282828; }

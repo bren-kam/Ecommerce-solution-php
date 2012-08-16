@@ -41,6 +41,59 @@ class TicketsController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Ticket
+     *
+     * @return RedirectResponse|TemplateResponse
+     */
+    public function ticket() {
+        if ( !isset( $_GET['tid'] ) )
+            return new RedirectResponse('/tickets/');
+
+        // Yay! We have the ticket ID
+        $ticket_id = $_GET['tid'];
+
+        // Instantiate all the objects
+        $ticket = new Ticket();
+        $tc = new TicketComment();
+        $tu = new TicketUpload();
+
+        $ticket->get( $ticket_id );
+
+        // Don't want them to see this if they don't have the right role
+        if ( $this->user->role < $ticket->role && $this->user->user_id != $ticket->user_id )
+            return new RedirectResponse('/tickets/');
+
+        // Get the uploads
+        $ticket_uploads = $tu->get_for_ticket( $ticket_id );
+        $comment_array = $tc->get_all( $ticket_id );
+        $comments = $comment_user_ids = array();
+
+        if ( is_array( $comment_array ) ) {
+            $comment_uploads = $tu->get_for_comments( $ticket_id );
+
+            foreach ( $comment_array as $comment ) {
+                $comments[$comment->ticket_comment_id] = $comment;
+                $comment_user_ids[] = $comment->user_id;
+            }
+
+            if ( is_array( $comment_uploads ) )
+            foreach ( $comment_uploads as $comment_upload ) {
+                $comments[$comment_upload->ticket_comment_id][] = array(
+                    'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $comment_upload->key
+                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $a->key ) ) )
+                );
+            }
+        }
+
+        $admin_users = $this->user->get_admin_users( $comment_user_ids );
+
+        $template_response = $this->get_template_response( 'ticket', _('Ticket') )
+            ->set( compact( 'ticket', 'ticket_uploads', 'comments', 'admin_users' ) );
+
+        return $template_response;
+    }
+
     /***** AJAX *****/
 
     /**

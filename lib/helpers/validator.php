@@ -192,7 +192,7 @@ class Validator {
 	 */
 	 private function check_validation( $element_name, $descriptor, $err = '' ) {
 	 	$descriptor_array = explode( '=', $descriptor );
-		
+
 		$cmd = $descriptor_array[0];
 		
 		// If it exists, set it
@@ -303,7 +303,7 @@ class Validator {
 				}
 			break;
 
-			case 'email': 
+			case 'email':
 				if ( !empty( $_POST[$element_name] ) && preg_match( $this->patterns['email'], $_POST[$element_name] ) == 0 ) {
 					$this->highlight_error( $element_name );
 					return ( empty( $err ) ) ? $element_name . " must contain a valid email address.\n<br />" : $err . ".\n<br />";

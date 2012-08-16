@@ -168,6 +168,13 @@ class UserAccountTest extends BaseDatabaseTest {
     }
 
     /**
+     * Get Admin Users
+     */
+    public function testGetAdminUsersWithRole5() {
+        $this->assertFalse( $this->user->get_admin_users() );
+    }
+
+    /**
      * Test a valid has_permission
      */
     public function testValidHasPermission() {

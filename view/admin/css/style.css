@@ -74,10 +74,6 @@ a img { border: none }
 	color: #fff !important;
 	padding: 5px 20px;
 	position: relative;
-    text-shadow: 0px 1px 0px #000000;
-    filter: dropshadow(color=#000000, offx=0, offy=1);
-    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(108, 110, 115, 1);
-    box-shadow: inset 0px 1px 0px 0px rgba(108, 110, 115, 1);
 }
 
 input.button {
@@ -169,7 +165,10 @@ input.button {
 
 #content { background: #DADFE3; }
 #subcontent-wrapper { margin-left: 180px; padding-top: 47px; margin-right: 20px; padding-bottom: 30px; }
-#subcontent { border: 1px solid #C7D1D9; background-color: #fff; padding: 20px; }
+#narrow-your-search-wrapper { margin-left: 180px; padding-top: 47px; margin-right: 20px; }
+#narrow-your-search, #subcontent { border: 1px solid #C7D1D9; background-color: #fff; padding: 20px; }
+#subcontent-wrapper.narrow-your-search { padding-top: 20px }
+#narrow-your-search h2 { font-size: 26px; margin-bottom: 25px; }
 
 #footer { margin-top: 26px; margin-bottom: 26px;text-align: right; padding: 0 20px; }
 #footer a { font-weight: bold; font-size: 12px; }
@@ -258,7 +257,7 @@ input.button {
 /***************/
 /* Form Styles */
 /***************/
-form td { padding: 0 10px 7px 0; }
+form td, table.formatted td { padding: 0 10px 7px 0; }
 label { font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: bold; }
 .dataTables_filter input, input.tb, select {
 	border: 1px solid #B3B3B3;
@@ -267,7 +266,7 @@ label { font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight:
 	width: 352px;
 }
 
-select { height:34px; width: 370px;
+select { height:34px; width: 386px;
     background-image: linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
     / -o-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
     / -moz-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)

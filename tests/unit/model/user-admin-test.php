@@ -187,6 +187,38 @@ class UserAdminTest extends BaseDatabaseTest {
     }
 
     /**
+     * Get Admin Users with a role of 5
+     *
+     * @depends testGet
+     */
+    public function testGetAdminUsersWithRole5() {
+        $this->user->role = 5;
+        $this->user->company_id = 1;
+
+        $users =  $this->user->get_admin_users();
+
+        $this->assertTrue( $users[0] instanceof User );
+
+        $user = new User;
+        $user->get( $users[0]->user_id );
+
+        $this->assertEquals( $user->company_id, 1 );
+    }
+
+    /**
+     * Get Admin Users when you have a role of 8
+     *
+     * @depends testGet
+     */
+    public function testGetAdminUsersWithRole8() {
+        $this->user->role = 8;
+
+        $users =  $this->user->get_admin_users();
+
+        $this->assertTrue( $users[0] instanceof User );
+    }
+
+    /**
      * Test a valid has_permission
      */
     public function testValidHasPermission() {

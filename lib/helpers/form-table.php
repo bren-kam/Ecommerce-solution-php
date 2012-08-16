@@ -17,7 +17,6 @@ class FormTable {
     protected $submit;
     protected $submit_classes = 'button';
     protected $attributes = array();
-    protected $end_columns = '';
 
     /**
      * Hold Validator
@@ -73,19 +72,6 @@ class FormTable {
         $this->fields[] = $field;
 
         return $field;
-    }
-
-    /**
-     * Add a column to the end of everything
-     *
-     * @param string $cell_1
-     * @param string $cell_2
-     */
-    public function add_end_column( $cell_1 = '&nbsp;', $cell_2 = '' ) {
-        if ( empty( $cell_1 ) )
-            $cell_1 = '&nbsp;';
-
-        $this->end_columns .= "<tr><td>$cell_1</td><td>$cell_2</td></tr>";
     }
 
     /**
@@ -157,7 +143,6 @@ class FormTable {
 
         $html .= '<tr><td colspan="2">&nbsp;</td></tr>';
         $html .= '<tr><td>&nbsp;</td><td><input type="submit" class="' . $this->submit_classes . '" value="' . $this->submit . '" /></td></tr>';
-        $html .= $this->end_columns;
         $html .= '</table>';
         $html .= nonce::field( 'form-' . $this->name, '_nonce', false );
         $html .= $hidden;

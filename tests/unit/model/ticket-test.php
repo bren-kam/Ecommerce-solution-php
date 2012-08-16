@@ -16,6 +16,15 @@ class TicketTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting a ticket
+     */
+    public function testGet() {
+        $this->ticket->get(1);
+
+        $this->assertEquals( $this->ticket->message, 'message' );
+    }
+
+    /**
      * Test listing all companies
      */
     public function testListAll() {

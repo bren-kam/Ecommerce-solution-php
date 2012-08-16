@@ -154,6 +154,38 @@ class User extends ActiveRecordBase {
         $this->id = $this->user_id;
     }
 
+    /**
+	 * Gets all the "admin" users
+	 *
+	 * @param array $user_ids [optional] any additional user ids you want to be included
+	 * @return array
+	 */
+	public function get_admin_users( $user_ids = array() ) {
+        if ( !$this->_admin )
+            return false;
+
+        $user_ids[] = 493;
+
+        $where = '';
+
+        // Type Juggline
+        foreach ( $user_ids as &$uid ) {
+            $uid = (int) $uid;
+        }
+
+        // Make sure they can only see what they're supposed to
+        if ( !$this->has_permission(8) )
+            $where .= ' AND ( `company_id` = ' . $this->company_id . ' OR `user_id` IN( ' . implode( ', ', $user_ids ) . ' ) ) ';
+
+        $users = $this->get_results(
+            "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `role` > 5 AND '' <> `contact_name` $where ORDER BY `contact_name`"
+            , PDO::FETCH_CLASS
+            , 'User'
+        );
+
+        return $users;
+    }
+
 
     /**
      * Check if the user has permissions

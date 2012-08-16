@@ -20,6 +20,7 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><?php echo $template->v('title') . ' | ' . TITLE; ?></title>
 <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
+<?php echo $resources->get_css_urls(); ?>
 <script type="text/javascript" src="/resources/js/?f=<?php echo $resources->get_javascript_file( 'head' ); ?>"></script>
 <link rel="icon" href="<?php echo '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
 <?php $template->get_head(); ?>

@@ -21,6 +21,9 @@ class AccountsController extends BaseController {
         $template_response = $this->get_template_response( 'index' )
             ->select( 'accounts', 'view' );
 
+        $this->resources->javascript( 'jquery.autocomplete', 'accounts/list' );
+        $this->resources->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
+
         return $template_response;
     }
 
@@ -279,7 +282,7 @@ class AccountsController extends BaseController {
         $company_packages = $cp->get_all( $account->id );
         $packages = array( '' => _('Select a Package') );
 
-        $settings = $account->get_settings( 'facebook-pages', 'custom-image-size' );
+        $custom_image_size = $account->get_settings( 'custom-image-size' );
 
         // Start adding fields
         $ft->add_field( 'text', _('Domain'), 'tDomain', $account->domain )
@@ -310,11 +313,8 @@ class AccountsController extends BaseController {
             ->attribute( 'multiple', 'multiple')
             ->options( $industry_list );
 
-        // Facebook pages
-        $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
-
         // Max Image Size
-        $ft->add_field( 'text', _('Max Image Size For Custom Products'), 'tCustomImageSize', $settings['custom-image-size'] );
+        $ft->add_field( 'text', _('Max Image Size For Custom Products'), 'tCustomImageSize', $custom_image_size );
 
         // Is the site live?
         $ft->add_field( 'checkbox', _('Live'), 'cbLive', $account->live );
@@ -329,10 +329,7 @@ class AccountsController extends BaseController {
             $account->update();
 
             // Update the settings
-            $account->set_settings( array(
-                'facebook-pages' => $_POST['tFacebookPages']
-                , 'custom-image-size' => $_POST['tCustomImageSize']
-            ));
+            $account->set_settings( array( 'custom-image-size' => $_POST['tCustomImageSize'] ));
 
             // Add the industries
             $account->add_industries( $_POST['sIndustries'] );
@@ -350,6 +347,7 @@ class AccountsController extends BaseController {
         $template_response = $this->get_template_response('website-settings')
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
+
         $this->resources->css('accounts/edit');
 
         return $template_response;
@@ -386,6 +384,7 @@ class AccountsController extends BaseController {
             , 'facebook-url'
             , 'advertising-url'
             , 'trumpia-api-key'
+            , 'facebook-pages'
         );
 
         // Start adding fields
@@ -399,6 +398,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Ashley FTP Username'), 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
+        $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
@@ -421,6 +421,7 @@ class AccountsController extends BaseController {
                 , 'ashley-ftp-username' => security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
                 , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
                 , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']
+                , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']

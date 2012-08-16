@@ -1,7 +1,7 @@
 <?php
 class Ticket extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $ticket_id, $name, $priority, $website, $assigned_to, $summary, $date_created;
+    public $id, $ticket_id, $assigned_to_user_id, $name, $priority, $website, $assigned_to, $summary, $date_created;
 
     /**
      * Setup the account initial data
@@ -14,7 +14,19 @@ class Ticket extends ActiveRecordBase {
             $this->id = $this->ticket_id;
     }
 
-   /**
+    /**
+     * Get ticket
+     */
+    public function get( $ticket_id ) {
+		$this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`message`, a.`priority`, a.`status`, a.`browser_name`, a.`browser_version`, a.`browser_platform`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) WHERE a.`ticket_id` = :ticket_id'
+            , 'i'
+            , array( ':ticket_id' => $ticket_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->ticket_id;
+    }
+
+    /**
 	 * Get all information of the tickets
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
