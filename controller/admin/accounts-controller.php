@@ -18,6 +18,8 @@ class AccountsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        unset( $_SESSION['accounts'] );
+
         $template_response = $this->get_template_response( 'index' )
             ->select( 'accounts', 'view' );
 
@@ -707,9 +709,24 @@ class AccountsController extends BaseController {
         $dt->order_by( 'b.`company_id`', 'a.`title`', 'b.`contact_name`', 'c.`contact_name`' );
 
         // Add Where's
-        if ( isset( $_SESSION['accounts']['state'] ) ) {
+        if ( isset( $_SESSION['accounts']['state'] ) && 'all' != $_SESSION['accounts']['state'] ) {
+            switch ( $_SESSION['accounts']['state'] ) {
+                default:
+                case 'live':
+                    $state = 1;
+                break;
+
+                case 'staging':
+                    $state = 0;
+                break;
+
+                case 'inactive':
+                    $state = -1;
+                break;
+            }
+
             // Live accounts
-            $dt->add_where( ( -1 == $_SESSION['accounts']['state'] ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . $_SESSION['accounts']['state'] );
+            $dt->add_where( ( -1 == $state ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . $state );
         } else {
             $dt->add_where( ' AND a.`status` = 1' );
         }
@@ -811,5 +828,46 @@ class AccountsController extends BaseController {
         }
 
         return $response;
+    }
+
+    /**
+     * AutoComplete
+     *
+     * @return AjaxResponse
+     */
+    public function autocomplete() {
+        $ajax_response = new AjaxResponse( $this->verified() );
+
+        // Get the right suggestions for the right type
+        switch ( $_POST['type'] ) {
+            case 'domain':
+                $account = new Account();
+
+                $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
+
+                $results = $account->autocomplete( $_POST['term'], 'domain', $this->user, $status );
+            break;
+
+            case 'store_name':
+                $results = $u->autocomplete( $_POST['term'] , 'store_name' );
+
+                if ( is_array( $results ) )
+                foreach ( $results as &$result ) {
+                    $result['store_name'] = $result['store_name'];
+                }
+            break;
+
+            case 'title':
+                $account = new Account();
+
+                $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
+
+                $results = $account->autocomplete( $_POST['term'], 'title', $this->user, $status );
+            break;
+        }
+
+        $ajax_response->add_response( 'objects', $results );
+
+        return $ajax_response;
     }
 }

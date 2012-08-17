@@ -135,14 +135,43 @@ class Account extends ActiveRecordBase {
 		// Get the website count
         $count = $this->prepare( "SELECT COUNT( DISTINCT a.`website_id` ) FROM `websites` as a LEFT JOIN `users` as b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`os_user_id` = c.`user_id` ) WHERE 1 $where"
             , str_repeat( 's', count( $values ) )
-            , $values 
+            , $values
         )->get_var();
 
 		return $count;
 	}
 
-    /***** Account Settings *****/
 
+    /**
+	 * Gets the data for an autocomplete request
+	 *
+	 * @param string $query
+	 * @param string $field
+     * @param User $user
+     * @param bool|null $status
+	 * @return array
+	 */
+	public function autocomplete( $query, $field, $user, $status = null ) {
+        $where = '';
+
+		// Construct WHERE
+		if ( !$user->has_permission(8) )
+            $where .= ' AND b.`company_id` = ' . (int) $user->company_id;
+
+        if ( is_null( $status ) ) {
+            $where .= ' AND a.`status` = 1';
+        } else {
+            $where .= ( -1 == $status ) ? ' AND a.`status` = 0' : ' AND a.`status` = 1 AND a.`live` = ' . (int) $status;
+        }
+
+		// Get results
+		return $this->prepare(
+            "SELECT DISTINCT( a.`$field` ) FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`$field` LIKE :query $where AND a.`website_id` NOT IN ( 96, 114, 115, 116 ) ORDER BY a.`$field` LIMIT 10"
+            , 's', array( ':query' => $query . '%' )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /***** Account Settings *****/
 
     /**
      * Get Settings

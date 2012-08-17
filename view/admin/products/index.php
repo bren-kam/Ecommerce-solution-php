@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page List Accounts
+ * @page List Products
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -51,13 +51,17 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 
 <div id="subcontent-wrapper" class="narrow-your-search">
 <div id="subcontent">
-    <table ajax="/accounts/list-all/" perPage="30,50,100">
+    <table ajax="/products/list-all/" perPage="30,50,100">
         <thead>
             <tr>
-                <th width="4%">&nbsp;</th>
-                <th width="55%" sort="1"><?php echo _('Account'); ?></th>
-                <th width="16%"><?php echo _('User Name' ); ?></th>
-                <th width="15%"><?php echo _('Online Specialist'); ?></th>
+                 <tr>
+                <th width="40%" sort="1"><?php echo _('Name'); ?></th>
+                <th><?php echo _('Created'); ?></th>
+                <th><?php echo _('Updated'); ?></th>
+                <th><?php echo _('Brand'); ?></th>
+                <th width="10%"><?php echo _('SKU'); ?></th>
+                <th width="8%"><?php echo _('Status'); ?></th>
+            </tr>
             </tr>
         </thead>
         <tbody>

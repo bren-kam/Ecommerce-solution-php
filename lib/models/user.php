@@ -186,6 +186,26 @@ class User extends ActiveRecordBase {
         return $users;
     }
 
+    /**
+	 * Autocomplete
+	 *
+	 * Gets the data for an autocomplete request
+	 *
+	 * @param string $query
+	 * @param string $field
+	 * @return array
+	 */
+	public function autocomplete( $query, $field ) {
+		// Construct WHERE
+		$where = ( !$this->has_permission(8) ) ? ' AND `company_id` = ' . (int) $this->company_id : '';
+
+		// Get results
+		return $this->prepare(
+            "SELECT DISTINCT( `$field` ) FROM `users` WHERE `$field` LIKE :query $where ORDER BY `$field` LIMIT 10"
+            , 's'
+            , array( ':query' => $query . '%' )
+        )->get_results( PDO::FETCH_ASSOC );
+	}
 
     /**
      * Check if the user has permissions

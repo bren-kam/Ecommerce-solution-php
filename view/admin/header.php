@@ -48,7 +48,6 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
                 <?php } ?>
                 <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
                 <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
-                <a href="/craigslist/" title="<?php echo _('Craigslist'); ?>"<?php echo $template->v('section_craigslist'); ?>><?php echo _('Craigslist'); ?></a>
                 <?php if ( $user->has_permission(7) ) { ?>
                 <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
                 <?php } ?>

@@ -40,6 +40,7 @@ class Template {
         // Get the sidebar if it's not false
         if ( $sidebar_file ) {
             extract( $this->variables );
+            $template = $this;
             require VIEW_PATH . $this->variables['view_base'] . $sidebar_file . '.php';
         }
 
@@ -68,6 +69,15 @@ class Template {
         } else {
             $this->variables[$key] = $value;
         }
+    }
+
+    /**
+     * Get Variables
+     *
+     * @return array
+     */
+    public function get_variables() {
+        return $this->variables;
     }
 
     /**

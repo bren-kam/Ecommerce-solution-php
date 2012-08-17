@@ -1,5 +1,5 @@
 // When the page has loaded
-jQuery(function($) {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
     cache = { 'domain' : {}, 'store_name' : {}, 'title' : {} };
 
 	// Create autocomplete
@@ -23,7 +23,7 @@ jQuery(function($) {
             }
 
             // It was not cached, get data
-            $.post( '/accounts/autocomplete/', { _nonce : $('#_ajax_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( data ) {
+            $.post( '/accounts/autocomplete/', { _nonce : $('#_autocomplete').val(), type : cacheType, term : request['term'] }, function( data ) {
                 // Assign global cache the response data
                 cache[cacheType][request['term']] = data['objects'];
 
@@ -36,27 +36,31 @@ jQuery(function($) {
                 }));
             }, 'json' );
         }
-	}).data( "autocomplete" )._renderItem = function() {
-        return $( "<li></li>" )
-		.data( "item.autocomplete", item )
-		.append( '<a href="#">' + item['label'] + '</a>' )
-		.appendTo( ul );
-    };
+	});
 
     // Submit Search - Trigger (Submit)
-	$('#fSubmitSearch').submit( function() {
+	$('#fSearch').submit( function() {
         $('#aSearch').click();
         return false;
     } );
 
 	// Search functionality - Trigger (Click)
 	$('#aSearch').click( function() {
-        $.post( '/accounts/search/', { _nonce : $('#_ajax_search').val(), 's' : $('#tAutoComplete').val() }, ajaxResponse, 'json' );
+        $.post( '/accounts/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'accounts', 'search' ], value : $('#tAutoComplete').val() }, endStoreSession );
     } );
 
 	// State Change - Trigger (Change)
-	$('#sState').change( function() {
+	$('#state').change( function() {
         // Change state ajax request
-        $.post( '/accounts/store-session/', { '_nonce' : $('#_ajax_change_state').val(), 's' : $(this).val() }, ajaxResponse, 'json' );
+        $.post( '/accounts/store-session/', { '_nonce' : $('#_store_session').val(), keys : [ 'accounts', 'state' ], value : $(this).val() }, endStoreSession );
     } );
 });
+
+/**
+ * The function to end store session AJAX call
+ * @param response
+ */
+function endStoreSession( response ) {
+    if ( response.success )
+        $('.dt:first').dataTable().fnDraw();
+}
