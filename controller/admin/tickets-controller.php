@@ -112,7 +112,7 @@ class TicketsController extends BaseController {
 
         // If they are below 8, that means they are a partner
 		if ( !$this->user->has_permission(8) )
-			$dt->add_where( ' AND c.`company_id` = ' . (int) $this->user->company_id );
+			$dt->add_where( ' AND ( c.`company_id` = ' . (int) $this->user->company_id . ' OR a.`user_id` = ' . (int) $this->user->id . ' )' );
 
         $status = ( isset( $_SESSION['tickets']['status'] ) ) ? (int) $_SESSION['tickets']['status'] : 0;
 
