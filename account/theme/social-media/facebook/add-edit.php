@@ -24,7 +24,7 @@ $sm = new Social_Media();
 $facebook_pages = (int) $w->get_setting( 'facebook-pages' );
 $facebook_page_count = $sm->count_facebook_pages('');
 
-$has_permission = $sm_facebook_page_id || $facebook_page_count < $facebook_pages;
+$has_permission = $sm_facebook_page_id || $facebook_page_count < $facebook_pages || empty( $facebook_page_count );
 
 $v = new Validator();
 $v->form_name = 'fAddEditFacebookPage';

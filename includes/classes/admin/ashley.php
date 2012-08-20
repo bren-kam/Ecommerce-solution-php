@@ -54,18 +54,28 @@ class Ashley extends Base_Class {
 			// Get al ist of the files
 			$files = $ftp->dir_list();
 			
-			$file = $files[count($files)-1];
+			$file = NULL;
+			$count = count( $files );
+			
+			while ( is_null( $file ) && 0 != $count ) {
+				$last_file = array_pop( $files );
+				
+				if ( 'xml' == f::extension( $last_file ) )
+					$file = $last_file;
+				
+				$count = count( $files );
+			}
 		}
-
+		
 		$xml_reader = new XMLReader();
 		
 		// Grab the latest file
-		if( !file_exists( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file ) )
-			$ftp->get( $file, '', '/home/imaginer/public_html/admin/media/downloads/ashley/' );
+		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file ) )
+			$ftp->get( $file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
 		
 		///// About 20mbs of useage /////
 		
-		$xml_reader->open( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file );
+		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file );
 		
 		$j = -1;
 		
@@ -164,10 +174,9 @@ class Ashley extends Base_Class {
 		
 		$xml_reader->close();
 
-		
 		// Initalize variables
 		$links = $products_string = '';
-		
+		echo count( $items );exit;
 					
 		$products = $this->get_products();
 
@@ -650,7 +659,7 @@ class Ashley extends Base_Class {
 	 */
 	public function upload_image( $image_url, $slug, $product_id ) {
 		$new_image_name = $slug;
-		$image_extension = strtolower( format::file_extension( $image_url ) );
+		$image_extension = strtolower( f::extension( $image_url ) );
 		
 		$image['name'] = "{$new_image_name}.{$image_extension}";
 		$image['tmp_name'] = '/home/imaginer/public_html/admin/media/downloads/scratchy/' . $image['name'];
@@ -666,8 +675,9 @@ class Ashley extends Base_Class {
 		
 		$this->file->upload_image( $image, $new_image_name, 320, 320, 'furniture', 'products/' . $product_id . '/' );
 		$this->file->upload_image( $image, $new_image_name, 46, 46, 'furniture', 'products/' . $product_id  . '/thumbnail/' );
-		$this->file->upload_image( $image, $new_image_name, 500, 500, 'furniture', 'products/' . $product_id . '/large/' );
-		
+		$this->file->upload_image( $image, $new_image_name, 200, 200, 'furniture', 'products/' . $product_id . '/small/' );
+		$this->file->upload_image( $image, $new_image_name, 700, 700, 'furniture', 'products/' . $product_id . '/large/' );
+
 		if( file_exists( $image['tmp_name'] ) )
 			@unlink( $image['tmp_name'] );
 		

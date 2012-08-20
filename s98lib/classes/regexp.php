@@ -62,4 +62,17 @@ class regexp extends Base_Class {
 	public static function replace( $string, $key, $replacement ) {
 		return preg_replace( self::pattern( $key ), $replacement, $string );
 	}
+
+    /**
+	 * Escapes a string to be used in regex
+	 *
+	 * @param string $string the text to escape
+	 * @return string
+	 */
+	public static function escape_string( $string ) {
+        $patterns = array('/\//', '/\^/', '/\./', '/\$/', '/\|/', '/\(/', '/\)/', '/\[/', '/\]/', '/\*/', '/\+/', '/\?/', '/\{/', '/\}/', '/\,/');
+        $replace = array('\/', '\^', '\.', '\$', '\|', '\(', '\)', '\[', '\]', '\*', '\+', '\?', '\{', '\}', '\,');
+
+        return preg_replace( $patterns, $replace, $string );
+	}
 }

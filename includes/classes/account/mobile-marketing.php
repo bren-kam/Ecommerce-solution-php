@@ -9,6 +9,7 @@
 class Mobile_Marketing extends Base_Class {
     /**
      * Avid Mobile Customer ID
+     * @var Trumpia
      */
     private $trumpia;
 
@@ -338,7 +339,7 @@ class Mobile_Marketing extends Base_Class {
                 $mobile_list = $this->get_mobile_list( $ml );
 
                 // Update the trumpia data
-                $trumpia_contact_id = $this->trumpia->add_contact( $this->_format_mobile_list_name( $mobile_list['name'] ), '', '', '', 1, $phone );
+                $trumpia_contact_id = $this->trumpia->add_contact( 'Unknown', $this->_format_mobile_list_name( $mobile_list['name'] ), '', '', '', 1, $phone );
 
                 if ( !$trumpia_contact_id )
                     return false;
@@ -675,7 +676,7 @@ class Mobile_Marketing extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-        $keyword_usage = $this->db->get_row( "SELECT COUNT(a.`mobile_keyword_id`) AS used_keywords, c.`keywords` FROM `mobile_keywords` AS a LEFT JOIN `website_settings` AS b ON ( a.`website_id` = b.`website_id` ) LEFT JOIN `mobile_plans` AS c ON ( b.`value` = c.`mobile_plan_id` ) WHERE a.`website_id` = $website_id AND b.`key` = 'mobile-plan-id'", ARRAY_A );
+        $keyword_usage = $this->db->get_row( "SELECT mp.`keywords`, COUNT( mk.`mobile_keyword_id`) AS used_keywords FROM `mobile_plans` AS mp LEFT JOIN `website_settings` AS ws ON ( mp.`mobile_plan_id` = ws.`value` ) LEFT JOIN `mobile_keywords` AS mk ON ( ws.`website_id` = mk.`website_id` ) WHERE ws.`website_id` = $website_id AND ws.`key` = 'mobile-plan-id'", ARRAY_A );
 
         // Handle any error
         if ( $this->db->errno() ) {
@@ -1153,7 +1154,7 @@ class Mobile_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `summary`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `title`, `status`, `date_sent` FROM `mobile_messages` WHERE 1 $where $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {

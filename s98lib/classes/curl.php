@@ -17,9 +17,10 @@ class curl {
 	 * @access public
 	 *
 	 * @param string $url the url of the page being called
+     * @param int $timeout [optional]
 	 * @return str/bool
 	 */
-	public static function get( $url ) {
+	public static function get( $url, $timeout = 30 ) {
 		// Whether we should close
 		$close = true;
 		
@@ -32,7 +33,7 @@ class curl {
 		
 		curl_setopt( $ch, CURLOPT_URL, $url );
 		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 30);
+		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_COOKIE, 1 );
@@ -124,6 +125,8 @@ class curl {
 	 * @return bool
 	 */
 	public static function save_file( $url, $fp ) {
+		$close = true; 
+		
 		if ( isset( $this ) ) {
 			$ch = &$this->ch;
 			$close = false;
@@ -132,9 +135,15 @@ class curl {
 		}
 		
 		curl_setopt( $ch, CURLOPT_URL, $url );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1 );
+		curl_setopt( $ch, CURLOPT_COOKIE, 1 );
+		curl_setopt( $ch, CURLOPT_COOKIEFILE, COOKIE_PATH );
+		curl_setopt( $ch, CURLOPT_COOKIEJAR, COOKIE_PATH );
+
 		curl_setopt( $ch, CURLOPT_FILE, $fp );
-		curl_setopt( $ch, CURLOPT_HEADER, 0 );
-		curl_setopt( $ch, CURLOPT_BINARYTRANSFER, TRUE );
+		
 		curl_exec( $ch );
 		
 		if ( $close )

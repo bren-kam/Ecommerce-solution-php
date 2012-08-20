@@ -53,7 +53,7 @@ jQuery(function(){
 					ajaxResponse( $.parseJSON( response ) );
 				},
 				onSelect	: function() {
-					$('#fTicketUpload').uploadifySettings( 'scriptData', { _nonce : $('#_ajax_ticket_upload').val(), uid : $('#hUserID').val(), wid : $('#hTicketWebsiteID').val(), tid : $('#hTicketID').val() } );
+					$('#fTicketUpload').uploadifySettings( 'scriptData', { _nonce : $('#_ajax_ticket_upload').val(), uid : $('#hUserID').val(), wid : $('#hTicketWebsiteID').val(), tid : $('#hTicketID').val(), PHPSESSID : $('#hPHPSESSID').val() } );
 					return true;
 				},
 				sizeLimit	: 6291456,// (6mb) In bytes? Really?

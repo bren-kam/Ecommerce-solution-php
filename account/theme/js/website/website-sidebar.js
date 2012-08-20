@@ -27,7 +27,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		cancelImg 	: '/images/icons/cancel.png',
 		fileExt		: '*.jpg;*.gif;*.png',
 		fileDesc	: 'Web Image Files', // @Fix needs to be put in PHP
-		scriptData	: { _nonce : $('#_ajax_new_image').val(), wid : $('#hWebsiteID').val(), wpid : $('#hWebsitePageID').val() },
+		scriptData	: { _nonce : $('#_ajax_new_image').val(), wid : $('#hWebsiteID').val(), wpid : $('#hWebsitePageID').val(), PHPSESSID : $('#hPHPSESSID').val() },
 		onComplete	: function( e, queueID, fileObj, response ) {
 			ajaxResponse( $.parseJSON( response ) );
 		},
@@ -46,7 +46,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 		cancelImg 	: '/images/icons/cancel.png',
 		fileExt		: '*.swf;*.flv;*.mp4;*.f4v',
 		fileDesc	: 'Video Files', // @Fix needs to be put in PHP
-		scriptData	: { _nonce : $('#_ajax_upload_video').val(), wid : $('#hWebsiteID').val(), wpid : $('#hWebsitePageID').val() },
+		scriptData	: { _nonce : $('#_ajax_upload_video').val(), wid : $('#hWebsiteID').val(), wpid : $('#hWebsitePageID').val(), PHPSESSID : $('#hPHPSESSID').val() },
 		onComplete	: function( e, queueID, fileObj, response ) {
             ajaxResponse( $.parseJSON( response ) );
 		},

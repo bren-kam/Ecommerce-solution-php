@@ -157,13 +157,8 @@ class SQL {
 	 * Connects to the database server and selects a database
 	 *
 	 * @since 1.0
-	 *
-	 * @param string $db_user MySQL database user
-	 * @param string $db_password MySQL database password
-	 * @param string $db_name MySQL database name
-	 * @param string $db_host MySQL database host
 	 */
-	function __construct( $db_user, $db_password, $db_name, $db_host ) {
+	function __construct() {
 		if ( true == DEBUG )
 			$this->show_errors();
 
@@ -173,19 +168,32 @@ class SQL {
 		if ( defined('DB_COLLATE') )
 			$this->collate = DB_COLLATE;
 
-		$this->m = new mysqli($db_host, $db_user, $db_password, $db_name);
+        require '/gsr/systems/db.php';
+
+		$this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
+
 		if ( $this->m->connect_error ) {
-			$this->bail( sprintf( "
+            // Switch to Slave
+            unlink('/gsr/systems/db.php');
+            symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
+            require '/gsr/systems/db.php';
+
+            $this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
+
+            if ( $this->m->connect_error ) {
+                $this->bail( sprintf( "
+>>>>>>> hotfix-1.4.2.1
 <h1>Error establishing a database connection</h1>
 <p>This either means that the username and password information is incorrect or we can't contact the database server at <code>%s</code>. This could mean your host's database server is down. The connection error is:\n%s</p>
 <ul>
-	<li>Are you sure you have the correct username and password?</li>
-	<li>Are you sure that you have typed the correct hostname?</li>
-	<li>Are you sure that the database server is running?</li>
+    <li>Are you sure you have the correct username and password?</li>
+    <li>Are you sure that you have typed the correct hostname?</li>
+    <li>Are you sure that the database server is running?</li>
 </ul>
 <p>If you're unsure what these terms mean you should probably contact your host.</p>
 ", $db_host, mysqli_connect_error() ) );
-			return;
+                return;
+            }
 		}
 
 		$this->ready = true;

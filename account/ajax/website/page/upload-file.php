@@ -11,10 +11,10 @@ $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 $ajax->ok( !empty( $_POST['fn'] ) && _('Enter File Name...') != $_POST['fn'], _('You must type in a file name before uploading a file.') );
 
 // Get the file extension
-$file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+$file_extension = strtolower( f::extension( $_FILES["Filedata"]['name'] ) );
 
 $file_name = preg_replace( '/[^-_a-zA-Z0-9]/', '', $_POST['fn'] );
-$file_name = format::strip_extension( $file_name ) . '.' . $file_extension;
+$file_name = f::strip_extension( $file_name ) . '.' . $file_extension;
 
 $dir = OPERATING_PATH . 'media/uploads/site_uploads/' . $_POST['wid'] . '/';
 

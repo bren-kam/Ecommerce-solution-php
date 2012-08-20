@@ -25,8 +25,6 @@ $v->form_name = 'fAddEditAccount';
 if ( !$website_id )
     $v->add_validation( 'sWebsiteID', 'req', _('The "Account" field is required') );
 
-$v->add_validation( 'sPlan', 'req', _('The "Plan" field is required') );
-
 add_footer( $v->js_validation() );
 
 // Initialize variable
@@ -37,10 +35,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-acc
 	$errs = $v->validate();
 
 	if ( empty( $errs ) ) {
-		if ( $website_id ) {
-            // Update the plan
-            $success = $w->update_settings( $website_id, array( 'craigslist-plan' => $_POST['sPlan'] ) );
-        } else {
+		if ( !$website_id ) {
             // Create everything
 
             // Get the website
@@ -56,7 +51,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-acc
             $customer_id = $craigslist_api->add_customer( $website['title'] );
 
             if ( $customer_id )
-                $success = $w->update_settings( $website['website_id'], array( 'craigslist-customer-id' => $customer_id, 'craigslist-plan' => $_POST['sPlan'] ) );
+                $success = $w->update_settings( $website['website_id'], array( 'craigslist-customer-id' => $customer_id ) );
         }
 	}
 }
@@ -139,28 +134,6 @@ get_header();
                     <td><?php echo $account['title']; ?></td>
                 </tr>
                 <?php } ?>
-                <tr>
-                    <td><label for="sPlan"><?php echo _('Plan'); ?>:</label></td>
-                    <td>
-                        <select name="sPlan" id="sPlan">
-                            <option value="">--<?php echo _('Select a Plan'); ?>--</option>
-                            <?php
-                            $plan = ( !$success && isset( $_POST['sPlan'] ) ) ? $_POST['sPlan'] : $account['plan'];
-
-                            $plans = array(
-                                '25 Ads/Day'
-                                , '50 Ads/Day'
-                                , '100 Ads/Day'
-                            );
-
-                            foreach ( $plans as $p ) {
-                                $selected = ( $plan == $p ) ? ' selected="selected"' : '';
-                            ?>
-                                <option value="<?php echo $p; ?>"<?php echo $selected; ?>><?php echo $p; ?></option>
-                            <?php } ?>
-                        </select>
-                    </td>
-                </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
                     <td>&nbsp;</td>

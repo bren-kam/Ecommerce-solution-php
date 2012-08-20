@@ -63,11 +63,17 @@ class Tags extends Base_Class {
 	 *
 	 * @param string $type the type of tag
 	 * @param int $object_id the object of whatever type of tag it is
-	 * @return bool true
+	 * @return array
 	 */
 	public function get( $type, $object_id ) {
+		// Type Juggling
+		$object_id = (int) $object_id;
+		
+		// Preparing string
+		$type = $this->db->escape( $type );
+		
 		// Get tags
-		$tags = $this->db->prepare( 'SELECT `value` FROM `tags` WHERE `type` = ? AND `object_id` = ?', 'si', $type, $object_id )->get_col( '', ARRAY_A );
+		$tags = $this->db->get_col( "SELECT `value` FROM `tags` WHERE `type` = '$type' AND `object_id` = $object_id" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
