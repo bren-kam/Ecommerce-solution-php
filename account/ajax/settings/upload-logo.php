@@ -10,7 +10,7 @@ $ajax = new AJAX( $_POST['_nonce'], 'upload-logo' );
 $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 
 // Get the file extension
-$file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+$file_extension = strtolower( f::extension( $_FILES["Filedata"]['name'] ) );
 $image_name = "logo." . str_replace( 'jpeg', 'jpg', $file_extension );
 
 $dir = OPERATING_PATH . 'media/uploads/site_logos/' . $_POST['wid'] . '/';

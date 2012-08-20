@@ -20,7 +20,6 @@ $email_autoresponder_id = ( isset( $_GET['eaid'] ) ) ? $_GET['eaid'] : false;
 if ( !$user['website']['email_marketing'] && !$email_autoresponder_id )
 	url::redirect('/email-marketing/autoresponders/');
 
-
 $v = new Validator();
 $v->form_name = 'fAddEditAutoresponder';
 $v->add_validation( 'tName', 'req' , 'The "Name" field is required' );
@@ -66,7 +65,7 @@ if ( $email_autoresponder_id ) {
 	);
 }
 
-$email_lists = $e->get_autoresponder_email_lists( isset( $autoresponder['email_list_id'] ) ? $autoresponder['email_list_id'] : 0 );
+$email_lists = $e->get_autoresponder_email_lists( !empty( $autoresponder['email_list_id'] ) ? $autoresponder['email_list_id'] : 0 );
 
 javascript( 'mammoth', 'email-marketing/autoresponders/add-edit' );
 

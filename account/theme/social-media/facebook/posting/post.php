@@ -139,19 +139,33 @@ get_header();
             <p><?php echo _('Your timezone has not yet been set.'), ' <a href="/social-media/settings/" title="', _('Social Media Settings'), '">', _('Click here to set your timezone.'), '</a>'; ?></p>
 		<?php
         } else {
-            if ( 0 == $posting['fb_user_id'] ) {
-            ?>
-                <h2 class="title"><?php echo _('Step 1: Go to the Posting application.'); ?></h2>
-                <p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Posting'); ?></a> <?php echo _('application page'); ?>.</p>
-                <br /><br />
+            // Define instructions
+            $instructions = array(
+                1 => array(
+                    'title' => _('Go to the Posting application')
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-posting/" title="' . _('Online Platform - Posting') . '" target="_blank">' . _('Posting') . '</a> ' . _('application page') . '.'
+                    , 'image' => false
+                )
+                , 2 => array(
+                    'title' => _('Install The App')
+                    , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $posting['key']
+                )
+            );
 
-                <h2 class="title"><?php echo _('Step 2: Connect the application with your dashboard account'); ?></h2>
-                <p><?php echo _('Copy the connection key listed below and paste into the Facebook app.'); ?></p>
-                <p><?php echo _('Facebook Connection Key'); ?>: <?php echo $posting['key']; ?></p>
-                <p><strong><?php echo _('NOTE'); ?></strong>: <?php echo _('You may see a request for permissions. If this is the case, you first need to Allow Permissions to the application before you will be able to move on.'); ?></p>
-                <br /><br />
+            if ( !isset( $posting['fb_page_id'] ) || 0 == $posting['fb_page_id'] ) {
+                foreach ( $instructions as $step => $data ) {
+                    echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
 
-            <?php } else { ?>
+                    if ( isset( $data['text'] ) )
+                        echo '<p>', $data['text'], '</p>';
+
+                    if ( !isset( $data['image'] ) || $data['image'] != false )
+                        echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/posting/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/posting/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
+
+                    echo '<br /><br />';
+                }
+             } else {
+                ?>
                 <h2 class="title"><?php echo _('Post To Your Pages'); ?></h2>
                 <?php if ( $success ) { ?>
                     <p class="success"><?php echo _('Your message has been successfully posted or scheduled to your Facebook page!'); ?></p>

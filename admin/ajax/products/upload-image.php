@@ -11,8 +11,8 @@
  */
 if ( !empty( $_FILES ) && nonce::verify( $_POST['_nonce'], 'upload-image' ) ) {
 	$product_id = (int) $_POST['pid'];
-	$new_image_name = strtolower( preg_replace( array( '/[^-a-zA-Z0-9\s]/', '/[\s]/' ), array( '', '-' ), format::strip_extension( $_FILES["Filedata"]['name'] ) ) );
-	$image_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+	$new_image_name = strtolower( preg_replace( array( '/[^-a-zA-Z0-9\s]/', '/[\s]/' ), array( '', '-' ), f::strip_extension( $_FILES["Filedata"]['name'] ) ) );
+	$image_extension = strtolower( f::extension( $_FILES["Filedata"]['name'] ) );
 	
 	// Instantiate file-handling class
 	$f = new Files;

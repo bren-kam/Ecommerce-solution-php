@@ -37,10 +37,16 @@ class Tickets extends Base_Class {
 			$this->_err( 'Failed to create ticket.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+        // Mark statistic for created tickets
+        library('statistics-api');
+        $stat = new Stat_API( config::key('rs-key') );
+        $date = new DateTime();
+        $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
+
 		// Get the assigned to user
 		$assigned_to_user = $u->get_user( 493 );
-		
+
 		// Send an email
 		return fn::mail( $assigned_to_user['email'], 'New ' . stripslashes( $user['website']['title'] ) . ' Ticket - ' . $summary, "Name: " . $user['contact_name'] . "\nEmail: " . $user['email'] . "\nSummary: $summary\n\n" . $message . "\n\nhttp://admin." . DOMAIN . "/tickets/ticket/?tid=" . $this->db->insert_id );
 	}
@@ -158,7 +164,20 @@ class Tickets extends Base_Class {
 			$this->_err( 'Failed to update ticket status.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
+
+        // Mark statistic for updated tickets
+        if ( 1 == $status && in_array( $user['user_id'], array( 493, 1, 814, 305, 85, 19 ) ) ) {
+            library('statistics-api');
+            $stat = new Stat_API( config::key('rs-key') );
+            $date = new DateTime();
+            $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
+
+            // Get the ticket
+            $ticket = $this->get( $ticket_id );
+            $hours = ( $date->getTimestamp() - $ticket['date_created'] ) / 3600;
+            $stat->add_graph_value( 23453, round( $hours, 1 ), $date->format('Y-m-d')  );
+        }
+
 		return true;
 	}
 	
@@ -205,7 +224,7 @@ class Tickets extends Base_Class {
 		$attachments = $this->db->get_col( 'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_id` = ' . (int) $ticket_id );
 		
 		foreach ( $attachments as $link ) {
-			$ticket['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', format::file_name( $link ) ) ) );
+			$ticket['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $link, 'name' => ucwords( str_replace( '-', ' ', f::name( $link ) ) ) );
 		}
 		
 		// If there was an error
@@ -226,6 +245,11 @@ class Tickets extends Base_Class {
 	 * @return array
 	 */
 	public function list_tickets( $limit, $where, $order_by ) {
+        global $user;
+
+        if ( $user['role'] < 8 )
+            $where .= ' AND c.`company_id` = ' . (int) $user['company_id'];
+
         // Get linked tickets
         $tickets = $this->db->get_results( "SELECT a.`ticket_id`, IF( 0 = a.`assigned_to_user_id`, 'Unassigned', c.`contact_name` ) AS assigned_to, a.`summary`, a.`status`, a.`priority`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, b.`contact_name` AS name, b.`email`, d.`title` AS website FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `users` AS c ON ( a.`assigned_to_user_id` = c.`user_id` ) LEFT JOIN `websites` AS d ON ( a.`website_id` = d.`website_id` ) WHERE 1" . $where . " GROUP BY a.`ticket_id` ORDER BY $order_by LIMIT $limit", ARRAY_A );
 

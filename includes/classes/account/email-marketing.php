@@ -1576,7 +1576,7 @@ class Email_Marketing extends Base_Class {
 	public function get_autoresponder_email_lists( $email_autoresponder_id ) {
 		global $user;
 		
-		$email_lists = $this->db->prepare( 'SELECT a.`email_list_id`, a.`category_id`, a.`name` FROM `email_lists`AS a LEFT JOIN `email_autoresponders` AS b ON ( a.`website_id` = b.`website_id` AND a.`email_list_id` = b.`email_list_id` ) WHERE a.`website_id` = ? AND a.`category_id` <> 0 AND ( b.`email_list_id` IS NULL OR b.`email_list_id` = ? ) GROUP BY a.`email_list_id` ORDER BY a.`name`', 'ii', $user['website']['website_id'], $email_autoresponder_id )->get_results( '', ARRAY_A );
+		$email_lists = $this->db->prepare( 'SELECT a.`email_list_id`, a.`category_id`, a.`name` FROM `email_lists`AS a LEFT JOIN `email_autoresponders` AS b ON ( a.`website_id` = b.`website_id` AND a.`email_list_id` = b.`email_list_id` ) WHERE a.`website_id` = ? AND ( b.`email_list_id` IS NULL OR b.`email_list_id` = ? ) GROUP BY a.`email_list_id` ORDER BY a.`name`', 'ii', $user['website']['website_id'], $email_autoresponder_id )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1621,7 +1621,7 @@ class Email_Marketing extends Base_Class {
 		
 		$settings = $this->get_settings();
 		
-		$from = ( empty( $settings['from_email'] ) ) ? $settings['from_name'] . '<noreply@' . $user['website']['domain'] . '>' : $settings['from_name'] . $settings['from_email'];
+		$from = ( empty( $settings['from_email'] ) ) ? $settings['from_name'] . '<noreply@' . $user['website']['domain'] . '>' : $settings['from_name'] . '<' . $settings['from_email'] . '>';
 		
 		// Check if we need to append the current offer
 		if ( $current_offer ) {

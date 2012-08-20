@@ -48,4 +48,36 @@ class f extends Base_Class {
 		
 		return $files;
 	}
+
+    /**
+	 * Returns a file name
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public static function name( $path ) {
+		$path_info = pathinfo( $path );
+		return $path_info['basename'];
+	}
+
+	/**
+	 * Returns a file extension
+	 *
+	 * @param string $path the path to the file that has the extension yo uwant
+	 * @return string
+	 */
+	public static function extension( $path ) {
+		$path_info = pathinfo( $path );
+		return ( isset( $path_info['extension'] ) ) ? $path_info['extension'] : '';
+	}
+
+	/**
+	 * Removes a file extension
+	 *
+	 * @param string $file_name the file name you want to strip of an extension
+	 * @return string
+	 */
+	public static function strip_extension( $file_name ) {
+		return str_replace( '.' . self::extension( $file_name ), '', $file_name );
+	}
 }

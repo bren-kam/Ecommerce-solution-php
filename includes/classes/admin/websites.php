@@ -838,6 +838,7 @@ class Websites extends Base_Class {
             , 'meta_description' => NULL
             , 'meta_keywords' => NULL
             , 'mobile' => NULL
+			, 'status' => 1
             , 'date_created' => "'" . dt::date('Y-m-d H:i:s') . "'"
         ), array( 'website_id' => $template_website_id ) );
 		

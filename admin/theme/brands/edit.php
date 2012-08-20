@@ -36,7 +36,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-brand
 	
 	if ( empty( $errs ) ) {
 		// Create the brand
-		$success = $b->update( $_POST['hBrandID'], $_POST['tName'], $_POST['tSlug'], $_POST['tLink'], $_FILES['fPicture'], $_POST['hProductOptions'] );
+		$success = $b->update( $_POST['hBrandID'], stripslashes( $_POST['tName'] ), $_POST['tSlug'], $_POST['tLink'], $_FILES['fPicture'], $_POST['hProductOptions'] );
 	}
 }
 

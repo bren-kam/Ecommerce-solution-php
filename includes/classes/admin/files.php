@@ -48,12 +48,15 @@ class Files extends Base_Class {
 		// Make sure it exists
 		if ( !is_file( $image_file ) )
 			return false;
-
+		
+		// Define the base name
+		$base_name = basename( $image_file );
+		
 		// Upload the image
-		if ( !empty( $industry ) && $this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . basename( $image_file ), S3::ACL_PUBLIC_READ ) ) {
+		if ( !empty( $industry ) && $this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ ) ) {
 			// Delete the local image
 			unlink( $image_file );
-			return true;
+			return $base_name;
 		}
 		
 		return false;
@@ -99,7 +102,7 @@ class Files extends Base_Class {
 		$directory = $user['user_id'] . '/' . $website_id . '/';
 		
 		// Get the file extension
-		$file_extension = format::file_extension( $attachment_name );
+		$file_extension = f::extension( $attachment_name );
 		
 		// Create the image name
 		$attachment_name = format::slug( str_replace( $file_extension, '', $attachment_name ) ) . '.' . $file_extension;
@@ -133,7 +136,7 @@ class Files extends Base_Class {
 		$directory = $user['user_id'] . '/' . $user['website']['website_id'] . '/' . $ticket_id . '/';
 		
 		// Get the file extension
-		$file_extension = format::file_extension( $attachment_name );
+		$file_extension = f::extension( $attachment_name );
 		
 		// Create the image name
 		$attachment_name = format::slug( str_replace( $file_extension, '', $attachment_name ) ) . '.' . $file_extension;

@@ -10,7 +10,7 @@ $ajax = new AJAX( $_POST['_nonce'], 'import-subscribers' );
 $ajax->ok( !empty( $_FILES ), _('No files were uploaded') );
 
 // Get the file extension
-$file_extension = strtolower( format::file_extension( $_FILES["Filedata"]['name'] ) );
+$file_extension = strtolower( f::extension( $_FILES["Filedata"]['name'] ) );
 
 // See what we're dealing with
 switch ( $file_extension ) {

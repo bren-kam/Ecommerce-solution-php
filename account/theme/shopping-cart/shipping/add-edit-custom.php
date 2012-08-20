@@ -83,13 +83,13 @@ get_header();
 	<div id="subcontent">
         <?php 
 		if ( isset( $errs ) )
-				echo "<p class='error'>$errs</p>";
+			echo "<p class='error'>$errs</p>";
 		?>
         <form name="fAddEditShipping" id="fAddEditShipping" action="/shopping-cart/shipping/add-edit-custom/" method="post">
             <table class="form">
                 <tr>
                     <td><label for="tName"><?php echo _('Name: '); ?></label></td>
-                    <td><input name="tName" id="tName" tmpval="<?php echo _('Method Name'); ?>..." class="tb" maxlength="25" type="text" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $name; ?>" /></td>
+                    <td><input name="tName" id="tName" tmpval="<?php echo _('Method Name'); ?>..." class="tb" maxlength="50" type="text" value="<?php echo ( !$success && isset( $_POST['tName'] ) ) ? $_POST['tName'] : $name; ?>" /></td>
                 </tr>
                 <tr>
                     <td><label for="sMethod"><?php echo _('Method: '); ?></label></td>

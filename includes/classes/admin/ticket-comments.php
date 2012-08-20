@@ -126,7 +126,7 @@ class Ticket_Comments extends Base_Class {
 		
 		if ( is_array( $attachments ) )
 		foreach ( $attachments as $a ) {
-			$comments[$a['ticket_comment_id']]['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $a['key'], 'name' => ucwords( str_replace( '-', ' ', format::file_name( $a['key'] ) ) ) );
+			$comments[$a['ticket_comment_id']]['attachments'][] = array( 'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $a['key'], 'name' => ucwords( str_replace( '-', ' ', f::name( $a['key'] ) ) ) );
 		}
 		
 		return $comments;

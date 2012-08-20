@@ -55,7 +55,6 @@ class security extends Base_Class {
 	 * @return string
 	 */
 	public static function encrypt( $string, $hash_key, $base64_encode = false ) {
-		
 		if ( !defined( 'ENCRYPTION_KEY' ) )
 			return false;
 		
@@ -156,11 +155,12 @@ class security extends Base_Class {
 	 */
 	public static function generate_password( $length = 12 ) {
 		$possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_-+=|}]{[":;,.?/';
-		
-		for ( $i = 1; $i <= $length; $i++ ):
+		$string = '';
+
+		for ( $i = 1; $i <= $length; $i++ ) {
 			$char = $possible[mt_rand( 0, strlen( $possible ) - 1 )];
 			$string .= $char;
-		endfor;
+        }
 		
 		return $string;
 	}

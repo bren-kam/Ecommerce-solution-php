@@ -36,7 +36,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-brand' )
 		$b = new Brands;
 		
 		// Create the brand
-		$success = $b->create( $_POST['tName'], $_POST['tSlug'], $_POST['tLink'], $_FILES['fPicture'], $_POST['hProductOptions'] );
+		$success = $b->create( stripslashes( $_POST['tName'] ), $_POST['tSlug'], $_POST['tLink'], $_FILES['fPicture'], $_POST['hProductOptions'] );
 	}
 }
 
