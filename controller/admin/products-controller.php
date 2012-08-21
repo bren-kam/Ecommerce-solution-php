@@ -20,10 +20,18 @@ class ProductsController extends BaseController {
     protected function index() {
         unset( $_SESSION['products'] );
 
-        $template_response = $this->get_template_response( 'index' )
-            ->select( 'products', 'view' );
+        // Get categories
+        $category = new Category;
+        $categories = $category->sort_by_hierarchy();
 
-        $this->resources->javascript( 'jquery.autocomplete', 'products/list' );
+        // Get product users
+        $product_users = $this->user->get_product_users();
+
+        $template_response = $this->get_template_response( 'index' )
+            ->select( 'products', 'view' )
+            ->set( compact( 'categories', 'product_users' ) );
+
+        $this->resources->javascript('products/list');
         $this->resources->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
 
         return $template_response;
@@ -31,7 +39,7 @@ class ProductsController extends BaseController {
 
     /***** REDIRECTS *****/
 
-/**
+    /**
      * Clone
      *
      * @return RedirectResponse
@@ -68,6 +76,7 @@ class ProductsController extends BaseController {
 
         if ( isset( $_SESSION['products']['visibility'] ) && !empty( $_SESSION['products']['visibility'] ) ) {
             switch ( $_SESSION['products']['visibility'] ) {
+                default:
                 case 'public':
                     $visibility = " AND `publish_visibility` = 'public'";
                 break;
@@ -88,8 +97,9 @@ class ProductsController extends BaseController {
         // Add the visibility check
         $dt->add_where( $visibility );
 
-        if ( isset( $_SESSION['products']['product-status'] ) && isset( $_SESSION['products']['user'] ) ) {
-            switch ( $_SESSION['products']['product-status'] ) {
+        if ( isset( $_SESSION['products']['user-option'] ) && isset( $_SESSION['products']['user'] ) ) {
+            switch ( $_SESSION['products']['user-option'] ) {
+                default:
                 case 'created':
                     $product_status = ' AND `user_id_created` = ' . (int) $_SESSION['products']['user'];
                 break;
@@ -105,7 +115,7 @@ class ProductsController extends BaseController {
 
         // Add search
         if ( isset( $_SESSION['products']['search'] ) ) {
-            $_GET['sSearch'] = $_SESSION['accounts']['search'];
+            $_GET['sSearch'] = $_SESSION['products']['search'];
 
             if ( isset( $_SESSION['products']['type'] ) ) {
                 switch ( $_SESSION['products']['type'] ) {
@@ -129,24 +139,18 @@ class ProductsController extends BaseController {
             $dt->search( array( $type => false ) );
         }
 
-        // Add search
-        if ( isset( $_SESSION['accounts']['search'] ) ) {
-            $_GET['sSearch'] = $_SESSION['accounts']['search'];
-            $dt->search( array( 'a.`title`' => false, 'a.`domain`' => false, 'b.`contact_name`' => false, 'c.`contact_name`' => false ) );
-        }
-
         // Add categories
         if ( isset( $_SESSION['products']['cid'] ) ) {
             $category = new Category();
-            $categories = $category->get_sub_category_ids( $_SESSION['products']['cid'] );
-            $categories[] = $_SESSION['products']['cid'];
+            $categories = $category->get_all_children( $_SESSION['products']['cid'] );
+            $category_ids[] = (int) $_SESSION['products']['cid'];
 
             // Make sure they are all integers
-            foreach ( $categories as &$cat ) {
-                $cat = (int) $cat;
+            foreach ( $categories as $category ) {
+                $category_ids[] = (int) $category->id;
             }
 
-            $dt->add_where(' AND b.`category_id` IN(' . implode( ',', $categories ) . ')');
+            $dt->add_where(' AND b.`category_id` IN(' . implode( ',', $category_ids ) . ')');
         }
 
         // Get accounts
@@ -223,31 +227,73 @@ class ProductsController extends BaseController {
     public function autocomplete() {
         $ajax_response = new AjaxResponse( $this->verified() );
 
+        // Get Product setup
+        $product = new Product();
+
+        // Setup ararys
+        $results = array();
+        $where = '';
+
+        /* Filtering  */
+
+        // Visibility
+        if ( isset( $_SESSION['products']['visibility'] ) ) {
+            switch ( $_SESSION['products']['visibility'] ) {
+                case 'public':
+                    $where .= " AND p.`publish_visibility` = 'public'";
+                break;
+
+                case 'private':
+                    $where .= " AND p.`publish_visibility` = 'private'";
+                break;
+
+                case 'deleted':
+                    $where .= " AND p.`publish_visibility` = 'deleted'";
+                break;
+            }
+        } else {
+            $where .= " AND p.`publish_visibility` <> 'deleted'";
+        }
+
+        // Categories
+        if ( isset( $_SESSION['products']['cid'] ) ) {
+            $category = new Category();
+            $categories = $category->get_all_children( $_SESSION['products']['cid'] );
+            $category_ids[] = (int) $_SESSION['products']['cid'];
+
+            // Make sure they are all integers
+            foreach ( $categories as $category ) {
+                $category_ids[] = (int) $category->id;
+            }
+
+            $where .= ' AND c.`category_id` IN(' . implode( ',', $category_ids ) . ')';
+        }
+
+        if ( isset( $_SESSION['products']['user-option'] ) && isset( $_SESSION['products']['user'] ) ) {
+            switch ( $_SESSION['products']['user-option'] ) {
+                case 'created':
+                    $where .= ' AND p.`user_id_created` = ' . (int) $_SESSION['products']['user'];
+                break;
+
+                case 'modified':
+                    $where .= ' AND p.`user_id_modified` = ' . (int) $_SESSION['products']['user'];
+                break;
+            }
+        }
+
+
         // Get the right suggestions for the right type
         switch ( $_POST['type'] ) {
-            case 'domain':
-                $account = new Account();
-
-                $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
-
-                $results = $account->autocomplete( $_POST['term'], 'domain', $this->user, $status );
+            case 'products':
+                $results = $product->autocomplete( $_POST['term'] , 'p.`name`', 'products', $where );
             break;
 
-            case 'store_name':
-                $results = $u->autocomplete( $_POST['term'] , 'store_name' );
-
-                if ( is_array( $results ) )
-                foreach ( $results as &$result ) {
-                    $result['store_name'] = $result['store_name'];
-                }
+            case 'sku':
+                $results = $product->autocomplete( $_POST['term'], 'p.`sku`', 'sku', $where );
             break;
 
-            case 'title':
-                $account = new Account();
-
-                $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
-
-                $results = $account->autocomplete( $_POST['term'], 'title', $this->user, $status );
+            case 'brands':
+                $results = $product->autocomplete( $_POST['term'], 'b.`name`', 'brands', $where );
             break;
         }
 

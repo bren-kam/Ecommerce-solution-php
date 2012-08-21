@@ -116,4 +116,21 @@ class Product extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-}
+
+    /**
+	 * Gets the data for an autocomplete request
+	 *
+	 * @param string $query
+	 * @param string $field
+     * @param string $as
+	 * @param string $where
+	 * @return bool
+	 */
+	public function autocomplete( $query, $field, $as, $where ) {
+		// Get results
+		return $this->prepare(
+            "SELECT $field AS $as FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) LEFT JOIN `categories` AS c ON ( pc.`category_id` = c.`category_id` ) LEFT JOIN `brands` AS b ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `product_images` AS pi ON ( p.`product_id` = pi.`product_id` ) WHERE pi.`sequence` = 0 AND $field LIKE :query $where GROUP BY $field ORDER BY $field LIMIT 10"
+            , 's'
+            , array( ':query' => $query . '%')
+        )->get_results( PDO::FETCH_ASSOC );
+	}}

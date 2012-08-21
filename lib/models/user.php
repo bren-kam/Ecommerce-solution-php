@@ -177,13 +177,30 @@ class User extends ActiveRecordBase {
         if ( !$this->has_permission(8) )
             $where .= ' AND ( `company_id` = ' . $this->company_id . ' OR `user_id` IN( ' . implode( ', ', $user_ids ) . ' ) ) ';
 
-        $users = $this->get_results(
+        return $this->get_results(
             "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `role` > 5 AND '' <> `contact_name` $where ORDER BY `contact_name`"
             , PDO::FETCH_CLASS
             , 'User'
         );
+    }
 
-        return $users;
+    /**
+     * Get Product users
+     *
+     * @return array
+     */
+    public function get_product_users() {
+        if ( !$this->_admin )
+            return false;
+
+        // Make sure they can only see what they're supposed to
+        $where = ( !$this->has_permission(8) ) ? ' AND a.`company_id` = ' . (int) $this->company_id : '';
+
+        return $this->get_results(
+            "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00' $where"
+            , PDO::FETCH_CLASS
+            , 'User'
+        );
     }
 
     /**

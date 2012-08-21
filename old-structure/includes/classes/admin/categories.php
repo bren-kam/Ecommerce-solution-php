@@ -322,7 +322,7 @@ class Categories extends Base_Class {
 	 * @param array $sub_category_ids (optional|array)
 	 * @return array
 	 */
-	public function get_sub_category_ids( $category_id, $sub_category_ids = array() ) {
+	public function get_sub_category_ids( $category_id = NULL, $sub_category_ids = array() ) {
 		// Check to see if it has any sub categories
 		if ( array_key_exists( $category_id, $this->categories ) )
 		foreach ( $this->categories[$category_id] as $cat ) {
