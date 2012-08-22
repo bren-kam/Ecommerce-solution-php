@@ -7,6 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var array $categories
  */
 
 require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
@@ -24,25 +25,61 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
         <form action="" id="fSearch">
         <table class="formatted">
             <tr>
+                <td width="386">
+                    <select id="user-option">
+                        <option value="all">-- <?php echo _('Select Option'); ?> --</option>
+                        <option value="created"><?php echo _('Created By'); ?></option>
+                        <option value="modified"><?php echo _('Modified By'); ?></option>
+                    </select>
+                </td>
+                <td width="386">
+                    <select id="user">
+                        <option value="all"><?php echo _('All Users'); ?></option>
+                        <?php
+                        if ( is_array( $product_users ) )
+                        foreach ( $product_users as $product_user ) {
+                        ?>
+                        <option value="<?php echo $product_user->id; ?>"><?php echo $product_user->contact_name; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
                 <td>
-                    <select id="state">
-                        <option value="all"><?php echo _('All Accounts'); ?></option>
-                        <option value="live"><?php echo _('Live'); ?></option>
-                        <option value="staging"><?php echo _('Staging'); ?></option>
-                        <option value="inactive"><?php echo _('Inactive'); ?></option>
+                    <select id="visibility">
+                        <option value=""><?php echo _('All Products'); ?></option>
+                        <option value="public"><?php echo _('Public Products'); ?></option>
+                        <option value="private"><?php echo _('Private Products'); ?></option>
+                        <option value="deleted"><?php echo _('Deleted Products'); ?></option>
                     </select>
                 </td>
             </tr>
             <tr>
                 <td>
                     <select id="sAutoComplete">
-                        <option value="title"><?php echo _('Account Name'); ?></option>
-                        <option value="domain"><?php echo _('Account Domain'); ?></option>
-                        <option value="store_name"><?php echo _('Store Name'); ?></option>
+                        <option value="sku"><?php echo _('SKU'); ?></option>
+                        <option value="products"><?php echo _('Product Name'); ?></option>
+                        <option value="brands"><?php echo _('Brands'); ?></option>
                     </select>
-                    <input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Name...'); ?>" style="position: relative; top: 1px;" />
                 </td>
-                <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
+                <td colspan="2">
+                    <div style="margin-right: 18px">
+                        <input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Search...'); ?>" style="width: 100%" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <select id="cid">
+                        <option value="0">-- <?php echo _('Select a Category'); ?> --</option>
+                        <?php
+                        $depth = 0;
+
+                        foreach ( $categories as $category ) {
+                            ?>
+                            <option value="<?php echo $category->id; ?>"><?php echo str_repeat( '&nbsp;', $category->depth * 5 ), $category->name; ?></option>
+                        <?php } ?>
+                    </select>
+                </td>
+                <td align="right" colspan="2"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
             </tr>
         </table>
         </form>

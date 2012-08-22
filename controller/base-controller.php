@@ -151,11 +151,11 @@ abstract class BaseController {
         $email = security::decrypt( base64_decode( $encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) );
 
         // Create new user
-        $this->user = new User( defined('ADMIN') );
+        $this->user = new User( 'admin' == SUBDOMAIN );
         $this->user->get_by_email( $email );
 
         // Check what permission needs to be checked
-        $permission = ( defined('ADMIN') ) ? 6 : 1;
+        $permission = ( 'admin' == SUBDOMAIN ) ? 6 : 1;
 
         // See if we can get the user
         if ( !$this->user->has_permission( $permission ) )

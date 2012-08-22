@@ -23,7 +23,7 @@ class AccountsController extends BaseController {
         $template_response = $this->get_template_response( 'index' )
             ->select( 'accounts', 'view' );
 
-        $this->resources->javascript( 'jquery.autocomplete', 'accounts/list' );
+        $this->resources->javascript('accounts/list');
         $this->resources->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
 
         return $template_response;
