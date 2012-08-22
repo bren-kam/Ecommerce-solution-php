@@ -25,14 +25,14 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
         <form action="" id="fSearch">
         <table class="formatted">
             <tr>
-                <td width="386">
+                <td width="300">
                     <select id="user-option">
                         <option value="all">-- <?php echo _('Select Option'); ?> --</option>
                         <option value="created"><?php echo _('Created By'); ?></option>
                         <option value="modified"><?php echo _('Modified By'); ?></option>
                     </select>
                 </td>
-                <td width="386">
+                <td width="300">
                     <select id="user">
                         <option value="all"><?php echo _('All Users'); ?></option>
                         <?php

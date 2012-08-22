@@ -22,8 +22,8 @@ class CompaniesController extends BaseController {
         if ( !$this->user->has_permission(8) )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response( 'index' );
-        $template_response->select( 'companies', 'view' );
+        $template_response = $this->get_template_response( 'index' )
+            ->select( 'companies', 'view' );
 
         return $template_response;
     }

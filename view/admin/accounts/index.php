@@ -24,7 +24,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
         <form action="" id="fSearch">
         <table class="formatted">
             <tr>
-                <td>
+                <td width="300">
                     <select id="state">
                         <option value="all"><?php echo _('All Accounts'); ?></option>
                         <option value="live"><?php echo _('Live'); ?></option>
@@ -40,8 +40,8 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                         <option value="domain"><?php echo _('Account Domain'); ?></option>
                         <option value="store_name"><?php echo _('Store Name'); ?></option>
                     </select>
-                    <input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Name...'); ?>" style="position: relative; top: 1px;" />
                 </td>
+                <td><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Name...'); ?>" style="position: relative; top: 1px;" /></td>
                 <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
             </tr>
         </table>

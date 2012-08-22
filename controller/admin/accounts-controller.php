@@ -849,7 +849,7 @@ class AccountsController extends BaseController {
             break;
 
             case 'store_name':
-                $results = $u->autocomplete( $_POST['term'] , 'store_name' );
+                $results = $this->user->autocomplete( $_POST['term'], 'store_name' );
 
                 if ( is_array( $results ) )
                 foreach ( $results as &$result ) {

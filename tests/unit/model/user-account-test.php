@@ -224,7 +224,7 @@ class UserAccountTest extends BaseDatabaseTest {
         $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
 
         // It should be more recent
-        $this->assertGreaterThan( $datetime->getTimestamp() - 5, $last_login->getTimestamp() );
+        $this->assertGreaterThan( $datetime->getTimestamp() - 60, $last_login->getTimestamp() );
     }
 
     /**
@@ -289,6 +289,62 @@ class UserAccountTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * Test Get Product Users
+     */
+    public function testGetProductUsers() {
+        // Give it a high role -- shouldn't matter
+        $this->user->role = 8;
+
+        // Can't get on the account side
+        $users = $this->user->get_product_users();
+
+        $this->assertFalse( $users );
+    }
+
+
+
+    /**
+     * Test Autocomplete
+     */
+    public function testAutocompleteA() {
+        // Assign Role
+        $this->user->role = 8;
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+
+        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+    }
+
+    /**
+     * Test Autocomplete with a lower Role
+     */
+    public function testAutocompleteB() {
+        // Assign Role
+        $this->user->role = 5;
+        $this->user->company_id = 4;
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+
+        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+    }
+
+    /**
+     * Test Autocomplete with a lower Role and wrong company
+     */
+    public function testAutocompleteC() {
+        // Assign Role
+        $this->user->role = 5;
+        $this->user->company_id = 1;
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+
+        $this->assertFalse( isset( $users[0] ) );
     }
 
     /**

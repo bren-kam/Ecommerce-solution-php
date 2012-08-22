@@ -169,6 +169,7 @@ input.button {
 #narrow-your-search, #subcontent { border: 1px solid #C7D1D9; background-color: #fff; padding: 20px; }
 #subcontent-wrapper.narrow-your-search { padding-top: 20px }
 #narrow-your-search h2 { font-size: 26px; margin-bottom: 25px; }
+#narrow-your-search select { width: 300px }
 
 #footer { margin-top: 26px; margin-bottom: 26px;text-align: right; padding: 0 20px; }
 #footer a { font-weight: bold; font-size: 12px; }

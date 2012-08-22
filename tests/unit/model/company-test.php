@@ -1,5 +1,4 @@
 <?php
-
 require_once 'base-database-test.php';
 
 class CompanyTest extends BaseDatabaseTest {

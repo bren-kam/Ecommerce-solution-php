@@ -21,16 +21,14 @@ class Category extends ActiveRecordBase {
     }
 
     /**
-     * Get Children
+     * Get All Categories
      *
-     * @param int $category_id [optional]
      * @return array
      */
-    public function get_children( $category_id = NULL ) {
-        // Make sure we have the right category id
-        $category_id = ( is_null( $category_id ) ) ? $this->id : $category_id;
+    public function get_all() {
+		Category::$categories = $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", PDO::FETCH_CLASS, 'Category' );
 
-        return $this->get_by_parent( $category_id );
+        return Category::$categories;
     }
 
     /**
@@ -40,10 +38,7 @@ class Category extends ActiveRecordBase {
      * @param array $child_categories [optional] Pseudo-optional -- shouldn't be filled in
      * @return array
      */
-    public function get_all_children( $category_id = NULL, array $child_categories = array() ) {
-        // Make sure we have the right category id
-        $category_id = ( is_null( $category_id ) ) ? $this->id : $category_id;
-
+    public function get_all_children( $category_id, array $child_categories = array() ) {
         $categories = $this->get_by_parent( $category_id );
 
         if ( is_array( $categories ) )
@@ -54,17 +49,6 @@ class Category extends ActiveRecordBase {
         }
 
         return $child_categories;
-    }
-
-    /**
-     * Get All Categories
-     *
-     * @return array
-     */
-    public function get_all() {
-		Category::$categories = $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", PDO::FETCH_CLASS, 'Category' );
-
-        return Category::$categories;
     }
 
     /**

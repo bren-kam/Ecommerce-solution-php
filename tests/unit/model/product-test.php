@@ -46,7 +46,7 @@ class ProductTest extends BaseDatabaseTest {
     /**
      * Test Cloning a product
      */
-    public function textCloneProduct() {
+    public function testCloneProduct() {
         $this->product->clone_product( 36385, 1 );
 
         $name = $this->db->get_var( 'SELECT `name` FROM `products` WHERE `product_id` = ' . (int) $this->product->id );
@@ -104,6 +104,15 @@ class ProductTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * Test Autocomplete
+     */
+    public function testAutocomplete() {
+        $products = $this->product->autocomplete( '1111', 'p.`sku`', 'sku', '' );
+
+        $this->assertEquals( $products[0]['sku'], '11115' );
     }
 
     /**

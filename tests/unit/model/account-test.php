@@ -273,6 +273,43 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Autocomplete as an Online Specialist
+     */
+    public function testAutocompleteA() {
+        $user = new User();
+        $user->role = 8;
+
+        $accounts = $this->account->autocomplete( 'Connel', 'title', $user );
+
+        $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
+    }
+
+    /**
+     * Test Autocomplete as a Reseller
+     */
+    public function testAutocompleteB() {
+        $user = new User();
+        $user->role = 7;
+        $user->company_id = 2;
+
+        $accounts = $this->account->autocomplete( 'Connel', 'title', $user );
+
+        $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
+    }
+
+    /**
+     * Test Autocomplete with a change in status
+     */
+    public function testAutocompleteC() {
+        $user = new User();
+        $user->role = 8;
+
+        $accounts = $this->account->autocomplete( 'Connel', 'title', $user, 1 );
+
+        $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

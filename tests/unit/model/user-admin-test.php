@@ -268,7 +268,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
 
         // It should be more recent
-        $this->assertGreaterThan( $datetime->getTimestamp() - 5, $last_login->getTimestamp() );
+        $this->assertGreaterThan( $datetime->getTimestamp() - 60, $last_login->getTimestamp() );
     }
 
     /**
@@ -333,6 +333,85 @@ class UserAdminTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * Test Get Product Users
+     */
+    public function testGetProductUsersA() {
+        $this->user->role = 8;
+        $users = $this->user->get_product_users();
+        $user_id = (int) $users[0]->id;
+
+        // Get the product that he created
+        $product_id = $this->db->get_var( "SELECT `product_id` FROM `products` WHERE `publish_date` <> '0000-00-00 00:00:00' AND ( `user_id_modified` = $user_id OR `user_id_created` = $user_id ) LIMIT 1" );
+
+        $this->assertGreaterThan( 0, $product_id );
+    }
+
+    /**
+     * Test Get Product Users
+     */
+    public function testGetProductUsersB() {
+        $this->user->role = 7;
+        $this->user->company_id = 1;
+
+        // Get Product Users
+        $users = $this->user->get_product_users();
+        $user_id = (int) $users[0]->id;
+
+        // Make sure they have the same company id
+        $company_id = $this->db->get_var( "SELECT `company_id` FROM `users` WHERE `user_id` = $user_id" );
+
+        // Should be the same
+        $this->assertEquals( $this->user->company_id, $company_id );
+
+        // Get the product that he created
+        $product_id = $this->db->get_var( "SELECT `product_id` FROM `products` WHERE `publish_date` <> '0000-00-00 00:00:00' AND ( `user_id_modified` = $user_id OR `user_id_created` = $user_id ) LIMIT 1" );
+
+        // Make sure it could grab it
+        $this->assertGreaterThan( 0, $product_id );
+    }
+
+    /**
+     * Test Autocomplete
+     */
+    public function testAutocompleteA() {
+        // Assign Role
+        $this->user->role = 8;
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+
+        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+    }
+
+    /**
+     * Test Autocomplete with a lower Role
+     */
+    public function testAutocompleteB() {
+        // Assign Role
+        $this->user->role = 7;
+        $this->user->company_id = 4;
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+
+        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+    }
+
+    /**
+     * Test Autocomplete with a lower Role and wrong company
+     */
+    public function testAutocompleteC() {
+        // Assign Role
+        $this->user->role = 7;
+        $this->user->company_id = 1;
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+
+        $this->assertFalse( isset( $users[0] ) );
     }
 
     /**

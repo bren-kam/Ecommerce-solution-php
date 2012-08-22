@@ -113,7 +113,7 @@ class DataTableResponse extends AjaxResponse {
 	 */
 	public function order_by() {
 		$fields = func_get_args();
-		
+
 		// Loop through the columns
 		for ( $i = 0; $i < intval( $_GET['iSortingCols'] ); $i++ ) {
 			// Add the necessary comman
