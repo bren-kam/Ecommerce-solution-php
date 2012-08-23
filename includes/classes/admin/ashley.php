@@ -190,7 +190,7 @@ class Ashley extends Base_Class {
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
-			
+
 			// We can't have a SKU like B457B532 -- it means it is international and comes in a container
 			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
 				continue;
@@ -222,9 +222,9 @@ class Ashley extends Base_Class {
                 continue;
 			}
 			
-			$name = $group_name . $item['description'];
+			$name = format::convert_characters( $group_name . $item['description'] );
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-			$description = format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
+			$description = format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) );
 			
 			$brand_id = $item['brand_id'];
 			
@@ -740,7 +740,7 @@ class Ashley extends Base_Class {
 		$this->curl->post( $this->login_url, $this->login_post_fields );
 		return true;
 	}
-	
+
 	/**
 	 * Starts the timer, for debugging purposes.
 	 *
@@ -758,7 +758,8 @@ class Ashley extends Base_Class {
 	 * @return int Total time spent on the query, in seconds
 	 */
 	private function scratchy_time() {
-		return microtime( true ) - $this->time_start;}
+		return microtime( true ) - $this->time_start;
+    }
 
 	
 	/**
