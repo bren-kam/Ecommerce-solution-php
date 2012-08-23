@@ -176,8 +176,7 @@ class Ashley extends Base_Class {
 
 		// Initalize variables
 		$links = $products_string = '';
-		echo count( $items );exit;
-					
+
 		$products = $this->get_products();
 
 		$i = 0;
