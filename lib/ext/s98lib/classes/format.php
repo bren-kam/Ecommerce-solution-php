@@ -139,6 +139,24 @@ class format extends Base_Class {
         return str_replace( array_keys( $html_entities ), array_values( $html_entities ), $string );
     }
 
+    /**
+     * Convert Characters to what we want them to be
+     *
+     * @param string
+     * @return string
+     */
+    public static function convert_characters( $string ) {
+        $conversion = array(
+            '“' => '"'
+            , '”' => '"'
+            , 'é' => '&eacute;'
+            , '®' => '&reg;'
+            , '™' => '&trade;'
+        );
+
+        return str_replace( array_keys( $conversion ), array_values( $conversion ), $string );
+    }
+
 	/**
 	 * Limits a phrase to a given number of words.
 	 *
