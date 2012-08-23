@@ -13,7 +13,7 @@ class AttributesController extends BaseController {
     }
 
     /**
-     * List Users
+     * List Attributes
      *
      * @return TemplateResponse
      */

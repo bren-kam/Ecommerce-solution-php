@@ -36,7 +36,7 @@
 	<input type="hidden" id="hTicketWebsiteID" value="<?php if ( isset( $user->website ) ) echo $user->website->website_id; ?>" />
 	<input type="hidden" id="hUserID" value="<?php echo $user->id; ?>" />
 	<div class="boxy-footer hidden">
-        <p class="col-2 float-left"><a href="javascript:;" class="close"><?php echo _('Cancel'); ?></a></p>
+        <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
         <p class="text-right col-2 float-right"><input type="submit" class="button" id="bCreateTicket" value="<?php echo _('Create Ticket'); ?>" /></p>
     </div>
 </div>

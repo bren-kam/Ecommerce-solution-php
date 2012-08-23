@@ -25,9 +25,9 @@ class CustomResponse extends Response {
      *
      * @param Resources $resources
      * @param string $file_to_render
-     * @param string $title
+     * @param string $title [optional]
      */
-    public function __construct( $resources, $file_to_render, $title ) {
+    public function __construct( $resources, $file_to_render, $title = '' ) {
         $this->_file_to_render = $file_to_render;
         $this->set( array(
             'title' => $title
