@@ -122,9 +122,10 @@ class curl {
 	 *
 	 * @param string $url the url of the page being called
 	 * @param resource $fp file pointer
+     * @param int $timeout [optional]
 	 * @return bool
 	 */
-	public static function save_file( $url, $fp ) {
+	public static function save_file( $url, $fp, $timeout = 30 ) {
 		$close = true; 
 		
 		if ( isset( $this ) ) {
