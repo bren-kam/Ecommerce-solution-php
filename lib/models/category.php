@@ -21,12 +21,45 @@ class Category extends ActiveRecordBase {
     }
 
     /**
+     * Get a category
+     *
+     * @param int $category_id
+     * @return Category
+     */
+    public function get( $category_id ) {
+        if ( !isset( self::$categories[$category_id] ) ) {
+            $this->prepare(
+                'SELECT * FROM `categories` WHERE `category_id` = :category_id'
+                , 'i'
+                , array( ':category_id' => $category_id )
+            )->get_row( PDO::FETCH_INTO, $this );
+
+            $this->id = $this->category_id;
+        } else {
+            $this->id = $this->category_id = $category_id;
+            $this->parent_category_id = self::$categories[$category_id]->parent_category_id;
+            $this->name = self::$categories[$category_id]->name;
+            $this->slug = self::$categories[$category_id]->slug;
+            $this->sequence = self::$categories[$category_id]->sequence;
+        }
+
+        return self::$categories[$category_id];
+    }
+
+    /**
      * Get All Categories
      *
      * @return array
      */
     public function get_all() {
-		Category::$categories = $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", PDO::FETCH_CLASS, 'Category' );
+		$categories_array = $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", PDO::FETCH_CLASS, 'Category' );
+        $categories = array();
+
+        foreach ( $categories_array as $c ) {
+            $categories[$c->id] = $c;
+        }
+
+        Category::$categories = $categories;
 
         return Category::$categories;
     }
@@ -52,6 +85,28 @@ class Category extends ActiveRecordBase {
     }
 
     /**
+     * Get all parent categories
+     *
+     * @param int $category_id
+     * @param array $parent_categories [optional] Pseudo-optional -- shouldn't be filled in
+     * @return array
+     */
+    public function get_all_parents( $category_id, array $parent_categories = array() ) {
+        if ( 0 == $category_id )
+            return $parent_categories;
+
+        $category = $this->get( $category_id );
+
+        if ( 0 == $category->parent_category_id )
+            return $parent_categories;
+
+        $parent_categories[] = $this->get( $category->parent_category_id );
+        $parent_categories = $this->get_all_parents( $category->parent_category_id, $parent_categories );
+
+        return $parent_categories;
+    }
+
+    /**
      * Get Categories By Parent
      *
      * @param int $parent_category_id
@@ -68,6 +123,31 @@ class Category extends ActiveRecordBase {
         }
 
         return ( isset( $categories_by_parent[$parent_category_id] ) ) ? $categories_by_parent[$parent_category_id] : false;
+    }
+
+    /**
+     * Update a Category
+     */
+    public function update() {
+        parent::update( array(
+            'parent_category_id' => $this->parent_category_id
+            , 'name' => $this->name
+            , 'slug' => $this->slug
+        ), array( 'category_id' => $this->id ), 'iss', 'i' );
+    }
+
+    /**
+     * Delete a category and dependents
+     */
+    public function delete() {
+        if ( is_null( $this->id ) )
+            return;
+
+        $this->prepare(
+            'DELETE FROM `categories` WHERE `category_id` = :category_id OR `parent_category_id` = :parent_category_id'
+            , 'ii'
+            , array( ':category_id' => $this->id, ':parent_category_id' => $this->id )
+        )->query();
     }
 
     /**

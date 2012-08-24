@@ -22,22 +22,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 });
 
 function loadCategories() {
-    // Hide any 'No sub categories' message and the list
-    $('#no-sub-categories').hide();
-
     // Get the category ID and name
     var categoryID = $(this).attr('id').replace( /[^0-9]+/, '' );
-
-    // Show the edit category as long as it's not the Main Categories
-    if ( 0 == categoryID ) {
-        $('#edit-delete-category').hide();
-    } else {
-        $('#edit-delete-category').show();
-    }
-
-    // Change the current selected category name
-    $('#current-category span:first').text( $(this).text() );
-    $('#current-category-id').val( categoryID );
 
     $.post( '/products/categories/get/', { _nonce : $('#_get_categories').val(), cid: categoryID }, ajaxResponse, 'json' );
 }

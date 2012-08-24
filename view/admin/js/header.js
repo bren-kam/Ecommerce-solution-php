@@ -67,4 +67,10 @@ jQuery(function($) {
             $('#' + $(this).attr('rel')).hide();
         }
     });
+
+    $('body')
+        .on( 'click', '.boxy-footer .button[rel]', function() {
+            $('#' + $(this).attr('rel')).submit();
+        }
+    );
 });

@@ -29,6 +29,15 @@ class Attribute extends ActiveRecordBase {
     }
 
     /**
+     * Get All
+     *
+     * @return array
+     */
+    public function get_all() {
+        return $this->get_results( 'SELECT * FROM `attributes` ORDER BY `title`', PDO::FETCH_CLASS, 'Attribute' );
+    }
+
+    /**
      * Delete Attribute
      */
     public function delete() {

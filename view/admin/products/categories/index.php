@@ -21,14 +21,11 @@ nonce::field( 'get', '_get_categories' );
 <h3 id="current-category">
     <span><?php echo _('Main Categories'); ?></span>
     <span id="edit-delete-category" class="hidden small"> -
-        <a href="#" id="edit-category" title="<?php echo _('Edit'); ?>"><?php echo _('Edit'); ?></a>
+        <a href="/products/categories/add-edit/" id="edit-category" title="<?php echo _('Edit'); ?>" rel="dialog" ajax="1"><?php echo _('Edit'); ?></a>
         <span class="small">|</span>
-        <a href="#" id="delete-category" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a>
+        <a href="#" id="delete-category" title="<?php echo _('Delete'); ?>"  ajax="1" confirm="<?php echo _('Are you sure you want to delete this category? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
     </span>
 </h3>
-
-<input type="hidden" id="current-category-id" value="0" />
-<input type="hidden" id="root-url" value="admin.<?php echo DOMAIN; ?>" />
 
 <p id="current-url"><a href="#" target="_blank"></a></p>
 
