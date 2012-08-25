@@ -43,7 +43,7 @@ class Category extends ActiveRecordBase {
             $this->sequence = self::$categories[$category_id]->sequence;
         }
 
-        return self::$categories[$category_id];
+        return $this;
     }
 
     /**
@@ -97,9 +97,6 @@ class Category extends ActiveRecordBase {
 
         $category = $this->get( $category_id );
 
-        if ( 0 == $category->parent_category_id )
-            return $parent_categories;
-
         $parent_categories[] = $this->get( $category->parent_category_id );
         $parent_categories = $this->get_all_parents( $category->parent_category_id, $parent_categories );
 
@@ -126,14 +123,55 @@ class Category extends ActiveRecordBase {
     }
 
     /**
+     * Create a Category
+     */
+    public function create() {
+        $this->insert( array(
+            'parent_category_id' => $this->parent_category_id
+            , 'name' => $this->name
+            , 'slug' => $this->slug
+        ), 'iss' );
+
+        $this->id = $this->get_insert_id();
+    }
+
+    /**
      * Update a Category
      */
     public function update() {
+        // We cannot let this happen
+        if ( $this->id == $this->parent_category_id )
+            return;
+
         parent::update( array(
             'parent_category_id' => $this->parent_category_id
             , 'name' => $this->name
             , 'slug' => $this->slug
         ), array( 'category_id' => $this->id ), 'iss', 'i' );
+    }
+
+    /**
+     * Update the sequence of many categories
+     *
+     * @param int $parent_category_id
+     * @param array $categories
+     */
+    public function update_sequence( $parent_category_id, array $categories ) {
+        // Starting with 0 for a sequence
+		$sequence = 0;
+
+		// Prepare statement
+		$statement = $this->prepare_raw( 'UPDATE `categories` SET `sequence` = :sequence WHERE `parent_category_id` = :parent_category_id AND `category_id` = :category_id' );
+		$statement->bind_param( ':sequence', $sequence, 'i' )
+		    ->bind_value( ':parent_category_id', $parent_category_id, 'i' )
+		    ->bind_param( ':category_id', $category_id, 'i' );
+
+		// Loop through the statement and update anything as it needs to be updated
+		foreach ( $categories as $category_id ) {
+			$statement->query();
+
+			$sequence++;
+		}
     }
 
     /**

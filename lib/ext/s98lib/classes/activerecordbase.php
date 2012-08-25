@@ -71,6 +71,19 @@ abstract class ActiveRecordBase {
     }
 
     /**
+     * Prepare Raw
+     *
+     * @param $sql
+     */
+    public function prepare_raw( $sql ) {
+        // Reset everything -- last query data is no longer last
+        $this->_flush();
+
+        // Create the statement
+        return new ActiveRecordStatement( $this, $this->_prepare( $sql ) );
+    }
+
+    /**
      * Insert something into the database
      *
      * @param array $data
@@ -659,5 +672,37 @@ class ActiveRecordStatement {
      */
     public function get_var() {
         return $this->_ar->get_var( $this->_statement );
+    }
+
+    /**
+     * Bind Param
+     *
+     * @param string $parameter
+     * @param mixed $variable
+     * @param string $format
+     * @return ActiveRecordStatement
+     */
+    public function bind_param( $parameter, &$variable, $format ) {
+        $format = ( 'i' == $format ) ? PDO::PARAM_INT : PDO::PARAM_STR;
+
+        $this->_statement->bindParam( $parameter, $variable, $format );
+
+        return $this;
+    }
+
+    /**
+     * Bind Value
+     *
+     * @param string $parameter
+     * @param mixed $variable
+     * @param string $format
+     * @return ActiveRecordStatement
+     */
+    public function bind_value( $parameter, $variable, $format ) {
+        $format = ( 'i' == $format ) ? PDO::PARAM_INT : PDO::PARAM_STR;
+
+        $this->_statement->bindValue( $parameter, $variable, $format );
+
+        return $this;
     }
 }

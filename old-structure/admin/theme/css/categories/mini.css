@@ -10,4 +10,3 @@ a:hover { text-decoration: underline; }
 .attribute, .attribute-placeholder { padding: 5px; margin: 5px 0; border: 1px solid; cursor: n-resize; width: 257px; position: relative; }
 .attribute-placeholder { border-style: dashed; cursor: auto; }
 .attribute img { position: absolute; top: 4px; right: 5px; }
-

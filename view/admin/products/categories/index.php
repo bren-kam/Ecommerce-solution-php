@@ -12,6 +12,7 @@
 echo $template->start( _('Categories'), '../sidebar' );
 
 nonce::field( 'get', '_get_categories' );
+nonce::field( 'update_sequence', '_update_sequence' );
 ?>
 
 <div id="breadcrumb"><?php echo _('Main Categories'); ?></div>
@@ -21,7 +22,7 @@ nonce::field( 'get', '_get_categories' );
 <h3 id="current-category">
     <span><?php echo _('Main Categories'); ?></span>
     <span id="edit-delete-category" class="hidden small"> -
-        <a href="/products/categories/add-edit/" id="edit-category" title="<?php echo _('Edit'); ?>" rel="dialog" ajax="1"><?php echo _('Edit'); ?></a>
+        <a href="/products/categories/add-edit/" id="edit-category" title="<?php echo _('Edit'); ?>" rel="dialog" ajax="1" cache="0"><?php echo _('Edit'); ?></a>
         <span class="small">|</span>
         <a href="#" id="delete-category" title="<?php echo _('Delete'); ?>"  ajax="1" confirm="<?php echo _('Are you sure you want to delete this category? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
     </span>

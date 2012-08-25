@@ -25,3 +25,6 @@
 }
 
 .gray-small { position: relative; bottom: 1px; color: #9E9E9E; font-size: 11px; font-weight:normal; }
+
+.attribute { padding: 5px 21px 5px 5px; margin: 5px 0; border: 1px solid; width: 358px; position: relative; }
+.delete-attribute { position: absolute; top: 4px; right: 4px; }

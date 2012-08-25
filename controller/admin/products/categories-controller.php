@@ -69,9 +69,9 @@ class CategoriesController extends BaseController {
 
             foreach ( $categories as $c ) {
                 $delete_url = url::add_query_arg( array( '_nonce' => $delete_nonce, 'cid' => $c->id ), '/products/categories/delete/' );
-                $edit_url = url::add_query_arg( array( 'cid' => $c->id ), '/products/categories/add-edit/' );
+                $edit_url = url::add_query_arg( array( 'cid' => $c->id, 'pcid' => $c->parent_category_id ), '/products/categories/add-edit/' ) . '#dAddEditCategory';
 
-                $html .= '<div id="cat' . $c->id . '" class="category">';
+                $html .= '<div id="cat_' . $c->id . '" class="category">';
                 $html .= '<h4>';
                 $html .= '<a href="#" title="' . $c->name . '" id="pc' . $c->id . '" class="parent-category">' . $c->name . '</a>';
                 $html .= ' <span class="gray-small">(' . $parent_category . ')</span>';
@@ -106,7 +106,7 @@ class CategoriesController extends BaseController {
             jQuery('#edit-delete-category')->hide();
         } else {
             $category_name = $category->name;
-            jQuery('#edit-category')->attr( 'href', url::add_query_arg( array( 'cid' => $category->id ), '/products/categories/add-edit/' ) );
+            jQuery('#edit-category')->attr( 'href', url::add_query_arg( array( 'cid' => $category->id, 'pcid' => $category->id ), '/products/categories/add-edit/' ) . '#dAddEditCategory' );
             jQuery('#delete-category')->attr( 'href', url::add_query_arg( array( '_nonce' => $delete_nonce, 'cid' => $category->id ), '/products/categories/delete/' ) );
             jQuery('#edit-delete-category')->show();
 
@@ -119,10 +119,13 @@ class CategoriesController extends BaseController {
                 $breadcrumb .= '<a href="#" id="bc' . $pc->id . '">' . $pc->name .'</a>';
             }
 
-            $breadcrumb .= '<span> &raquo; </span><span>' . $category->name . '</span>';
+            $breadcrumb .= '<span> &raquo; </span><span>' . $category_name . '</span>';
         }
 
-        jQuery('#current-category span:first')->text( $category_name );
+        jQuery('#current-category span:first')
+            ->text( $category_name )
+            ->attr( 'rel', $_POST['cid'] );
+
         jQuery('#breadcrumb')->html( $breadcrumb );
 
         // Add the response
@@ -140,20 +143,62 @@ class CategoriesController extends BaseController {
         // Get the company_id if there is one
         $category_id = ( isset( $_GET['cid'] ) ) ? (int) $_GET['cid'] : false;
 
+        // Setup Models
         $category = new Category();
         $attribute = new Attribute();
 
-        $attributes = $attribute->get_all();
+        // Get Attributes
+        $attributes_array = $attribute->get_all();
+
+        foreach ( $attributes_array as $aa ) {
+            $attributes[$aa->id] = $aa;
+        }
+
+        // Get Category data
         $categories = $category->sort_by_hierarchy();
+        $category_attribute_ids = ( isset( $_GET['cid'] ) ) ? $attribute->get_category_attribute_ids( $_GET['cid'] ) : array();
 
         if ( $this->verified() ) {
+            // If it exists, get it
+            if ( $category_id )
+                $category->get( $category_id );
+
             $category->parent_category_id = $_POST['sParentCategoryID'];
             $category->name = $_POST['tName'];
             $category->slug = $_POST['tSlug'];
 
-            $category->update();
+            if ( $category_id ) {
+                $category->update();
+                $message = _('Your category has been successfully updated!');
+                $parent_category_id = $_GET['pcid'];
 
-            $response = new AjaxResponse( $this->verified() );
+                $attribute->delete_category_relations( $category_id );
+            } else {
+                $category->create();
+                $message = _('Your category has been successfully created!');
+                $parent_category_id = $category->parent_category_id;
+            }
+
+            $attribute->add_category_relations( $category_id, explode( '|', $_POST['hAttributes'] ) );
+
+            // Reset Categories list
+            Category::$categories = Category::$categories_by_parent = NULL;
+
+            $notification_html = '<div class="notification sticky hidden">';
+            $notification_html .= '<a class="close" href="#"><img src="/images/icons/close.png" alt="' . _('Close') . '" /></a>';
+            $notification_html .= "<p>$message</p>";
+            $notification_html .= '</div>';
+
+            $_POST['cid'] = $parent_category_id;
+            $response = $this->get();
+
+            jQuery('div.boxy-wrapper a.close:visible:first')->click();
+            jQuery('body')->append( $notification_html );
+            jQuery('.notification:last')->notify();
+
+            $response->add_response( 'jquery', jQuery::getResponse() );
+
+            return $response;
         }
 
         if ( $category_id ) {
@@ -168,7 +213,7 @@ class CategoriesController extends BaseController {
         }
 
         $response = new CustomResponse( $this->resources, 'products/categories/add-edit' );
-        $response->set( compact( 'category', 'attributes', 'categories', 'name', 'slug', 'parent_category_id' ) );
+        $response->set( compact( 'category', 'attributes', 'category_attribute_ids', 'categories', 'name', 'slug', 'parent_category_id' ) );
 
         return $response;
     }
@@ -201,6 +246,25 @@ class CategoriesController extends BaseController {
 
             $response = $this->get();
         }
+
+        return $response;
+    }
+
+    /**
+     * Update Sequence
+     *
+     * @return AjaxResponse
+     */
+    public function update_sequence() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() || !isset( $_POST['pcid'] ) || !isset( $_POST['sequence'] ) )
+            return $response;
+
+        $category = new Category();
+        $category->update_sequence( $_POST['pcid'], explode( '&cat[]=', substr( $_POST['sequence'], 6 ) ) );
 
         return $response;
     }

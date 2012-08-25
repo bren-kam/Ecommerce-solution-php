@@ -24,6 +24,83 @@ class AttributeTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting all attributes
+     */
+    public function testGetAll() {
+        $attributes = $this->attribute->get_all();
+
+        $this->assertTrue( array_shift( $attributes ) instanceof Attribute );
+    }
+
+    /**
+     * Add Category relations
+     */
+    public function testAddCategoryRelations() {
+        $category_id = 0;
+        $attribute_ids = array( '-1', '-2', '-3', '-4', '-5' );
+
+        // Delete any that may have been created before the test
+        $this->db->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
+
+        // Add the relations
+        $this->attribute->add_category_relations( $category_id, $attribute_ids );
+
+        // Get them for testing
+        $fetched_attribute_ids = $this->db->get_col( "SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id ORDER BY `attribute_id` DESC" );
+
+        // Should be the same
+        $this->assertEquals( $attribute_ids, $fetched_attribute_ids );
+
+        // Delete them
+        $this->db->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
+    }
+
+    /**
+     * Delete Category Relations
+     *
+     * @depends testAddCategoryRelations
+     */
+    public function testDeleteCategoryRelations() {
+        // Declare variables
+        $category_id = 0;
+        $attribute_ids = array( '-1', '-2', '-3', '-4', '-5' );
+
+        // Add relations
+        $this->attribute->add_category_relations( $category_id, $attribute_ids );
+
+        // Delete the relations
+        $this->attribute->delete_category_relations( $category_id );
+
+        // See if we can get it
+        $attribute_id = $this->db->get_var( 'SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id' );
+
+        $this->assertFalse( $attribute_id );
+    }
+
+    /**
+     * Get Category Attribute IDs
+     *
+     * @depends testAddCategoryRelations
+     */
+    public function testGetCategoryAttributeIds() {
+        // Declare variables
+        $category_id = 0;
+        $attribute_ids = array( '2', '15', '13', '12' );
+
+        // Add relations
+        $this->attribute->add_category_relations( $category_id, $attribute_ids );
+
+        // Let's see if it matches
+        $fetched_attribute_ids = $this->attribute->get_category_attribute_ids( $category_id );
+
+        // Make sure they match
+        $this->assertEquals( $attribute_ids, $fetched_attribute_ids );
+
+        // Delete them
+        $this->db->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
+    }
+
+    /**
      * Test Deleting an attribute
      *
      * @depends testGet

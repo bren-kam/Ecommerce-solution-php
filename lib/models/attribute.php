@@ -29,6 +29,34 @@ class Attribute extends ActiveRecordBase {
     }
 
     /**
+     * Add Category Relations
+     *
+     * @param int $category_id
+     * @param array $attribute_ids
+     */
+    public function add_category_relations( $category_id, array $attribute_ids ) {
+        // Create all the values
+        $values = '';
+
+		foreach ( $attribute_ids as $attribute_id ) {
+            // Make sure it's something
+            if ( empty( $attribute_id ) )
+                continue;
+
+			if ( !empty( $values ) )
+				$values .= ',';
+
+			$values .= '(' . (int) $attribute_id . ', ' . (int) $category_id . ')';
+		}
+
+        // If there isn't anything, return
+        if ( empty( $values ) )
+            return;
+
+        $this->query( "INSERT INTO `attribute_relations` ( `attribute_id`, `category_id` ) VALUES $values" );
+    }
+
+    /**
      * Get All
      *
      * @return array
@@ -38,11 +66,38 @@ class Attribute extends ActiveRecordBase {
     }
 
     /**
+     * Get Category Attribute IDs
+     *
+     * @param int $category_id
+     * @return array
+     */
+    public function get_category_attribute_ids( $category_id ) {
+        return $this->prepare(
+            'SELECT a.`attribute_id` FROM `attributes` AS a LEFT JOIN `attribute_relations` AS b ON ( a.`attribute_id` = b.`attribute_id` ) WHERE b.`category_id` = :category_id ORDER BY a.`title`'
+            , 'i'
+            , array( ':category_id' => $category_id )
+        )->get_col();
+    }
+
+    /**
      * Delete Attribute
      */
     public function delete() {
         if ( isset( $this->id ) )
             parent::delete( array( 'attribute_id' => $this->id ), 'i' );
+    }
+
+    /**
+     * Delete Relations to a category
+     *
+     * @param int $category_id
+     */
+    public function delete_category_relations( $category_id ) {
+        $this->prepare(
+            'DELETE FROM `attribute_relations` WHERE `category_id` = :category_id'
+            , 'i'
+            , array( ':category_id' => $category_id )
+        )->query();
     }
 
     /**

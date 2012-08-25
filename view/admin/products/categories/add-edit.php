@@ -10,11 +10,15 @@
  * @var Category $category
  * @var array $categories
  * @var array $attributes
+ * @var array $category_attribute_ids
  */
 
-?>
+$add_edit_url = '/products/categories/add-edit/';
 
-<form name="fAddEditCategory" id="fAddEditCategory" action="/products/categories/add-edit/<?php if ( $category->id ) echo '?cid=' . $category->id; ?>" method="post" ajax="1">
+if ( $category->id )
+    $add_edit_url = url::add_query_arg( array( 'cid' => $category->id, 'pcid' => $_GET['pcid'] ) );
+?>
+<form name="fAddEditCategory" class="form-add-edit-category" id="fAddEditCategory" action="<?php echo $add_edit_url; ?>" method="post" ajax="1">
 <table>
     <tr>
         <td><label for="tName"><?php echo _('Name'); ?>:</label></td>
@@ -45,10 +49,22 @@
                 <option value="">-- <?php echo _('Select Attribute'); ?> --</option>
                 <?php
                 foreach ( $attributes as $a ) {
+                    $disabled = ( in_array( $a->id, $category_attribute_ids ) ) ? ' disabled="disabled"' : '';
                 ?>
-                    <option value="<?php echo $a->id; ?>"><?php echo $a->title; ?></option>
+                    <option value="<?php echo $a->id; ?>"<?php echo $disabled; ?>><?php echo $a->title; ?></option>
                 <?php } ?>
             </select>
+            <div id="attributes-list">
+            <?php foreach ( $category_attribute_ids as $caid ) { ?>
+            <div extra="<?php echo format::slug( $attributes[$caid]->title ); ?>" id="dAttribute<?php echo $caid; ?>" class="attribute-container">
+                <div class="attribute">
+                    <span class="attribute-name"><?php echo $attributes[$caid]->title; ?></span>
+                    <a href="#" class="delete-attribute" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" /></a>
+                </div>
+            </div>
+            <?php } ?>
+            </div>
+            <input type="hidden" name="hAttributes" id="hAttributes" />
         </td>
     </tr>
 </table>
@@ -56,5 +72,8 @@
     <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
     <p class="text-right col-2 float-right"><input type="submit" class="button" value="<?php echo ( $category->id ) ? _('Save') : _('Add'); ?>" rel="fAddEditCategory" /></p>
 </div>
-<?php nonce::field('add-edit'); ?>
+<?php nonce::field('add_edit'); ?>
 </form>
+<script type="text/javascript">
+    updateAttributes();
+</script>
