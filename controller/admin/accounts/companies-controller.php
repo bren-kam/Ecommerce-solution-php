@@ -40,9 +40,9 @@ class CompaniesController extends BaseController {
         // Get the company_id if there is one
         $company_id = ( isset( $_GET['cid'] ) ) ? (int) $_GET['cid'] : false;
 
-        $template_response = $this->get_template_response( 'add-edit' );
-        $template_response->select( 'companies', 'view' );
-        $template_response->add_title( ( $company_id ) ? _('Edit') : _('Add') );
+        $template_response = $this->get_template_response( 'add-edit' )
+            ->select( 'companies', 'add' )
+            ->add_title( ( $company_id ) ? _('Edit') : _('Add') );
 
         $company = new Company();
 

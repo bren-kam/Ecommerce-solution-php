@@ -29,6 +29,32 @@ class Attribute extends ActiveRecordBase {
     }
 
     /**
+     * Create Attribute
+     */
+    public function create() {
+        $this->insert( array(
+            'brand_id' => $this->brand_id
+            , 'title' => $this->title
+            , 'name' => $this->name
+        ), 'iss' );
+
+        $this->attribute_id = $this->id = $this->get_insert_id();
+    }
+
+    /**
+     * Update an attribute
+     */
+    public function update() {
+        parent::update( array(
+            'brand_id' => $this->brand_id
+            , 'title' => $this->title
+            , 'name' => $this->name
+        ), array(
+            'attribute_id' => $this->id
+        ), 'iss', 'i' );
+    }
+
+    /**
      * Add Category Relations
      *
      * @param int $category_id

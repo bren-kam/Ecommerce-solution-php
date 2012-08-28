@@ -14,3 +14,6 @@ CHANGE `option_name` `name` VARCHAR( 250 ) CHARACTER SET utf8 COLLATE utf8_gener
 
 ----- Remove Product Options Unique -----
 DROP TABLE `product_options_unique`;
+
+------ Change Attribute Items to rename columns -----
+ALTER TABLE `attribute_items` CHANGE `attribute_item_name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
