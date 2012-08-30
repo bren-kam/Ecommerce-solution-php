@@ -76,7 +76,7 @@ class AttributesController extends BaseController {
 
                 if ( isset( $_POST['list-items'] ) )
                 foreach ( $_POST['list-items'] as $attribute_item_id => $ai ) {
-                    if ( stristr( $attribute_item, 'ai' ) ) {
+                    if ( stristr( $attribute_item_id, 'ai' ) ) {
                         // Updating attribute
                         $attribute_item_ids[] = $attribute_item_id = str_replace( 'ai', '', $attribute_item_id );
 

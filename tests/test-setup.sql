@@ -9,3 +9,6 @@ INSERT INTO `categories` (`category_id`, `parent_category_id`, `name`, `slug`, `
 (561, 559, 'Test Child Two', 'test-child-two', 1, '2012-08-22 01:27:37'),
 (560, 559, 'Test Child One', 'test-child-one', 0, '2012-08-22 01:27:37'),
 (559, 0, 'Test Parent', 'test-parent', -1, '0000-00-00 00:00:00');
+
+-- Brand Test
+INSERT INTO `imaginer_system`.`brands` (`brand_id`, `name`, `slug`, `link`, `image`) VALUES (NULL, 'Test Brand', 'test-brand', 'www.test-brand.com', '');

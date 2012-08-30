@@ -29,6 +29,41 @@ class ProductOption extends ActiveRecordBase {
     }
 
     /**
+     * Get All
+     *
+     * @return array
+     */
+    public function get_all() {
+        return $this->get_results( 'SELECT * FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->insert( array(
+            'type' => $this->type
+            , 'title' => $this->title
+            , 'name' => $this->name
+        ), 'sss' );
+
+        $this->product_option_id = $this->id = $this->get_insert_id();
+    }
+
+    /**
+     * Update an attribute item
+     */
+    public function update() {
+        parent::update( array(
+            'type' => $this->type
+            , 'title' => $this->title
+            , 'name' => $this->name
+        ), array(
+            'product_option_id' => $this->id
+        ), 'sss', 'i' );
+    }
+
+    /**
      * Delete Product Option
      */
     public function delete() {

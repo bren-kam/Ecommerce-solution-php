@@ -20,8 +20,44 @@ class File {
 	public function __construct() {
 		// Load Amazon S3
 		library('S3');
-		$this->s3 = new S3( config::key('aws-access-key'), config::key('aws-secret-key') );
-		$this->bucket = config::key('aws-bucket-domain');
+		$this->s3 = new S3( Config::key('aws-access-key'), Config::key('aws-secret-key') );
+		$this->bucket = Config::key('aws-bucket-domain');
+	}
+
+    /**
+	 * Uploads an Image to Amazon
+	 *
+	 * @param file $image the product image file
+	 * @param string $new_image_name the new image name
+	 * @param int $width the width you want the image to be
+	 * @param int $height the height you want the image to be
+	 * @param string $industry the industry to upload it under
+	 * @param string $directory (Optional) any path to the directory you want the file to be in
+	 * @param bool $keep_proportions (Optional|true) keep image proportions
+	 * @param bool fill_constraints (Optional|true) fill the constraints given
+	 * @return bool/string
+	 */
+	public function upload_image( $image, $new_image_name, $width, $height, $industry, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
+		if ( empty( $image['name'] ) || empty( $industry ) )
+			return false;
+
+		list( $result, $image_file ) = image::resize( $image['tmp_name'], OPERATING_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
+
+		if ( !$result || !$image_file || !is_file( $image_file ) )
+			return false;
+
+		// Define the base name
+		$base_name = basename( $image_file );
+
+		// Upload the image
+		if ( !$this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ ) )
+			return false;
+
+        // Delete the local image
+        unlink( $image_file );
+
+        // Return image name
+        return $base_name;
 	}
 
     /**

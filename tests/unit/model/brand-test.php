@@ -26,6 +26,99 @@ class BrandTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting relations (to product options)
+     *
+     * @depends testGet
+     */
+    public function testGetProductOptionRelations() {
+        // Get a brand
+        $brand_id = 8;
+        $this->brand->get( $brand_id );
+
+        $product_option_ids = $this->brand->get_product_option_relations();
+
+        $this->assertTrue( is_array( $product_option_ids ) );
+        $this->assertEquals( count( $product_option_ids ), 7 );
+    }
+
+    /**
+     * Test creating an attribute
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        $this->brand->name = 'Test Brand';
+        $this->brand->slug = 'test-brand';
+        $this->brand->link = 'www.testbrand.com';
+        $this->brand->image = '';
+        $this->brand->create();
+
+        $this->assertTrue( !is_null( $this->brand->id ) );
+
+        // Make sure it's in the database
+        $this->brand->get( $this->brand->id );
+
+        $this->assertEquals( 'www.testbrand.com', $this->brand->link );
+
+        // Delete the brand
+        $this->db->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
+    }
+
+    /**
+     * Test Adding Product Option Relations
+     *
+     * @depends testGetProductOptionRelations
+     */
+    public function testAddProductOptionRelations() {
+        // Declare variables
+        $brand_id = 612;
+        $product_option_ids = array( '-2', '-1' );
+
+        // Delete any previous relations
+        $this->db->delete( 'product_option_relations', array( 'brand_id' => 612 ), 'i' );
+
+        // Get brand
+        $this->brand->get( $brand_id );
+
+        // Add them
+        $this->brand->add_product_option_relations( $product_option_ids );
+
+        // Now check it
+        $fetched_product_option_ids = $this->brand->get_product_option_relations( $brand_id );
+
+        $this->assertEquals( $product_option_ids, $fetched_product_option_ids );
+    }
+
+    /**
+     * Test updating an attribute
+     *
+     * @depends testCreate
+     */
+    public function testUpdate() {
+        // Create test
+        $this->brand->name = 'Test Brand';
+        $this->brand->slug = 'test-brand';
+        $this->brand->link = 'www.testbrand.com';
+        $this->brand->image = '';
+        $this->brand->create();
+
+        // Update test
+        $this->brand->slug = 'dnarb-tset';
+        $this->brand->update();
+
+        // Make sure we have an ID still
+        $this->assertTrue( !is_null( $this->brand->id ) );
+
+        // Now check it!
+        $this->brand->get( $this->brand->id );
+
+        $this->assertEquals( 'dnarb-tset', $this->brand->slug );
+
+        // Delete the brand
+        $this->db->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
+    }
+
+    /**
      * Test Deleting an attribute
      *
      * @depends testGet
@@ -46,6 +139,32 @@ class BrandTest extends BaseDatabaseTest {
         $name = $this->db->get_var( "SELECT `name` FROM `brands` WHERE `brand_id` = $brand_id" );
 
         $this->assertFalse( $name );
+    }
+
+    /**
+     * Test Delete relations
+     *
+     * @depends testAddProductOptionRelations
+     */
+    public function testDeleteProductOptionRelations() {
+        // Declare variables
+        $brand_id = 612;
+        $product_option_ids = array( '-1', '-2' );
+
+        // Get the brand
+        $this->brand->get( $brand_id );
+
+        // Add relations
+        $this->brand->add_product_option_relations( $product_option_ids );
+
+        // Delete relations
+        $this->brand->delete_product_option_relations();
+
+        // Get relations
+        $fetched_product_option_ids = $this->brand->get_product_option_relations();
+
+        $this->assertTrue( is_array( $fetched_product_option_ids ) );
+        $this->assertEquals( count( $fetched_product_option_ids ), 0 );
     }
 
     /**

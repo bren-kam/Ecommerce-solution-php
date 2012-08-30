@@ -60,12 +60,11 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function update() {
         parent::update( array(
-            'attribute_id' => $this->attribute_id
-            , 'name' => $this->name
+            'name' => $this->name
             , 'sequence' => $this->sequence
         ), array(
             'attribute_item_id' => $this->id
-        ), 'isi', 'i' );
+        ), 'si', 'i' );
     }
 
     /**

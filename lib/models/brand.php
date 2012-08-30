@@ -29,11 +29,87 @@ class Brand extends ActiveRecordBase {
     }
 
     /**
+     * Get Relations
+     *
+     * @return array
+     */
+    public function get_product_option_relations() {
+        return $this->prepare(
+            'SELECT * FROM `product_option_relations` WHERE `brand_id` = :brand_id'
+            , 's'
+            , array( ':brand_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->insert( array(
+            'name' => $this->name
+            , 'slug' => $this->slug
+            , 'link' => $this->link
+            , 'image' => $this->image
+        ), 'ssss' );
+
+        $this->brand_id = $this->id = $this->get_insert_id();
+    }
+
+    /**
+     * Add Relations
+     *
+     * @param array $product_option_ids
+     */
+    public function add_product_option_relations( array $product_option_ids ) {
+        if ( 0 == count( $product_option_ids ) )
+            return;
+
+        $values = '';
+        $brand_id = (int) $this->id;
+
+        foreach ( $product_option_ids as $poid ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $poid = (int) $poid;
+
+            $values .= "( $poid, $brand_id )";
+        }
+
+        $this->query( "INSERT INTO `product_option_relations` ( `product_option_id`, `brand_id` ) VALUES $values" );
+    }
+
+    /**
+     * Update
+     */
+    public function update() {
+        parent::update( array(
+            'name' => $this->name
+            , 'slug' => $this->slug
+            , 'link' => $this->link
+            , 'image' => $this->image
+        ), array(
+            'brand_id' => $this->id
+        ), 'ssss', 'i' );
+    }
+
+    /**
      * Delete Brand
      */
     public function delete() {
         if ( isset( $this->id ) )
             parent::delete( array( 'brand_id' => $this->id ), 'i' );
+    }
+
+    /**
+     * Delete Relations
+     */
+    public function delete_product_option_relations() {
+        $this->prepare(
+            'DELETE FROM `product_option_relations` WHERE `brand_id` = :brand_id'
+            , 'i'
+            , array( ':brand_id' => $this->id )
+        )->query();
     }
 
     /**

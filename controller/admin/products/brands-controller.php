@@ -10,6 +10,7 @@ class BrandsController extends BaseController {
         // Tell what is the base for all login
         $this->view_base = 'products/brands/';
         $this->section = 'products';
+        $this->title .= _('Brands');
     }
 
     /**
@@ -21,6 +22,103 @@ class BrandsController extends BaseController {
         $template_response = $this->get_template_response( 'index' )
             ->add_title( _('Brands') )
             ->select( 'brands', 'view' );
+
+        return $template_response;
+    }
+
+    /**
+     * Add/Edit a Brand
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function add_edit() {
+        // Get the brand_id if there is one
+        $brand_id = ( isset( $_GET['bid'] ) ) ? (int) $_GET['bid'] : false;
+
+        $brand = new Brand();
+        $product_option = new ProductOption();
+
+        $product_options_array = $product_option->get_all();
+
+        // Get the attribute
+        if ( $brand_id ) {
+            $brand->get( $brand_id );
+            $product_option_ids = $brand->get_product_option_relations();
+        } else {
+            $product_option_ids = array();
+        }
+
+        $v = new Validator( _('fAddEditBrand') );
+
+        $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
+        $v->add_validation( 'tSlug', 'req', _('The "Slug" field is required') );
+
+        $validation = $v->js_validation();
+
+        $errs = false;
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $brand->name = $_POST['tName'];
+                $brand->slug = $_POST['tSlug'];
+                $brand->link = $_POST['tWebsite'];
+
+                // Handle file upload
+                if ( !empty( $_FILES['fImage']['name'] ) ) {
+                    $f = new File();
+
+                    // Delete old image
+                    if ( $brand_id && !empty( $brand->image ) ) {
+                        $old_url_info = parse_url( $brand->image );
+                        $old_image_path = substr( $old_url_info['path'], 1 );
+
+                        if ( !empty( $old_image_path ) )
+                            $f->delete_image( $old_image_path, 'brands' );
+                    }
+
+                    // Upload new image
+                    $image = $f->upload_image( $_FILES['fImage'], format::slug( $_POST['tName'] ), 120, 120, 'brands', '', true, true );
+
+                    // If it was successful, assign it the correct name
+                    if ( $image )
+                        $brand->image = 'http://brands.retailcatalog.us/' . $image;
+                } elseif ( !$brand_id ) {
+                    $brand->image = '';
+                }
+
+                if ( $brand_id ) {
+                    $brand->update();
+                    $message = _('Your brand has been successfully updated!' );
+
+                    // Delete any relations there may have been
+                    $brand->delete_product_option_relations();
+                } else {
+                    $brand->create();
+                    $message = _('Your brand has been successfully created!' );
+                }
+
+                // Add product option relations
+                if ( isset( $_POST['product-options'] ) && is_array( $_POST['product-options'] ) )
+                    $brand->add_product_option_relations( $_POST['product-options'] );
+
+                // Let them know what happened
+                $this->notify( $message );
+
+                // Redirect
+                return new RedirectResponse( '/products/brands/' );
+            }
+        }
+
+        $template_response = $this->get_template_response( 'add-edit' )
+            ->select( 'brands', 'add' )
+            ->add_title( ( $brand_id ) ? _('Edit') : _('Add') )
+            ->set( compact( 'brand', 'product_options_array', 'product_option_ids', 'validation', 'errs' ) );
+
+        $this->resources
+            ->javascript( 'products/brands/add-edit' )
+            ->css( 'products/brands/add-edit' );
 
         return $template_response;
     }
@@ -87,9 +185,8 @@ class BrandsController extends BaseController {
 
         // Delete brand
         if ( $brand->id ) {
-            // First delete product options
-            $product_option = new ProductOption();
-            $product_option->delete_by_brand( $brand->id );
+            // First delete product option relations
+            $brand->delete_product_option_relations();
 
             // Then delete image from Amazon
             if ( !empty( $brand->image ) ) {
@@ -104,10 +201,6 @@ class BrandsController extends BaseController {
 
             // Now delete the brand
             $brand->delete();
-
-            // Delete product options by brand
-            if ( !$po->delete_relations_by_brand( $brand_id ) )
-                return false;
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();

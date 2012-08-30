@@ -22,6 +22,64 @@ class ProductOptionTest extends BaseDatabaseTest {
 
         $this->assertEquals( $this->product_option->title, 'Annual Sales' );
     }
+    
+    /**
+     * Test Getting all product options
+     */
+    public function testGetAll() {
+        $product_options = $this->product_option->get_all();
+
+        $this->assertTrue( current( $product_options ) instanceof ProductOption );
+    }
+
+    /**
+     * Test create
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        $this->product_option->type = 'text';
+        $this->product_option->title = 'Extra Information';
+        $this->product_option->name = 'Extra Info';
+        $this->product_option->create();
+
+        $this->assertTrue( !is_null( $this->product_option->id ) );
+
+        // Make sure it's in the database
+        $this->product_option->get( $this->product_option->id );
+
+        $this->assertEquals( 'Extra Info', $this->product_option->name );
+
+        // Delete the product option
+        $this->db->delete( 'product_options', array( 'product_option_id' => $this->product_option->id ), 'i' );
+    }
+
+    /**
+     * Test updating the product option
+     *
+     * @depends testCreate
+     */
+    public function testUpdate() {
+        $this->product_option->type = 'text';
+        $this->product_option->title = 'Extra Information';
+        $this->product_option->name = 'Extra Info';
+        $this->product_option->create();
+
+        // Update test
+        $this->product_option->name = 'ofnI artxE';
+        $this->product_option->update();
+
+        // Make sure we have an ID still
+        $this->assertTrue( !is_null( $this->product_option->id ) );
+
+        // Now check it!
+        $this->product_option->get( $this->product_option->id );
+
+        $this->assertEquals( 'ofnI artxE', $this->product_option->name );
+
+        // Delete the product option list item
+        $this->db->delete( 'product_options', array( 'product_option_id' => $this->product_option->id ), 'i' );
+    }
 
     /**
      * Test Deleting a Product Option
@@ -55,7 +113,7 @@ class ProductOptionTest extends BaseDatabaseTest {
 
         $this->assertFalse( $brand_id );
 
-        // Make sure there are no list items
+        // Make sure there are nos
         $value = $this->db->get_var( "SELECT `value` FROM `product_option_list_items` WHERE `product_option_id` = $product_option_id" );
 
         $this->assertFalse( $value );

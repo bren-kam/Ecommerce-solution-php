@@ -1,6 +1,12 @@
 // When the page has loaded
 head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
-	// Make attributes sortable
+    // Change Screens
+    $('#subcontent a.screen').click( function() {
+        $('#subcontent div.screen').hide();
+        $('#' + $(this).attr('rel')).show();
+    });
+
+    // Make attributes sortable
 	$("#items-list").sortable({
         forcePlaceholderSize : true
         , placeholder: 'list-item-placeholder'

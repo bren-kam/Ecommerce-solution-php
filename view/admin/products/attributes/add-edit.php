@@ -10,6 +10,7 @@
  * @var Attribute $attribute
  * @var array $attribute_items
  * @var bool|string $errs
+ * @var string $validation
  */
 
 $confirm_delete = _('Are you sure you want to delete this attribute? This cannot be undone.');
@@ -53,6 +54,7 @@ if ( $errs )
                     foreach ( $attribute_items as $attribute_item ) {
                     ?>
                         <div class="list-item">
+                            <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
                             <input type="text" class="tb" name="list-items[ai<?php echo $attribute_item->id; ?>]" value="<?php echo $attribute_item->name; ?>" />
 
                             <a href="#" class="delete-list-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirm_delete; ?>"><img src="/images/icons/x.png" alt="<?php echo _('Delete'); ?>" width="15" height="17" /></a>
@@ -68,7 +70,9 @@ if ( $errs )
     </table>
     <?php nonce::field( 'add_edit' ); ?>
 </form>
+<?php echo $validation; ?>
 <div class="list-item hidden" id="list-item-template">
+    <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
     <input type="text" class="tb" name="list-items[]" />
 
     <a href="#" class="delete-list-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirm_delete; ?>"><img src="/images/icons/x.png" alt="<?php echo _('Delete'); ?>" width="15" height="17" /></a>

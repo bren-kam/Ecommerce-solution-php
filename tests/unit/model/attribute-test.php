@@ -33,6 +33,56 @@ class AttributeTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test creating an attribute
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        $this->attribute->brand_id = 0;
+        $this->attribute->title = 'Testee - Section';
+        $this->attribute->name = 'Testee';
+        $this->attribute->create();
+
+        $this->assertTrue( !is_null( $this->attribute->id ) );
+
+        // Make sure it's in the database
+        $this->attribute->get( $this->attribute->id );
+
+        $this->assertEquals( 'Testee - Section', $this->attribute->title );
+
+        // Delete the attribute
+        $this->db->delete( 'attributes', array( 'attribute_id' => $this->attribute->id ), 'i' );
+    }
+
+    /**
+     * Test updating an attribute
+     *
+     * @depends testCreate
+     */
+    public function testUpdate() {
+        // Create test
+        $this->attribute->brand_id = 0;
+        $this->attribute->title = 'Testee - Section';
+        $this->attribute->name = 'Testee';
+        $this->attribute->create();
+
+        // Update test
+        $this->attribute->title = 'noitceS - eetseT';
+        $this->attribute->update();
+
+        // Make sure we have an ID still
+        $this->assertTrue( !is_null( $this->attribute->id ) );
+
+        // Now check it!
+        $this->attribute->get( $this->attribute->id );
+
+        $this->assertEquals( 'noitceS - eetseT', $this->attribute->title );
+
+        // Delete the attribute
+        $this->db->delete( 'attributes', array( 'attribute_id' => $this->attribute->id ), 'i' );
+    }
+
+    /**
      * Add Category relations
      */
     public function testAddCategoryRelations() {
