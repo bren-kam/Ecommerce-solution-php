@@ -18,7 +18,20 @@ class ReportsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        $services = array(
+            'product_catalog' => _('Product Catalog')
+            , 'blog' => _('Blog')
+            , 'email_marketing' => _('Email Marketing')
+            , 'mobile_marketing' => _('Mobile Marketing')
+            , 'shopping_cart' => _('Shopping Cart')
+            , 'room_planner' => _('Room Planner')
+            , 'craigslist' => _('Craigslist')
+            , 'domain_registration' => _('Domain')
+            , 'additional_email_addresses' => _('Additional Email Addresses')
+        );
+
         $template_response = $this->get_template_response( 'index' )
+            ->set( compact( 'services' ) )
             ->select( 'search' );
 
         return $template_response;
