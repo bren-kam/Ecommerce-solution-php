@@ -17,6 +17,7 @@ class header extends Base_Class {
 	public static $content_types = array (
 		'json' => 'application/json'
         , 'text' => 'text/plain'
+        , 'csv' => 'application/octet-stream'
         , 'xml' => 'text/xml'
         , 'gif' => 'image/gif'
         , 'jpg' => 'image/jpeg'
@@ -136,6 +137,17 @@ class header extends Base_Class {
             return false;
 
         return self::type( $extension );
+    }
+
+    /**
+     * Send Download Header
+     *
+     * @param string $file_name
+     */
+    public static function download( $file_name ) {
+        self::send( array(
+            'Content-Disposition' => 'attachment; filename="' . $file_name . '"'
+        ));
     }
 	
 	/**
