@@ -9,6 +9,6 @@
  */
 
 define( 'TITLE', 'Visionary Web Services' );
-define( 'LOGO_WIDTH', 314 );
-define( 'LOGO_HEIGHT', 48 );
+define( 'LOGO_WIDTH', 270 );
+define( 'LOGO_HEIGHT', 90 );
 define( 'COMPANY_ID', 17 );
