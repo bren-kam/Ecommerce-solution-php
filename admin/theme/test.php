@@ -4,8 +4,8 @@
 
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
-//fn::info( $a->get_items('LoadAllItemCategories') );
-$packages = $a->get_packages();
+fn::info( $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) ) );
+/*$packages = $a->get_packages();
 
 $i = 0;
 foreach ( $packages as $package ) {

@@ -181,12 +181,12 @@ class Ashley_API {
      *      LoadItems
      *      LoadAllItemCategories
      *
-     * @param string $item_execute_option [optional]
+     * @param string|array $item_execute_option [optional]
      * @return object
      */
     public function get_items( $item_execute_option = 'LoadItems' ) {
-        ini_set( 'memory_limit', '256M' );
-        set_time_limit(300);
+        ini_set( 'memory_limit', '512M' );
+        set_time_limit(3000);
         // Setup the package request
         $package_request = new PackageRequest();
         $package_request->ExecuteOptions = array( 'ItemExecuteOption' => $item_execute_option );
