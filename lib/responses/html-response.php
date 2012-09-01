@@ -1,15 +1,15 @@
 <?php
 
-class XmlResponse extends Response {
-    protected $xml;
+class HtmlResponse extends Response {
+    protected $html;
 
     /**
      * Check if it's verified
      *
-     * @param string $xml
+     * @param string $html
      */
-    public function __construct( $xml ) {
-        $this->xml = $xml;
+    public function __construct( $html ) {
+        $this->html = $html;
     }
 
     /**
@@ -24,10 +24,7 @@ class XmlResponse extends Response {
      * Spit out the html response
      */
     protected function respond() {
-        // Set it to XML
-        header::type('xml');
-
         // Spit out the code and exit;
-        echo $this->xml;
+        echo $this->html;
     }
 }

@@ -46,7 +46,7 @@ class TemplateResponse extends Response {
      *
      * @param string|array $key
      * @param string $value [optional]
-     * @return Template Response
+     * @return TemplateResponse
      */
     public function set( $key, $value = '' ) {
         if ( is_array( $key ) ) {
