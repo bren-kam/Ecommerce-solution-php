@@ -7,24 +7,295 @@
  */
 class Ashley extends Base_Class {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
+    const IMAGE_URL = 'https://www.ashleydirect.com/graphics/';
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
+    const USER_ID = 1477;
 	
 	private $images = array();
-	
+
+    /**
+     * Hold Ashley Package Description translations
+     * @var array
+     */
+    private $_package_descriptions = array();
+
 	/**
 	 * Creates new Database instance
 	 */
 	public function __construct() {
 		// Load database library into $this->db (can be omitted if not required)
 		parent::__construct();
+
+        set_time_limit(300);
 		
 		// Time how long we've been on this page
-		$this->timer_start();
 		$this->curl = new curl();
 		$this->p = new Products();
 		$this->file = new Files();
 	}
+
+    /**
+     * Search Array
+     *
+     * @param array $array
+     * @param string $value
+     * @return string
+     */
+    public function search_array( $array, $value ) {
+        foreach ( $array as $v ) {
+            if ( stristr( $v, $value ) )
+                return $v;
+        }
+
+        return false;
+    }
+
+    /**
+     * Load Packages
+     */
+    public function load_packages() {
+        // Sets who is updating the products
+        global $user;
+        $user['user_id'] = 1477;
+
+        // Get librarys
+        library('ashley-api/ashley-api');
+        $a = new Ashley_API();
+
+        // Get packages
+        $packages = $a->get_packages();
+
+        // Get templates for descriptions
+        $unrefined_package_templates = $a->get_package_templates();
+        $package_templates = array();
+
+        // Arrange these by template ID
+        foreach ( $unrefined_package_templates as $pt ) {
+            $package_templates[$pt->TemplateId] = $pt;
+        }
+
+        // Get existing products
+        $existing_products = $this->_get_existing_products();
+
+        // Generate array of our items
+        $i = $skipped = 0;
+
+        // Initiate product string
+        $products_string = '';
+
+        // Any new products get al ink
+        $links = array();
+
+        foreach ( $packages as $item ) {
+            // We don't care if they don't have an image
+            if ( empty( $item->Image ) || !curl::check_file( self::IMAGE_URL . $item->Image ) ) {
+                $skipped++;
+                continue;
+            }
+
+            // Count how many products we're dealing with
+			$i++;
+
+            // Ensure that we can keep running
+            echo '                                                   ';
+            set_time_limit(30);
+			flush();
+
+            // Start collecting data
+			$name = $item->SeriesName . ' ' . $item->SeriesColor . ' ' . $package_templates[$item->TemplateId];
+			$slug = str_replace( '---', '-', format::slug( $name ) );
+            $sku = $item->PackageId;
+			$image = $item->Image;
+			$weight = $volume = 0;
+
+            // Set item description
+			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
+			$description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
+
+            // Will have to format this
+			$product_specs = $this->_package_descriptions[$item->PackageDescription];
+
+            // "Ashley Furniture" brand
+			$brand_id = 8;
+
+			$images = array();
+
+			////////////////////////////////////////////////
+			// Get/Create the product
+			if( array_key_exists( $sku, $existing_products ) ) {
+				$identical = true;
+                
+				$product = $products[$sku];
+				$product_id = $product['product_id'];
+
+				$product_images = explode( '|', $product['images'] );
+
+				// Override data with existing data
+				if( empty( $name ) ) {
+					$name = $product['name'];
+				} elseif ( $name != $product['name'] ) {
+					$identical = false;
+				}
+
+				if( empty( $slug ) ) {
+					$slug = $product['slug'];
+				} elseif ( $slug != $product['slug'] ) {
+					$slug = $this->unique_slug( $slug );
+
+					if ( $slug != $product['slug'] )
+						$identical = false;
+				}
+
+				if( empty( $description ) ) {
+					$description = format::autop( format::unautop( $product['description'] ) );
+				} elseif ( $description != format::autop( format::unautop( $product['description'] ) ) ) {
+					$identical = false;
+				}
+
+				$images = $product_images;
+
+
+				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+					$identical = false;
+					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
+
+					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
+						$images[] = $image_name;
+				}
+
+				$price = 0;//$product_information['price'];
+				$list_price = 0;//$product_information['list_price'];
+				$product_specifications = '';
+
+				$product['product_specifications'] = unserialize( $product['product_specifications'] );
+				if( is_array( $product['product_specifications'] ) )
+				foreach( $product['product_specifications'] as $ps ) {
+					if( !empty( $product_specifications ) )
+						$product_specifications .= '|';
+
+					$product_specifications .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
+				}
+
+				if( empty( $product_specs ) ) {
+					$product_specs = $product_specifications;
+				} elseif ( $product_specs != $product_specifications ) {
+					$identical = false;
+				}
+
+				if( empty( $brand_id ) ) {
+					$brand_id = $product['brand_id'];
+				} elseif ( $brand_id != $product['brand_id'] ) {
+					$identical = false;
+				}
+
+				if( empty( $product_status ) ) {
+					$product_status = $product['status'];
+					$links['updated-product'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+				} else {
+					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+
+					if ( $product_status != $product['status'] )
+						$identical = false;
+				}
+
+				$publish_visibility = $product['publish_visibility'];
+				$publish_date = $product['publish_date'];
+
+				if( empty( $weight ) ) {
+					$weight = $product['weight'];
+				} elseif ( $weight != $product['weight'] ) {
+					$identical = false;
+				}
+
+				if( empty( $volume ) ) {
+					$volume = $product['volume'];
+				} elseif ( $volume != $product['volume'] ) {
+					$identical = false;
+				}
+
+				// If everything is identical, we don't want to do anything
+				if ( $identical ) {
+					$skipped++;
+					$products_string .= $name . "\n";
+					continue;
+				}
+			} else {
+                // User "Ashley Packages"
+				$product_id = $this->p->create( 1477 );
+
+                // Make sure it's a unique slug
+                $slug = $this->unique_slug( $slug );
+
+				// Upload image if it's not blank
+				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
+
+					if ( !in_array( $image_name, $images ) )
+						$images[] = $image_name;
+				}
+
+				$price = $list_price = 0;
+				$publish_visibility = 'private';
+				$publish_date = date_time::date( 'Y-m-d' );
+
+				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+
+				// Add images
+				$this->p->empty_product_images( $product_id );
+
+				// Makes the images have the right sequence if they exist
+				if ( is_array( $images ) ) {
+					$j = 0;
+
+					foreach ( $images as &$image ) {
+						$image .= "|$j";
+						$j++;
+					}
+				}
+
+				$this->p->add_product_images( $images, $product_id );
+			}
+
+			// Update the product
+			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
+
+			// Add images
+			//$product_ids[] = (int) $product_id;
+
+			/* Makes the images have the right sequence if they exist
+			if ( is_array( $images ) ) {
+				$j = 0;
+
+				foreach ( $images as &$image ) {
+					$image .= "|$j";
+					$j++;
+				}
+			}
+
+			$this->commit_product_images( $images, $product_id );
+			*/
+
+			$products_string .= $name . "\n";
+
+			// We don't want to carry them around in the next loop
+			unset( $images );
+
+			if ( $i % 1000 == 0 ) {
+				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
+
+				foreach ( $links as $section => $link_array ) {
+					$message .= ucwords( str_replace( '-', ' ', $section ) ) . ": " . count( $link_array ) . "\n";
+				}
+
+				$message .= "\n\nSkipped: " . $skipped;
+
+				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
+			}
+			//$i++;
+
+		}
+    }
 
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
@@ -647,7 +918,7 @@ class Ashley extends Base_Class {
 		
 		return $product_id;
 	}
-	
+
 	/**
 	 * Upload image
 	 *
@@ -727,40 +998,24 @@ class Ashley extends Base_Class {
 		
 		return !$result;
 	}
-	
-	/**
-	 * Logs in
+
+    /**
+	 * Get Existing Products
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return true
+	 * @return array
 	 */
-	private function login() {
-		$this->curl->post( $this->login_url, $this->login_post_fields );
-		return true;
+	private function _get_existing_products() {
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return ar::assign_key( $products, 'sku' );
 	}
 
-	/**
-	 * Starts the timer, for debugging purposes.
-	 *
-	 * @since 1.0.0
-	 */
-	private function timer_start() {
-		$this->time_start = microtime( true );
-	}
-
-	/**
-	 * Stops the debugging timer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return int Total time spent on the query, in seconds
-	 */
-	private function scratchy_time() {
-		return microtime( true ) - $this->time_start;
-    }
-
-	
 	/**
 	 * Report an error
 	 *

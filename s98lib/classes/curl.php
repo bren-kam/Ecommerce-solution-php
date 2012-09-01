@@ -101,14 +101,15 @@ class curl {
 		} else {
 			$ch = curl_init();
 		}
-		
+
 		curl_setopt( $ch, CURLOPT_URL, $url );
 		
 		// Don't download content
 		curl_setopt( $ch, CURLOPT_NOBODY, 1 );
 		curl_setopt( $ch, CURLOPT_FAILONERROR, 1 );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		
+
 		$result = ( false !== curl_exec( $ch ) ) ? true : false;
 		
 		if ( $close )
