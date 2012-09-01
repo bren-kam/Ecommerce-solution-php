@@ -98,7 +98,7 @@ class Tickets extends Base_Class {
 		
 		// Techincal : Online Specialist
 		$assigned_to_user_id = ( $user['user']['role'] > 5 ) ? 493 : $user['website']['os_user_id']; 
-		
+
 		$result = $this->db->update( 'tickets', array( 'user_id' => $user['user_id'], 'assigned_to_user_id' => $assigned_to_user_id, 'website_id' => $user['website']['website_id'], 'summary' => stripslashes( $summary ), 'message' => htmlentities( nl2br( stripslashes( $message ) ) ), 'browser_name' => $this->b['name'], 'browser_version' => $this->b['version'], 'browser_platform' => $this->b['platform'], 'browser_user_agent' => $this->b['user_agent'], 'status' => 0 ), array( 'ticket_id' => $ticket_id ), 'iiissssssi', 'i' ); 
 		
 		// Handle any error
