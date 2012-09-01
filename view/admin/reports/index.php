@@ -17,7 +17,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     <div id="narrow-your-search">
         <?php
         nonce::field( 'autocomplete', '_autocomplete' );
-        nonce::field( 'store_session', '_store_session' );
+        nonce::field( 'search', '_search' );
         ?>
 
         <h2><?php echo _('Narrow Your Search'); ?></h2>
@@ -37,11 +37,15 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                         <option value="package"><?php echo _('Package'); ?></option>
                     </select>
                 </td>
-                <td><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Search...'); ?>" style="position: relative; top: 1px;" /></td>
+                <td>
+                    <div style="margin-right:18px">
+                        <input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Search...'); ?>" style="position: relative; top: 1px; width: 100%" />
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td>
-                    <select id="services">
+                    <select id="services" rel="<?php echo _('Service'); ?>">
                         <option value="">-- <?php echo _('Add Service'); ?> --</option>
                         <?php foreach ( $services as $k => $v ) { ?>
                             <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
@@ -50,6 +54,11 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                 </td>
                 <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
             </tr>
+            <tr>
+                <td>
+                    <div id="criteria"></div>
+                </td>
+            </tr>
         </table>
         </form>
     </div>
@@ -57,7 +66,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 
 <div id="subcontent-wrapper" class="narrow-your-search">
 <div id="subcontent">
-    <table id="table" class="hidden">
+    <table id="table" class="formatted">
         <thead>
             <tr>
                 <th><?php echo _('Title'); ?></th>
@@ -70,4 +79,11 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
         </tbody>
     </table>
 </div>
+</div>
+
+<div class="hidden">
+    <div class="criterion" id="criterion-template">
+        <span class="type" rel="[type-value]">[type-text]</span> - <span class="search" rel="[object-id]">[object-value]</span>
+        <a href="#" class="remove-criterion" title="<?php echo _('Remove'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Remove'); ?>"></a>
+    </div>
 </div>
