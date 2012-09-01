@@ -13,7 +13,7 @@ class Ashley_API {
 	 */
 	const URL_API = 'http://api.ashleyfurniture.com/';
     const URL_WSDL = 'http://api.ashleyfurniture.com/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL';
-	const DEBUG = false;
+	const DEBUG = true;
 
     /**
 	 * A few variables that will determine the basic status
@@ -301,13 +301,13 @@ class Ashley_API {
      * Display debug information
      */
     public function debug() {
-        echo "<h1>Method</h1>\n<p>" . $this->_method . "</p>\n<hr />\n<br /><br />\n";
-        echo "<h1>Request Headers</h1>\n<pre>", $this->_request_headers, "</pre>\n<hr />\n<br /><br />\n";
-        echo "<h1>Request</h1>\n\n<textarea style='width:100%;height:150px;' cols='50' rows='5'>", $this->_request, "</textarea>\n<hr />\n<br /><br />\n";
-        echo "<h1>Response Headers</h1>\n<pre>", $this->_response_headers, "</pre>\n<hr />\n<br /><br />\n";
-        echo "<h1>Raw Response</h1>\n<textarea style='width:100%;height:300px;' cols='50' rows='5'>", $this->_raw_response, "</textarea>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Method</h1>\n<p>" . $this->_method . "</p>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Request Headers</h1>\n<pre>", $this->_request_headers, "</pre>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Request</h1>\n\n<textarea style='width:100%;height:150px;' cols='50' rows='5'>", $this->_request, "</textarea>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Response Headers</h1>\n<pre>", $this->_response_headers, "</pre>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Raw Response</h1>\n<textarea style='width:100%;height:300px;' cols='50' rows='5'>", $this->_raw_response, "</textarea>\n<hr />\n<br /><br />\n";
         echo "<h1>Full Response</h1>\n<pre>", var_export( $this->_full_response, true ), "</pre>\n<hr />\n<br /><br />\n";
-        echo "<h1>Response</h1>\n<pre>", var_export( $this->_response, true ), "</pre>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Response</h1>\n<pre>", var_export( $this->_response, true ), "</pre>\n<hr />\n<br /><br />\n";
     }
 
 	/**

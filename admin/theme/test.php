@@ -4,7 +4,9 @@
 
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
-fn::info( $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) ) );
+$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
+
+exit;
 /*$packages = $a->get_packages();
 
 $i = 0;
