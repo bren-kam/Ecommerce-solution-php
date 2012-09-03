@@ -182,7 +182,6 @@ class SQL {
 
             if ( $this->m->connect_error ) {
                 $this->bail( sprintf( "
->>>>>>> hotfix-1.4.2.1
 <h1>Error establishing a database connection</h1>
 <p>This either means that the username and password information is incorrect or we can't contact the database server at <code>%s</code>. This could mean your host's database server is down. The connection error is:\n%s</p>
 <ul>

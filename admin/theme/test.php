@@ -4,11 +4,11 @@
 
 library('ashley-api/ashley-api');
 $a = new Ashley_API();
-$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
+//$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
 
-exit;
-/*$packages = $a->get_packages();
+$packages = $a->get_packages();
 
+fn::info( $packages );
 $i = 0;
 foreach ( $packages as $package ) {
     $i++;
@@ -16,7 +16,6 @@ foreach ( $packages as $package ) {
         continue;
     fn::info( $package );exit;
 }
->>>>>>> feature-new-ashley-feed
 exit;
 /*
 // Load the library
