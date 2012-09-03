@@ -87,9 +87,23 @@ class Ashley extends Base_Class {
         // Any new products get al ink
         $links = array();
 
+        // Set it so we can use fputcsv
+        $outstream = fopen("php://output", 'w');
+        header("Content-type: application/octet-stream");
+header('Content-Disposition: attachment; filename="' . format::slug( $user['website']['title'] ) . '-email-subscribers.csv"');
+
+        // Set up the head section
+        fputcsv( $outstream, array( 'Name', 'Description' ) );
+
         foreach ( $packages as $item ) {
+            // Ensure that we can keep running
+            //echo '                                                   ';
+            set_time_limit(30);
+			flush();
+
             // We don't care if they don't have an image
-            if ( empty( $item->Image ) || !curl::check_file( self::IMAGE_URL . $item->Image ) ) {
+            if ( empty( $item->PackageDescription ) || 'NoTempl' == $item->PackageDescription || empty( $item->Image ) ) {
+                //|| !curl::check_file( self::IMAGE_URL . $item->Image )
                 $skipped++;
                 continue;
             }
@@ -97,13 +111,9 @@ class Ashley extends Base_Class {
             // Count how many products we're dealing with
 			$i++;
 
-            // Ensure that we can keep running
-            echo '                                                   ';
-            set_time_limit(30);
-			flush();
-
             // Start collecting data
-			$name = $item->SeriesName . ' ' . $item->SeriesColor . ' ' . $package_templates[$item->TemplateId];
+			$name = trim( $item->SeriesName . ' ' . $item->SeriesColor . ' ' . $package_templates[$item->TemplateId] );
+
 			$slug = str_replace( '---', '-', format::slug( $name ) );
             $sku = $item->PackageId;
 			$image = $item->Image;
@@ -111,7 +121,7 @@ class Ashley extends Base_Class {
 
             // Set item description
 			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
-			$description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
+            $description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
 
             // Will have to format this
 			$product_specs = $this->_package_descriptions[$item->PackageDescription];
@@ -124,6 +134,7 @@ class Ashley extends Base_Class {
 			////////////////////////////////////////////////
 			// Get/Create the product
 			if( array_key_exists( $sku, $existing_products ) ) {
+                continue;
 				$identical = true;
                 
 				$product = $products[$sku];
@@ -220,7 +231,8 @@ class Ashley extends Base_Class {
 					$products_string .= $name . "\n";
 					continue;
 				}
-			} else {
+			} else if ( 1==2 ) {
+
                 // User "Ashley Packages"
 				$product_id = $this->p->create( 1477 );
 
@@ -258,7 +270,7 @@ class Ashley extends Base_Class {
 			}
 
 			// Update the product
-			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
+			//$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
 
 			// Add images
 			//$product_ids[] = (int) $product_id;
@@ -276,7 +288,8 @@ class Ashley extends Base_Class {
 			$this->commit_product_images( $images, $product_id );
 			*/
 
-			$products_string .= $name . "\n";
+            fputcsv( $outstream, array( $name, $item->PackageDescription ) );
+			//$products_string .= $name . ">" . $item->PackageDescription . "\n";
 
 			// We don't want to carry them around in the next loop
 			unset( $images );
@@ -293,8 +306,11 @@ class Ashley extends Base_Class {
 				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
 			}
 			//$i++;
-
 		}
+
+        echo $products_string;
+
+        fclose( $outstream );
     }
 
 	/**

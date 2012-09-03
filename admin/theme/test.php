@@ -1,14 +1,13 @@
 <?php
-//$a = new Ashley();
-//$a->load_packages();
+$a = new Ashley();
+$a->load_packages();
 
-library('ashley-api/ashley-api');
-$a = new Ashley_API();
+//library('ashley-api/ashley-api');
+//$a = new Ashley_API();
 //$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
-
+/*
 $packages = $a->get_packages();
 
-fn::info( $packages );
 $i = 0;
 foreach ( $packages as $package ) {
     $i++;

@@ -13,7 +13,7 @@ class Ashley_API {
 	 */
 	const URL_API = 'http://api.ashleyfurniture.com/';
     const URL_WSDL = 'http://api.ashleyfurniture.com/Ashley.ProductKnowledge.Maintenance.NewService/Services/ProductKnowledgeService.asmx?WSDL';
-	const DEBUG = true;
+	const DEBUG = false;
 
     /**
 	 * A few variables that will determine the basic status

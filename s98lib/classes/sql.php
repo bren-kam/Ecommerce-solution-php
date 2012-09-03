@@ -168,20 +168,25 @@ class SQL {
 		if ( defined('DB_COLLATE') )
 			$this->collate = DB_COLLATE;
 
-        require '/gsr/systems/db.php';
-
-		$this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
-
-		if ( $this->m->connect_error ) {
-            // Switch to Slave
-            unlink('/gsr/systems/db.php');
-            symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
+         if ( stristr( $_SERVER['DOCUMENT_ROOT'], '/gsr/systems/' ) ) {
             require '/gsr/systems/db.php';
 
             $this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
 
             if ( $this->m->connect_error ) {
-                $this->bail( sprintf( "
+                // Switch to Slave
+                unlink('/gsr/systems/db.php');
+                symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
+                require '/gsr/systems/db.php';
+
+                $this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
+            }
+         } else {
+             $this->m = new mysqli( 'localhost', 'imaginer_admin', 'rbDxn6kkj2e4', 'imaginer_system' );
+        }
+
+        if ( $this->m->connect_error ) {
+            $this->bail( sprintf( "
 <h1>Error establishing a database connection</h1>
 <p>This either means that the username and password information is incorrect or we can't contact the database server at <code>%s</code>. This could mean your host's database server is down. The connection error is:\n%s</p>
 <ul>
@@ -190,13 +195,12 @@ class SQL {
     <li>Are you sure that the database server is running?</li>
 </ul>
 <p>If you're unsure what these terms mean you should probably contact your host.</p>
-", $db_host, mysqli_connect_error() ) );
+", 'localhost', mysqli_connect_error() ) );
                 return;
-            }
-		}
+        }
 
 		$this->ready = true;
-		
+
 		if ( !empty( $this->charset ) )
 			$this->m->set_charset( $this->charset );
 	}
