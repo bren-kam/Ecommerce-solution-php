@@ -28,9 +28,9 @@ class AttributeItemTest extends BaseDatabaseTest {
     /**
      * Test Getting all attribute items for an attribute
      */
-    public function testGetAll() {
+    public function testGetByAttribute() {
         $attribute_id = 2;
-        $attribute_items = $this->attribute_item->get_all( $attribute_id );
+        $attribute_items = $this->attribute_item->get_by_attribute( $attribute_id );
 
         $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
         $this->assertEquals( count( $attribute_items ), 13 );

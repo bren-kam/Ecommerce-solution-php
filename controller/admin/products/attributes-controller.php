@@ -43,7 +43,7 @@ class AttributesController extends BaseController {
             $attribute->get( $attribute_id );
 
             $attribute_item = new AttributeItem();
-            $attribute_items = $attribute_item->get_all( $attribute_id );
+            $attribute_items = $attribute_item->get_by_attribute( $attribute_id );
         } else {
             $attribute_items = array();
         }

@@ -3,6 +3,9 @@ class AttributeItem extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $attribute_item_id, $attribute_id, $name, $sequence;
 
+    // Columns from other tables
+    public $title;
+
     /**
      * Setup the initial data
      */
@@ -29,16 +32,43 @@ class AttributeItem extends ActiveRecordBase {
     }
 
     /**
+     * Get all attribute_items
+     *
+     * @return array
+     */
+    public function get_all() {
+        return $this->get_results(
+            'SELECT ai.`attribute_item_id`, ai.`name`, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` )'
+            , PDO::FETCH_CLASS
+            , 'AttributeItem'
+        );
+    }
+
+    /**
      * Get all attribute items for an attribute
      *
      * @param int $attribute_id
      * @return array
      */
-    public function get_all( $attribute_id ) {
+    public function get_by_attribute( $attribute_id ) {
         return $this->prepare(
             'SELECT `attribute_item_id`, `name` FROM `attribute_items` WHERE `attribute_id` = :attribute_id ORDER BY `sequence` ASC'
             , 's'
             , array( ':attribute_id' => $attribute_id )
+        )->get_results( PDO::FETCH_CLASS, 'AttributeItem' );
+    }
+
+    /**
+     * Get all attribute items by a product_id
+     *
+     * @param int $product_id
+     * @return array
+     */
+    public function get_by_product( $product_id ) {
+        return $this->prepare(
+            'SELECT ai.`attribute_item_id`, ai.`attribute_id`, ai.`name`, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attribute_item_relations` AS air ON ( ai.`attribute_item_id` = air.`attribute_item_id` ) INNER JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` ) WHERE air.`product_id` = :product_id'
+            , 's'
+            , array( ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'AttributeItem' );
     }
 

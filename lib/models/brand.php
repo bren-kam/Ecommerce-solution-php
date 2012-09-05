@@ -29,6 +29,15 @@ class Brand extends ActiveRecordBase {
     }
 
     /**
+     * Get All
+     *
+     * @return array
+     */
+    public function get_all() {
+        return $this->get_results( 'SELECT * FROM `brands` ORDER BY `name`', PDO::FETCH_CLASS, 'Brand' );
+    }
+
+    /**
      * Get Relations
      *
      * @return array

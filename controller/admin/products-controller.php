@@ -37,6 +37,63 @@ class ProductsController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Add/Edit a Product
+     *
+     * @return TemplateResponse
+     */
+    protected function add_edit() {
+        // Determine if we're adding or editing the product
+        $product_id = ( isset( $_GET['pid'] ) ) ? (int) $_GET['pid'] : false;
+
+        $product = new Product;
+        $industry = new Industry();
+        $brand = new Brand();
+        $category = new Category();
+        $attribute_item = new AttributeItem();
+        $tag = new Tag();
+
+        // Get variables
+
+        if ( $product_id ) {
+            // If we're editing a product
+            $product->get( $product_id );
+            $product_attribute_items = $attribute_item->get_by_product( $product_id );
+            $tags = $tag->get_value_by_type( 'product', $product_id );
+            $title = _('Edit');
+            $date = new DateTime( $product->publish_date );
+        } else {
+            $product_attribute_items = $tags = array();
+            $title = _('Add');
+            $date = new DateTime();
+        }
+
+        $industries = $industry->get_all();
+        $brands = $brand->get_all();
+        $categories = $category->sort_by_hierarchy();
+        $attribute_items_array = $attribute_item->get_all();
+
+
+        // Add on an associative aspect
+        $attribute_items = array();
+
+        foreach ( $attribute_items_array as $aia ) {
+            $attribute_items[$aia->title][] = $aia;
+        }
+
+        $template_response = $this->get_template_response( 'add-edit' )
+            ->select( 'products', 'add' )
+            ->add_title( $title )
+            ->set( compact( 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'product_attribute_items' ) );
+
+        $this->resources
+            ->javascript('products/add-edit')
+            ->css('products/add-edit')
+            ->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
+
+        return $template_response;
+    }
+
     /***** REDIRECTS *****/
 
     /**

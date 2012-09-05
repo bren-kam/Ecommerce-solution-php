@@ -1,10 +1,10 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $name, $sku, $status, $publish_visibility, $publish_date;
+    public $id, $product_id, $name, $sku, $status, $product_specifications, $publish_visibility, $publish_date;
 
     // Columns from other tables
-    public $brand;
+    public $brand, $category_id;
 
     /**
      * Setup the account initial data
@@ -23,8 +23,8 @@ class Product extends ActiveRecordBase {
      * @param int $product_id
      */
     public function get( $product_id ) {
-		$this->prepare(
-            'SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`website_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, c.`contact_name` AS created_user, d.`contact_name` AS updated_user, e.`title` AS website FROM `products` AS a LEFT JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `users` AS c ON ( a.`user_id_created` = c.`user_id` ) LEFT JOIN `users` AS d ON ( a.`user_id_modified` = d.`user_id` ) LEFT JOIN `websites` AS e ON ( a.`website_id` = e.`website_id` ) WHERE a.`product_id` = :product_id'
+        $this->prepare(
+            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`product_id` = :product_id GROUP BY p.`product_id`'
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_row( PDO::FETCH_INTO, $this );
