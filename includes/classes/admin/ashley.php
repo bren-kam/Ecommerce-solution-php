@@ -18,7 +18,130 @@ class Ashley extends Base_Class {
      * Hold Ashley Package Description translations
      * @var array
      */
-    private $_package_descriptions = array();
+    private $_package_descriptions = array(
+        'A' => 'Armoire'
+        , 'B' => 'Bed'
+        , 'BAR 2 BS' => 'Bar, 2 Bar Stools'
+        , 'BB' => 'Bunk Bed'
+        , 'BB D M' => 'Bunk Bed, Dresser, Mirror'
+        , 'BBTF' => 'Bunk Bed - Twin/Full'
+        , 'BBTF D M' => 'Bunk Bed - Twin/Full, Dresser, Mirror'
+        , 'BBTF D M 1N' => 'Bunk Bed, Dresser, Mirror, 1NS'
+        , 'BBTF D M C' => 'Bunk Bed, Dresser, Mirror, Chest'
+        , 'BBTT' => 'Bunk Bed - Twin/Twin'
+        , 'BBTT D M' => 'Bunk Bed - Twin/Twin, Dresser, Mirror'
+        , 'BK' => 'Bookcase'
+        , 'BS' => 'Bar Stools'
+        , 'C' => 'Desk Chair'
+        , 'CK' => 'Cal King Bed'
+        , 'CK D M' => 'Cal King Bed, Dresser, Mirror'
+        , 'CK D M A' => 'Cal King, Dresser, Mirror, Armoire'
+        , 'CK D M C' => 'Cal King, Dresser, Mirror, Chest'
+        , 'CK D M N' => 'Cal King, Dresser, Mirror, 1NS'
+        , 'D' => 'Dresser'
+        , 'D C' => 'Desk, Chair'
+        , 'D H' => 'Desk, Hutch'
+        , 'D M' => 'Dresser, Mirror'
+        , 'D T' => 'Desk and Top - Roll Top / Hutch top'
+        , 'DB' => 'Day Bed'
+        , 'DB D M' => 'DayBed, Dresser, Mirror'
+        , 'DB WT' => 'Day Bed w/Trundle'
+        , 'ENT' => 'Entertainment Center'
+        , 'F CPT 2 SS' => 'Full Capt Bed, Storage 2 Sides'
+        , 'F CPT wS' => 'Full Captain Storage Bed'
+        , 'FB' => 'Full Bed'
+        , 'FB D M' => 'Full Bed, Dresser, Mirror'
+        , 'FB D M C' => 'Full Bed, Dresser, Mirror, Chest'
+        , 'FB T' => 'Full Bed w/ Trundle'
+        , 'FB WTDM' => 'Full Bed w/Trundle, Dresser,Mirror'
+        , 'FBS' => 'Full Bed w/ Storage'
+        , 'FBS D M' => 'Full Bed w/ Storage, Dresser, Mirror'
+        , 'FFB DM' => 'Full/Full Bunk, Dresser, Mirror'
+        , 'FH D M' => 'Full Hdbd, Dresser, Mirror'
+        , 'H D M' => 'HdBd, Dresser, Mirror'
+        , 'H D M C' => 'HdBd, Dresser, Mirror, Chest'
+        , 'KB' => 'K Bed'
+        , 'KB D M' => 'K Bed, Dresser, Mirror'
+        , 'KB D M A' => 'K Bed, Dresser, Mirror, Armoire'
+        , 'KB D M A 2N' => 'KBed,Dressr,Mirror,Armr,2NS'
+        , 'KB D M C' => 'K Bed, Dresser, Mirror, Chest'
+        , 'KB D M C 2N' => 'KBed,Dressr,Mrror,Chest,2NS'
+        , 'KB D M N' => 'K Bed, Dresser, Mirror, 1 NS'
+        , 'KB S' => 'King Bed w/Storage'
+        , 'KM' => 'King Metal Bed'
+        , 'LB' => 'Loft Bed'
+        , 'LF RF' => 'LAFSectional,RAFSectional'
+        , 'LF RF W' => 'LAF, RAF, Wdge'
+        , 'MC' => 'Media Chest'
+        , 'P 2B 2BS' => 'Pub / Breakfast Table, 2 Benches, 2 Bar Stools'
+        , 'P 2BS' => 'Pub / Breakfast Table, 2 Bar Stools'
+        , 'P 2BS 2DBS CS' => 'Pub Table, 2 Bar Stools, 2 Double Bar Stools, Corner Stool'
+        , 'P 2DBS CS' => 'Pub Table / 2 Dbl Bar Stools / Corner Stool'
+        , 'P 3BS' => 'Pub/Breakfast Table, 3 Bar Stools'
+        , 'P 4BS' => 'Pub / Breakfast Table, 4 Bar Stools'
+        , 'P 5BS' => 'Pub/Breakfast Table, 5 Bar Stools'
+        , 'P 6BS' => 'Pub / Breakfast Table, 6 Bar Stools'
+        , 'P B 4BS' => 'Pub / Breakfast Table, Bench, 4 Bar Stools'
+        , 'Q' => 'Q Bed'
+        , 'Q wS' => 'Q Bed w/Storage'
+        , 'Q wS DM' => 'Q Bed w/Storage, Dresser, Mirror'
+        , 'QB D M' => 'Q Bed, Dresser, Mirror'
+        , 'QB D M 2N' => 'Q Bed, Dresser, Mirror, 2NS'
+        , 'QB D M A' => 'Q Bed, Dresser, Mirror, Armoire'
+        , 'QB D M A 2N' => 'QBed,Dressr,Mirror,Armr,2NS'
+        , 'QB D M C' => 'Q Bed, Dresser, Mirror, Chest'
+        , 'QB D M C 2N' => 'QBed,Dressr,Mrror,Chest,2NS'
+        , 'QB D M C NS' => 'Q Bed, Dresser, Mirror, Chest, 1NS'
+        , 'QB D M N' => 'Q Bed, Dresser, Mirror, 1NS'
+        , 'QH' => 'Q Hdbd'
+        , 'QH D M' => 'Q Hdbd, Dresser, Mirror'
+        , 'QH D M 1N' => 'Q HdBd, Dresser, Mirror, 1NS'
+        , 'QH D M 2N' => 'Q HdBd, Dresser, Mirror, 2NS'
+        , 'QH D M C' => 'Q Hdbd, Dresser, Mirror, Chest'
+        , 'QH D M C 1N' => 'Q Hdbd, Dresser, Mirror, Chest, 1NS'
+        , 'QM' => 'Queen Metal Bed'
+        , 'RS' => 'Recl Sofa'
+        , 'RS L' => 'Rec Sofa, LoveSeat'
+        , 'RS RL' => 'Rec Sofa, Rec LoveSeat'
+        , 'RS RL W' => 'Rec Sofa, Rec LoveSeat, Wdge'
+        , 'S' => 'Sofa'
+        , 'S L' => 'Sofa, Love Seat'
+        , 'S L C' => 'Sofa, Love Seat, Chair'
+        , 'S L R' => 'Sofa, Love Seat, Reclining Chair'
+        , 'S SL C' => 'Sofa, Sleeper, Chair'
+        , 'SP' => 'Storage Piece'
+        , 'SPH 2N' => 'SprdHdBd, 2 NS'
+        , 'SYS' => 'System'
+        , 'T' => 'Dining Table'
+        , 'T 2S' => 'Table, 2 Sides'
+        , 'T 2S 2DC' => 'Table, 2 Sides, 2 Double Chairs'
+        , 'T 2S 2DC CC' => 'Table, 2 Sides, 2 Double Chairs, Corner Chair'
+        , 'T 2S B' => 'Table, 2 Sides, Bench'
+        , 'T 4BS' => 'Butterfly Table, 4 Barstools'
+        , 'T 4S' => 'Table, 4 Sides'
+        , 'T 4S 2A' => 'Table, 4 Sides, 2 Arms'
+        , 'T 4S 2A SP' => 'Table, 4 Sides, 2 Arms, Storage'
+        , 'T 4S B' => 'Table, 4 Sides, Bench'
+        , 'T 4S SP' => 'Table, 4 Sides, Storage'
+        , 'T 6S' => 'Table, 6 Sides'
+        , 'T 6S B' => 'Table, 6 Sides, Bench'
+        , 'T 6S SP' => 'Table, 6 Sides, Storage'
+        , 'T 8S' => 'Table, 8 Sides'
+        , 'T CAP wS' => 'Twin Captain Storage Bed'
+        , 'TB' => 'Twin Bed'
+        , 'TB D M' => 'Twin Bed, Dresser, Mirror'
+        , 'TB D M C' => 'Twin Bed, Dresser, Mirror, Chest'
+        , 'TB D M N' => 'Twin Bed, Dresser, Mirror, NS'
+        , 'TB WT' => 'Twin Bed w/Trundle'
+        , 'TB WTDM' => 'Twin Bed w/Trundle, Dresser,Mirror'
+        , 'TBS' => 'Twin Bed w/ Storage'
+        , 'TBS D M' => 'Twin Bed w/ Storage, Dresser, Mirror'
+        , 'TH D M' => 'Twin Hdbd, Dresser, Mirror'
+        , 'TH D M C' => 'Twin Hdbd, Dresser, Mirror, Chest'
+        , 'TL' => 'Table Lamp'
+        , 'TV' => 'TV Stand'
+        , 'WS' => 'Wall System'
+    );
 
 	/**
 	 * Creates new Database instance
@@ -55,6 +178,7 @@ class Ashley extends Base_Class {
      * Load Packages
      */
     public function load_packages() {
+
         // Sets who is updating the products
         global $user;
         $user['user_id'] = 1477;
@@ -87,17 +211,9 @@ class Ashley extends Base_Class {
         // Any new products get al ink
         $links = array();
 
-        // Set it so we can use fputcsv
-        $outstream = fopen("php://output", 'w');
-        header("Content-type: application/octet-stream");
-header('Content-Disposition: attachment; filename="' . format::slug( $user['website']['title'] ) . '-email-subscribers.csv"');
-
-        // Set up the head section
-        fputcsv( $outstream, array( 'Name', 'Description' ) );
-
         foreach ( $packages as $item ) {
             // Ensure that we can keep running
-            //echo '                                                   ';
+            echo '                                                   ';
             set_time_limit(30);
 			flush();
 
@@ -112,7 +228,15 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 			$i++;
 
             // Start collecting data
-			$name = trim( $item->SeriesName . ' ' . $item->SeriesColor . ' ' . $package_templates[$item->TemplateId] );
+			$name = $item->SeriesName;
+
+            if ( !stristr( $name, $item->SeriesColor ) )
+                $name .= ' ' . $item->SeriesColor;
+
+            if ( !empty( $package_templates[$item->TemplateId] ) )
+                $name .= ' ' . $package_templates[$item->TemplateId];
+
+            $name .= ' - ' . $this->_package_descriptions[(string)$item->PackageDescription];
 
 			$slug = str_replace( '---', '-', format::slug( $name ) );
             $sku = $item->PackageId;
@@ -120,9 +244,10 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 			$weight = $volume = 0;
 
             // Set item description
-			$item_description = $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
+			$item_description = $this->_package_descriptions[(string)$item->PackageDescription] . '<br /><br />' . $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
             $description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
 
+            echo $name . '<br />' . $item_description;exit;
             // Will have to format this
 			$product_specs = $this->_package_descriptions[$item->PackageDescription];
 
@@ -134,7 +259,6 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 			////////////////////////////////////////////////
 			// Get/Create the product
 			if( array_key_exists( $sku, $existing_products ) ) {
-                continue;
 				$identical = true;
                 
 				$product = $products[$sku];
@@ -231,7 +355,7 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 					$products_string .= $name . "\n";
 					continue;
 				}
-			} else if ( 1==2 ) {
+			} else {
 
                 // User "Ashley Packages"
 				$product_id = $this->p->create( 1477 );
@@ -270,10 +394,10 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 			}
 
 			// Update the product
-			//$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
+			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
 
 			// Add images
-			//$product_ids[] = (int) $product_id;
+			$product_ids[] = (int) $product_id;
 
 			/* Makes the images have the right sequence if they exist
 			if ( is_array( $images ) ) {
@@ -288,8 +412,7 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 			$this->commit_product_images( $images, $product_id );
 			*/
 
-            fputcsv( $outstream, array( $name, $item->PackageDescription ) );
-			//$products_string .= $name . ">" . $item->PackageDescription . "\n";
+			$products_string .= $name . ">" . $item->PackageDescription . "\n";
 
 			// We don't want to carry them around in the next loop
 			unset( $images );
@@ -309,8 +432,6 @@ header('Content-Disposition: attachment; filename="' . format::slug( $user['webs
 		}
 
         echo $products_string;
-
-        fclose( $outstream );
     }
 
 	/**
