@@ -33,14 +33,16 @@
 /* Product Specifications */
 #tProductSpecifications td { padding-right: 0 !important; }
 #tAddSpecName, #taAddSpecValue { width: 88px !important; }
-#taAddSpecValue { height: 19px; padding: 6px 8px 7px; }
+#taAddSpecValue { height: 19px; padding: 8px 8px 5px; }
 #tdValue * { position: relative; bottom: 1px }
+#product-specs-list { cursor: ns-resize }
 
 /* Attributes */
 #sAttributes { height: 170px }
 
 /* Lists */
-#right .item { padding: 10px 24px 10px 8px; position: relative; line-height: 17px; }
+#right .item, .list-item-placeholder { padding: 10px 24px 10px 8px; position: relative; line-height: 17px; }
+.list-item-placeholder { border: 1px dashed #B2B2B2 }
 #right .item.even { background-color: #fff }
 #right .item a { position: absolute; right: 7px; top: 9px; }
 
@@ -51,3 +53,9 @@
 /* Slug */
 #dProductSlug { margin-top: 9px; margin-bottom:10px; display:block; font-size: 12px; }
 #tProductSlug { width: 100px; font-size: 12px; height: 15px; padding: 5px 8px; color: #4B4F51  }
+
+/* Images */
+.image, .image-placeholder { width: 206px; height: 237px; float: left; margin-right: 10px; }
+.image img { border: 3px solid #DADFE3 }
+.image p {text-align: center; margin-top: 5px }
+.image-placeholder { width: 200px; height: 200px; border: 1px dashed #B2B2B2 }

@@ -37,7 +37,7 @@ class ReportsController extends BaseController {
         $this->resources
             ->javascript('reports/index')
             ->css('reports/index')
-            ->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
+            ->css_url( Config::resource('jquery-ui') );
 
         return $template_response;
     }

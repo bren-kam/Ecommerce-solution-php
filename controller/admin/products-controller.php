@@ -32,7 +32,7 @@ class ProductsController extends BaseController {
             ->set( compact( 'categories', 'product_users' ) );
 
         $this->resources->javascript('products/list');
-        $this->resources->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
+        $this->resources->css_url( Config::resource('jquery-ui') );
 
         return $template_response;
     }
@@ -58,38 +58,48 @@ class ProductsController extends BaseController {
         if ( $product_id ) {
             // If we're editing a product
             $product->get( $product_id );
+
+            $product_images = $product->get_images();
             $product_attribute_items = $attribute_item->get_by_product( $product_id );
+
             $tags = $tag->get_value_by_type( 'product', $product_id );
-            $title = _('Edit');
             $date = new DateTime( $product->publish_date );
+
+            $title = _('Edit');
         } else {
             $product_attribute_items = $tags = array();
-            $title = _('Add');
+
             $date = new DateTime();
+
+            $title = _('Add');
         }
 
-        $industries = $industry->get_all();
+        $industries_array = $industry->get_all();
         $brands = $brand->get_all();
         $categories = $category->sort_by_hierarchy();
         $attribute_items_array = $attribute_item->get_all();
 
 
         // Add on an associative aspect
-        $attribute_items = array();
+        $attribute_items = $industries = array();
 
         foreach ( $attribute_items_array as $aia ) {
             $attribute_items[$aia->title][] = $aia;
         }
 
+        foreach ( $industries_array as $industry ) {
+            $industries[$industry->id] = $industry;
+        }
+
         $template_response = $this->get_template_response( 'add-edit' )
             ->select( 'products', 'add' )
             ->add_title( $title )
-            ->set( compact( 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'product_attribute_items' ) );
+            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items' ) );
 
         $this->resources
-            ->javascript('products/add-edit')
+            ->javascript( 'fileuploader', 'products/add-edit' )
             ->css('products/add-edit')
-            ->css_url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/ui-lightness/jquery-ui.css' );
+            ->css_url( Config::resource('jquery-ui') );
 
         return $template_response;
     }
@@ -115,6 +125,32 @@ class ProductsController extends BaseController {
     }
 
     /***** AJAX *****/
+
+    /**
+     * Create a product
+     *
+     * @return AjaxResponse
+     */
+    public function create() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get the user
+        $product = new Product();
+        $product->create( 0, $this->user->id );
+
+        // Change Form
+        jQuery('#fAddEditProduct')->attr( 'action', url::add_query_arg( 'pid', $product->id, '' ) );
+        jQuery('#hProductId')->val( $product->id );
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
 
     /**
      * List Accounts

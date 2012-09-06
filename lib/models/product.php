@@ -1,7 +1,7 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $name, $sku, $status, $product_specifications, $publish_visibility, $publish_date;
+    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date;
 
     // Columns from other tables
     public $brand, $category_id;
@@ -30,6 +30,36 @@ class Product extends ActiveRecordBase {
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->product_id;
+    }
+
+    /**
+     * Get Images
+     *
+     * @return array
+     */
+    public function get_images() {
+        return $this->prepare(
+            "SELECT `image` FROM `product_images` WHERE `product_id` = :product_id AND `image` <> '' ORDER BY `sequence`"
+            , 's'
+            , array( ':product_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
+     * Create
+     *
+     * @param int $website_id
+     * @param int $user_id
+     */
+    public function create( $website_id, $user_id ) {
+        $this->insert( array(
+            'website_id' => $website_id
+            , 'user_id_created' => $user_id
+            , 'publish_visibility' => 'deleted'
+            , 'date_created' => dt::date('Y-m-d H:i:s')
+        ), 'iiss' );
+
+        $this->id = $this->product_id = $this->get_insert_id();
     }
 
     /**

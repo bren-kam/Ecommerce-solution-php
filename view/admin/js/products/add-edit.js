@@ -1,5 +1,30 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', '/js2/?f=jquery.form', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+    // Make the form verify that the images is a proper field
+	$('#fAddEditProduct').submit( function() {
+		if ( 'public' == $('#sStatus').val() && ( $('#images-list .image') ).length < 1 ) {
+			alert( $(this).attr('err') );
+			return false;
+		}
+	});
+
+    // Trigger the check to make sure the slug is available
+	$('#tName').change( function() {
+		if ( $(this).attr('tmpval') == $(this).val() || '' == $(this).val().replace(/\s/g, '') )
+            return;
+
+        // Get slugs
+        var tProductSlug = $('#tProductSlug');
+
+        // Change slug
+        if ( '' == tProductSlug.val() )
+            tProductSlug.val( $(this).val().slug() );
+
+        // Create the product ID
+        if ( '' == $('#fAddEditProduct').attr('action') )
+            $.post( '/products/create/', { _nonce : $('#_create_product').val() }, ajaxResponse , 'json');
+	});
+
     // Date Picker
 	$('#tPublishDate').datepicker({
 		dateFormat: 'MM d, yy'
@@ -12,14 +37,35 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         applyListClasses( $(this) );
     });
 
+    // Make Specs sortable
+    $('#product-specs-list').sortable({
+        forcePlaceholderSize : true
+        , placeholder: 'list-item-placeholder'
+        , update: function() {
+            applyListClasses( $('#product-specs-list') );
+        }
+    });
+
+    // Make Images sortable
+    $('#images-list').sortable({
+        forcePlaceholderSize : true
+        , placeholder: 'image-placeholder'
+    });
+
     // The 'Add Spec' button
     $('#add-product-spec').click( function() {
         var tAddSpecName = $('#tAddSpecName'), specName = tAddSpecName.val().trim().replace( /[|`]/g, ''), tmpSpecName = tAddSpecName.attr('tmpval');
         var taAddSpecValue = $('#taAddSpecValue'), specValue = taAddSpecValue.val().trim().replace( /[|`]/g, ''), tmpSpecValue = taAddSpecValue.attr('tmpval');
         var productSpecsList = $('#product-specs-list'), productSpecTemplate = $('#product-spec-template');
 
+        if ( tmpSpecName == specName )
+            specName = '';
+
+        if ( tmpSpecValue == specValue )
+            specValue = '';
+
 		// ake sure it's a valid entry
-		if ( tmpSpecName == specName || '' == specName || tmpSpecValue == specValue || '' == specValue )
+		if ( '' == specName && '' == specValue )
 			return;
 
 		var values = specValue.split( /\n/ );
@@ -36,7 +82,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
                     .text( specName )
                     .end()
                 .find('div.specification-value')
-                    .text( specValue );
+                    .text( specValue )
+                    .end()
+                .find('input:first')
+                    .val( specName + '|' + specValue );
 
 			productSpecsList.append( newProductSpec );
 		}
@@ -117,6 +166,37 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 
         // Make it look good
         applyListClasses( list );
+    });
+
+    // Make Images delete work
+    $('#images-list').on( 'click', 'a.delete', function() {
+        if ( confirm( $(this).attr('confirm') ) )
+            $(this).parent().parent().remove();
+    });
+
+    // Setup File Uploader
+    var uploader = new qq.FileUploader({
+        action: '/products/upload-image/'
+        , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
+        , element: $('#upload-image')[0]
+        , sizeLimit: 6144000 // 6 mb's
+        , onSubmit: function( id, fileName ) {
+            uploader.setParams({
+                _nonce : $('#_upload_image').val()
+                , pid : $('#hProductId').val()
+                , iid : $('#sIndustry').val()
+            })
+        }
+        , onComplete: function( id, fileName, responseJSON ) {
+            ajaxResponse( responseJSON );
+        }
+    });
+
+    /**
+     * Make the uploader work
+     */
+    $('#aUpload').click( function() {
+        $('#upload-image input:first').click();
     })
 });
 
@@ -124,3 +204,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 function applyListClasses( list ) {
     $('.item', list).removeClass('even').filter(':even').addClass('even');
 }
+
+// Turns text into a slug
+String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); }

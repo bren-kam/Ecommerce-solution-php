@@ -7,6 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var bool|int $product_id
  * @var Product $product
  * @var array $brands
  * @var array $industries
@@ -15,20 +16,23 @@
  * @var array $attribute_items
  * @var array $product_attribute_items
  * @var array $tags
+ * @var array $product_images
  */
 
 $title = ( $product->id ) ? _('Edit') : _('Add');
 $title .= ' ' . _('Product');
 
 echo $template->start( $title );
+nonce::field( 'create', '_create_product' );
+nonce::field( 'upload_image', '_upload_image' );
 ?>
 
-<form name="fAddEditProduct" id="fAddEditProduct" action="" method="post">
+<form name="fAddEditProduct" id="fAddEditProduct" action="" method="post" err="<?php echo _('Products require at least one image to publish'); ?>">
     <div id="right">
         <div class="box">
             <h2><?php echo _('Publish'); ?></h2>
             <div class="content">
-                <select name="sStatus">
+                <select name="sStatus" id="sStatus">
                 <?php
                 $visibilities = array(
                     'public' => _('Public')
@@ -83,23 +87,17 @@ echo $template->start( $title );
                         if ( !$specifications )
                             $specifications = @unserialize( html_entity_decode( $product->product_specifications, ENT_QUOTES, 'UTF-8' ) );
 
-                        $new_slugs = 0;
-
                         if ( is_array( $specifications ) && count( $specifications ) > 0 )
                         foreach ( $specifications as $ps ) {
-                            $ps_slug = str_replace( ' ', '-', strtolower( $ps[0] ) );
-
-                            if ( empty( $ps_slug ) ) {
-                                $ps_slug = $new_slugs;
-                                $new_slugs++;
-                            }
+                            $specification_name = html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' );
+                            $specification_value = html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' );
                         ?>
 
                         <div class="specification item">
-                            <div class="specification-name"><?php echo html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ); ?></div>
-                            <div class="specification-value"><?php echo html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ); ?></div>
+                            <div class="specification-name"><?php echo $specification_name; ?></div>
+                            <div class="specification-value"><?php echo $specification_value; ?></div>
                             <a href="#" class="delete" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
-                            <input type="hidden" name="product-specs[]" value="" />
+                            <input type="hidden" name="product-specs[]" value="<?php echo str_replace( '"', '&quot;', $specification_name ) . '|' . str_replace( '"', '&quot;', $specification_value ); ?>" />
                         </div>
                     <?php
                         }
@@ -175,9 +173,8 @@ echo $template->start( $title );
         <div id="main">
             <div id="name-container"><input type="text" name="tName" id="tName" class="tb" value="<?php echo $product->name; ?>" tmpval="<?php echo _('Product Name'); ?>" maxlength="200" /></div>
             <div id="dProductSlug">
-                <span><strong><?php echo _('Link:'); ?></strong> <?php echo _('http://www.website.com/'); ?><span id="category-slug"><?php echo _('products'); ?></span>/ <input type="text" name="tProductSlug" id="tProductSlug" maxlength="50" class="tb" value="<?php echo $product->slug; ?>" /> /
+                <span><strong><?php echo _('Link:'); ?></strong> <?php echo _('http://www.website.com/'); ?><span><?php echo _('products'); ?></span>/ <input type="text" name="tProductSlug" id="tProductSlug" maxlength="50" class="tb" value="<?php echo $product->slug; ?>" /> /
             </div>
-            <input type="hidden" name="hCategorySlug" id="hCategorySlug" maxlength="50" />
 
             <textarea name="taDescription" id="taDescription" rows="12" cols="50" rte="1"><?php echo $product->description; ?></textarea>
             <br />
@@ -225,7 +222,7 @@ echo $template->start( $title );
                             <?php
                                 if ( is_array( $industries ) )
                                 foreach ( $industries as $industry ) {
-                                    $selected = ( $product->industry_id == $industry->id ) ? ' selected="selected"' : '';
+                                    $selected = ( $product_id && $product->industry_id == $industry->id ) ? ' selected="selected"' : '';
                             ?>
                             <option value="<?php echo $industry->id; ?>"<?php echo $selected; ?>><?php echo ucwords( $industry->name ); ?></option>
                             <?php } ?>
@@ -239,7 +236,7 @@ echo $template->start( $title );
                             <option value="">-- <?php echo _('Select Category'); ?> --</option>
                             <?php
                             foreach ( $categories as $category ) {
-                                $selected = ( $category->id == $product->category_id ) ? ' selected="selected"' : '';
+                                $selected = ( $product_id && $category->id == $product->category_id ) ? ' selected="selected"' : '';
                                 ?>
                                 <option value="<?php echo $category->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
                             <?php } ?>
@@ -265,9 +262,24 @@ echo $template->start( $title );
 
             <h2><?php echo _('Upload Images'); ?></h2>
             <p id="pUploadImagesMessage"><?php echo _('You can upload up to 10 images per product. Please ensure images are at least 500px wide or tall as a minimum.'); ?></p>
-            <p><a href="#" class="button" id="aUpload"><?php echo _('Upload'); ?></a></p>
+            <a href="#" id="aUpload" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
+            <div class="hidden" id="upload-image"></div>
+            <br /><br />
+            <div id="images-list">
+                <?php
+                if ( $product_id && is_array( $product_images ) )
+                foreach ( $product_images as $pi ) {
+                    ?>
+                    <div class="image">
+                        <a href="http://<?php echo $industries[$product->industry_id]->name; ?>.retailcatalog.us/products/<?php echo $product_id; ?>/large/<?php echo $pi; ?>" title="<?php echo _('View'); ?>" target="_blank"><img src="http://<?php echo $industries[$product->industry_id]->name; ?>.retailcatalog.us/products/<?php echo $product_id; ?>/small/<?php echo $pi; ?>" width="200" height="200" alt="" /></a>
+                        <p><a href="#" class="delete" title="<?php echo _('Delete'); ?>" confirm="<?php echo _('Are you sure you want to delete this image? It cannot be undone'); ?>"><?php echo _('Delete'); ?></a></p>
+                        <input type="hidden" name="images[]" value="<?php echo $pi; ?>" />
+                    </div>
+                <?php } ?>
+            </div>
         </div>
     </div>
+    <input type="hidden" id="hProductId" value="<?php if ( $product_id ) echo $product_id; ?>" />
 </form>
 <br clear="all" />
 <br />

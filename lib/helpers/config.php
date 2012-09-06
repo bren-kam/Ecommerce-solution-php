@@ -36,11 +36,20 @@ class Config {
 
     /**
      * The Settings
-     * @access piravte
+     * @access private
      * @var array
      */
     private static $settings = array(
         'server-timezone'         => 'America/Chicago'
+    );
+
+    /**
+     * Resource links
+     * @access private
+     * @var array
+     */
+    private static $resources = array(
+        'jquery-ui' => 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/ui-lightness/jquery-ui.css'
     );
 		
 	/**
@@ -61,5 +70,15 @@ class Config {
 	 */
 	public static function setting( $setting ) {
 		return self::$settings[$setting];
+	}
+
+	/**
+	 * Returns a resource
+	 *
+	 * @param string $resource
+	 * @return bool
+	 */
+	public static function resource( $resource ) {
+		return self::$resources[$resource];
 	}
 }
