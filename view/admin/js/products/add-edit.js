@@ -78,10 +78,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
                 .removeAttr('id');
 
             newProductSpec
-                .find('div.specification-name')
+                .find('span.specification-name')
                     .text( specName )
                     .end()
-                .find('div.specification-value')
+                .find('span.specification-value')
                     .text( specValue )
                     .end()
                 .find('input:first')
@@ -131,10 +131,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         var attributeItemTemplate = $('#attribute-item-template'), attributeItemsList = $('#attribute-items-list'), sAttributes = $('#sAttributes');
 
 		sAttributes.find('option:selected').each( function() {
-			var option = $(this), attributeItemID = option.val();
+			var option = $(this), attributeItemId = option.val();
 
 			// Make sure they actually put something in
-			if ( '' == attributeItemID )
+			if ( '' == attributeItemId )
                 return;
 
             var newAttributeItem = attributeItemTemplate
@@ -144,13 +144,16 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
             newAttributeItem
                 .find('strong:first')
                     .prepend( option.parents('optgroup:first').attr('label') )
-                    .after( option.text() );
+                    .after( option.text() )
+                    .end()
+                .find('input:first')
+                    .val( attributeItemId );
 
             attributeItemsList.append( newAttributeItem );
 
             // Deselect the option
-            option.attr('disabled', true);
-		}).val('');
+            option.attr('disabled', true).prop('selected', false);
+		});
 
         // Update the list
         applyListClasses( attributeItemsList );
@@ -172,6 +175,17 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
     $('#images-list').on( 'click', 'a.delete', function() {
         if ( confirm( $(this).attr('confirm') ) )
             $(this).parent().parent().remove();
+    });
+
+    // Make attribute items delete work
+    $('#attribute-items-list').on( 'click', 'a.delete-attribute-item', function() {
+        var attributeItemId = $(this).next().val();
+
+        // Remove parent
+        $(this).parent().remove();
+
+        // Enable item in drop down
+        $('#sAttributes option[value=' + attributeItemId + ']').attr('disabled', false);
     });
 
     // Setup File Uploader
@@ -197,12 +211,38 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
      */
     $('#aUpload').click( function() {
         $('#upload-image input:first').click();
-    })
+    });
+
+    // Make attributes specific to a category
+    $('#sCategory').change( updateAttributes );
+
+    // We need to update them once
+    updateAttributes();
 });
 
 // Apply the classes
 function applyListClasses( list ) {
     $('.item', list).removeClass('even').filter(':even').addClass('even');
+}
+
+// Update attributes
+function updateAttributes() {
+    var categoryId = parseInt( $('#sCategory').val() );
+
+    if ( categoryId <= 0 )
+        return;
+
+    // Load attribute items
+	$.post( '/products/get-attribute-items/', { _nonce: $('#_get_attribute_items').val(), cid : categoryId }, ajaxResponse, 'json' );
+}
+
+// Disable attributes
+$.fn.disableAttributes = function() {
+    var sAttributes = $('#sAttributes');
+
+    $('#attribute-items-list input').each( function() {
+        $('option[value=' + $(this).val() + ']', sAttributes).attr( 'disabled', true );
+    });
 }
 
 // Turns text into a slug

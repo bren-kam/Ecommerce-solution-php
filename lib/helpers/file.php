@@ -27,7 +27,7 @@ class File {
     /**
 	 * Uploads an Image to Amazon
 	 *
-	 * @param file $image the product image file
+	 * @param file|string $image the product image file
 	 * @param string $new_image_name the new image name
 	 * @param int $width the width you want the image to be
 	 * @param int $height the height you want the image to be
@@ -38,10 +38,13 @@ class File {
 	 * @return bool/string
 	 */
 	public function upload_image( $image, $new_image_name, $width, $height, $industry, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
-		if ( empty( $image['name'] ) || empty( $industry ) )
+        // Get hte image path
+        $image_path = ( is_string( $image ) ) ? $image : $image['tmp_name'];
+
+		if ( empty( $image_path ) || empty( $industry ) )
 			return false;
 
-		list( $result, $image_file ) = image::resize( $image['tmp_name'], OPERATING_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
+		list( $result, $image_file ) = image::resize( $image_path, OPERATING_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
 
 		if ( !$result || !$image_file || !is_file( $image_file ) )
 			return false;

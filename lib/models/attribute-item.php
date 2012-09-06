@@ -32,16 +32,17 @@ class AttributeItem extends ActiveRecordBase {
     }
 
     /**
-     * Get all attribute_items
+     * Get all attribute items by a category id
      *
+     * @param int $category_id
      * @return array
      */
-    public function get_all() {
-        return $this->get_results(
-            'SELECT ai.`attribute_item_id`, ai.`name`, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` )'
-            , PDO::FETCH_CLASS
-            , 'AttributeItem'
-        );
+    public function get_by_category( $category_id ) {
+        return $this->prepare(
+            'SELECT ai.`attribute_item_id`, ai.`name`, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` ) LEFT JOIN `attribute_relations` AS ar ON ( ar.`attribute_id` = a.`attribute_id` ) WHERE ar.`category_id` = :category_id'
+            , 'i'
+            , array( ':category_id' => $category_id )
+        )->get_results( PDO::FETCH_CLASS , 'AttributeItem' );
     }
 
     /**
@@ -53,7 +54,7 @@ class AttributeItem extends ActiveRecordBase {
     public function get_by_attribute( $attribute_id ) {
         return $this->prepare(
             'SELECT `attribute_item_id`, `name` FROM `attribute_items` WHERE `attribute_id` = :attribute_id ORDER BY `sequence` ASC'
-            , 's'
+            , 'i'
             , array( ':attribute_id' => $attribute_id )
         )->get_results( PDO::FETCH_CLASS, 'AttributeItem' );
     }

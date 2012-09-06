@@ -77,15 +77,9 @@ class ProductsController extends BaseController {
         $industries_array = $industry->get_all();
         $brands = $brand->get_all();
         $categories = $category->sort_by_hierarchy();
-        $attribute_items_array = $attribute_item->get_all();
-
 
         // Add on an associative aspect
-        $attribute_items = $industries = array();
-
-        foreach ( $attribute_items_array as $aia ) {
-            $attribute_items[$aia->title][] = $aia;
-        }
+        $industries = array();
 
         foreach ( $industries_array as $industry ) {
             $industries[$industry->id] = $industry;
@@ -139,13 +133,120 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        // Get the user
         $product = new Product();
         $product->create( 0, $this->user->id );
 
         // Change Form
         jQuery('#fAddEditProduct')->attr( 'action', url::add_query_arg( 'pid', $product->id, '' ) );
         jQuery('#hProductId')->val( $product->id );
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+    /**
+     * Get Attribute Items
+     *
+     * @return AjaxResponse
+     */
+    public function get_attribute_items() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() || !isset( $_POST['cid'] ) );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $attribute_item = new AttributeItem();
+
+        $attribute_items_array = $attribute_item->get_by_category( $_POST['cid'] );
+        $attribute_items = array();
+
+        foreach ( $attribute_items_array as $aia ) {
+            $attribute_items[$aia->title][] = $aia;
+        }
+
+        $html = '';
+
+        $attributes = array_keys( $attribute_items );
+
+        foreach ( $attributes as $attribute ) {
+            $html .= '<optgroup label="' . $attribute . '">';
+
+            foreach ( $attribute_items[$attribute] as $attribute_item ) {
+                $html .= '<option value="' . $attribute_item->id . '">' . $attribute_item->name . '</option>';
+            }
+
+            $html .= '</optgroup>';
+        }
+
+        // Change Form
+        jQuery('#sAttributes')
+            ->html( $html )
+            ->disableAttributes();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload Image
+     *
+     * @return AjaxResponse
+     */
+    public function upload_image() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() || !isset( $_POST['pid'] ) || !isset( $_POST['iid'] ) );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $product = new Product();
+        $industry = new Industry();
+        $file = new File();
+        $uploader = new qqFileUploader( array('gif', 'jpg', 'jpeg', 'png'), 6144000 );
+
+        // Change the name
+        $new_image_name = format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+        $temp_image_file = tempnam( '/tmp', 'gsr_' );
+
+        // Get variables
+        $product->get( $_POST['pid'] );
+
+        $industry->get( $_POST['iid'] );
+        $industry_name = str_replace( " ", "", $industry->name );
+
+        // Upload file
+        $uploader->handleUpload( $temp_image_file );
+
+        // Create the different versions we need
+        $file->upload_image( $temp_image_file, $new_image_name, 320, 320, $industry, 'products/' . $product->id . '/', false, true );
+        $file->upload_image( $temp_image_file, $new_image_name, 46, 46, $industry, 'products/' . $product->id . '/thumbnail/', false, true );
+        $file->upload_image( $temp_image_file, $new_image_name, 200, 200, $industry, 'products/' . $product->id . '/small/', false, true );
+        $file->upload_image( $temp_image_file, $new_image_name, 700, 700, $industry, 'products/' . $product->id . '/large/', false, true );
+
+        // Get image url
+        $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$new_image_name";
+
+        // Clone image template
+        jQuery('#image-template')->clone()
+            ->removeAttr('id')
+            ->find('a:first')
+                ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
+                ->end()
+            ->find('img:first')
+                ->attr( 'src', $image_url )
+                ->end()
+            ->find('input:first')
+                ->val($new_image_name)
+                ->end()
+            ->appendTo('#images-list');
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 

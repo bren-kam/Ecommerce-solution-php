@@ -13,7 +13,6 @@
  * @var array $industries
  * @var DateTime $date
  * @var array $categories
- * @var array $attribute_items
  * @var array $product_attribute_items
  * @var array $tags
  * @var array $product_images
@@ -25,6 +24,7 @@ $title .= ' ' . _('Product');
 echo $template->start( $title );
 nonce::field( 'create', '_create_product' );
 nonce::field( 'upload_image', '_upload_image' );
+nonce::field( 'get_attribute_items', '_get_attribute_items' );
 ?>
 
 <form name="fAddEditProduct" id="fAddEditProduct" action="" method="post" err="<?php echo _('Products require at least one image to publish'); ?>">
@@ -94,8 +94,8 @@ nonce::field( 'upload_image', '_upload_image' );
                         ?>
 
                         <div class="specification item">
-                            <div class="specification-name"><?php echo $specification_name; ?></div>
-                            <div class="specification-value"><?php echo $specification_value; ?></div>
+                            <span class="specification-name"><?php echo $specification_name; ?></span>
+                            <span class="specification-value"><?php echo $specification_value; ?></span>
                             <a href="#" class="delete" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
                             <input type="hidden" name="product-specs[]" value="<?php echo str_replace( '"', '&quot;', $specification_name ) . '|' . str_replace( '"', '&quot;', $specification_value ); ?>" />
                         </div>
@@ -129,42 +129,22 @@ nonce::field( 'upload_image', '_upload_image' );
         <div class="box">
             <h2><?php echo _('Attributes'); ?></h2>
             <div class="content">
-                <?php
-                $disabled_attributes = array();
-                $attributes_html = '';
-
-                if ( is_array( $product_attribute_items ) )
-                foreach ( $product_attribute_items as $pai ) {
-                    $disabled_attributes[] = $pai->id;
-
-                    $attributes_html .= '<div class="attribute item">';
-                    $attributes_html .= '<strong>' . $pai->title . ' &ndash; </strong>';
-                    $attributes_html .= $pai->name;
-                    $attributes_html .= '<a href="#" class="delete" title="' . _('Delete') . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" /></a>';
-                    $attributes_html .= '<input type="hidden" name="attributes[]" value="' . $pai->id . '" />';
-                    $attributes_html .= '</div>';
-                }
-                ?>
-                <select id="sAttributes" multiple="multiple">
-                    <?php
-                        $attributes = array_keys( $attribute_items );
-
-                        foreach ( $attributes as $attribute ) {
-                            echo '<optgroup label="', $attribute, '">';
-
-                            if ( is_array( $attribute_items[$attribute] ) )
-                            foreach ( $attribute_items[$attribute] as $attribute_item ) {
-                                $disabled = ( in_array( $attribute_item->id, $disabled_attributes ) ) ? ' disabled="disabled"' : '';
-                                echo '<option value="', $attribute_item->id, '"', $disabled , '>', $attribute_item->name, '</option>';
-                            }
-
-                            echo '</optgroup>';
-                        }
-                        ?>
-                </select>
+                <select id="sAttributes" multiple="multiple"></select>
                 <br /><br />
                 <p><a href="#" class="button" id="add-attribute" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
-                <div id="attribute-items-list" class="list"><?php echo $attributes_html; ?></div>
+                <div id="attribute-items-list" class="list">
+                <?php
+                if ( is_array( $product_attribute_items ) )
+                foreach ( $product_attribute_items as $pai ) {
+                    ?>
+                    <div class="attribute item">
+                        <strong><?php echo $pai->title; ?> &ndash; </strong>
+                        <?php echo $pai->name; ?>
+                        <a href="#" class="delete-attribute-item" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
+                        <input type="hidden" name="attributes[]" value="<?php echo $pai->id; ?>" />
+                    </div>
+                <?php } ?>
+                </div>
             </div>
         </div>
     </div>
@@ -232,7 +212,7 @@ nonce::field( 'upload_image', '_upload_image' );
                 <tr>
                     <td><div class="container"><input type="text" class="tb" name="tWeight" id="tWeight" value="<?php echo $product->weight; ?>" tmpval="<?php echo _('Weight'); ?>" /></div></td>
                     <td>
-                        <select name="sCategory">
+                        <select name="sCategory" id="sCategory">
                             <option value="">-- <?php echo _('Select Category'); ?> --</option>
                             <?php
                             foreach ( $categories as $category ) {
@@ -291,14 +271,19 @@ nonce::field( 'upload_image', '_upload_image' );
     </div>
     <div class="attribute item" id="attribute-item-template">
         <strong> &ndash; </strong>
-        <a href="#" class="delete" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
+        <a href="#" class="delete-attribute-item" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
         <input type="hidden" name="attributes[]" value="" />
     </div>
     <div class="specification item" id="product-spec-template">
-        <div class="specification-name"></div>
-        <div class="specification-value"></div>
+        <span class="specification-name"></span>
+        <span class="specification-value"></span>
         <a href="#" class="delete" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
         <input type="hidden" name="product-specs[]" value="" />
+    </div>
+    <div class="image" id="image-template">
+        <a href="" title="<?php echo _('View'); ?>" target="_blank"><img src="" width="200" height="200" alt="" /></a>
+        <p><a href="#" class="delete" title="<?php echo _('Delete'); ?>" confirm="<?php echo _('Are you sure you want to delete this image? It cannot be undone'); ?>"><?php echo _('Delete'); ?></a></p>
+        <input type="hidden" name="images[]" value="" />
     </div>
 </div>
 

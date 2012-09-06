@@ -15,6 +15,21 @@ class Industry extends ActiveRecordBase {
     }
 
     /**
+     * Get Industry
+     *
+     * @param int $industry_id
+     */
+    public function get( $industry_id ) {
+		$this->prepare(
+            'SELECT `industry_id`, `name` FROM `industries` WHERE `industry_id` = :industry_id'
+            , 'i'
+            , array( ':industry_id' => $industry_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->industry_id;
+    }
+
+    /**
 	 * Get all industries
 	 *
 	 * @return array
