@@ -24,7 +24,7 @@ class CompanyTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test getting the companies as a clas
+     * Test getting the companies as a class
      */
     public function testGetAllClass() {
         $companies = $this->company->get_all();

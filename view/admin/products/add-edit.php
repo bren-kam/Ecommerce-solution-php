@@ -27,7 +27,7 @@ nonce::field( 'upload_image', '_upload_image' );
 nonce::field( 'get_attribute_items', '_get_attribute_items' );
 ?>
 
-<form name="fAddEditProduct" id="fAddEditProduct" action="" method="post" err="<?php echo _('Products require at least one image to publish'); ?>">
+<form name="fAddEditProduct" id="fAddEditProduct" action="<?php if ( $product->id ) echo '?pid=' . $product->id; ?>" method="post" err="<?php echo _('Products require at least one image to publish'); ?>">
     <div id="right">
         <div class="box">
             <h2><?php echo _('Publish'); ?></h2>
@@ -260,6 +260,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
         </div>
     </div>
     <input type="hidden" id="hProductId" value="<?php if ( $product_id ) echo $product_id; ?>" />
+    <?php nonce::field('add_edit'); ?>
 </form>
 <br clear="all" />
 <br />

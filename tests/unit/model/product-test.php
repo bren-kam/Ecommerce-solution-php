@@ -25,6 +25,98 @@ class ProductTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting images
+     *
+     * @depends testGet
+     */
+    public function testGetImages() {
+        // Declare variables
+        $product_id = 4;
+
+        // Load Product
+        $this->product->get( $product_id );
+
+        // Get images
+        $images = $this->product->get_images();
+
+        $this->assertEquals( count( $images ), 3 );
+        $this->assertTrue( is_string( $images[0] ) );
+    }
+
+    /**
+     * Test creating a company
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        $this->product->website_id = 0;
+        $this->product->user_id_created = 1;
+        $this->product->create();
+
+        $this->assertTrue( !is_null( $this->product->id ) );
+
+        // Make sure it's in the database
+        $this->product->get( $this->product->id );
+
+        $this->assertEquals( 'deleted', $this->product->publish_visibility );
+
+        // Delete the company
+        $this->db->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
+    }
+
+    /**
+     * Test adding a category
+     *
+     * This will be removed when the DB structure is changed
+     *
+     * @depends testGet
+     */
+    public function testAddCategory() {
+        // Declare variables
+        $product_id = 1;
+        $category_id = '-5';
+
+        // Delete any categories that may already exist
+        $this->db->delete( 'product_categories', array( 'product_id' => $product_id ) , 'i' );
+
+        // Get product
+        $this->product->get( $product_id );
+
+        // Add Category
+        $this->product->add_category( $category_id );
+
+        // See if it's there
+        $fetched_category_id = $this->db->get_var( "SELECT `category_id` FROM `product_categories` WHERE `product_id` = $product_id" );
+
+        $this->assertEquals( $category_id, $fetched_category_id );
+    }
+
+    /**
+     * Test Adding Images
+     *
+     * @depends testGet
+     */
+    public function testAddImages() {
+        // Declare variables
+        $product_id = 1;
+        $images = array( 'test.png', 'test1.gif' );
+
+        // Delete any images from before hand
+        $this->db->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
+
+        // Get product
+        $this->product->get( $product_id );
+
+        // Add images
+        $this->product->add_images( $images );
+
+        // See if they are there
+        $fetched_images = $this->db->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id ORDER BY `image` ASC" );
+
+        $this->assertEquals( $images, $fetched_images );
+    }
+
+    /**
      * Test updating a product
      *
      * @depends testGet
@@ -41,6 +133,58 @@ class ProductTest extends BaseDatabaseTest {
         $publish_visibility = $this->db->get_var( 'SELECT `publish_visibility` FROM `products` WHERE `product_id` = 36385' );
 
         $this->assertEquals( $publish_visibility, 'public' );
+    }
+
+    /**
+     * Test Delete Categories
+     *
+     * @depends testGet
+     * @depends testAddCategory
+     */
+    public function testDeleteCategories() {
+        // Declare Variables
+        $product_id = 1;
+        $category_id = -6;
+
+        // Get product
+        $this->product->get( $product_id );
+
+        // Add category
+        $this->product->add_category( $category_id );
+
+        // Delete categories
+        $this->product->delete_categories();
+
+        // Make sure there are no categories
+        $category_ids = $this->db->get_col( "SELECT `category_id` FROM `product_categories` WHERE `product_id` = $product_id" );
+
+        $this->assertTrue( 0 == count( $category_ids ) );
+    }
+
+    /**
+     * Test Delete Images
+     *
+     * @depends testGet
+     * @depends testAddImages
+     */
+    public function testDeleteImages() {
+        // Declare Variables
+        $product_id = 1;
+        $images = array( 'no.jpg', 'yes.png' );
+
+        // Get product
+        $this->product->get( $product_id );
+
+        // Add category
+        $this->product->add_images( $images );
+
+        // Delete images
+        $this->product->delete_images();
+
+        // Make sure there are no images
+        $images = $this->db->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id" );
+
+        $this->assertTrue( 0 == count( $images ) );
     }
 
     /**

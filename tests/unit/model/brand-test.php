@@ -26,6 +26,15 @@ class BrandTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting all of some brands
+     */
+    public function testGetAll() {
+        $brands = $this->brand->get_all();
+
+        $this->assertTrue( $brands[0] instanceof Brand );
+    }
+
+    /**
      * Test Getting relations (to product options)
      *
      * @depends testGet

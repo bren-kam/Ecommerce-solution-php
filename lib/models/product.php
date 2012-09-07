@@ -1,7 +1,7 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date;
+    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created;
 
     // Columns from other tables
     public $brand, $category_id;
@@ -47,14 +47,11 @@ class Product extends ActiveRecordBase {
 
     /**
      * Create
-     *
-     * @param int $website_id
-     * @param int $user_id
      */
-    public function create( $website_id, $user_id ) {
+    public function create() {
         $this->insert( array(
-            'website_id' => $website_id
-            , 'user_id_created' => $user_id
+            'website_id' => $this->website_id
+            , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => dt::date('Y-m-d H:i:s')
         ), 'iiss' );
@@ -127,7 +124,7 @@ class Product extends ActiveRecordBase {
                 , 'publish_visibility' => $this->publish_visibility
             )
             , array( 'product_id' => $this->id )
-            , 'iisssssiss'
+            , 'iisssssisss'
             , 'i'
         );
     }

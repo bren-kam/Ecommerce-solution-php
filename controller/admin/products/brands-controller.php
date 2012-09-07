@@ -67,7 +67,7 @@ class BrandsController extends BaseController {
 
                 // Handle file upload
                 if ( !empty( $_FILES['fImage']['name'] ) ) {
-                    $f = new File();
+                    $file = new File();
 
                     // Delete old image
                     if ( $brand_id && !empty( $brand->image ) ) {
@@ -75,11 +75,11 @@ class BrandsController extends BaseController {
                         $old_image_path = substr( $old_url_info['path'], 1 );
 
                         if ( !empty( $old_image_path ) )
-                            $f->delete_image( $old_image_path, 'brands' );
+                            $file->delete_image( $old_image_path, 'brands' );
                     }
 
                     // Upload new image
-                    $image = $f->upload_image( $_FILES['fImage'], format::slug( $_POST['tName'] ), 120, 120, 'brands', '', true, true );
+                    $image = $file->upload_image( $_FILES['fImage'], format::slug( $_POST['tName'] ), 120, 120, 'brands', '', true, true );
 
                     // If it was successful, assign it the correct name
                     if ( $image )
@@ -190,13 +190,13 @@ class BrandsController extends BaseController {
 
             // Then delete image from Amazon
             if ( !empty( $brand->image ) ) {
-                $f = new File();
+                $file = new File();
 
                 $url_info = parse_url( $brand->image );
                 $image_path = substr( $url_info['path'], 1 );
 
                 if ( !empty( $image_path ) )
-                    $f->delete_image( $image_path, 'brands' );
+                    $file->delete_image( $image_path, 'brands' );
             }
 
             // Now delete the brand

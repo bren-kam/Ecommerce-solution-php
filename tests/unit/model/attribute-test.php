@@ -122,7 +122,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->attribute->delete_category_relations( $category_id );
 
         // See if we can get it
-        $attribute_id = $this->db->get_var( 'SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id' );
+        $attribute_id = $this->db->get_var( "SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id" );
 
         $this->assertFalse( $attribute_id );
     }

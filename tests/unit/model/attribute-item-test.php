@@ -14,6 +14,27 @@ class AttributeItemTest extends BaseDatabaseTest {
         $this->attribute_item = new AttributeItem();
     }
 
+    public function testAddRelations() {
+        // Declare variables
+        $product_id = 0;
+        $attribute_item_ids = array( '-1', '-2', '-3', '-4', '-5' );
+
+        // Delete any that may have been created before the test
+        $this->db->query( "DELETE FROM `attribute_item_relations` WHERE `product_id` = $product_id" );
+
+        // Add the relations
+        $this->attribute_item->add_relations( $product_id, $attribute_item_ids );
+
+        // Get them for testing
+        $fetched_attribute_item_ids = $this->db->get_col( "SELECT `attribute_item_id` FROM `attribute_item_relations` WHERE `product_id` = $product_id ORDER BY `attribute_item_id` DESC" );
+
+        // Should be the same
+        $this->assertEquals( $attribute_item_ids, $fetched_attribute_item_ids );
+
+        // Delete them
+        $this->db->query( "DELETE FROM `attribute_item_relations` WHERE `product_id` = $product_id" );
+    }
+
     /**
      * Test Getting an attribute item
      */
@@ -34,6 +55,28 @@ class AttributeItemTest extends BaseDatabaseTest {
 
         $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
         $this->assertEquals( count( $attribute_items ), 13 );
+    }
+
+    /**
+     * Test Getting all attribute items for a category
+     */
+    public function testGetByCategory() {
+        $category_id = 99;
+        $attribute_items = $this->attribute_item->get_by_category( $category_id );
+
+        $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
+        $this->assertEquals( count( $attribute_items ), 36 );
+    }
+
+    /**
+     * Test Getting all attribute items for a product
+     */
+    public function testGetByProduct() {
+        $product_id = 147;
+        $attribute_items = $this->attribute_item->get_by_product( $product_id );
+
+        $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
+        $this->assertEquals( count( $attribute_items ), 4 );
     }
 
     /**
@@ -109,6 +152,30 @@ class AttributeItemTest extends BaseDatabaseTest {
         $name = $this->db->get_var( "SELECT `name` FROM `attribute_items` WHERE `attribute_item_id` = " . (int) $this->attribute_item->id );
 
         $this->assertFalse( $name );
+    }
+
+
+
+    /**
+     * Delete Relations
+     *
+     * @depends testAddRelations
+     */
+    public function testDeleteRelations() {
+        // Declare variables
+        $product_id = 0;
+        $attribute_item_ids = array( '-1', '-2', '-3', '-4', '-5' );
+
+         // Add the relations
+        $this->attribute_item->add_relations( $product_id, $attribute_item_ids );
+
+        // Delete the relations
+        $this->attribute_item->delete_relations( $product_id );
+
+        // See if we can get it
+        $attribute_item_id = $this->db->get_var( "SELECT `attribute_item_id` FROM `attribute_item_relations` WHERE `product_id` = $product_id" );
+
+        $this->assertFalse( $attribute_item_id );
     }
 
     /**

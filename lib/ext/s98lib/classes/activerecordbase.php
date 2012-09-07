@@ -563,14 +563,14 @@ abstract class ActiveRecordBase {
      * @param string $format
      * @throws ModelException
      */
-    private function _bind( $statement, array $values, $format ) {
+    private function _bind( $statement, array $values, $format_array ) {
         // To keep track of the format
         $i = 0;
 
         // Loop through values and bind the value
         foreach ( $values as $key => $value ) {
             // Get the proper format
-            $format = $format[$i];
+            $format = $format_array[$i];
 
             // If it's a string, then let's hope they did it correctly, if it's not, use the integer version
             $key = ( is_string( $key ) ) ? $key : $key + 1;
@@ -584,6 +584,8 @@ abstract class ActiveRecordBase {
             } catch ( PDOException $e ) {
                 throw new ModelException( $e->getMessage(), $e );
             }
+
+            $i++;
         }
     }
 

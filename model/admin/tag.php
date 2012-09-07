@@ -58,7 +58,7 @@ class Tag extends ActiveRecordBase {
      * @return array
      */
     public function get_value_by_type( $type, $object_id ) {
-        return $this->prepare( 'SELECT `value` FROM `tags` WHERE `type` = :type AND `object_id` = :object_id'
+        return $this->prepare( 'SELECT `value` FROM `tags` WHERE `type` = :type AND `object_id` = :object_id ORDER BY `value` ASC'
             , 'si'
             , array( ':type' => $type, ':object_id' => $object_id )
         )->get_col();

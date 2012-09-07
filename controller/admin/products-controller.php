@@ -66,8 +66,12 @@ class ProductsController extends BaseController {
             $date = new DateTime( $product->publish_date );
 
             $title = _('Edit');
+
+            // Get the industry as it may be needed
+            if ( $this->verified() )
+                $industry->get( $product->industry_id );
         } else {
-            $product_attribute_items = $tags = array();
+            $product_attribute_items = $tags = $product_images = array();
 
             $date = new DateTime();
 
@@ -127,8 +131,33 @@ class ProductsController extends BaseController {
             if ( isset( $_POST['attributes'] ) )
                 $attribute_item->add_relations( $product->id, $_POST['attributes'] );
 
-            if ( isset( $_POST['images'] ) )
+            if ( isset( $_POST['images'] ) ) {
                 $product->add_images( $_POST['images'] );
+
+                // What images do we need to remove
+                $remove_images = array_diff( $product_images, $_POST['images'] );
+            } else {
+                $remove_images = $product_images;
+            }
+
+            // Need to remove images
+            if ( count( $remove_images ) > 0 ) {
+                $file = new File();
+                $path_base = 'products/' . $product->id . '/';
+
+                foreach ( $remove_images as $ri ) {
+                    $file->delete_image( $path_base . $ri, $industry->name );
+                    $file->delete_image( $path_base . 'thumbnail/' . $ri, $industry->name );
+                    $file->delete_image( $path_base . 'small/' . $ri, $industry->name );
+                    $file->delete_image( $path_base . 'large/' . $ri, $industry->name );
+                }
+            }
+
+            // Now go back to products list with a notification
+            $this->notify( _('Your product was successfully created or updated!') );
+
+            // Return to products list
+            return new RedirectResponse('/products/');
         }
 
         $template_response = $this->get_template_response( 'add-edit' )
@@ -180,7 +209,9 @@ class ProductsController extends BaseController {
             return $response;
 
         $product = new Product();
-        $product->create( 0, $this->user->id );
+        $product->website_id = 0;
+        $product->user_id_created = $this->user->id;
+        $product->create();
 
         // Change Form
         jQuery('#fAddEditProduct')->attr( 'action', url::add_query_arg( 'pid', $product->id, '' ) );

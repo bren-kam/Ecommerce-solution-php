@@ -16,6 +16,17 @@ class IndustryTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get
+     */
+    public function testGet() {
+        $industry_id = 1;
+
+        $this->industry->get( $industry_id );
+
+        $this->assertEquals( $this->industry->name, 'furniture' );
+    }
+
+    /**
      * Test getting all the industries
      */
     public function testGetAll() {
