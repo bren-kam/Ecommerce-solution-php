@@ -181,7 +181,7 @@ class Ashley extends Base_Class {
 
         // Sets who is updating the products
         global $user;
-        $user['user_id'] = 1477;
+        $user['user_id'] = self::USER_ID;
 
         // Get librarys
         library('ashley-api/ashley-api');
@@ -230,26 +230,25 @@ class Ashley extends Base_Class {
             // Start collecting data
 			$name = $item->SeriesName;
 
-            if ( !stristr( $name, $item->SeriesColor ) )
+            if ( !stristr( $name, (string) $item->SeriesColor ) )
                 $name .= ' ' . $item->SeriesColor;
 
             if ( !empty( $package_templates[$item->TemplateId] ) )
                 $name .= ' ' . $package_templates[$item->TemplateId];
 
             $name .= ' - ' . $this->_package_descriptions[(string)$item->PackageDescription];
-
+            echo $name;exit;
 			$slug = str_replace( '---', '-', format::slug( $name ) );
             $sku = $item->PackageId;
-			$image = $item->Image;
+			$image = self::IMAGE_URL . $item->Image;
 			$weight = $volume = 0;
 
             // Set item description
 			$item_description = $this->_package_descriptions[(string)$item->PackageDescription] . '<br /><br />' . $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
             $description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
 
-            echo $name . '<br />' . $item_description;exit;
             // Will have to format this
-			$product_specs = $this->_package_descriptions[$item->PackageDescription];
+			$product_specs = ''; //$this->_package_descriptions[$item->PackageDescription];
 
             // "Ashley Furniture" brand
 			$brand_id = 8;
@@ -258,10 +257,10 @@ class Ashley extends Base_Class {
 
 			////////////////////////////////////////////////
 			// Get/Create the product
-			if( array_key_exists( $sku, $existing_products ) ) {
+			if ( array_key_exists( $sku, $existing_products ) ) {
 				$identical = true;
                 
-				$product = $products[$sku];
+				$product = $existing_products[$sku];
 				$product_id = $product['product_id'];
 
 				$product_images = explode( '|', $product['images'] );
@@ -291,7 +290,7 @@ class Ashley extends Base_Class {
 				$images = $product_images;
 
 
-				if ( 0 == count( $images ) && !empty( $image ) && 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image - update', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
+				if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
 					$identical = false;
 					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
 
@@ -356,16 +355,15 @@ class Ashley extends Base_Class {
 					continue;
 				}
 			} else {
-
                 // User "Ashley Packages"
-				$product_id = $this->p->create( 1477 );
+				$product_id = $this->p->create( self::USER_ID );
 
                 // Make sure it's a unique slug
                 $slug = $this->unique_slug( $slug );
 
 				// Upload image if it's not blank
-				if ( 'Blank.gif' != $image && 'NOIMAGEAVAILABLE_BIG.jpg' != $image && mail('kerry.jones@earthlink.net', 'adding image', $slug . "\n\n$image") && curl::check_file( 'http://www.studio98.com/ashley/Images/' . $image ) ) {
-					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
+				if ( !empty( $image ) && curl::check_file( $image ) ) {
+					$image_name = $this->upload_image( $image, $slug, $product_id );
 
 					if ( !in_array( $image_name, $images ) )
 						$images[] = $image_name;
@@ -391,6 +389,8 @@ class Ashley extends Base_Class {
 				}
 
 				$this->p->add_product_images( $images, $product_id );
+
+                $product_status = 'private';
 			}
 
 			// Update the product
@@ -429,6 +429,7 @@ class Ashley extends Base_Class {
 				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
 			}
 			//$i++;
+            echo 'here';exit;
 		}
 
         echo $products_string;
@@ -1069,7 +1070,7 @@ class Ashley extends Base_Class {
 		$image_extension = strtolower( f::extension( $image_url ) );
 		
 		$image['name'] = "{$new_image_name}.{$image_extension}";
-		$image['tmp_name'] = '/home/imaginer/public_html/admin/media/downloads/scratchy/' . $image['name'];
+		$image['tmp_name'] = OPERATING_PATH . 'media/downloads/scratchy/' . $image['name'];
 		
 		if( is_file( $image['tmp_name'] ) && curl::check_file( "http://furniture.retailcatalog.us/products/$product_id/thumbnail/$new_image_name.$image_extension" ) )
 			return "$new_image_name.$image_extension";
