@@ -17,6 +17,35 @@ class AttributeItem extends ActiveRecordBase {
     }
 
     /**
+     * Add Relations
+     *
+     * @param int $product_id
+     * @param array $attribute_items
+     */
+    public function add_relations( $product_id, array $attribute_items ) {
+        // Don't want to add no attribute_items
+        if ( 0 == count( $attribute_items ) )
+            return;
+
+        // Declare variable
+        $values = '';
+        $product_id = (int) $product_id;
+
+        // Create the array for all the values
+        foreach ( $attribute_items as $attribute_item_id ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $attribute_item_id = (int) $attribute_item_id;
+
+            $values .= "( $attribute_item_id, $product_id )";
+        }
+
+        // Insert the values
+        $this->query( "INSERT INTO `attribute_item_relations` VALUES $values");
+    }
+
+    /**
      * Get an attribute item
      *
      * @param int $attribute_item_id
@@ -103,5 +132,18 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function delete() {
         parent::delete( array( 'attribute_item_id' => $this->id ), 'i' );
+    }
+
+    /**
+     * Delete relations by product
+     *
+     * @param int $product_id
+     */
+    public function delete_relations( $product_id ) {
+        $this->prepare(
+            'DELETE FROM `attribute_item_relations` WHERE `product_id` = :product_id'
+            , 'i'
+            , array( ':product_id' => $product_id )
+        )->query();
     }
 }

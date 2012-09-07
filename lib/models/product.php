@@ -63,6 +63,52 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * Add Category
+     *
+     * @param int $category_id
+     */
+    public function add_category( $category_id ) {
+        $this->prepare(
+            'INSERT INTO `product_categories` ( `product_id`, `category_id` ) VALUES ( :product_id, :category_id )'
+            , 'ii'
+            , array( ':product_id' => $this->id, ':category_id' => $category_id )
+        )->query();
+    }
+
+    /**
+     * Add Images
+     *
+     * @param array $images
+     */
+    public function add_images( array $images ) {
+        // Determine how many images we have
+        $image_count = count( $images );
+
+        // Don't want to add no tags
+        if ( 0 == $image_count )
+            return;
+
+        // Declare variable
+        $values = '';
+        $product_id = (int) $this->id;
+
+        // Create the array for all the values
+        for( $sequence = 0; $sequence < $image_count; $sequence++ ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= "( $product_id, ?, $sequence )";
+        }
+
+        // Insert the values
+        $this->prepare(
+            "INSERT INTO `product_images` ( `product_id`, `image`, `sequence` ) VALUES $values"
+            , str_repeat( 's', $image_count )
+            , $images
+        )->query();
+    }
+
+    /**
      * Update
      */
     public function update() {
@@ -87,9 +133,32 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * Delete Categories
+     */
+    public function delete_categories() {
+        $this->prepare(
+            'DELETE FROM `product_categories` WHERE `product_id` = :product_id'
+            , 'i'
+            , array( ':product_id' => $this->id )
+        )->query();
+    }
+
+    /**
+     * Delete Images
+     */
+    public function delete_images() {
+        $this->prepare(
+            'DELETE FROM `product_images` WHERE `product_id` = :product_id'
+            , 'i'
+            , array( ':product_id' => $this->id )
+        )->query();
+    }
+
+    /**
 	 * Clones a product
 	 *
 	 * @param int $product_id
+     * @param int $user_id
 	 */
 	public function clone_product( $product_id, $user_id ) {
 		// Type Juggling
@@ -101,7 +170,7 @@ class Product extends ActiveRecordBase {
 
 		// Check to see if it exists
 		if ( !$exists )
-			return false;
+			return;
 
 		// Clone product
 		$this->query( "INSERT INTO `products` ( `brand_id`, `industry_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, `user_id_created`, `date_created` ) SELECT `brand_id`, `industry_id`, CONCAT( `name`, ' (Clone)' ), CONCAT( `slug`, '-2' ), `description`, `status`, CONCAT( `sku`, '-2' ), `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, $user_id, NOW() FROM `products` WHERE `product_id` = $product_id" );

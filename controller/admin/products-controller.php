@@ -85,7 +85,7 @@ class ProductsController extends BaseController {
             $industries[$industry->id] = $industry;
         }
 
-        if ( $this->verified() ) {
+        if ( $this->verified() && $product->id ) {
             $product->brand_id = $_POST['sBrand'];
             $product->industry_id = $_POST['sIndustry'];
             $product->name = $_POST['tName'];
@@ -97,26 +97,38 @@ class ProductsController extends BaseController {
             $product->publish_date = $_POST['hPublishDate'];
             $product->publish_visibility = $_POST['sStatus'];
 
+            $product_specs = array();
+            $sequence = 0;
+
+            if ( isset( $_POST['product-specs'] ) )
+            foreach( $_POST['product_spec'] as $ps ) {
+                list ( $spec_name, $spec_value ) = explode( '|', $ps );
+                $product_specs[] = array( $spec_name, $spec_value, $sequence );
+
+                $sequence++;
+            }
+
+            $product->product_specifications = serialize( $product_specs );
+
             // Update the product
             $product->update();
 
-            // Category - sCategory
+            // Delete all the things
+            $product->delete_categories();
+            $product->delete_images();
+            $tag->delete_by_type( 'product', $product->id );
+            $attribute_item->delete_relations( $product->id );
 
-            if ( isset( $_POST['product-specs'] ) ) {
+            $product->add_category( $_POST['sCategory'] );
 
-            }
+            if ( isset( $_POST['tags'] ) )
+                $tag->add_bulk( 'product', $product->id, $_POST['tags'] );
 
-            if ( isset( $_POST['tags'] ) ) {
+            if ( isset( $_POST['attributes'] ) )
+                $attribute_item->add_relations( $product->id, $_POST['attributes'] );
 
-            }
-
-            if ( isset( $_POST['attributes'] ) ) {
-
-            }
-
-            if ( isset( $_POST['images'] ) ) {
-
-            }
+            if ( isset( $_POST['images'] ) )
+                $product->add_images( $_POST['images'] );
         }
 
         $template_response = $this->get_template_response( 'add-edit' )
