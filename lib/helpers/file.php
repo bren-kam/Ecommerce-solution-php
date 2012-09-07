@@ -44,7 +44,7 @@ class File {
 		if ( empty( $image_path ) || empty( $industry ) )
 			return false;
 
-		list( $result, $image_file ) = image::resize( $image_path, OPERATING_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
+		list( $result, $image_file ) = image::resize( $image_path, TMP_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
 
 		if ( !$result || !$image_file || !is_file( $image_file ) )
 			return false;

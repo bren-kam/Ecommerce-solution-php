@@ -115,11 +115,7 @@ class qqFileUploader {
     /**
      * Returns array('success'=>true) or array('error'=>'error message')
      */
-    function handleUpload($uploadDirectory, $replaceOldFile = FALSE){
-        if (!is_writable($uploadDirectory)){
-            return array('error' => "Server error. Upload directory isn't writable.");
-        }
-        
+    function handleUpload( $abbr = NULL ){
         if (!$this->file){
             return array('error' => 'No files were uploaded.');
         }
@@ -135,24 +131,17 @@ class qqFileUploader {
         }
         
         $pathinfo = pathinfo($this->file->getName());
-        $filename = $pathinfo['filename'];
-        //$filename = md5(uniqid());
+
         $ext = $pathinfo['extension'];
+        $file_path = tempnam( '/tmp', $abbr );
 
         if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
             $these = implode(', ', $this->allowedExtensions);
             return array('error' => 'File has an invalid extension, it should be one of '. $these . '.');
         }
-        
-        if(!$replaceOldFile){
-            /// don't overwrite previous files that were uploaded
-            while (file_exists($uploadDirectory . $filename . '.' . $ext)) {
-                $filename .= rand(10, 99);
-            }
-        }
-        
-        if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
-            return array('success'=>true);
+
+        if ($this->file->save($file_path)){
+            return array( 'success' => true, 'file_path' => $file_path );
         } else {
             return array('error'=> 'Could not save uploaded file.' .
                 'The upload was cancelled, or server error encountered');

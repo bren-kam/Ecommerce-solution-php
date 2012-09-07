@@ -62,7 +62,7 @@ class image extends Base_Class {
 	public static function resize( $image_to_resize, $save_folder, $name = '', $width_constraint = 100, $height_constraint = 100, $quality = 90, $keep_proportions = true, $fill_constraints = true ) {
 		if ( !file_exists( $image_to_resize ) )
 			return false;
-		
+
 		$info = getimagesize( $image_to_resize );
 		
 		if ( empty( $info ) )
@@ -168,7 +168,7 @@ class image extends Base_Class {
 			$destination_y = ceil( ( $height_constraint - $new_height ) / 2 );
 
             // Determine allocated color -- special ternary operator
-            $allocated_color = $transparent_allocated_color ?: imagecolorallocate( $resized_image, 255, 255, 255 );
+            $allocated_color = isset( $transparent_allocated_color ) ?: imagecolorallocate( $resized_image, 255, 255, 255 );
 
 			imagefilledrectangle( $resized_image, 0, 0, $width_constraint, $height_constraint, $allocated_color );
 		} else {

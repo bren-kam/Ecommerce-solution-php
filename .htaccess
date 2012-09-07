@@ -6,6 +6,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 
+# Increase post size
+php_value post_max_size 25M
+php_value upload_max_filesize 25M
+
 # 1 YEAR
 <FilesMatch '\.(ico|pdf|flv)$'>
 Header set Cache-Control 'max-age=29030400, public'

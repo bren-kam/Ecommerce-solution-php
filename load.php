@@ -51,6 +51,7 @@ define( 'MODEL_PATH', ABS_PATH . 'model/' . SUBDOMAIN . '/' );
 define( 'VIEW_PATH', ABS_PATH . 'view/' . SUBDOMAIN . '/' );
 define( 'CONTROLLER_PATH', ABS_PATH . 'controller/' . SUBDOMAIN . '/' );
 define( 'CACHE_PATH', ABS_PATH . 'cache/' );
+define( 'TMP_PATH', ABS_PATH . 'tmp/' );
 
 if ( PROFILE && extension_loaded( 'xhprof' ) ) {
 	// Enable XHProf (profiler)

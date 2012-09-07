@@ -85,6 +85,40 @@ class ProductsController extends BaseController {
             $industries[$industry->id] = $industry;
         }
 
+        if ( $this->verified() ) {
+            $product->brand_id = $_POST['sBrand'];
+            $product->industry_id = $_POST['sIndustry'];
+            $product->name = $_POST['tName'];
+            $product->slug = $_POST['tProductSlug'];
+            $product->description = $_POST['taDescription'];
+            $product->sku = $_POST['tSKU'];
+            $product->weight = $_POST['tWeight'];
+            $product->status = $_POST['sProductStatus'];
+            $product->publish_date = $_POST['hPublishDate'];
+            $product->publish_visibility = $_POST['sStatus'];
+
+            // Update the product
+            $product->update();
+
+            // Category - sCategory
+
+            if ( isset( $_POST['product-specs'] ) ) {
+
+            }
+
+            if ( isset( $_POST['tags'] ) ) {
+
+            }
+
+            if ( isset( $_POST['attributes'] ) ) {
+
+            }
+
+            if ( isset( $_POST['images'] ) ) {
+
+            }
+        }
+
         $template_response = $this->get_template_response( 'add-edit' )
             ->select( 'products', 'add' )
             ->add_title( $title )
@@ -197,7 +231,8 @@ class ProductsController extends BaseController {
      */
     public function upload_image() {
         // Verify the nonce
-        $response = new AjaxResponse( $this->verified() || !isset( $_POST['pid'] ) || !isset( $_POST['iid'] ) );
+        $response = new AjaxResponse( $this->verified() );
+        $response->check( isset( $_GET['pid'] ) && isset( $_GET['iid'] ), _('Image filed to upload') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -213,39 +248,42 @@ class ProductsController extends BaseController {
         $uploader = new qqFileUploader( array('gif', 'jpg', 'jpeg', 'png'), 6144000 );
 
         // Change the name
-        $new_image_name = format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
-        $temp_image_file = tempnam( '/tmp', 'gsr_' );
+        $new_image_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) );
 
         // Get variables
-        $product->get( $_POST['pid'] );
-
-        $industry->get( $_POST['iid'] );
+        $product->get( $_GET['pid'] );
+        $industry->get( $_GET['iid'] );
         $industry_name = str_replace( " ", "", $industry->name );
 
         // Upload file
-        $uploader->handleUpload( $temp_image_file );
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
 
         // Create the different versions we need
-        $file->upload_image( $temp_image_file, $new_image_name, 320, 320, $industry, 'products/' . $product->id . '/', false, true );
-        $file->upload_image( $temp_image_file, $new_image_name, 46, 46, $industry, 'products/' . $product->id . '/thumbnail/', false, true );
-        $file->upload_image( $temp_image_file, $new_image_name, 200, 200, $industry, 'products/' . $product->id . '/small/', false, true );
-        $file->upload_image( $temp_image_file, $new_image_name, 700, 700, $industry, 'products/' . $product->id . '/large/', false, true );
+        $file->upload_image( $result['file_path'], $new_image_name, 320, 320, $industry_name, 'products/' . $product->id . '/', false, true );
+        $file->upload_image( $result['file_path'], $new_image_name, 46, 46, $industry_name, 'products/' . $product->id . '/thumbnail/', false, true );
+        $file->upload_image( $result['file_path'], $new_image_name, 200, 200, $industry_name, 'products/' . $product->id . '/small/', false, true );
+        $image_name = $file->upload_image( $result['file_path'], $new_image_name, 700, 700, $industry_name, 'products/' . $product->id . '/large/', false, true );
 
         // Get image url
-        $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$new_image_name";
+        $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";
 
         // Clone image template
         jQuery('#image-template')->clone()
             ->removeAttr('id')
             ->find('a:first')
                 ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
-                ->end()
-            ->find('img:first')
-                ->attr( 'src', $image_url )
-                ->end()
+                ->find('img:first')
+                    ->attr( 'src', $image_url )
+                    ->parents('.image:first')
             ->find('input:first')
-                ->val($new_image_name)
-                ->end()
+                ->val($image_name)
+                ->parent()
             ->appendTo('#images-list');
 
         $response->add_response( 'jquery', jQuery::getResponse() );

@@ -68,10 +68,20 @@ class Product extends ActiveRecordBase {
     public function update() {
         parent::update(
             array(
-                'publish_visibility' => $this->publish_visibility
+                'brand_id' => $this->brand_id
+                , 'industry_id' => $this->industry_id
+                , 'name' => $this->name
+                , 'slug' => $this->slug
+                , 'description' => $this->description
+                , 'sku' => $this->sku
+                , 'status' => $this->status
+                , 'weight' => $this->weight
+                , 'product_specifications' => $this->product_specifications
+                , 'publish_date' => $this->publish_date
+                , 'publish_visibility' => $this->publish_visibility
             )
             , array( 'product_id' => $this->id )
-            , 's'
+            , 'iisssssiss'
             , 'i'
         );
     }
