@@ -241,7 +241,7 @@ function loadAddCategory( categoryID ) {
  */
 function loadEditCategory( categoryID ) {
 	dEditCategory = $("#dEditCategory");
-
+	
 	dEditCategory.empty().attr( 'title' , 'Edit Category' );
 	dEditCategory.dialog({
 		modal: true,

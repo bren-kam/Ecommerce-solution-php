@@ -94,12 +94,131 @@ class TicketsController extends BaseController {
 
         $this->resources
             ->css( 'tickets/ticket' )
-            ->javascript( 'tickets/ticket' );
+            ->javascript( 'tickets/ticket', 'jquery.autoresize' );
 
         return $template_response;
     }
 
     /***** AJAX *****/
+
+    public function update_assigned_to() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['auid'] ), _('Failed to update assigned user') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change priority
+        $ticket->assigned_to_user_id = $_POST['auid'];
+
+        // Update ticket
+        $ticket->update();
+
+        // Send out email
+        $priorities = array(
+            0 => 'Normal',
+            1 => 'High',
+            2 => 'Urgent'
+        );
+
+        $assigned_user = new User();
+        $assigned_user->get( $_POST['atui'] );
+
+        // Send out an email if their role is less than 8
+        $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
+        $message .= 'You have been assigned Ticket #' . $ticket->id . ". To view it, follow the link below:\n\n";
+        $message .= 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/tickets/ticket/?tid=' . $ticket->id . "\n\n";
+        $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
+        $message .= "Sincerely,\n" . $assigned_user->company . " Team";
+
+        fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+
+        return $response;
+    }
+
+    /**
+     * Update the priority of a ticket
+     *
+     * @return AjaxResponse
+     */
+    public function update_priority() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['priority'] ), _('Failed to update priority') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change priority
+        $ticket->priority = $_POST['priority'];
+
+        // Update ticket
+        $ticket->update();
+
+        return $response;
+    }
+
+    /**
+     * Update ticket status
+     *
+     * @return AjaxResponse
+     */
+    public function update_status() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tid'] ) && isset( $_POST['status'] ), _('Failed to update status') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket
+        $ticket = new Ticket();
+        $ticket->get( $_POST['tid'] );
+
+        // Change status
+        $ticket->status = $_POST['status'];
+
+        // Update ticket
+        $ticket->update();
+
+        // Mark statistic for updated tickets if it's a GSR user
+        if ( 1 == $ticket->status && in_array( $this->user->id, array( 493, 1, 814, 305, 85, 19 ) ) ) {
+            // Load library
+            library('statistics-api');
+            $stat = new Stat_API( Config::key('rs-key') );
+
+            // Get the dates
+            $date = new DateTime();
+            $ticket_date = new DateTime( $ticket->date_created );
+
+            // Add the value of a completed ticket
+            $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
+
+            // Add the average ticket time
+            $hours = ( $date->getTimestamp() - $ticket_date->getTimestamp() ) / 3600;
+            $stat->add_graph_value( 23453, round( $hours, 1 ), $date->format('Y-m-d')  );
+        }
+
+        return $response;
+    }
 
     /**
      * List Accounts

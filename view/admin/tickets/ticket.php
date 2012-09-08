@@ -29,6 +29,9 @@ foreach ( $admin_users as $au ) {
 $user_is_admin = in_array( $ticket->user_id, $admin_user_ids );
 
 echo $template->start( $ticket->summary, false );
+nonce::field( 'update_status', '_update_status' );
+nonce::field( 'update_priority', '_update_priority' );
+nonce::field( 'update_assigned_to', '_update_assigned_to' );
 ?>
 
 <table class="formatted">
@@ -198,5 +201,6 @@ echo $template->start( $ticket->summary, false );
     </div>
 </div>
 <br clear="all" />
+<input type="hidden" id="hTicketID" value="<?php echo $ticket->id; ?>" />
 
 <?php echo $template->end(); ?>

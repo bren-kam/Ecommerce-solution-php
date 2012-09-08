@@ -30,6 +30,22 @@ class Ticket extends ActiveRecordBase {
     }
 
     /**
+     * Update a ticket
+     */
+    public function update() {
+        parent::update(
+            array(
+                'assigned_to_user_id' => $this->assigned_to_user_id
+                , 'priority' => $this->priority
+                , 'status' => $this->status
+            )
+            , array( 'ticket_id' => $this->id )
+            , 'iii'
+            , 'i'
+        );
+    }
+
+    /**
 	 * Get all information of the tickets
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )

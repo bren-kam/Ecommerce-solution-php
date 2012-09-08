@@ -13,6 +13,7 @@ newrelic_background_job();
 $a = new Analytics();
 $c = new Craigslist;
 $m = new Mobile_Marketing();
+$s = new SiteOnTime();
 
 // Determine date range
 $date = new DateTime();
@@ -26,4 +27,7 @@ $c->update_tags();
 
 // Synchronize Mobile Subscribers
 $m->synchronize_contacts();
+
+// Synchronize Site On Time Products
+$s->run();
 ?>

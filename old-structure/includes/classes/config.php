@@ -6,7 +6,7 @@
  * @since 1.0.0
  */
 
-class Config2 {
+class Config {
 	/**
 	 * The keys
 	 * @access private

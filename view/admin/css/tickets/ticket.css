@@ -14,8 +14,8 @@ blockquote { margin-left: 1px; }
 .comment .message { font-size: 14px; color: #5f5f66; margin-left: 7px; }
 
 #comment { width: 100%; height: 19px; padding: 7px 8px 6px; margin-bottom: 14px; }
-#add-comment { float:right; margin: 3px 10px 0 }
-#private-wrapper { float:right; margin: 12px 10px 0; }
+#add-comment { float:right; margin: 3px 10px 0; padding: 0 20px; line-height: 29px; }
+#private-wrapper { float:right; margin: 8px 10px 0; }
 #private-wrapper input { position: relative; top: 2px }
 #comment-wrapper { margin-right: 18px; }
 #comments-divider { margin-top: 10px }
