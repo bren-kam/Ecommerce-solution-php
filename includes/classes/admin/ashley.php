@@ -965,7 +965,7 @@ class Ashley extends Base_Class {
         // See if the slug already exists
         if ( $slug == $existing_slug ) {
             // Check to see if it has been incremented before
-            if ( preg_match( '/-([0-9]+)$/', $slug, $matches ) > 0 ) {
+            if ( 1 == preg_match( '/-([0-9]+)$/', $slug, $matches ) > 0 ) {
                 // The number to increment it by
                 $increment = $matches[1] * 1 + 1;
 

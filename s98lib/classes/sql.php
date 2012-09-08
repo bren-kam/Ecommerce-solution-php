@@ -168,7 +168,7 @@ class SQL {
 		if ( defined('DB_COLLATE') )
 			$this->collate = DB_COLLATE;
 
-         if ( stristr( $_SERVER['DOCUMENT_ROOT'], '/gsr/systems/' ) ) {
+         if ( stristr( $_SERVER['DOCUMENT_ROOT'], '/home/' ) ) {
             require '/gsr/systems/db.php';
 
             $this->m = new mysqli( $db_host, $db_username, $db_password, $db_name );
