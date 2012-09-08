@@ -1,7 +1,10 @@
 <?php
 class Ticket extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $ticket_id, $assigned_to_user_id, $name, $priority, $website, $assigned_to, $summary, $date_created;
+    public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to, $status, $priority, $browser_name, $browser_version, $date_created;
+
+    // Fields from other tables
+    public $role, $website_id, $domain;
 
     /**
      * Setup the account initial data

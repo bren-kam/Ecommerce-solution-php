@@ -23,7 +23,7 @@ class TicketUpload extends ActiveRecordBase {
      * @param int $ticket_id
      * @return array
      */
-    public function get_for_ticket( $ticket_id ) {
+    public function get_by_ticket( $ticket_id ) {
 		return $this->prepare(
             'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_id` = :ticket_id'
             , 'i'
@@ -37,7 +37,7 @@ class TicketUpload extends ActiveRecordBase {
      * @param int $ticket_id
      * @return array
      */
-    public function get_for_comments( $ticket_id ) {
+    public function get_by_comments( $ticket_id ) {
         return $this->prepare(
             'SELECT a.`key`, b.`ticket_comment_id` FROM `ticket_uploads` AS a LEFT JOIN `ticket_comment_upload_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) LEFT JOIN `ticket_comments` AS c ON ( b.`ticket_comment_id` = c.`ticket_comment_id` ) WHERE c.`ticket_id` = :ticket_id'
             , 'i'

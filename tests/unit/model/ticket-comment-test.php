@@ -19,7 +19,11 @@ class TicketCommentTest extends BaseDatabaseTest {
      * Test Getting all the ticket comments
      */
     public function testGetAll() {
-        $comments = $this->ticket_comment->get_all(1);
+        // Declare variables
+        $ticket_id = 1;
+
+        // Get comments
+        $comments = $this->ticket_comment->get_by_ticket( $ticket_id );
 
         $this->assertTrue( $comments[0] instanceof TicketComment );
     }

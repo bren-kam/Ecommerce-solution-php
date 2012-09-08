@@ -19,7 +19,11 @@ class TicketUploadTest extends BaseDatabaseTest {
      * Test Getting all the uploads for a ticket
      */
     public function testGetForTicket() {
-        $uploads = $this->ticket_upload->get_for_ticket(33);
+        // Declare variables
+        $ticket_id = 33;
+
+        // Get uploads
+        $uploads = $this->ticket_upload->get_by_ticket( $ticket_id );
 
         $this->assertEquals( $uploads[0], '19/160/33/gsr-home.jpg' );
     }
@@ -28,7 +32,11 @@ class TicketUploadTest extends BaseDatabaseTest {
      * Test Getting all the uploads for a ticket
      */
     public function testGetForComments() {
-        $uploads = $this->ticket_upload->get_for_comments(2);
+        // Declare variables
+        $ticket_id = 2;
+
+        // Get uploads
+        $uploads = $this->ticket_upload->get_by_comments( $ticket_id );
 
         $this->assertTrue( $uploads[0] instanceof TicketUpload );
         $this->assertEquals( $uploads[0]->key, '/tickets/uploads/test.jpg' );

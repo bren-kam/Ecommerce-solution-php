@@ -65,12 +65,12 @@ class TicketsController extends BaseController {
             return new RedirectResponse('/tickets/');
 
         // Get the uploads
-        $ticket_uploads = $tu->get_for_ticket( $ticket_id );
-        $comment_array = $tc->get_all( $ticket_id );
+        $ticket_uploads = $tu->get_by_ticket( $ticket_id );
+        $comment_array = $tc->get_by_ticket( $ticket_id );
         $comments = $comment_user_ids = array();
 
         if ( is_array( $comment_array ) ) {
-            $comment_uploads = $tu->get_for_comments( $ticket_id );
+            $comment_uploads = $tu->get_by_comments( $ticket_id );
 
             foreach ( $comment_array as $comment ) {
                 $comments[$comment->ticket_comment_id] = $comment;
@@ -79,9 +79,9 @@ class TicketsController extends BaseController {
 
             if ( is_array( $comment_uploads ) )
             foreach ( $comment_uploads as $comment_upload ) {
-                $comments[$comment_upload->ticket_comment_id][] = array(
+                $comments[$comment_upload->ticket_comment_id]->uploads[] = array(
                     'link' => 'http://s3.amazonaws.com/retailcatalog.us/attachments/' . $comment_upload->key
-                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $a->key ) ) )
+                    , 'name' => ucwords( str_replace( '-', ' ', f::name( $comment_upload->key ) ) )
                 );
             }
         }
@@ -89,7 +89,12 @@ class TicketsController extends BaseController {
         $admin_users = $this->user->get_admin_users( $comment_user_ids );
 
         $template_response = $this->get_template_response( 'ticket', _('Ticket') )
+            ->add_title( _('View') )
             ->set( compact( 'ticket', 'ticket_uploads', 'comments', 'admin_users' ) );
+
+        $this->resources
+            ->css( 'tickets/ticket' )
+            ->javascript( 'tickets/ticket' );
 
         return $template_response;
     }

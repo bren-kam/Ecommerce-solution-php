@@ -10,10 +10,12 @@
  * @var Ticket $ticket
  * @var array $admin_users
  * @var array $ticket_uploads
+ * @var array $comments
  */
 
 // Determine the select options
 $admin_user_options = '';
+$admin_user_ids = array();
 
 foreach ( $admin_users as $au ) {
     $selected = ( $ticket->assigned_to_user_id == $au->user_id ) ? ' selected="selected"' : '';
@@ -29,7 +31,7 @@ $user_is_admin = in_array( $ticket->user_id, $admin_user_ids );
 echo $template->start( $ticket->summary, false );
 ?>
 
-<table>
+<table class="formatted">
     <tr>
         <td>
             <strong><?php echo _('Name'); ?></strong>
@@ -80,7 +82,7 @@ echo $template->start( $ticket->summary, false );
         <td>
             <strong><?php echo _('Status'); ?></strong>
             <br />
-            <select id="sStatus" class="dd" style="width: 150px">
+            <select id="sStatus">
             <?php
             $statuses = array(
                 0 => _('Open'),
@@ -133,5 +135,68 @@ echo $template->start( $ticket->summary, false );
         <a href="<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a>
     <?php } ?>
 </div>
+
+<br /><hr />
+
+<div id="comments">
+    <div id="comment-wrapper">
+        <textarea id="comment" cols="5" rows="3" tmpval="<?php echo _('Write a comment...'); ?>"></textarea>
+    </div>
+    <a href="#" id="add-comment" class="button hidden" title="<?php echo _('Add Comment'); ?>"><?php echo _('Add Comment'); ?></a>
+    <div id="private-wrapper" class="hidden">
+        <input type="checkbox" id="private" value="1" /> <label for="private"><?php echo _('Private'); ?></label>
+    </div>
+
+    <div id="uploader"></div>
+    <a href="#" id="attach" class="button hidden" title="<?php echo _('Attach'); ?>"><?php echo _('Attach'); ?></a>
+
+    <br clear="all" />
+    <div id="attachments"></div>
+    <div class="divider" id="comments-divider"></div>
+    <div id="comments-list">
+    <?php
+    if ( is_array( $comments ) )
+    foreach ( $comments as $comment ) {
+
+        if ( $user->id == $ticket->user_id && '1' == $comment->private )
+            continue;
+
+        $date = new DateTime( $comment->date_created );
+    ?>
+    <div class="comment" id="comment-<?php echo $comment->id; ?>">
+        <p class="name">
+            <?php if ( '1' == $comment->private ) { ?>
+                <img src="/images/icons/lock.gif" width="11" height="15" alt="<?php echo _('Private'); ?>" class="private" />
+            <?php
+            }
+
+            if ( in_array( $comment->user_id, $admin_user_ids ) )
+                echo '<a href="#" class="assign-to" rel="', $comment->user_id, '">';
+
+            echo $comment->name;
+
+            if ( in_array( $comment->user_id, $admin_user_ids ) )
+                echo '</a>';
+            ?>
+            <span class="date"><?php echo $date->format( 'F j, Y g:ia' ); ?></span>
+
+            <a href="#" class="delete-comment" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" alt="<?php echo _('X'); ?>" width="16" height="16" /></a>
+        </p>
+        <p class="message"><?php echo $comment->comment; ?></p>
+
+        <div class="attachments">
+        <?php
+        if ( is_array( $comment->uploads ) )
+        foreach ( $comment->uploads as $upload ) {
+        ?>
+        <a href="<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a>
+        <?php } ?>
+        </div>
+        <br clear="left" />
+    </div>
+    <?php } ?>
+    </div>
+</div>
+<br clear="all" />
 
 <?php echo $template->end(); ?>
