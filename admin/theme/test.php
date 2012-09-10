@@ -1,13 +1,12 @@
 <?php
-//$a = new Ashley();
-//$a->load_packages();
+$a = new Ashley();
+$a->load_packages();
 
-library('ashley-api/ashley-api');
-$a = new Ashley_API();
-$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
-
-exit;
-/*$packages = $a->get_packages();
+//library('ashley-api/ashley-api');
+//$a = new Ashley_API();
+//$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
+/*
+$packages = $a->get_packages();
 
 $i = 0;
 foreach ( $packages as $package ) {
@@ -16,7 +15,6 @@ foreach ( $packages as $package ) {
         continue;
     fn::info( $package );exit;
 }
->>>>>>> feature-new-ashley-feed
 exit;
 /*
 // Load the library
