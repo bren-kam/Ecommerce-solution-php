@@ -57,6 +57,10 @@ class Ashley_API {
      * @return object
      */
     public function get_packages() {
+        // Give it time to load
+
+        set_time_limit(300);
+
         // Setup the package request
         $package_request = new PackageRequest();
         $package_request->ExecuteOptions = array( 'PackageExecuteOption' => 'LoadPackages' );
@@ -71,6 +75,150 @@ class Ashley_API {
         $packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->PackagesCollection->XmlData ) );
 
         return $packages;
+    }
+
+    /**
+     * Get Package Templates
+     *
+     * @param string $template_id
+     * @param string $series_number
+     * @return object
+     */
+    public function get_package_templates( $template_id = NULL, $series_number = NULL ) {
+         // Setup the package request
+        $package_request = new PackageRequest();
+
+        if ( is_null( $template_id ) || is_null( $series_number ) ) {
+            $package_request->ExecuteOptions = array( 'PackageTemplateExecuteOption' => 'LoadAllPackageTemplates' );
+            $all = true;
+        } else {
+            $package_request->ExecuteOptions = array( 'PackageTemplateExecuteOption' => 'LoadPackageTemplate' );
+            $package_request->Criteria = array( 'TemplateId' => $template_id, 'SeriesNo' => $series_number );
+            $all = false;
+        }
+
+        // Execute the response
+        $this->_execute( 'GetPackageTemplates', new GetPackageTemplates( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // Determine what we're grabbing
+        $template_packages = ( $all ) ? $this->_response->PackageTemplatesCollection->XmlData : $this->_response->PackageTemplate->XmlData;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        $template_packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $template_packages ) );
+
+        return ( $all ) ? $template_packages->PackageTemplate : $template_packages;
+    }
+
+    /**
+     * Get Categories
+     *
+     * @return object
+     */
+    public function get_categories() {
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'CategoryExecuteOption' => 'LoadAllCategories' );
+
+        // Execute the response
+        $this->_execute( 'GetCategories', new GetCategories( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->CategoriesCollection->XmlData ) );
+    }
+
+    /**
+     * Get Dimensions
+     *
+     * @param string $items
+     * @return object
+     */
+    public function get_dimensions( $items ) {
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'DimensionExecuteOption' => 'LoadAllDimensions' );
+        $package_request->Criteria = array( 'ListOfItems' => $items );
+
+        // Execute the response
+        $this->_execute( 'GetDimensions', new GetDimensions( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->DimensionsCollection->XmlData ) );
+    }
+
+    /**
+     * Get Friendly Descriptions
+     *
+     * @return object
+     */
+    public function get_friendly_descriptions() {
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'FriendlyDescriptionExecuteOption' => 'LoadAllFriendlyDescriptions' );
+
+        // Execute the response
+        $this->_execute( 'GetFriendlyDescriptions', new GetFriendlyDescriptions( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->FriendlyDescriptionsCollection->XmlData ) );
+    }
+
+    /**
+     * Get Items
+     *
+     * Other options for item execute option
+     *      LoadItems
+     *      LoadAllItemCategories
+     *
+     * @param string|array $item_execute_option [optional]
+     * @return object
+     */
+    public function get_items( $item_execute_option = 'LoadItems' ) {
+        ini_set( 'memory_limit', '512M' );
+        set_time_limit(3000);
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'ItemExecuteOption' => $item_execute_option );
+
+        // Execute the response
+        $this->_execute( 'GetItems', new GetItems( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->GetItemsCollection->XmlData ) );
+    }
+
+    /**
+     * Get Item Features
+     *
+     * @return object
+     */
+    public function get_item_features() {
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'ItemFeaturesExecuteOption' => 'LoadAllProductFeatures' );
+
+        // Execute the response
+        $this->_execute( 'GetItemFeatures', new GetItemFeatures( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->ItemFeaturesCollection->XmlData ) );
     }
 
 	/***********************/
@@ -153,13 +301,13 @@ class Ashley_API {
      * Display debug information
      */
     public function debug() {
-        echo "<h1>Method</h1>\n<p>" . $this->_method . "</p>\n<hr />\n<br /><br />\n";
-        echo "<h1>Request Headers</h1>\n<pre>", $this->_request_headers, "</pre>\n<hr />\n<br /><br />\n";
-        echo "<h1>Request</h1>\n\n<textarea style='width:100%;height:150px;' cols='50' rows='5'>", $this->_request, "</textarea>\n<hr />\n<br /><br />\n";
-        echo "<h1>Response Headers</h1>\n<pre>", $this->_response_headers, "</pre>\n<hr />\n<br /><br />\n";
-        echo "<h1>Raw Response</h1>\n<textarea style='width:100%;height:300px;' cols='50' rows='5'>", $this->_raw_response, "</textarea>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Method</h1>\n<p>" . $this->_method . "</p>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Request Headers</h1>\n<pre>", $this->_request_headers, "</pre>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Request</h1>\n\n<textarea style='width:100%;height:150px;' cols='50' rows='5'>", $this->_request, "</textarea>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Response Headers</h1>\n<pre>", $this->_response_headers, "</pre>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Raw Response</h1>\n<textarea style='width:100%;height:300px;' cols='50' rows='5'>", $this->_raw_response, "</textarea>\n<hr />\n<br /><br />\n";
         echo "<h1>Full Response</h1>\n<pre>", var_export( $this->_full_response, true ), "</pre>\n<hr />\n<br /><br />\n";
-        echo "<h1>Response</h1>\n<pre>", var_export( $this->_response, true ), "</pre>\n<hr />\n<br /><br />\n";
+        //echo "<h1>Response</h1>\n<pre>", var_export( $this->_response, true ), "</pre>\n<hr />\n<br /><br />\n";
     }
 
 	/**
