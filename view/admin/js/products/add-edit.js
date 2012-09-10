@@ -193,12 +193,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         action: '/products/upload-image/'
         , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
         , element: $('#upload-image')[0]
-        , sizeLimit: 6144000 // 6 mb's
+        , sizeLimit: 10485760 // 10 mb's
         , onSubmit: function( id, fileName ) {
             uploader.setParams({
-                _nonce : $('#_upload_image').val()
-                , pid : $('#hProductId').val()
-                , iid : $('#sIndustry').val()
+                _nonce : $('#_upload').val()
+                , tid : $('#hTicketID').val()
             })
         }
         , onComplete: function( id, fileName, responseJSON ) {

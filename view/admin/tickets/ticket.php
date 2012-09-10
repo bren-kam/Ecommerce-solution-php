@@ -151,7 +151,7 @@ nonce::field( 'update_assigned_to', '_update_assigned_to' );
         <input type="checkbox" id="private" value="1" /> <label for="private"><?php echo _('Private'); ?></label>
     </div>
 
-    <div id="uploader"></div>
+    <div id="uploader" class="hidden"></div>
     <a href="#" id="attach" class="button hidden" title="<?php echo _('Attach'); ?>"><?php echo _('Attach'); ?></a>
 
     <br clear="all" />
