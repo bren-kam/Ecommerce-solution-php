@@ -101,6 +101,39 @@ class TicketsController extends BaseController {
 
     /***** AJAX *****/
 
+    /**
+     * Delete a comment
+     *
+     * @return AjaxResponse
+     */
+    public function delete_comment() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['tcid'] ), _('Failed to delete comment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket comment
+        $ticket_comment = new TicketComment();
+        $ticket_comment->get( $_POST['tcid'] );
+
+        // Need to get uploads and delete them
+
+        // Then delete ticket
+        $ticket_comment->delete();
+
+        return $response;
+    }
+
+    /**
+     * Update who the ticket is assigned to
+     *
+     * @return AjaxResponse
+     */
     public function update_assigned_to() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );

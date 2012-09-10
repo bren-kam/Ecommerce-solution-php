@@ -35,6 +35,18 @@ jQuery(function($) {
 			$('#add-comment, #private-wrapper, #attach').hide();
 		}
 	}).autoResize();
+
+    // Edit Entries
+	$('#comments-list').on( 'click', '.delete-comment', function() {
+		// Make sure they actually want to do this
+		if ( !confirm( $(this).attr('confirm') ) )
+			return;
+
+		var c = $(this).parents('.comment:first');
+
+		// Send AJAX request to delete the entr
+		$.post( '/tickets/delete-comment/', { _nonce : $('#_delete_comment').val(), tcid : c.attr('id').replace( 'comment-', '' ) }, ajaxResponse, 'json' );
+	});
 });
 
 // Update assigned to

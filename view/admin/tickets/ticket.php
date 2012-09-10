@@ -31,6 +31,7 @@ $user_is_admin = in_array( $ticket->user_id, $admin_user_ids );
 echo $template->start( $ticket->summary, false );
 nonce::field( 'update_status', '_update_status' );
 nonce::field( 'update_priority', '_update_priority' );
+nonce::field( 'delete_comment', '_delete_comment' );
 nonce::field( 'update_assigned_to', '_update_assigned_to' );
 ?>
 
@@ -158,6 +159,8 @@ nonce::field( 'update_assigned_to', '_update_assigned_to' );
     <div class="divider" id="comments-divider"></div>
     <div id="comments-list">
     <?php
+    $confirmation = _('Are you sure you want to delete this comment? This cannot be undone.');
+
     if ( is_array( $comments ) )
     foreach ( $comments as $comment ) {
 
@@ -183,7 +186,7 @@ nonce::field( 'update_assigned_to', '_update_assigned_to' );
             ?>
             <span class="date"><?php echo $date->format( 'F j, Y g:ia' ); ?></span>
 
-            <a href="#" class="delete-comment" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" alt="<?php echo _('X'); ?>" width="16" height="16" /></a>
+            <a href="#" class="delete-comment" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirmation; ?>"><img src="/images/icons/x.png" alt="<?php echo _('X'); ?>" width="16" height="16" /></a>
         </p>
         <p class="message"><?php echo $comment->comment; ?></p>
 
