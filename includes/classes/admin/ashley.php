@@ -30,26 +30,26 @@ class Ashley extends Base_Class {
      */
     private $_categories = array(
         'Accents' => 0
-        , 'Stationary Upholstery' => 0
+        , 'Stationary Upholstery' => 218
         , 'Motion Upholstery' => 0
-        , 'Sectionals' => 0
-        , 'Chairs' => 0
-        , 'Stationary Leather' => 0
-        , 'Recliners' => 0
+        , 'Sectionals' => 226
+        , 'Chairs' => 221
+        , 'Stationary Leather' => 255
+        , 'Recliners' => 222
         , 'Motion Leather' => 0
-        , 'Dining' => 0
-        , 'Master Bedroom' => 0
-        , 'Metal Beds' => 0
-        , 'Youth Bedroom' => 0
-        , 'Top of Bed' => 0
-        , 'Curios' => 0
-        , 'Home Office' => 0
-        , 'Lamps' => 0
+        , 'Dining' => 347
+        , 'Master Bedroom' => 228
+        , 'Metal Beds' => 685
+        , 'Youth Bedroom' => 267
+        , 'Top of Bed' => 463
+        , 'Curios' => 434
+        , 'Home Office' => 328
+        , 'Lamps' => 194
         , 'Mattresses' => 0
-        , 'Rugs' => 0
-        , 'Occasional' => 0
-        , 'Walls' => 0
-        , 'Entertainment' => 0
+        , 'Rugs' => 338
+        , 'Occasional' => 382
+        , 'Walls' => 336
+        , 'Entertainment' => 335
     );
 
 	/**
@@ -97,7 +97,23 @@ class Ashley extends Base_Class {
         $a = new Ashley_API();
 
         // Get packages
-        $series = $a->get_series();
+        $packages = $a->get_packages();
+
+        // Get Series
+        $series_array = $a->get_series();
+        $series = array();
+
+        foreach ( $series_array as $sa ) {
+            $series[(string)$sa->SeriesNo] = $sa;
+        }
+
+        // Get Templates
+        $package_template_array = $a->get_package_templates();
+        $package_templates = array();
+
+        foreach ( $package_template_array as $pta ) {
+            $package_templates[(string)$pta->TemplateId] = $pta;
+        }
 
         // Get existing products
         $existing_products = $this->_get_existing_products();
@@ -111,44 +127,47 @@ class Ashley extends Base_Class {
         // Any new products get a link
         $links = array();
 
-        foreach ( $series as $item ) {
+        foreach ( $packages as $item ) {
             // Ensure that we can keep running
             echo '                                                   ';
             set_time_limit(30);
 			flush();
 
-            $image_name = (string) $item->ImageName;
+            $image = (string) $item->Image;
 
             // We don't care if they don't have an image
-            if ( 'false' == (string) $item->Active || empty( $image_name ) || 'NOIMAGEAVAILABLE_THUMB.jpg' == $image_name ) {
+            if ( empty( $image ) ) {
                 //|| !curl::check_file( self::IMAGE_URL . $item->Image )
                 $skipped++;
                 continue;
             }
 
+            $package_series = $series[(string)$item->SeriesNo];
+            $template = $package_templates[(string)$item->TemplateId];
+
             // Count how many products we're dealing with
 			$i++;
 
             // Start collecting data
-			$name = $item->SeriesName . ' ' . $item->Grouping;
+			$name = $item->SeriesName . ' ' . $template->Descr;
 
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-            $sku = $item->SeriesNo;
-			$image = self::IMAGE_URL . $image_name;
+            $sku = $item->PackageId;
+			$image = self::IMAGE_URL . $image;
 			$weight = $volume = 0;
 
             // Set item description
-			$item_description = '<p>' . $item->Description . "</p>\n\n<p>" . $item->Features . "</p>\n\n<p>" . $item->SeriesColor . "</p>\n\n<p>" . $item->StyleDescription . '</p>';
+			$item_description = '<p>' . $package_series->Description . "</p>\n\n<p>" . $package_series->Features . "</p>\n\n<p>" . $package_series->SeriesColor . "</p>\n\n<p>" . $package_series->StyleDescription . '</p>';
             $description = format::autop( format::unautop( $item_description ) );
 
             // Will have to format this
 			$product_specs = '';
 
             // One of the Ashley brands
-			$brand_id = $this->_brands[(string)$item->Showroom];
+			$brand_id = $this->_brands[(string)$package_series->Showroom];
 
             // Get Category ID
-            $category_id = $this->_categories[(string)$item->Grouping];
+            $category_id = $this->_categories[(string)$package_series->Grouping];
 
 			$images = array();
 
