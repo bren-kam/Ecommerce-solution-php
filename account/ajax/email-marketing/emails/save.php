@@ -22,8 +22,8 @@ if ( !empty( $_POST['tTime'] ) ) {
 	
 	if ( 'pm' == strtolower( $am_pm ) ) {
 		list( $hour, $minute ) = explode( ':', $time );
-		
-		$date_sent .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+
+		$date_sent .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
 	} else {
 		$date_sent .= ' ' . $time . ':00';
 	}
