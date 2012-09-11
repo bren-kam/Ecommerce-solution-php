@@ -18,6 +18,19 @@ class TicketUpload extends ActiveRecordBase {
     }
 
     /**
+     * Create
+     */
+    public function create() {
+        $this->insert(
+            array(
+                'key' => $this->key
+                , 'date_created' => dt::now()
+            )
+            , 'ss'
+        );
+    }
+
+    /**
      * Get ticket uploads
      *
      * @param int $ticket_id

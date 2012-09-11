@@ -55,8 +55,8 @@ class TicketsController extends BaseController {
 
         // Instantiate all the objects
         $ticket = new Ticket();
-        $tc = new TicketComment();
         $tu = new TicketUpload();
+        $tc = new TicketComment();
 
         $ticket->get( $ticket_id );
 
@@ -100,6 +100,67 @@ class TicketsController extends BaseController {
     }
 
     /***** AJAX *****/
+
+    /**
+     * Upload an attachment
+     *
+     * @return AjaxResponse
+     */
+    public function upload_attachment() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['wid'] ), _('Failed to upload attachment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $ticket_upload = new TicketUpload();
+        $file = new File();
+        $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt'), 10485760 );
+
+        // Get variables
+		$directory = $this->user->id . '/' . $_POST['wid']. '/';
+        $file_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+
+        // Create upload
+        $ticket_upload->key = $directory . $file_name;
+        $ticket_upload->create();
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload attachment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $file_url = $file->upload_file( $result['file_path'], $directory, $file_name );
+
+        // Clone image template
+        jQuery('#image-template')->clone()
+            ->removeAttr('id')
+            ->find('a:first')
+                ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
+                ->find('img:first')
+                    ->attr( 'src', $image_url )
+                    ->parents('.image:first')
+            ->find('input:first')
+                ->val($image_name)
+                ->parent()
+            ->appendTo('#images-list');
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
 
     /**
      * Delete a comment

@@ -53,12 +53,10 @@ jQuery(function($) {
         action: '/tickets/upload/'
         , allowedExtensions: ['pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt']
         , element: $('#uploader')[0]
-        , sizeLimit: 6144000 // 6 mb's
+        , sizeLimit: 10485760 // 6 mb's
         , onSubmit: function( id, fileName ) {
             uploader.setParams({
-                _nonce : $('#_upload_image').val()
-                , pid : $('#hProductId').val()
-                , iid : $('#sIndustry').val()
+                _nonce : $('#_upload').val()
             })
         }
         , onComplete: function( id, fileName, responseJSON ) {

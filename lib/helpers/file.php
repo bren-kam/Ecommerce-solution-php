@@ -64,6 +64,23 @@ class File {
 	}
 
     /**
+     * Upload File
+     *
+     * @param string $file_path
+     * @param string $directory
+     * @param string $name
+     * @return string|bool
+     */
+    public function upload_file( $file_path, $directory, $name ) {
+		if ( !$this->s3->putObjectFile( $directory, $this->bucket, 'attachments/' . $directory . $name, S3::ACL_PUBLIC_READ ) )
+            return false;
+
+        unlink( $file_path );
+
+        return 'http://s3.amazonaws.com/' . $this->bucket . "/attachments/{$directory}{$name}";
+    }
+
+    /**
 	 * Deletes an image from the Amazon S3
 	 *
 	 * @param string $image_path (key)

@@ -33,6 +33,7 @@ nonce::field( 'update_status', '_update_status' );
 nonce::field( 'update_priority', '_update_priority' );
 nonce::field( 'delete_comment', '_delete_comment' );
 nonce::field( 'update_assigned_to', '_update_assigned_to' );
+nonce::field( 'upload', '_upload' );
 ?>
 
 <table class="formatted">
