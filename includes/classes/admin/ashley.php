@@ -15,132 +15,41 @@ class Ashley extends Base_Class {
 	private $images = array();
 
     /**
-     * Hold Ashley Package Description translations
-     * @var array
+     * Hold the ashley brands
      */
-    private $_package_descriptions = array(
-        'A' => 'Armoire'
-        , 'B' => 'Bed'
-        , 'BAR 2 BS' => 'Bar, 2 Bar Stools'
-        , 'BB' => 'Bunk Bed'
-        , 'BB D M' => 'Bunk Bed, Dresser, Mirror'
-        , 'BBTF' => 'Bunk Bed - Twin/Full'
-        , 'BBTF D M' => 'Bunk Bed - Twin/Full, Dresser, Mirror'
-        , 'BBTF D M 1N' => 'Bunk Bed, Dresser, Mirror, 1NS'
-        , 'BBTF D M C' => 'Bunk Bed, Dresser, Mirror, Chest'
-        , 'BBTT' => 'Bunk Bed - Twin/Twin'
-        , 'BBTT D M' => 'Bunk Bed - Twin/Twin, Dresser, Mirror'
-        , 'BK' => 'Bookcase'
-        , 'BS' => 'Bar Stools'
-        , 'C' => 'Desk Chair'
-        , 'CK' => 'Cal King Bed'
-        , 'CK D M' => 'Cal King Bed, Dresser, Mirror'
-        , 'CK D M A' => 'Cal King, Dresser, Mirror, Armoire'
-        , 'CK D M C' => 'Cal King, Dresser, Mirror, Chest'
-        , 'CK D M N' => 'Cal King, Dresser, Mirror, 1NS'
-        , 'D' => 'Dresser'
-        , 'D C' => 'Desk, Chair'
-        , 'D H' => 'Desk, Hutch'
-        , 'D M' => 'Dresser, Mirror'
-        , 'D T' => 'Desk and Top - Roll Top / Hutch top'
-        , 'DB' => 'Day Bed'
-        , 'DB D M' => 'DayBed, Dresser, Mirror'
-        , 'DB WT' => 'Day Bed w/Trundle'
-        , 'ENT' => 'Entertainment Center'
-        , 'F CPT 2 SS' => 'Full Capt Bed, Storage 2 Sides'
-        , 'F CPT wS' => 'Full Captain Storage Bed'
-        , 'FB' => 'Full Bed'
-        , 'FB D M' => 'Full Bed, Dresser, Mirror'
-        , 'FB D M C' => 'Full Bed, Dresser, Mirror, Chest'
-        , 'FB T' => 'Full Bed w/ Trundle'
-        , 'FB WTDM' => 'Full Bed w/Trundle, Dresser,Mirror'
-        , 'FBS' => 'Full Bed w/ Storage'
-        , 'FBS D M' => 'Full Bed w/ Storage, Dresser, Mirror'
-        , 'FFB DM' => 'Full/Full Bunk, Dresser, Mirror'
-        , 'FH D M' => 'Full Hdbd, Dresser, Mirror'
-        , 'H D M' => 'HdBd, Dresser, Mirror'
-        , 'H D M C' => 'HdBd, Dresser, Mirror, Chest'
-        , 'KB' => 'K Bed'
-        , 'KB D M' => 'K Bed, Dresser, Mirror'
-        , 'KB D M A' => 'K Bed, Dresser, Mirror, Armoire'
-        , 'KB D M A 2N' => 'KBed,Dressr,Mirror,Armr,2NS'
-        , 'KB D M C' => 'K Bed, Dresser, Mirror, Chest'
-        , 'KB D M C 2N' => 'KBed,Dressr,Mrror,Chest,2NS'
-        , 'KB D M N' => 'K Bed, Dresser, Mirror, 1 NS'
-        , 'KB S' => 'King Bed w/Storage'
-        , 'KM' => 'King Metal Bed'
-        , 'LB' => 'Loft Bed'
-        , 'LF RF' => 'LAFSectional,RAFSectional'
-        , 'LF RF W' => 'LAF, RAF, Wdge'
-        , 'MC' => 'Media Chest'
-        , 'P 2B 2BS' => 'Pub / Breakfast Table, 2 Benches, 2 Bar Stools'
-        , 'P 2BS' => 'Pub / Breakfast Table, 2 Bar Stools'
-        , 'P 2BS 2DBS CS' => 'Pub Table, 2 Bar Stools, 2 Double Bar Stools, Corner Stool'
-        , 'P 2DBS CS' => 'Pub Table / 2 Dbl Bar Stools / Corner Stool'
-        , 'P 3BS' => 'Pub/Breakfast Table, 3 Bar Stools'
-        , 'P 4BS' => 'Pub / Breakfast Table, 4 Bar Stools'
-        , 'P 5BS' => 'Pub/Breakfast Table, 5 Bar Stools'
-        , 'P 6BS' => 'Pub / Breakfast Table, 6 Bar Stools'
-        , 'P B 4BS' => 'Pub / Breakfast Table, Bench, 4 Bar Stools'
-        , 'Q' => 'Q Bed'
-        , 'Q wS' => 'Q Bed w/Storage'
-        , 'Q wS DM' => 'Q Bed w/Storage, Dresser, Mirror'
-        , 'QB D M' => 'Q Bed, Dresser, Mirror'
-        , 'QB D M 2N' => 'Q Bed, Dresser, Mirror, 2NS'
-        , 'QB D M A' => 'Q Bed, Dresser, Mirror, Armoire'
-        , 'QB D M A 2N' => 'QBed,Dressr,Mirror,Armr,2NS'
-        , 'QB D M C' => 'Q Bed, Dresser, Mirror, Chest'
-        , 'QB D M C 2N' => 'QBed,Dressr,Mrror,Chest,2NS'
-        , 'QB D M C NS' => 'Q Bed, Dresser, Mirror, Chest, 1NS'
-        , 'QB D M N' => 'Q Bed, Dresser, Mirror, 1NS'
-        , 'QH' => 'Q Hdbd'
-        , 'QH D M' => 'Q Hdbd, Dresser, Mirror'
-        , 'QH D M 1N' => 'Q HdBd, Dresser, Mirror, 1NS'
-        , 'QH D M 2N' => 'Q HdBd, Dresser, Mirror, 2NS'
-        , 'QH D M C' => 'Q Hdbd, Dresser, Mirror, Chest'
-        , 'QH D M C 1N' => 'Q Hdbd, Dresser, Mirror, Chest, 1NS'
-        , 'QM' => 'Queen Metal Bed'
-        , 'RS' => 'Recl Sofa'
-        , 'RS L' => 'Rec Sofa, LoveSeat'
-        , 'RS RL' => 'Rec Sofa, Rec LoveSeat'
-        , 'RS RL W' => 'Rec Sofa, Rec LoveSeat, Wdge'
-        , 'S' => 'Sofa'
-        , 'S L' => 'Sofa, Love Seat'
-        , 'S L C' => 'Sofa, Love Seat, Chair'
-        , 'S L R' => 'Sofa, Love Seat, Reclining Chair'
-        , 'S SL C' => 'Sofa, Sleeper, Chair'
-        , 'SP' => 'Storage Piece'
-        , 'SPH 2N' => 'SprdHdBd, 2 NS'
-        , 'SYS' => 'System'
-        , 'T' => 'Dining Table'
-        , 'T 2S' => 'Table, 2 Sides'
-        , 'T 2S 2DC' => 'Table, 2 Sides, 2 Double Chairs'
-        , 'T 2S 2DC CC' => 'Table, 2 Sides, 2 Double Chairs, Corner Chair'
-        , 'T 2S B' => 'Table, 2 Sides, Bench'
-        , 'T 4BS' => 'Butterfly Table, 4 Barstools'
-        , 'T 4S' => 'Table, 4 Sides'
-        , 'T 4S 2A' => 'Table, 4 Sides, 2 Arms'
-        , 'T 4S 2A SP' => 'Table, 4 Sides, 2 Arms, Storage'
-        , 'T 4S B' => 'Table, 4 Sides, Bench'
-        , 'T 4S SP' => 'Table, 4 Sides, Storage'
-        , 'T 6S' => 'Table, 6 Sides'
-        , 'T 6S B' => 'Table, 6 Sides, Bench'
-        , 'T 6S SP' => 'Table, 6 Sides, Storage'
-        , 'T 8S' => 'Table, 8 Sides'
-        , 'T CAP wS' => 'Twin Captain Storage Bed'
-        , 'TB' => 'Twin Bed'
-        , 'TB D M' => 'Twin Bed, Dresser, Mirror'
-        , 'TB D M C' => 'Twin Bed, Dresser, Mirror, Chest'
-        , 'TB D M N' => 'Twin Bed, Dresser, Mirror, NS'
-        , 'TB WT' => 'Twin Bed w/Trundle'
-        , 'TB WTDM' => 'Twin Bed w/Trundle, Dresser,Mirror'
-        , 'TBS' => 'Twin Bed w/ Storage'
-        , 'TBS D M' => 'Twin Bed w/ Storage, Dresser, Mirror'
-        , 'TH D M' => 'Twin Hdbd, Dresser, Mirror'
-        , 'TH D M C' => 'Twin Hdbd, Dresser, Mirror, Chest'
-        , 'TL' => 'Table Lamp'
-        , 'TV' => 'TV Stand'
-        , 'WS' => 'Wall System'
+    private $_brands = array(
+        'Ashley' => 8
+        , 'Signature Design' => 170
+        , 'Benchcraft' => 8
+        , 'Millennium' => 171
+        , 'Room Solutions' => 8
+    );
+
+    /**
+     * Hold the ashley categories
+     */
+    private $_categories = array(
+        'Accents' => 0
+        , 'Stationary Upholstery' => 0
+        , 'Motion Upholstery' => 0
+        , 'Sectionals' => 0
+        , 'Chairs' => 0
+        , 'Stationary Leather' => 0
+        , 'Recliners' => 0
+        , 'Motion Leather' => 0
+        , 'Dining' => 0
+        , 'Master Bedroom' => 0
+        , 'Metal Beds' => 0
+        , 'Youth Bedroom' => 0
+        , 'Top of Bed' => 0
+        , 'Curios' => 0
+        , 'Home Office' => 0
+        , 'Lamps' => 0
+        , 'Mattresses' => 0
+        , 'Rugs' => 0
+        , 'Occasional' => 0
+        , 'Walls' => 0
+        , 'Entertainment' => 0
     );
 
 	/**
@@ -175,9 +84,9 @@ class Ashley extends Base_Class {
     }
 
     /**
-     * Load Packages
+     * Load Series
      */
-    public function load_packages() {
+    public function load_series() {
 
         // Sets who is updating the products
         global $user;
@@ -188,16 +97,7 @@ class Ashley extends Base_Class {
         $a = new Ashley_API();
 
         // Get packages
-        $packages = $a->get_packages();
-
-        // Get templates for descriptions
-        $unrefined_package_templates = $a->get_package_templates();
-        $package_templates = array();
-
-        // Arrange these by template ID
-        foreach ( $unrefined_package_templates as $pt ) {
-            $package_templates[$pt->TemplateId] = $pt;
-        }
+        $series = $a->get_series();
 
         // Get existing products
         $existing_products = $this->_get_existing_products();
@@ -208,17 +108,19 @@ class Ashley extends Base_Class {
         // Initiate product string
         $products_string = '';
 
-        // Any new products get al ink
+        // Any new products get a link
         $links = array();
 
-        foreach ( $packages as $item ) {
+        foreach ( $series as $item ) {
             // Ensure that we can keep running
             echo '                                                   ';
             set_time_limit(30);
 			flush();
 
+            $image_name = (string) $item->ImageName;
+
             // We don't care if they don't have an image
-            if ( empty( $item->PackageDescription ) || 'NoTempl' == $item->PackageDescription || empty( $item->Image ) ) {
+            if ( 'false' == (string) $item->Active || empty( $image_name ) || 'NOIMAGEAVAILABLE_THUMB.jpg' == $image_name ) {
                 //|| !curl::check_file( self::IMAGE_URL . $item->Image )
                 $skipped++;
                 continue;
@@ -228,30 +130,25 @@ class Ashley extends Base_Class {
 			$i++;
 
             // Start collecting data
-			$name = $item->SeriesName;
+			$name = $item->SeriesName . ' ' . $item->Grouping;
 
-            if ( !stristr( $name, (string) $item->SeriesColor ) )
-                $name .= ' ' . $item->SeriesColor;
-
-            if ( !empty( $package_templates[$item->TemplateId] ) )
-                $name .= ' ' . $package_templates[$item->TemplateId];
-
-            $name .= ' - ' . $this->_package_descriptions[(string)$item->PackageDescription];
-            echo $name;exit;
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-            $sku = $item->PackageId;
-			$image = self::IMAGE_URL . $item->Image;
+            $sku = $item->SeriesNo;
+			$image = self::IMAGE_URL . $image_name;
 			$weight = $volume = 0;
 
             // Set item description
-			$item_description = $this->_package_descriptions[(string)$item->PackageDescription] . '<br /><br />' . $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
-            $description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
+			$item_description = '<p>' . $item->Description . "</p>\n\n<p>" . $item->Features . "</p>\n\n<p>" . $item->SeriesColor . "</p>\n\n<p>" . $item->StyleDescription . '</p>';
+            $description = format::autop( format::unautop( $item_description ) );
 
             // Will have to format this
-			$product_specs = ''; //$this->_package_descriptions[$item->PackageDescription];
+			$product_specs = '';
 
-            // "Ashley Furniture" brand
-			$brand_id = 8;
+            // One of the Ashley brands
+			$brand_id = $this->_brands[(string)$item->Showroom];
+
+            // Get Category ID
+            $category_id = $this->_categories[(string)$item->Grouping];
 
 			$images = array();
 
@@ -371,7 +268,7 @@ class Ashley extends Base_Class {
 
 				$price = $list_price = 0;
 				$publish_visibility = 'private';
-				$publish_date = date_time::date( 'Y-m-d' );
+				$publish_date = dt::date( 'Y-m-d' );
 
 				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
 
@@ -399,6 +296,10 @@ class Ashley extends Base_Class {
 			// Add images
 			$product_ids[] = (int) $product_id;
 
+            // Need to delete categories and readd
+            $this->p->empty_categories( $product_id );
+            $this->p->add_categories( $product_id, array( $category_id ) );
+
 			/* Makes the images have the right sequence if they exist
 			if ( is_array( $images ) ) {
 				$j = 0;
@@ -412,7 +313,7 @@ class Ashley extends Base_Class {
 			$this->commit_product_images( $images, $product_id );
 			*/
 
-			$products_string .= $name . ">" . $item->PackageDescription . "\n";
+			$products_string .= $name . "\n";
 
 			// We don't want to carry them around in the next loop
 			unset( $images );

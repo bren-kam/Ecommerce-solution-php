@@ -1,6 +1,6 @@
 <?php
 $a = new Ashley();
-$a->load_packages();
+$a->load_series();
 
 //library('ashley-api/ashley-api');
 //$a = new Ashley_API();

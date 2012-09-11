@@ -129,7 +129,54 @@ class Ashley_API {
             return false;
 
         // SimpleXML errors out if it thinks its reading utf-16
-        return simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->CategoriesCollection->XmlData ) );
+        $template_packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->CategoriesCollection->XmlData ) );
+
+        return $template_packages->Category;
+    }
+
+    /**
+     * Get Series
+     *
+     * @return object
+     */
+    public function get_series() {
+        ini_set( 'memory_limit', '512M' );
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'SeriesExecuteOption' => 'LoadAllSeries' );
+
+        // Execute the response
+        $this->_execute( 'GetSeries', new GetSeries( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        $template_packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->SeriesCollection->XmlData ) );
+
+        return $template_packages->Series;
+    }
+
+    /**
+     * Get Series
+     *
+     * @return object
+     */
+    public function get_groupings() {
+        // Setup the package request
+        $package_request = new PackageRequest();
+        $package_request->ExecuteOptions = array( 'GroupingExecuteOption' => 'LoadAllGroupings' );
+
+        // Execute the response
+        $this->_execute( 'GetGroupings', new GetGroupings( $package_request ) );
+
+        if ( !$this->_success )
+            return false;
+
+        // SimpleXML errors out if it thinks its reading utf-16
+        $template_packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $this->_response->GroupingsCollection->XmlData ) );
+
+        return $template_packages->Grouping;
     }
 
     /**
