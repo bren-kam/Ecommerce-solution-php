@@ -31,12 +31,12 @@ class Ashley extends Base_Class {
     private $_categories = array(
         'Accents' => 0
         , 'Stationary Upholstery' => 218
-        , 'Motion Upholstery' => 0
+        , 'Motion Upholstery' => 348
         , 'Sectionals' => 226
         , 'Chairs' => 221
         , 'Stationary Leather' => 255
         , 'Recliners' => 222
-        , 'Motion Leather' => 0
+        , 'Motion Leather' => 255
         , 'Dining' => 347
         , 'Master Bedroom' => 228
         , 'Metal Beds' => 685
