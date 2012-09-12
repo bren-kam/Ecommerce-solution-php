@@ -263,7 +263,7 @@ class ReportsController extends BaseController {
                         if ( !empty( $state_where ) )
                             $state_where .= ',';
 
-                        $state_where .= "'" . $this->db->escape( $object_id ) . "'";
+                        $state_where .= $report->quote( $object_id );
                     }
 
                     $where .= "$state_where )";
