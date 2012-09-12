@@ -217,6 +217,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 
     // We need to update them once
     updateAttributes();
+
+    // Stripe them
+    applyListClasses('.list');
+    applyListClasses('#product-specs-list');
 });
 
 // Apply the classes
