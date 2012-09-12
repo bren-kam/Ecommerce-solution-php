@@ -122,15 +122,18 @@ class ProductTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testUpdate() {
-        $this->db->update( 'products', array( 'publish_visibility' => 'deleted' ), array( 'product_id' => 36385 ), 's', 'i' );
+        // Declare variables
+        $product_id = 36385;
 
-        $this->product->get(36385);
+        $this->db->update( 'products', array( 'publish_visibility' => 'deleted' ), array( 'product_id' => $product_id ), 's', 'i' );
+
+        $this->product->get( $product_id );
 
         // Update test
         $this->product->publish_visibility = 'public';
         $this->product->update();
 
-        $publish_visibility = $this->db->get_var( 'SELECT `publish_visibility` FROM `products` WHERE `product_id` = 36385' );
+        $publish_visibility = $this->db->get_var( "SELECT `publish_visibility` FROM `products` WHERE `product_id` = $product_id" );
 
         $this->assertEquals( $publish_visibility, 'public' );
     }

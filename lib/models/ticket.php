@@ -4,7 +4,7 @@ class Ticket extends ActiveRecordBase {
     public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to, $status, $priority, $browser_name, $browser_version, $date_created;
 
     // Fields from other tables
-    public $role, $website_id, $domain;
+    public $role, $website_id, $domain, $email;
 
     /**
      * Setup the account initial data

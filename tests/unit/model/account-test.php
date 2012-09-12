@@ -242,8 +242,11 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testDeleteIndustries() {
+        // Declare variables
+        $account_id = 96;
+
         // Get test account
-        $this->account->get(96);
+        $this->account->get( $account_id );
 
         // Delete
         $this->account->delete_industries();

@@ -19,9 +19,36 @@ class TicketTest extends BaseDatabaseTest {
      * Test Getting a ticket
      */
     public function testGet() {
-        $this->ticket->get(1);
+        // Declare variable
+        $ticket_id = 1;
+
+        $this->ticket->get( $ticket_id );
 
         $this->assertEquals( $this->ticket->message, 'message' );
+    }
+
+    /**
+     * Test updating a ticket
+     *
+     * @depends testGet
+     */
+    public function testUpdate() {
+        // Declare variable
+        $ticket_id = 1;
+
+        // Update ticket to something wrong
+        $this->db->update( 'tickets', array( 'priority' => 2 ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
+
+        $this->ticket->get( $ticket_id );
+
+        // Update test
+        $this->ticket->priority = 1;
+        $this->ticket->update();
+
+        // Get priority
+        $priority = $this->db->get_var( "SELECT `priority` FROM `tickets` WHERE `ticket_id` = $ticket_id" );
+
+        $this->assertEquals( '1', $priority );
     }
 
     /**

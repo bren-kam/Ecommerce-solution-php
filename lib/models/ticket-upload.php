@@ -18,16 +18,18 @@ class TicketUpload extends ActiveRecordBase {
     }
 
     /**
-     * Create
+     * Get ticket upload
+     *
+     * @param int $ticket_upload_id
      */
-    public function create() {
-        $this->insert(
-            array(
-                'key' => $this->key
-                , 'date_created' => dt::now()
-            )
-            , 'ss'
-        );
+    public function get( $ticket_upload_id ) {
+		$this->prepare(
+            'SELECT `ticket_upload_id`, `key` FROM `ticket_uploads` WHERE `ticket_upload_id` = :ticket_upload_id'
+            , 'i'
+            , array( ':ticket_upload_id' => $ticket_upload_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->ticket_upload_id;
     }
 
     /**
@@ -56,5 +58,41 @@ class TicketUpload extends ActiveRecordBase {
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
+    }
+
+    /**
+     * Get uploads for a comment
+     *
+     * @param int $ticket_comment_id
+     * @return array
+     */
+    public function get_by_comment( $ticket_comment_id ) {
+        return $this->prepare(
+            'SELECT a.`key`, b.`ticket_comment_id` FROM `ticket_uploads` AS a LEFT JOIN `ticket_comment_upload_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_comment_id` = :ticket_comment_id'
+            , 'i'
+            , array( ':ticket_comment_id' => $ticket_comment_id )
+        )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->insert(
+            array(
+                'key' => $this->key
+                , 'date_created' => dt::now()
+            )
+            , 'ss'
+        );
+
+        $this->id = $this->ticket_upload_id = $this->get_insert_id();
+    }
+
+    /**
+     * Delete
+     */
+    public function delete() {
+        parent::delete( array( 'ticket_upload_id' => $this->id ), 'i' );
     }
 }

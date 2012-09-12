@@ -2,13 +2,13 @@
 jQuery(function($) {
     // Make it possible to priority the status on the fly
 	$('#sPriority').change( function() {
-		$.post( '/tickets/update-priority/', { _nonce : $('#_update_priority').val(), tid : $('#hTicketID').val(), priority : $(this).val() }, ajaxResponse, 'json' );
+		$.post( '/tickets/update-priority/', { _nonce : $('#_update_priority').val(), tid : $('#hTicketId').val(), priority : $(this).val() }, ajaxResponse, 'json' );
 	});
 
     // Make it possible to update the status on the fly
 	$('#sStatus').change( function() {
         // Update the status when they change it
-        $.post( '/tickets/update-status/', { _nonce : $('#_update_status').val(), tid : $('#hTicketID').val(), status : $(this).val() }, ajaxResponse, 'json' );
+        $.post( '/tickets/update-status/', { _nonce : $('#_update_status').val(), tid : $('#hTicketId').val(), status : $(this).val() }, ajaxResponse, 'json' );
 	});
 
 	// Make it possible to update the "assigned to" on the fly
@@ -57,6 +57,7 @@ jQuery(function($) {
         , onSubmit: function( id, fileName ) {
             uploader.setParams({
                 _nonce : $('#_upload').val()
+                , 'wid' : $('#hWebsiteId').val()
             })
         }
         , onComplete: function( id, fileName, responseJSON ) {
@@ -75,5 +76,5 @@ jQuery(function($) {
 // Update assigned to
 function updateAssignedTo( userId ) {
     // Update the status when they change it
-    $.post( '/tickets/update-assigned-to/', { _nonce : $('#_update_assigned_to').val(), tid : $('#hTicketID').val(), atui : userId }, ajaxResponse, 'json' );
+    $.post( '/tickets/update-assigned-to/', { _nonce : $('#_update_assigned_to').val(), tid : $('#hTicketId').val(), atui : userId }, ajaxResponse, 'json' );
 }

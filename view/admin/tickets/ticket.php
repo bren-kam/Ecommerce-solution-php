@@ -144,19 +144,24 @@ nonce::field( 'upload', '_upload' );
 <br /><hr />
 
 <div id="comments">
-    <div id="comment-wrapper">
-        <textarea id="comment" cols="5" rows="3" tmpval="<?php echo _('Write a comment...'); ?>"></textarea>
-    </div>
-    <a href="#" id="add-comment" class="button hidden" title="<?php echo _('Add Comment'); ?>"><?php echo _('Add Comment'); ?></a>
-    <div id="private-wrapper" class="hidden">
-        <input type="checkbox" id="private" value="1" /> <label for="private"><?php echo _('Private'); ?></label>
-    </div>
+    <form name="fAddComment" method="post" action="/tickets/add-comment/" ajax="1">
+        <div id="comment-wrapper">
+            <textarea id="comment" name="comment" cols="5" rows="3" tmpval="<?php echo _('Write a comment...'); ?>"></textarea>
+        </div>
+        <input type="submit" id="add-comment" class="button hidden" value="<?php echo _('Add Comment'); ?>" />
+        <div id="private-wrapper" class="hidden">
+            <input type="checkbox" name="private" id="private" value="1" /> <label for="private"><?php echo _('Private'); ?></label>
+        </div>
 
-    <div id="uploader" class="hidden"></div>
-    <a href="#" id="attach" class="button hidden" title="<?php echo _('Attach'); ?>"><?php echo _('Attach'); ?></a>
+        <div id="uploader" class="hidden"></div>
+        <a href="#" id="attach" class="button hidden" title="<?php echo _('Attach'); ?>"><?php echo _('Attach'); ?></a>
 
-    <br clear="all" />
-    <div id="attachments"></div>
+        <br clear="all" />
+        <div id="uploads"></div>
+        <input type="hidden" name="hTicketId" id="hTicketId" value="<?php echo $ticket->id; ?>" />
+        <?php nonce::field('add_comment'); ?>
+    </form>
+
     <div class="divider" id="comments-divider"></div>
     <div id="comments-list">
     <?php
@@ -187,7 +192,7 @@ nonce::field( 'upload', '_upload' );
             ?>
             <span class="date"><?php echo $date->format( 'F j, Y g:ia' ); ?></span>
 
-            <a href="#" class="delete-comment" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirmation; ?>"><img src="/images/icons/x.png" alt="<?php echo _('X'); ?>" width="16" height="16" /></a>
+            <a href="#" class="delete-comment" title="<?php echo _('Delete'); ?>" confirm="<?php echo $confirmation; ?>"><img src="/images/icons/x.png" alt="<?php echo _('X'); ?>" width="15" height="17" /></a>
         </p>
         <p class="message"><?php echo $comment->comment; ?></p>
 
@@ -196,7 +201,7 @@ nonce::field( 'upload', '_upload' );
         if ( is_array( $comment->uploads ) )
         foreach ( $comment->uploads as $upload ) {
         ?>
-        <a href="<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a>
+            <p><a href="http://s3.amazonaws.com/retailcatalog.us/attachments/<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a></p>
         <?php } ?>
         </div>
         <br clear="left" />
@@ -205,6 +210,6 @@ nonce::field( 'upload', '_upload' );
     </div>
 </div>
 <br clear="all" />
-<input type="hidden" id="hTicketID" value="<?php echo $ticket->id; ?>" />
+    <input type="hidden" id="hWebsiteId" value="<?php echo (int) $ticket->website_id; ?>" />
 
 <?php echo $template->end(); ?>

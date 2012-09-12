@@ -94,7 +94,7 @@ class TicketsController extends BaseController {
 
         $this->resources
             ->css( 'tickets/ticket' )
-            ->javascript( 'tickets/ticket', 'jquery.autoresize' );
+            ->javascript( 'fileuploader', 'tickets/ticket', 'jquery.autoresize' );
 
         return $template_response;
     }
@@ -102,16 +102,124 @@ class TicketsController extends BaseController {
     /***** AJAX *****/
 
     /**
-     * Upload an attachment
+     * Add a comment
      *
      * @return AjaxResponse
      */
-    public function upload_attachment() {
+    public function add_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_POST['wid'] ), _('Failed to upload attachment') );
+        $response->check( isset( $_POST['comment'] ) && isset( $_POST['hTicketId'] ), _('Failed to add comment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Initialize objects
+        $ticket = new Ticket();
+        $ticket_comment = new TicketComment();
+        $ticket_creator = new User();
+        $assigned_user = new User();
+        $ticket_upload = new TicketUpload();
+
+        // Get ticket
+        $ticket->get( $_POST['hTicketId'] );
+
+        // Get users
+        $ticket_creator->get( $ticket->user_id );
+        $assigned_user->get( $ticket->assigned_to_user_id );
+
+        // Set variables
+        $status = ( 0 == $ticket->status ) ? ' (Open)' : ' (Closed)';
+
+        // Create ticket comment
+        $ticket_comment->ticket_id = $ticket->id;
+        $ticket_comment->user_id = $this->user->user_id;
+        $ticket_comment->comment = nl2br( format::links_to_anchors( format::htmlentities( $_POST['comment'], array('&') ), true, true ) );
+        $ticket_comment->private = (int) isset( $_POST['private'] );
+
+        $ticket_comment->create();
+
+        // Handle attachments
+        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
+            $ticket_comment->add_upload_links( $_POST['uploads'] );
+
+        // Send emails
+        $comment = strip_tags( $ticket_comment->comment );
+
+        // If it's not private, send an email to the client
+        if ( 0 == $ticket_comment->private && ( 1 == $ticket->status || !$ticket_creator->has_permission(8) ) )
+            fn::mail( $ticket->email, 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>' );
+
+        // Send the assigned user an email if they are not submitting the comment
+        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id && 1 == $ticket->status )
+            fn::mail( $assigned_user->email, 'New Comment on Ticket #' . $ticket->id . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id . "**Comment**\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>' );
+
+        /***** Add comment *****/
+
+        // Declare variables
+        $date = new DateTime( $ticket_comment->date_created );
+        $confirmation = _('Are you sure you want to delete this comment? This cannot be undone.');
+        $uploads = $ticket_upload->get_by_comment( $ticket_comment->id );
+
+        // Create Comment HTML
+        $comment = '<div class="comment" id="comment-' . $ticket_comment->id . '">';
+        $comment .= '<p class="name">';
+
+        if ( '1' == $ticket_comment->private )
+            $comment .= '<img src="/images/icons/lock.gif" width="11" height="15" alt="' . _('Private') . '" class="private" />';
+
+        $comment .= '<a href="#" class="assign-to" rel="' . $ticket->user_id . '">' . $this->user->contact_name . '</a>';
+        $comment .= '<span class="date">' . $date->format( 'F j, Y g:ia' ) . '</span>';
+        $comment .= '<a href="#" class="delete-comment" title="' . _('Delete') . '" confirm="' .  $confirmation . '">';
+        $comment .= '<img src="/images/icons/x.png" alt="' . _('X') . '" width="15" height="17" />';
+        $comment .= '</a>';
+        $comment .= '</p>';
+        $comment .= '<p class="message">' . $ticket_comment->comment . '</p>';
+        $comment .= '<div class="attachments">';
+
+        /**
+         * @var TicketUpload $upload
+         */
+        if ( isset( $uploads ) )
+        foreach ( $uploads as $upload ) {
+            $comment .= '<p><a href="http://s3.amazonaws.com/retailcatalog.us/attachments/' . $upload->key . '" target="_blank" title="' . _('Download') . '">' . f::name( $upload->key ) . '</a></p>';
+        }
+
+        $comment .= '</div>';
+        $comment .= '<br clear="left" />';
+        $comment .= '</div>';
+
+        // Add comment
+        jQuery('#comments-list')->prepend( $comment );
+
+        // Also need to reset the form
+        jQuery('#comment')
+            ->val('')
+            ->trigger('blur');
+
+        jQuery('#uploads')->empty();
+        jQuery('#private')->prop( 'checked', false );
+
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload an attachment
+     *
+     * @return AjaxResponse
+     */
+    public function upload() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_GET['wid'] ), _('Failed to upload attachment') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -122,11 +230,11 @@ class TicketsController extends BaseController {
 
         // Instantiate classes
         $ticket_upload = new TicketUpload();
-        $file = new File();
+        $file = new File( 'retailcatalog.us' );
         $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt'), 10485760 );
 
         // Get variables
-		$directory = $this->user->id . '/' . $_POST['wid']. '/';
+		$directory = $this->user->id . '/' . $_GET['wid']. '/';
         $file_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
 
         // Create upload
@@ -142,20 +250,22 @@ class TicketsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $file_url = $file->upload_file( $result['file_path'], $directory, $file_name );
+        $file_url = $file->upload_file( $result['file_path'], $ticket_upload->key, 'attachments/' );
+        $confirmation = _('Are you sure you want to remove this attachment?');
+        $delete_upload = nonce::create('delete_upload');
+
+        $upload = '<div class="upload" id="upload-' . $ticket_upload->id . '">';
+        $upload .= '<a href="' . $file_url . '" class="download" target="_blank">' . $file_name . '</a>';
+        $upload .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_upload, 'tuid' => $ticket_upload->id ), '/tickets/delete-upload/' ) . '" class="delete" title="' . _('Delete') . '" ajax="1" confirm="' . $confirmation . '">';
+        $upload .= '<img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" />';
+        $upload .= '</a>';
+        $upload .= '<input type="hidden" name="uploads[]" value="' . $ticket_upload->id . '" />';
+        $upload .= '</div>';
 
         // Clone image template
-        jQuery('#image-template')->clone()
-            ->removeAttr('id')
-            ->find('a:first')
-                ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
-                ->find('img:first')
-                    ->attr( 'src', $image_url )
-                    ->parents('.image:first')
-            ->find('input:first')
-                ->val($image_name)
-                ->parent()
-            ->appendTo('#images-list');
+        jQuery('#uploads')
+            ->append( $upload )
+            ->sparrow();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 
@@ -183,9 +293,72 @@ class TicketsController extends BaseController {
         $ticket_comment->get( $_POST['tcid'] );
 
         // Need to get uploads and delete them
+        $ticket_upload = new TicketUpload();
+        $uploads = $ticket_upload->get_by_comment( $_POST['tcid'] );
+
+        if ( is_array( $uploads ) ) {
+            $file = new File( 'retailcatalog.us' );
+
+            /**
+             * @var $upload TicketUpload
+             */
+            foreach ( $uploads as $upload ) {
+                // Delete the file
+                $file->delete_file( $upload->key, 'attachments/' );
+
+                // Delete the upload entry
+                $upload->delete();
+            }
+
+            // Delete links
+            $ticket_comment->delete_upload_links();
+        }
+
+        // Remove from page
+        jQuery('#comment-' . $ticket_comment->id)->remove();
 
         // Then delete ticket
         $ticket_comment->delete();
+
+        // Add jquery
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Delete Upload
+     *
+     * @return AjaxResponse
+     */
+    public function delete_upload() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_GET['tuid'] ), _('Failed to delete attachment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get ticket upload
+        $ticket_upload = new TicketUpload();
+        $ticket_upload->get( $_GET['tuid'] );
+
+        // Delete upload
+        $file = new File( 'retailcatalog.us' );
+
+        $file->delete_file( $ticket_upload->key, 'attachments/' );
+
+        // Remove it from the page
+        jQuery('#upload-' . $ticket_upload->id)->remove();
+
+        // Delete upload
+        $ticket_upload->delete();
+
+        // Add response
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

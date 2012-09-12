@@ -16,13 +16,22 @@ class File {
 
     /**
 	 * Construct initializes data
+     *
+     * @param string $override_bucket
 	 */
-	public function __construct() {
+	public function __construct( $override_bucket = NULL ) {
 		// Load Amazon S3
 		library('S3');
 		$this->s3 = new S3( Config::key('aws-access-key'), Config::key('aws-secret-key') );
-		$this->bucket = Config::key('aws-bucket-domain');
+		$this->bucket = ( is_null( $override_bucket ) ) ? Config::key('aws-bucket-domain') : $override_bucket;
 	}
+
+    /**
+     * Set bucket
+     */
+    public function set_bucket( $bucket ) {
+        $this->bucket = $bucket;
+    }
 
     /**
 	 * Uploads an Image to Amazon
@@ -67,17 +76,17 @@ class File {
      * Upload File
      *
      * @param string $file_path
-     * @param string $directory
-     * @param string $name
+     * @param string $key
+     * @param string $dir [optional]
      * @return string|bool
      */
-    public function upload_file( $file_path, $directory, $name ) {
-		if ( !$this->s3->putObjectFile( $directory, $this->bucket, 'attachments/' . $directory . $name, S3::ACL_PUBLIC_READ ) )
+    public function upload_file( $file_path, $key, $dir = '' ) {
+		if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ ) )
             return false;
 
         unlink( $file_path );
 
-        return 'http://s3.amazonaws.com/' . $this->bucket . "/attachments/{$directory}{$name}";
+        return 'http://s3.amazonaws.com/' . $this->bucket . '/' . $dir . $key;
     }
 
     /**
@@ -90,4 +99,16 @@ class File {
 	public function delete_image( $image_path, $industry ) {
 		return $this->s3->deleteObject( $industry . $this->bucket, $image_path );
 	}
+
+    /**
+     * Delete File
+     *
+     * @param string $key
+     * @param string $dir [optional]
+     * @return bool
+     */
+    public function delete_file( $key, $dir = '' ) {
+		// Delete the object
+		return $this->s3->deleteObject( $this->bucket, $dir . $key );
+    }
 }
