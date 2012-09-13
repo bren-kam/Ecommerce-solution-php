@@ -197,7 +197,13 @@ class ChecklistsController extends BaseController {
         $checklist_website_item->get( $_POST['cwiid'] );
 
         // Update it
-        $checklist_website_item->checked = ( 'true' == $_POST['checked'] ) ? 1 : 0;
+        if ( ( 'true' == $_POST['checked'] ) ) {
+            $checklist_website_item->checked = 1;
+            $checklist_website_item->date_checked = dt::now();
+        } else {
+            $checklist_website_item->checked = 0;
+        }
+
         $checklist_website_item->update();
 
         // Add jQuery Response

@@ -18,6 +18,7 @@ class BrandTest extends BaseDatabaseTest {
      * Test Getting a Brand
      */
     public function testGet() {
+        // Declare variables
         $brand_id = 8;
 
         $this->brand->get( $brand_id );

@@ -62,7 +62,11 @@ class CategoryTest extends BaseDatabaseTest {
      * Test getting all the categories by a parent category ID
      */
     public function testGetByParent() {
-        $categories = $this->category->get_by_parent(559);
+        // Declare variables
+        $category_id = 559;
+
+        // Get the categories
+        $categories = $this->category->get_by_parent( $category_id );
 
         $this->assertTrue( $categories[0] instanceof Category );
         $this->assertEquals( count( $categories ), 2 );

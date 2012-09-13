@@ -515,7 +515,7 @@ class Checklists extends Base_Class {
 	 * @param bool $state whether checked or not
 	 * @return bool
 	 */
-	public function update_item( $checklist_website_item_id, $state ){		
+	public function update_item( $checklist_website_item_id, $state ) {
 		$state = ( $state == 'true' ) ? 1 : 0;
 
 		$this->db->update( 'checklist_website_items', array( 'checked' => $state, 'date_checked' => dt::date('Y-m-d H:i:s') ), array( 'checklist_website_item_id' => $checklist_website_item_id ), 'is', 'i' );
