@@ -84,9 +84,9 @@ class Ashley extends Base_Class {
     }
 
     /**
-     * Load Series
+     * Load Packages
      */
-    public function load_series() {
+    public function load_packages() {
 
         // Sets who is updating the products
         global $user;
@@ -152,7 +152,7 @@ class Ashley extends Base_Class {
 			$name = $item->SeriesName . ' ' . $template->Descr;
 
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-            $sku = $item->PackageId;
+            $sku = $item->PackageName;
 			$image = self::IMAGE_URL . $image;
 			$weight = $volume = 0;
 
@@ -161,7 +161,14 @@ class Ashley extends Base_Class {
             $description = format::autop( format::unautop( $item_description ) );
 
             // Will have to format this
-			$product_specs = '';
+            $style_description = trim( (string) $package_series->StyleDescription );
+
+            // Set product specs
+            if ( empty( $style_description ) ) {
+                $product_specs = '';
+            } else {
+                $product_specs = 'Style Description`' . $style_description . '`0';
+            }
 
             // One of the Ashley brands
 			$brand_id = $this->_brands[(string)$package_series->Showroom];
@@ -317,7 +324,9 @@ class Ashley extends Base_Class {
 
             // Need to delete categories and readd
             $this->p->empty_categories( $product_id );
-            $this->p->add_categories( $product_id, array( $category_id ) );
+
+            if ( 0 != $category_id )
+                $this->p->add_categories( $product_id, array( $category_id ) );
 
 			/* Makes the images have the right sequence if they exist
 			if ( is_array( $images ) ) {
