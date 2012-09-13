@@ -6,6 +6,16 @@
  * @since 1.0
  */
 class Authorized_Users extends Base_Class {
+    protected $blocked_emails = array(
+        'dcribbs@ashleyfurniture.com'
+        , 'jwilliams@ashleyfurniture.com'
+        , 'bherrmann@ashleyfurniture.com'
+        , 'rcoppola@ashleyfurniture.com'
+        , 'GGesualdo@Ashleyfurniture.com'
+        , 'RLachenmaier@Ashleyfurniture.com'
+        , 'AMatthews@Ashleyfurniture.com'
+    );
+
 	/**
 	 * Construct initializes data
 	 */
@@ -84,10 +94,16 @@ class Authorized_Users extends Base_Class {
 			$this->add_link( $au['user_id'], $user['website']['website_id'], $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart );
 
             $user_id = $au['user_id'];
+            $email = strtolower( $email );
 
 			// @Translate
 			// @Fix very poorly translated email
 			// Send them an email letting them know they have a new authorized user
+
+            // If it's a blocked email, just return true
+            if ( in_array( $email, $this->blocked_emails ) )
+                return true;
+
 			$from    = $user['website']['title'] . '<' . $user['email'] . '>';
 			$headers = 'CC: ' . $user['website']['title'] . '<' . $user['email'] . '> \r\n';
 			$subject = $user['website']['title'] . ' has added you as an Authorized User at ' . DOMAIN . '.';
