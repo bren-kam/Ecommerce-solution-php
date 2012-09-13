@@ -17,6 +17,21 @@ class Checklist extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $checklist_id
+     */
+    public function get( $checklist_id ) {
+        $this->prepare(
+            'SELECT c.`checklist_id`, c.`website_id`, c.`type`, c.`date_created`, w.`title`, DATEDIFF( DATE_ADD( c.`date_created`, INTERVAL 30 DAY ), NOW() ) AS days_left FROM `checklists` AS c LEFT JOIN `websites` AS w ON ( c.`website_id` = w.`website_id` ) WHERE c.`checklist_id` = :checklist_id ORDER BY days_left ASC'
+            , 'i'
+            , array( ':checklist_id' => $checklist_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->checklist_id;
+    }
+
+    /**
      * Get Incomplete checklists
      *
      * @return array
