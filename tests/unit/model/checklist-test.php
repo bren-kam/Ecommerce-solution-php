@@ -16,6 +16,18 @@ class ChecklistTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get
+     */
+    public function testGet() {
+        // Declare variables
+        $checklist_id = 1;
+
+        $this->checklist->get( $checklist_id );
+
+        $this->assertEquals( $this->checklist->website_id, 57 );
+    }
+
+    /**
      * Tests getting incomplete checklists
      */
     public function testGetIncomplete() {

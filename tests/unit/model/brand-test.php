@@ -52,7 +52,7 @@ class BrandTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test creating an attribute
+     * Test creating
      *
      * @depends testGet
      */
@@ -129,7 +129,7 @@ class BrandTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Deleting an attribute
+     * Test Deleting
      *
      * @depends testGet
      */

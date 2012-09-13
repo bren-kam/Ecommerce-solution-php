@@ -20,34 +20,73 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
      */
     public function testGet() {
         // Declare variables
-        $checklist_website_item_id = 3;
+        $checklist_website_item_note_id = 16;
 
-        $this->checklist_website_item->get( $checklist_website_item_id );
+        $this->checklist_website_item_note->get( $checklist_website_item_note_id );
 
-        $this->assertEquals( $this->checklist_website_item->checklist_item_id, 2 );
+        $this->assertEquals( $this->checklist_website_item_note->id, 16 );
     }
 
     /**
-     * Test update
+     * Tests getting notes by a website item
+     */
+    public function testGetByChecklist() {
+        // Declare variables
+        $checklist_website_item_id = 123;
+
+        $checklist_website_item_notes = $this->checklist_website_item_note->get_by_checklist_website_item( $checklist_website_item_id );
+
+        $this->assertTrue( $checklist_website_item_notes[0] instanceof ChecklistWebsiteItemNote );
+        $this->assertEquals( count( $checklist_website_item_notes ), 2 );
+    }
+
+    /**
+     * Test creating
      *
      * @depends testGet
      */
-    public function testUpdate() {
-        // Declare variables
-        $checklist_website_item_id = 4;
-        $now = dt::now();
+    public function testCreate() {
+        $this->checklist_website_item_note->checklist_website_item_id = 0;
+        $this->checklist_website_item_note->user_id = 514;
+        $this->checklist_website_item_note->note = 'with a love that was more than love';
+        $this->checklist_website_item_note->create();
 
-        // Get
-        $this->checklist_website_item->get( $checklist_website_item_id );
+        $this->assertTrue( !is_null( $this->checklist_website_item_note->id ) );
 
-        // Update
-        $this->checklist_website_item->date_checked = $now;
-        $this->checklist_website_item->update();
+        // Make sure it's in the database
+        $this->checklist_website_item_note->get( $this->checklist_website_item_note->id );
 
-        // Now check it!
-        $date_checked = $this->db->get_var( 'SELECT `date_checked` FROM `checklist_website_items` WHERE `checklist_website_item_id` = ' . (int) $this->checklist_website_item->id );
+        $this->assertEquals( 'with a love that was more than love', $this->checklist_website_item_note->note );
 
-        $this->assertEquals( $now, $date_checked );
+        // Delete
+        $this->db->delete( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $this->checklist_website_item_note->id ), 'i' );
+    }
+
+    /**
+     * Test Deleting an attribute
+     *
+     * @depends testCreate
+     * @depends testGet
+     */
+    public function testDelete() {
+        // Create
+        $this->checklist_website_item_note->checklist_website_item_id = 0;
+        $this->checklist_website_item_note->user_id = 514;
+        $this->checklist_website_item_note->note = 'two paths diverged';
+        $this->checklist_website_item_note->create();
+
+        $checklist_website_item_note_id = $this->db->get_insert_id();
+
+        // Get it
+        $this->checklist_website_item_note->get( $checklist_website_item_note_id );
+
+        // Delete
+        $this->checklist_website_item_note->delete();
+
+        // Make sure it doesn't exist
+        $note = $this->db->get_var( "SELECT `note` FROM `checklist_website_item_notes` WHERE `checklist_website_item_note_id` = $checklist_website_item_note_id" );
+
+        $this->assertFalse( $note );
     }
 
     /**

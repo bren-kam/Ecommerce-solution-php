@@ -1,7 +1,7 @@
 <?php
 class Checklist extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $checklist_id, $type, $date_created, $days_left;
+    public $id, $checklist_id, $website_id, $type, $date_created, $days_left;
 
     // Columns from other tables
     public $title, $online_specialist;
