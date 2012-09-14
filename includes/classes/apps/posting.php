@@ -45,6 +45,26 @@ class Posting extends Base_Class {
 	}
 	
 	/**
+	 * Update Access Token
+	 *
+	 * @param int $fb_user_id
+	 * @param int $fb_page_id
+	 * @param string $access_token
+	 * @return bool
+	 */
+	public function update_access_token( $fb_user_id, $fb_page_id, $access_token ) {
+		$this->db->update( 'sm_posting', array( 'access_token' => $access_token ), array( 'fb_user_id' => $fb_user_id, 'fb_page_id' => $fb_page_id ), 's', 'ii' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to update access token.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * Connect a website
 	 *
 	 * @param int $fb_user_id
