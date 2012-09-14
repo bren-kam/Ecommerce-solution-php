@@ -6,8 +6,11 @@
 
 global $user;
 
+$app_id = '268649406514419';
+$app_secret = '6ca6df4c7e9d909a58d95ce7360adbf3';
+
 // Instantiate Classes
-$fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3', 'op-posting', false, array( 'scope' => 'manage_pages,offline_access,publish_stream' ) );
+$fb = new FB( $app_id, $app_secret, 'op-posting', false, array( 'scope' => 'manage_pages,publish_stream' ) );
 $p = new Posting;
 $v = new Validator;
 
@@ -17,13 +20,39 @@ $user = $fb->user;
 // Set Validation
 $v->add_validation( 'tFBConnectionKey', 'req', _('The "Facebook Connection Key" field is required') );
 
+if ( isset( $_REQUEST["code"] ) ) {
+	$token_url = url::add_query_arg( array(
+		'client_id' => $app_id
+		, 'redirect_uri' => url::add_query_arg( array(
+			'fb_page_id' => $_REQUEST['fb_page_id']
+			, 'gsr_redirect' => $_REQUEST['gsr_redirect']
+		), 'http://apps.facebook.com/op-posting/' )
+		, 'client_secret' => $app_secret
+		, 'code' => $_REQUEST['code']
+		, 'display' => 'popup'
+	), 'https://graph.facebook.com/oauth/access_token' );
+	
+    $response = file_get_contents( $token_url );
+    $params = null;
+    parse_str( $response, $params );
+	
+	$fb->setAccessToken( $params['access_token'] );
+	$fb->setExtendedAccessToken();
+	$p->update_access_token( $user, $_REQUEST['fb_page_id'], $fb->getAccessToken() );
+	
+	echo("<script> top.location.href='" . $_REQUEST['gsr_redirect'] . "'</script>");
+	exit;
+}
+
 // Make sure it's a valid request
 if ( nonce::verify( $_POST['_nonce'], 'connect-to-field' ) ) {
 	$errs = $v->validate();
 
 	// if there are no errors
-	if( empty( $errs ) )
+	if( empty( $errs ) ) { 
+        $fb->setExtendedAccessToken();
 		$success = $p->connect( $user, $_POST['sFBPageID'], $_POST['tFBConnectionKey'], $fb->getAccessToken() );
+	}
 }
 
 // See if we're connected
