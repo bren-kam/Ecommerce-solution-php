@@ -16,9 +16,10 @@ $e = new Email_Marketing;
 
 // List of settings
 $empty_settings = array(
-	'from_name' => '',
-	'from_email' => '',
-	'timezone' => ''
+	'from_name' => ''
+	, 'from_email' => ''
+	, 'timezone' => ''
+    , 'remove-header-footer' => ''
 );
 
 // Validation
@@ -42,12 +43,14 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-setting
 		
 		// Assign new values for settings
 		foreach ( $setting_keys as $sk ) {
-			if ( !isset( $_POST[$sk] ) )
+			if ( !isset( $_POST[$sk] ) ) {
+                $settings[$sk] = '';
 				continue;
-			
+            }
+
 			$settings[$sk] = $_POST[$sk];
 		}
-		
+
 		// Set settings
 		$success = $e->set_settings( $settings );
 	}
@@ -97,6 +100,13 @@ get_header();
 					</select>
 				</td>
 			</tr>
+            <tr>
+                <td>&nbsp;</td>
+				<td>
+                    <input type="checkbox" class="cb" name="remove-header-footer" id="remove-header-footer" value="1"<?php if ( isset( $POST ) && '1' == $_POST['remove-header-footer'] || !isset( $POST ) && '1' == $settings['remove-header-footer']  ) echo ' checked="checked"'; ?>" />
+                    <label for="remove-header-footer"><?php echo _('Remove Header and Footer from Custom Emails'); ?></label>
+                </td>
+            </tr>
 			<tr><td colspan="2">&nbsp;</td></tr>
 			<tr>
 				<td>&nbsp;</td>

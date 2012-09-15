@@ -96,6 +96,9 @@ class Ashley extends Base_Class {
         library('ashley-api/ashley-api');
         $a = new Ashley_API();
 
+        // Get existing products
+        $existing_products = $this->_get_existing_products();
+
         // Get packages
         $packages = $a->get_packages();
 
@@ -114,9 +117,6 @@ class Ashley extends Base_Class {
         foreach ( $package_template_array as $pta ) {
             $package_templates[(string)$pta->TemplateId] = $pta;
         }
-
-        // Get existing products
-        $existing_products = $this->_get_existing_products();
 
         // Generate array of our items
         $i = $skipped = 0;
@@ -152,13 +152,13 @@ class Ashley extends Base_Class {
 			$name = $item->SeriesName . ' ' . $template->Descr;
 
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-            $sku = $item->PackageName;
+            $sku = (string) $item->PackageName;
 			$image = self::IMAGE_URL . $image;
 			$weight = $volume = 0;
 
             // Set item description
 			$item_description = '<p>' . $package_series->Description . "</p>\n\n<p>" . $package_series->Features . "</p>\n\n<p>" . $package_series->SeriesColor . "</p>\n\n<p>" . $package_series->StyleDescription . '</p>';
-            $description = format::autop( format::unautop( $item_description ) );
+            $description = format::convert_characters( format::autop( format::unautop( $item_description ) ) );
 
             // Will have to format this
             $style_description = trim( (string) $package_series->StyleDescription );
@@ -358,7 +358,6 @@ class Ashley extends Base_Class {
 				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
 			}
 			//$i++;
-            echo 'here';exit;
 		}
 
         echo $products_string;
