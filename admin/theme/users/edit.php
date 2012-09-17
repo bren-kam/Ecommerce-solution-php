@@ -64,7 +64,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user'
 		$information = array(
 			'company_id'			=> $_POST['sCompany']
 			, 'email'				=> $_POST['tEmail']
-			, 'contact_name'		=> $_POST['tContactName']
+			, 'contact_name'		=> stripslashes( $_POST['tContactName'] )
             , 'work_phone'          => $_POST['tWorkPhone']
 			, 'cell_phone'          => $_POST['tCellPhone']
 			, 'store_name'			=> $_POST['tStoreName']

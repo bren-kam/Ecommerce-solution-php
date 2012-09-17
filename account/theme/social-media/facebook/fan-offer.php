@@ -45,7 +45,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fan-offer' )
 	if ( 'pm' == $am_pm ) {
 		list( $hour, $minute ) = explode( ':', $start_time );
 		
-		$start_date .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+		$start_date .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
 	} else {
 		$start_date .= ' ' . $start_time . ':00';
 	}
@@ -56,7 +56,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fan-offer' )
 	if ( 'pm' == $am_pm ) {
 		list( $hour, $minute ) = explode( ':', $end_time );
 		
-		$end_date .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+		$end_date .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
 	} else {
 		$end_date .= ' ' . $end_time . ':00';
 	}

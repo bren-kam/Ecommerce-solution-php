@@ -374,7 +374,7 @@ get_header();
 						</td>
 					</tr>
 					<tr>
-						<td><input type="text" class="tb" name="tSKU" id="tSKU" maxlength="20" value="<?php echo ( isset( $p['sku'] ) ) ? $p['sku'] : _('SKU'); ?>" style="width:50%" /></td>
+						<td><input type="text" class="tb" name="tSKU" id="tSKU" maxlength="100" value="<?php echo ( isset( $p['sku'] ) ) ? $p['sku'] : _('SKU'); ?>" style="width:50%" /></td>
 						<td>
 							<input class="hidden" type="text" name="tListPrice" id="tListPrice" maxlength="20" value="<?php echo ( isset( $p['list_price'] ) ) ? $p['list_price'] : _('List Price (Optional)'); ?>" style="width:50%" />
 							<select name="sIndustry" id="sIndustry">
