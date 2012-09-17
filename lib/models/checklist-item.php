@@ -1,7 +1,7 @@
 <?php
 class ChecklistItem extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $checklist_item_id, $name, $assigned_to, $sequence, $status;
+    public $id, $checklist_item_id, $checklist_section_id, $name, $assigned_to, $sequence, $status;
 
     // Columns from other tables
     public $checked, $checklist_website_item_id, $notes_count, $section;
@@ -14,6 +14,15 @@ class ChecklistItem extends ActiveRecordBase {
 
         if ( isset( $this->checklist_item_id ) )
             $this->id = $this->checklist_item_id;
+    }
+
+    /**
+     * Get all
+     *
+     * @return array
+     */
+    public function get_all() {
+        return $this->get_results( 'SELECT `checklist_item_id`, `checklist_section_id`, `name`, `assigned_to` FROM `checklist_items` WHERE `status` = 1 ORDER BY `sequence` ASC', PDO::FETCH_CLASS, 'ChecklistItem' );
     }
 
     /**
@@ -30,5 +39,31 @@ class ChecklistItem extends ActiveRecordBase {
         )->get_results( PDO::FETCH_CLASS, 'ChecklistItem' );
 
 		return $checklist_items;
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->insert( array(
+            'checklist_section_id' => $this->checklist_section_id
+            , 'status' => $this->status
+        ), 'ii' );
+
+        $this->id = $this->checklist_item_id = $this->get_insert_id();
+    }
+
+    /**
+     * Update
+     */
+    public function update() {
+        parent::update(
+            array(
+                'status' => $this->status
+            )
+            , array( 'checklist_item_id' => $this->id )
+            , 'i'
+            , 'i'
+        );
     }
 }

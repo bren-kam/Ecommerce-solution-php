@@ -4,6 +4,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 	$("#items-list").sortable({
         forcePlaceholderSize : true
         , placeholder: 'list-item-placeholder'
+        , handle : '.handle'
     });
 
     // The 'Add List Item' link

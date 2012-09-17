@@ -72,6 +72,87 @@ class ChecklistsController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Manage
+     *
+     * @return TemplateResponse
+     */
+    public function manage() {
+        // Instantiate classes
+        $checklist_section = new ChecklistSection();
+        $checklist_item = new ChecklistItem();
+
+        // Get variables
+        $sections = $checklist_section->get_all();
+        $checklist_items = $checklist_item->get_all();
+
+        // Put all the items in the proper place
+        $items = array();
+
+        /**
+         * @var ChecklistItem $ci
+         */
+        foreach ( $checklist_items as $ci ) {
+            $items[$ci->checklist_section_id][] = $ci;
+        }
+
+        if ( $this->verified() ) {
+            $sequence = 0;
+
+            /**
+             * @var ChecklistSection $section
+             */
+            foreach ( $sections as $section ) {
+                if ( array_key_exists( $section->checklist_section_id, $_POST['sections'] ) ) {
+                    $section->name = $_POST['sections'][$section->checklist_section_id];
+                    $section->sequence = $sequence;
+                    $section->status = 1;
+
+                    $sequence++;
+                } else {
+                    $section->status = 0;
+                }
+
+                $section->update();
+            }
+
+            $sequence = 0;
+
+            foreach ( $items as $item_array ) {
+                /**
+                 * @var ChecklistItem $item
+                 */
+                foreach ( $item_array as $item ) {
+                    if ( array_key_exists( $item->checklist_section_id, $_POST['items'] ) && array_key_exists( $item->id, $_POST['items'][$item['checklist_section_id']] ) ) {
+                        $item->name = $_POST['items'][$item->checklist_section_id][$item->id]['name'];
+                        $item->assigned_to = $_POST['items'][$item->checklist_section_id][$item->id]['assigned_to'];
+                        $item->sequence = $sequence;
+                        $item->status = 1;
+
+                        $sequence++;
+                    } else {
+                        $item->status = 0;
+                    }
+
+                    $item->update();
+                }
+            }
+
+            $this->notify( _('The Master Checklist have been successfully updated!') );
+        }
+
+        // Get response
+        $template_response = $this->get_template_response( 'manage' )
+            ->set( compact( 'sections', 'items' ) )
+            ->select( 'checklists', 'manage' );
+
+        $this->resources
+            ->css( 'checklists/manage' )
+            ->javascript( 'checklists/manage' );
+
+        return $template_response;
+    }
+
     /***** AJAX *****/
 
     /**
@@ -306,6 +387,65 @@ class ChecklistsController extends BaseController {
             // Add the response
             $response->add_response( 'jquery', jQuery::getResponse() );
         }
+
+        return $response;
+    }
+
+    /**
+     * Manage Checklists - Add Checklist Section
+     *
+     * @return AjaxResponse
+     */
+    public function add_section() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_POST['note'] ) && isset( $_POST['hChecklistWebsiteItemId'] ), _('Failed to add note') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        return $response;
+    }
+
+
+
+    /**
+     * Manage Checklists - Add Checklist Item
+     *
+     * @return AjaxResponse
+     */
+    public function add_item() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have the proper parameters
+        $response->check( isset( $_GET['csid'] ), _('Failed to add checklist item') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create checklist item
+        $checklist_item = new ChecklistItem();
+        $checklist_item->checklist_section_id = $_GET['csid'];
+        $checklist_item->status = 0;
+        $checklist_item->create();
+
+        // Now add it on
+        jQuery('#item-template')
+            ->clone()
+            ->removeAttr('id')
+            ->find('input:first')
+                ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][name]')
+            ->next()
+                ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][assigned_to]')
+            ->parents('.item:first')
+                ->appendTo( '#section-' . $checklist_item->checklist_section_id . ' .section-items:first');
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
