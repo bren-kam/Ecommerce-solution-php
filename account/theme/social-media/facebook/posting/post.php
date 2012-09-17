@@ -28,10 +28,13 @@ $facebook_page = $sm->get_facebook_page( $_SESSION['sm_facebook_page_id'] );
 if ( !$facebook_page || !is_array( $social_media_add_ons ) || !in_array( 'posting', $social_media_add_ons ) )
     url::redirect('/social-media/facebook/');
 
+$app_id = '268649406514419';
+$app_secret = '6ca6df4c7e9d909a58d95ce7360adbf3';
+
 // Instantiate Classes
 $sm = new Social_Media;
 $v = new Validator;
-$fb = new FB( '268649406514419', '6ca6df4c7e9d909a58d95ce7360adbf3' );
+$fb = new FB( $app_id, $app_secret );
 $w = new Websites;
 
 // Add validation
@@ -51,7 +54,7 @@ $now = new DateTime( dt::adjust_timezone( 'now', config::setting('server-timezon
 // Get the posting variable if it exists
 if ( 0 != $posting['fb_page_id'] ) {
 	$fb->setAccessToken( $posting['access_token'] );
-	
+
 	try {
 		$accounts = $fb->api( '/' . $posting['fb_user_id'] . '/accounts' );
 	} catch( Exception $e ) {
@@ -59,6 +62,16 @@ if ( 0 != $posting['fb_page_id'] ) {
 		
 		switch ( $response->error_code() ) {
 			case 190:
+                url::redirect( url::add_query_arg( array(
+                    'client_id' => $app_id
+                    , 'redirect_uri' => url::add_query_arg( array(
+                        'fb_page_id' => $posting['fb_page_id']
+                        , 'gsr_redirect' => 'http://account.' . DOMAIN . '/social-media/facebook/posting/post/'
+                    ), 'http://apps.facebook.com/op-posting/' )
+                ), 'https://www.facebook.com/dialog/oauth' ) );
+			break;
+			
+			default:
 				$errs = _('Due to a recent change to your Facebook account, your Online Specialist needs to reconnect your Posting App to Facebook.');
 			break;
 		}
@@ -84,7 +97,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'fb-post' ) )
             if ( 'pm' == strtolower( $am_pm ) ) {
                 list( $hour, $minute ) = explode( ':', $time );
                 
-                $date_posted .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                $date_posted .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
             } else {
                 $date_posted .= ' ' . $time . ':00';
             }

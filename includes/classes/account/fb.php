@@ -24,9 +24,9 @@ class FB extends Base_Class {
 		
 		// Create our Application instance (replace this with your appId and secret).
 		$this->facebook = new Facebook(array(
-			'appId' => $app_id,
-			'secret' => $secret,
-			'cookie' => true,
+			'appId' => $app_id
+			, 'secret' => $secret
+			, 'cookie' => true
 		));
 	}
 	

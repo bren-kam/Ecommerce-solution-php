@@ -131,6 +131,46 @@ class GetCategories {
 }
 
 /**
+ * GetSeries
+ */
+class GetSeries {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
+ * GetGroupings
+ */
+class GetGroupings {
+	/**
+	 * @access public
+	 * @var PackageRequest
+	 */
+	public $request;
+
+    /**
+     * Construct to auto assign request
+     *
+     * @param PackageRequest $request
+     */
+    public function __construct( $request ) {
+        $this->request = $request;
+    }
+}
+
+/**
  * GetDimensions
  */
 class GetDimensions {

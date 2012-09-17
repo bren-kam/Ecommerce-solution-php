@@ -49,7 +49,7 @@ if ( !empty( $timezone ) ) {
             if ( 'pm' == strtolower( $am_pm ) ) {
                 list( $hour, $minute ) = explode( ':', $time );
     
-                $date_posted .= ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                $date_posted .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
             } else {
                 $date_posted .= ' ' . $time . ':00';
             }

@@ -367,7 +367,7 @@ get_header();
 						</td>
 					</tr>
 					<tr>
-						<td><input type="text" class="tb" name="tSKU" id="tSKU" maxlength="20" tmpval="<?php echo _('SKU'); ?>" value="<?php if ( isset( $p['sku'] ) ) echo $p['sku']; ?>" style="width:50%" /></td>
+						<td><input type="text" class="tb" name="tSKU" id="tSKU" maxlength="100" tmpval="<?php echo _('SKU'); ?>" value="<?php if ( isset( $p['sku'] ) ) echo $p['sku']; ?>" style="width:50%" /></td>
 						<td>
 							<input class="hidden" type="text" name="tListPrice" id="tListPrice" maxlength="20" tmpval="<?php echo _('List Price (Optional)'); ?>" value="<?php if ( isset( $p['list_price'] ) ) echo $p['list_price']; ?>" style="width:50%" />
 							<select name="sIndustry" id="sIndustry" error="<?php echo _('You must select an industry before you can upload an image.'); ?>">
