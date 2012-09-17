@@ -14,12 +14,36 @@ class ChecklistSection extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $checklist_section_id
+     */
+    public function get( $checklist_section_id ) {
+        $this->prepare(
+            'SELECT `checklist_section_id`, `name`, `status` FROM `checklist_sections` WHERE `checklist_section_id` = :checklist_section_id'
+            , 'i'
+            , array( ':checklist_section_id' => $checklist_section_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->checklist_section_id;
+    }
+
+    /**
      * Get all
      *
      * @return array
      */
     public function get_all() {
         return $this->get_results( 'SELECT `checklist_section_id`, `name` FROM `checklist_sections` WHERE `status` = 1 ORDER BY `sequence` ASC', PDO::FETCH_CLASS, 'ChecklistSection' );
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->insert( array( 'status' => $this->status ), 'i' );
+
+        $this->id = $this->checklist_section_id = $this->get_insert_id();
     }
 
     /**

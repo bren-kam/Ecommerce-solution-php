@@ -83,21 +83,60 @@ class ChecklistsController extends BaseController {
         $checklist_item = new ChecklistItem();
 
         // Get variables
-        $sections = $checklist_section->get_all();
+        $checklist_sections = $checklist_section->get_all();
         $checklist_items = $checklist_item->get_all();
 
-        // Put all the items in the proper place
-        $items = array();
+        // Declare arrays
+        $items = $sections = array();
 
+        // Put all the sections & itemsitems in the proper place
+
+        /**
+         * @var ChecklistSection $cs
+         */
+        foreach ( $checklist_sections as $cs ) {
+            $sections[$cs->id] = $cs;
+        }
         /**
          * @var ChecklistItem $ci
          */
         foreach ( $checklist_items as $ci ) {
-            $items[$ci->checklist_section_id][] = $ci;
+            $items[$ci->checklist_section_id][$ci->id] = $ci;
         }
 
+        // Save any updates
         if ( $this->verified() ) {
+            $section_sequences = $item_sequences = array();
             $sequence = 0;
+
+            // Create sections sequencing
+            foreach ( $_POST['sections'] as $checklist_section_id => $value ) {
+                $section_sequences[$checklist_section_id] = $sequence;
+
+                // Get the section
+                if ( !isset( $sections[$checklist_section_id] ) ) {
+                    $sections[$checklist_section_id] = new ChecklistSection();
+                    $sections[$checklist_section_id]->get( $checklist_section_id );
+                }
+
+                $sequence++;
+            }
+
+            // Create sequencing for items
+            $sequence = 0;
+            foreach ( $_POST['items'] as $checklist_section_id => $item_array ) {
+                foreach ( $item_array as $checklist_item_id => $value_array ) {
+                    $item_sequences[$checklist_section_id][$checklist_item_id] = $sequence;
+
+                    // Get the item
+                    if ( !isset( $items[$checklist_section_id][$checklist_item_id] ) ) {
+                        $items[$checklist_section_id][$checklist_item_id] = new ChecklistItem();
+                        $items[$checklist_section_id][$checklist_item_id]->get( $checklist_item_id );
+                    }
+
+                    $sequence++;
+                }
+            }
 
             /**
              * @var ChecklistSection $section
@@ -105,31 +144,28 @@ class ChecklistsController extends BaseController {
             foreach ( $sections as $section ) {
                 if ( array_key_exists( $section->checklist_section_id, $_POST['sections'] ) ) {
                     $section->name = $_POST['sections'][$section->checklist_section_id];
-                    $section->sequence = $sequence;
+                    $section->sequence = $section_sequences[$section->checklist_section_id];
                     $section->status = 1;
-
-                    $sequence++;
                 } else {
                     $section->status = 0;
                 }
 
                 $section->update();
-            }
 
-            $sequence = 0;
+                // Remove sections
+                unset( $_POST['sections'][$section->checklist_section_id] );
+            }
 
             foreach ( $items as $item_array ) {
                 /**
                  * @var ChecklistItem $item
                  */
                 foreach ( $item_array as $item ) {
-                    if ( array_key_exists( $item->checklist_section_id, $_POST['items'] ) && array_key_exists( $item->id, $_POST['items'][$item['checklist_section_id']] ) ) {
+                    if ( array_key_exists( $item->checklist_section_id, $_POST['items'] ) && array_key_exists( $item->id, $_POST['items'][$item->checklist_section_id] ) ) {
                         $item->name = $_POST['items'][$item->checklist_section_id][$item->id]['name'];
                         $item->assigned_to = $_POST['items'][$item->checklist_section_id][$item->id]['assigned_to'];
-                        $item->sequence = $sequence;
+                        $item->sequence = $item_sequences[$item->checklist_section_id][$item->id];
                         $item->status = 1;
-
-                        $sequence++;
                     } else {
                         $item->status = 0;
                     }
@@ -138,7 +174,20 @@ class ChecklistsController extends BaseController {
                 }
             }
 
+            // Give notification
             $this->notify( _('The Master Checklist have been successfully updated!') );
+
+            // Reget the sections after sequencing
+            $sections = $checklist_section->get_all();
+            $checklist_items = $checklist_item->get_all();
+            $items = array();
+
+            /**
+             * @var ChecklistItem $ci
+             */
+            foreach ( $checklist_items as $ci ) {
+                $items[$ci->checklist_section_id][] = $ci;
+            }
         }
 
         // Get response
@@ -400,12 +449,38 @@ class ChecklistsController extends BaseController {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
-        // Make sure we have the proper parameters
-        $response->check( isset( $_POST['note'] ) && isset( $_POST['hChecklistWebsiteItemId'] ), _('Failed to add note') );
-
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
+
+        // Create checklist section
+        $checklist_section = new ChecklistSection();
+        $checklist_section->status = 0;
+        $checklist_section->create();
+
+        jQuery('#section-template')
+            ->clone()
+            ->attr( 'id', 'section-' . $checklist_section->id )
+            ->find( 'input:first' )
+                ->attr( 'name', 'sections[' . $checklist_section->id . ']' )
+            ->parents( '.section:first' )
+            ->find( 'a.add-section-item:first')
+                ->attr( 'href', url::add_query_arg( array( '_nonce' => nonce::create( 'add_item' ), 'csid' => $checklist_section->id ), '/checklists/add-item/' ) )
+                ->attr( 'ajax', '1' )
+            ->parents( '.section:first' )
+            ->sortable( array(
+		        'items' => '.item'
+                , 'cancel' => 'input'
+                , 'cursor' => 'move'
+                , 'placeholder' => 'item-placeholder'
+                , 'forcePlaceholderSize' => true
+                , 'handle' => 'a.handle'
+	            )
+            )
+            ->sparrow()
+            ->appendTo( '#checklist-sections' );
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -443,7 +518,8 @@ class ChecklistsController extends BaseController {
             ->next()
                 ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][assigned_to]')
             ->parents('.item:first')
-                ->appendTo( '#section-' . $checklist_item->checklist_section_id . ' .section-items:first');
+            ->sparrow()
+            ->appendTo( '#section-' . $checklist_item->checklist_section_id . ' .section-items:first');
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 

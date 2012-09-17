@@ -17,6 +17,21 @@ class ChecklistItem extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $checklist_item_id
+     */
+    public function get( $checklist_item_id ) {
+        $this->prepare(
+            'SELECT `checklist_item_id`, `checklist_section_id`, `name`, `assigned_to` FROM `checklist_items` WHERE `checklist_item_id` = :checklist_item_id'
+            , 'i'
+            , array( ':checklist_item_id' => $checklist_item_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->checklist_item_id;
+    }
+
+    /**
      * Get all
      *
      * @return array
@@ -59,10 +74,13 @@ class ChecklistItem extends ActiveRecordBase {
     public function update() {
         parent::update(
             array(
-                'status' => $this->status
+                'name' => $this->name
+                , 'assigned_to' => $this->assigned_to
+                , 'sequence' => $this->sequence
+                , 'status' => $this->status
             )
             , array( 'checklist_item_id' => $this->id )
-            , 'i'
+            , 'ssii'
             , 'i'
         );
     }
