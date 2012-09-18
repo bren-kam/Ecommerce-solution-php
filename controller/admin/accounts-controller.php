@@ -909,7 +909,7 @@ class AccountsController extends BaseController {
         ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
 
         // Copy account pages
-        $account_page = new AccountPage( 'SELECT `website_page_id`, `slug` FROM `website_pages` WHERE `website_id` = $website_id' );
+        $account_page = new AccountPage();
         $account_page->copy_by_account( $template_account->id, $account->id );
 
         // Get account pages by slug
@@ -918,18 +918,28 @@ class AccountsController extends BaseController {
 
         // Get attachments
         $account_page_attachment = new AccountPageAttachment();
-
         $template_account_attachments = $account_page_attachment->get_by_account_page_ids( array_keys( $template_account_pages ) );
 
-        $new_website_attachments = array();
+        // Delete certain sidebar elements that you can only have one of
+        $account_page_attachment->delete_unique_attachments( array_values( $account_pages ) );
+
+        // Declare file which will be used to copy files
+        $file = new File();
 
         /**
          * @var AccountPageAttachment $taa
          */
         if ( is_array( $template_account_attachments )  )
         foreach ( $template_account_attachments as $taa ) {
-            // Checks if its S3 and uploads it
-            $value = $this->_check_s3( $account->id, $taa->value, 'websites' );
+            $value = $file->copy_file( $account->id, $taa->value, 'websites' );
+
+            if ( $value ) {
+                // Create the link in website files
+                $account_file = new AccountFile();
+                $account_file->website_id = $account->id;
+                $account_file->file_path = $value;
+                $account_file->create();
+            }
 
             $new_account_page_attachment = new AccountPageAttachment();
             $new_account_page_attachment->website_page_id = $account_pages[$template_account_pages[$taa->website_page_id]];
@@ -940,6 +950,46 @@ class AccountsController extends BaseController {
             $new_account_page_attachment->sequence = $taa->sequence;
             $new_account_page_attachment->create();
         }
+
+        // Copy Account industries
+        $account->copy_industries_by_account( $template_account->id, $account->id );
+
+        // Copy Account Pagemeta
+        $account_pagemeta = new AccountPagemeta();
+
+        $pagemeta_keys = array( 'display-coupon', 'email-coupon', 'hide-all-maps' );
+		$template_account_page_ids = implode( ', ', array_keys( $template_account_pages ) );
+
+        $template_pagemeta = $account_pagemeta->get_by_keys( $template_account_page_ids, $pagemeta_keys );
+
+        $new_pagemeta = array();
+
+        /**
+         * @var AccountPagemeta $tpm
+         */
+        if ( is_array( $template_pagemeta )  )
+        foreach ( $template_pagemeta as $tpm ) {
+             $website_page_id = (int) $account_pages[$template_account_pages[$tpm->website_page_id]];
+
+            $new_pagemeta[] = array( 'website_page_id' => $website_page_id, 'key' => $tpm->key, 'value' => $tpm->value );
+        }
+
+        if ( 0 != count( $new_pagemeta ) )
+            $account_pagemeta->add_bulk( $new_pagemeta );
+
+        // Copy top brands
+        $account->copy_top_brands_by_account( $template_account->id, $account->id );
+
+        // Copy products
+        $account_product = new AccountProduct();
+        $account_product->copy_by_account( $template_account->id, $account->id );
+
+        // Reorganize Categories
+        $account_category = new AccountCategory();
+        $account_category->reorganize_categories( $account->id, new Category() );
+
+        // Copy Website Settings
+		$account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' ) );
 
         // Let them know it's been installed
         $this->notify( _('The website package has been successfully installed') );

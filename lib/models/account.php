@@ -290,6 +290,20 @@ class Account extends ActiveRecordBase {
     }
 
     /**
+     * Copy industries
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    public function copy_industries_by_account( $template_account_id, $account_id ) {
+        $this->copy( array(
+                'website_id' => $account_id
+                , 'industry_id' => NULL
+            ), array( 'website_id' => $template_account_id )
+        );
+    }
+
+    /**
      * Delete Industries
      */
     public function delete_industries() {
@@ -318,5 +332,40 @@ class Account extends ActiveRecordBase {
         }
 
         $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) );
+    }
+
+
+    /**
+     * Copy top brands
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     */
+    public function copy_top_brands_by_account( $template_account_id, $account_id ) {
+        $this->copy( array(
+                'website_id' => $account_id
+                , 'brand_id' => NULL
+                , 'sequence' => NULL
+            ), array( 'website_id' => $template_account_id )
+        );
+    }
+
+    /**
+     * Copy website_settings
+     *
+     * @param int $template_account_id
+     * @param int $account_id
+     * @param array $settings
+     */
+    public function copy_settings_by_account( $template_account_id, $account_id, array $settings ) {
+        $this->copy( array(
+                'website_id' => $account_id
+                , 'key' => NULL
+                , 'value' => NULL
+            ), array(
+                'website_id' => $template_account_id
+                , 'key' => $settings
+            )
+        );
     }
 }

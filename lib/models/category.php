@@ -104,6 +104,25 @@ class Category extends ActiveRecordBase {
     }
 
     /**
+     * Get all parent ids
+     *
+     * @param int $category_id
+     * @return array
+     */
+    public function get_all_parent_category_ids( $category_id ) {
+        // Get parent categories
+        $parent_categories = $this->get_all_parents( $category_id );
+
+        $parent_category_ids = array();
+
+        foreach ( $parent_categories as $pc ) {
+            $parent_category_ids = $pc->id;
+        }
+
+        return $parent_category_ids;
+    }
+
+    /**
      * Get Categories By Parent
      *
      * @param int $parent_category_id

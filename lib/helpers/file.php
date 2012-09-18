@@ -90,6 +90,28 @@ class File {
     }
 
     /**
+	 * Copy File
+     *
+     * Copes a file in Amazon S3
+	 *
+	 * @param int $account_id
+	 * @param string $url
+     * @param string $bucket
+	 * @return mixed
+	 */
+	public function copy_file( $account_id, $url, $bucket ) {
+        $bucket = $bucket . $this->bucket;
+
+        $uri = str_replace( 'http://' . $bucket . '/', '', $url );
+        $new_uri = preg_replace( '/^([0-9]+)/', $account_id, $uri );
+
+		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri, S3::ACL_PUBLIC_READ ) )
+            return false;
+
+        return 'http://' . $bucket . '/' . $new_uri;
+	}
+
+    /**
 	 * Deletes an image from the Amazon S3
 	 *
 	 * @param string $image_path (key)

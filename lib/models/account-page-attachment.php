@@ -42,4 +42,18 @@ class AccountPageAttachment extends ActiveRecordBase {
 
         $this->id = $this->website_attachment_id = $this->get_insert_id();
     }
+
+    /**
+     * Delete by attachments
+     *
+     * @param array $account_page_ids
+     */
+    public function delete_unique_attachments( array $account_page_ids ) {
+        // Make sure they're all integerss
+        foreach ( $account_page_ids as &$apid ) {
+            $apid = (int) $apid;
+        }
+
+        $this->query( "DELETE FROM `website_attachments` WHERE `key` IN( 'video', 'search', 'email' ) AND `website_page_id` IN( " . implode( ',', $account_page_ids ) . ' )' );
+    }
 }
