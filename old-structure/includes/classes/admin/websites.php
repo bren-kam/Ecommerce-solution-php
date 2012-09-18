@@ -912,7 +912,6 @@ class Websites extends Base_Class {
                 $this->_err( 'Failed to insert website attachments.', __LINE__, __METHOD__ );
                 return false;
             }
-			
         }
 
         /***** Copy Website Industries *****/

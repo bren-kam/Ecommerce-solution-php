@@ -909,9 +909,37 @@ class AccountsController extends BaseController {
         ssh2_exec( $ssh_connection, "chown $username:nobody /home/$username/public_html" );
 
         // Copy account pages
-        $account_page = new AccountPage();
+        $account_page = new AccountPage( 'SELECT `website_page_id`, `slug` FROM `website_pages` WHERE `website_id` = $website_id' );
         $account_page->copy_by_account( $template_account->id, $account->id );
 
+        // Get account pages by slug
+        $account_pages = ar::assign_key( $account_page->get_all( $account->id ), 'slug', true );
+        $template_account_pages = ar::assign_key( $account_page->get_all( $template_account->id ), 'website_page_id', true );
+
+        // Get attachments
+        $account_page_attachment = new AccountPageAttachment();
+
+        $template_account_attachments = $account_page_attachment->get_by_account_page_ids( array_keys( $template_account_pages ) );
+
+        $new_website_attachments = array();
+
+        /**
+         * @var AccountPageAttachment $taa
+         */
+        if ( is_array( $template_account_attachments )  )
+        foreach ( $template_account_attachments as $taa ) {
+            // Checks if its S3 and uploads it
+            $value = $this->_check_s3( $account->id, $taa->value, 'websites' );
+
+            $new_account_page_attachment = new AccountPageAttachment();
+            $new_account_page_attachment->website_page_id = $account_pages[$template_account_pages[$taa->website_page_id]];
+            $new_account_page_attachment->key = $taa->key;
+            $new_account_page_attachment->value = $value;
+            $new_account_page_attachment->extra = $taa->extra;
+            $new_account_page_attachment->meta = $taa->meta;
+            $new_account_page_attachment->sequence = $taa->sequence;
+            $new_account_page_attachment->create();
+        }
 
         // Let them know it's been installed
         $this->notify( _('The website package has been successfully installed') );

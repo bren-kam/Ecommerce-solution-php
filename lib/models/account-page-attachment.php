@@ -14,6 +14,20 @@ class AccountPageAttachment extends ActiveRecordBase {
     }
 
     /**
+     * Get by account page ids
+     *
+     * @param array $account_page_ids
+     * @return array
+     */
+    public function get_by_account_page_ids( array $account_page_ids ) {
+        foreach ( $account_page_ids as &$apid ) {
+            $apid = (int) $apid;
+        }
+
+        return $this->get_results( 'SELECT `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` FROM `website_attachments` WHERE `status` = 1 AND `website_page_id` IN (' . implode( ', ', $account_page_ids ) . ')', PDO::FETCH_CLASS, 'AccountPageAttachment' );
+    }
+
+    /**
      * Create
      */
     public function create() {
@@ -21,8 +35,10 @@ class AccountPageAttachment extends ActiveRecordBase {
             'website_page_id' => $this->website_page_id
             , 'key' => $this->key
             , 'value' => $this->value
+            , 'extra' => $this->extra
+            , 'meta' => $this->meta
             , 'sequence' => $this->sequence
-        ), 'isss' );
+        ), 'isssss' );
 
         $this->id = $this->website_attachment_id = $this->get_insert_id();
     }

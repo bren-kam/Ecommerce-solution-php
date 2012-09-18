@@ -14,6 +14,20 @@ class AccountPage extends ActiveRecordBase {
     }
 
     /**
+     * Get all
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_all( $account_id ) {
+        return $this->prepare(
+            'SELECT `website_page_id`, `slug` FROM `website_pages` WHERE `website_id` = :account_id'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
      * Create
      */
     public function create() {
