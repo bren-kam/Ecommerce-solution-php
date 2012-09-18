@@ -40,7 +40,11 @@ class Config {
      * @var array
      */
     private static $settings = array(
-        'server-timezone'         => 'America/Chicago'
+        'server-timezone'       => 'America/Chicago'
+        , 'server-ip'           => '199.79.48.137'
+        , 'server-username'     => 'root'
+        , 'server-password'     => 'WIxp2sDfRgLMDTL5'
+        , 'defualt-timezone'    => 'America/New_York'
     );
 
     /**

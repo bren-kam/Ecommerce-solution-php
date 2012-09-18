@@ -15,6 +15,20 @@ class CompanyPackage extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $company_package_id
+     */
+    public function get( $company_package_id ) {
+        $this->prepare( 'SELECT `company_package_id`, `name`, `website_id FROM `company_packages` WHERE `company_package_id` = :company_package_id'
+            , 'i'
+            , array( ':company_package_id' => $company_package_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->company_package_id;
+    }
+
+    /**
      * Get all the accounts
      *
      * @param int $account_id

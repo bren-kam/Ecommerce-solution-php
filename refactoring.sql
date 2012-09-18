@@ -17,3 +17,6 @@ DROP TABLE `product_options_unique`;
 
 ------ Change Attribute Items to rename columns -----
 ALTER TABLE `attribute_items` CHANGE `attribute_item_name` `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+
+------ Change Website Pages to default to active -----
+ALTER TABLE `website_pages` CHANGE `status` `status` TINYINT( 1 ) NOT NULL DEFAULT '1';

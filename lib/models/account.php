@@ -2,7 +2,7 @@
 class Account extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
-        , $plan_description, $theme, $phone, $products, $pages, $shopping_cart, $product_catalog
+        , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog
         , $room_planner, $blog, $craigslist, $email_marketing, $domain_registration, $mobile_marketing
         , $additional_email_Addresses, $social_media, $ftp_username, $ga_profile_id, $ga_tracking_key
         , $wordpress_username, $wordpress_password, $mc_list_id, $version, $live, $type, $status;
@@ -29,7 +29,7 @@ class Account extends ActiveRecordBase {
     public function get( $account_id ) {
         // Get the account
 		$this->prepare(
-            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ftp_username`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
+            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ftp_username`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, a.`status`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -80,6 +80,7 @@ class Account extends ActiveRecordBase {
             , 'plan_name' => $this->plan_name
             , 'plan_description' => $this->plan_description
             , 'theme' => $this->theme
+            , 'logo' => $this->logo
             , 'phone' => $this->phone
             , 'products' => $this->products
             , 'pages' => $this->pages
@@ -99,9 +100,11 @@ class Account extends ActiveRecordBase {
             , 'wordpress_username' => $this->wordpress_username
             , 'wordpress_password' => $this->wordpress_password
             , 'mc_list_id' => $this->mc_list_id
+            , 'version' => $this->version
             , 'live' => $this->live
+            , 'status' => $this->status
         ), array( 'website_id' => $this->id )
-        , 'iiissssssiiiiiiiiiiisissssi', 'i' );
+        , 'iiisssssssiiiiiiiiiiisisssssii', 'i' );
     }
 
     /**
@@ -240,6 +243,34 @@ class Account extends ActiveRecordBase {
 		// Insert it or update it
 		$this->prepare(
             'INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ' . substr( str_repeat( ', ( ?, ?, ? )', $settings_count ), 2 ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
+            , str_repeat( 'iss', $settings_count )
+            , $setting_values
+        )->query();
+    }
+
+    /**
+     * Set Email Settings
+     *
+     * @fix need to consolidate with the above function to remove this table
+     *
+     * @param array $settings
+     */
+    public function set_email_settings( array $settings ) {
+        // How many settings are we dealing with?
+        $settings_count = count( $settings );
+
+        // Get the setting values
+        $setting_values = array();
+
+        foreach ( $settings as $k => $v ) {
+            $setting_values[] = $this->id;
+            $setting_values[] = $k;
+            $setting_values[] = $v;
+        }
+
+		// Insert it or update it
+		$this->prepare(
+            'INSERT INTO `email_settings` ( `website_id`, `key`, `value` ) VALUES ' . substr( str_repeat( ', ( ?, ?, ? )', $settings_count ), 2 ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
             , str_repeat( 'iss', $settings_count )
             , $setting_values
         )->query();

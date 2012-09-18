@@ -24,46 +24,20 @@
 
 <?php echo $template->start( _('Actions') ); ?>
 
-<table class="col-2">
     <?php if ( 0 == $account->version ) { ?>
-        <tr>
-            <td><?php echo _('Install Website'); ?>:</td>
-            <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_website' ), '/accounts/install-website/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></td>
-        </tr>
+        <p><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_website' ), '/accounts/install-website/' ) ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
     <?php
     }
 
     if ( 0 != $account->version ) {
     ?>
-        <tr>
-            <td><?php echo _('Install Package'); ?>:</td>
-            <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/install-package/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></td>
-        </tr>
+        <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-package/' ); ?>" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></p>
     <?php } ?>
-    <tr>
-        <td><?php echo _('Delete Categories and Products'); ?>:</td>
-        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
-    </tr>
-    <tr>
-        <td><?php echo _('Reset Social Media'); ?>:</td>
-        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
-    </tr>
-    <tr>
-        <td><?php echo _('Create Trumpia Account'); ?>:</td>
-        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
-    </tr>
-    <tr>
-        <td><?php echo _('Reset Social Media'); ?>:</td>
-        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
-    </tr>
-    <tr>
-        <td><?php echo _('Cancel Account'); ?>:</td>
-        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
-    </tr>
-    <tr>
-        <td><?php echo _('Run Ashley FTP'); ?>:</td>
-        <td><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_package' ), '/accounts/delete-categories-and-products/' ) ); ?>" class="button" ajax="1" title="<?php echo _('Delete'); ?>"><?php echo _('Delete'); ?></a></td>
-    </tr>
+
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Delete Categories and Products'); ?>" confirm="<?php echo _('Are you sure you want to delete all categories and products? This cannot be undone.'); ?>"><?php echo _('Delete Categories and Products'); ?></a></p>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Create Trumpia Account'); ?>"><?php echo _('Create Trumpia Account'); ?></a></td>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Run Ashley FTP'); ?>"><?php echo _('Run Ashley FTP'); ?></a></p>
 </table>
 
 
