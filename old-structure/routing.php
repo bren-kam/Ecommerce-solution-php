@@ -10,6 +10,8 @@
 
 // If it's the home page
 if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) {
+	$type = 'home';
+    
     // Set the transaction name
     $transaction_name = theme_inc( 'index' );
     

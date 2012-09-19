@@ -111,52 +111,51 @@ get_header();
             <p><?php echo _('Your timezone has not yet been set.'), ' <a href="/social-media/settings/" title="', _('Social Media Settings'), '">', _('Click here to set your timezone.'), '</a>'; ?></p>
 		<?php 
         } else { 
-            if ( 0 == $fan_offer['fb_page_id'] ) { 
+           if( !isset( $fan_offer['fb_page_id'] ) || 0 == $fan_offer['fb_page_id'] ) {
+            // Define instructions
+            $instructions = array(
+                1 => array(
+                    'title' => _('Go to the Fan Offer application')
+                    , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-fan-offer/" title="' . _('Online Platform - Fan Offer') . '" target="_blank">' . _('Fan Offer') . '</a> ' . _('application page') . '.'
+                    , 'image' => false
+                )
+                , 2 => array(
+                    'title' => _('Install The App')
+                    , 'text' => _('Click') . ' <strong>' . _('Install This App.') . '</strong> ' . _('on the page shown below:')
+                )
+                , 3 => array(
+                    'title' => _('Choose Your Page')
+                    , 'text' => _('(Note - You must first be an admin of the page to install the App)')
+                )
+                , 4 => array(
+                    'title' => _('Click Add Online Platform - Fan Offer')
+                )
+                , 5 => array(
+                    'title' => _('Click on the Fan Offer App')
+                    , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
+                )
+                , 6 => array(
+                    'title' => _('Click on the Update Settings')
+                )
+                , 7 => array(
+                    'title' => _('Click Add Online Platform - Fan Offer')
+                    , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $fan_offer['key']
+                )
+            );
+
+            foreach ( $instructions as $step => $data ) {
+                echo '<h2 class="title">', _('Step'), " $step:", $data['title'], '</h2>';
+
+                if ( isset( $data['text'] ) )
+                    echo '<p>', $data['text'], '</p>';
+
+                if ( !isset( $data['image'] ) || $data['image'] != false )
+                    echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
+
+                echo '<br /><br />';
+            }
+         } else {
             ?>
-                <h2 class="title"><?php echo _('Step 1: Go to the Fan Offer application.'); ?></h2>
-                <p><?php echo _('Go to the'); ?> <a href="http://apps.facebook.com/op-fan-offer/" title="<?php echo _('Online Platform - Fan Offer'); ?>" target="_blank"><?php echo _('Fan Offer'); ?></a> <?php echo _('application page'); ?>.</p>
-                <br /><br />
-
-                <h2 class="title"><?php echo _('Step 2: Install on your Fan Page'); ?></h2>
-                <p><?php echo _('Click'); ?> <strong><?php echo _('Add to my Page (bottom left of your page).'); ?></strong></p>
-                <p><strong><?php echo _('NOTE'); ?>:</strong> <?php echo _("If you do not see this link, it means you either don't have administrative access to any fan pages, or you already have this application installed. (If it is already installed, please ahead skip to Step 4.)"); ?></p>
-                <br />
-                <p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step2.jpg" class="image-border" width="750" height="534" alt="<?php echo _('Step 2'); ?>" /></p>
-                <br /><br />
-
-                <h2 class="title"><?php echo _('Step 3: Click on the Add to Page Button.'); ?></h2>
-                <p><?php echo _('Choose the Facebook Fan Page you want to add your app to by clicking on the'); ?> <strong><?php echo _('Add to Page'); ?></strong> <?php echo _('button to the right of the Fan Page name.'); ?></p>
-                <br />
-                <p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step3.jpg" class="image-border" width="750" height="236" alt="<?php echo _('Step 3'); ?>" /></p>
-                <br /><br />
-
-                <h2 class="title"><?php echo _('Step 4: Click on the App.'); ?></h2>
-                <p><?php echo _('Go to your Fan Page and click on the App you are installing from the list on the left.'); ?></p>
-                <br />
-                <p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step4.jpg" class="image-border" width="750" height="650" alt="<?php echo _('Step 4 - 1'); ?>" /></p>
-                <br />
-                <p><?php echo _('Click on'); ?> <strong><?php echo _('Update Settings'); ?></strong> <?php echo _('right under the app name. Note: This is only visible to you because you are the admin for this page.'); ?></p>
-                <br />
-                <p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step4-1.jpg" class="image-border" width="750" height="178" alt="<?php echo _('Step 4 - 2'); ?>" /></p>
-                <br /><br />
-
-                <h2 class="title"><?php echo _('Step 5: Connect the application with your dashboard account'); ?></h2>
-                <p><?php echo _('Copy the connection key listed below and paste into the Facebook app.'); ?></p>
-                <p><?php echo _('Facebook Connection Key'); ?>: <?php echo $fan_offer['key']; ?></p>
-                <p><strong><?php echo _('NOTE'); ?></strong>: <?php echo _('You may see a request for permissions. If this is the case, you first need to Allow Permissions to the application before you will be able to move on.'); ?></p>
-                <br />
-                <p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step5.jpg" class="image-border" width="750" height="150" alt="<?php echo _('Step 5'); ?>" /></p>
-                <br />
-                <p><?php echo _('When you click Connect, you will see'); ?> <span class="error"><?php echo _('(Not Connected)'); ?></span> <?php echo _('in red change to'); ?> <span class="success"><?php echo _('(Connected)'); ?></span> <?php echo _('in green.'); ?></p>
-                <br /><br />
-
-                <h2 class="title"><?php echo _('Step 6: Final App Activation.'); ?></h2>
-                <p><?php echo _('Click the activate link to complete the installation process. You will then be able to control all the content for the app from this dashboard.'); ?></p>
-                <p><a href="/social-media/facebook/fan-offer/" title="<?php echo _('Activate'); ?>"><?php echo _('Activate'); ?></a></p>
-                <br />
-                <p><img src="http://account.imagineretailer.com/images/social-media/facebook/fan-offer/step6.jpg" class="image-border" width="489" height="190" alt="<?php echo _('Step 6'); ?>" /></p>
-                <br /><br />
-            <?php } else { ?>
                 <p align="right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $fan_offer['fb_page_id']; ?>?sk=app_165348580198324" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
                 <form name="fFanOffer" action="/social-media/facebook/fan-offer/" method="post">
                     <?php if ( $success ) { ?>

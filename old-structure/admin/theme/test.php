@@ -1,21 +1,22 @@
 <?php
+$a = new Ashley();
+$a->load_packages();
 
-echo format::string_to_entity( ".com" );
+//library('ashley-api/ashley-api');
+//$a = new Ashley_API();
+//$categories = $a->get_items( array( 'LoadAllItemCategories', 'LoadCatalogSearchResults' ) );
+/*
+$packages = $a->get_packages();
+
+$i = 0;
+foreach ( $packages as $package ) {
+    $i++;
+    if ( $i < 2000 )
+        continue;
+    fn::info( $package );exit;
+}
 exit;
 /*
-$array = json_decode( curl::get( 'http://www.siteontime.com/bigsandydata.php' ) );
-
-echo count( $array );
-foreach ( $array as $a ) {
-    fn::info( $a );
-    exit;
-}
-
-library('ashley-api/ashley-api');
-$a = new Ashley_API();
-$packages = $a->get_packages();
-exit;
-
 // Load the library
 library( 'craigslist-api' );
 $b = new Base_Class();
@@ -35,13 +36,7 @@ foreach ( $markets as $m ) {
     }
 }
 
-
-$s = new SiteOnTime();
-$s->run();
-
-
-
-
+<<<<<<< HEAD
 // Declare classes
 $a = new Analytics();
 $c = new Craigslist;

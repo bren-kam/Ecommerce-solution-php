@@ -7,6 +7,13 @@ class Resources {
     private $_css = array();
 
     /**
+     * Private CSS URLs
+     *
+     * @vary array
+     */
+    private $_css_urls = array();
+
+    /**
      * Hold the Javascript
      * @var array
      */
@@ -27,6 +34,38 @@ class Resources {
 
         return $this;
 	}
+
+    /**
+     * Allow people to include whatever CSS files they want without duplicates -- before
+     *
+     * @return Resources
+     */
+	public function css_before() {
+        $files = func_get_args();
+
+        foreach ( $files as $f ) {
+            if ( !in_array( $f, $this->_css ) )
+                array_unshift( $this->_css, $f );
+        }
+
+        return $this;
+	}
+
+    /**
+     * CSS URL
+     *
+     * @return Resources
+     */
+    public function css_url() {
+        $files = func_get_args();
+
+        foreach ( $files as $f ) {
+            if ( !in_array( $f, $this->_css_urls ) )
+                array_unshift( $this->_css_urls, $f );
+        }
+
+        return $this;
+    }
 
     /**
      * Allow people to include whatever JS files they want without duplicates
@@ -107,6 +146,18 @@ class Resources {
         }
 
         return $cached_file;
+    }
+
+    /**
+     * Get CSS URLs
+     *
+     * @return string
+     */
+    public function get_css_urls() {
+        if ( 0 == count( $this->_css_urls ) )
+            return false;
+
+        return '<link type="text/css" rel="stylesheet" href="' . implode( '" /><link type="text/css" rel="stylesheet" href="', $this->_css_urls ) . '" />';
     }
 
     /**

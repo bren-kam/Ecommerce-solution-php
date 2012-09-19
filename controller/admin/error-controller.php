@@ -5,7 +5,9 @@ class ErrorController extends BaseController {
      */
     public function __construct() {
         // Pass in the base for all the views
-        parent::__construct( 'error/' );
+        parent::__construct();
+
+        $this->view_base = '../error/';
     }
 
     /**
@@ -18,10 +20,20 @@ class ErrorController extends BaseController {
     }
 
     /**
+     * Handle 403 Error
+     *
+     * @return TemplateResponse
+     */
+    protected function http_403() {
+        return $this->get_template_response('403');
+    }
+
+    /**
      * Override login function
      * @return bool
      */
     protected function get_logged_in_user() {
+        $this->user = new User();
         return true;
     }
 }

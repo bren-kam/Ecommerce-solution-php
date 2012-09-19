@@ -25,6 +25,12 @@ class fn extends Base_Class {
 	 * @return array
 	 */
 	public static function info( $object, $echo = true ) {
+		// For Imagine Retailer specifically
+		global $user;
+		
+		if ( $user && $user['role'] < 10 )
+			return false;
+		
 		$info = '<pre>' . var_export( $object, true ) . '</pre>';
 		
 		if ( $echo )

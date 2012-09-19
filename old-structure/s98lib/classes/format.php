@@ -35,7 +35,7 @@ class format extends Base_Class {
 	public static function htmlspecialchars_deep( $value ) {
 		return is_array( $value ) ? array_map( array( 'self', 'htmlspecialchars_deep' ), $value ) : htmlspecialchars( $value );
 	}
-	
+
 	/**
 	 * Navigates through an array and encodes the values to be used in a URL.
 	 *
@@ -83,6 +83,25 @@ class format extends Base_Class {
         return str_replace( array_keys( $html_entities ), array_values( $html_entities ), $string );
     }
 
+    /**
+     * Convert Characters to what we want them to be
+     *
+     * @param string
+     * @return string
+     */
+    public static function convert_characters( $string ) {
+        $conversion = array(
+            '“' => '"'
+            , '”' => '"'
+            , 'é' => '&eacute;'
+            , '®' => '&reg;'
+            , '™' => '&trade;'
+            , '’' => "'"
+        );
+
+        return str_replace( array_keys( $conversion ), array_values( $conversion ), $string );
+    }
+
 	/**
 	 * Limits a phrase to a given number of words.
 	 *
@@ -119,7 +138,7 @@ class format extends Base_Class {
 	 */
 	public static function limit_chars( $str, $limit = 100, $end_char = NULL, $preserve_words = TRUE ) {
 		$end_char = ( NULL === $end_char ) ? '...' : $end_char;
-		
+
 		$limit = (int) $limit;
 
 		if ( '' === trim($str) || mb_strlen( $str ) <= $limit )
@@ -151,7 +170,7 @@ class format extends Base_Class {
 		foreach ( str_split( $string ) as $char ) {
 			$new_string .= '&#' . ord( $char ) . ';';
 		}
-		
+
 		return $new_string;
 	}
 
@@ -180,30 +199,30 @@ class format extends Base_Class {
 	public static function autop( $pee, $br = true ) {
 		if ( trim( $pee ) === '' )
 			return '';
-		
+
 		$pee = $pee . "\n"; // just to make things a little easier, pad the end
 		$pee = preg_replace( '|<br />\s*<br />|', "\n\n", $pee );
-		
+
 		// Space things out a little
 		$allblocks = '(?:table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|form|map|area|blockquote|address|math|style|input|p|h[1-6]|hr|fieldset|legend)';
 		$pee = preg_replace( '!(<' . $allblocks . '[^>]*>)!', "\n$1", $pee );
 		$pee = preg_replace( '!(</' . $allblocks . '>)!', "$1\n\n", $pee );
 		$pee = str_replace( array( "\r\n", "\r" ), "\n", $pee ); // cross-platform newlines
-		
+
 		if ( strpos( $pee, '<object' ) !== false ) {
 			$pee = preg_replace( '|\s*<param([^>]*)>\s*|', "<param$1>", $pee ); // no pee inside object/embed
 			$pee = preg_replace( '|\s*</embed>\s*|', '</embed>', $pee );
 		}
-		
+
 		$pee = preg_replace( "/\n\n+/", "\n\n", $pee ); // take care of duplicates
-		
+
 		// make paragraphs, including one at the end
 		$pees = preg_split( '/\n\s*\n/', $pee, -1, PREG_SPLIT_NO_EMPTY );
 		$pee = '';
-		
+
 		foreach ( $pees as $tinkle )
 			$pee .= '<p>' . trim( $tinkle, "\n") . "</p>\n";
-		
+
 		$pee = preg_replace( '|<p>\s*</p>|', '', $pee ); // under certain strange conditions it could create a P of entirely whitespace
 		$pee = preg_replace( '!<p>([^<]+)</(div|address|form)>!', "<p>$1</p><$2>", $pee );
 		$pee = preg_replace( '!<p>\s*(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee ); // don't pee all over a tag
@@ -212,23 +231,23 @@ class format extends Base_Class {
 		$pee = str_replace( '</blockquote></p>', '</p></blockquote>', $pee );
 		$pee = preg_replace( '!<p>\s*(</?' . $allblocks . '[^>]*>)!', "$1", $pee );
 		$pee = preg_replace( '!(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee) ;
-		
+
 		if ( $br ) {
 			$pee = preg_replace_callback( '/<(script|style).*?<\/\\1>/s', 'self::preserve_new_lines' , $pee );
 			$pee = preg_replace( '|(?<!<br />)\s*\n|', "<br />\n", $pee ); // optionally make line breaks
 			$pee = str_replace( '<PreserveNewline />', "\n", $pee );
 		}
-		
+
 		$pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*<br />!', "$1", $pee);
 		$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)!', '$1', $pee);
 		if ( strpos( $pee, '<pre' ) !== false )
 			$pee = preg_replace_callback('!(<pre[^>]*>)(.*?)</pre>!is', 'clean_pre', $pee );
-		
+
 		$pee = preg_replace( "|\n</p>$|", '</p>', $pee );
-	
+
 		return $pee;
 	}
-	
+
 	/**
 	 * Reverses autop or turns paragraph and line breaks into newlines
 	 *
@@ -240,8 +259,8 @@ class format extends Base_Class {
 		$string  = ltrim( str_replace('<p>', "\n", $string ) );
 		return str_replace('</p>', '', $string );
 	}
-	
-	/** 
+
+	/**
 	 * Opposite of strip_tags -- strips specific tags
 	 *
 	 * @param string $str
@@ -251,30 +270,30 @@ class format extends Base_Class {
 	 */
 	public static function strip_only( $str, $tags, $strip_content = false ) {
 		$content = '';
-		
+
 		// If tags are not an array
 		if ( !is_array( $tags ) ) {
 			// Remove greater-than and lesser-than symbols and turn it into an array
 			$tags = ( false !== ( strpos( $str, '>' ) ) ? explode( '>', str_replace( '<', '', $tags ) ) : array( $tags ) );
-			
+
 			// Make sure there are no empty tags
-			if ( '' == end( $tags ) ) 
+			if ( '' == end( $tags ) )
 				array_pop( $tags );
 		}
-		
+
 		// Go through the tags
 		foreach ( $tags as $tag ) {
 			// Find out if we're removing the inner content
 			if ( $strip_content )
 				 $content = '(.+</' . $tag . '[^>]*>|)';
-			 
+
 			 // Strip the tags
 			 $str = preg_replace( '#</?' . $tag . '[^>]*>' . $content . '#is', '', $str );
 		}
-		
+
 		return $str;
 	}
-	
+
 	/**
 	 * Converts links in text to anchor tags that link to those links
 	 * This does not take into account that there may already be links
@@ -291,7 +310,7 @@ class format extends Base_Class {
         // Tricket to make sure there is always an http://
 		return str_replace( 'http://http', 'http', regexp::replace( $string, 'url', '<a href="http://\\1"' . $title . $target . '>\\1</a>' ) );
 	}
-	
+
 	/**
 	 * Turns something into a slug (devoid of all symbols/spaces)
 	 *
@@ -314,4 +333,20 @@ class format extends Base_Class {
         return ucwords( str_replace( '-', ' ', $string ) );
     }
 
+    /**
+     * String Last Replace
+     *
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
+     * @return string
+     */
+    public static function str_lreplace( $search, $replace, $subject ) {
+        $pos = strrpos( $subject, $search );
+
+        if ( false !== $pos )
+            $subject = substr_replace( $subject, $replace, $pos, strlen( $search ) );
+
+        return $subject;
+    }
 }

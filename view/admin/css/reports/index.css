@@ -1,0 +1,5 @@
+/* Reports */
+#table th { text-align: left; font-weight: bold; padding-bottom: 14px; }
+.criterion { position: relative; width: 300px; padding: 10px 0; }
+.remove-criterion { margin-left: 5px; position: absolute; top: 7px; right:5px; }
+.even { background-color: #F8F8F8 }

@@ -10,7 +10,7 @@ class HomeController extends BaseController {
 
     /**
      * Setup a new account
-     * @return TemplateResponse
+     * @return RedirectResponse
      */
     protected function index() {
         return new RedirectResponse( '/accounts/' );

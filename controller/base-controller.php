@@ -23,6 +23,12 @@ abstract class BaseController {
     protected $section;
 
     /**
+     * Define the title of the section
+     * @var string
+     */
+    protected $title;
+
+    /**
      * The model path for the current controller
      * @var string
      */
@@ -87,6 +93,18 @@ abstract class BaseController {
     }
 
     /**
+     * Create a notification
+     *
+     * @param string $message
+     */
+    public function notify( $message ) {
+        $notification = new Notification();
+        $notification->user_id = $this->user->user_id;
+        $notification->message = $message;
+        $notification->create();
+    }
+
+    /**
      * Determine if this page has been verified
      *
      * @return bool
@@ -108,7 +126,14 @@ abstract class BaseController {
 
         // Setup new template response
         $template_response = new TemplateResponse( $this->resources, $this->view_base . $file, $title );
-        $template_response->add( 'user', $this->user );
+        $template_response->set( 'user', $this->user );
+        $template_response->set( 'section', $this->section );
+
+        if ( is_null( $this->title ) )
+            $this->title = ucwords( $this->section );
+
+        $template_response->set( 'title', $this->title );
+        $template_response->set( 'view_base', $this->view_base );
 
         return $template_response;
     }
@@ -126,11 +151,11 @@ abstract class BaseController {
         $email = security::decrypt( base64_decode( $encrypted_email ), security::hash( COOKIE_KEY, 'secure-auth' ) );
 
         // Create new user
-        $this->user = new User( defined('ADMIN') );
+        $this->user = new User( 'admin' == SUBDOMAIN );
         $this->user->get_by_email( $email );
 
         // Check what permission needs to be checked
-        $permission = ( defined('ADMIN') ) ? 6 : 1;
+        $permission = ( 'admin' == SUBDOMAIN ) ? 6 : 1;
 
         // See if we can get the user
         if ( !$this->user->has_permission( $permission ) )
@@ -153,6 +178,33 @@ abstract class BaseController {
             $referer .= '?' . $_SERVER['QUERY_STRING'];
 
         url::redirect( '/login/?r=' . urlencode( $referer ) );
+    }
+
+    /**
+     * Store Session
+     *
+     * @return AjaxResponse
+     */
+    protected function store_session() {
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() || !isset( $_POST['keys'] ) || !isset( $_POST['value'] ) )
+            return $response;
+
+        // Create array
+        $session = &$_SESSION;
+
+        foreach ( $_POST['keys'] as $key ) {
+            if ( !isset( $session[$key] ) )
+                $session[$key] = array();
+
+            $session = &$session[$key];
+        }
+
+        $session = $_POST['value'];
+
+        return $response;
     }
 
     /**

@@ -5,7 +5,7 @@
  * @package Studio98 Framework
  * @since 1.0
  */
-class DataTableResponse extends Response {
+class DataTableResponse extends AjaxResponse {
 	/**
 	 * Holds the where information
 	 * @var string
@@ -113,7 +113,7 @@ class DataTableResponse extends Response {
 	 */
 	public function order_by() {
 		$fields = func_get_args();
-		
+
 		// Loop through the columns
 		for ( $i = 0; $i < intval( $_GET['iSortingCols'] ); $i++ ) {
 			// Add the necessary comman
@@ -174,19 +174,13 @@ class DataTableResponse extends Response {
         $this->data = ( $data ) ? $data : array();
     }
 
-    /**
-     * Determines if we have reached an error
-     *
-     * @return bool
-     */
-    public function has_error() {
-        return $this->error;
-    }
-
 	/**
 	 * Get Response
 	 */
 	public function respond() {
+        // Set it to JSON
+        header::type('json');
+
         if ( $this->has_error() ) {
             echo json_encode( array(
                 'redirect' => true,

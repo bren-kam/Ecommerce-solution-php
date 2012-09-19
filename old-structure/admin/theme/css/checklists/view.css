@@ -49,7 +49,7 @@ h3 { font-size: 18px; padding-bottom: 8px; line-height: 20px }
 }
 #dNotesList .dNote .title { float: left; width: 125px; display: block; line-height: 18px; }
 #dNotesList .dNote .note { width: auto; line-height:16px; display:block; float:left;}
-#fNewNote{ 
+#fNewNote{
 	margin-left: 125px;
 	margin-top:10px;
 	display: inline-block;

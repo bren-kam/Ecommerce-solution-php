@@ -6,8 +6,15 @@ class User extends ActiveRecordBase {
      */
     private  $_admin;
 
-    // The columsn we will have access to
+    // The columns we will have access to
     public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
+
+    // Columns available in getting a complete user
+    public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
+
+    // These columns belong to another table but might be available from the user
+    public $company, $domain;
+
     private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role' );
 
     /**
@@ -16,6 +23,67 @@ class User extends ActiveRecordBase {
     public function __construct( $admin = 0 ) {
         parent::__construct( 'users' );
         $this->_admin = $admin;
+
+        // We want to make sure they match
+        if ( isset( $this->user_id ) )
+            $this->id = $this->user_id;
+    }
+
+    /**
+     * Create a user
+     */
+    public function create() {
+        $this->insert( array(
+            'company_id' => $this->company_id
+            , 'email' => $this->email
+            , 'contact_name' => $this->contact_name
+            , 'work_phone' => $this->work_phone
+            , 'cell_phone' => $this->cell_phone
+            , 'store_name' => $this->store_name
+            , 'products' => $this->products
+            , 'status' => $this->status
+            , 'role' => $this->role
+            , 'billing_first_name' => $this->billing_first_name
+            , 'billing_last_name' => $this->billing_last_name
+            , 'billing_address1' => $this->billing_address1
+            , 'billing_state' => $this->billing_state
+            , 'billing_zip' => $this->billing_zip
+            , 'date_created' => dt::date( 'Y-m-d H:i:s' )
+        ), 'isssssiiissssss' );
+
+        $this->user_id = $this->id = $this->get_insert_id();
+    }
+
+    /**
+     * Update the user
+     */
+    public function update() {
+        parent::update( array(
+            'company_id' => $this->company_id
+            , 'email' => $this->email
+            , 'contact_name' => $this->contact_name
+            , 'work_phone' => $this->work_phone
+            , 'cell_phone' => $this->cell_phone
+            , 'store_name' => $this->store_name
+            , 'products' => $this->products
+            , 'status' => $this->status
+            , 'role' => $this->role
+            , 'billing_first_name' => $this->billing_first_name
+            , 'billing_last_name' => $this->billing_last_name
+            , 'billing_address1' => $this->billing_address1
+            , 'billing_state' => $this->billing_state
+            , 'billing_zip' => $this->billing_zip
+        ), array( 'user_id' => $this->id )
+            , 'isssssiiisssss', 'i' );
+    }
+
+    /**
+     * Set Password
+     *
+     * @param string $password
+     */
+    public function set_password( $password ) {
+        parent::update( array( 'password' => md5( $password ) ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 
     /**
@@ -29,25 +97,47 @@ class User extends ActiveRecordBase {
         $role_requirement = ( 1 == $this->_admin ) ? 6 : 1;
 
 		// Prepare the statement
-		$columns = $this->prepare( 'SELECT ' . $this->get_columns() . " FROM `users` WHERE `role` >= $role_requirement AND `status` = 1 AND `email` = :email AND `password` = MD5(:password)",
+		$this->prepare( 'SELECT ' . $this->get_columns() . " FROM `users` WHERE `role` >= $role_requirement AND `status` = 1 AND `email` = :email AND `password` = MD5(:password)",
             'ss',
             array(
                 ':email' => $email
                 , ':password' => $password
             )
-        )->get_row();
+        )->get_row( PDO::FETCH_INTO, $this );
 
-		// If no user was found, return false
-		if ( !$columns ) {
-            $this->unset_values();
-			return false;
-        }
+        $this->id = $this->user_id;
 
-        // Assign values to this user
-        $this->assign_values( $columns );
-
-        return true;
+        return 1 === $this->get_row_count();
 	}
+
+    /**
+	 * Gets a user by their id
+	 *
+	 * @param int $user_id
+	 * @return User
+	 */
+	public function get( $user_id ) {
+        // Prepare the statement
+        $this->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`work_phone`, a.`cell_phone`, a.`billing_first_name`, a.`billing_last_name`, a.`billing_address1`, a.`billing_city`, a.`billing_state`, a.`billing_zip`, a.`products`, a.`role`, a.`status`, a.`date_created`, b.`name` AS company, b.`domain` FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = :user_id'
+            , 'i'
+            , array( ':user_id' => $user_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+		$this->id = $this->user_id;
+	}
+
+    /**
+     * Gets all users
+     *
+     * @return array
+     */
+    public function get_all() {
+        $where = ( $this->role < 8 ) ? ' AND ( `company_id` = ' . $this->company_id . ' OR `user_id` = 493 )' : '';
+
+		$users = $this->get_results( "SELECT `user_id`, `company_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `contact_name` <> '' $where ORDER BY `contact_name`", PDO::FETCH_CLASS, 'User' );
+
+        return $users;
+    }
 
     /**
      * Get By Email
@@ -55,11 +145,84 @@ class User extends ActiveRecordBase {
      * @param string $email
      */
     public function get_by_email( $email ) {
-        $columns = $this->prepare( 'SELECT ' . $this->get_columns() . ' FROM `users` WHERE `status` = 1 AND `email` = :email', 's', array( ':email' => $email ) )->get_row();
+        $this->prepare(
+            'SELECT ' . $this->get_columns() . ' FROM `users` WHERE `status` = 1 AND `email` = :email'
+            , 's'
+            , array( ':email' => $email )
+        )->get_row(  PDO::FETCH_INTO, $this );
 
-        $this->assign_values( $columns );
+        $this->id = $this->user_id;
     }
 
+    /**
+	 * Gets all the "admin" users
+	 *
+	 * @param array $user_ids [optional] any additional user ids you want to be included
+	 * @return array
+	 */
+	public function get_admin_users( $user_ids = array() ) {
+        if ( !$this->_admin )
+            return false;
+
+        $user_ids[] = 493;
+
+        $where = '';
+
+        // Type Juggline
+        foreach ( $user_ids as &$uid ) {
+            $uid = (int) $uid;
+        }
+
+        // Make sure they can only see what they're supposed to
+        if ( !$this->has_permission(8) )
+            $where .= ' AND ( `company_id` = ' . $this->company_id . ' OR `user_id` IN( ' . implode( ', ', $user_ids ) . ' ) ) ';
+
+        return $this->get_results(
+            "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `role` > 5 AND '' <> `contact_name` $where ORDER BY `contact_name`"
+            , PDO::FETCH_CLASS
+            , 'User'
+        );
+    }
+
+    /**
+     * Get Product users
+     *
+     * @return array
+     */
+    public function get_product_users() {
+        if ( !$this->_admin )
+            return false;
+
+        // Make sure they can only see what they're supposed to
+        $where = ( !$this->has_permission(8) ) ? ' AND a.`company_id` = ' . (int) $this->company_id : '';
+
+        return $this->get_results(
+            "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00' $where"
+            , PDO::FETCH_CLASS
+            , 'User'
+        );
+    }
+
+    /**
+	 * Autocomplete
+	 *
+	 * Gets the data for an autocomplete request
+	 *
+	 * @param string $query
+	 * @param string $field
+	 * @return array
+	 */
+	public function autocomplete( $query, $field ) {
+		// Construct WHERE
+		$where = ( !$this->has_permission(8) ) ? ' AND `company_id` = ' . (int) $this->company_id : '';
+
+		// Get results
+		return $this->prepare(
+            "SELECT DISTINCT( `$field` ) FROM `users` WHERE `$field` LIKE :query $where ORDER BY `$field` LIMIT 10"
+            , 's'
+            , array( ':query' => $query . '%' )
+        )->get_results( PDO::FETCH_ASSOC );
+	}
 
     /**
      * Check if the user has permissions
@@ -79,31 +242,47 @@ class User extends ActiveRecordBase {
      */
     public function record_login() {
         if ( $this->id )
-            $this->update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
+            parent::update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 
     /**
-     * Assign values
-     *
-     * @param stdClass|array $columns
-     */
-    protected function assign_values( $columns ) {
-        if ( !is_array( $columns ) && !$columns instanceof stdClass )
-            return;
+	 * Get all information of the users
+	 *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+	 * @return array
+	 */
+	public function list_all( $variables ) {
+		// Get the variables
+		list( $where, $values, $order_by, $limit ) = $variables;
 
-        foreach ( $columns as $col => $value ) {
-            $this->{$col} = $value;
-        }
+        $users = $this->prepare( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`, '') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where GROUP BY a.`user_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'User' );
 
-        $this->id = $this->user_id;
-    }
+		return $users;
+	}
 
-    /**
-     * Unset Values
-     */
-    protected function unset_values() {
-        $this->assign_values( array_fill_keys( $this->_columns, NULL ) );
-    }
+	/**
+	 * Count all the websites
+	 *
+	 * @param array $variables
+	 * @return int
+	 */
+	public function count_all( $variables ) {
+        // Get the variables
+		list( $where, $values ) = $variables;
+
+		// Get the website count
+        $count = $this->prepare( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+
+		return $count;
+	}
+
+    /***** PROTECTED *****/
 
     /**
      * Gets the columns

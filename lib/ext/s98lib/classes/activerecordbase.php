@@ -7,7 +7,7 @@
  * @package Studio98 Library
  */
 
-class ActiveRecordBase {
+abstract class ActiveRecordBase {
     /**
      * Define connection parameters
      */
@@ -71,6 +71,19 @@ class ActiveRecordBase {
     }
 
     /**
+     * Prepare Raw
+     *
+     * @param $sql
+     */
+    public function prepare_raw( $sql ) {
+        // Reset everything -- last query data is no longer last
+        $this->_flush();
+
+        // Create the statement
+        return new ActiveRecordStatement( $this, $this->_prepare( $sql ) );
+    }
+
+    /**
      * Insert something into the database
      *
      * @param array $data
@@ -79,6 +92,18 @@ class ActiveRecordBase {
      * @return int
      */
     public function insert( array $data, $format, $on_duplicate_key = false ) {
+        $i = 0;
+
+        // Make sure we don't insert null values
+        foreach ( $data as $key => $value ) {
+            if ( is_null( $value ) ) {
+                unset( $data[$key] );
+                $format = substr( $format, 0, $i ) . substr( $format, $i + 1 );
+            }
+
+            $i++;
+        }
+
         // Separate fields from values
         $fields = array_keys( $data );
         $values = array_values( $data );
@@ -190,10 +215,10 @@ class ActiveRecordBase {
      *
      * @param string|PDOStatement $query [optional]
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC, FETCH_CLASS
-     * @param string $class_name [optional] NULL
+     * @param mixed $fetch_argument [optional]
      * @return mixed
      */
-    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ, $class_name = NULL ) {
+    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
         // Make sure we have a statement
         if ( !is_null( $query ) )
             $this->query( $query );
@@ -202,8 +227,8 @@ class ActiveRecordBase {
         $this->_statement();
 
         // Make it possible to do the FETCH_CLASS
-        if ( PDO::FETCH_CLASS == $style && !is_null( $class_name ) )
-            $this->_statement->setFetchMode( $style, $class_name );
+        if ( in_array( $style, array( PDO::FETCH_CLASS, PDO::FETCH_INTO ) ) && !is_null( $fetch_argument ) )
+            $this->_statement->setFetchMode( $style, $fetch_argument );
 
         return $this->_statement->fetch( $style );
     }
@@ -315,7 +340,7 @@ class ActiveRecordBase {
         // Throw an error if it doesn't work
         if ( 00000 != $this->_statement->errorCode() ) {
             $error_info = $this->_statement->errorInfo();
-            throw new ModelException( $error_info[2] );
+            throw new ModelException( 'SQL Error: ' . $error_info[2] );
         }
     }
 
@@ -378,6 +403,16 @@ class ActiveRecordBase {
     }
 
     /**
+     * Quote a string
+     *
+     * @param string $string
+     * @return string
+     */
+    public function quote( $string ) {
+        return $this->_pdo->quote( $string );
+    }
+
+    /**
      * Connect to PDO
      *
      * @throws ModelException
@@ -390,10 +425,29 @@ class ActiveRecordBase {
 
             // Doesn't exist, then create it
             if ( !$this->_pdo ) {
-                try {
-                    $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
-                } catch( PDOException $e ) {
-                    throw new ModelException( $exception->getMessage(), $e );
+                if ( stristr( $_SERVER['DOCUMENT_ROOT'], '/gsr/systems/' ) ) {
+                    require '/gsr/systems/db.php';
+
+                    try {
+                        $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                    } catch( PDOException $e ) {
+                         // Switch to Slave
+                        unlink('/gsr/systems/db.php');
+                        symlink('/gsr/systems/db.slave.php', '/gsr/systems/db.php');
+                        require '/gsr/systems/db.php';
+
+                        try {
+                            $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
+                        } catch( PDOException $e ) {
+                            throw new ModelException( $exception->getMessage(), $e );
+                        }
+                    }
+                } else {
+                    try {
+                        $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
+                    } catch( PDOException $e ) {
+                        throw new ModelException( $exception->getMessage(), $e );
+                    }
                 }
 
                 // Set it in the registry
@@ -519,14 +573,14 @@ class ActiveRecordBase {
      * @param string $format
      * @throws ModelException
      */
-    private function _bind( $statement, array $values, $format ) {
+    private function _bind( $statement, array $values, $format_array ) {
         // To keep track of the format
         $i = 0;
 
         // Loop through values and bind the value
         foreach ( $values as $key => $value ) {
             // Get the proper format
-            $format = $format[$i];
+            $format = $format_array[$i];
 
             // If it's a string, then let's hope they did it correctly, if it's not, use the integer version
             $key = ( is_string( $key ) ) ? $key : $key + 1;
@@ -540,6 +594,8 @@ class ActiveRecordBase {
             } catch ( PDOException $e ) {
                 throw new ModelException( $e->getMessage(), $e );
             }
+
+            $i++;
         }
     }
 
@@ -594,7 +650,7 @@ class ActiveRecordStatement {
      * Get Results
      *
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC
-     * @param mixed $fetch_argument [optional] NULL
+     * @param mixed $fetch_argument [optional]
      * @return object
      */
     public function get_results( $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
@@ -605,11 +661,11 @@ class ActiveRecordStatement {
      * Get Row
      *
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC, FETCH_CLASS
-     * @param string $class_name [optional]
+     * @param mixed $fetch_argument [optional]
      * @return object
      */
-    public function get_row( $style = PDO::FETCH_OBJ, $class_name = null ) {
-        return $this->_ar->get_row( $this->_statement, $style, $class_name );
+    public function get_row( $style = PDO::FETCH_OBJ, $fetch_argument = null ) {
+        return $this->_ar->get_row( $this->_statement, $style, $fetch_argument );
     }
 
     /**
@@ -628,5 +684,37 @@ class ActiveRecordStatement {
      */
     public function get_var() {
         return $this->_ar->get_var( $this->_statement );
+    }
+
+    /**
+     * Bind Param
+     *
+     * @param string $parameter
+     * @param mixed $variable
+     * @param string $format
+     * @return ActiveRecordStatement
+     */
+    public function bind_param( $parameter, &$variable, $format ) {
+        $format = ( 'i' == $format ) ? PDO::PARAM_INT : PDO::PARAM_STR;
+
+        $this->_statement->bindParam( $parameter, $variable, $format );
+
+        return $this;
+    }
+
+    /**
+     * Bind Value
+     *
+     * @param string $parameter
+     * @param mixed $variable
+     * @param string $format
+     * @return ActiveRecordStatement
+     */
+    public function bind_value( $parameter, $variable, $format ) {
+        $format = ( 'i' == $format ) ? PDO::PARAM_INT : PDO::PARAM_STR;
+
+        $this->_statement->bindValue( $parameter, $variable, $format );
+
+        return $this;
     }
 }

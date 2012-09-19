@@ -7,6 +7,12 @@ class Template {
     protected $variables;
 
     /**
+     * Hold anything to be spit out in the top
+     * @var string
+     */
+    protected $top = '';
+
+    /**
      * Hold available variables
      */
     public function __construct( $variables ) {
@@ -16,20 +22,62 @@ class Template {
     /**
      * Start of the template
      *
-     * @param string $title
+     * @param string $title [optional]
+     * @param string|bool $sidebar_file [optional]
      * @return string
      */
-    public function start( $title ) {
-        return '<div id="content"><h1>' . $title . '</h1><br clear="all" /><br />';
+    public function start( $title = '', $sidebar_file = 'sidebar' ) {
+        $start_html = '<div id="content">';
+
+        if ( is_string( $sidebar_file ) )
+            $start_html .= '<div id="subcontent-wrapper">';
+
+        $start_html .= '<div id="subcontent">';
+
+        if ( !empty( $title ) )
+            $start_html .= '<h1>' . $title . '</h1><br clear="all" /><br />';
+
+        // Get the sidebar if it's not false
+        if ( $sidebar_file ) {
+            extract( $this->variables );
+            $template = $this;
+            require VIEW_PATH . $this->variables['view_base'] . $sidebar_file . '.php';
+        }
+
+        return $start_html;
     }
 
     /**
      * End of the template
      *
+     * @param int $div_count [optional]
      * @return string
      */
-    public function end() {
-        return '</div>';
+    public function end( $div_count = 3 ) {
+        return str_repeat( '</div>', $div_count );
+    }
+
+    /**
+     * Set data to variables
+     *
+     * @param string|array $key
+     * @param string $value [optional]
+     */
+    public function set( $key, $value = '' ) {
+        if ( is_array( $key ) ) {
+            $this->variables = array_merge( $this->variables, $key );
+        } else {
+            $this->variables[$key] = $value;
+        }
+    }
+
+    /**
+     * Get Variables
+     *
+     * @return array
+     */
+    public function get_variables() {
+        return $this->variables;
     }
 
     /**
@@ -53,13 +101,14 @@ class Template {
     }
 
     /**
-     * Spit out the checked status if it exists
+     * Spit of selected if something is selected
      *
      * @param string $string
+     * @param bool $class [optional] Whether to include class attribute
      */
-    public function checked( $string ) {
-        if ( isset( $this->variables[$string] ) )
-            echo ' checked="checked"';
+    public function select( $string, $class = false ) {
+        if ( isset( $this->variables[$string] ) && true === $this->variables[$string] )
+            echo ( $class ) ? ' class="selected"' : ' selected';
     }
 
     /**
@@ -68,6 +117,15 @@ class Template {
     public function show_errors() {
         if ( isset( $this->variables['errs'] ) )
             echo '<p class="red">', $this->variables['errs'], '</p>';
+    }
+
+    /**
+     * Add Top
+     *
+     * @param string $string
+     */
+    public function add_top( $string ) {
+        $this->top .= $string;
     }
 
     /**
@@ -81,7 +139,7 @@ class Template {
      * Get Top
      */
     public function get_top() {
-        // Do stuff
+        echo $this->top;
     }
 
     /**

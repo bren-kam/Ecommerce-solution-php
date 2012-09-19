@@ -9,6 +9,9 @@
 
 define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 
+// Should change to imagineretailer.com before deploy
+define( 'DEFAULT_DOMAIN', 'imagineretailer.com' );
+
 /** Define LIVE if the website is live */
 define( 'LIVE', false );
 
@@ -33,7 +36,7 @@ define( 'LIB_PATH', ABS_PATH . 'lib/' );
 require LIB_PATH . 'ext/s98lib/init.php';
 
 /** Dynamic definitions */
-define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : 'imagineretailer.com' );
+define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : DEFAULT_DOMAIN );
 
 // Define the subdomain
 $subdomain = ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], true ) ) : str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_HOST'], true ) );
@@ -48,6 +51,7 @@ define( 'MODEL_PATH', ABS_PATH . 'model/' . SUBDOMAIN . '/' );
 define( 'VIEW_PATH', ABS_PATH . 'view/' . SUBDOMAIN . '/' );
 define( 'CONTROLLER_PATH', ABS_PATH . 'controller/' . SUBDOMAIN . '/' );
 define( 'CACHE_PATH', ABS_PATH . 'cache/' );
+define( 'TMP_PATH', ABS_PATH . 'tmp/' );
 
 if ( PROFILE && extension_loaded( 'xhprof' ) ) {
 	// Enable XHProf (profiler)
@@ -80,6 +84,10 @@ require ABS_PATH . 'controller/base-controller.php';
 
 /** Load the Loaders */
 require LIB_PATH . 'misc/loaders.php';
+
+// Clear all posts of slashes!
+if ( isset( $_POST ) && 0 != count( $_POST ) )
+    $_POST = format::stripslashes_deep( $_POST );
 
 /** Routing */
 require ABS_PATH . 'routing.php';

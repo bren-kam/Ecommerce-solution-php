@@ -14,6 +14,18 @@ class AjaxResponse extends Response {
     private $error = false;
 
     /**
+     * Check if it's verified
+     *
+     * @param bool $verified
+     */
+    public function __construct( $verified ) {
+        $this->check( $verified, _('A verification error occurred. Please refresh the page and try again.') );
+
+        if ( $verified )
+            lib( 'ext/jQuery/jQuery' );
+    }
+
+    /**
      * Add Response
      *
      * @param string $key
@@ -29,22 +41,24 @@ class AjaxResponse extends Response {
      *
      * @param mixed $assertion
      * @param string $error
-     * @return mixed
+     * @return bool
      */
     public function check( $assertion, $error ) {
         if ( $assertion )
-            return;
+            return true;
 
         // Add the error response
         $this->add_response( 'error', $error );
         $this->error = true;
+
+        return false;
     }
 
     /**
      * Check to see if we have an error
      * @return bool
      */
-    protected function has_error() {
+    public function has_error() {
         return $this->error;
     }
 
@@ -65,6 +79,4 @@ class AjaxResponse extends Response {
         // Spit out the code and exit;
         echo json_encode( $this->json_response );
     }
-
-
 }

@@ -37,11 +37,12 @@ class Categories extends Base_Class {
 	}
 	
 	/**
-	 * Load All the category variables
+	 * Load All the category variables for this website (indicated by their industry)
      *
      * @return array
 	 */
-	 public function load_categories() {
+	public function load_categories() {
+        // Get every category in the system
 		$categories = $this->db->get_results( 'SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, `sequence` ASC, `name` ASC', ARRAY_A );
 		
 		// Handle any error
@@ -49,8 +50,35 @@ class Categories extends Base_Class {
 			$this->_err( 'Failed to get categories.', __LINE__, __METHOD__ );
 			return false;
 		}
-		
-		foreach ( $categories as $c ) {
+
+        global $user;
+
+        // Get valid categories for this website
+        $valid_categories = $this->db->prepare( "SELECT DISTINCT c.`category_id`, c.`parent_category_id` FROM `categories` AS c LEFT JOIN `product_categories` AS pc ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `products` AS p ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `website_industries` AS wi ON ( p.`industry_id` = wi.`industry_id` ) WHERE ( p.`website_id` = 0 OR p.`website_id` = ? ) AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' AND wi.`website_id` = ?", 'ii', $user['website']['website_id'], $user['website']['website_id'] )->get_results('');
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get valid categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Narrow down to new set of categories
+        $new_categories = $parent_categories = array();
+        $categories = ar::assign_key( $categories, 'category_id' );
+
+        foreach ( $valid_categories as $vc ) {
+            $parent_category_id = $vc['category_id'];
+            $last_parent_category_id = -1;
+
+            while ( $parent_category_id != 0 && $parent_category_id != $last_parent_category_id ) {
+                $category = $categories[$parent_category_id];
+                $new_categories[$category['category_id']] = $category;
+                $parent_category_id = $category['parent_category_id'];
+            }
+        }
+
+        // Go through new categories to get them as we must
+		foreach ( $new_categories as $c ) {
 			// Assign the categories list in a way for infinite nesting
 			$parent_categories[$c['parent_category_id']][] = $c;
 	

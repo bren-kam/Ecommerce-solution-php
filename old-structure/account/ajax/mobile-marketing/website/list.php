@@ -29,7 +29,7 @@ if ( is_array( $pages ) )
 foreach ( $pages as $p ) {
 	$data[] = array( $p['title'] . '<br />
 					<div class="actions">
-						<a href="http://m.' . url::domain( $user['website']['domain'], false ) . '/' . $p['slug'] . '/" title="' . _('View Page') . '" target="_blank">' . _('View') . '</a>' .
+						<a href="http://m.' . str_replace( 'www.', '', url::domain( $user['website']['domain'] ) ) . '/' . $p['slug'] . '/" title="' . _('View Page') . '" target="_blank">' . _('View') . '</a>' .
 						' | <a href="/mobile-marketing/website/add-edit/?mpid=' . $p['mobile_page_id'] . '" title="' . _('Edit Page') . '">' . _('Edit') . '</a>' .
                         ' | <a href="/ajax/mobile-marketing/website/delete/?mpid=' . $p['mobile_page_id'] . '&amp;_nonce=' . $delete_page_nonce . '" title="' . _('Delete Page') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' .
 					'</div>',

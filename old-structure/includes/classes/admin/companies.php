@@ -22,8 +22,14 @@ class Companies extends Base_Class {
      * @return array
      */
     public function get( $company_id ) {
+        global $user;
+
         // Type Juggling
-        $company_id= (int) $company_id;
+        $company_id = (int) $company_id;
+
+        // Make sure they have permission
+        if ( $user['role'] < 8 && $user['company_id'] != $company_id )
+            return false;
 
         $company = $this->db->get_row( "SELECT `name`, `domain` FROM `companies` WHERE `company_id` = $company_id", ARRAY_A );
 
@@ -42,7 +48,12 @@ class Companies extends Base_Class {
 	 * @return array
 	 */
 	public function get_all() {
-		$companies = $this->db->get_results( 'SELECT `company_id`, `name` FROM `companies`', ARRAY_A );
+        global $user;
+
+        // Make sure they have permission
+        $where = ( $user['role'] < 8 ) ? ' WHERE `company_id` = ' . (int) $user['company_id'] : '';
+
+        $companies = $this->db->get_results( "SELECT `company_id`, `name` FROM `companies` $where", ARRAY_A );
 		
 		// Handle errors
 		if ( $this->db->errno() ) {
@@ -112,6 +123,11 @@ class Companies extends Base_Class {
      * @return int
      */
     public function create( $name, $domain ) {
+        global $user;
+
+        if ( $user['role'] < 8 )
+            return false;
+
         $this->db->insert( 'companies', array( 'name' => $name, 'domain' => $domain, 'date_created' => dt::date('Y-m-d H:i:s') ), 'sss' );
 
         // Handle errors
@@ -129,9 +145,14 @@ class Companies extends Base_Class {
      * @param int $company_id
      * @param string $name
      * @param string $domain
-     * @return int
+     * @return bool
      */
     public function update( $company_id, $name, $domain ) {
+        global $user;
+
+        if ( $user['role'] < 8 )
+            return false;
+
         $this->db->update( 'companies', array( 'name' => $name, 'domain' => $domain ), array( 'company_id' => $company_id ), 'ss', 'i' );
 
         // Handle errors
@@ -191,9 +212,11 @@ class Companies extends Base_Class {
 	 */
 	public function autocomplete( $query ) {
 		global $user;
-		
+
+        $where = ( $user['role'] < 8 ) ? ' AND `company_id` = ' . (int) $user['company_id'] : '';
+
 		// Get results
-		$results = $this->db->prepare( "SELECT `company_id` AS object_id, `name` AS company FROM `companies` WHERE `name` LIKE ? ORDER BY `name`", 's', $query . '%' )->get_results( '', ARRAY_A );
+		$results = $this->db->prepare( "SELECT `company_id` AS object_id, `name` AS company FROM `companies` WHERE `name` LIKE ? $where ORDER BY `name`", 's', $query . '%' )->get_results( '', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {

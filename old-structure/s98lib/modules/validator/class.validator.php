@@ -23,7 +23,7 @@
  * </code>
  */
 
-class Validator3 {
+class Validator {
 	/**
 	 * Sets the variable for client-side validation
 	 * @var bool

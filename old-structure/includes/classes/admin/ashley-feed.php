@@ -102,7 +102,7 @@ class Ashley_Feed extends Base_Class {
 			$file = $files[count($files)-1];
 		}
 		
-		$local_folder = "/home/imaginer/public_html/admin/media/downloads/ashley/$username/";
+		$local_folder = "/gsr/systems/backend/admin/media/downloads/ashley/$username/";
 
 		if ( !file_exists( $local_folder ) ) {
             // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
@@ -128,7 +128,8 @@ class Ashley_Feed extends Base_Class {
                 continue;
 
 			$sku = trim( $item->itemIdentification->itemIdentifier[0]->attributes()->itemNumber );
-			
+
+            // Prevent SKUs not sold in America or only in containers
 			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
 				continue;
 			

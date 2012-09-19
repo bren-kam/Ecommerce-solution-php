@@ -14,60 +14,46 @@ class LoginController extends BaseController {
     /**
      * Login Page
      *
-     * @return TemplateResponse|RedirectResponse
+     * @return CustomResponse|RedirectResponse
      */
     protected function index() {
         // Get the template response
-        $template_response = $this->get_template_response('index');
+        $custom_response = new CustomResponse( $this->resources, $this->view_base . 'index', _('Login') );
 
-        // Instantiate a new form table
-        $ft = new FormTable( $this->resources, 'fLogin' );
+        $v = new Validator( 'fLogin' );
+        $v->add_validation( 'email', 'email', _('The "Email" field must contain a valid email address') );
 
-        // Choose login button
-        $ft->submit( _('Login') );
-
-        // Add fields
-        $ft->add_field( 'text', _('Email'), 'tEmail' )
-            ->add_validation( 'req', _('The "Email" field is required') )
-            ->add_validation( 'email', _('The "Email" field must contain a valid email address') )
-            ->attribute( 'maxlength', 200 );
-
-        $ft->add_field( 'password', _('Password'), 'tPassword' )
-            ->add_validation( 'req', _('The "Password" field is required') )
-            ->attribute( 'maxlength', 30 );
-
-        $ft->add_field( 'checkbox', _('Remember me?'), 'cbRememberMe' );
-
-        $ft->add_field( 'hidden', 'referer', array( 'GET', 'r' ) );
-
-        // Add extra columns
-        $ft->add_end_column( '', '<a href="/forgot-your-password/" title="' . _('Forgot Your Password?') . '">' . _('Forgot Your Password?') . '</a>' );
+        $errs = false;
+        $validation = $v->js_validation();
 
         // If posted
-        if ( $ft->posted() ) {
-            // Try to login
-            if ( $this->user->login( $_POST['tEmail'], $_POST['tPassword'] ) ) {
-                // Record the login
-                $this->user->record_login();
+        if ( $this->verified() ) {
+            $errs = $v->validate();
 
-                // Two Weeks : Two Days
-                $expiration = ( isset( $_POST['cbRememberMe'] ) ) ? 1209600 : 172800;
-                set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
+            if ( empty( $errs ) ) {
+                // Try to login
+                if ( $this->user->login( $_POST['email'], $_POST['password'] ) ) {
+                    // Record the login
+                    $this->user->record_login();
 
-                if( !isset( $_POST['referer'] ) || isset( $_POST['referer'] ) && empty( $_POST['referer'] ) ) {
-                    return new RedirectResponse('/');
+                    // Two Weeks : Two Days
+                    $expiration = ( isset( $_POST['remember-me'] ) ) ? 1209600 : 172800;
+                    set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
+
+                    if( !isset( $_POST['referer'] ) || isset( $_POST['referer'] ) && empty( $_POST['referer'] ) ) {
+                        return new RedirectResponse('/');
+                    } else {
+                        return new RedirectResponse( $_POST['referer'] );
+                    }
                 } else {
-                    return new RedirectResponse('/');
+                    $errs .= _('Your email and password do not match. Please try again.');
                 }
-            } else {
-                $ft->error( _('Your email and password do not match. Please try again.') );
             }
         }
 
-        // Add the form
-        $template_response->add( 'form', $ft->generate_form() );
+        $custom_response->set( compact( 'errs', 'validation' ) );
 
-        return $template_response;
+        return $custom_response;
     }
 
     /**

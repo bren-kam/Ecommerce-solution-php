@@ -7,24 +7,433 @@
  */
 class Ashley extends Base_Class {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
+    const IMAGE_URL = 'https://www.ashleydirect.com/graphics/';
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
+    const USER_ID = 1477;
 	
 	private $images = array();
-	
+
+    /**
+     * Hold Ashley Package Description translations
+     * @var array
+     */
+    private $_package_descriptions = array(
+        'A' => 'Armoire'
+        , 'B' => 'Bed'
+        , 'BAR 2 BS' => 'Bar, 2 Bar Stools'
+        , 'BB' => 'Bunk Bed'
+        , 'BB D M' => 'Bunk Bed, Dresser, Mirror'
+        , 'BBTF' => 'Bunk Bed - Twin/Full'
+        , 'BBTF D M' => 'Bunk Bed - Twin/Full, Dresser, Mirror'
+        , 'BBTF D M 1N' => 'Bunk Bed, Dresser, Mirror, 1NS'
+        , 'BBTF D M C' => 'Bunk Bed, Dresser, Mirror, Chest'
+        , 'BBTT' => 'Bunk Bed - Twin/Twin'
+        , 'BBTT D M' => 'Bunk Bed - Twin/Twin, Dresser, Mirror'
+        , 'BK' => 'Bookcase'
+        , 'BS' => 'Bar Stools'
+        , 'C' => 'Desk Chair'
+        , 'CK' => 'Cal King Bed'
+        , 'CK D M' => 'Cal King Bed, Dresser, Mirror'
+        , 'CK D M A' => 'Cal King, Dresser, Mirror, Armoire'
+        , 'CK D M C' => 'Cal King, Dresser, Mirror, Chest'
+        , 'CK D M N' => 'Cal King, Dresser, Mirror, 1NS'
+        , 'D' => 'Dresser'
+        , 'D C' => 'Desk, Chair'
+        , 'D H' => 'Desk, Hutch'
+        , 'D M' => 'Dresser, Mirror'
+        , 'D T' => 'Desk and Top - Roll Top / Hutch top'
+        , 'DB' => 'Day Bed'
+        , 'DB D M' => 'DayBed, Dresser, Mirror'
+        , 'DB WT' => 'Day Bed w/Trundle'
+        , 'ENT' => 'Entertainment Center'
+        , 'F CPT 2 SS' => 'Full Capt Bed, Storage 2 Sides'
+        , 'F CPT wS' => 'Full Captain Storage Bed'
+        , 'FB' => 'Full Bed'
+        , 'FB D M' => 'Full Bed, Dresser, Mirror'
+        , 'FB D M C' => 'Full Bed, Dresser, Mirror, Chest'
+        , 'FB T' => 'Full Bed w/ Trundle'
+        , 'FB WTDM' => 'Full Bed w/Trundle, Dresser,Mirror'
+        , 'FBS' => 'Full Bed w/ Storage'
+        , 'FBS D M' => 'Full Bed w/ Storage, Dresser, Mirror'
+        , 'FFB DM' => 'Full/Full Bunk, Dresser, Mirror'
+        , 'FH D M' => 'Full Hdbd, Dresser, Mirror'
+        , 'H D M' => 'HdBd, Dresser, Mirror'
+        , 'H D M C' => 'HdBd, Dresser, Mirror, Chest'
+        , 'KB' => 'K Bed'
+        , 'KB D M' => 'K Bed, Dresser, Mirror'
+        , 'KB D M A' => 'K Bed, Dresser, Mirror, Armoire'
+        , 'KB D M A 2N' => 'KBed,Dressr,Mirror,Armr,2NS'
+        , 'KB D M C' => 'K Bed, Dresser, Mirror, Chest'
+        , 'KB D M C 2N' => 'KBed,Dressr,Mrror,Chest,2NS'
+        , 'KB D M N' => 'K Bed, Dresser, Mirror, 1 NS'
+        , 'KB S' => 'King Bed w/Storage'
+        , 'KM' => 'King Metal Bed'
+        , 'LB' => 'Loft Bed'
+        , 'LF RF' => 'LAFSectional,RAFSectional'
+        , 'LF RF W' => 'LAF, RAF, Wdge'
+        , 'MC' => 'Media Chest'
+        , 'P 2B 2BS' => 'Pub / Breakfast Table, 2 Benches, 2 Bar Stools'
+        , 'P 2BS' => 'Pub / Breakfast Table, 2 Bar Stools'
+        , 'P 2BS 2DBS CS' => 'Pub Table, 2 Bar Stools, 2 Double Bar Stools, Corner Stool'
+        , 'P 2DBS CS' => 'Pub Table / 2 Dbl Bar Stools / Corner Stool'
+        , 'P 3BS' => 'Pub/Breakfast Table, 3 Bar Stools'
+        , 'P 4BS' => 'Pub / Breakfast Table, 4 Bar Stools'
+        , 'P 5BS' => 'Pub/Breakfast Table, 5 Bar Stools'
+        , 'P 6BS' => 'Pub / Breakfast Table, 6 Bar Stools'
+        , 'P B 4BS' => 'Pub / Breakfast Table, Bench, 4 Bar Stools'
+        , 'Q' => 'Q Bed'
+        , 'Q wS' => 'Q Bed w/Storage'
+        , 'Q wS DM' => 'Q Bed w/Storage, Dresser, Mirror'
+        , 'QB D M' => 'Q Bed, Dresser, Mirror'
+        , 'QB D M 2N' => 'Q Bed, Dresser, Mirror, 2NS'
+        , 'QB D M A' => 'Q Bed, Dresser, Mirror, Armoire'
+        , 'QB D M A 2N' => 'QBed,Dressr,Mirror,Armr,2NS'
+        , 'QB D M C' => 'Q Bed, Dresser, Mirror, Chest'
+        , 'QB D M C 2N' => 'QBed,Dressr,Mrror,Chest,2NS'
+        , 'QB D M C NS' => 'Q Bed, Dresser, Mirror, Chest, 1NS'
+        , 'QB D M N' => 'Q Bed, Dresser, Mirror, 1NS'
+        , 'QH' => 'Q Hdbd'
+        , 'QH D M' => 'Q Hdbd, Dresser, Mirror'
+        , 'QH D M 1N' => 'Q HdBd, Dresser, Mirror, 1NS'
+        , 'QH D M 2N' => 'Q HdBd, Dresser, Mirror, 2NS'
+        , 'QH D M C' => 'Q Hdbd, Dresser, Mirror, Chest'
+        , 'QH D M C 1N' => 'Q Hdbd, Dresser, Mirror, Chest, 1NS'
+        , 'QM' => 'Queen Metal Bed'
+        , 'RS' => 'Recl Sofa'
+        , 'RS L' => 'Rec Sofa, LoveSeat'
+        , 'RS RL' => 'Rec Sofa, Rec LoveSeat'
+        , 'RS RL W' => 'Rec Sofa, Rec LoveSeat, Wdge'
+        , 'S' => 'Sofa'
+        , 'S L' => 'Sofa, Love Seat'
+        , 'S L C' => 'Sofa, Love Seat, Chair'
+        , 'S L R' => 'Sofa, Love Seat, Reclining Chair'
+        , 'S SL C' => 'Sofa, Sleeper, Chair'
+        , 'SP' => 'Storage Piece'
+        , 'SPH 2N' => 'SprdHdBd, 2 NS'
+        , 'SYS' => 'System'
+        , 'T' => 'Dining Table'
+        , 'T 2S' => 'Table, 2 Sides'
+        , 'T 2S 2DC' => 'Table, 2 Sides, 2 Double Chairs'
+        , 'T 2S 2DC CC' => 'Table, 2 Sides, 2 Double Chairs, Corner Chair'
+        , 'T 2S B' => 'Table, 2 Sides, Bench'
+        , 'T 4BS' => 'Butterfly Table, 4 Barstools'
+        , 'T 4S' => 'Table, 4 Sides'
+        , 'T 4S 2A' => 'Table, 4 Sides, 2 Arms'
+        , 'T 4S 2A SP' => 'Table, 4 Sides, 2 Arms, Storage'
+        , 'T 4S B' => 'Table, 4 Sides, Bench'
+        , 'T 4S SP' => 'Table, 4 Sides, Storage'
+        , 'T 6S' => 'Table, 6 Sides'
+        , 'T 6S B' => 'Table, 6 Sides, Bench'
+        , 'T 6S SP' => 'Table, 6 Sides, Storage'
+        , 'T 8S' => 'Table, 8 Sides'
+        , 'T CAP wS' => 'Twin Captain Storage Bed'
+        , 'TB' => 'Twin Bed'
+        , 'TB D M' => 'Twin Bed, Dresser, Mirror'
+        , 'TB D M C' => 'Twin Bed, Dresser, Mirror, Chest'
+        , 'TB D M N' => 'Twin Bed, Dresser, Mirror, NS'
+        , 'TB WT' => 'Twin Bed w/Trundle'
+        , 'TB WTDM' => 'Twin Bed w/Trundle, Dresser,Mirror'
+        , 'TBS' => 'Twin Bed w/ Storage'
+        , 'TBS D M' => 'Twin Bed w/ Storage, Dresser, Mirror'
+        , 'TH D M' => 'Twin Hdbd, Dresser, Mirror'
+        , 'TH D M C' => 'Twin Hdbd, Dresser, Mirror, Chest'
+        , 'TL' => 'Table Lamp'
+        , 'TV' => 'TV Stand'
+        , 'WS' => 'Wall System'
+    );
+
 	/**
 	 * Creates new Database instance
 	 */
 	public function __construct() {
 		// Load database library into $this->db (can be omitted if not required)
 		parent::__construct();
+
+        set_time_limit(300);
 		
 		// Time how long we've been on this page
-		$this->timer_start();
 		$this->curl = new curl();
 		$this->p = new Products();
 		$this->file = new Files();
 	}
+
+    /**
+     * Search Array
+     *
+     * @param array $array
+     * @param string $value
+     * @return string
+     */
+    public function search_array( $array, $value ) {
+        foreach ( $array as $v ) {
+            if ( stristr( $v, $value ) )
+                return $v;
+        }
+
+        return false;
+    }
+
+    /**
+     * Load Packages
+     */
+    public function load_packages() {
+
+        // Sets who is updating the products
+        global $user;
+        $user['user_id'] = self::USER_ID;
+
+        // Get librarys
+        library('ashley-api/ashley-api');
+        $a = new Ashley_API();
+
+        // Get packages
+        $packages = $a->get_packages();
+
+        // Get templates for descriptions
+        $unrefined_package_templates = $a->get_package_templates();
+        $package_templates = array();
+
+        // Arrange these by template ID
+        foreach ( $unrefined_package_templates as $pt ) {
+            $package_templates[$pt->TemplateId] = $pt;
+        }
+
+        // Get existing products
+        $existing_products = $this->_get_existing_products();
+
+        // Generate array of our items
+        $i = $skipped = 0;
+
+        // Initiate product string
+        $products_string = '';
+
+        // Any new products get al ink
+        $links = array();
+
+        foreach ( $packages as $item ) {
+            // Ensure that we can keep running
+            echo '                                                   ';
+            set_time_limit(30);
+			flush();
+
+            // We don't care if they don't have an image
+            if ( empty( $item->PackageDescription ) || 'NoTempl' == $item->PackageDescription || empty( $item->Image ) ) {
+                //|| !curl::check_file( self::IMAGE_URL . $item->Image )
+                $skipped++;
+                continue;
+            }
+
+            // Count how many products we're dealing with
+			$i++;
+
+            // Start collecting data
+			$name = $item->SeriesName;
+
+            if ( !stristr( $name, (string) $item->SeriesColor ) )
+                $name .= ' ' . $item->SeriesColor;
+
+            if ( !empty( $package_templates[$item->TemplateId] ) )
+                $name .= ' ' . $package_templates[$item->TemplateId];
+
+            $name .= ' - ' . $this->_package_descriptions[(string)$item->PackageDescription];
+            echo $name;exit;
+			$slug = str_replace( '---', '-', format::slug( $name ) );
+            $sku = $item->PackageId;
+			$image = self::IMAGE_URL . $item->Image;
+			$weight = $volume = 0;
+
+            // Set item description
+			$item_description = $this->_package_descriptions[(string)$item->PackageDescription] . '<br /><br />' . $item->ApplicateDescription . "<br /><br />" . $item->ItemDescription;
+            $description = format::autop( format::unautop( '<p>' . $item_description . "</p>" ) );
+
+            // Will have to format this
+			$product_specs = ''; //$this->_package_descriptions[$item->PackageDescription];
+
+            // "Ashley Furniture" brand
+			$brand_id = 8;
+
+			$images = array();
+
+			////////////////////////////////////////////////
+			// Get/Create the product
+			if ( array_key_exists( $sku, $existing_products ) ) {
+				$identical = true;
+                
+				$product = $existing_products[$sku];
+				$product_id = $product['product_id'];
+
+				$product_images = explode( '|', $product['images'] );
+
+				// Override data with existing data
+				if( empty( $name ) ) {
+					$name = $product['name'];
+				} elseif ( $name != $product['name'] ) {
+					$identical = false;
+				}
+
+				if( empty( $slug ) ) {
+					$slug = $product['slug'];
+				} elseif ( $slug != $product['slug'] ) {
+					$slug = $this->unique_slug( $slug );
+
+					if ( $slug != $product['slug'] )
+						$identical = false;
+				}
+
+				if( empty( $description ) ) {
+					$description = format::autop( format::unautop( $product['description'] ) );
+				} elseif ( $description != format::autop( format::unautop( $product['description'] ) ) ) {
+					$identical = false;
+				}
+
+				$images = $product_images;
+
+
+				if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
+					$identical = false;
+					$image_name = $this->upload_image( 'http://www.studio98.com/ashley/Images/' . $image, $slug, $product_id );
+
+					if ( !is_array( $images ) || !in_array( $image_name, $images ) )
+						$images[] = $image_name;
+				}
+
+				$price = 0;//$product_information['price'];
+				$list_price = 0;//$product_information['list_price'];
+				$product_specifications = '';
+
+				$product['product_specifications'] = unserialize( $product['product_specifications'] );
+				if( is_array( $product['product_specifications'] ) )
+				foreach( $product['product_specifications'] as $ps ) {
+					if( !empty( $product_specifications ) )
+						$product_specifications .= '|';
+
+					$product_specifications .= html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' ) . '`' . html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' ) . '`' . $ps[2];
+				}
+
+				if( empty( $product_specs ) ) {
+					$product_specs = $product_specifications;
+				} elseif ( $product_specs != $product_specifications ) {
+					$identical = false;
+				}
+
+				if( empty( $brand_id ) ) {
+					$brand_id = $product['brand_id'];
+				} elseif ( $brand_id != $product['brand_id'] ) {
+					$identical = false;
+				}
+
+				if( empty( $product_status ) ) {
+					$product_status = $product['status'];
+					$links['updated-product'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+				} else {
+					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+
+					if ( $product_status != $product['status'] )
+						$identical = false;
+				}
+
+				$publish_visibility = $product['publish_visibility'];
+				$publish_date = $product['publish_date'];
+
+				if( empty( $weight ) ) {
+					$weight = $product['weight'];
+				} elseif ( $weight != $product['weight'] ) {
+					$identical = false;
+				}
+
+				if( empty( $volume ) ) {
+					$volume = $product['volume'];
+				} elseif ( $volume != $product['volume'] ) {
+					$identical = false;
+				}
+
+				// If everything is identical, we don't want to do anything
+				if ( $identical ) {
+					$skipped++;
+					$products_string .= $name . "\n";
+					continue;
+				}
+			} else {
+                // User "Ashley Packages"
+				$product_id = $this->p->create( self::USER_ID );
+
+                // Make sure it's a unique slug
+                $slug = $this->unique_slug( $slug );
+
+				// Upload image if it's not blank
+				if ( !empty( $image ) && curl::check_file( $image ) ) {
+					$image_name = $this->upload_image( $image, $slug, $product_id );
+
+					if ( !in_array( $image_name, $images ) )
+						$images[] = $image_name;
+				}
+
+				$price = $list_price = 0;
+				$publish_visibility = 'private';
+				$publish_date = date_time::date( 'Y-m-d' );
+
+				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
+
+				// Add images
+				$this->p->empty_product_images( $product_id );
+
+				// Makes the images have the right sequence if they exist
+				if ( is_array( $images ) ) {
+					$j = 0;
+
+					foreach ( $images as &$image ) {
+						$image .= "|$j";
+						$j++;
+					}
+				}
+
+				$this->p->add_product_images( $images, $product_id );
+
+                $product_status = 'private';
+			}
+
+			// Update the product
+			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
+
+			// Add images
+			$product_ids[] = (int) $product_id;
+
+			/* Makes the images have the right sequence if they exist
+			if ( is_array( $images ) ) {
+				$j = 0;
+
+				foreach ( $images as &$image ) {
+					$image .= "|$j";
+					$j++;
+				}
+			}
+
+			$this->commit_product_images( $images, $product_id );
+			*/
+
+			$products_string .= $name . ">" . $item->PackageDescription . "\n";
+
+			// We don't want to carry them around in the next loop
+			unset( $images );
+
+			if ( $i % 1000 == 0 ) {
+				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
+
+				foreach ( $links as $section => $link_array ) {
+					$message .= ucwords( str_replace( '-', ' ', $section ) ) . ": " . count( $link_array ) . "\n";
+				}
+
+				$message .= "\n\nSkipped: " . $skipped;
+
+				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
+			}
+			//$i++;
+            echo 'here';exit;
+		}
+
+        echo $products_string;
+    }
 
 	/**
 	 * Main function, goes to page and grabs everything needed and does required actions.
@@ -54,18 +463,28 @@ class Ashley extends Base_Class {
 			// Get al ist of the files
 			$files = $ftp->dir_list();
 			
-			$file = $files[count($files)-1];
+			$file = NULL;
+			$count = count( $files );
+			
+			while ( is_null( $file ) && 0 != $count ) {
+				$last_file = array_pop( $files );
+				
+				if ( 'xml' == f::extension( $last_file ) )
+					$file = $last_file;
+				
+				$count = count( $files );
+			}
 		}
-
+		
 		$xml_reader = new XMLReader();
 		
 		// Grab the latest file
-		if( !file_exists( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file ) )
-			$ftp->get( $file, '', '/home/imaginer/public_html/admin/media/downloads/ashley/' );
+		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file ) )
+			$ftp->get( $file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
 		
 		///// About 20mbs of useage /////
 		
-		$xml_reader->open( '/home/imaginer/public_html/admin/media/downloads/ashley/' . $file );
+		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file );
 		
 		$j = -1;
 		
@@ -164,11 +583,9 @@ class Ashley extends Base_Class {
 		
 		$xml_reader->close();
 
-		
 		// Initalize variables
 		$links = $products_string = '';
-		
-					
+
 		$products = $this->get_products();
 
 		$i = 0;
@@ -181,7 +598,7 @@ class Ashley extends Base_Class {
 			$i++;
 			$item_description = $item['description'];
 			$sku = $item['sku'];
-			
+
 			// We can't have a SKU like B457B532 -- it means it is international and comes in a container
 			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
 				continue;
@@ -213,9 +630,9 @@ class Ashley extends Base_Class {
                 continue;
 			}
 			
-			$name = $group_name . $item['description'];
+			$name = format::convert_characters( $group_name . $item['description'] );
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-			$description = format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) );
+			$description = format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) );
 			
 			$brand_id = $item['brand_id'];
 			
@@ -548,7 +965,7 @@ class Ashley extends Base_Class {
         // See if the slug already exists
         if ( $slug == $existing_slug ) {
             // Check to see if it has been incremented before
-            if ( preg_match( '/-([0-9]+)$/', $slug, $matches ) > 0 ) {
+            if ( 1 == preg_match( '/-([0-9]+)$/', $slug, $matches ) > 0 ) {
                 // The number to increment it by
                 $increment = $matches[1] * 1 + 1;
 
@@ -639,7 +1056,7 @@ class Ashley extends Base_Class {
 		
 		return $product_id;
 	}
-	
+
 	/**
 	 * Upload image
 	 *
@@ -653,7 +1070,7 @@ class Ashley extends Base_Class {
 		$image_extension = strtolower( f::extension( $image_url ) );
 		
 		$image['name'] = "{$new_image_name}.{$image_extension}";
-		$image['tmp_name'] = '/home/imaginer/public_html/admin/media/downloads/scratchy/' . $image['name'];
+		$image['tmp_name'] = OPERATING_PATH . 'media/downloads/scratchy/' . $image['name'];
 		
 		if( is_file( $image['tmp_name'] ) && curl::check_file( "http://furniture.retailcatalog.us/products/$product_id/thumbnail/$new_image_name.$image_extension" ) )
 			return "$new_image_name.$image_extension";
@@ -666,8 +1083,9 @@ class Ashley extends Base_Class {
 		
 		$this->file->upload_image( $image, $new_image_name, 320, 320, 'furniture', 'products/' . $product_id . '/' );
 		$this->file->upload_image( $image, $new_image_name, 46, 46, 'furniture', 'products/' . $product_id  . '/thumbnail/' );
-		$this->file->upload_image( $image, $new_image_name, 500, 500, 'furniture', 'products/' . $product_id . '/large/' );
-		
+		$this->file->upload_image( $image, $new_image_name, 200, 200, 'furniture', 'products/' . $product_id . '/small/' );
+		$this->file->upload_image( $image, $new_image_name, 700, 700, 'furniture', 'products/' . $product_id . '/large/' );
+
 		if( file_exists( $image['tmp_name'] ) )
 			@unlink( $image['tmp_name'] );
 		
@@ -718,39 +1136,24 @@ class Ashley extends Base_Class {
 		
 		return !$result;
 	}
-	
-	/**
-	 * Logs in
+
+    /**
+	 * Get Existing Products
 	 *
-	 * @since 1.0.0
-	 *
-	 * @return true
+	 * @return array
 	 */
-	private function login() {
-		$this->curl->post( $this->login_url, $this->login_post_fields );
-		return true;
-	}
-	
-	/**
-	 * Starts the timer, for debugging purposes.
-	 *
-	 * @since 1.0.0
-	 */
-	private function timer_start() {
-		$this->time_start = microtime( true );
+	private function _get_existing_products() {
+		$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`name`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`price`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, b.`name` AS industry, GROUP_CONCAT( `image` ORDER BY `sequence` ASC SEPARATOR '|' ) AS images FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`user_id_created` = " . self::USER_ID . " GROUP BY a.`product_id`", ARRAY_A );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return ar::assign_key( $products, 'sku' );
 	}
 
-	/**
-	 * Stops the debugging timer.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return int Total time spent on the query, in seconds
-	 */
-	private function scratchy_time() {
-		return microtime( true ) - $this->time_start;}
-
-	
 	/**
 	 * Report an error
 	 *

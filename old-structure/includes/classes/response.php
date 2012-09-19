@@ -5,14 +5,14 @@
  * @package Studio98 Framework
  * @since 1.0
  */
-class Response2 {
+class Response {
     /**
      * Variables
      */
-    protected $_success;
-    protected $_message;
-    protected $_error_code;
-    protected $_data;
+    private $success;
+    private $message;
+    private $error_code;
+    private $data;
 
 	/**
 	 * Construct initializes data
@@ -22,9 +22,9 @@ class Response2 {
      * @param int $error_code
 	 */
 	public function __construct( $success, $message = '', $error_code = 0 ) {
-	    $this->_success = $success;
-        $this->_message = $message;
-        $this->_error_code = $error_code;
+	    $this->success = $success;
+        $this->message = $message;
+        $this->error_code = $error_code;
 	}
 
     /**
@@ -33,7 +33,7 @@ class Response2 {
      * @return bool
      */
     public function success() {
-        return $this->_success;
+        return $this->success;
     }
 
 	/**
@@ -42,7 +42,7 @@ class Response2 {
      * @return string
      */
     public function message() {
-        return $this->_message;
+        return $this->message;
     }
 
 	/**
@@ -51,7 +51,7 @@ class Response2 {
      * @return int
      */
     public function error_code() {
-        return $this->_error_code;
+        return $this->error_code;
     }
 
     /**
@@ -62,7 +62,7 @@ class Response2 {
 	 */
 	public function add( $key, $value ) {
 		// Set the variable
-		$this->_data[$key] = $value;
+		$this->data[$key] = $value;
 	}
 
     /**
@@ -72,7 +72,7 @@ class Response2 {
      * @return mixed
      */
     public function get( $key ) {
-        return ( isset( $this->_data[$key] ) ) ? $this->_data[$key] : false;
+        return ( isset( $this->data[$key] ) ) ? $this->data[$key] : false;
     }
 	
 	/**

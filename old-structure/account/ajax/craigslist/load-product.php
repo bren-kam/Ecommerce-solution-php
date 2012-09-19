@@ -70,7 +70,7 @@ $image_html = '';
 
 if ( is_array( $images ) )
 foreach ( $images as $i ) {
-	$image_html .= '<img class="hiddenImage" name="hiddenImage" src="' . $i . '" />';
+	$image_html .= '<img class="hiddenImage" name="hiddenImage" src="' . format::str_lreplace( '/', '/large/', $i ) . '" />';
 }
 
 jQuery('#dProductPhotos')

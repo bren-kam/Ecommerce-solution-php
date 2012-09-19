@@ -29,30 +29,61 @@ class TemplateResponse extends Response {
      */
     public function __construct( $resources, $file_to_render, $title ) {
         $this->_file_to_render = $file_to_render;
-        $this->add( array(
-            'title' => $title . ' | ' . TITLE
+        $this->set( array(
+            'title' => $title
             , 'resources' => $resources
         ) );
 
         if ( isset( $_POST ) )
-            $this->add( format::camel_case_to_underscore_deep( $_POST ) );
+            $this->set( format::camel_case_to_underscore_deep( $_POST ) );
 
         if ( isset( $_GET ) )
-            $this->add( format::camel_case_to_underscore_deep( $_GET ) );
+            $this->set( format::camel_case_to_underscore_deep( $_GET ) );
     }
 
     /**
-     * Add data to variables
+     * Set data to variables
      *
      * @param string|array $key
      * @param string $value [optional]
+     * @return TemplateResponse
      */
-    public function add( $key, $value = '' ) {
+    public function set( $key, $value = '' ) {
         if ( is_array( $key ) ) {
             $this->variables = array_merge( $this->variables, $key );
         } else {
             $this->variables[$key] = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Add Title
+     *
+     * @param string $title
+     * @return TemplateResponse
+     */
+    public function add_title( $title ) {
+        $this->variables['title'] = $title . ' | ' . $this->variables['title'];
+
+        return $this;
+    }
+
+    /**
+     * Select section/page
+     *
+     * @param $section
+     * @param $page [optional]
+     * @return TemplateResponse
+     */
+    public function select( $section, $page = '' ) {
+        $this->set( $section, true );
+
+        if ( !empty( $page ) )
+            $this->set( $page, true );
+
+        return $this;
     }
 
     /**
@@ -85,14 +116,36 @@ class TemplateResponse extends Response {
      * Including the file
      */
     public function respond() {
-        $this->add( 'template', new Template( $this->variables ) );
-
-        // Make available the variables
+        /**
+         * @var User $user
+         */
         extract( $this->variables );
 
+        // Create template function class
+        $template = new Template( $this->variables );
+
+        // Get notifications
+        $notification = new Notification();
+        $notifications = $notification->get_by_user( $user->user_id );
+
+        if ( is_array( $notifications ) ) {
+            // We ony want to show them once
+            $notification->delete_by_user( $user->user_id );
+
+            foreach ( $notifications as $n ) {
+                $notification_html = '<div class="notification sticky hidden">';
+                $notification_html .= '<a class="close" href="#"><img src="/images/icons/close.png" alt="' . _('Close') . '" /></a>';
+                $notification_html .= '<p>' . $n->message . '</p>';
+                $notification_html .= '</div>';
+
+                $template->add_top( $notification_html );
+            }
+        }
+
         require VIEW_PATH . 'header.php';
+
         require VIEW_PATH . $this->_file_to_render . '.php';
+
         require VIEW_PATH . 'footer.php';
     }
-
 }

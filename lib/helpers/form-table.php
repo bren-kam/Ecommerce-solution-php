@@ -13,12 +13,16 @@ class FormTable {
     protected $action;
     protected $method;
     protected $fields;
-    protected $v;
     protected $errs = '';
     protected $submit;
     protected $submit_classes = 'button';
     protected $attributes = array();
-    protected $end_columns = '';
+
+    /**
+     * Hold Validator
+     * @var Validator
+     */
+    protected $v;
 
     /**
      * Hold Resources object
@@ -29,19 +33,26 @@ class FormTable {
     /**
      * Constructor -- Create the name
      *
-     * @param Resources $resources
      * @param string $name
      * @param string $action [optional]
      * @param string $method [optional]
      */
-    public function __construct( $resources, $name, $action = '', $method = 'post' ) {
-        $this->resources = $resources;
+    public function __construct( $name, $action = '', $method = 'post' ) {
         $this->name = $name;
         $this->action = $action;
         $this->method = $method;
 
         // Need to set this
         $this->submit = _('Save');
+    }
+
+    /**
+     * Set the action dynamically
+     *
+     * @param string $action
+     */
+    public function set_action( $action ) {
+        $this->action = $action;
     }
 
     /**
@@ -61,19 +72,6 @@ class FormTable {
         $this->fields[] = $field;
 
         return $field;
-    }
-
-    /**
-     * Add a column to the end of everything
-     *
-     * @param string $cell_1
-     * @param string $cell_2
-     */
-    public function add_end_column( $cell_1 = '&nbsp;', $cell_2 = '' ) {
-        if ( empty( $cell_1 ) )
-            $cell_1 = '&nbsp;';
-
-        $this->end_columns .= "<tr><td>$cell_1</td><td>$cell_2</td></tr>";
     }
 
     /**
@@ -145,11 +143,12 @@ class FormTable {
 
         $html .= '<tr><td colspan="2">&nbsp;</td></tr>';
         $html .= '<tr><td>&nbsp;</td><td><input type="submit" class="' . $this->submit_classes . '" value="' . $this->submit . '" /></td></tr>';
-        $html .= $this->end_columns;
         $html .= '</table>';
         $html .= nonce::field( 'form-' . $this->name, '_nonce', false );
         $html .= $hidden;
         $html .= '</form>';
+
+        $html .= $this->v->js_validation();
 
         return $html;
     }
@@ -174,7 +173,7 @@ class FormTable {
      */
     private function _validator() {
         if ( is_null( $this->v ) ) {
-            $this->v = new Validator( $this->resources, $this->name );
+            $this->v = new Validator( $this->name );
 
             foreach ( $this->fields as $f ) {
                $f->validation( $this->v );
@@ -213,9 +212,7 @@ abstract class FormTable_Field {
                     $value = isset( $_POST[$value[1]] ) ? $_POST[$value[1]] : '';
                 break;
 
-                default:
-                    $value = '';
-                break;
+                default:break;
             }
         }
 
@@ -295,6 +292,15 @@ abstract class FormTable_Field {
         return ( 0 == count( $this->attributes ) ) ? '' : ' ' . implode( ' ', $this->attributes );
     }
 
+    /**
+     * Get the ID based off the name
+     *
+     * @return string
+     */
+    protected function id() {
+        return preg_replace( '/[^a-zA-Z0-9_-]/', '', $this->name );
+    }
+
     /***** ABSTRACT METHODS *****/
     abstract public function generate_html( $count = 0 );
 }
@@ -317,6 +323,15 @@ class FormTable_Text extends FormTable_Field {
     }
 
     /**
+     * Generate just the HTML
+     *
+     * @return string
+     */
+    public function generate() {
+        return '<input type="text" class="tb" name="' . $this->name . '" id="' . $this->id() . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+    }
+
+    /**
      * Generate HTML
      *
      * @param int $count [optional]
@@ -324,14 +339,61 @@ class FormTable_Text extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>';
-        $html .= '<label for="' . $this->name . '">' . $this->nice_name . ':';
+        $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';
 
         $html .= '</label>';
         $html .= '</td><td>';
-        $html .= '<input type="text" class="tb" name="' . $this->name . '" id="' . $this->name . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+        $html .= $this->generate();
+        $html .= '</td></tr>';
+
+        return $html;
+    }
+}
+/**
+ * Textarea Field
+ */
+class FormTable_Textarea extends FormTable_Field {
+    /**
+     * Constructor -- Create a field with validation options
+     *
+     * @param string $nice_name
+     * @param string $name [optional]
+     * @param string $value [optional] the preset value of the field (other than the post)
+     */
+    public function __construct( $nice_name, $name = '', $value = '' ) {
+        parent::__construct( $nice_name, $name, $value );
+
+        $this->type = 'textarea';
+    }
+
+    /**
+     * Generate just the HTML
+     *
+     * @return string
+     */
+    public function generate() {
+        return '<textarea name="' . $this->name . '" id="' . $this->id() . '" cols="50" rows="3" ' . $this->format_attributes() .'>' . $this->value . '</textarea>';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        $html = '<tr><td>';
+        $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
+
+        if ( $this->required )
+            $html .= ' <span class="red">*</span>';
+
+        $html .= '</label>';
+        $html .= '</td><td>';
+        $html .= $this->generate();
         $html .= '</td></tr>';
 
         return $html;
@@ -363,14 +425,14 @@ class FormTable_Password extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>';
-        $html .= '<label for="' . $this->name . '">' . $this->nice_name . ':';
+        $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';
 
         $html .= '</label>';
         $html .= '</td><td>';
-        $html .= '<input type="password" class="tb" name="' . $this->name . '" id="' . $this->name . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+        $html .= '<input type="password" class="tb" name="' . $this->name . '" id="' . $this->id() . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
         $html .= '</td></tr>';
 
         return $html;
@@ -398,6 +460,8 @@ class FormTable_Select extends FormTable_Field {
         parent::__construct( $nice_name, $name, $value );
 
         $this->type = 'select';
+
+        return $this;
     }
 
     /**
@@ -413,6 +477,26 @@ class FormTable_Select extends FormTable_Field {
     }
 
     /**
+     * Generate Select
+     *
+     * @return string
+     */
+    public function generate() {
+        $html = '<select name="' . $this->name . '" id="' . $this->id() . '"' . $this->format_attributes() . '>';
+
+        foreach ( $this->options as $option_value => $option_name ) {
+            if ( is_array( $this->value ) ) {
+                $selected = ( in_array( $option_value, $this->value ) ) ? ' selected="selected"' : '';
+            } else {
+                $selected = ( $this->value == $option_value ) ? ' selected="selected"' : '';
+            }
+            $html .= '<option value="' . $option_value . '"' . $selected . '>' . $option_name . '</option>';
+        }
+
+        return $html;
+    }
+
+    /**
      * Generate HTML
      *
      * @param int $count [optional]
@@ -420,19 +504,14 @@ class FormTable_Select extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>';
-        $html .= '<label for="' . $this->name . '">' . $this->nice_name . ':';
+        $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';
 
         $html .= '</label>';
         $html .= '</td><td>';
-        $html .= '<select name="' . $this->name . '" id="' . $this->name . '"' . $this->format_attributes() . '>';
-
-        foreach ( $this->options as $option_value => $option_name ) {
-            $selected = ( $this->value == $option_value ) ? ' selected="selected"' : '';
-            $html .= '<option value="' . $option_value . '"' . $selected . '>' . $option_name . '</option>';
-        }
+        $html .= $this->generate();
 
         $html .= '</td></tr>';
 
@@ -465,12 +544,12 @@ class FormTable_Radio extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>&nbsp;</td><td>';
-        $html .= '<input type="radio" class="rb" name="' . $this->name . '" id="' . $this->name . $count . '" value="1"';
+        $html .= '<input type="radio" class="rb" name="' . $this->name . '" id="' . $this->id() . $count . '" value="1"';
 
         if ( '1' == $this->value )
             $html .= ' checked="checked"';
 
-        $html .= $this->format_attributes() . ' /> <label for="' . $this->name . $count . '">' . $this->nice_name;
+        $html .= $this->format_attributes() . ' /> <label for="' . $this->id() . $count . '">' . $this->nice_name;
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';
@@ -508,12 +587,12 @@ class FormTable_Checkbox extends FormTable_Field {
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>&nbsp;</td><td>';
 
-        $html .= '<input type="checkbox" class="cb" name="' . $this->name . '" id="' . $this->name . '" value="1"';
+        $html .= '<input type="checkbox" class="cb" name="' . $this->name . '" id="' . $this->id() . '" value="1"';
 
         if ( '1' == $this->value )
             $html .= ' checked="checked"';
 
-        $html .= $this->format_attributes() . ' /> <label for="' . $this->name . '">' . $this->nice_name;
+        $html .= $this->format_attributes() . ' /> <label for="' . $this->id() . '">' . $this->nice_name;
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';
@@ -547,6 +626,57 @@ class FormTable_Hidden extends FormTable_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        return '<input type="hidden" name="' . $this->name . '" id="' . $this->name . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+        return '<input type="hidden" name="' . $this->name . '" id="' . $this->id() . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+    }
+}
+
+/**
+ * Title Row
+ */
+class FormTable_Title extends FormTable_Field {
+    /**
+     * Constructor -- Create a title row
+     *
+     * @param string $name
+     */
+    public function __construct( $name ) {
+        parent::__construct( $name );
+
+        $this->type = 'title';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<tr><td>&nbsp;</td><td><strong>' . $this->nice_name . '</strong></td></tr>';
+    }
+}
+
+/**
+ * Blank Row
+ */
+class FormTable_Blank extends FormTable_Field {
+    /**
+     * Constructor -- Create a title row
+     *
+     */
+    public function __construct() {
+        parent::__construct( '' );
+
+        $this->type = 'blank';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<tr><td colspan="2">&nbsp;</td></tr>';
     }
 }
