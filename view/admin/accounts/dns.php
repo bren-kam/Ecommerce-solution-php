@@ -37,7 +37,7 @@ if ( !empty( $zone_id ) ) {
 ?>
     <a href="<?php echo url::add_query_arg( 'a', 'delete' ); ?>" class="button float-right" title="<?php echo _('Delete Zone File'); ?>"><?php echo _('Delete Zone File'); ?></a>
     <br class="clr" /><br />
-    <form name="fEditDNS" id="fEditDNS" action="" method="post">
+    <form name="fEditDNS" id="fEditDNS" action="" method="post" err="<?php echo 'The records you have entered do not match the type you have selected.'; ?>">
     <table cellpadding="0" cellspacing="0">
         <tr>
             <td><label><?php echo _('Domain'); ?>: </label></td>

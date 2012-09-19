@@ -210,8 +210,6 @@ class Account extends ActiveRecordBase {
             , array_merge( array( $this->id ), $keys )
         )->get_results( PDO::FETCH_ASSOC );
 
-
-
         $settings = ar::assign_key( $values, 'key', true );
 
         foreach ( $arguments as $arg ) {

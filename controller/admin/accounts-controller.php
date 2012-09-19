@@ -461,15 +461,20 @@ class AccountsController extends BaseController {
         $account = new Account;
         $account->get( $_GET['aid'] );
 
+        // Get trumpia api key
+        $trumpia_api_key = $account->get_settings( 'trumpia-api-key' );
+
         // Make sure he has permission
         if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         $template_response = $this->get_template_response('actions')
+            ->set( compact( 'account', 'trumpia_api_key' ) )
             ->select('accounts');
-        $this->resources->css('accounts/edit');
 
-        $template_response->set( compact( 'account' ) );
+        $this->resources
+            ->css('accounts/edit')
+            ->javascript('accounts/actions');
 
         return $template_response;
     }
@@ -1047,6 +1052,248 @@ class AccountsController extends BaseController {
     }
 
     /***** AJAX *****/
+
+    /**
+     * Create trumpia account
+     *
+     * @return CustomResponse|AjaxResponse
+     */
+    protected function create_trumpia_account() {
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Get mobile plans
+        $mobile_plan = new MobilePlan();
+        $mobile_plans = $mobile_plan->get_all();
+
+        $mobile_plan_options = array();
+
+        /**
+         * @var MobilePlan $mp
+         */
+        foreach ( $mobile_plans as $mp ) {
+            $mobile_plan_options[$mp->id] = $mp->name;
+        }
+
+        // Create new form table
+        $ft = new FormTable( 'fCreateTrumpiaAccount' );
+
+        $ft->submit( _('Create') )
+            ->attribute( 'ajax', '1' )
+            ->set_action( url::add_query_arg( 'aid', $account->id, '/accounts/create-trumpia-account/' ) );
+
+        $ft->add_field( 'select', _('Mobile Marketing Plan'), 'sMobilePlanId' )
+            ->add_validation( 'req', _('The "Mobile Marketing Plan" field is required') )
+            ->options( $mobile_plan_options );
+
+        $form = $ft->generate_form();
+
+        // Create the account
+        if ( $ft->posted() ) {
+            $response = new AjaxResponse(true);
+
+            // Create classes
+            $industry = new Industry();
+            $curl = new Curl();
+            $account_user = new User();
+
+            // Get data
+            $account_user->get( $account->user_id );
+            $account_industries = $account->get_industries();
+            $industry->get( current( $account_industries ) );
+            $timezone_object = new DateTimeZone( $account->get_settings( 'timezone' ) );
+            $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
+            $password = security::generate_password();
+
+            if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )
+                $timezone = -5;
+
+            // Move to right format
+            $timezone *= 1000;
+
+            if ( $timezone > -10000 && $timezone < 0 ) {
+                $timezone = '-0' . ( $timezone * -1 );
+            } elseif ( 0 === $timezone ) {
+                $timezone = '+00000';
+            } elseif ( $timezone > 0 && $timezone < 10000 ) {
+                $timezone = '+0' . $timezone;
+            } else {
+                $timezone = '+' . $timezone;
+            }
+
+            // Get name and mobile number
+            list( $first_name, $last_name ) = explode( ' ', $account_user->contact_name );
+            $mobile = ( empty( $account_user->cell_phone ) ) ? $account_user->cell_phone : $account_user->work_phone;
+
+            if ( empty( $mobile ) )
+                $mobile = '8185551234';
+
+            // Get email
+            $email = 'mobile@' . url::domain( $account->domain, false );
+
+            // Login to Grey Suit Apps
+            $login_fields = array(
+                'username' => config::key('trumpia-admin-username')
+                , 'password' => config::key('trumpia-admin-password')
+            );
+
+            $curl->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
+
+            // Create customer
+            $post_fields = array(
+                'wlw_uid' => 7529
+                , 'mode' => 'signup'
+                , 'promo_code' => ''
+                , 'username' => format::slug( $account->title )
+                , 'password1' => $password
+                , 'password2' => $password
+                , 'organization_name' => $account->title
+                , 'firstname' => $first_name
+                , 'lastname' => $last_name
+                , 'email' => $email
+                , 'mobile' => $mobile
+                , 'industry' => $industry
+                , 'timezone' => $timezone
+                , 'send_confirmation' => 0
+                , 'send_welcome' => 0
+            );
+
+            $page = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_createCustomer.php', $post_fields );
+
+            $response->check( preg_match( '/action="[^"]+"/', $page ), _('Failed to create Trumpia customer') );
+
+            if ( $response->has_error() )
+                return $response;
+
+            // Get Member's User ID
+            $list_page = $curl->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $email ) . '&x=28&y=15' );
+
+            // Isolate the user ID
+            preg_match( "/uid=([0-9]+)/", $list_page, $matches );
+
+            // Get USER ID
+            $user_id = $matches[1];
+
+            // Get mobile plan
+            $mobile_plan->get( $_POST['sMobilePlanId'] );
+
+            // Determine how many more credits they need
+            $plus_credits = $mobile_plan->credits - 10;
+
+            // Update Plan
+            $update_plan_fields = array(
+                'mode' => 'updatePlan'
+                , 'member_uid' => $user_id
+                , 'arg1' => $mobile_plan->trumpia_plan_id
+            );
+
+            $update_plan = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_plan_fields );
+
+            $response->check( '<script type="text/javascript">history.go(-1);</script>' == $update_plan, _("Failed to update customer's plan") );
+
+            if ( $response->has_error() )
+                return $response;
+
+            // Update Credits
+            $update_credits_fields = array(
+                'mode' => 'addCredit'
+                , 'member_uid' => $user_id
+                , 'arg1' => $plus_credits
+            );
+
+            $update_credits = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_credits_fields );
+
+            $response->check( '<script type="text/javascript">history.go(-1);</script>' == $update_credits, _("Failed to update customer's credits") );
+
+            if ( $response->has_error() )
+                return $response;
+
+            // Create API Key
+            $api_fields = array(
+                'mode' => 'createAPIKey'
+                , 'member_uid' => $user_id
+                , 'arg1' => $user_id
+            );
+
+            $api_creation = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $api_fields );
+
+            $response->check( preg_match( '/action="[^"]+"/', $api_creation ), _('Failed to create API key') );
+
+            if ( $response->has_error() )
+                return $response;
+
+            // Assign API to All IP Addresses
+            $assign_ip_fields = array(
+                'mode' => 'updateAPIKey'
+                , 'member_uid' => $user_id
+                , 'ipType' => 'ip'
+                , 'ip1' => '199'
+                , 'ip2' => '79'
+                , 'ip3' => '48'
+                , 'ip4' => '137'
+            );
+
+            $update_api = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_apiCustomers.php', $assign_ip_fields );
+
+            $response->check( preg_match( '/action="[^"]+"/', $update_api ), _('Failed to update API Key to the right IP address') );
+
+            if ( $response->has_error() )
+                return $response;
+
+            // Get API Key
+            $api_page = $curl->get( 'http://greysuitmobile.com/admin/MemberManagement/apiCustomers.php' );
+
+            preg_match( '/' . $user_id . '\'\)"><\/td>\s*<td>([^<]+)</', $api_page, $matches );
+            $api_key = $matches[1];
+
+            // Update the setting with the API Key. YAY!
+            $account->set_settings( array( 'trumpia-api-key' => $api_key, 'trumpia-user-id' => $user_id, 'mobile-plan-id' => $mobile_plan->id ) );
+
+            // Now we want to create the home page for mobile
+            $mobile_page = new MobilePage();
+            $mobile_page->website_id = $account->id;
+            $mobile_page->slug = 'home';
+            $mobile_page->title = 'Home';
+            $mobile_page->create();
+
+
+            // We need to get their DNS zone if they are live
+            if ( '1' == $account->live && '1' == $account->pages ) {
+                library('r53');
+                $r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
+
+                $zone_id = $account->get_settings( 'r53-zone-id' );
+                $r53->changeResourceRecordSets( $zone_id, array( $r53->prepareChange( 'CREATE', 'm.' . url::domain( $account->domain, false ) .'.', 'A', '14400', '199.79.48.138' ) ) );
+
+                // We need to create their subdomain
+                $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
+
+                // Load cPanel API
+                library('cpanel-api');
+                $cpanel = new cPanel_API( $username );
+
+                // Add the subdomain
+                $cpanel->add_subdomain( url::domain( $account->domain, false ), 'm', 'public_html' );
+            }
+
+            // Add notification
+            $this->notify( _('Trumpia account successfully created') );
+
+            // Redirect to next page
+            jQuery('body')->redirect( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
+
+            // Add jquery
+            $response->add_response( 'jquery', jQuery::getResponse() );
+
+            return $response;
+        }
+
+        $response = new CustomResponse( $this->resources, 'accounts/create-trumpia-account' );
+        $response->set( compact( 'form' ) );
+
+        return $response;
+    }
 
     /**
      * List Accounts

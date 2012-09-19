@@ -1,0 +1,8 @@
+h2 { font-size: 18px; padding-bottom: 10px }
+td span { line-height: 35px; width: 125px; vertical-align: top; display: inline-block; }
+p { padding-bottom: 10px }
+label { margin:0; padding:0 0 5px 0 }
+.inline { display: inline !important }
+.tb { width: 200px !important }
+select { width:75px !important }
+.disabled, input.disabled, textarea.disabled { background: #fff !important; border:none !important; color:#595F65 !important; font-family:Arial, Helvetica, sans-serif !important; font-size: 13px !important }

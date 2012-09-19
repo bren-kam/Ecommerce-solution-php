@@ -8,6 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var Account $account
+ * @var string $trumpia_api_key
  */
 
 ?>
@@ -35,8 +36,13 @@
     <?php } ?>
 
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Delete Categories and Products'); ?>" confirm="<?php echo _('Are you sure you want to delete all categories and products? This cannot be undone.'); ?>"><?php echo _('Delete Categories and Products'); ?></a></p>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Create Trumpia Account'); ?>"><?php echo _('Create Trumpia Account'); ?></a></td>
+
+    <?php if ( empty( $trumpia_api_key ) ) { ?>
+        <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-trumpia-account/' ); ?>" title="<?php echo _('Create Trumpia Account'); ?>" rel="dialog" cache="0"><?php echo _('Create Trumpia Account'); ?></a></p>
+    <?php } ?>
+
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
+
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Run Ashley FTP'); ?>"><?php echo _('Run Ashley FTP'); ?></a></p>
 </table>
 

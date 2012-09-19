@@ -22,7 +22,7 @@ class AccountCategory extends ActiveRecordBase {
      * @param int $account_id
      * @param Category $category
      */
-    public function reorganize_categories( $account_id, $category ) {
+    public function reorganize_categories( $account_id, Category $category ) {
         // Get data
         $category_ids = $this->get_category_ids( $account_id );
 		$website_category_ids = $this->get_website_category_ids( $account_id );
