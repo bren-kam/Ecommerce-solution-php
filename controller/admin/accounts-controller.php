@@ -1051,6 +1051,27 @@ class AccountsController extends BaseController {
         return new RedirectResponse('/accounts/');
     }
 
+    /**
+     * Run Ashley Feed
+     *
+     * @return RedirectResponse
+     */
+    protected function run_ashley_feed() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account
+        $ashley_specific_feed = new AshleySpecificFeed();
+        $ashley_specific_feed->run( $_GET['aid'] );
+
+        // Give them a notification
+        $this->notify( _('The ashley feed has been successfully run!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse('/accounts/');
+    }
+
     /***** AJAX *****/
 
     /**

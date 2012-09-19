@@ -43,7 +43,7 @@
 
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
 
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Run Ashley FTP'); ?>"><?php echo _('Run Ashley FTP'); ?></a></p>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley FTP'); ?>"><?php echo _('Run Ashley FTP'); ?></a></p>
 </table>
 
 
