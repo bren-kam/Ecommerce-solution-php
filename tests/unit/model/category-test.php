@@ -23,10 +23,10 @@ class CategoryTest extends BaseDatabaseTest {
         $category_id = 559;
 
         // Get category
-        $category = $this->category->get( $category_id );
+        $this->category->get( $category_id );
 
         // Should be a category
-        $this->assertTrue( $category instanceof Category );
+        $this->assertEquals( $this->category->name, 'Test Parent' );
     }
 
     /**
@@ -35,7 +35,7 @@ class CategoryTest extends BaseDatabaseTest {
     public function testGetAll() {
         $categories = $this->category->get_all();
 
-        $this->assertTrue( array_shift( $categories ) instanceof Category );
+        $this->assertTrue( current( $categories ) instanceof Category );
     }
 
     /**
@@ -45,17 +45,35 @@ class CategoryTest extends BaseDatabaseTest {
         $categories = $this->category->get_all_children(559);
 
         $this->assertEquals( count( $categories ), 3 );
-        $this->assertTrue( array_shift( $categories ) instanceof Category );
+        $this->assertTrue( current( $categories ) instanceof Category );
     }
 
     /**
      * Test getting all the parnets
      */
     public function testGetAllParents() {
-        $categories = $this->category->get_all_parents(562);
+        // Declare variable
+        $category_id = 562;
+
+        // Get all categories
+        $categories = $this->category->get_all_parents( $category_id );
 
         $this->assertEquals( count( $categories ), 2 );
-        $this->assertTrue( array_shift( $categories ) instanceof Category );
+        $this->assertTrue( current( $categories ) instanceof Category );
+    }
+    
+    /**
+     * Test getting all the parnets
+     */
+    public function testGetAllParentCategoryIds() {
+        // Declare variable
+        $category_id = 562;
+
+        // Get all categories
+        $category_ids = $this->category->get_all_parent_category_ids( $category_id );
+        
+        $this->assertEquals( count( $category_ids ), 2 );
+        $this->assertTrue( is_string( current( $category_ids ) ) );
     }
 
     /**

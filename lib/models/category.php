@@ -42,8 +42,6 @@ class Category extends ActiveRecordBase {
             $this->slug = self::$categories[$category_id]->slug;
             $this->sequence = self::$categories[$category_id]->sequence;
         }
-
-        return $this;
     }
 
     /**
@@ -95,10 +93,17 @@ class Category extends ActiveRecordBase {
         if ( 0 == $category_id )
             return $parent_categories;
 
-        $category = $this->get( $category_id );
+        $category = new Category();
+        $category->get( $category_id );
 
-        $parent_categories[] = $this->get( $category->parent_category_id );
-        $parent_categories = $this->get_all_parents( $category->parent_category_id, $parent_categories );
+        if ( 0 != $category->parent_category_id ) {
+            $parent_category = new Category();
+            $parent_category->get( $category->parent_category_id );
+
+            $parent_categories[] = $parent_category;
+
+            $parent_categories = $this->get_all_parents( $category->parent_category_id, $parent_categories );
+        }
 
         return $parent_categories;
     }
@@ -116,7 +121,7 @@ class Category extends ActiveRecordBase {
         $parent_category_ids = array();
 
         foreach ( $parent_categories as $pc ) {
-            $parent_category_ids = $pc->id;
+            $parent_category_ids[] = $pc->id;
         }
 
         return $parent_category_ids;

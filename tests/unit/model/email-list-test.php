@@ -15,8 +15,23 @@ class EmailListTest extends BaseDatabaseTest {
         $this->email_list = new EmailList();
     }
 
-    public function testReplace() {
+    /**
+     * Test create
+     */
+    public function testCreate() {
+        $this->email_list->website_id = -3;
+        $this->email_list->name = 'Test Default';
+        $this->email_list->create();
 
+        $this->assertTrue( !is_null( $this->email_list->id ) );
+
+        // Make sure it's in the database
+        $name = $this->db->get_var( 'SELECT `name` FROM `email_lists` WHERE `email_list_id` = ' . (int) $this->email_list->id );
+
+        $this->assertEquals( 'Test Default', $name );
+
+        // Delete
+        $this->db->delete( 'email_lists', array( 'email_list_id' => $this->email_list->id ), 'i' );
     }
 
     /**
