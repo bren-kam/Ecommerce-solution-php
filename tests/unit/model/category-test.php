@@ -71,7 +71,7 @@ class CategoryTest extends BaseDatabaseTest {
 
         // Get all categories
         $category_ids = $this->category->get_all_parent_category_ids( $category_id );
-        
+
         $this->assertEquals( count( $category_ids ), 2 );
         $this->assertTrue( is_string( current( $category_ids ) ) );
     }

@@ -38,7 +38,7 @@ abstract class ActiveRecordBase {
      * Table name, case sensitive
      * @var string
      */
-    private $table = NULL;
+    protected $table = NULL;
 
     private $not_connected_message = "The Connection object was not created. Did you call parent::__construct(\$table) ?";
 
@@ -270,13 +270,14 @@ abstract class ActiveRecordBase {
     /**
      * Copy data from one table to another
      *
+     * @param string $table
      * @param array $fields the Fields to copy
      * @param array $where the fields to base it on
      * @return bool
      */
-    public function copy( $fields, $where ) {
+    public function copy( $table, $fields, $where ) {
         // Initialize variables
-        $table = "`$this->table`";
+        $table = "`$table`";
         $duplicate_keys = array();
 
         // Determine the fields that need to be copied over
@@ -302,7 +303,7 @@ abstract class ActiveRecordBase {
                 // Make sure the array is sql safe
                 foreach ( $field as &$i ) {
                     if ( !is_int( $i ) && !is_float( $i ) ) {
-                        $field_values = $i;
+                        $where_values[] = $i;
                         $i = '?';
                     }
                 }
@@ -317,7 +318,8 @@ abstract class ActiveRecordBase {
         $sql = "INSERT INTO $table ( $field_keys ) SELECT $field_values FROM $table WHERE " . IMPLODE ( ' AND ', $where_sql ) . ' ON DUPLICATE KEY UPDATE ' . implode( ', ', $duplicate_keys );
 
         // Prepare statement
-        $statement = $this->_get_statement( $sql, NULL, $field_values );
+        $where_value_count = count( $where_values );
+        $statement = ( $where_value_count > 0 ) ? $this->_get_statement( $sql, str_repeat( 's', $where_value_count ), $where_values ) : $sql;
 
         // Query it
         $this->query( $statement );

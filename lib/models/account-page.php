@@ -51,7 +51,7 @@ class AccountPage extends ActiveRecordBase {
      * @param int $account_id
      */
     public function copy_by_account( $template_account_id, $account_id ) {
-        $this->copy( array(
+        $this->copy( $this->table, array(
                 'website_id' => $account_id
                 , 'slug' => NULL
                 , 'title' => NULL

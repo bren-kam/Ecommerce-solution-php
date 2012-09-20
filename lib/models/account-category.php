@@ -83,7 +83,8 @@ class AccountCategory extends ActiveRecordBase {
 		$this->bulk_add_categories( $account_id, $new_category_ids, $category );
 
 		// Remove extra categoryes
-		$this->remove_categories( $account_id, $remove_category_ids );
+        if ( count( $remove_category_ids ) > 0 )
+            $this->remove_categories( $account_id, $remove_category_ids );
 	}
 
     /**
@@ -153,7 +154,7 @@ class AccountCategory extends ActiveRecordBase {
 		}
 
 		$this->prepare(
-            "DELETE FROM `website_categories` WHERE `website_id` = :account_id AND `category_id` IN(" . implode( ',', $category_ids ) . ')'
+            'DELETE FROM `website_categories` WHERE `website_id` = :account_id AND `category_id` IN(' . implode( ',', $category_ids ) . ')'
             , 'i'
             , array( ':account_id' => $account_id )
         )->query();

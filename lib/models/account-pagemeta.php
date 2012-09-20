@@ -16,19 +16,20 @@ class AccountPagemeta extends ActiveRecordBase {
     /**
      * Get by keys
      *
-     * @param array $template_account_page_ids
+     * @param array $account_page_ids
      * @param array $pagemeta_keys
      * @return array
      */
-    public function get_by_keys( array $template_account_page_ids, array $pagemeta_keys ) {
-        foreach ( $template_account_page_ids as &$tapid ) {
-            $tapid = (int) $tapid;
+    public function get_by_keys( array $account_page_ids, array $pagemeta_keys ) {
+        foreach ( $account_page_ids as &$apid ) {
+            $apid = (int) $apid;
         }
 
         $pagemeta_keys_count = count( $pagemeta_keys );
+        $account_page_ids = implode( ', ', $account_page_ids );
 
         return $this->prepare(
-            "SELECT `website_page_id`, `key`, `value` FROM `website_pagemeta` WHERE `website_page_id` IN ( $template_account_page_ids ) AND `key` IN( ?" . str_repeat( ', ?', $pagemeta_keys_count - 1 ) . ' )', PDO::FETCH_CLASS, 'AccountPagemeta'
+            "SELECT `website_page_id`, `key`, `value` FROM `website_pagemeta` WHERE `website_page_id` IN ( $account_page_ids ) AND `key` IN( ?" . str_repeat( ', ?', $pagemeta_keys_count - 1 ) . ' )'
             , str_repeat( 's', $pagemeta_keys_count )
             , $pagemeta_keys
         )->get_results( PDO::FETCH_CLASS, 'AccountPagemeta' );

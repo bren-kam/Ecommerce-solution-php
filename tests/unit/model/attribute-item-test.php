@@ -14,6 +14,9 @@ class AttributeItemTest extends BaseDatabaseTest {
         $this->attribute_item = new AttributeItem();
     }
 
+    /**
+     * Test add relations
+     */
     public function testAddRelations() {
         // Declare variables
         $product_id = 0;

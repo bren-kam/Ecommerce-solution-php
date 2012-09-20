@@ -24,7 +24,7 @@ class AccountPageAttachment extends ActiveRecordBase {
             $apid = (int) $apid;
         }
 
-        return $this->get_results( 'SELECT `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` FROM `website_attachments` WHERE `status` = 1 AND `website_page_id` IN (' . implode( ', ', $account_page_ids ) . ')', PDO::FETCH_CLASS, 'AccountPageAttachment' );
+        return $this->get_results( 'SELECT `website_attachment_id`, `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` FROM `website_attachments` WHERE `status` = 1 AND `website_page_id` IN (' . implode( ', ', $account_page_ids ) . ')', PDO::FETCH_CLASS, 'AccountPageAttachment' );
     }
 
     /**
@@ -49,7 +49,7 @@ class AccountPageAttachment extends ActiveRecordBase {
      * @param array $account_page_ids
      */
     public function delete_unique_attachments( array $account_page_ids ) {
-        // Make sure they're all integerss
+        // Make sure they're all integers
         foreach ( $account_page_ids as &$apid ) {
             $apid = (int) $apid;
         }

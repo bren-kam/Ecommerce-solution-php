@@ -43,7 +43,7 @@ class AccountTest extends BaseDatabaseTest {
             }
         }
 
-        $this->asserttrue( $testing_account_exists );
+        $this->assertTrue( $testing_account_exists );
     }
 
     /**
@@ -172,8 +172,11 @@ class AccountTest extends BaseDatabaseTest {
      * Test setting a setting
      */
     public function testSetSettings() {
+        // Declare variable
+        $account_id = 160; // Connells
+
         // Get the account
-        $this->account->get( 160 );
+        $this->account->get( $account_id );
 
         // Set it wrong in the first place
         $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( 160, 'test-settings', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
@@ -182,10 +185,33 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->set_settings( array( 'test-settings' => '3.14159' ) );
 
         // Get the value
-        $setting_value = $this->db->get_var( "SELECT `value` FROM `website_settings` WHERE `website_id` = 160 AND `key` = 'test-settings'" );
+        $setting_value = $this->db->get_var( "SELECT `value` FROM `website_settings` WHERE `website_id` = $account_id AND `key` = 'test-settings'" );
 
         // Make sure they equal each other
         $this->assertEquals( '3.14159', $setting_value );
+    }
+
+    /**
+     * Test setting an email setting
+     */
+    public function testSetEmailSettings() {
+        // Declare variable
+        $account_id = 160; // Connells
+
+        // Get the account
+        $this->account->get( $account_id );
+
+        // Set it wrong in the first place
+        $this->db->query( "INSERT INTO `email_settings` ( `website_id`, `key`, `value` ) VALUES ( $account_id, 'garbonzo-beans', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
+
+        // Set it with the method
+        $this->account->set_email_settings( array( 'garbonzo-beans' => 'negatory' ) );
+
+        // Get the value
+        $setting_value = $this->db->get_var( "SELECT `value` FROM `email_settings` WHERE `website_id` = $account_id AND `key` = 'garbonzo-beans'" );
+
+        // Make sure they equal each other
+        $this->assertEquals( 'negatory', $setting_value );
     }
 
     /**
@@ -226,14 +252,45 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGetIndustries() {
+        // Declare variables
+        $account_id = 96; // Testing account
+
         // Get the testing account
-        $this->account->get(96);
+        $this->account->get( $account_id );
 
         // Get the industries
         $industries = $this->account->get_industries();
 
         // House Plans industry
         $this->assertTrue( in_array( 5, $industries ) );
+    }
+
+    /**
+     * Test copying industries
+     *
+     * @depends testGetIndustries
+     */
+    public function testCopyIndustriesByAccount() {
+        // Declare variables
+        $template_account_id = 96;
+        $account_id = -5;
+
+        // Copy industries
+        $this->account->copy_industries_by_account( $template_account_id, $account_id );
+
+        // Get the account and get the industries of each
+        $this->account->get( $template_account_id );
+        $template_industry_ids = $this->account->get_industries();
+
+        // Get other account
+        $this->account->get( $account_id );
+        $account_industry_ids = $this->account->get_industries();
+
+        // Get industries and see if they match
+        $this->assertEquals( $template_industry_ids, $account_industry_ids );
+
+        // Now delete
+        $this->db->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -264,8 +321,11 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testDeleteIndustries
      */
     public function testAddIndustries() {
+        // Declare variables
+        $account_id = 96; // Testing account
+
         // Get test account
-        $this->account->get(96);
+        $this->account->get( $account_id );
 
         $this->account->add_industries( array( 1, 2, 3, 4, 5, 6, 7, 8, 10, 11 ) );
 
@@ -310,6 +370,50 @@ class AccountTest extends BaseDatabaseTest {
         $accounts = $this->account->autocomplete( 'Connel', 'title', $user, 1 );
 
         $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
+    }
+
+    /**
+     * Test Copy Top Brands by Account
+     */
+    public function testCopyTopBrandsByAccount() {
+        // Declare variables
+        $template_account_id = 96;
+        $account_id = -5;
+        $brand_id = 151;
+
+        // Do the copying
+        $this->account->copy_top_brands_by_account( $template_account_id, $account_id );
+
+        // Get brand ids
+        $brand_ids = $this->db->get_col( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $account_id" );
+
+        $this->assertEquals( count( $brand_ids ), 15 );
+        $this->assertTrue( in_array( $brand_id, $brand_ids ) );
+
+        // Delete
+        $this->db->delete( 'website_top_brands', array( 'website_id' => $account_id ) , 'i' );
+    }
+
+    /**
+     * Test Copy settings by Account
+     */
+    public function testCopySettingsByAccount() {
+        // Declare variables
+        $template_account_id = 96;
+        $account_id = -5;
+        $settings = array( 'banner-background-color', 'banner-effect', 'banner-height', 'banner-loading-color', 'banner-speed', 'banner-width' );
+
+        // Do the copying
+        $this->account->copy_settings_by_account( $template_account_id, $account_id, $settings );
+
+        // Get brand ids
+        $copied_settings = ar::assign_key( $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $account_id ORDER BY `key`", PDO::FETCH_ASSOC ), 'key', true );
+
+        $this->assertEquals( array_keys( $copied_settings ), $settings );
+        $this->assertEquals( '4C86B0', $copied_settings['banner-loading-color'] );
+
+        // Delete
+        $this->db->delete( 'website_settings', array( 'website_id' => $account_id ) , 'i' );
     }
 
     /**

@@ -294,7 +294,7 @@ class Account extends ActiveRecordBase {
      * @param int $account_id
      */
     public function copy_industries_by_account( $template_account_id, $account_id ) {
-        $this->copy( array(
+        $this->copy( 'website_industries', array(
                 'website_id' => $account_id
                 , 'industry_id' => NULL
             ), array( 'website_id' => $template_account_id )
@@ -340,7 +340,7 @@ class Account extends ActiveRecordBase {
      * @param int $account_id
      */
     public function copy_top_brands_by_account( $template_account_id, $account_id ) {
-        $this->copy( array(
+        $this->copy( 'website_top_brands', array(
                 'website_id' => $account_id
                 , 'brand_id' => NULL
                 , 'sequence' => NULL
@@ -356,7 +356,7 @@ class Account extends ActiveRecordBase {
      * @param array $settings
      */
     public function copy_settings_by_account( $template_account_id, $account_id, array $settings ) {
-        $this->copy( array(
+        $this->copy( 'website_settings', array(
                 'website_id' => $account_id
                 , 'key' => NULL
                 , 'value' => NULL

@@ -23,7 +23,7 @@ class AccountProduct extends ActiveRecordBase {
      * @param int $account_id
      */
     public function copy_by_account( $template_account_id, $account_id ) {
-        $this->copy( array(
+        $this->copy( $this->table, array(
                 'website_id' => $account_id
                 , 'product_id' => NULL
                 , 'status' => NULL
@@ -64,12 +64,12 @@ class AccountProduct extends ActiveRecordBase {
             $product_sku_count = count( $product_skus );
 
 			// Turn it into a string
-			$product_skus_sql = '?' . str_repeat( ',?', $product_sku_count );
+			$product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
 
 			// Magical Query
 			// Insert website products
 			$this->prepare(
-                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) ON DUPLICATE KEY UPDATE `active` = 1"
+                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
                 , str_repeat( 's', $product_sku_count )
                 , $product_skus
             )->query();
