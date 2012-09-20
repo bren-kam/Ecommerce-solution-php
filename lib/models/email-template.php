@@ -41,9 +41,9 @@ class EmailTemplate extends ActiveRecordBase {
             , 'iis'
             , array(
                 ':email_template_id' => $this->id
-                , 'object_id' => $object_id
-                , 'type' => $this->type
+                , ':object_id' => $object_id
+                , ':type' => $type
             )
-        );
+        )->query();
     }
 }

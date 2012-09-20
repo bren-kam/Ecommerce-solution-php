@@ -18,9 +18,24 @@ class CompanyPackageTest extends BaseDatabaseTest {
     /**
      * Test getting the company packages
      */
+    public function testGet() {
+        // Declare variables
+        $company_package_id = 1;
+
+        $this->company_package->get( $company_package_id );
+
+        $this->assertEquals( $this->company_package->name, 'Furnish123 Gallery' );
+    }
+
+    /**
+     * Test getting the company packages
+     */
     public function testGetAll() {
-        // WHFA
-        $packages = $this->company_package->get_all( 248 );
+        // Declare Variables
+        $account_id = 248; // WHFA
+
+        // Get all packages
+        $packages = $this->company_package->get_all( $account_id );
 
         $this->assertTrue( $packages[0] instanceof CompanyPackage );
     }
