@@ -18,7 +18,11 @@ class CompanyTest extends BaseDatabaseTest {
      * Test getting the company
      */
     public function testGet() {
-        $this->company->get(4);
+        // Declare variables
+        $company_id = 4;
+
+        // Get company
+        $this->company->get( $company_id );
 
         $this->assertEquals( 'Grey Suit Retail', $this->company->name );
     }

@@ -14,6 +14,47 @@ class AccountPagemeta extends ActiveRecordBase {
     }
 
     /**
+	 * Gets a metadata for a page
+	 *
+	 * @param int $account_id
+	 * @param string $key_1, $key_2, $key_3, etc.
+	 * @return array|bool
+	 */
+	public function get_by_account_and_keys( $account_id, $key_1 ) {
+		// Get the arguments
+		$arguments = func_get_args();
+
+		// Needs to have at least two arguments
+		if ( count( $arguments ) <= 2 )
+			return false;
+
+		// Typecast
+		$account_id = (int) array_shift( $arguments );
+
+		// Get keys, escape them and turn them into comma separated values
+        $key_count = count( $arguments );
+
+		// Get the meta data
+		$metadata = $this->prepare(
+            "SELECT wpm.`key`, wpm.`value` FROM `website_pagemeta` AS wpm LEFT JOIN `website_pages` AS wp ON ( wpm.`website_page_id` = wp.`website_page_id` ) WHERE wpm.`key` IN ($keys) AND wp.`website_id` = $account_id"
+            , str_repeat( 's', $key_count )
+            , $arguments
+        )->get_results( PDO::FETCH_ASSOC );
+
+
+		// Set the array
+		$new_metadata = array_fill_keys( $arguments, '' );
+
+		// Decrypt any meta data
+		if ( is_array( $metadata ) )
+		foreach ( $metadata as $md ) {
+			$new_metadata[$md['key']] = html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' );
+		}
+
+		return ( 1 == count( $new_metadata ) ) ? array_shift( $new_metadata ) : $new_metadata;
+	}
+
+    /**
      * Get by keys
      *
      * @param array $account_page_ids

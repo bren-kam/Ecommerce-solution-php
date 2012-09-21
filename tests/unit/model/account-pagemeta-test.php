@@ -18,6 +18,22 @@ class AccountPagemetaTest extends BaseDatabaseTest {
     /**
      * Test get by keys
      */
+    public function testGetByAccountAndKeys() {
+        // Declare variables
+        $account_id = 96;
+        $key_1 = 'display-coupon';
+        $key_2 = 'email';
+
+        // Get
+        $pagemeta = $this->account_pagemeta->get_by_account_and_keys( $account_id, $key_1, $key_2 );
+
+        $this->assertTrue( current( $pagemeta ) instanceof AccountPagemeta );
+        $this->assertEquals( 2, count( $pagemeta ) );
+    }
+
+    /**
+     * Test get by keys
+     */
     public function testGetByKeys() {
         // Declare variables
         $account_page_ids = array( 7, 8 );

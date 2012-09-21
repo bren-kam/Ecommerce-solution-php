@@ -32,7 +32,7 @@ class BrandTest extends BaseDatabaseTest {
     public function testGetAll() {
         $brands = $this->brand->get_all();
 
-        $this->assertTrue( $brands[0] instanceof Brand );
+        $this->assertTrue( current( $brands ) instanceof Brand );
     }
 
     /**
