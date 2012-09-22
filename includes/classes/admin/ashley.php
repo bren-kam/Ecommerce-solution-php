@@ -59,7 +59,7 @@ class Ashley extends Base_Class {
 		// Load database library into $this->db (can be omitted if not required)
 		parent::__construct();
 
-        set_time_limit(300);
+        set_time_limit(600);
 		
 		// Time how long we've been on this page
 		$this->curl = new curl();
@@ -87,33 +87,42 @@ class Ashley extends Base_Class {
      * Load Packages
      */
     public function load_packages() {
-
         // Sets who is updating the products
         global $user;
         $user['user_id'] = self::USER_ID;
-
+		
         // Get librarys
         library('ashley-api/ashley-api');
         $a = new Ashley_API();
-
+		
         // Get existing products
         $existing_products = $this->_get_existing_products();
 
         // Get packages
         $packages = $a->get_packages();
-
+		
+		echo str_repeat( '&nspb;', 1000 );
+		flush();
+		
         // Get Series
+		set_time_limit(600);
+		
         $series_array = $a->get_series();
+		
+		echo str_repeat( '&nspb;', 1000 );
+		flush();
         $series = array();
-
+		
         foreach ( $series_array as $sa ) {
             $series[(string)$sa->SeriesNo] = $sa;
         }
 
+		echo str_repeat( '&nspb;', 1000 );
+		flush();
         // Get Templates
         $package_template_array = $a->get_package_templates();
         $package_templates = array();
-
+		
         foreach ( $package_template_array as $pta ) {
             $package_templates[(string)$pta->TemplateId] = $pta;
         }
@@ -126,7 +135,7 @@ class Ashley extends Base_Class {
 
         // Any new products get a link
         $links = array();
-
+		
         foreach ( $packages as $item ) {
             // Ensure that we can keep running
             echo '                                                   ';
@@ -141,6 +150,7 @@ class Ashley extends Base_Class {
                 $skipped++;
                 continue;
             }
+			$this->p = new Products();
 
             $package_series = $series[(string)$item->SeriesNo];
             $template = $package_templates[(string)$item->TemplateId];
@@ -177,7 +187,7 @@ class Ashley extends Base_Class {
             $category_id = $this->_categories[(string)$package_series->Grouping];
 
 			$images = array();
-
+			
 			////////////////////////////////////////////////
 			// Get/Create the product
 			if ( array_key_exists( $sku, $existing_products ) ) {
@@ -279,15 +289,15 @@ class Ashley extends Base_Class {
 				}
 			} else {
                 // User "Ashley Packages"
-				$product_id = $this->p->create( self::USER_ID );
-
+				$product_id = $this->p->create( 1477 );
+				
                 // Make sure it's a unique slug
                 $slug = $this->unique_slug( $slug );
-
+				
 				// Upload image if it's not blank
 				if ( !empty( $image ) && curl::check_file( $image ) ) {
 					$image_name = $this->upload_image( $image, $slug, $product_id );
-
+					
 					if ( !in_array( $image_name, $images ) )
 						$images[] = $image_name;
 				}
@@ -315,7 +325,7 @@ class Ashley extends Base_Class {
 
                 $product_status = 'private';
 			}
-
+			
 			// Update the product
 			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
 
@@ -345,7 +355,7 @@ class Ashley extends Base_Class {
 
 			// We don't want to carry them around in the next loop
 			unset( $images );
-
+			
 			if ( $i % 1000 == 0 ) {
 				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
 
@@ -358,6 +368,7 @@ class Ashley extends Base_Class {
 				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
 			}
 			//$i++;
+			
 		}
 
         echo $products_string;
@@ -889,17 +900,18 @@ class Ashley extends Base_Class {
 			$this->_err( 'Failed to check slug.', __LINE__, __METHOD__ );
 			return false;
 		}
-
+		
         // See if the slug already exists
         if ( $slug == $existing_slug ) {
             // Check to see if it has been incremented before
             if ( 1 == preg_match( '/-([0-9]+)$/', $slug, $matches ) > 0 ) {
                 // The number to increment it by
                 $increment = $matches[1] * 1 + 1;
-
+				echo $slug;
                 // Give it the new increment
                 $slug = preg_replace( '/-[0-9]+$/', "-$increment", $slug );
-
+				echo "|$slug";
+				exit;
                 // Make sure it's unique
                 $slug = $this->unique_slug( $slug );
             } else {
