@@ -62,7 +62,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'update-user'
         $company_id = ( $user['role'] < 8 ) ? $us['company_id'] : $_POST['sCompany'];
 
 		$information = array(
-			'company_id'			=> $_POST['sCompany']
+			'company_id'			=> $company_id
 			, 'email'				=> $_POST['tEmail']
 			, 'contact_name'		=> stripslashes( $_POST['tContactName'] )
             , 'work_phone'          => $_POST['tWorkPhone']
