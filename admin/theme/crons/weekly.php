@@ -9,4 +9,7 @@ newrelic_background_job();
 
 $a = new Ashley_Feed();
 $a->run_all();
+
+$a = new Ashley();
+$a->load_packages();
 ?>
