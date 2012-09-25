@@ -109,7 +109,7 @@ class Ashley_API {
         // SimpleXML errors out if it thinks its reading utf-16
         $template_packages = simplexml_load_string( str_replace( 'utf-16', 'utf-8', $template_packages ) );
 
-        return ( $all ) ? $template_packages->PackageTemplate : $template_packages;
+        return ( $all ) ? $template_->PackageTemplateTemplate : $template_packages;
     }
 
     /**
