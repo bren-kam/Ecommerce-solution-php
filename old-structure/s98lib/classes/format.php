@@ -97,6 +97,7 @@ class format extends Base_Class {
             , '®' => '&reg;'
             , '™' => '&trade;'
             , '’' => "'"
+            , '‘' => "'"
         );
 
         return str_replace( array_keys( $conversion ), array_values( $conversion ), $string );

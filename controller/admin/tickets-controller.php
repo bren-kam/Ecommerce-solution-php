@@ -102,6 +102,81 @@ class TicketsController extends BaseController {
     /***** AJAX *****/
 
     /**
+     * Create ticket
+     *
+     * @return AjaxResponse
+     */
+    protected function create() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $ticket = new Ticket();
+
+        if ( isset( $_POST['hSupportTicketId'] ) && !empty( $_POST['hSupportTicketId'] ) ) {
+            $ticket->get( $_POST['hSupportTicketId'] );
+        } else {
+            $ticket->status = 0;
+            $ticket->create();
+        }
+
+        // Get browser information
+        $browser = fn::browser();
+
+        // Set ticket information
+        $ticket->user_id = $this->user->id;
+        $ticket->assigned_to_user_id = 493; // Technical user
+        $ticket->website_id = 0; // Admin side -- no website
+        $ticket->summary = $_POST['tTicketSummary'];
+        $ticket->message = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['taTicketMessage'] ), array('&') ), true , true ) );
+        $ticket->browser_name = $browser['name'];
+        $ticket->browser_version = $browser['version'];
+        $ticket->browser_platform = $browser['platform'];
+        $ticket->browser_user_agent = $browser['user_agent'];
+        $ticket->status = 0;
+
+        // Update the ticket
+        $ticket->update();
+
+        // Add links if there are any
+        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
+            $ticket->add_links( $_POST['uploads'] );
+
+        // Add statistics
+        library('statistics-api');
+        $stat = new Stat_API( Config::key('rs-key') );
+
+        // Get the dates
+        $date = new DateTime();
+
+        // Add the value of a new ticket
+        $stat->add_graph_value( 23451, 1, $date->format('Y-m-d') );
+
+        // Send email
+        $assigned_user = new User();
+        $assigned_user->get( 493 ); // Technical user
+
+        //fn::mail( $assigned_user->email, 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary, "Name: " . $this->user->contact_name . "\nEmail: " . $this->user->email . "\nSummary: " . $ticket->summary . "\n\n" . $ticket->message . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id );
+
+        // Close the window
+        jQuery('a.close:visible:first')->click();
+
+        // Don't want the attachments coming up next time
+        jQuery('#ticket-attachments-list')->empty();
+
+        // Reset the two fields
+        jQuery('#tTicketSummary, #taTicketMessage, #hSupportTicketId')->val('')->blur();
+
+        // Add the jQuery
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
      * Add a comment
      *
      * @return AjaxResponse
@@ -210,16 +285,87 @@ class TicketsController extends BaseController {
     }
 
     /**
-     * Upload an attachment
+     * Upload an attachment to comment
      *
      * @return AjaxResponse
      */
-    public function upload() {
+    public function upload_to_ticket() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $ticket_upload = new TicketUpload();
+        $ticket = new Ticket();
+        $file = new File( 'retailcatalog.us' );
+        $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt'), 10485760 );
+
+        if ( !isset( $_GET['tid'] ) || empty( $_GET['tid'] ) ) {
+            $ticket->status = -1;
+            $ticket->create();
+
+            // Set the variable
+            jQuery('#hSupportTicketId')->val( $ticket->id );
+        } else {
+            $ticket->get( $_GET['tid'] );
+        }
+
+        // Get variables
+		$directory = $this->user->id . '/' . $ticket->ticket_id . '/';
+        $file_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+
+        // Create upload
+        $ticket_upload->key = $directory . $file_name;
+        $ticket_upload->create();
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload attachment') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $file_url = $file->upload_file( $result['file_path'], $ticket_upload->key, 'attachments/' );
+        $confirmation = _('Are you sure you want to remove this attachment?');
+        $delete_upload = nonce::create('delete_upload');
+
+        $upload = '<div class="upload" id="upload-' . $ticket_upload->id . '">';
+        $upload .= '<a href="' . $file_url . '" class="download" target="_blank">' . $file_name . '</a>';
+        $upload .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_upload, 'tuid' => $ticket_upload->id ), '/tickets/delete-upload/' ) . '" class="delete" title="' . _('Delete') . '" ajax="1" confirm="' . $confirmation . '">';
+        $upload .= '<img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" />';
+        $upload .= '</a>';
+        $upload .= '<input type="hidden" name="uploads[]" value="' . $ticket_upload->id . '" />';
+        $upload .= '</div>';
+
+        // Clone image template
+        jQuery('#ticket-attachments-list')
+            ->append( $upload )
+            ->sparrow();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload an attachment to comment
+     *
+     * @return AjaxResponse
+     */
+    public function upload_to_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_GET['wid'] ), _('Failed to upload attachment') );
+        $response->check( isset( $_GET['tid'] ), _('Failed to upload attachment') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -234,7 +380,7 @@ class TicketsController extends BaseController {
         $uploader = new qqFileUploader( array('pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt'), 10485760 );
 
         // Get variables
-		$directory = $this->user->id . '/' . $_GET['wid']. '/';
+		$directory = $this->user->id . '/' . $_GET['tid'] . '/';
         $file_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
 
         // Create upload

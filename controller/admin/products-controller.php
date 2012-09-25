@@ -275,7 +275,7 @@ class ProductsController extends BaseController {
     public function upload_image() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
-        $response->check( isset( $_GET['pid'] ) && isset( $_GET['iid'] ), _('Image filed to upload') );
+        $response->check( isset( $_GET['pid'] ) && isset( $_GET['iid'] ), _('Image failed to upload') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )

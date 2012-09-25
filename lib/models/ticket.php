@@ -1,7 +1,8 @@
 <?php
 class Ticket extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to, $status, $priority, $browser_name, $browser_version, $date_created;
+    public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to
+        , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created;
 
     // Fields from other tables
     public $role, $website_id, $domain, $email;
@@ -30,17 +31,57 @@ class Ticket extends ActiveRecordBase {
     }
 
     /**
+     * Create a ticket
+     */
+    public function create() {
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'status' => $this->status
+            , 'date_created' => $this->date_created
+        ), 'is' );
+
+        $this->id = $this->ticket_id = $this->get_insert_id();
+    }
+
+    /**
+     * Add Links
+     *
+     * @param array $ticket_upload_ids
+     */
+    public function add_links( array $ticket_upload_ids ) {
+        $values = '';
+
+        foreach ( $ticket_upload_ids as &$tuid ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= '(' . $this->id . ',' . (int) $tuid . ')';
+        }
+
+        $this->query( "INSERT INTO `ticket_links` ( `ticket_id`, `ticket_upload_id` ) VALUES $values" );
+    }
+
+    /**
      * Update a ticket
      */
     public function update() {
         parent::update(
             array(
-                'assigned_to_user_id' => $this->assigned_to_user_id
+                'user_id' => $this->user_id
+                , 'assigned_to_user_id' => $this->assigned_to_user_id
+                , 'website_id' => $this->website_id
+                , 'summary' => $this->summary
+                , 'message' => $this->message
+                , 'browser_name' => $this->browser_name
+                , 'browser_version' => $this->browser_version
+                , 'browser_platform' => $this->browser_platform
+                , 'browser_user_agent' => $this->browser_user_agent
                 , 'priority' => $this->priority
                 , 'status' => $this->status
             )
             , array( 'ticket_id' => $this->id )
-            , 'iii'
+            , 'iiissssssis'
             , 'i'
         );
     }

@@ -27,7 +27,6 @@ class AccountPagemetaTest extends BaseDatabaseTest {
         // Get
         $pagemeta = $this->account_pagemeta->get_by_account_and_keys( $account_id, $key_1, $key_2 );
 
-        $this->assertTrue( current( $pagemeta ) instanceof AccountPagemeta );
         $this->assertEquals( 2, count( $pagemeta ) );
     }
 

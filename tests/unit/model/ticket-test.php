@@ -28,6 +28,53 @@ class TicketTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Create
+     */
+    public function testCreate() {
+        $this->ticket->status = -5;
+        $this->ticket->create();
+
+        $this->assertTrue( !is_null( $this->ticket->id ) );
+
+        // Make sure it's in the database
+        $status = $this->db->get_var( 'SELECT `status` FROM `tickets` WHERE `ticket_id` = ' . (int) $this->ticket->id );
+
+        $this->assertEquals( $this->ticket->status, $status );
+
+        // Delete the attribute
+        $this->db->delete( 'tickets', array( 'ticket_id' => $this->ticket->id ), 'i' );
+    }
+
+    /**
+     * Test Adding Ticket Links
+     *
+     * @depends testCreate
+     */
+    public function testAddLinks() {
+        // Declare variables
+        $ticket_links = array( '-10', '-5' );
+
+        // Delete any previous relations
+        $this->db->delete( 'ticket_links', array( 'ticket_id' => -3 ), 'i' );
+
+        // Create ticket
+        $this->status = 0;
+        $this->ticket->create();
+
+        // Add them
+        $this->ticket->add_links( $ticket_links );
+
+        // Now check it
+        $fetched_links = $this->db->get_col( "SELECT `ticket_upload_id` FROM `ticket_links` WHERE `ticket_id` = " . (int) $this->ticket->id );
+
+        $this->assertEquals( $ticket_links, $fetched_links );
+
+        // Delete links and ticket
+        $this->db->delete( 'ticket_links', array( 'ticket_id' => $this->ticket->id ), 'i' );
+        $this->db->delete( 'tickets', array( 'ticket_id' => $this->ticket->id ), 'i' );
+    }
+
+    /**
      * Test updating a ticket
      *
      * @depends testGet

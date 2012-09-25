@@ -33,7 +33,7 @@ nonce::field( 'update_status', '_update_status' );
 nonce::field( 'update_priority', '_update_priority' );
 nonce::field( 'delete_comment', '_delete_comment' );
 nonce::field( 'update_assigned_to', '_update_assigned_to' );
-nonce::field( 'upload', '_upload' );
+nonce::field( 'upload_to_comment', '_upload_to_comment' );
 ?>
 
 <table class="formatted">
@@ -60,7 +60,7 @@ nonce::field( 'upload', '_upload' );
     </tr>
     <tr>
         <td>
-            <strong><?php echo _('Website'); ?></strong>
+            <strong><?php echo _('Account'); ?></strong>
             <a href="http://<?php echo $ticket->domain; ?>/" title="<?php echo $ticket->website; ?>" target="_blank"><?php echo $ticket->website; ?></a>
             <?php if ( !empty( $ticket->website_id ) ) { ?>
                 <br />
@@ -132,14 +132,15 @@ nonce::field( 'upload', '_upload' );
     <?php echo $ticket->message; ?>
 </blockquote>
 
-<div class="uploads">
-    <?php
-    if ( is_array( $ticket_uploads ) )
-    foreach ( $ticket_uploads as $upload ) {
-    ?>
-        <a href="<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a>
-    <?php } ?>
-</div>
+<?php if ( is_array( $ticket_uploads ) ) { ?>
+    <br />
+    <div class="uploads">
+        <p><strong><?php echo _('Attachments'); ?>:</strong></p>
+        <?php foreach ( $ticket_uploads as $upload ) { ?>
+            <p><a href="http://s3.amazonaws.com/retailcatalog.us/attachments/<?php echo $upload; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo f::name( $upload ); ?></a></p>
+        <?php } ?>
+    </div>
+<?php } ?>
 
 <br /><hr />
 
@@ -210,6 +211,5 @@ nonce::field( 'upload', '_upload' );
     </div>
 </div>
 <br clear="all" />
-    <input type="hidden" id="hWebsiteId" value="<?php echo (int) $ticket->website_id; ?>" />
 
 <?php echo $template->end(); ?>

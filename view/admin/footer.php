@@ -28,17 +28,21 @@
 	<form action="/tickets/create/" id="fCreateTicket" method="post">
 		<input type="text" class="tb" name="tTicketSummary" id="tTicketSummary" maxlength="140" tmpval="<?php echo _('Enter summary'); ?>..." error="<?php echo _('You must enter in a summary'); ?>" />
 		<br />
-		<textarea name="taTicket" id="taTicket" rows="5" cols="50" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
+		<textarea name="taTicketMessage" id="taTicketMessage" rows="5" cols="50" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
 		<br /><br />
-		<input type="hidden" name="hTicketID" id="hTicketID" value="0" />
-		<?php nonce::field( 'create', '_ajax_create_ticket' ); ?>
+        <a href="#" id="aUploadTicketAttachment" title="<?php echo _('Add Attachment'); ?>"><?php echo _('Add Attachment'); ?></a>
+        <div class="hidden" id="upload-ticket-attachment"></div>
+        <div id="ticket-attachments-list"></div>
+
+        <input type="hidden" name="hSupportTicketId" id="hSupportTicketId" value="" />
+		<?php nonce::field( 'create' ); ?>
 	</form>
-	<input type="hidden" id="hTicketWebsiteID" value="<?php if ( isset( $user->website ) ) echo $user->website->website_id; ?>" />
-	<input type="hidden" id="hUserID" value="<?php echo $user->id; ?>" />
+
 	<div class="boxy-footer hidden">
         <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
         <p class="text-right col-2 float-right"><input type="submit" class="button" id="bCreateTicket" value="<?php echo _('Create Ticket'); ?>" /></p>
     </div>
+    <?php nonce::field( 'upload_to_ticket', '_upload_to_ticket' ); ?>
 </div>
 
 <!-- End: Footer -->

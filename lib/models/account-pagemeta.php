@@ -33,6 +33,7 @@ class AccountPagemeta extends ActiveRecordBase {
 
 		// Get keys, escape them and turn them into comma separated values
         $key_count = count( $arguments );
+        $keys = '?' . str_repeat( ',?', $key_count - 1 );
 
 		// Get the meta data
 		$metadata = $this->prepare(

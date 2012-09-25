@@ -196,8 +196,9 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         , sizeLimit: 10485760 // 10 mb's
         , onSubmit: function( id, fileName ) {
             uploader.setParams({
-                _nonce : $('#_upload').val()
-                , tid : $('#hTicketID').val()
+                _nonce : $('#_upload_image').val()
+                , iid : $('#sIndustry').val()
+                , pid : $('#hProductId').val()
             })
         }
         , onComplete: function( id, fileName, responseJSON ) {

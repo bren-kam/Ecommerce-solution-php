@@ -253,8 +253,11 @@ input.button {
 
 /***** Tickets *****/
 #tTicketSummary{margin-bottom:7px}
-#taTicket { font-family: Arial, Helvetica, sans-serif; font-size: 14px }
-#tTicketSummary, #taTicket { width:650px }
+#taTicketMessage { font-family: Arial, Helvetica, sans-serif; font-size: 14px }
+#tTicketSummary, #taTicketMessage { width:650px }
+#ticket-attachments-list { margin: 13px 0 23px }
+#ticket-attachments-list a.delete { position: relative; left: 19px; top: 3px }
+#ticket-attachments-list .upload { margin-bottom: 9px }
 
 /***************/
 /* Form Styles */
