@@ -22,7 +22,6 @@ class Ashley_Feed extends Base_Class {
 		$this->curl = new curl();
 		$this->w = new Websites();
 		$this->file = new Files();
-		
 	}
 
 	/**

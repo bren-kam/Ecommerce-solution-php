@@ -653,7 +653,7 @@ class ActiveRecordStatement {
      *
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC
      * @param mixed $fetch_argument [optional]
-     * @return object
+     * @return mixed
      */
     public function get_results( $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
         return $this->_ar->get_results( $this->_statement, $style, $fetch_argument );
