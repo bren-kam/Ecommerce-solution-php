@@ -25,7 +25,7 @@ if ( $user['role'] <= 5 ) {
 // Instantiate classes
 $a = new Attributes;
 $b = new Brands;
-$c = new Categories;
+$c = new Categories( false );
 $i = new Industries;
 $products = new Products;
 $v = new Validator;
