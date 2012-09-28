@@ -14,12 +14,18 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
      * Hold the brand IDs by name
      * @var array
      */
-    protected  $brand_ids = NULL;
+    protected $brand_ids = NULL;
 
     /**
      * Hold objects for use in process
      */
     protected $products, $features, $assets;
+
+    /**
+     * Hold all the non existent categories
+     * @var array
+     */
+    protected $non_existent_categories = array();
 
     /**
      * Category translation array
@@ -117,11 +123,6 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
      * Do the setup to get anything we need
      */
     protected function setup() {
-        // Time how long we've been on this page
-		$this->curl = new curl();
-		$this->product = new Product();
-		$this->file = new File();
-
         // We need to up the limit
         set_time_limit(300);
         ini_set('memory_limit', '256M');
@@ -169,30 +170,60 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
      * Now process everything with the data we have
      */
     protected function process() {
-        // Initiate product string
-        $products_string = $non_existent_categories = '';
-
-        // Any new products get al ink
-        $links = array();
-		
 		foreach ( $this->products as $product ) {
+            /***** SETUP OF PRODUCT *****/
+
             // Trick to make sure the page doesn't timeout or segfault
             echo str_repeat( ' ', 50 );
             set_time_limit(30);
 			flush();
 
+            // Reset errors
+            $this->reset_error();
+
 			// Get the item
-            $product = $product->{'stdClass Object'};
-			
+            $sot_product = $product->{'stdClass Object'};
+
+            /***** CHECK PRODUCT *****/
+
             // Setup the variables to see if we should continue
-			$name = trim( preg_replace( '/-+$/', '', $product->SeriesName . ' ' . $product->ModelDescription . ' - ' . $product->StandardColor ) );
+			$name = trim( preg_replace( '/-+$/', '', $sot_product->SeriesName . ' ' . $sot_product->ModelDescription . ' - ' . $sot_product->StandardColor ) );
+            $category_name = $sot_product->Category . ' > ' . $sot_product->SubCategory;
+            $category_id = $this->category_translation[$category_name];
 
             // Check to make sure we should continue
-			if ( ' - ' == $name )
-				continue;
+			$this->check( ' - ' != $name );
 
-            // Figure out the industry
-            switch ( $product->MenuHeading ) {
+            if ( !$this->check( $category_id ) )
+                $non_existent_categories[] = $sot_product->Category . ' > ' . $sot_product->SubCategory . "\n";
+
+            $this->check( in_array( $sot_product->MenuHeading, array( 'Appliances', 'Electronics' ) ) );
+
+            // If it has an error, don't continue
+            if ( $this->has_error() )
+                continue;
+
+            /***** GET PRODUCT *****/
+
+            // Get Product
+			$product = $this->get_existing_product( $sot_product->SKU );
+
+            // Now we have the product
+            if ( !$product instanceof Product ) {
+                $product = new Product();
+                $product->website_id = 0;
+                $product->user_id_created = self::USER_ID;
+                $product->publish_visibility = 'public';
+                $product->create();
+
+                // Set publish date
+                $product->publish_date = dt::now();
+            }
+
+            /***** PREPARE PRODUCT DATA *****/
+
+            /** Industry **/
+            switch ( $sot_product->MenuHeading ) {
                 case 'Appliances':
                     $industry_id = 3;
 					$industry = 'appliances';
@@ -202,31 +233,22 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
                     $industry_id = 2;
 					$industry = 'electronics';
                 break;
-
-                default:
-                    continue;
-                break;
             }
 
-            // Increment product count
-			$this->tick();
-
-            // Setup all the variables
-			$slug = str_replace( '---', '-', format::slug( $name ) );
-            $category_name = $product->Category . ' > ' . $product->SubCategory;
-            $product_features = $this->features[$product->ProductGroupID];
-            $product_assets = $this->assets[$product->SKU];
+            /** Product description **/
+            $product_features = $this->features[$sot_product->ProductGroupID];
+            $product_assets = $this->assets[$sot_product->SKU];
 
 			// Arrange the features so that they are always in the same order
 			ksort( $product_features );
 
             // Add key features
             $item_description = "<strong>Features</strong>";
-            $item_description .= "\n" . $product->KeyFeature1;
-            $item_description .= "\n" . $product->KeyFeature2;
-            $item_description .= "\n" . $product->KeyFeature3;
-            $item_description .= "\n" . $product->KeyFeature4;
-            $item_description .= "\n" . $product->KeyFeature5;
+            $item_description .= "\n" . $sot_product->KeyFeature1;
+            $item_description .= "\n" . $sot_product->KeyFeature2;
+            $item_description .= "\n" . $sot_product->KeyFeature3;
+            $item_description .= "\n" . $sot_product->KeyFeature4;
+            $item_description .= "\n" . $sot_product->KeyFeature5;
 
             // Add Dimensions
             if ( isset( $product_features['DIMENSIONS'] ) ) {
@@ -239,8 +261,8 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
 
             // Add other items
             $item_description .= "\n\n\n<strong>Other</strong>";
-            $item_description .= "\nColor: " . $product->StandardColor;
-            $item_description .= "\nModel No: " . $product->StandardColor;
+            $item_description .= "\nColor: " . $sot_product->StandardColor;
+            $item_description .= "\nModel No: " . $sot_product->StandardColor;
 
             // If they have a spec page
             if ( isset( $product_assets['SpecPage'] ) )
@@ -250,15 +272,11 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
             if ( isset( $product_assets['EnergyGuide'] ) )
                 $item_description .= "\n\n\n<a href='" . $product_assets['EnergyGuide'] . "' title='Energy Guide' target='_blank'>Click here to download the energy guide for this product.</a>";
 
-            // Define the description as it needs to be
-			$description = format::autop( format::unautop( '<p>' . $item_description . '</p>' ) );
-
-            // Set SKU
-			$sku = $product->SKU;
+            /** Product Specifications **/
+            $product_specs = '';
 
             // Set product specs
             if ( is_array( $product_features ) ) {
-                $product_specs = '';
                 $j = 0;
 
                 foreach ( $product_features as $section => $section_features ) {
@@ -278,212 +296,116 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
                 }
             }
 
-            // No reporting for weight and volume
-			$weight = $volume = $price = $list_price = 0;
+            // Now get old specs
+            $product_specifications = unserialize( $product->product_specifications );
+            $new_product_specifications = '';
 
-            // Get the brand ID -- create it if necessary
-			$brand_id = $this->get_brand_id( $product->Brand );
-            
+            if( is_array( $product_specifications ) )
+            foreach( $product_specifications as $ps ) {
+                if( !empty( $product_specifications ) )
+                    $new_product_specifications .= '|';
+
+                $new_product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
+            }
+
+            /***** ADD PRODUCT DATA *****/
+
+            // Reset the product to being "not" identical
+            $this->reset_identical();
+
+            /** Add Category **/
+            if ( $category_id != $product->category_id ) {
+                $product->delete_categories();
+                $product->add_category( $category_id );
+            }
+
+            /**
+             * @var int $industry_id
+             */
+            $product->name = $this->identical( $name, $product->name, 'name' );
+			$this->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $sot_product->slug, 'slug' );
+            $product->sku = $this->identical( $sot_product->SKU, $product->sku, 'sku' );
+            $product->weight = $this->identical( '', $product->weight, 'weight' );
+			$product->brand_id = $this->identical( $this->get_brand_id( $sot_product->Brand ), $product->brand_id, 'brand' );
+            $product->industry_id = $this->identical( $industry_id, $product->industry_id, 'industry' );
+			$product->description = $this->identical( format::autop( format::unautop( '<p>' . $item_description . '</p>' ) ), format::autop( format::unautop( $product->description ) ), 'description' );
+
+            /** Product Specs are special */
+            $product_specifications = explode( '|', $this->identical( $product_specs, $new_product_specifications, 'product-specifications' ) );
+
+            $product_specifications_array = array();
+
+            foreach ( $product_specifications as $ps ) {
+                $product_specifications_array[] = explode( '`', $ps );
+            }
+
+            $product->product_specifications = serialize( $product_specifications_array );
+
+            /***** ADD PRODUCT IMAGES *****/
+
             // Let's hope it's big!
-			$image = $product->LargeImage;
+			$image = $sot_product->LargeImage;
 
             // Setup images array
-			$images = array();
+            $images = explode( '|', $product->images );
 
-            // Add category
-            $category_id = $this->category_translation[$category_name];
+            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
+                /**
+                 * @var string $industry
+                 */
+                $image_name = $this->upload_image( $image, $product->slug, $product->id, $industry );
 
-            if ( !$category_id ) {
-                $non_existent_categories .= $product->Category . ' > ' . $product->SubCategory . "\n";
+                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+                    $this->not_identical[] = 'images';
+                    $images[] = $image_name;
+
+                    $product->add_images( $images );
+                }
+            }
+
+            // Change publish visibility to private if there are no images
+            if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
+                $this->not_identical[] = 'publish_visibility';
+                $product->publish_visibility = 'private';
+            }
+
+            /***** SKIP PRODUCT IF IDENTICAL *****/
+
+            // If everything is identical, we don't want to do anything
+            if ( $this->is_identical() ) {
+                $this->skip( $name );
                 continue;
             }
 
-			////////////////////////////////////////////////
-			// Get/Create the product
-			if ( $this->get_existing_product( $sku ) ) {
-				// Get the product
-                $product = $this->get_existing_product( $sku );
+            /***** UPDATE PRODUCT *****/
 
-                // Set variables
-				$product_id = $product['product_id'];
-				$publish_visibility = $product['publish_visibility'];
-				$publish_date = $product['publish_date'];
-				$product_images = explode( '|', $product['images'] );
+			$product->update();
 
-				// Override data with existing data
-                $name = $this->identical( $name, $product['name'], 'name' );
+            // Increment product count
+	        $this->new_product( $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
 
-				if ( empty( $slug ) ) {
-					$slug = $product['slug'];
-				} elseif ( $slug != $product['slug'] ) {
-					$slug = $this->unique_slug( $slug );
-
-					if ( $slug != $product['slug'] ) {
-						$identical = false;
-					}
-				}
-
-				if( empty( $description ) ) {
-					$description = format::autop( format::unautop( $product['description'] ) );
-				} elseif ( $description != format::autop( format::unautop( $product['description'] ) ) ) {
-					echo 'description';
-					$identical = false;
-				}
-
-				$images = $product_images;
-
-				if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image ) ) {
-					$image_name = $this->upload_image( $image, $slug, $product_id, $industry );
-
-					if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-						echo 'images';
-						$identical = false;
-						$images[] = $image_name;
-
-						$this->p->add_product_images( $images, $product_id );
-					}
-				}
-				
-				if ( 0 == count( $images ) && 'private' != $publish_visibility ) {
-					echo 'images';
-					$identical = false;
-					$publish_visibility = 'private';
-				}
-				
-				$product_specifications = '';
-
-				$product['product_specifications'] = unserialize( $product['product_specifications'] );
-				if( is_array( $product['product_specifications'] ) )
-				foreach( $product['product_specifications'] as $ps ) {
-					if( !empty( $product_specifications ) )
-						$product_specifications .= '|';
-
-					$product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
-				}
-
-				if( empty( $product_specs ) ) {
-					$product_specs = $product_specifications;
-				} elseif ( $product_specs != $product_specifications ) {
-					echo 'specs';
-					$identical = false;
-				}
-
-				if( empty( $brand_id ) ) {
-					$brand_id = $product['brand_id'];
-				} elseif ( $brand_id != $product['brand_id'] ) {
-					echo 'brand';
-					$identical = false;
-				}
-
-				if( empty( $product_status ) ) {
-					$product_status = $product['status'];
-					$links['updated-product'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
-				} else {
-					$links[$product_status][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
-
-					if ( $product_status != $product['status'] ) {
-						echo 'status';
-						$identical = false;
-					}
-				}
-
-				if( empty( $weight ) ) {
-					$weight = $product['weight'];
-				} elseif ( $weight != $product['weight'] ) {
-					echo 'weight';
-					$identical = false;
-				}
-
-				if( empty( $volume ) ) {
-					$volume = $product['volume'];
-				} elseif ( $volume != $product['volume'] ) {
-					echo 'volume';
-					$identical = false;
-				}
-
-                if ( $category_id != $product['category_id'] ) {
-                    echo 'category';
-                    $identical = false;
-                }
-
-				// If everything is identical, we don't want to do anything
-				if ( $identical ) {
-					$skipped++;
-					$products_string .= $name . "\n";
-					continue;
-				}
-			} else {
-				$product_id = $this->p->create( self::USER_ID );
-			
-				// Insert the feed product ID
-				$this->_insert_feed_product_id( $product_id, $product->ProductID );
-
-                // Make sure it's a unique slug
-                $slug = $this->_unique_slug( $slug );
-
-				// Upload image if it's not blank
-				if ( !empty( $image ) && curl::check_file( $image ) ) {
-                    $image_name = $this->upload_image( $image, $slug, $product_id, $industry );
-
-					if ( !in_array( $image_name, $images ) )
-						$images[] = $image_name;
-				}
-
-				$price = $list_price = 0;
-				$publish_date = dt::date( 'Y-m-d' );
-
-				$links['new-products'][] = $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid=$product_id\n";
-
-				// Add images
-				$this->p->empty_product_images( $product_id );
-
-				// Makes the images have the right sequence if they exist
-				if ( is_array( $images ) ) {
-					$j = 0;
-
-					foreach ( $images as &$image ) {
-						$image .= "|$j";
-						$j++;
-					}
-				}
-
-				$this->p->add_product_images( $images, $product_id );
-                $products[$product->ProductID] = compact( 'name', 'slug', 'description', 'product-status', 'sku', 'price', 'list_price', 'product_specs', 'brand_id', 'publish_visibility', 'publish_date', 'product_id', 'weight', 'volume', 'images' );
-			}
-
-            if ( !isset( $publish_visibility ) || empty( $publish_visibility ) )
-                $publish_visibility = 'public';
-
-			// Update the product
-			$this->p->update( $name, $slug, $description, 'in-stock', $sku, $price, $list_price, $product_specs, $brand_id, $industry_id, $publish_visibility, $publish_date, $product_id, $weight, $volume );
-
-            // Empty the categories
-            $this->p->empty_categories( $product_id );
-			
-			// Add any category
-            if ( $category_id )
-                $this->p->add_categories( $product_id, array( $category_id ) );
-
-			$products_string .= $name . "\n";
-
-			// We don't want to carry them around in the next loop
-			unset( $images );
-
-			if ( $i % 1000 == 0 ) {
-				$message = memory_get_peak_usage(true) . "\n" . memory_get_usage(true) . "\n\n";
-
-				foreach ( $links as $section => $link_array ) {
-					$message .= ucwords( str_replace( '-', ' ', $section ) ) . ": " . count( $link_array ) . "\n";
-				}
-
-				$message .= "\n\nSkipped: " . $skipped;
-
-				mail( 'tiamat2012@gmail.com', "Made it to $i", $message );
-			}
+            // Add on to lists
+            $this->existing_products[$product->sku] = $product;
 		}
     }
-    protected function send_report() {
 
+    /**
+     * Send a report
+     */
+    protected function send_report() {
+        $user = new User();
+        $user->get(1); // Kerry Jones
+
+        $subject = 'SiteOnTime Feed - ' . dt::now();
+
+        $message = 'New Products: ' . count( $this->new_products ) . PHP_EOL;
+        $message .= 'Skipped/Unadjusted Products: ' . count( $this->skipped ) . PHP_EOL;
+        $message .= str_repeat( PHP_EOL, 2 );
+        $message .= 'List Of New Products:' . @implode( PHP_EOL, $this->new_products );
+        $message .= str_repeat( PHP_EOL, 2 );
+        $message .= "Categories We Don't Have:" . @implode( PHP_EOL, $this->non_existent_categories );
+
+        fn::mail( $user->email, $subject, $message );
     }
 
     /**

@@ -15,7 +15,7 @@ class f extends Base_Class {
 	 * @since 1.0
 	 *
 	 * @param string $path
-	 * @return |array
+	 * @return array
 	 */
 	public static function read( $path ) {
 		$handle = fopen( $path, 'r' );
@@ -56,8 +56,7 @@ class f extends Base_Class {
 	 * @return string
 	 */
 	public static function name( $path ) {
-		$path_info = pathinfo( $path );
-		return $path_info['basename'];
+		return pathinfo( $path, PATHINFO_BASENAME );
 	}
 
 	/**
@@ -67,8 +66,7 @@ class f extends Base_Class {
 	 * @return string
 	 */
 	public static function extension( $path ) {
-		$path_info = pathinfo( $path );
-		return ( isset( $path_info['extension'] ) ) ? $path_info['extension'] : '';
+		return pathinfo( $path, PATHINFO_EXTENSION );
 	}
 
 	/**

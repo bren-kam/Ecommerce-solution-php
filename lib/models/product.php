@@ -3,6 +3,9 @@ class Product extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created;
 
+    // Artificial columns
+    public $images;
+
     // Columns from other tables
     public $brand, $category_id;
 
