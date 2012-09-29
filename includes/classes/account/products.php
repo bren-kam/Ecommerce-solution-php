@@ -501,7 +501,7 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 
-		$images = $this->db->get_col( "SELECT CONCAT( 'http://', b.`name`, '.retailcatalog.us/products/', c.`product_id`, '/', a.`image` ) AS image_url FROM `product_images` AS a LEFT JOIN `products` AS c ON (a.`product_id` = c.`product_id`) LEFT JOIN `industries` AS b ON (c.`industry_id` = b.`industry_id`) WHERE a.`product_id` = $product_id ORDER BY a.`sequence` ASC LIMIT 5" );
+		$images = $this->db->get_col( "SELECT CONCAT( 'http://', b.`name`, '.retailcatalog.us.s3.amazonaws.com/products/', c.`product_id`, '/', a.`image` ) AS image_url FROM `product_images` AS a LEFT JOIN `products` AS c ON (a.`product_id` = c.`product_id`) LEFT JOIN `industries` AS b ON (c.`industry_id` = b.`industry_id`) WHERE a.`product_id` = $product_id ORDER BY a.`sequence` ASC LIMIT 5" );
 
 		// Handle any error
 		if( $this->db->errno() ) {
