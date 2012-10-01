@@ -8,14 +8,18 @@
 class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     const FTP_URL = 'ftp.ashleyfurniture.com';
     const IMAGE_URL = 'https://www.ashleydirect.com/graphics/';
-	const USERNAME = 'CE_3400-';
-	const PASSWORD = 'gRwfUn#';
-    const USER_ID = 353; // Ashley
+    const USER_ID = 1477; // Ashley
 
     /**
-     * Hold items and groups
+     * Hold ashley items
      */
-    protected $items, $groups;
+    protected $packages, $series, $package_templates;
+
+    /**
+     * Holds product
+     * @var Product
+     */
+    protected $product;
 
     /**
      * Hold all the non existent groups
@@ -36,6 +40,44 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected $ashley;
 
     /**
+     * Hold the ashley brands
+     */
+    protected $brands = array(
+        'Ashley' => 8
+        , 'Signature Design' => 170
+        , 'Benchcraft' => 8
+        , 'Millennium' => 171
+        , 'Room Solutions' => 8
+    );
+
+    /**
+     * Hold the ashley categories
+     */
+    protected  $categories = array(
+        'Accents' => 0
+        , 'Stationary Upholstery' => 218
+        , 'Motion Upholstery' => 348
+        , 'Sectionals' => 226
+        , 'Chairs' => 221
+        , 'Stationary Leather' => 255
+        , 'Recliners' => 222
+        , 'Motion Leather' => 255
+        , 'Dining' => 347
+        , 'Master Bedroom' => 228
+        , 'Metal Beds' => 685
+        , 'Youth Bedroom' => 267
+        , 'Top of Bed' => 463
+        , 'Curios' => 434
+        , 'Home Office' => 328
+        , 'Lamps' => 194
+        , 'Mattresses' => 0
+        , 'Rugs' => 338
+        , 'Occasional' => 382
+        , 'Walls' => 336
+        , 'Entertainment' => 335
+    );
+
+    /**
      * Construct
      */
     public function __construct() {
@@ -50,7 +92,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
         
-        // Get librarys
+        // Get libraries
         library('ashley-api/ashley-api');
         $this->ashley = new Ashley_API();
     }
@@ -59,124 +101,33 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * Get Data from Ashley
      */
     protected function get_data() {
-        // Get al ist of the files
-        $files = $this->ftp->dir_list();
+        // Get packages
+        $this->packages = $this->ashley->get_packages();
 
-        $count = count( $files );
+		echo str_repeat( '&nspb;', 1000 );
+		flush();
 
-        while ( is_null( $this->file ) && 0 != $count ) {
-            $last_file = array_pop( $files );
+        // Get series
+        $series_array = $this->ashley->get_series();
 
-            if ( 'xml' == f::extension( $last_file ) )
-                $this->file = $last_file;
+		echo str_repeat( '&nspb;', 1000 );
+		flush();
 
-            $count = count( $files );
+        // Arrange series
+        foreach ( $series_array as $sa ) {
+            $this->series[(string)$sa->SeriesNo] = $sa;
         }
 
-        $xml_reader = new XMLReader();
+		echo str_repeat( '&nspb;', 1000 );
+		flush();
 
-		// Grab the latest file
-		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $this->file ) )
-			$this->ftp->get( $this->file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
+        // Get Templates
+        $package_template_array = $this->ashley->get_package_templates();
 
-		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $this->file );
-
-		$j = -1;
-
-		while( $xml_reader->read() ) {
-			switch ( $xml_reader->localName ) {
-				case 'item':
-					// Make sure we're not dealing with an end element
-					if( $xml_reader->nodeType == XMLReader::END_ELEMENT ) {
-						$xml_reader->next();
-						continue;
-					}
-
-					// Increment the item
-					$j++;
-
-					// Set the dimensions
-					$dimensions = 0;
-
-					// Create base for items
-					$this->items[$j] = array(
-						'status' => ( 'Discontinued' == trim( $xml_reader->getAttribute('itemStatus') ) ) ? 'discontinued' : 'in-stock'
-						, 'nodeType' => trim( $xml_reader->nodeType )
-						, 'group' => trim( $xml_reader->getAttribute('itemGroupCode') )
-						, 'image' => trim( $xml_reader->getAttribute('image') )
-						, 'brand_id' => $this->get_brand( trim( $xml_reader->getAttribute('retailSalesCategory') ) )
-						, 'specs' => ''
-						, 'weight' => 0
-						, 'volume' => 0
-					);
-
-				break;
-
-				// SKU
-				case 'itemIdentifier':
-					if ( !isset( $this->items[$j]['sku'] ) )
-						$this->items[$j]['sku'] = trim( $xml_reader->getAttribute('itemNumber') );
-				break;
-
-				// Description
-				case 'itemDescription':
-					$this->items[$j]['description'] = trim( $xml_reader->getAttribute('itemFriendlyDescription') );
-				break;
-
-				// We're in the item dimensions section
-				case 'itemDimensions':
-					$dimensions = 1;
-				break;
-
-                // Turn off so it doesn't get overridden by package characteristics
-                case 'packageDimensions':
-                    $dimensions = 0;
-                break;
-
-				// Specifications
-				case 'depth':
-					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] = 'Depth`' . trim( $xml_reader->getAttribute('value') );
-				break;
-
-				// Specifications
-				case 'height':
-					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] .= ' Inches`0|Height`' . trim( $xml_reader->getAttribute('value') );
-				break;
-
-				// Specifications
-				case 'length':
-					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] .= ' Inches`1|Length`' . trim( $xml_reader->getAttribute('value') ) . ' Inches`2';
-
-					$dimensions = 0;
-				break;
-
-				// Weight
-				case 'weight':
-					if ( !isset( $this->items[$j]['weight'] ) )
-						$this->items[$j]['weight'] = trim( $xml_reader->getAttribute('value') );
-				break;
-
-				/*// Volume
-				case 'volume':
-					if ( !isset( $this->items[$j]['volume'] ) )
-						$this->items[$j]['volume'] = trim( $xml_reader->getAttribute('value') );
-				break;*/
-
-				// Groups
-				case 'groupInformation':
-					$this->groups[$xml_reader->getAttribute('groupID')] = array(
-						'name' => trim( $xml_reader->getAttribute('groupName') )
-						, 'description' => trim( $xml_reader->getAttribute('groupDescription') )
-						, 'features' => trim( $xml_reader->getAttribute('groupFeatures') )
-					);
-				break;
-			}
-		}
-
-		$xml_reader->close();
+        // Arrange templates
+        foreach ( $package_template_array as $pta ) {
+            $this->package_templates[(string)$pta->TemplateId] = $pta;
+        }
     }
 
     /**
@@ -184,7 +135,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      */
     protected function process() {
         // Generate array of our items
-		foreach( $this->items as $item ) {
+		foreach ( $this->packages as $item ) {
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
@@ -198,27 +149,19 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             /***** CHECK PRODUCT *****/
 
             // Setup the variables to see if we should continue
-			$sku = $item['sku'];
+            $image = (string) $item->Image;
 
-            // We can't have a SKU like B457B532 -- it means it is international and comes in a container
-			$this->check( !preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) );
-
-            if ( !isset( $this->groups[$item['group'] ] ) ) {
-                $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
-
-                if ( !$this->check( isset( $this->groups[$item['group'] ] ) ) )
-                    $this->non_existent_groups[] = $item['group'];
-            }
+            // Image can't be empty
+			$this->check( !empty( $image ) );
 
             // If it has an error, don't continue
             if ( $this->has_error() )
                 continue;
 
-
             /***** GET PRODUCT *****/
 
             // Get Product
-			$product = $this->get_existing_product( $sku );
+			$product = $this->get_existing_product( (string) $item->PackageName );
 
             // Now we have the product
             if ( !$product instanceof Product ) {
@@ -234,13 +177,23 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             /***** PREPARE PRODUCT DATA *****/
 
-            $group = $this->groups[$item['group']];
-            $group_name = $group['name'] . ' - ';
+            $package_series = $this->series[(string)$item->SeriesNo];
+            $template = $this->package_templates[(string)$item->TemplateId];
 
-            $group_description = '<p>' . $group['description'] . '</p>';
-            $group_features = '<p>' . $group['features'] . '</p>';
+            $name = $item->SeriesName . ' ' . $template->Descr;
 
-			$name = format::convert_characters( $group_name . $item['description'] );
+            // Will have to format this
+            $style_description = trim( (string) $package_series->StyleDescription );
+
+            // Create description
+            $description = format::convert_characters( format::autop( format::unautop( '<p>' . $package_series->Description . "</p>\n\n<p>" . $package_series->Features . "</p>\n\n<p>" . $package_series->SeriesColor . "</p>\n\n<p>" . $style_description . '</p>' ) ) );
+
+            // Set product specs
+            if ( empty( $style_description ) ) {
+                $product_specs = '';
+            } else {
+                $product_specs = 'Style Description`' . $style_description . '`0';
+            }
 
             // Now get old specs
             $product_specifications = unserialize( $product->product_specifications );
@@ -254,22 +207,29 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $new_product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
             }
 
+            // Get Category ID
+            $category_id = $this->categories[(string)$package_series->Grouping];
+
             /***** ADD PRODUCT DATA *****/
 
             // Reset the product to being "not" identical
             $this->reset_identical();
 
+            /** Add Category **/
+            if ( $category_id != $product->category_id ) {
+                $product->delete_categories();
+                $product->add_category( $category_id );
+            }
+
+            // Set product data
             $product->name = $this->identical( $name, $product->name, 'name' );
             $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
-            $product->sku = $this->identical( $sku, $product->sku, 'sku' );
-            $product->status = $this->identical( $item['status'], $product->status, 'status' );
-            $product->product_specifications = $this->identical( $item['specs'], $product->product_specifications, 'product-specifications' );
-            $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
-            $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
-            $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
+            $product->sku = $this->identical( (string) $item->PackageName, $product->sku, 'sku' );
+            $product->brand_id = $this->identical( $this->brands[(string)$package_series->Showroom], $product->brand_id, 'brand' );
+            $product->description = $this->identical( $description, format::autop( format::unautop( $product->description ) ), 'description' );
 
             /** Product Specs are special */
-            $product_specifications = explode( '|', $this->identical( $item['specs'], $new_product_specifications, 'product-specifications' ) );
+            $product_specifications = explode( '|', $this->identical( $product_specs, $new_product_specifications, 'product-specifications' ) );
 
             $product_specifications_array = array();
 
@@ -282,13 +242,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             /***** ADD PRODUCT IMAGES *****/
 
             // Let's hope it's big!
-			$image = $item['image'];
-            $image_url = 'http://www.studio98.com/ashley/Images/' . $image;
+			$image_url = self::IMAGE_URL . $image;
 
             // Setup images array
             $images = explode( '|', $product->images );
 
-            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
+            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image_url ) ) {
                 /**
                  * @var string $industry
                  */
@@ -336,7 +295,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         $user = new User();
         $user->get(1); // Kerry Jones
 
-        $subject = 'Ashley Feed - ' . dt::now();
+        $subject = 'Ashley Packages Feed - ' . dt::now();
 
         $new_products = @implode( PHP_EOL, $this->new_products );
 
@@ -356,14 +315,4 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
 		}
     }
-
-    /**
-	 * Get Brand
-	 *
-	 * @param string $retail_sales_category_code
-	 * @return int
-	 */
-	protected function get_brand( $retail_sales_category_code ) {
-		return $this->codes[$retail_sales_category_code];
-	}
 }

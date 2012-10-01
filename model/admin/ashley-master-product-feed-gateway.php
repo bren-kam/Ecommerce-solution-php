@@ -318,7 +318,6 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
-            $product->product_specifications = $this->identical( $item['specs'], $product->product_specifications, 'product-specifications' );
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );

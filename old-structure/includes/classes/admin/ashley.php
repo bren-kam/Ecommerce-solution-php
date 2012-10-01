@@ -150,7 +150,8 @@ class Ashley extends Base_Class {
                 $skipped++;
                 continue;
             }
-			$this->p = new Products();
+
+            $this->p = new Products();
 
             $package_series = $series[(string)$item->SeriesNo];
             $template = $package_templates[(string)$item->TemplateId];
