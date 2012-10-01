@@ -135,7 +135,7 @@ function refreshPreview() {
 			if ( index >= photos.length ) 
 				index = 0;
 			
-			photoHTML = '<img src="' + photos[index]['src'] + '" width="320" height="320" />';
+			photoHTML = '<img src="' + photos[index]['src'] + '" />';
 			newContent = newContent.replace( "[Photo]", photoHTML );
 			index++;
 		}

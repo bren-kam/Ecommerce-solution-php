@@ -26,7 +26,6 @@ class Products extends Base_Class {
 	
 		// Handle any error
 		if ( $this->db->errno() ) {
-            fn::info
 			$this->_err( 'Failed to create product.', __LINE__, __METHOD__ );
 			return false;
 		}

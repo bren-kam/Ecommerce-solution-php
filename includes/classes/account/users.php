@@ -224,6 +224,7 @@ class Users extends Base_Class {
 	public function get_websites( $user_id, $role ) {
         // Type Juggling
         $user_id = (int) $user_id;
+        $websites = array();
 
 		if ( $role > 1 ) {
 			// @Fix should `phone` and `logo` be removed and put in the websites:get_website function (meaning theme/website/top needs to change)
@@ -234,7 +235,9 @@ class Users extends Base_Class {
 				$this->_err( 'Failed to predetermine website.', __LINE__, __METHOD__ );
 				return false;
 			}
-		} else {
+		} 
+		
+		if ( ( !isset( $websites ) || is_null( $websites ) ) && in_array( $role, array( 1, 6 ) ) ) {
 			// @Fix -- look off `products` or `product_catalog`
 			$websites = $this->db->get_results( "SELECT a.`website_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`product_catalog`, a.`link_brands`, a.`seo`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`live`, a.`type`, a.`pages`, ( b.`products` * a.`products` * a.`product_catalog` ) AS products, a.`ga_profile_id`, IF ( 1 = a.`blog`, b.`blog`, 0 ) AS blog, IF( 1 = a.`email_marketing`, b.`email_marketing`, 0 ) AS email_marketing, IF( 1 = a.`shopping_cart`, b.`shopping_cart`, 0 ) AS shopping_cart FROM `websites` AS a LEFT JOIN `auth_user_websites` AS b ON ( a.`website_id` = b.`website_id` ) WHERE b.`user_id` = $user_id AND `status` = 1  ORDER BY a.`title` ASC", ARRAY_A );
 
