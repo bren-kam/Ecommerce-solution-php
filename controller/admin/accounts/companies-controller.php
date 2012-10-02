@@ -62,11 +62,16 @@ class CompaniesController extends BaseController {
             ->attribute( 'maxlength', 200 )
             ->add_validation( 'URL', _('The "Domain" field must contain a valid domain name') );
 
+        $ft->add_field( 'text', _('Notification Email'), 'tEmail', $company->domain )
+            ->attribute( 'maxlength', 200 )
+            ->add_validation( 'email', _('The "Email" field must contain a valid email address') );
+
 
         // Update the company if posted
         if ( $ft->posted() ) {
             $company->name = $_POST['tName'];
             $company->domain = $_POST['tDomain'];
+            $company->email = $_POST['tEmail'];
 
             if ( $company_id ) {
                 $company->update();

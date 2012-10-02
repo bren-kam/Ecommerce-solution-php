@@ -945,6 +945,20 @@ class AccountsController extends BaseController {
         // Give them a notification
         $this->notify( _('The account, "' . $account->title . '", has been deactivated.' ) );
 
+        // Send an email to let people know an account cancelled
+        $company = new Company();
+        $company->get( $account->company_id );
+
+        if ( !empty( $company->email ) ) {
+            $subject = $company->name . ' Account Canceled';
+
+            $message = "Billing has been terminated, billing has stopped and $account->title has been removed from the platform.";
+            $message .= "\n\n";
+            $message .= "-$company->name";
+
+            fn::mail( $company->email, $subject, $message );
+        }
+
         // Redirect them to accounts page
         return new RedirectResponse('/accounts/');
     }

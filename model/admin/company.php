@@ -1,7 +1,7 @@
 <?php
 class Company extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $company_id, $name, $domain, $date_created;
+    public $id, $company_id, $name, $domain, $email, $date_created;
 
     /**
      * Setup the account initial data
@@ -20,7 +20,7 @@ class Company extends ActiveRecordBase {
      * @param int $company_id
      */
     public function get( $company_id ) {
-        $this->prepare( 'SELECT `company_id`, `name`, `domain` FROM `companies` WHERE `company_id` = :company_id', 'i', array( ':company_id' => $company_id ) )->get_row( PDO::FETCH_INTO, $this );
+        $this->prepare( 'SELECT `company_id`, `name`, `domain`, `email` FROM `companies` WHERE `company_id` = :company_id', 'i', array( ':company_id' => $company_id ) )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->company_id;
     }
@@ -41,7 +41,7 @@ class Company extends ActiveRecordBase {
      * Create a company
      */
     public function create() {
-        $this->insert( array( 'name' => $this->name, 'domain' => $this->domain, 'date_created' => dt::date('Y-m-d H:i:s') ), 'sss' );
+        $this->insert( array( 'name' => $this->name, 'domain' => $this->domain, 'email' => $this->email, 'date_created' => dt::date('Y-m-d H:i:s') ), 'ssss' );
 
         $this->company_id = $this->id = $this->get_insert_id();
     }
@@ -50,7 +50,11 @@ class Company extends ActiveRecordBase {
      * Update the company
      */
     public function update() {
-        parent::update( array( 'name' => $this->name, 'domain' => $this->domain ), array( 'company_id' => $this->id ), 'ss', 'i' );
+        parent::update( array(
+            'name' => $this->name
+            , 'domain' => $this->domain
+            , 'email' => $this->email
+        ), array( 'company_id' => $this->id ), 'sss', 'i' );
     }
 
     /**
