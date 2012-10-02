@@ -34,10 +34,16 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     protected $file = null;
 
     /**
-     * Hold FTP
+     * Hold Ashley API
      * @var Ashley_API
      */
     protected $ashley;
+
+    /**
+     * Hold Ashley Products by sku
+     * @var array
+     */
+    protected $ashley_products;
 
     /**
      * Hold the ashley brands
@@ -101,6 +107,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * Get Data from Ashley
      */
     protected function get_data() {
+        // Get Ashley Products by SKU
+        $this->ashley_products = $this->get_ashley_products_by_sku();
+
         // Get packages
         $this->packages = $this->ashley->get_packages();
 
@@ -179,8 +188,31 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             $package_series = $this->series[(string)$item->SeriesNo];
             $template = $this->package_templates[(string)$item->TemplateId];
+            $sku = (string) $item->PackageName;
 
-            $name = $item->SeriesName . ' ' . $template->Descr;
+            // Get the name -- which may be hard if the description is empty
+			if ( empty( $template->Descr ) ) {
+				$sku_pieces = explode( '/', $sku );
+				$series = array_shift( $sku_pieces );
+
+				$name_pieces = array();
+
+				foreach ( $sku_pieces as $sp ) {
+					if ( isset( $this->ashley_products[$series . $sp] ) ) {
+						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . $sp] );
+					} elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
+						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . '-' . $sp] );
+					} else {
+						continue;
+					}
+
+					$name_pieces[] = preg_replace( '/^ - /', '', $name_piece );
+				}
+
+				$name = $item->SeriesName . ' - ' . implode( ', ', $name_pieces );
+			} else {
+				$name = $item->SeriesName . ' ' . $template->Descr;
+			}
 
             // Will have to format this
             $style_description = trim( (string) $package_series->StyleDescription );
@@ -224,7 +256,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             // Set product data
             $product->name = $this->identical( $name, $product->name, 'name' );
             $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
-            $product->sku = $this->identical( (string) $item->PackageName, $product->sku, 'sku' );
+            $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->brand_id = $this->identical( $this->brands[(string)$package_series->Showroom], $product->brand_id, 'brand' );
             $product->description = $this->identical( $description, format::autop( format::unautop( $product->description ) ), 'description' );
 
@@ -314,5 +346,14 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
 			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
 		}
+    }
+
+    /**
+     * Get ashley products by sku
+     *
+     * @return array
+     */
+    protected function get_ashley_products_by_sku() {
+        return ar::assign_key( $this->get_results( "SELECT `sku`, `name` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
     }
 }
