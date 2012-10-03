@@ -900,7 +900,7 @@ class Products extends Base_Class {
 		foreach ( $ps_array as $ps ) {
 			if ( '' != $ps ) {
 				list( $spec_name, $spec_value, $sequence ) = explode( '`', $ps );
-				$product_specs[] = array( $spec_name, $spec_value, $sequence );
+				$product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ), $sequence );
 			}
 		}
 
@@ -912,7 +912,7 @@ class Products extends Base_Class {
 				'industry_id' => $industry_id,
 				'name' => $name,
 				'slug' => $slug,
-				'description' => $description,
+				'description' => format::convert_characters( $description ),
 				'status' => $status,
 				'sku' => $sku,
 				'price' => $price,
