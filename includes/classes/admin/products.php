@@ -142,7 +142,7 @@ class Products extends Base_Class {
 		$this->db->update( 'products', array(
 				'brand_id' => $brand_id,
 				'industry_id' => $industry_id,
-				'name' => $name,
+				'name' => format::convert_characters( $name ),
 				'slug' => $slug,
 				'description' => format::convert_characters( $description ),
 				'status' => $status,
