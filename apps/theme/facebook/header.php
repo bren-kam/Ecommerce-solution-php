@@ -20,9 +20,9 @@ javascript( 'jquery', 'fb' );
 <title><?php echo $title; ?></title>
     <meta name="description" content="" />
     <meta name="keywords" content="" />
-    <link rel="icon" href="http://www.greysuitapps.com/favicon.ico" type="image/x-icon" />
-    <link href="http://fonts.googleapis.com/css?family=Ubuntu+Condensed" rel="stylesheet" type="text/css" />
-    <link type="text/css" rel="stylesheet" href="http://www.greysuitapps.com/fb/css/style.css" />
+    <link rel="icon" href="https://www.greysuitapps.com/favicon.ico" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Condensed" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="https://www.greysuitapps.com/fb/css/style.css" />
     <style>
     	.hidden { display: none; }
     </style>
