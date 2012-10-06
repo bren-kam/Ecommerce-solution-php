@@ -87,7 +87,7 @@ get_header('facebook/');
 
 <div id="header">
     <div id="logo">
-        <a href="http://www.greysuitapps.com/" title="Grey Suit Apps"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Grey Suit Apps" /></a>
+        <a href="http://www.greysuitapps.com/" title="Grey Suit Apps"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Grey Suit Apps" /></a>
     </div><!-- #logo -->
         
 	<?php if( $success && $website ) { ?>
@@ -101,9 +101,9 @@ get_header('facebook/');
 		echo "<p class='error'>$errs</p>"; ?>
 	<div id="nav">
             <ul>
-                <li id="nav-apps"><a id="aTabApps" class="fb-tab" href="#" title="Apps"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Apps" /></a></li>
-                <li id="nav-pricing"><a id="aTabPricing" class="fb-tab" href="#" title="Pricing"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Pricing" /></a></li>
-                <!-- <li id="nav-faqs"><a id="aTabFaqs" class="fb-tab" href="#" title="FAQs"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="FAQs" /></a></li> -->
+                <li id="nav-apps"><a id="aTabApps" class="fb-tab" href="#" title="Apps"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Apps" /></a></li>
+                <li id="nav-pricing"><a id="aTabPricing" class="fb-tab" href="#" title="Pricing"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Pricing" /></a></li>
+                <!-- <li id="nav-faqs"><a id="aTabFaqs" class="fb-tab" href="#" title="FAQs"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="FAQs" /></a></li> -->
             </ul>
         </div><!-- #nav -->
     </div><!-- #header -->
@@ -133,7 +133,7 @@ get_header('facebook/');
 	            <?php theme_inc( 'facebook/app-sidebar', true); ?>
 	            
 	            <div id="apps-icon">
-                    <img src="http://www.greysuitapps.com/fb/images/icons/posting.png" alt="Posting" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/posting.png" alt="Posting" />
                 </div>
                 <div id="apps-desc">
                     <h1>Posting</h1>
@@ -144,7 +144,7 @@ get_header('facebook/');
                         <li>View your scheduled posts and even look at previous posts</li>
                         <li>Take the time out of daily posting to do what you do best, making money</li>
                     </ul>
-                    <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="http://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
+                    <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
 	
                 <?php if( $connected ) { ?>
                     <p class="success"><?php echo _('You are connected!'); ?></p>

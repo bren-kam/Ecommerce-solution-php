@@ -60,7 +60,7 @@ get_header('facebook/');
 
 <div id="header">
     <div id="logo">
-        <a href="http://www.greysuitapps.com/" title="Grey Suit Apps"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Grey Suit Apps" /></a>
+        <a href="http://www.greysuitapps.com/" title="Grey Suit Apps"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Grey Suit Apps" /></a>
     </div><!-- #logo -->
 
     <?php if( $success && $website ) { ?>
@@ -77,9 +77,9 @@ get_header('facebook/');
     ?>
 	<div id="nav">
             <ul>
-                <li id="nav-apps"><a id="aTabApps" class="fb-tab" href="#" title="Apps"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Apps" /></a></li>
-                <li id="nav-pricing"><a id="aTabPricing" class="fb-tab" href="#" title="Pricing"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Pricing" /></a></li>
-                <!-- <li id="nav-faqs"><a id="aTabFaqs" class="fb-tab" href="#" title="FAQs"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="FAQs" /></a></li> -->
+                <li id="nav-apps"><a id="aTabApps" class="fb-tab" href="#" title="Apps"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Apps" /></a></li>
+                <li id="nav-pricing"><a id="aTabPricing" class="fb-tab" href="#" title="Pricing"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Pricing" /></a></li>
+                <!-- <li id="nav-faqs"><a id="aTabFaqs" class="fb-tab" href="#" title="FAQs"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="FAQs" /></a></li> -->
             </ul>
         </div><!-- #nav -->
     </div><!-- #header -->
@@ -110,12 +110,12 @@ get_header('facebook/');
 
 	            <div id="apps-content" class="clear">
 	               <div id="apps-icon">
-                    <img src="http://www.greysuitapps.com/fb/images/icons/fan-offer.png" alt="Fan Offer" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/fan-offer.png" alt="Fan Offer" />
 	                </div>
 	                <div id="apps-desc">
 	                    <h1>Facebook Site</h1>
-	                    <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="http://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
-	                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=114243368669744&pages=1'"title="Install this App" class="install-app"><img src="http://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
+	                    <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
+	                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=114243368669744&pages=1'"title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
 	                    <p class="sml-text">gives you access to ALL apps</p>
 	                </div>
 	            </div>
