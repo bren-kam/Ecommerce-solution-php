@@ -476,7 +476,7 @@ class Requests extends Base_Class {
                 }
 				
                 // Now, create the WHM API accounts
-                if ( !$this->whm->create_account( $username, $domain, 'Basic No Shopping Cart', $email ) ) {
+                if ( !$this->whm->create_account( $username, $domain, 'Basic No Shopping Cart', 'serveradmin@imagineretailer.com', $password ) ) {
                     $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $this->whm->message(), __LINE__, __METHOD__ );
                     $this->_add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
 					exit;

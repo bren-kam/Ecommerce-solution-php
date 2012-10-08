@@ -132,7 +132,7 @@ class Products extends Base_Class {
 		foreach ( $ps_array as $ps ) {
 			if ( '' != $ps ) {
 				list( $spec_name, $spec_value, $sequence ) = explode( '`', $ps );
-				$product_specs[] = array( $spec_name, $spec_value, $sequence );
+				$product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ), $sequence );
 			}
 		}
 
@@ -142,9 +142,9 @@ class Products extends Base_Class {
 		$this->db->update( 'products', array(
 				'brand_id' => $brand_id,
 				'industry_id' => $industry_id,
-				'name' => $name,
+				'name' => format::convert_characters( $name ),
 				'slug' => $slug,
-				'description' => $description,
+				'description' => format::convert_characters( $description ),
 				'status' => $status,
 				'sku' => trim( $sku ),
 				'price' => $price,
@@ -494,7 +494,7 @@ class Products extends Base_Class {
 		$categories[] = $category_id;
 		
 		// @Fix shouldn't need to do the count
-		$website_result_array = $this->db->get_results( "SELECT a.`website_id`, COUNT(*) AS product_count FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`active` = 1 AND a.`website_id` IN($website_ids) AND b.`category_id` IN(" . implode( ',', $categories ) . ') GROUP BY `website_id` HAVING product_count > 0', ARRAY_A );
+		$website_result_array = $this->db->get_results( "SELECT a.`website_id`, COUNT(*) AS product_count FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`blocked` = 0 AND a.`active` = 1 AND a.`website_id` IN($website_ids) AND b.`category_id` IN(" . implode( ',', $categories ) . ') GROUP BY `website_id` HAVING product_count > 0', ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -860,7 +860,7 @@ class Products extends Base_Class {
 		// Type Juggling
 		$product_id = (int) $product_id;
 		
-		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 1 AND b.`product_id` = $product_id AND b.`active` = 1 ORDER BY a.`title`" );
+		$websites = $this->db->get_col( "SELECT a.`title` FROM `websites` AS a LEFT JOIN `website_products` AS b ON ( a.`website_id` = b.`website_id` ) WHERE a.`status` = 1 AND b.`product_id` = $product_id AND b.`blocked` = 0 AND b.`active` = 1 ORDER BY a.`title`" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -936,7 +936,7 @@ class Products extends Base_Class {
         $website_id = (int) $website_id;
 
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND c.`publish_visibility` = 'public'" );
+		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`website_id` = $website_id AND a.`blocked` = 0 AND a.`active` = 1 AND c.`publish_visibility` = 'public'" );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
