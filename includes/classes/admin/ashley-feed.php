@@ -220,7 +220,7 @@ class Ashley_Feed extends Base_Class {
 		$website_id = (int) $website_id;
 		
 		// Get Products
-		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1 AND b.`user_id_created` = 353", ARRAY_A );
+		$products = $this->db->get_results( "SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`blocked` = 0 AND a.`active` = 1 AND b.`user_id_created` = 353", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -265,8 +265,8 @@ class Ashley_Feed extends Base_Class {
 			$website_id = (int) $website_id;
 			
 			// Magical Query #1
-			// Insert website products
-			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, `product_id` FROM `products` WHERE `industry_id` IN($industries) AND `user_id_created` = 353 AND `website_id` = 0 AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus ) ON DUPLICATE KEY UPDATE `active` = 1" );
+			// Insert website products and make sure not to add blocked products
+			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $website_id ) WHERE p.`industry_id` IN($industries) AND p.`user_id_created` = 353 AND p.`website_id` = 0 AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $product_skus ) AND ( wp.`blocked` IS NULL OR wp.`blocked` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -321,7 +321,7 @@ class Ashley_Feed extends Base_Class {
 	 */
 	public function reorganize_categories( $website_id ) {
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1" );
+		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`blocked` = 0 AND a.`active` = 1" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
