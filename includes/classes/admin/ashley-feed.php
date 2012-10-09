@@ -22,7 +22,7 @@ class Ashley_Feed extends Base_Class {
 		$this->curl = new curl();
 		$this->w = new Websites();
 		$this->file = new Files();
-		
+        $this->p = new Products();
 	}
 
 	/**
@@ -159,7 +159,7 @@ class Ashley_Feed extends Base_Class {
 		$this->deactivate_old_products( $website_id, $remove_products );
 		
 		// Reorganize Categories
-		$this->reorganize_categories( $website_id );
+		$this->p->reorganize_categories( $website_id );
 		
 		echo $this->scratchy_time();
 	}
@@ -312,203 +312,7 @@ class Ashley_Feed extends Base_Class {
 		
 		return true;
 	}
-	
-	/**
-	 * Reorganize Categories
-	 *
-	 * @param int $website_id
-	 * @return bool
-	 */
-	public function reorganize_categories( $website_id ) {
-		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`blocked` = 0 AND a.`active` = 1" );
 
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to get product categories.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// IF NULL exists, remove it
-		if ( $key = array_search( NULL, $category_ids ) )
-			unset( $category_ids[$key] );
-		
-		// Get website category IDs
-		$website_category_ids = $this->db->get_col( "SELECT DISTINCT `category_id` FROM `website_categories` WHERE `website_id` = $website_id" );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to get website product categories.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// IF NULL exists, remove it
-		if ( $key = array_search( NULL, $website_category_ids ) )
-			unset( $website_category_ids[$key] );
-		
-		// Need to get the parent categories
-		$c = new Categories;
-		
-		$new_category_ids = $product_category_ids = $remove_category_ids = array();
-		
-		// Find out what categories we need to add
-		if ( is_array( $category_ids ) )
-		foreach ( $category_ids as $cid ) {
-			if ( empty( $cid ) )
-				continue;
-			
-			// Start forming complete list of product categories
-			$product_category_ids[] = $cid;
-			
-			// If the website does not already have it and it has not already been added
-			if ( !in_array( $cid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) )
-				$new_category_ids[] = $cid;
-			
-			// Get the parent categories of this category
-			$parent_category_ids = $c->get_parent_category_ids( $cid );
-			
-			// Loop through parent ids
-			if ( is_array( $parent_category_ids ) )
-			foreach ( $parent_category_ids as $pcid ) {
-				// Forming complete list 
-				$product_category_ids[] = $pcid;
-				
-				// If the website does not already have it and it has not already been added
-				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) )
-					$new_category_ids[] = $pcid;
-			}
-		}
-		
-		// Only want the unique values
-		$product_category_ids = array_unique( $product_category_ids );
-		
-		// IF NULL exists, remove it
-		if ( $key = array_search( NULL, $product_category_ids ) )
-			unset( $product_category_ids[$key] );
-		
-		sort( $product_category_ids );
-		
-		foreach ( $website_category_ids as $wcid ) {
-			if ( !in_array( $wcid, $product_category_ids ) )
-				$remove_category_ids[] = $wcid;
-		}
-		
-		echo '<p><strong>New Categories:</strong> ' . count( $new_category_ids ) . '</p>';
-		
-		// Bulk add categories
-		$this->bulk_add_categories( $website_id, $new_category_ids, $c );
-		
-		echo '<p><strong>Old Categories:</strong> ' . count( $remove_category_ids ) . '</p>';
-		
-		// Remove extra categoryes
-		$this->remove_categories( $website_id, $remove_category_ids );
-		
-		return true;
-	}
-	
-	/**
-	 * Bulk Add categories
-	 *
-	 * @param int $website_id
-	 * @param array $category_ids
-	 * @param object $c (Category)
-	 * @return bool
-	 */
-	private function bulk_add_categories( $website_id, $category_ids, $c ) {
-		if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
-			return;
-		
-		// Type Juggling
-		$website_id = (int) $website_id;
-		
-		// If there are any categories that need to be added
-		$category_images = $this->db->get_results( "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/small/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`website_id` = 0 AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = $website_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`", ARRAY_A );
-
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to get website category images.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Create insert
-		$values = '';
-		$category_images = ar::assign_key( $category_images, 'category_id', true );
-		
-		foreach ( $category_ids as $cid ) {
-			// If we have an image, use it
-			if ( isset( $category_images[$cid] ) ) {
-				$image = $this->db->escape( $category_images[$cid] );
-			} else {
-				// If not, that means it is a parent category. Choose the first child category with an image, and use it
-				
-				// Get child categories
-				$child_categories = $c->get_child_categories( $cid );
-				
-				// Find the first available image
-				foreach ( $child_categories as $cc ) {
-					if ( isset( $category_images[$cc['category_id']] ) ) {
-						// Assign the image
-						$image = $this->db->escape( $category_images[$cc['category_id']] );
-						
-						// Don't need to loop any furhter
-						break;
-					}
-				}
-			}
-			
-			// Create the CSV
-			if ( !empty( $values ) )
-				$values .= ',';
-			
-			// Create the values
-			$values .= "( $website_id, $cid, '$image' )";
-		}
-		
-		// Add the values
-		if ( !empty( $values ) ) {
-			$this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES $values ON DUPLICATE KEY UPDATE `category_id` = VALUES( `category_id` )" );
-
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->_err( 'Failed to add website categories.', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Remove Categories from a website
-	 *
-	 * @param int $website_id
-	 * @param array $category_ids
-	 * @return bool
-	 */
-	private function remove_categories( $website_id, $category_ids ) {
-		// Type Juggling
-		$website_id = (int) $website_id;
-		
-		// Make sure we're dealing with an array
-		if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
-			return true;
-		
-		// Make sure they're MySQL safe
-		foreach ( $category_ids as &$cid ) {
-			$cid = (int) $cid;
-		}
-		
-		$this->db->query( "DELETE FROM `website_categories` WHERE `website_id` = $website_id AND `category_id` IN(" . implode( ',', $category_ids ) . ')' );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to delete website categories.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return true;
-	}
-	
 	/**
 	 * Get website industries
 	 *
@@ -528,18 +332,6 @@ class Ashley_Feed extends Base_Class {
 		}
 		
 		return $industry_ids;
-	}
-	
-	/**
-	 * Logs in
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return true
-	 */
-	private function login() {
-		$this->curl->post( $this->login_url, $this->login_post_fields );
-		return true;
 	}
 	
 	/**

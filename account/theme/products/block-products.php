@@ -39,7 +39,7 @@ if ( isset( $_POST['_nonce'] ) ) {
 
 $blocked_products = $p->get_blocked_products();
 
-$title = _('Add Bulk') . ' | ' . _('Product Catalog') . ' ' . TITLE;
+$title = _('Block Products') . ' | ' . _('Product Catalog') . ' ' . TITLE;
 get_header();
 ?>
 
@@ -56,7 +56,7 @@ get_header();
 		if ( isset( $errs ) )
 			echo "<p class='red'>$errs</p>";
 		?>
-        <p><?php echo _('Separate SKU’s by putting one on each line.'); ?></p>
+        <p><?php echo _("Separate SKU's by putting one on each line."); ?></p>
 		<form action="/products/block-products/" method="post" name="fAddBulk">
             <textarea name="taProductSKUs" id="taProductSKUs" cols="50" rows="20" class="col-2"><?php if ( !$success ) echo $_POST['taProductSKUs']; ?></textarea>
             <br /><br />
