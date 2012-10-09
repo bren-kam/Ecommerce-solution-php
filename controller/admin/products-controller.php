@@ -347,26 +347,26 @@ class ProductsController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set Order by
-        $dt->order_by( 'a.`name`', 'e.`contact_name`', 'f.`contact_name`', 'd.`name`', 'a.`sku`', 'a.`status`' );
+        $dt->order_by( 'p.`name`', 'u.`contact_name`', 'u2.`contact_name`', 'b.`name`', 'p.`sku`', 'c.`name`' );
 
         if ( isset( $_SESSION['products']['visibility'] ) && !empty( $_SESSION['products']['visibility'] ) ) {
             switch ( $_SESSION['products']['visibility'] ) {
                 default:
                 case 'public':
-                    $visibility = " AND `publish_visibility` = 'public'";
+                    $visibility = " AND p.`publish_visibility` = 'public'";
                 break;
 
                 case 'private':
-                    $visibility = " AND `publish_visibility` = 'private'";
+                    $visibility = " AND p.`publish_visibility` = 'private'";
                 break;
 
                 case 'deleted':
-                    $visibility = " AND `publish_visibility` = 'deleted'";
+                    $visibility = " AND p.`publish_visibility` = 'deleted'";
                 break;
 
             }
         }  else {
-            $visibility = " AND `publish_visibility` <> 'deleted'";
+            $visibility = " AND p.`publish_visibility` <> 'deleted'";
         }
 
         // Add the visibility check
@@ -376,11 +376,11 @@ class ProductsController extends BaseController {
             switch ( $_SESSION['products']['user-option'] ) {
                 default:
                 case 'created':
-                    $product_status = ' AND `user_id_created` = ' . (int) $_SESSION['products']['user'];
+                    $product_status = ' AND p.`user_id_created` = ' . (int) $_SESSION['products']['user'];
                 break;
 
                 case 'modified':
-                    $product_status = ' AND `user_id_modified` = ' . (int) $_SESSION['products']['user'];
+                    $product_status = ' AND p.`user_id_modified` = ' . (int) $_SESSION['products']['user'];
                 break;
             }
 
@@ -395,20 +395,20 @@ class ProductsController extends BaseController {
             if ( isset( $_SESSION['products']['type'] ) ) {
                 switch ( $_SESSION['products']['type'] ) {
                     case 'products':
-                        $type = 'a.`name`';
+                        $type = 'p.`name`';
                     break;
 
                     default:
                     case 'sku':
-                        $type = 'a.`sku`';
+                        $type = 'p.`sku`';
                     break;
 
                     case 'brands':
-                        $type = 'd.`name`';
+                        $type = 'b.`name`';
                     break;
                 }
             } else {
-                $type = 'a.`sku`';
+                $type = 'p.`sku`';
             }
 
             $dt->search( array( $type => false ) );
@@ -425,7 +425,7 @@ class ProductsController extends BaseController {
                 $category_ids[] = (int) $category->id;
             }
 
-            $dt->add_where(' AND b.`category_id` IN(' . implode( ',', $category_ids ) . ')');
+            $dt->add_where(' AND pc.`category_id` IN(' . implode( ',', $category_ids ) . ')');
         }
 
         // Get accounts
@@ -450,7 +450,7 @@ class ProductsController extends BaseController {
                 , $p->updated_by
                 , $p->brand
                 , $p->sku
-                , ucwords( $p->status )
+                , ucwords( $p->category )
             );
         }
 

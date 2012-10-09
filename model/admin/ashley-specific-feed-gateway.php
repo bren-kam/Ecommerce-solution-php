@@ -149,7 +149,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	 */
 	protected function get_website_product_skus( $account_id ) {
 		return $this->prepare(
-            'SELECT a.`product_id`, b.`sku` FROM `website_products` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = :account_id AND a.`active` = 1 AND b.`user_id_created` = :user_id_created'
+            'SELECT wp.`product_id`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`user_id_created` = :user_id_created'
             , 'ii'
             , array( ':account_id' => $account_id, ':user_id_created' => SELF::USER_ID )
         )->get_results( PDO::FETCH_ASSOC );

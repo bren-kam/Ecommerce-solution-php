@@ -14,7 +14,7 @@ class Report extends ActiveRecordBase {
      * @return array
      */
     public function search( $where ) {
-        return $this->get_results( "SELECT a.`website_id` AS id, a.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', a.`products` ) AS products, DATE( a.`date_created` ) AS date_created FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS d ON ( a.`website_id` = d.`website_id` ) LEFT JOIN `products` AS e ON ( d.`product_id` = e.`product_id` ) LEFT JOIN `brands` AS f ON ( e.`brand_id` = f.`brand_id` ) WHERE a.`status` = 1 $where GROUP BY a.`website_id` ORDER BY a.`title` ASC" );
+        return $this->get_results( "SELECT w.`website_id` AS id, w.`title`, c.`name` AS company, CONCAT( SUM( COALESCE( d.`active`, 0 ) ), ' / ', w.`products` ) AS products, DATE( w.`date_created` ) AS date_created FROM `websites` AS w LEFT JOIN `users` AS u ON ( w.`user_id` = u.`user_id` ) LEFT JOIN `companies` AS c ON ( u.`company_id` = c.`company_id` ) LEFT JOIN `website_products` AS wp ON ( w.`website_id` = wp.`website_id` ) LEFT JOIN `products` AS p ON ( wp.`product_id` = p.`product_id` ) LEFT JOIN `brands` AS b ON ( p.`brand_id` = b.`brand_id` ) WHERE w.`status` = 1 $where GROUP BY w.`website_id` ORDER BY w.`title` ASC" );
     }
 
     /**

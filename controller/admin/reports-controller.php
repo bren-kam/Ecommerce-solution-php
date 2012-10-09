@@ -183,7 +183,7 @@ class ReportsController extends BaseController {
         foreach ( $_POST['c'] as $type => $criterion ) {
             switch ( $type ) {
                 case 'brand':
-                    $where .= ' AND ( e.`brand_id` IN( ';
+                    $where .= ' AND ( p.`brand_id` IN( ';
 
                     $brand_where = '';
 
@@ -202,7 +202,7 @@ class ReportsController extends BaseController {
 
                     foreach ( $criterion as $service => $value ) {
                         if ( in_array( $service, $services ) )
-                            $where .= " AND a.`$service` = 1";
+                            $where .= " AND w.`$service` = 1";
                     }
 
                     $where .= " )";
@@ -224,7 +224,7 @@ class ReportsController extends BaseController {
                 break;
 
                 case 'online_specialist':
-                    $where .= ' AND ( a.`os_user_id` IN( ';
+                    $where .= ' AND ( w.`os_user_id` IN( ';
 
                     $online_specialist_where = '';
 
@@ -239,7 +239,7 @@ class ReportsController extends BaseController {
                 break;
 
                 case 'marketing_specialist':
-                    $where .= ' AND ( b.`role` = 6 AND b.`user_id` IN( ';
+                    $where .= ' AND ( u.`role` = 6 AND u.`user_id` IN( ';
 
                     $marketing_specialist_where = '';
 
@@ -255,7 +255,7 @@ class ReportsController extends BaseController {
 
 
                 case 'billing_state':
-                    $where .= ' AND b.`billing_state` IN( ';
+                    $where .= ' AND u.`billing_state` IN( ';
 
                     $state_where = '';
 
@@ -270,7 +270,7 @@ class ReportsController extends BaseController {
                 break;
 
                 case 'package':
-                    $where .= ' AND ( a.`company_package_id` IN( ';
+                    $where .= ' AND ( w.`company_package_id` IN( ';
 
                     $company_package_where = '';
 
@@ -287,7 +287,7 @@ class ReportsController extends BaseController {
         }
 
         if ( !$this->user->has_permission(8) )
-            $where .= " AND b.`company_id` = " . (int) $this->user->company_id . " ";
+            $where .= " AND u.`company_id` = " . (int) $this->user->company_id . " ";
 
         // Do the search
         $accounts = $report->search( $where );

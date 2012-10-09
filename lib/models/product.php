@@ -202,7 +202,7 @@ class Product extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT a.`product_id`, a.`name`, d.`name` AS brand, a.`sku`, a.`status`, DATE( a.`publish_date` ) AS publish_date, c.`name` AS category, e.`contact_name` AS created_by, f.`contact_name` AS updated_by FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `users` AS e ON ( a.`user_id_created` = e.`user_id` ) LEFT JOIN `users` AS f ON ( a.`user_id_modified` = f.`user_id` ) WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT p.`product_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, DATE( p.`publish_date` ) AS publish_date, c.`name` AS category, u.`contact_name` AS created_by, u2.`contact_name` AS updated_by FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = p.`user_id_modified` ) WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -220,7 +220,7 @@ class Product extends ActiveRecordBase {
 
 		// Get the website count
         return $this->prepare(
-            "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `product_categories` AS b ON (a.product_id = b.product_id) LEFT JOIN `categories` AS c ON (b.category_id = c.category_id) LEFT JOIN `brands` AS d ON (a.brand_id = d.brand_id) LEFT JOIN `users` AS e ON ( a.`user_id_created` = e.`user_id` ) LEFT JOIN `users` AS f ON ( a.`user_id_modified` = f.`user_id` ) WHERE 1 $where"
+            "SELECT COUNT( p.`product_id` ) FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = p.`user_id_modified` ) WHERE 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

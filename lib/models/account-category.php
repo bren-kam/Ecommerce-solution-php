@@ -26,6 +26,7 @@ class AccountCategory extends ActiveRecordBase {
         // Get data
         $category_ids = $this->get_category_ids( $account_id );
 		$website_category_ids = $this->get_website_category_ids( $account_id );
+        $blocked_categories = $this->get_blocked_website_category_ids( $account_id );
 
         // Clean data
         if ( $key = array_search( NULL, $category_ids ) )
@@ -47,7 +48,7 @@ class AccountCategory extends ActiveRecordBase {
 			$product_category_ids[] = $cid;
 
 			// If the website does not already have the category and it has not already been added
-			if ( !in_array( $cid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) )
+			if ( !in_array( $cid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) && !in_array( $cid, $blocked_categories ) )
 				$new_category_ids[] = $cid;
 
 			// Get the parent categories of this category
@@ -59,8 +60,8 @@ class AccountCategory extends ActiveRecordBase {
 				// Forming complete list
 				$product_category_ids[] = $pcid;
 
-				// If the website does not already have it and it has not already been added
-				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) )
+				// If the website does not already have it and it has not already been added and it is not in the blocked list
+				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) && !in_array( $cid, $blocked_categories ) )
 					$new_category_ids[] = $pcid;
 			}
 		}
@@ -75,7 +76,8 @@ class AccountCategory extends ActiveRecordBase {
 		sort( $product_category_ids );
 
 		foreach ( $website_category_ids as $wcid ) {
-			if ( !in_array( $wcid, $product_category_ids ) )
+            // If it's not in their products or if it's blocked, remove
+			if ( !in_array( $wcid, $product_category_ids ) || in_array( $wcid, $blocked_categories ) )
 				$remove_category_ids[] = $wcid;
 		}
 
@@ -168,7 +170,7 @@ class AccountCategory extends ActiveRecordBase {
      */
     protected function get_category_ids( $account_id ) {
         return $this->prepare(
-            "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `products` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`website_id` = :account_id AND a.`active` = 1 AND c.`publish_visibility` = 'public'"
+            "SELECT DISTINCT pc.`category_id` FROM `website_products` AS wp LEFT JOIN `product_categories` AS pc ON ( wp.`product_id` = pc.`product_id` ) LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public'"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_col();
@@ -183,6 +185,20 @@ class AccountCategory extends ActiveRecordBase {
     protected function get_website_category_ids( $account_id ) {
         return $this->prepare(
             "SELECT DISTINCT `category_id` FROM `website_categories` WHERE `website_id` = :account_id"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_col();
+    }
+
+    /**
+     * Get blocked website category ids
+     *
+     * @param $account_id
+     * @return array
+     */
+    protected function get_blocked_website_category_ids( $account_id ) {
+        return $this->prepare(
+            "SELECT DISTINCT `category_id` FROM `website_blocked_category` WHERE `website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_col();

@@ -91,14 +91,12 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     <table ajax="/products/list-all/" perPage="30,50,100">
         <thead>
             <tr>
-                 <tr>
                 <th width="40%" sort="1"><?php echo _('Name'); ?></th>
-                <th><?php echo _('Created'); ?></th>
-                <th><?php echo _('Updated'); ?></th>
-                <th><?php echo _('Brand'); ?></th>
+                <th width="10%"><?php echo _('Created'); ?></th>
+                <th width="10%"><?php echo _('Updated'); ?></th>
+                <th width="10%"><?php echo _('Brand'); ?></th>
                 <th width="10%"><?php echo _('SKU'); ?></th>
-                <th width="8%"><?php echo _('Status'); ?></th>
-            </tr>
+                <th><?php echo _('Category'); ?></th>
             </tr>
         </thead>
         <tbody>
