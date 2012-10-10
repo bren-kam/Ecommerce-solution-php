@@ -217,7 +217,7 @@ class ProductTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( 'a.`name`', 'e.`contact_name`', 'f.`contact_name`', 'd.`name`', 'a.`sku`', 'a.`status`' );
+        $dt->order_by( 'p.`name`', 'u.`contact_name`', 'u2.`contact_name`', 'b.`name`', 'p.`sku`', 'c.`name`' );
 
         $products = $this->product->list_all( $dt->get_variables() );
 

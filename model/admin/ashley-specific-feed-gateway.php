@@ -25,7 +25,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      *  Get websites to run
      */
     public function run_all() {
-        $website_ids = $this->get_col( "SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-password' AND `value` <> ''" );
+        // Get Feed Websites
+        $website_ids = $this->get_feed_websites();
 
 		// Get the file if htere is one
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
@@ -154,4 +155,11 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             , array( ':account_id' => $account_id, ':user_id_created' => SELF::USER_ID )
         )->get_results( PDO::FETCH_ASSOC );
 	}
+
+    /**
+     * Get Feed Websites
+     */
+    protected function get_feed_websites() {
+        return $this->get_col( "SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-password' AND `value` <> ''" );
+    }
 }

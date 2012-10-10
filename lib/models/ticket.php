@@ -118,4 +118,12 @@ class Ticket extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Delete uncreated tickets (and dependencies)
+     */
+    public function deleted_uncreated_tickets() {
+        // Delete ticket uploads, ticket links and tickets themselves (this is awesome!)
+		$this->query( 'DELETE tu.*, tl.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tl.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tl.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )');
+    }
 }

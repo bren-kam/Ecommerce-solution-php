@@ -40,7 +40,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_ticket( $ticket_id ) {
 		return $this->prepare(
-            'SELECT a.`key` FROM `ticket_uploads` AS a LEFT JOIN `ticket_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_id` = :ticket_id'
+            'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tu.`ticket_upload_id` = tl.`ticket_upload_id` ) WHERE tl.`ticket_id` = :ticket_id'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_col();
@@ -54,7 +54,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_comments( $ticket_id ) {
         return $this->prepare(
-            'SELECT a.`key`, b.`ticket_comment_id` FROM `ticket_uploads` AS a LEFT JOIN `ticket_comment_upload_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) LEFT JOIN `ticket_comments` AS c ON ( b.`ticket_comment_id` = c.`ticket_comment_id` ) WHERE c.`ticket_id` = :ticket_id'
+            'SELECT tu.`key`, tcul.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comment_upload_links` AS tcul ON ( tcul.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `ticket_comments` AS tc ON ( tc.`ticket_comment_id` = tcul.`ticket_comment_id` ) WHERE tc.`ticket_id` = :ticket_id'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
@@ -68,11 +68,21 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_comment( $ticket_comment_id ) {
         return $this->prepare(
-            'SELECT a.`key`, b.`ticket_comment_id` FROM `ticket_uploads` AS a LEFT JOIN `ticket_comment_upload_links` AS b ON ( a.`ticket_upload_id` = b.`ticket_upload_id` ) WHERE b.`ticket_comment_id` = :ticket_comment_id'
+            'SELECT tu.`key`, tcul.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comment_upload_links` AS tcul ON ( tcul.`ticket_upload_id` = tu.`ticket_upload_id` ) WHERE tcul.`ticket_comment_id` = :ticket_comment_id'
             , 'i'
             , array( ':ticket_comment_id' => $ticket_comment_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
     }
+
+    /**
+     * Get uploads for uncreated tickets
+     *
+     * @return array
+     */
+    public function get_keys_by_uncreated_tickets() {
+        return $this->get_col( 'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tl.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tl.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+    }
+
 
     /**
      * Create

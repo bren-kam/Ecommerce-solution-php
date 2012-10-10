@@ -20,7 +20,7 @@ class ReportTest extends BaseDatabaseTest {
      */
     public function testSearch() {
         // Declare Variables
-        $where = ' AND ( e.`brand_id` IN( 8 ) )';
+        $where = ' AND ( p.`brand_id` IN( 8 ) )';
 
         // Get report
         $accounts = $this->report->search( $where );
