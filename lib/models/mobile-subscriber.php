@@ -27,7 +27,7 @@ class MobileSubscriber extends ActiveRecordBase {
         $values = substr( str_repeat( ',?', $mobile_number_count ), 1 );
 
         return ar::assign_key( $this->prepare(
-            "SELECT `mobile_subscriber_id`, `phone` FROM `mobile_subscribers` WHERE `account_id` = $account_id AND `phone` IN( $values )"
+            "SELECT `mobile_subscriber_id`, `phone` FROM `mobile_subscribers` WHERE `website_id` = $account_id AND `phone` IN( $values )"
             , str_repeat( 's', $mobile_number_count )
             , $mobile_numbers
         )->get_results( PDO::FETCH_ASSOC ), 'phone', true );
@@ -72,13 +72,17 @@ class MobileSubscriber extends ActiveRecordBase {
      * @param array $values
      */
     public function add_bulk_associations( array $values ) {
+        $assocation_values = array();
+
         foreach ( $values as &$value_array ) {
             foreach ( $value_array as &$id ) {
-                $id = (int) $id;
+                 $id = (int) $id;
             }
+
+            $assocation_values[] = '(' . implode( ',', $value_array) . ')';
         }
 
-        $values = implode( ',', $values );
+        $values = implode( ',', $assocation_values );
 
         // Insert all the mobile lists
         $this->query( "INSERT INTO `mobile_associations` ( `mobile_subscriber_id`, `mobile_list_id`, `trumpia_contact_id` ) VALUES $values ON DUPLICATE KEY UPDATE `trumpia_contact_id` = VALUES( `trumpia_contact_id` )" );
@@ -107,8 +111,8 @@ class MobileSubscriber extends ActiveRecordBase {
         // Now remove all lists from subscribers who have no status
 		$this->prepare(
             "DELETE ma.* FROM `mobile_associations` AS ma LEFT JOIN `mobile_subscribers` AS ms ON ( ms.`mobile_subscriber_id` = ma.`mobile_subscriber_id` ) WHERE ( ms.`mobile_subscriber_id` IS NULL OR ms.`status` = 0 ) AND ms.`website_id` = :account_id"
-            , array( ':account_id' => $account_id )
             , 'i'
+            , array( ':account_id' => $account_id )
         )->query();
     }
 }

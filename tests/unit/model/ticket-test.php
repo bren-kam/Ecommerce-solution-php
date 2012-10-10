@@ -151,6 +151,36 @@ class TicketTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test deleting all uncreated tickets
+     *
+     * @depends testCreate
+     * @depends testAddLinks
+     */
+    public function testDeleteUncreatedTickets() {
+        // An uncreated ticket has status of -1
+        $this->ticket->status = -1;
+        $this->ticket->create();
+
+        // Set the update time to something in the past
+        $this->db->update( 'tickets', array( 'date_created' => '2012-10-09 00:00:00' ), array( 'ticket_id' => $this->ticket->id ), 's', 'i' );
+
+        // Create a fake ticket upload
+        $this->db->insert( 'ticket_uploads', array( 'key' => 'url/path/file.jpg', 'date_created' => dt::now() ), 'ss' );
+
+        // Add links
+        $ticket_upload_id = $this->db->get_insert_id();
+        $this->ticket->add_links( array( $ticket_upload_id ) );
+
+        // Now -- delete it, it's uncreated, everything should be gone
+        $this->ticket->deleted_uncreated_tickets();
+
+        // Makes ure they are deleted
+        $tickets = $this->db->get_results( 'SELECT t.`ticket_id`, tl.`ticket_upload_id` AS ticket_link, tu.`ticket_upload_id` FROM `tickets` AS t JOIN `ticket_links` AS tl ON ( tl.`ticket_id` = t.`ticket_id` ) JOIN `ticket_uploads` AS tu ON ( tu.`ticket_upload_id` = tl.`ticket_upload_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+
+        $this->assertTrue( empty( $tickets ) );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

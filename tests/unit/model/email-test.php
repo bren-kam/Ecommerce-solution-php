@@ -16,10 +16,24 @@ class EmailTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test method
+     * Test Getting Unsynchronized Emails (so they can be synced)
      */
-    public function testMethod() {
-        // Do stuff
+    public function testGetUnsynced() {
+        // Declare variables
+        $account_id = -5;
+
+        // Insert an email that has not been synced
+        $this->db->insert( 'emails', array( 'website_id' => $account_id, 'email' => 'lan@caster.com', 'name' => 'George', 'date_created' => '2010-10-10 00:00:00' ), 'isss' );
+
+        $email_id = $this->db->get_insert_id();
+
+        // Get unsynced emails
+        $emails = $this->email->get_unsynced();
+
+        $this->assertTrue( current( $emails ) instanceof Email );
+
+        // Delete email
+        $this->db->delete( 'emails', array( 'email_id' => $email_id ), 'i' );
     }
 
     /**

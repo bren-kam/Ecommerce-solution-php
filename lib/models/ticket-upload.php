@@ -83,15 +83,16 @@ class TicketUpload extends ActiveRecordBase {
         return $this->get_col( 'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tl.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tl.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
     }
 
-
     /**
      * Create
      */
     public function create() {
+        $this->date_created = dt::now();
+
         $this->insert(
             array(
                 'key' => $this->key
-                , 'date_created' => dt::now()
+                , 'date_created' => $this->date_created
             )
             , 'ss'
         );

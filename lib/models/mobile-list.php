@@ -38,7 +38,7 @@ class MobileList extends ActiveRecordBase {
      */
     public function get_name_index_by_account( $account_id ) {
         return ar::assign_key( $this->prepare(
-            "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `account_id` = :account_id"
+            "SELECT `mobile_list_id`, `name` FROM `mobile_lists` WHERE `website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC ), 'name', true );
