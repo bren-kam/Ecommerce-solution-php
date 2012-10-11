@@ -351,7 +351,9 @@ class Ashley extends Base_Class {
 				$this->p->add_product_images( $images, $product_id );
 
                 $product_status = 'private';
-			
+
+                if ( 0 != $category_id )
+                    $this->p->add_categories( $product_id, array( $category_id ) );
 			}
 
 			// Update the product
@@ -360,12 +362,6 @@ class Ashley extends Base_Class {
 			// Add images
 			$product_ids[] = (int) $product_id;
 
-            // Need to delete categories and readd
-            $this->p->empty_categories( $product_id );
-
-            if ( 0 != $category_id )
-                $this->p->add_categories( $product_id, array( $category_id ) );
-			
 			if ( 226 == $category_id )
 				$products_string .= $name . "<br />\n";
 			
