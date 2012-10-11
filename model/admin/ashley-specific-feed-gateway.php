@@ -25,15 +25,15 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      *  Get websites to run
      */
     public function run_all() {
-        // Get Feed Websites
-        $website_ids = $this->get_feed_websites();
+        // Get Feed Accounts
+        $accounts = $this->get_feed_accounts();
 
 		// Get the file if htere is one
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 		
-        if ( is_array( $website_ids ) )
-        foreach( $website_ids as $wid ) {
-            $this->run( $wid, $file );
+        if ( is_array( $accounts ) )
+        foreach( $accounts as $account ) {
+            $this->run( $account, $file );
         }
     }
 
@@ -102,7 +102,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
         // Declare array
-        $skus = $remove_products = $new_products = array();
+        $packages = $this->get_ashley_packages();
+        $skus = $remove_products = $new_product_skus = $all_skus = array();
 
         /**
          * @var SimpleXMLElement $item
@@ -117,11 +118,53 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Prevent SKUs not sold in America or only in containers
 			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
 				continue;
-			
-			if ( !array_key_exists( $sku, $products ) )
-				$new_products[] = $sku;
 
-			$skus[] = $sku;
+            $all_skus[] = $sku;
+
+			if ( !stristr( $sku, '-' ) ) {
+				if ( !array_key_exists( $sku, $products ) )
+					$new_product_skus[] = $sku;
+
+				continue;
+			}
+
+			list( $series, $item ) = explode( '-', $sku, 2 );
+
+			$skus[$series][] = $item;
+		}
+        
+        $new_product_ids = $remove_skus = array();
+		
+        // Add packages if they have all the pieces
+		foreach ( $packages as $series => $items ) {
+            // Go through each item
+			foreach ( $items as $product_id => $package_pieces ) {
+				// See if they have all the items necessary
+				foreach ( $package_pieces as $item ) { 
+					if ( in_array( $item, $skus[$series] ) ) { // Check if it is a series such as "W123-45"
+						$remove_skus[] = "$series-$item";
+						continue;
+					} elseif( in_array( $series . $item, $all_skus ) ) { // Check if it is straight like "W12345"
+						$remove_skus[] = $series . $item;
+						continue;
+					}
+
+                    // If they don't have both, then stop this item
+					continue 2; // Drop out of both
+				}
+
+                // Add to packages list
+				$new_product_ids[] = $product_id;
+			}
+		}
+
+        // Only need one of each
+		$remove_skus = array_unique( $remove_skus );
+		
+		// Now remove skus
+		if ( !empty( $remove_skus ) )
+		foreach ( $remove_skus as $sku ) {
+			unset( $new_product_skus[array_search( $sku, $new_product_skus )] );
 		}
 
 		if ( is_array( $products ) )
@@ -131,8 +174,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
 		// Add new products
+        $industries = $account->get_industries();
         $account_product = new AccountProduct();
-		$account_product->add_bulk( $account->id, $account->get_industries(), $new_products );
+		$account_product->add_bulk( $account->id, $industries, $new_product_skus );
+        $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
 
 		// Deactivate old products
 		$account_product->remove_bulk( $account->id, $remove_products );
@@ -157,9 +202,72 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	}
 
     /**
-     * Get Feed Websites
+     * Get Feed Accounts
+     *
+     * @return mixed
      */
-    protected function get_feed_websites() {
-        return $this->get_col( "SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-password' AND `value` <> ''" );
+    protected function get_feed_accounts() {
+        return $this->get_results( "SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-password' AND `value` <> ''", PDO::FETCH_CLASS, 'Account' );
     }
+
+    /**
+	 * Get Ashley Packages
+	 *
+	 * @return array
+	 */
+	protected function get_ashley_packages() {
+		$products = ar::assign_key( $this->get_results( 'SELECT `product_id`, `sku` FROM `products` WHERE `user_id_created` = 1477', PDO::FETCH_ASSOC ), 'sku', true );
+
+		$ashley_packages = array();
+
+		foreach ( $products as $sku => $product_id ) {
+			$sku_pieces = explode( '/', $sku );
+
+			$series = array_shift( $sku_pieces );
+
+			$ashley_packages[$series][$product_id] = $sku_pieces;
+		}
+
+		return $ashley_packages;
+	}
+
+    /**
+	 * Add Bulk
+	 *
+	 * @param int $account_id
+     * @param array $industry_ids
+	 * @param array $product_ids
+	 */
+	protected function add_bulk_packages_by_ids( $account_id, array $industry_ids, array $product_ids ) {
+        // Make sure they entered in SKUs
+        if ( empty( $industry_ids ) || empty( $product_ids ) )
+            return;
+
+        // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Split into chunks so we can do queries one at a time
+		$product_id_chunks = array_chunk( $product_ids, 500 );
+
+		foreach ( $product_id_chunks as $product_ids ) {
+            // Escape all the SKUs
+			foreach ( $product_ids as &$pid ) {
+				$pid = (int) $pid;
+			}
+
+            // Turn it into a string
+			$product_ids = implode( ",", $product_ids );
+
+			// Magical Query
+			// Insert website products
+			$this->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $account_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1" );
+		}
+	}
 }
