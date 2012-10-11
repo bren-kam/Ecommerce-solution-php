@@ -60,7 +60,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * Hold the ashley categories
      */
     protected  $categories = array(
-        'Accents' => 0
+        'Accents' => 360
         , 'Stationary Upholstery' => 218
         , 'Motion Upholstery' => 348
         , 'Sectionals' => 226
@@ -110,24 +110,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Get Ashley Products by SKU
         $this->ashley_products = $this->get_ashley_products_by_sku();
 
-        // Get packages
-        $this->packages = $this->ashley->get_packages();
-
-		echo str_repeat( '&nspb;', 1000 );
-		flush();
-
-        // Get series
-        $series_array = $this->ashley->get_series();
-
-		echo str_repeat( '&nspb;', 1000 );
-		flush();
-
-        // Arrange series
-        foreach ( $series_array as $sa ) {
-            $this->series[(string)$sa->SeriesNo] = $sa;
-        }
-
-		echo str_repeat( '&nspb;', 1000 );
+        echo str_repeat( ' ', 1000 );
 		flush();
 
         // Get Templates
@@ -136,6 +119,23 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Arrange templates
         foreach ( $package_template_array as $pta ) {
             $this->package_templates[(string)$pta->TemplateId] = $pta;
+        }
+
+        // Get packages
+        $this->packages = $this->ashley->get_packages();
+
+		echo str_repeat( ' ', 1000 );
+		flush();
+
+        // Get series
+        $series_array = $this->ashley->get_series();
+
+		echo str_repeat( ' ', 1000 );
+		flush();
+
+        // Arrange series
+        foreach ( $series_array as $sa ) {
+            $this->series[(string)$sa->SeriesNo] = $sa;
         }
     }
 
@@ -154,6 +154,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             // Reset errors
             $this->reset_error();
+            $add_category = false;
 
             /***** CHECK PRODUCT *****/
 
@@ -177,11 +178,14 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $product = new Product();
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
-                $product->publish_visibility = 'private';
+                $product->publish_visibility = 'public';
                 $product->create();
 
                 // Set publish date
                 $product->publish_date = dt::now();
+
+                // Need to add the category
+                $add_category = true;
             }
 
             /***** PREPARE PRODUCT DATA *****/
@@ -248,12 +252,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $this->reset_identical();
 
             /** Add Category **/
-            if ( $category_id != $product->category_id ) {
+            if ( $add_category ) {
                 $product->delete_categories();
                 $product->add_category( $category_id );
             }
 
-            // Set product data
+            /** Set Product Data */
             $product->name = $this->identical( $name, $product->name, 'name' );
             $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
