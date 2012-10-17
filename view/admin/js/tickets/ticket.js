@@ -76,5 +76,5 @@ jQuery(function($) {
 // Update assigned to
 function updateAssignedTo( userId ) {
     // Update the status when they change it
-    $.post( '/tickets/update-assigned-to/', { _nonce : $('#_update_assigned_to').val(), tid : $('#hTicketId').val(), atui : userId }, ajaxResponse, 'json' );
+    $.post( '/tickets/update-assigned-to/', { _nonce : $('#_update_assigned_to').val(), tid : $('#hTicketId').val(), auid : userId }, ajaxResponse, 'json' );
 }

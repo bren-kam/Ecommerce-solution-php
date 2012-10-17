@@ -543,7 +543,7 @@ class TicketsController extends BaseController {
         );
 
         $assigned_user = new User();
-        $assigned_user->get( $_POST['atui'] );
+        $assigned_user->get( $_POST['auid'] );
 
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
