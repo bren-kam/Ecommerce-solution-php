@@ -29,7 +29,7 @@ class Ashley extends Base_Class {
      * Hold the ashley categories
      */
     private $_categories = array(
-        'Accents' => 0
+        'Accents' => 360
         , 'Stationary Upholstery' => 218
         , 'Motion Upholstery' => 348
         , 'Sectionals' => 226
@@ -97,11 +97,23 @@ class Ashley extends Base_Class {
 		
         // Get existing products
         $existing_products = $this->_get_existing_products();
-
+		
+		// Get ashley products
+		$ashley_products = $this->get_ashley_products();
+		
+        // Get Templates
+        $package_template_array = $a->get_package_templates();
+		
+		$package_templates = array();
+		
+        foreach ( $package_template_array as $pta ) {
+            $package_templates[(string)$pta->TemplateId] = $pta;
+        }
+		
         // Get packages
         $packages = $a->get_packages();
 		
-		echo str_repeat( '&nspb;', 1000 );
+		echo str_repeat( ' ', 1000 );
 		flush();
 		
         // Get Series
@@ -109,32 +121,25 @@ class Ashley extends Base_Class {
 		
         $series_array = $a->get_series();
 		
-		echo str_repeat( '&nspb;', 1000 );
+		echo str_repeat( ' ', 1000 );
 		flush();
         $series = array();
 		
         foreach ( $series_array as $sa ) {
             $series[(string)$sa->SeriesNo] = $sa;
         }
-
-		echo str_repeat( '&nspb;', 1000 );
-		flush();
-        // Get Templates
-        $package_template_array = $a->get_package_templates();
-        $package_templates = array();
 		
-        foreach ( $package_template_array as $pta ) {
-            $package_templates[(string)$pta->TemplateId] = $pta;
-        }
+		echo str_repeat( ' ', 1000 );
+		flush();
 
         // Generate array of our items
         $i = $skipped = 0;
 
         // Initiate product string
-        $products_string = '';
+        $products_string = $skipped_products_string = '';
 
         // Any new products get a link
-        $links = array();
+        $links = $categories = array();
 		
         foreach ( $packages as $item ) {
             // Ensure that we can keep running
@@ -143,26 +148,50 @@ class Ashley extends Base_Class {
 			flush();
 
             $image = (string) $item->Image;
-
+			
             // We don't care if they don't have an image
-            if ( empty( $image ) ) {
-                //|| !curl::check_file( self::IMAGE_URL . $item->Image )
-                $skipped++;
+            if ( empty( $image ) )
                 continue;
-            }
-			$this->p = new Products();
 
-            $package_series = $series[(string)$item->SeriesNo];
-            $template = $package_templates[(string)$item->TemplateId];
+			$this->p = new Products();
 
             // Count how many products we're dealing with
 			$i++;
-
+			
+            $package_series = $series[(string)$item->SeriesNo];
+			$template = $package_templates[(string)$item->TemplateId];
+			$sku = (string) $item->PackageName;
+			
+			$grouping = (string)$package_series->Grouping;
+			$categories[$grouping][] = $item->SeriesName . ' ' . $template->Descr;
+			
+			
             // Start collecting data
-			$name = $item->SeriesName . ' ' . $template->Descr;
+			if ( empty( $template->Descr ) ) {
+				$sku_pieces = explode( '/', $sku );
+				$series_name = array_shift( $sku_pieces );
+				
+				$name_pieces = array();
+				
+				foreach ( $sku_pieces as $sp ) {
+					if ( isset( $ashley_products[$series_name . $sp] ) ) {
+						$name_piece = str_replace( (string) $item->SeriesName, '', $ashley_products[$series_name . $sp] );
+					} elseif( isset( $ashley_products[$series_name . '-' . $sp] ) ) {
+						$name_piece = str_replace( (string) $item->SeriesName, '', $ashley_products[$series_name . '-' . $sp] );
+					} else {
+						continue;
+					}
+					
+					$name_pieces[] = preg_replace( '/^ - /', '', $name_piece );
+				}
+				
+				$name = $item->SeriesName . ' - ' . implode( ', ', $name_pieces );
+			} else {
+				$name = $item->SeriesName . ' ' . $template->Descr;
+			}			
 
 			$slug = str_replace( '---', '-', format::slug( $name ) );
-            $sku = (string) $item->PackageName;
+            
 			$image = self::IMAGE_URL . $image;
 			$weight = $volume = 0;
 
@@ -184,8 +213,7 @@ class Ashley extends Base_Class {
 			$brand_id = $this->_brands[(string)$package_series->Showroom];
 
             // Get Category ID
-            $category_id = $this->_categories[(string)$package_series->Grouping];
-
+            $category_id = $this->_categories[$grouping];
 			$images = array();
 			
 			////////////////////////////////////////////////
@@ -284,7 +312,6 @@ class Ashley extends Base_Class {
 				// If everything is identical, we don't want to do anything
 				if ( $identical ) {
 					$skipped++;
-					$products_string .= $name . "\n";
 					continue;
 				}
 			} else {
@@ -324,20 +351,20 @@ class Ashley extends Base_Class {
 				$this->p->add_product_images( $images, $product_id );
 
                 $product_status = 'private';
+
+                if ( 0 != $category_id )
+                    $this->p->add_categories( $product_id, array( $category_id ) );
 			}
-			
+
 			// Update the product
 			$this->p->update( $name, $slug, $description, $product_status, $sku, $price, $list_price, $product_specs, $brand_id, 1, $publish_visibility, $publish_date, $product_id, $weight, $volume );
-
+			
 			// Add images
 			$product_ids[] = (int) $product_id;
 
-            // Need to delete categories and readd
-            $this->p->empty_categories( $product_id );
-
-            if ( 0 != $category_id )
-                $this->p->add_categories( $product_id, array( $category_id ) );
-
+			if ( 226 == $category_id )
+				$products_string .= $name . "<br />\n";
+			
 			/* Makes the images have the right sequence if they exist
 			if ( is_array( $images ) ) {
 				$j = 0;
@@ -350,8 +377,6 @@ class Ashley extends Base_Class {
 
 			$this->commit_product_images( $images, $product_id );
 			*/
-
-			$products_string .= $name . "\n";
 
 			// We don't want to carry them around in the next loop
 			unset( $images );
@@ -370,8 +395,10 @@ class Ashley extends Base_Class {
 			//$i++;
 			
 		}
-
-        echo $products_string;
+		
+		fn::info( $categories );
+		echo 'here';
+		echo $products_string;
     }
 
 	/**
@@ -1092,6 +1119,23 @@ class Ashley extends Base_Class {
 		}
 
 		return ar::assign_key( $products, 'sku' );
+	}
+
+    /**
+	 * Get Existing Products
+	 *
+	 * @return array
+	 */
+	protected function get_ashley_products() {
+		$products = $this->db->get_results( "SELECT a.`sku`, a.`name` FROM `products` AS a INNER JOIN `industries` AS b ON (a.`industry_id` = b.`industry_id`) LEFT JOIN `product_images` AS c ON ( a.`product_id` = c.`product_id` ) WHERE a.`user_id_created` = 353 AND a.`publish_visibility` = 'public' GROUP BY a.`product_id`", ARRAY_A );
+
+		// Handle any error
+		if( $this->db->errno() ) {
+			$this->_err( 'Failed to get products.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return ar::assign_key( $products, 'sku', true );
 	}
 
 	/**

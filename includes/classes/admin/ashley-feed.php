@@ -61,6 +61,8 @@ class Ashley_Feed extends Base_Class {
 	public function run( $website_id, $file = '' ) {
 		$this->timer_start();
 		
+		$packages = $this->get_ashley_packages();
+		
         // Get the settings
 		$settings = $this->w->get_settings( $website_id, array( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' ) );
 		
@@ -122,6 +124,8 @@ class Ashley_Feed extends Base_Class {
 			$this->xml = simplexml_load_string( $ftp->ftp_get_contents( $file ) );
 		}
 		
+		$new_products = $all_skus = array();
+		
 		// Generate array of our items
 		foreach ( $this->xml->items->item as $item ) {
             if ( 'Discontinued' == trim( $item->attributes()->itemStatus ) )
@@ -133,11 +137,52 @@ class Ashley_Feed extends Base_Class {
 			if ( preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) )
 				continue;
 			
-			if ( !array_key_exists( $sku, $products ) ) {
-				$new_products[] = $sku;
+			$all_skus[] = $sku;
+			
+			if ( !stristr( $sku, '-' ) ) {
+				if ( !array_key_exists( $sku, $products ) )
+					$new_products[] = $sku;
+				
+				continue;
 			}
 			
-			$skus[] = $sku;
+			list( $series, $item ) = explode( '-', $sku, 2 );
+			
+			$skus[$series][] = $item;
+		}
+		
+		
+		$new_product_ids = $remove_skus = array();
+		
+		foreach ( $packages as $series => $items ) {
+			// If they don't have the series, then keep going
+			//if ( !array_key_exists( $series, $skus ) )
+				//continue;
+			
+			foreach ( $items as $product_id => $package_pieces ) {
+				// See if they have all the items necessary
+				foreach ( $package_pieces as $item ) { 
+					if ( in_array( $item, $skus[$series] ) ) {
+						$remove_skus[] = "$series-$item";
+						continue;
+					} elseif( in_array( $series . $item, $all_skus ) ) {
+						$remove_skus[] = $series . $item;
+						continue;
+					}
+					
+					continue 2; // Drop out of both
+				}
+				
+				$new_product_ids[] = $product_id;
+			}
+		}
+		
+		$remove_skus = array_unique( $remove_skus );
+		
+		// Now remove skus
+		if ( !empty( $remove_skus ) )
+		foreach ( $remove_skus as $sku ) {
+			unset( $new_products[array_search( $sku, $new_products )] );
 		}
 		
 		$remove_products = array();
@@ -149,7 +194,8 @@ class Ashley_Feed extends Base_Class {
 		}
 
 		// Add new products
-		$product_count = $this->add_bulk( $website_id, $new_products );
+		$product_count = $this->add_bulk_skus( $website_id, $new_products );
+		$product_count += $this->add_bulk_ids( $website_id, $new_product_ids );
 
 		echo "<p><strong>New Products:</strong> $product_count</p>";
 
@@ -239,13 +285,19 @@ class Ashley_Feed extends Base_Class {
 	 * @param string $product_skus
 	 * @return bool
 	 */
-	private function add_bulk( $website_id, $product_skus ) {
+	private function add_bulk_skus( $website_id, $product_skus ) {
         // Make sure they entered in SKUs
         if ( !is_array( $product_skus ) || empty( $product_skus ) )
             return false;
 		
 		$product_sku_chunks = array_chunk( $product_skus, 500 );
 		
+		// Get industries
+		$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $this->get_website_industries( $website_id ) ) );
+		
+		if ( $industries == '' )
+			return array( false, 0, true );
+				
 		foreach ( $product_sku_chunks as $product_skus ) {
 			// Escape all the SKUs
 			foreach ( $product_skus as &$ps ) {
@@ -254,19 +306,61 @@ class Ashley_Feed extends Base_Class {
 			
 			// Turn it into a string
 			$product_skus = implode( ",", $product_skus );
-			
-			// Get industries
-			$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $this->get_website_industries( $website_id ) ) );
 	
-			if ( $industries == '' )
-				return array( false, 0, true );
 	
 			// Type Juggling
 			$website_id = (int) $website_id;
 			
 			// Magical Query #1
-			// Insert website products and make sure not to add blocked products
-			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $website_id ) WHERE p.`industry_id` IN($industries) AND p.`user_id_created` = 353 AND p.`website_id` = 0 AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $product_skus ) AND ( wp.`blocked` IS NULL OR wp.`blocked` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
+			// Insert website products
+			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $website_id, `product_id` FROM `products` WHERE `industry_id` IN($industries) AND `user_id_created` = 353 AND `website_id` = 0 AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus ) ON DUPLICATE KEY UPDATE `active` = 1" );
+			
+			// Handle any error
+			if ( $this->db->errno() ) {
+				$this->_err( 'Failed to dump website products.', __LINE__, __METHOD__ );
+				return false;
+			}
+		}
+		
+		return $this->db->rows_affected;
+	}
+	
+	/**
+	 * Add Bulk
+	 *
+	 * @param int $website_id
+	 * @param string $product_ids
+	 * @return bool
+	 */
+	private function add_bulk_ids( $website_id, array $product_ids ) {
+        // Make sure they entered in SKUs
+        if ( empty( $product_ids ) )
+            return false;
+		
+		$product_id_chunks = array_chunk( $product_ids, 500 );
+		
+		// Get industries
+		$industries = preg_replace( '/[^0-9,]/', '', implode( ',', $this->get_website_industries( $website_id ) ) );
+	
+		if ( $industries == '' )
+			return array( false, 0, true );
+		
+		foreach ( $product_id_chunks as $product_ids ) {
+			// Escape all the SKUs
+			foreach ( $product_ids as &$pid ) {
+				$pid = (int) $pid;
+			}
+			
+			// Turn it into a string
+			$product_ids = implode( ",", $product_ids );
+	
+			// Type Juggling
+			$website_id = (int) $website_id;
+			
+			//AND `website_id` = 0 AND `publish_visibility` = 'public' AND `status` <> 'discontinued' 
+			// Magical Query #1
+			// Insert website products
+			$this->db->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $website_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN($industries) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) ON DUPLICATE KEY UPDATE `active` = 1" );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -321,7 +415,7 @@ class Ashley_Feed extends Base_Class {
 	 */
 	public function reorganize_categories( $website_id ) {
 		// Get category IDs
-		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`blocked` = 0 AND a.`active` = 1" );
+		$category_ids = $this->db->get_col( "SELECT DISTINCT b.`category_id` FROM `website_products` AS a LEFT JOIN `product_categories` AS b ON ( a.`product_id` = b.`product_id` ) WHERE a.`website_id` = $website_id AND a.`active` = 1" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -560,6 +654,27 @@ class Ashley_Feed extends Base_Class {
 	 */
 	private function scratchy_time() {
 		return microtime( true ) - $this->time_start;
+	}
+	
+	/**
+	 * Get Ashley Packages
+	 * 
+	 * @return array
+	 */
+	protected function get_ashley_packages() {
+		$products = ar::assign_key( $this->db->get_results( 'SELECT `product_id`, `sku` FROM `products` WHERE `user_id_created` = 1477' ), 'sku', true );
+		
+		$ashley_packages = array();
+		
+		foreach ( $products as $sku => $product_id ) {
+			$sku_pieces = explode( '/', $sku );
+			
+			$series = array_shift( $sku_pieces );
+			
+			$ashley_packages[$series][$product_id] = $sku_pieces;
+		}
+		
+		return $ashley_packages;
 	}
 	
 	/**
