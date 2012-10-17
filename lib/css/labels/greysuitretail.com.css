@@ -48,4 +48,5 @@ body { background-color: #A2AAB0 }
 /**** OLD ****/
 a { color: #282828; }
 a:hover { color: #a9c800 }
+#nav, .box h2 { background-color: #7a7b7d }
 #description { color: #a9c800 }

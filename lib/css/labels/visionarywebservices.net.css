@@ -1,17 +1,17 @@
-/**********************************/
-/* Label - GForceMarketingInc.com */
-/**********************************/
+/************************************/
+/* Label - VisionaryWebservices.net */
+/************************************/
 body { background-color: #A2AAB0 }
 #log-out, #log-out a { color: #4B4F51 }
-#nav { border-bottom-color: #820023; }
-#nav-right a { color: #820023 }
+#nav { border-bottom-color: #000000; }
+#nav-right a { color: #000000 }
 #footer, #footer a { color: #DADFE3 }
 #footer a:hover { color:  #fff }
-#sidebar a.sub { color: #820023 }
-#sidebar a.sub:hover, #sidebar a.sub.selected { background-color: #820023 !important; border-top-color: #ACDB00; border-bottom-color: #AD2D00; }
+#sidebar a.sub { color: #000000 }
+#sidebar a.sub:hover, #sidebar a.sub.selected { background-color: #000000 !important; border-top-color: #ACDB00; border-bottom-color: #636363; }
 .boxy-wrapper .title-bar, .boxy-footer { background-color: #3C3D40 }
 
-.button {
+.button { 
 	background-color: #414141;
 	border: 1px solid #343537;
 
@@ -48,4 +48,5 @@ body { background-color: #A2AAB0 }
 /**** OLD ****/
 a { color: #282828; }
 a:hover { color: #a9c800 }
+#nav, .box h2 { background-color: #7a7b7d }
 #description { color: #a9c800 }

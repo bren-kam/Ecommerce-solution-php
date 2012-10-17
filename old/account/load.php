@@ -19,7 +19,7 @@ define( 'ADMIN', false );
 define( 'ACCOUNT', true );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', str_replace( '/account', '/', $_SERVER['DOCUMENT_ROOT'] ) );
+define( 'ABS_PATH', realpath( __DIR__ . '/../' ) . '/' );
 
 /** Define OPERATING_PATH as the main directory to get things from */
 define( 'OPERATING_PATH', ABS_PATH . 'account/' );
