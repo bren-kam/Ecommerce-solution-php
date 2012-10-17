@@ -52,7 +52,7 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function get( $attribute_item_id ) {
         $this->prepare(
-            'SELECT `attribute_item_id`, `attribute_id`, `name`, `sequence` FROM `attribute_items` WHERE `attribute_item_id` = :attribute_item_id'
+            'SELECT `attribute_item_id`, `attribute_id`, `attribute_item_name` AS name, `sequence` FROM `attribute_items` WHERE `attribute_item_id` = :attribute_item_id'
             , 'i'
             , array( ':attribute_item_id' => $attribute_item_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -68,7 +68,7 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function get_by_category( $category_id ) {
         return $this->prepare(
-            'SELECT ai.`attribute_item_id`, ai.`name`, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` ) LEFT JOIN `attribute_relations` AS ar ON ( ar.`attribute_id` = a.`attribute_id` ) WHERE ar.`category_id` = :category_id'
+            'SELECT ai.`attribute_item_id`, ai.`attribute_item_name` AS name, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` ) LEFT JOIN `attribute_relations` AS ar ON ( ar.`attribute_id` = a.`attribute_id` ) WHERE ar.`category_id` = :category_id'
             , 'i'
             , array( ':category_id' => $category_id )
         )->get_results( PDO::FETCH_CLASS , 'AttributeItem' );
@@ -82,7 +82,7 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function get_by_attribute( $attribute_id ) {
         return $this->prepare(
-            'SELECT `attribute_item_id`, `name` FROM `attribute_items` WHERE `attribute_id` = :attribute_id ORDER BY `sequence` ASC'
+            'SELECT `attribute_item_id`, `attribute_item_name` AS name FROM `attribute_items` WHERE `attribute_id` = :attribute_id ORDER BY `sequence` ASC'
             , 'i'
             , array( ':attribute_id' => $attribute_id )
         )->get_results( PDO::FETCH_CLASS, 'AttributeItem' );
@@ -95,8 +95,9 @@ class AttributeItem extends ActiveRecordBase {
      * @return array
      */
     public function get_by_product( $product_id ) {
+        // @Fix need to change attribute_item_name to name
         return $this->prepare(
-            'SELECT ai.`attribute_item_id`, ai.`attribute_id`, ai.`name`, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attribute_item_relations` AS air ON ( ai.`attribute_item_id` = air.`attribute_item_id` ) INNER JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` ) WHERE air.`product_id` = :product_id'
+            'SELECT ai.`attribute_item_id`, ai.`attribute_id`, ai.`attribute_item_name` AS name, a.`title` FROM `attribute_items` AS ai LEFT JOIN `attribute_item_relations` AS air ON ( ai.`attribute_item_id` = air.`attribute_item_id` ) INNER JOIN `attributes` AS a ON ( ai.`attribute_id` = a.`attribute_id` ) WHERE air.`product_id` = :product_id'
             , 's'
             , array( ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'AttributeItem' );
@@ -108,7 +109,7 @@ class AttributeItem extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'attribute_id' => $this->attribute_id
-            , 'name' => $this->name
+            , 'attribute_item_name' => $this->name
             , 'sequence' => $this->sequence
         ), 'isi' );
 
@@ -120,7 +121,7 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function update() {
         parent::update( array(
-            'name' => $this->name
+            'attribute_item_name' => $this->name
             , 'sequence' => $this->sequence
         ), array(
             'attribute_item_id' => $this->id
