@@ -160,7 +160,7 @@ get_header();
 						<option value="<?php echo $el['email_list_id']; ?>"<?php echo $selected; ?>><?php echo $el['name']; ?></option>
 						<?php } ?>
 					</select>
-					<a href="/email-marketing/email-lists/add-edit" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
+					<a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
 				</p>
 				<br />
 				
