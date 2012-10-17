@@ -45,7 +45,7 @@ class Ashley_Feed extends Base_Class {
         if ( is_array( $website_ids ) )
         foreach( $website_ids as $wid ) {
 			echo "<h1>$wid</h1>";
-            $this->run( $wid, $file );
+            //$this->run( $wid, $file );
         }
 
         return true;
