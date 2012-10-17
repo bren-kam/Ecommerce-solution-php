@@ -85,12 +85,110 @@ class Website_Categories extends Base_Class {
 		
 		return $website_categories;
 	}
+
+    /**
+     * Block categories
+     *
+     * @param array $category_ids
+     * @return bool
+     */
+    public function block_categories( array $category_ids ) {
+        if ( empty( $category_ids ) )
+            return true;
+
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+        foreach ( $category_ids as &$cid ) {
+            $cid = (int) $cid;
+        }
+
+        $values = "( $website_id, " . implode( " ), ( $website_id, ", $category_ids ) . ' )';
+
+        // Insert into blocked list
+        $this->db->query( "INSERT INTO `website_blocked_category` ( `website_id`, `category_id` ) VALUES $values" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to block category ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        // Remove these
+        $category_ids = implode( ',', $category_ids );
+
+        // Remove the categories
+        $this->db->query( "DELETE FROM `website_categories` WHERE `website_id` = $website_id AND `category_id` IN ( $category_ids )" );
+
+        if ( $this->db->errno() ) {
+			$this->_err( 'Failed to remove blocked categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+     * Unblock categories
+     *
+     * @param array $category_ids
+     * @return bool
+     */
+    public function unblock_categories( array $category_ids ) {
+        if ( empty( $category_ids ) )
+            return true;
+
+        global $user;
+
+        // Type Juggling
+        $website_id = (int) $user['website']['website_id'];
+
+        foreach ( $category_ids as &$cid ) {
+            $cid = (int) $cid;
+        }
+
+        $category_ids = implode( ',', $category_ids );
+
+        $this->db->query( "DELETE FROM `website_blocked_category` WHERE `website_id` = $website_id AND `category_id` IN ( $category_ids )" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to unblock category ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        return true;
+    }
+
+    /**
+	 * Get blocked website category ids
+	 *
+	 * @return array
+	 */
+	public function get_blocked_categories() {
+		global $user;
+
+		// Type Juggling
+		$website_id = (int) $user['website']['website_id'];
+
+		$website_blocked_categories = $this->db->get_col( "SELECT `category_id` FROM `website_blocked_category` WHERE `website_id` = $website_id" );
+
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get blocked category ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		return $website_blocked_categories;
+	}
 	
 	 /**
 	  * Get all sub categories related to a website and a main category
 	  *
 	  * @param int $category_id
-	  * @returns array
+	  * @return array
 	  */
 	 public function get_all_child_categories( $category_id ) {
 		 // Instantiate Class

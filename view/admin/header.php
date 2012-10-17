@@ -9,7 +9,7 @@
  * @var User $user
  */
 
-$resources->css_before( 'labels/' . 'greysuitretail.com', 'style' );
+$resources->css_before( 'labels/' . DOMAIN, 'style' );
 $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 
 $template->set( 'section_' . $template->v('section'), ' class="selected"');
