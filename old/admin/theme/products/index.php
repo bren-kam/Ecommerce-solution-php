@@ -123,7 +123,7 @@ get_header();
 					<th><?php echo _('Updated'); ?></th>
 					<th><?php echo _('Brand'); ?></th>
 					<th width="10%"><?php echo _('SKU'); ?></th>
-					<th width="8%"><?php echo _('Status'); ?></th>
+					<th><?php echo _('Category'); ?></th>
 				</tr>
 			</thead>
 			<tbody>

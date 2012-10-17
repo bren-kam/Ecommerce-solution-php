@@ -56,10 +56,6 @@ if ( isset( $_GET['iSortCol_0'] ) ) {
 			case 5:
 				$field = 'c.`name`';
 			break;
-			
-			case 6:
-				$field = 'a.`status`';
-			break;
 		}
 			
 		$order_by .= $field . ' ' . $_GET['sSortDir_' . $i] . ', ';
@@ -136,7 +132,7 @@ foreach ( $products as $product ) {
 			<a href="/products/add-edit/?pid=' . $product['product_id'] . '" title=\'' . _('Edit') . ' "' . $product['name'] . '"\' class="edit-product">' . _('Edit') . '</a> |
 			<a href="javascript:;" id="aDelete' . $product['product_id'] . '" title=\'' . _('Delete') . ' "' . $product['name'] . '"\' class="delete-product">' . _('Delete') . '</a> | 
 			<a href="/products/clone/?pid=' . $product['product_id'] . '" title=\'' . _('Clone') . ' "' . $product['name'] . '"\' target="_blank">' . _('Clone') . '</a>
-		</div>', $product['created_by'], $product['updated_by'], $product['brand'], $product['sku'], ucwords( $product['status'] ) );
+		</div>', $product['created_by'], $product['updated_by'], $product['brand'], $product['sku'], $product['category'] );
 }
 
 echo json_encode( array( 

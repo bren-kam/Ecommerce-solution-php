@@ -110,7 +110,7 @@ get_header('facebook/');
 
 	            <div id="apps-content" class="clear">
 	               <div id="apps-icon">
-                    <img src="https://www.greysuitapps.com/fb/images/icons/fan-offer.png" alt="Fan Offer" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/fb-home.png" alt="<?php echo _('Facebook Site'); ?>" />
 	                </div>
 	                <div id="apps-desc">
 	                    <h1>Facebook Site</h1>

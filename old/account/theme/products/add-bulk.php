@@ -60,7 +60,7 @@ get_header();
 		if ( isset( $errs ) )
 			echo "<p class='red'>$errs</p>";
 		?>
-        <p><?php echo _('Separate SKU’s by putting one on each line.'); ?></p>
+        <p><?php echo _("Separate SKU's by putting one on each line."); ?></p>
 		<form action="/products/add-bulk/" method="post" name="fAddBulk">
             <textarea name="taProductSKUs" id="taProductSKUs" cols="50" rows="20" class="col-2"><?php if ( !$success ) echo $_POST['taProductSKUs']; ?></textarea>
             <br /><br />
