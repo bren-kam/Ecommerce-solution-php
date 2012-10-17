@@ -38,6 +38,9 @@ class TicketsController extends BaseController {
         // Reset any defaults
         unset( $_SESSION['tickets'] );
 
+        // Set first one to be me
+        $_SESSION['tickets']['assigned-to'] = $this->user->id;
+
         return $template_response;
     }
 
