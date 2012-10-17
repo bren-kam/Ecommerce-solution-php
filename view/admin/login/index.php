@@ -10,6 +10,8 @@
  */
 $resources->css_before( 'labels/' . 'greysuitretail.com', 'login' );
 $resources->javascript( 'sparrow' );
+
+$margin_bottom = ( 'greysuitretail' == DOMAIN ) ? '' : '20px';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -24,7 +26,7 @@ $resources->javascript( 'sparrow' );
 <body>
 <?php $template->get_top(); ?>
 
-<div id="login-logo"><img src="/images/logos/login/greysuitretail.com.png" alt="<?php echo TITLE; ?>" /></div>
+<div id="login-logo"<?php if ( !empty( $margin_bottom ) ) echo ' style="margin-bottom: ' . $margin_bottom . ' "'; ?>><img src="/images/logos/login/<?php echo DOMAIN; ?>.png" alt="<?php echo TITLE; ?>" /></div>
 <div id="login">
     <?php
     if ( $errs )
