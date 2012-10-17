@@ -1,0 +1,7 @@
+/*****************/
+/* Brands - Edit */
+/*****************/
+.product-option, .product-option-placeholder { padding: 5px 0; margin: 5px 0; border: 1px solid; height: 17px; cursor: n-resize; width: 266px }
+.product-option-placeholder { border-style: dashed; cursor: auto; }
+.product-option .product-option-name { margin-left: 5px; }
+.product-option img { margin-right: 10px; }

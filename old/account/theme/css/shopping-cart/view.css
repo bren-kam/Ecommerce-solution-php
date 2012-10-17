@@ -1,0 +1,11 @@
+/* Tables */
+#tItemList { border:1px solid #CCC; }
+#tItemList th { padding:10px; border:1px solid #CCC; background-color:#CCC; }
+#tItemList td { padding:10px; border:1px solid #CCC; vertical-align:text-top; }
+
+/* Inputs */
+input[type="text"], input[type="password"] { border:1px solid #999; width:250px; }
+
+/* Misc */
+.red { color:#f00; }
+.green { color:#090; }

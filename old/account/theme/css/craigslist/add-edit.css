@@ -1,0 +1,75 @@
+/************************/
+/* Craigslist  - Add/Edit */
+/************************/
+.page-content { margin-right: 325px; padding: 0 5px }
+.page-content h2 { margin-top: 24px; font-size: 19px;line-height: 25px;padding-bottom: 2px;color: #616268;}
+.divider { width: 100%; height:1px; background-color: #D3D3D3; margin-top: 22px; }
+#fAddEdit td { padding-bottom: 7px }
+#fAddEdit td.last { padding-bottom: 0 }
+
+.tb, select { 
+	border: 1px solid #636363;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	padding: 2px;
+}
+
+#right-sidebar {width: 306px; float:right; margin: 0 5px}
+#right-sidebar .box { width: 306px;  margin-bottom: 10px; border: 1px solid #AFAFAF }
+#right-sidebar .box-content { padding: 0 10px 10px; }
+#right-sidebar .box h2 { font-size:20px; font-weight:bold; color:#fff; line-height:30px; padding:0 10px 0 19px; margin: 1px 1px 10px; }
+
+div.even { background-color: #E3E3E3 !important; }
+
+/** Handle Autocomplete **/
+.autocomplete-w1 { background:url(img/shadow.png) no-repeat bottom right; position:absolute; top:0px; left:0px; margin:6px 0 0 6px; /* IE6 fix: */ _background:none; _margin:1px 0 0 0; }
+.autocomplete { border:1px solid #999; background:#FFF; cursor:default; text-align:left; max-height:350px; overflow:auto; margin:-6px 6px 6px -6px; /* IE6 specific: */ _height:350px;  _margin:0; _overflow-x:hidden; }
+.autocomplete .selected { background:#F0F0F0; }
+.autocomplete div { padding:2px 5px; white-space:nowrap; overflow:hidden; }
+.autocomplete strong { font-weight:normal; color:#3399FF; }
+
+/** Step: 2: Upload Images **/
+.product-image, .image-placeholder { float:left; text-align:center; width: 50px; margin-right: 40px; height: 80px; padding-bottom: 10px; }
+.product-image { cursor: w-resize; }
+.image-placeholder { border: 1px dashed #C8C8C8; padding-bottom: 0; margin-bottom: 10px; }
+.product-image img { padding-bottom: 3px; }
+.product-image a { font-size: 12px; font-weight: bold; line-height: 23px; text-align:center; }
+#dUploadedImages { margin-top: 32px }
+#fUploadImagesUploader { margin-top: 30px; }
+
+/***** Add Products *****/
+#tTitle, #tCraigslistPublishTitle {
+	width:100%; height: 30px; font-size: 18px; padding: 2px 2px 0;
+	border: 1px solid #636363;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px; 
+}
+#dTitleContainer { margin: 0 6px 10px 0; line-height: 1px; }
+
+#sCraigslistCategory { width: 100%; }
+.list-item { background-color: #FFFFFF; }
+.box-action { padding: 20px 5px 0; position: relative; padding-bottom:0; text-align:right; }
+
+img.ui-datepicker-trigger { float:left; cursor: pointer; position:absolute; right: 0; top: 4px; }
+.date-container { position:relative; padding-right: 20px; }
+
+input.cb { width: 15px !important; }
+
+/* Make the headlines larger */
+.tb.headline { width: 390px }
+#sCraigslistMarkets { height: 100px }
+
+/******* Preview Window **********/
+#dPreviewArea { font:16px serif; line-height:20px; }
+#dPreviewArea h2 { font:24px serif; font-weight:700; }
+#dPreviewArea p { margin-bottom: 20px; }
+#dPreviewArea ul { list-style:none; margin-left:15px; }
+#dPreviewArea a { color:#00f; }
+
+#taCraigslistPublish { width:100% }
+#dCraigslistCustomPreview { background-color:#FFF; border:1px solid #666; padding:10px; }
+
+#dCraigslistPreview { margin:5px; padding:10px; border:1px solid #666; }
+#dCraigslistCustomPreview h1, #dCraigslistCustomPreview h2, #dCraigslistCustomPreview h3, #dCraigslistCustomPreview h4, #dCraigslistCustomPreview h5, #dCraigslistCustomPreview h6 { float:  none; }

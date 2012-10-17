@@ -1,0 +1,19 @@
+/********************/
+/* Accounts - Notes */
+/********************/
+.dNote {
+	display: block;
+	border-bottom-color: #CCCCCC;
+	border-bottom-style:  solid;
+	border-bottom-width: 1px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	width: 100%;
+	float: left;
+}
+.title { float: left; width: 125px; display: block; line-height: 18px; font-size: 12px;}
+.note { width: auto; line-height:16px; display:block; float:left; font-size: 12px;}
+#dNotes a { color: #FFA800; }
+#dNotes a:hover { color: #616268; }
+
+#taNoteContents { padding: 1px 0 0 2px; margin-bottom: 7px }

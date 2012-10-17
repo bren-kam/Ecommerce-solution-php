@@ -1,0 +1,26 @@
+/*****************/
+/* View Feedback */
+/*****************/
+h2 { font-size: 18px; font-weight: bold; padding-bottom:7px }
+td { padding: 0 10px 7px 0; }
+blockquote { line-height: 17px }
+
+/*** Comments ***/
+.comment { margin: 10px; clear:left; position:relative; }
+.comment img { margin-right: 10px; float:left }
+.comment-content { float:left }
+.comment p { font-size: 12px; color: #464A4C }
+.comment br { clear: both }
+.comment .name { font-weight: bold; color: #007AD }
+.comment .date { font-size: 11px; color:#757B80 }
+.divider { clear: both; height: 1px; background-color: #E3E3E3; margin: 0 10px }
+.delete-comment { position: absolute; top: 0; right: 0; display: none }
+.comment:hover .delete-comment { display: inline }
+
+#iFeedbackCommentsImage { display: none; margin: 0 10px 0 0; float:left }
+#taFeedbackComments { width: 100%; height: 16px; border: 1px #ddd solid; padding: 2px; font-size: 12px; font-family: Arial, Helvetica, sans-serif; color: #777 }
+#aAddComment { float:right; display: none; margin: 3px 10px 0 }
+#dPrivate { float:right; display: none; margin: 12px 10px 0; }
+#dPrivate input { position: relative; top: 2px }
+#dTAFeedbackCommentsWrapper { margin: 0 14px 0 0 }
+#dFeedbackCommentsDivider { margin-top: 10px }
