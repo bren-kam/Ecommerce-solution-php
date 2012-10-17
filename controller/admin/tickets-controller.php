@@ -39,7 +39,8 @@ class TicketsController extends BaseController {
         unset( $_SESSION['tickets'] );
 
         // Set first one to be me
-        $_SESSION['tickets']['assigned-to'] = $this->user->id;
+        if ( $this->user->has_permission( 7 ) )
+            $_SESSION['tickets']['assigned-to'] = $this->user->id;
 
         return $template_response;
     }
