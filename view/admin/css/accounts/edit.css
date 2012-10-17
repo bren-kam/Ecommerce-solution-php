@@ -1,0 +1,10 @@
+#sidebar { margin-top: 0; }
+#subcontent-wrapper { padding-top: 0; }
+
+#subcontent h3 { color: #828487; font-size: 18px; padding-bottom: 16px; }
+input.tb { width: 368px; }
+
+#tFeatures { width: 60%; }
+#tFeatures label { position: relative; bottom: 3px }
+.on-off{ display: block; width: 76px; height: 25px; background: url(/images/accounts/edit/on-off.png) 0 -25px no-repeat; position: relative; top: 5px; }
+.on-off.selected { background-position: 0 0 }
