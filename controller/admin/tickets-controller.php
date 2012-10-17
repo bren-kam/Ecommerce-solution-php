@@ -554,6 +554,12 @@ class TicketsController extends BaseController {
 
         fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
 
+        // Change who it's assigned to
+        jQuery('#sAssignedTo')->val( $assigned_user->id );
+
+        // Add jQuery
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
         return $response;
     }
 
