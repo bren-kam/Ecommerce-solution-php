@@ -93,6 +93,16 @@ class AccountsController extends BaseController {
             $account->type = $_POST['sType'];
             $account->create();
 
+            // Needs to create a checklist
+            $checklist = new Checklist();
+            $checklist->website_id = $account->id;
+            $checklist->type = 'Website Setup';
+            $checklist->create();
+
+            // Add checklist website items
+            $checklist_website_item = new ChecklistWebsiteItem();
+            $checklist_website_item->add_all_to_checklist( $checklist->id );
+
             $this->notify( _('Your account was successfully created!') );
 
             return new RedirectResponse('/accounts/');

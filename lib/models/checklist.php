@@ -32,6 +32,21 @@ class Checklist extends ActiveRecordBase {
     }
 
     /**
+     * Create Checklist
+     */
+    public function create() {
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'website_id' => $this->website_id
+            , 'type' => $this->type
+            , 'date_created' => $this->date_created
+        ), 'iisssis' );
+
+        $this->checklist_id = $this->id = $this->get_insert_id();
+    }
+
+    /**
      * Get Incomplete checklists
      *
      * @return array

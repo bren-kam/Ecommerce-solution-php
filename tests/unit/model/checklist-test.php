@@ -28,6 +28,30 @@ class ChecklistTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Create
+     *
+     * @depends testGet
+     */
+    public function create() {
+        // Declare variables
+        $account_id = -5;
+
+        $this->checklist->website_id = $account_id;
+        $this->checklist->type = 'Website Setup';
+        $this->checklist->create();
+
+        $this->assertTrue( !is_null( $this->checklist->id ) );
+
+        // Make sure it's in the database
+        $this->checklist->get( $this->checklist->id );
+
+        $this->assertTrue( !is_null( $this->checklist->website_id ) );
+
+        // Delete the account
+        $this->db->delete( 'checklists', array( 'checklist_id' => $this->checklist->id ), 'i' );
+    }
+
+    /**
      * Tests getting incomplete checklists
      */
     public function testGetIncomplete() {
