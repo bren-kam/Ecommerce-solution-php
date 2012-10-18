@@ -354,16 +354,16 @@ class ChecklistsController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set Order by
-        $dt->order_by( 'days_left', 'b.`title`', 'a.`type`', 'a.`date_created`' );
-        $dt->search( array( 'b.`title`' => false ) );
+        $dt->order_by( 'days_left', 'w.`title`', 'u2.`contact_name`', 'c.`type`', 'c.`date_created`' );
+        $dt->search( array( 'w.`title`' => false ) );
 
         $not = ( isset( $_SESSION['checklists']['completed'] ) && '1' == $_SESSION['checklists']['completed'] ) ? 'NOT ' : '';
 
-        $dt->add_where( " AND a.`checklist_id` {$not}IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )" );
+        $dt->add_where( " AND c.`checklist_id` {$not}IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )" );
 
         // If they are below 8, that means they are a partner
 		if ( !$this->user->has_permission(8) )
-			$dt->add_where( ' AND c.`company_id` = ' . (int) $this->user->company_id );
+			$dt->add_where( ' AND u.`company_id` = ' . (int) $this->user->company_id );
 
         $checklist = new Checklist();
 

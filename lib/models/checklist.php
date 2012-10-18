@@ -67,7 +67,7 @@ class Checklist extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        return $this->prepare( "SELECT a.`checklist_id`, a.`type`, a.`date_created`, b.`title`, d.`contact_name` AS 'online_specialist', DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) LEFT JOIN `users` AS d ON ( b.`os_user_id` = d.`user_id` ) WHERE b.`status` = 1 $where $order_by LIMIT $limit"
+        return $this->prepare( "SELECT c.`checklist_id`, c.`type`, c.`date_created`, b.`title`, d.`contact_name` AS 'online_specialist', DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS c LEFT JOIN `websites` AS w ON ( w.`website_id` = c.`website_id` ) INNER JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = w.`os_user_id` ) WHERE w.`status` = 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Checklist' );
@@ -84,7 +84,7 @@ class Checklist extends ActiveRecordBase {
 		list( $where, $values ) = $variables;
 
 		// Get the website count
-        return $this->prepare( "SELECT COUNT( a.`checklist_id` ) FROM `checklists` AS a LEFT JOIN `websites` AS b ON ( a.`website_id` = b.`website_id` ) INNER JOIN `users` AS c ON ( b.`user_id` = c.`user_id` ) LEFT JOIN `users` AS d ON ( b.`os_user_id` = d.`user_id` ) WHERE b.`status` = 1 $where"
+        return $this->prepare( "SELECT COUNT( c.`checklist_id` ) FROM `checklists` AS c LEFT JOIN `websites` AS w ON ( w.`website_id` = c.`website_id` ) INNER JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = w.`os_user_id` ) WHERE w.`status` = 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
