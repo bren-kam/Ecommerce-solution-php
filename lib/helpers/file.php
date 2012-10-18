@@ -79,6 +79,8 @@ class File {
     /**
      * Upload File
      *
+     * @throws HelperException
+     * 
      * @param string $file_path
      * @param string $key
      * @param string $dir [optional]
@@ -86,7 +88,7 @@ class File {
      */
     public function upload_file( $file_path, $key, $dir = '' ) {
 		if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ ) )
-            return false;
+            throw new HelperException( 'Amazon S3 failed to upload file' );
 
         unlink( $file_path );
 
@@ -98,6 +100,8 @@ class File {
      *
      * Copes a file in Amazon S3
 	 *
+     * @throws HelperException
+     * 
 	 * @param int $account_id
 	 * @param string $url
      * @param string $bucket
@@ -110,7 +114,7 @@ class File {
         $new_uri = preg_replace( '/^([0-9]+)/', $account_id, $uri );
 
 		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri, S3::ACL_PUBLIC_READ ) )
-            return false;
+            throw new HelperException( 'Amazon S3 failed to copy file' );
 
         return 'http://' . $bucket . '/' . $new_uri;
 	}
