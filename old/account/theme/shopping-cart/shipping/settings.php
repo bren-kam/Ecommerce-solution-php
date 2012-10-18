@@ -213,6 +213,11 @@ get_header();
                 <td><label for="usps-username"><?php echo _('USPS Development Username'); ?>:</label></td>
                 <td><input type="text" class="tb" name="usps[username]" id="usps-username" value="<?php echo $usps['username']; ?>" maxlength="30" /></td>
             </tr>
+            <tr><td class="title" colspan="2"><strong><?php echo _('Tax Settings'); ?></strong></td></tr>
+            <tr>
+                 <td>&nbsp;</td>
+                 <td><input type="checkbox" class="cb" name="taxable-shipping" id="taxable-shipping" value="1" /> <label for="taxable-shipping"><?php echo _('Taxable Shipping'); ?>:</label></td>
+             </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
                 <td>&nbsp;</td>
