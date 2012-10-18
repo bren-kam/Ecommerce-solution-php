@@ -67,7 +67,7 @@ class Checklist extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        return $this->prepare( "SELECT c.`checklist_id`, c.`type`, c.`date_created`, b.`title`, d.`contact_name` AS 'online_specialist', DATEDIFF( DATE_ADD( a.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS c LEFT JOIN `websites` AS w ON ( w.`website_id` = c.`website_id` ) INNER JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = w.`os_user_id` ) WHERE w.`status` = 1 $where $order_by LIMIT $limit"
+        return $this->prepare( "SELECT c.`checklist_id`, c.`type`, c.`date_created`, w.`title`, u2.`contact_name` AS 'online_specialist', DATEDIFF( DATE_ADD( c.`date_created`, INTERVAL 30 DAY ), NOW() ) AS 'days_left' FROM `checklists` AS c LEFT JOIN `websites` AS w ON ( w.`website_id` = c.`website_id` ) INNER JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = w.`os_user_id` ) WHERE w.`status` = 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Checklist' );
