@@ -1190,7 +1190,7 @@ class AccountsController extends BaseController {
             $data[] = array(
                 $image
                 , $title
-                , '<a href="/users/edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
+                , '<a href="/users/add-edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
                 , $a->online_specialist
             );
         }
