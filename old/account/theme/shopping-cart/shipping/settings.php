@@ -33,6 +33,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'shipping-set
 			, 'shipping-ups' => serialize( $_POST['ups'] )
 			, 'shipping-fedex' => serialize( $_POST['fedex'] )
 			, 'shipping-usps' => serialize( $_POST['usps'] )
+            , 'taxable-shipping' => ( isset( $_POST['taxable-shipping'] ) ) ? '1' : '0'
 		) );
 }
 
