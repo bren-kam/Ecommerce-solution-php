@@ -58,7 +58,7 @@ class Account extends ActiveRecordBase {
      * @return array
      */
     public function get_by_product( $product_id ) {
-        return $this->prepare( "SELECT `website_id`, `title`, `domain` FROM `websites` AS w LEFT JOIN `website_products` AS wp ON ( wp.`website_id` = w.`website_id` )WHERE w.`status` = 1 AND wp.`product_id` = :product_id AND wp.`blocked` = 0 AND wp.`active` = 1 ORDER BY w.`title`"
+        return $this->prepare( "SELECT w.`website_id`, w.`title`, `domain` FROM `websites` AS w LEFT JOIN `website_products` AS wp ON ( wp.`website_id` = w.`website_id` ) WHERE w.`status` = 1 AND wp.`product_id` = :product_id AND wp.`blocked` = 0 AND wp.`active` = 1 ORDER BY w.`title`"
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
