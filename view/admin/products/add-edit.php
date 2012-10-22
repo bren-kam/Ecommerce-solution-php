@@ -16,6 +16,7 @@
  * @var array $product_attribute_items
  * @var array $tags
  * @var array $product_images
+ * @var account $accounts
  */
 
 $title = ( $product->id ) ? _('Edit') : _('Add');
@@ -257,6 +258,15 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                     </div>
                 <?php } ?>
             </div>
+
+            <?php if ( !empty( $accounts ) ) { ?>
+                <h2><?php echo _('Accounts With Product'); ?></h2>
+                <ul>
+                    <?php foreach( $accounts as $account ) { ?>
+                        <li><?php echo $account->title; ?></li>
+                    <?php } ?>
+                </ul>
+            <?php } ?>
         </div>
     </div>
     <input type="hidden" id="hProductId" value="<?php if ( $product_id ) echo $product_id; ?>" />
