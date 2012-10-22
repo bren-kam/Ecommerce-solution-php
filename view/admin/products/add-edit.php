@@ -260,6 +260,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
             </div>
 
             <?php if ( !empty( $accounts ) ) { ?>
+                <br />
                 <h2><?php echo _('Accounts With Product'); ?></h2>
                 <ul>
                     <?php foreach( $accounts as $account ) { ?>
