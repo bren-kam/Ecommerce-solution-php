@@ -11,7 +11,7 @@ jQuery(function($) {
     // Refresh the page every 5 minutes
     setInterval( function() {
         $('.dt:first').dataTable().fnDraw();
-    }, 5000 );
+    }, 300000 );
 });
 
 /**
