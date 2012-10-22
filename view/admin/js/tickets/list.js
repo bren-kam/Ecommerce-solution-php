@@ -10,8 +10,8 @@ jQuery(function($) {
 
     // Refresh the page every 5 minutes
     setInterval( function() {
-        $('#tListTickets').fnDraw();
-    }, 300000 );
+        $('.dt:first').dataTable().fnDraw();
+    }, 5000 );
 });
 
 /**
