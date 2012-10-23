@@ -686,7 +686,7 @@ class TicketsController extends BaseController {
         $dt->add_where( $where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )' );
 
         // If they are below 8, that means they are a partner
-		if ( !$this->user->has_permission(9) )
+		if ( !$this->user->has_permission(8) )
 			$dt->add_where( ' AND ( c.`company_id` = ' . (int) $this->user->company_id . ' OR a.`user_id` = ' . (int) $this->user->id . ' )' );
 
         $status = ( isset( $_SESSION['tickets']['status'] ) ) ? (int) $_SESSION['tickets']['status'] : 0;
@@ -699,7 +699,7 @@ class TicketsController extends BaseController {
             if ( '-1' == $_SESSION['tickets']['assigned-to'] ) {
                 $dt->add_where( ' AND c.`role` <= ' . (int) $this->user->role );
             } else {
-                $assigned_to = ( $this->user->has_permission(8) ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
+                $assigned_to = ( $this->user->has_permission(9) ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
                 $dt->add_where( $assigned_to );
             }
         }
