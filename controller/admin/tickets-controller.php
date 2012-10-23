@@ -686,7 +686,7 @@ class TicketsController extends BaseController {
         $dt->add_where( $where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )' );
 
         // If they are below 8, that means they are a partner
-		if ( !$this->user->has_permission(8) )
+		if ( !$this->user->has_permission(9) )
 			$dt->add_where( ' AND ( c.`company_id` = ' . (int) $this->user->company_id . ' OR a.`user_id` = ' . (int) $this->user->id . ' )' );
 
         $status = ( isset( $_SESSION['tickets']['status'] ) ) ? (int) $_SESSION['tickets']['status'] : 0;
@@ -712,6 +712,7 @@ class TicketsController extends BaseController {
 
         // Get accounts
         $tickets = $ticket->list_all( $dt->get_variables() );
+
         $dt->set_row_count( $ticket->count_all( $dt->get_count_variables() ) );
 
         // Set initial data
