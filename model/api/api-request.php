@@ -264,31 +264,38 @@ class APIRequest {
 	
 	/**
 	 * Create Website
-	 * 
-	 * @param int $user_id
-	 * @param string $domain
-	 * @param string $title
-     * @param string $plan_name
-     * @param string $plan_description
-	 * @param string $type
-	 * @param bool $pages
-	 * @param bool $product_catalog
-	 * @param bool $blog
-	 * @param bool $email_marketing
-	 * @param bool $shopping_cart
-	 * @param bool $seo
-	 * @param bool $room_planner
-     * @param bool $craigslist
-     * @param bool $social_media
-	 * @param bool $domain_registration
-	 * @param bool $additional_email_addresses
-     * @param int $pages
-	 * @return int|bool
 	 */
 	protected function create_website() {
+        /**
+         * @param int $user_id
+         * @param string $domain
+         * @param string $title
+         * @param string $plan_name
+         * @param string $plan_description
+         * @param string $type
+         * @param bool $pages
+         * @param bool $product_catalog
+         * @param bool $blog
+         * @param bool $email_marketing
+         * @param bool $shopping_cart
+         * @param bool $seo
+         * @param bool $room_planner
+         * @param bool $craigslist
+         * @param bool $social_media
+         * @param bool $domain_registration
+         * @param bool $additional_email_addresses
+         * @param int $pages
+         */
+
 		// Gets parameters and errors out if something is missing
-		$website = $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' );
-		$website['title'] = stripslashes( $website['title'] );
+		extract( $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
+
+        // Create account
+        $account = new Account();
+
+        // @CONTINUE HERE
+
+        $website['title'] = stripslashes( $website['title'] );
 		$website['status'] = 1;
         $website['date_created'] = dt::date('Y-m-d H:i:s');
 		

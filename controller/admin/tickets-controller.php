@@ -140,7 +140,7 @@ class TicketsController extends BaseController {
         );
 
         // Figure out who we're assigned to
-        $assigned_to_user_id = 473; // Technical user (default)
+        $assigned_to_user_id = 493; // Technical user (default)
 
         // Find out if they are trying to direct it to a particular person
         foreach ( $variables as $string ) {

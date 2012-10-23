@@ -141,4 +141,17 @@ class dt extends Base_Class {
         // Return the format
         return $datetime->format( $format );
     }
+
+    /**
+     * Hours to date
+     *
+     * @param int $hours
+     * @return DateTime
+     */
+    public static function hours_to_date( $hours ) {
+        $datetime = new DateTime();
+        $datetime->add( new DateInterval( 'P' . (int) $hours . 'H' ) );
+
+        return $datetime;
+    }
 }
