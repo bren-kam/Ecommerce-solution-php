@@ -101,7 +101,6 @@ class UsersController extends BaseController {
                 , 1 => _('Active')
             ));
 
-
         $ft->add_field( 'select', _('Role'), 'sRole', $user->role )
             ->options( array_slice( array(
                 1 => '1 - ' ._('Authorized User')
@@ -114,7 +113,7 @@ class UsersController extends BaseController {
                 , 8 => '8 - ' . _('Admin')
                 , 9 => '9'
                 , 10 => '10 - ' . _('Super Admin')
-            ), 0, $this->user->role )
+            ), 0, $this->user->role, true )
         );
 
         $ft->add_field( 'blank', '' );
