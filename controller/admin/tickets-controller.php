@@ -127,12 +127,40 @@ class TicketsController extends BaseController {
             $ticket->create();
         }
 
+        // Special words
+        $words = array(
+            247 => '@sales'  // Chad
+            , 73 => '@products' // Chris
+            , 54 => '@accounting' // Craig
+        );
+
+        $variables = array(
+            $_POST['tTicketSummary']
+            , $_POST['taTicketMessage']
+        );
+
+        // Figure out who we're assigned to
+        $assigned_to_user_id = 473; // Technical user (default)
+
+        // Find out if they are trying to direct it to a particular person
+        foreach ( $variables as $string ) {
+            $string = strtolower( $string );
+
+            foreach ( $words as $user_id => $word ) {
+                if ( stristr( $string, $word ) ) {
+                    // Found it -- we're done here
+                    $assigned_to_user_id = $user_id;
+                    break 2;
+                }
+            }
+        }
+
         // Get browser information
         $browser = fn::browser();
 
         // Set ticket information
         $ticket->user_id = $this->user->id;
-        $ticket->assigned_to_user_id = 493; // Technical user
+        $ticket->assigned_to_user_id = $assigned_to_user_id; // Technical user
         $ticket->website_id = 0; // Admin side -- no website
         $ticket->summary = $_POST['tTicketSummary'];
         $ticket->message = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['taTicketMessage'] ), array('&') ), true , true ) );
