@@ -5,7 +5,7 @@
  * @package Grey Suit Retail
  * @since 1.0
  */
-class FTP {
+class Ftp {
 	// Connection settings
     public $host, $username, $password, $port, $cwd, $conn_id;
 	

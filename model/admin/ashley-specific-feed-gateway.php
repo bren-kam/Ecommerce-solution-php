@@ -64,7 +64,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$products = array();
 
         // Setup FTP
-		$ftp = new FTP( "/CustEDI/$folder/$subfolder/" );
+		$ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
 
 		// Set login information
 		$ftp->host     = self::FTP_URL;
