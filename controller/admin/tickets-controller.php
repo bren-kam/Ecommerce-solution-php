@@ -139,18 +139,40 @@ class TicketsController extends BaseController {
             , $_POST['taTicketMessage']
         );
 
+        // Special hash priorities
+        $priorities = array(
+            1 => '#high' // high priority
+            , 2 => '#urgent' // urgent priority
+        );
+
+        $variables = array(
+            $_POST['tTicketSummary']
+            , $_POST['taTicketMessage']
+        );
+
         // Figure out who we're assigned to
         $assigned_to_user_id = 493; // Technical user (default)
+        $priority = 0; // Normal
 
         // Find out if they are trying to direct it to a particular person
         foreach ( $variables as $string ) {
             $string = strtolower( $string );
 
+            if ( 493 == $assigned_to_user_id )
             foreach ( $words as $user_id => $word ) {
                 if ( stristr( $string, $word ) ) {
                     // Found it -- we're done here
                     $assigned_to_user_id = $user_id;
-                    break 2;
+                    break;
+                }
+            }
+
+            if ( 0 == $priority )
+            foreach ( $priorities as $priority_id => $hash ) {
+                if ( stristr( $string, $hash ) ) {
+                    // Found it -- we're done here
+                    $priority = $priority_id;
+                    break;
                 }
             }
         }
@@ -169,6 +191,7 @@ class TicketsController extends BaseController {
         $ticket->browser_platform = $browser['platform'];
         $ticket->browser_user_agent = $browser['user_agent'];
         $ticket->status = 0;
+        $ticket->priority = $priority;
 
         // Update the ticket
         $ticket->update();
