@@ -218,7 +218,7 @@ get_header();
             <tr><td class="title" colspan="2"><strong><?php echo _('Tax Settings'); ?></strong></td></tr>
             <tr>
                  <td>&nbsp;</td>
-                 <td><input type="checkbox" class="cb" name="taxable-shipping" id="taxable-shipping" value="1"<?php if ( '1' == $settings['taxable-shipping'] ) echo ' checked="checked"'; ?> /> <label for="taxable-shipping"><?php echo _('Taxable Shipping'); ?>:</label></td>
+                 <td><input type="checkbox" class="cb" name="taxable-shipping" id="taxable-shipping" value="1"<?php if ( '1' == $settings['taxable-shipping'] ) echo ' checked="checked"'; ?> /> <label for="taxable-shipping"><?php echo _('Taxable Shipping'); ?></label></td>
              </tr>
             <tr><td colspan="2">&nbsp;</td></tr>
             <tr>
