@@ -1010,7 +1010,7 @@ class AccountsController extends BaseController {
 
         // Get the account category
         $account_category = new AccountCategory();
-        $account_category->reorganize_categories( $_GET['aid'], new Categories() );
+        $account_category->reorganize_categories( $_GET['aid'], new Category() );
 
         // Give them a notification
         $this->notify( _('The categories have been successfully reorganized!') );
