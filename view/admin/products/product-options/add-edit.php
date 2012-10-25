@@ -38,12 +38,14 @@ echo $template->start( $title, '../sidebar' );
         <p><?php echo _('This is an option that can be added to a product for a yes/no type question. Example: Insurance.'); ?></p>
         <p><a href="#" class="button screen" rel="checkbox" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
     </div>
+    <?php /*
     <div class="box last">
         <h2><?php echo _('Text'); ?></h2>
         <img src="/images/icons/product-options/text.png" width="68" height="68" alt="" align="left" />
         <p><?php echo _('This is an option that can be added if you want to give the user the ability to provide you with some information.'); ?></p>
         <p><a href="#" class="button screen" rel="text" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
     </div>
+    */?>
 
     <br clear="left" />
 </div>

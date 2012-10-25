@@ -7,7 +7,7 @@ class User extends ActiveRecordBase {
     private  $_admin;
 
     // The columns we will have access to
-    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role;
+    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role, $date_created;
 
     // Columns available in getting a complete user
     public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
@@ -33,6 +33,8 @@ class User extends ActiveRecordBase {
      * Create a user
      */
     public function create() {
+        $this->date_created = dt::now();
+
         $this->insert( array(
             'company_id' => $this->company_id
             , 'email' => $this->email
@@ -48,7 +50,7 @@ class User extends ActiveRecordBase {
             , 'billing_address1' => $this->billing_address1
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
-            , 'date_created' => dt::date( 'Y-m-d H:i:s' )
+            , 'date_created' => $this->date_created
         ), 'isssssiiissssss' );
 
         $this->user_id = $this->id = $this->get_insert_id();
@@ -143,10 +145,13 @@ class User extends ActiveRecordBase {
      * Get By Email
      *
      * @param string $email
+     * @param bool $status [optional]
      */
-    public function get_by_email( $email ) {
+    public function get_by_email( $email, $status = true ) {
+        $status_where = ( $status ) ? ' AND `status` = 1' : '';
+
         $this->prepare(
-            'SELECT ' . $this->get_columns() . ' FROM `users` WHERE `status` = 1 AND `email` = :email'
+            'SELECT ' . $this->get_columns() . ' FROM `users` WHERE `email` = :email' . $status_where
             , 's'
             , array( ':email' => $email )
         )->get_row(  PDO::FETCH_INTO, $this );

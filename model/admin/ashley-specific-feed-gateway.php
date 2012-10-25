@@ -64,7 +64,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$products = array();
 
         // Setup FTP
-		$ftp = new FTP( "/CustEDI/$folder/$subfolder/" );
+		$ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
 
 		// Set login information
 		$ftp->host     = self::FTP_URL;
@@ -199,7 +199,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		return $this->prepare(
             'SELECT wp.`product_id`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`user_id_created` = :user_id_created'
             , 'ii'
-            , array( ':account_id' => $account_id, ':user_id_created' => SELF::USER_ID )
+            , array( ':account_id' => $account_id, ':user_id_created' => self::USER_ID )
         )->get_results( PDO::FETCH_ASSOC );
 	}
 

@@ -26,13 +26,16 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test getting acounts by a user
+     * Test getting accounts by a user
      */
     public function testGetByUser() {
-        // Get the account
-        $accounts = $this->account->get_by_user( 1 );
+        // Declare variables
+        $user_id = 1;
 
-        $this->assertTrue( $accounts[0] instanceof Account );
+        // Get the account
+        $accounts = $this->account->get_by_user( $user_id );
+
+        $this->assertTrue( current( $accounts ) instanceof Account );
 
         $testing_account_exists = false;
 
@@ -44,6 +47,19 @@ class AccountTest extends BaseDatabaseTest {
         }
 
         $this->assertTrue( $testing_account_exists );
+    }
+
+    /**
+     * Test getting accounts by a product
+     */
+    public function testGetByProduct() {
+        // Declare variable
+        $product_id = 38972;
+
+        // Get the account
+        $accounts = $this->account->get_by_product( $product_id );
+
+        $this->assertTrue( current( $accounts ) instanceof Account );
     }
 
     /**

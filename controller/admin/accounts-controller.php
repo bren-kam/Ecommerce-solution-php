@@ -984,8 +984,12 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
         $ashley_specific_feed = new AshleySpecificFeedGateway();
-        $ashley_specific_feed->run( $_GET['aid'] );
+        $ashley_specific_feed->run( $account );
 
         // Give them a notification
         $this->notify( _('The ashley feed has been successfully run!') );
@@ -1190,7 +1194,7 @@ class AccountsController extends BaseController {
             $data[] = array(
                 $image
                 , $title
-                , '<a href="/users/edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
+                , '<a href="/users/add-edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
                 , $a->online_specialist
             );
         }

@@ -70,8 +70,11 @@ class ProductsController extends BaseController {
             // Get the industry as it may be needed
             if ( $this->verified() )
                 $industry->get( $product->industry_id );
+
+            $account = new Account();
+            $accounts = $account->get_by_product( $product->id );
         } else {
-            $product_attribute_items = $tags = $product_images = array();
+            $product_attribute_items = $tags = $product_images = $accounts = array();
 
             $date = new DateTime();
 
@@ -163,7 +166,7 @@ class ProductsController extends BaseController {
         $template_response = $this->get_template_response( 'add-edit' )
             ->select( 'products', 'add' )
             ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items' ) );
+            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
 
         $this->resources
             ->javascript( 'fileuploader', 'products/add-edit' )

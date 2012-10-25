@@ -16,6 +16,7 @@
  * @var array $product_attribute_items
  * @var array $tags
  * @var array $product_images
+ * @var account $accounts
  */
 
 $title = ( $product->id ) ? _('Edit') : _('Add');
@@ -251,12 +252,22 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                 foreach ( $product_images as $pi ) {
                     ?>
                     <div class="image">
-                        <a href="http://<?php echo $industries[$product->industry_id]->name; ?>.retailcatalog.us/products/<?php echo $product_id; ?>/large/<?php echo $pi; ?>" title="<?php echo _('View'); ?>" target="_blank"><img src="http://<?php echo $industries[$product->industry_id]->name; ?>.retailcatalog.us/products/<?php echo $product_id; ?>/small/<?php echo $pi; ?>" width="200" height="200" alt="" /></a>
+                        <a href="http://<?php echo str_replace( ' ', '', $industries[$product->industry_id]->name ); ?>.retailcatalog.us/products/<?php echo $product_id; ?>/large/<?php echo $pi; ?>" title="<?php echo _('View'); ?>" target="_blank"><img src="http://<?php echo str_replace( ' ', '', $industries[$product->industry_id]->name ); ?>.retailcatalog.us/products/<?php echo $product_id; ?>/small/<?php echo $pi; ?>" width="200" height="200" alt="" /></a>
                         <p><a href="#" class="delete" title="<?php echo _('Delete'); ?>" confirm="<?php echo _('Are you sure you want to delete this image? It cannot be undone'); ?>"><?php echo _('Delete'); ?></a></p>
                         <input type="hidden" name="images[]" value="<?php echo $pi; ?>" />
                     </div>
                 <?php } ?>
             </div>
+
+            <?php if ( !empty( $accounts ) ) { ?>
+                <br clear="left" /><br />
+                <h2><?php echo _('Accounts With Product'); ?></h2>
+                <ul>
+                    <?php foreach( $accounts as $account ) { ?>
+                        <li><?php echo $account->title; ?></li>
+                    <?php } ?>
+                </ul>
+            <?php } ?>
         </div>
     </div>
     <input type="hidden" id="hProductId" value="<?php if ( $product_id ) echo $product_id; ?>" />
