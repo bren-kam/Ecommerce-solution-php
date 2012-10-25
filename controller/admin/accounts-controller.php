@@ -1016,7 +1016,7 @@ class AccountsController extends BaseController {
         $this->notify( _('The categories have been successfully reorganized!') );
 
         // Redirect them to accounts page
-        return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'] ), '/accounts/actions/' );
+        return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'], '/accounts/actions/' ) );
     }
 
     /**
