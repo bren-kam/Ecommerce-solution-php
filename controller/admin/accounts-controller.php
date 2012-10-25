@@ -999,6 +999,27 @@ class AccountsController extends BaseController {
     }
 
     /**
+     * Reorganize categories
+     *
+     * @return RedirectResponse
+     */
+    protected function reorganize_categories() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account category
+        $account_category = new AccountCategory();
+        $account_category->reorganize_categories( $_GET['aid'], new Categories() );
+
+        // Give them a notification
+        $this->notify( _('The categories have been successfully reorganized!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( '/accounts/actions/', 'aid', $_GET['aid'] ) );
+    }
+
+    /**
      * Create craigslist account
      *
      * @return RedirectResponse
