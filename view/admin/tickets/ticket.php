@@ -71,7 +71,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
             <?php } ?>
         </td>
         <td>
-            <strong><?php echo _('Browser/OS'); ?></strong>
+            <strong><?php echo _('Browser'); ?></strong>
             <?php echo $ticket->browser_name, ' ', $ticket->browser_version ?>
         </td>
     </tr>
