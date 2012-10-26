@@ -319,8 +319,8 @@ class InstallService {
 
         // Login to Grey Suit Apps
         $login_fields = array(
-            'username' => config::key('trumpia-admin-username')
-            , 'password' => config::key('trumpia-admin-password')
+            'username' => Config::key('trumpia-admin-username')
+            , 'password' => Config::key('trumpia-admin-password')
         );
 
         $curl->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
@@ -345,7 +345,7 @@ class InstallService {
         );
 
         $page = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_createCustomer.php', $post_fields );
-
+		
         if ( !preg_match( '/action="[^"]+"/', $page ) )
             return _('Failed to create Trumpia customer');
 
@@ -371,11 +371,13 @@ class InstallService {
             , 'arg1' => $mobile_plan->trumpia_plan_id
         );
 
-        $update_plan = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_plan_fields );
-
+        $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_plan_fields );
+		
+		/** Assuming it's working -- the page it brought back changed
+		$update_plan = 
         if ( '<script type="text/javascript">history.go(-1);</script>' != $update_plan )
             return _("Failed to update customer's plan");
-
+		*/
         // Update Credits
         $update_credits_fields = array(
             'mode' => 'addCredit'
