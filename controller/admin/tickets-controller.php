@@ -212,9 +212,9 @@ class TicketsController extends BaseController {
 
         // Send email
         $assigned_user = new User();
-        $assigned_user->get( 493 ); // Technical user
+        $assigned_user->get( $assigned_to_user_id ); // Technical user
 
-        //fn::mail( $assigned_user->email, 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary, "Name: " . $this->user->contact_name . "\nEmail: " . $this->user->email . "\nSummary: " . $ticket->summary . "\n\n" . $ticket->message . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id );
+        fn::mail( $assigned_user->email, 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary, "Name: " . $this->user->contact_name . "\nEmail: " . $this->user->email . "\nSummary: " . $ticket->summary . "\n\n" . $ticket->message . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id );
 
         // Close the window
         jQuery('a.close:visible:first')->click();
