@@ -247,7 +247,7 @@ $.fn.disableAttributes = function() {
     $('#attribute-items-list input').each( function() {
         $('option[value=' + $(this).val() + ']', sAttributes).attr( 'disabled', true );
     });
-}
+};
 
 // Turns text into a slug
-String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); }
+String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); };
