@@ -52,7 +52,7 @@ get_header();
                     ?>
                     <a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $links[$k][1]; ?>" id="blog"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
                 <?php } else { ?>
-                    <a href="/<?php echo $links[$k][0]; ?>/" title="<?php echo $links[$k][1]; ?>" id="<?php echo $links[$k][0]; ?>"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
+                    <a href="/<?php echo $links[$k][0]; ?>/" title="<?php echo $links[$k][1]; ?>" id="<?php echo str_replace( '/users', '', $links[$k][0] ); ?>"><img src="/images/trans.gif" width="130" height="112" alt="<?php echo $links[$k][1]; ?>" /><br /><?php echo $links[$k][1]; ?></a>
                     <?php
 				}
 			}
