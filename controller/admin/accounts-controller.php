@@ -1208,7 +1208,7 @@ class AccountsController extends BaseController {
             $title .= '<a href="/accounts/notes/?aid=' . $a->id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
 
             if ( isset( $incomplete_checklists[$a->id] ) )
-                $title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
+                $title .= ' | <a href="/checklists/checklist/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
 
             $title .= '</span>';
 
