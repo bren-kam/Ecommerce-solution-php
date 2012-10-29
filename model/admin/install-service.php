@@ -238,11 +238,9 @@ class InstallService {
 
         // Copy Account Pagemeta
         $account_pagemeta = new AccountPagemeta();
-
         $pagemeta_keys = array( 'display-coupon', 'email-coupon', 'hide-all-maps' );
-		$template_account_page_ids = implode( ', ', array_keys( $template_account_pages ) );
 
-        $template_pagemeta = $account_pagemeta->get_by_keys( $template_account_page_ids, $pagemeta_keys );
+        $template_pagemeta = $account_pagemeta->get_by_keys( array_keys( $template_account_pages ), $pagemeta_keys );
 
         $new_pagemeta = array();
 
