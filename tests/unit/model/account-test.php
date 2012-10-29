@@ -54,7 +54,7 @@ class AccountTest extends BaseDatabaseTest {
      */
     public function testGetByProduct() {
         // Declare variable
-        $product_id = 38972;
+        $product_id = 38;
 
         // Get the account
         $accounts = $this->account->get_by_product( $product_id );
