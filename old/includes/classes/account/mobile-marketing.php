@@ -35,7 +35,7 @@ class Mobile_Marketing extends Base_Class {
         // Type Juggling
         $website_id = (int) $user['website']['website_id'];
 
-		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `message` FROM `mobile_messages` WHERE `website_id` = $website_id AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5", ARRAY_A );
+		$messages = $this->db->get_results( "SELECT `mobile_message_id`, `message` FROM `mobile_messages` WHERE `website_id` = $website_id AND `status` = 1 ORDER BY `date_sent` DESC LIMIT 5", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
