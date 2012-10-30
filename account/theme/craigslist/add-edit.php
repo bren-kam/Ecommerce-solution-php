@@ -55,6 +55,8 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-edit-cra
 	// if there are no errors
 	if ( empty( $errs ) ) {
         $post = '1' == $_POST['hPostAd'];
+        $_POST['taDescription'] = str_replace( 'websites.retailcatalog.us/', 'websites.retailcatalog.us.s3.amazonaws.com/', $_POST['taDescription'] );
+        $_POST['hCraigslistPost'] = str_replace( 'websites.retailcatalog.us/', 'websites.retailcatalog.us.s3.amazonaws.com/', $_POST['hCraigslistPost'] );
 
         if ( empty ( $_POST['hCraigslistAdID'] ) ) {
             // Create ad
