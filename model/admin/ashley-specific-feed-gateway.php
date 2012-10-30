@@ -177,12 +177,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		// Add new products
         $industries = $account->get_industries();
-        $account_product = new AccountProduct();
-		$account_product->add_bulk( $account->id, $industries, $new_product_skus );
+		$this->add_bulk( $account->id, $industries, $new_product_skus );
         $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
 
 		// Deactivate old products
-		$account_product->remove_bulk( $account->id, $remove_products );
+        $account_product = new AccountProduct();
+        $account_product->remove_bulk( $account->id, $remove_products );
 		
 		// Reorganize Categories
         $account_category = new AccountCategory();
@@ -231,6 +231,48 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
 		return $ashley_packages;
+	}
+
+    /**
+	 * Add Bulk
+	 *
+	 * @param int $account_id
+     * @param array $industry_ids
+	 * @param array $product_skus
+	 */
+	public  function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
+        // Make sure they entered in SKUs
+        if ( 0 == count( $product_skus ) || 0 == $industry_ids )
+            return;
+
+        // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Split into chunks so we can do queries one at a time
+		$product_sku_chunks = array_chunk( $product_skus, 500 );
+
+		foreach ( $product_sku_chunks as $product_skus ) {
+            // Get the count
+            $product_sku_count = count( $product_skus );
+
+			// Turn it into a string
+			$product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
+
+			// Magical Query
+			// Insert website products
+			$this->prepare(
+                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 353 AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
+                , str_repeat( 's', $product_sku_count )
+                , $product_skus
+            )->query();
+		}
 	}
 
     /**
