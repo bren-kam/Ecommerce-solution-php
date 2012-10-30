@@ -93,6 +93,27 @@ class ProductsController extends BaseController {
         }
 
         if ( $this->verified() && $product->id ) {
+            // Need to delete it from all websites
+            if ( 'deleted' == $_POST['sStatus'] ) {
+                // We need to remove it from all user websites
+                $account_product = new AccountProduct();
+                $account_category = new AccountCategory();
+
+                /**
+                 * Get variables
+                 * @var Account $account
+                 */
+                $accounts = $account->get_by_product( $product->id );
+
+                // Delete product from all accounts
+                $account_product->delete_by_product( $product->id );
+
+                // Recategorize them
+                foreach ( $accounts as $account ) {
+                    $account_category->reorganize_categories( $account->id, $category );
+                }
+            }
+
             $product->brand_id = $_POST['sBrand'];
             $product->industry_id = $_POST['sIndustry'];
             $product->name = $_POST['tName'];
@@ -466,7 +487,7 @@ class ProductsController extends BaseController {
 
 
     /**
-     * Delete a user
+     * Delete a product
      *
      * @return AjaxResponse
      */
@@ -484,6 +505,24 @@ class ProductsController extends BaseController {
 
         // Deactivate product
         if ( $product->id && 'deleted' != $product->publish_visibility ) {
+            // We need to remove it from all user websites
+            $account = new Account();
+            $account_product = new AccountProduct();
+            $account_category = new AccountCategory();
+            $category = new Category();
+
+            // Get variables
+            $accounts = $account->get_by_product( $product->id );
+
+            // Delete product from all accounts
+            $account_product->delete_by_product( $product->id );
+
+            // Recategorize them
+            foreach ( $accounts as $account ) {
+                $account_category->reorganize_categories( $account->id, $category );
+            }
+
+            // Delete the product
             $product->publish_visibility = 'deleted';
             $product->update();
 
