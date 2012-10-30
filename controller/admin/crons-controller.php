@@ -22,6 +22,11 @@ class CronsController extends BaseController {
         $email_message = new EmailMessage;
         $email_message->update_scheduled_emails();
 
+
+        /** Update Scheduled Messages from Trumpia */
+        $mobile_marketing = new MobileMarketing();
+        $mobile_marketing->update_scheduled_messages();
+
         /** Remove uploads that were never used */
 
         // Instantiate classes
@@ -95,7 +100,7 @@ class CronsController extends BaseController {
         $craigslist->update_tags();
 
         /** Synchronize Mobile Marketing */
-        $mobile_marketing = new Mobile_Marketing();
+        $mobile_marketing = new MobileMarketing();
         $mobile_marketing->synchronize_contacts();
 
         /** Run Ashley Feed */

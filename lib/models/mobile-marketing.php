@@ -264,7 +264,7 @@ class MobileMarketing extends ActiveRecordBase {
     public function get_customers() {
         return ar::assign_key( $this->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'trumpia-user-id'", PDO::FETCH_ASSOC ), 'value', true );
     }
-    
+
     /**
      * Format Mobile List Name
      *
