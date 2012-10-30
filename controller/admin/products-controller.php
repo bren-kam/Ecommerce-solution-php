@@ -108,9 +108,9 @@ class ProductsController extends BaseController {
             $sequence = 0;
 
             if ( isset( $_POST['product-specs'] ) )
-            foreach( $_POST['product_spec'] as $ps ) {
+            foreach( $_POST['product-specs'] as $ps ) {
                 list ( $spec_name, $spec_value ) = explode( '|', $ps );
-                $product_specs[] = array( $spec_name, $spec_value, $sequence );
+                $product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ), $sequence );
 
                 $sequence++;
             }
