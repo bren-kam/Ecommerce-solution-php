@@ -36,11 +36,13 @@ foreach ( $messages as $m ) {
 	} else {
 		//$actions = '<a href="/analytics/mobile-message/?mmid=' . $m['mobile_message_id'] . '" title="' . _('View Analytics') . '">' . _('Analytics') . '</a>';
 	}
-	
+
+    $date = new DateTime( $m['date_sent'] );
+
 	$data[] = array( 
 		format::limit_chars( $m['title'], 75, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
 		$statuses[$m['status']],
-		dt::date( 'F jS, Y g:i a', $m['date_sent'] )
+		$date->format('F jS, Y g:i a')
 	);
 }
 
