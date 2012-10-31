@@ -76,7 +76,8 @@ class User extends ActiveRecordBase {
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
         ), array( 'user_id' => $this->id )
-            , 'isssssiiisssss', 'i' );
+            , 'isssssiiisssss', 'i'
+        );
     }
 
     /**

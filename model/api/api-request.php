@@ -222,6 +222,7 @@ class APIRequest {
             $user->billing_address1 = $billing_address1;
             $user->billing_city = $billing_city;
             $user->billing_zip = $billing_zip;
+            $user->role = 5;
 
             // Create user
             $user->create();
@@ -241,7 +242,7 @@ class APIRequest {
 		/**
          *
          * @param int $website_id
-         * @param string $emails
+         * @param array $emails
          * @return bool
          */
 		extract( $this->get_parameters( 'website_id', 'emails' ) );
@@ -278,146 +279,112 @@ class APIRequest {
          * @param bool $blog
          * @param bool $email_marketing
          * @param bool $shopping_cart
-         * @param bool $seo
          * @param bool $room_planner
          * @param bool $craigslist
          * @param bool $social_media
          * @param bool $domain_registration
          * @param bool $additional_email_addresses
-         * @param int $pages
+         * @param int $products
          */
 
 		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'seo', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
+		extract( $this->get_parameters( 'user_id', 'domain', 'title', 'plan_name', 'plan_description', 'type', 'pages', 'product_catalog', 'blog', 'email_marketing', 'shopping_cart', 'room_planner', 'craigslist', 'social_media', 'domain_registration', 'additional_email_addresses', 'products' ) );
 
         // Create account
         $account = new Account();
 
-        // @CONTINUE HERE
+        // Create
+        $account->user_id = $user_id;
+        $account->domain = $domain;
+        $account->title = $title;
+        $account->plan_name = $plan_name;
+        $account->plan_description = $plan_description;
+        $account->type = $type;
+        $account->pages = $pages;
+        $account->status = 1;
+        $account->product_catalog = $product_catalog;
+        $account->blog = $blog;
+        $account->email_marketing = $email_marketing;
+        $account->shopping_cart = $shopping_cart;
+        $account->room_planner = $room_planner;
+        $account->craigslist = $craigslist;
+        $account->social_media = $social_media;
+        $account->domain_registration = $domain_registration;
+        $account->additional_email_Addresses = $additional_email_addresses;
+        $account->products = $products;
 
-        $website['title'] = stripslashes( $website['title'] );
-		$website['status'] = 1;
-        $website['date_created'] = dt::date('Y-m-d H:i:s');
-		
-		// Insert website
-		$this->db->insert( 'websites', $website, 'isssssiiiiiiiiiiiiis' );
+        // Create and update
+        $account->create(); // Doesn't add them all
+        $account->update();
 
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( "Failed to create website.\n\nUser ID: " . $website['user_id'], __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-			exit;
-		}
-		
-		// Get the website ID
-		$website_id = (int) $this->db->insert_id;
-		
-		// Now we have to insert checklists
-		$this->db->insert( 'checklists', array( 'website_id' => $website_id, 'type' => 'Website Setup', 'date_created' => dt::date('Y-m-d H:i:s') ), 'iss' );
-		
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( "Failed to insert checklist.\n\nWebsite ID: $website_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-			exit;
-		}
-		
-		// Get checklist ID
-		$checklist_id = (int) $this->db->insert_id;
+        // Needs to create a checklist
+        $checklist = new Checklist();
+        $checklist->website_id = $account->id;
+        $checklist->type = 'Website Setup';
+        $checklist->create();
 
-        // Insert all the checklist items
-        $this->db->query( "INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT $checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = 1" );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( "Failed to insert checklist.\n\Checklist ID: $checklist_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-			exit;
-		}
+        // Add checklist website items
+        $checklist_website_item = new ChecklistWebsiteItem();
+        $checklist_website_item->add_all_to_checklist( $checklist->id );
 
         // If they had social media, add all the plugins, they get update this later
-        if ( '1' == $website['social_media'] ) {
-            $this->db->insert( 'website_settings', array( 'website_id' => $website_id, 'key' => 'social-media-add-ons', 'value' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}' ), 'iss' );
-
-            // If there was a MySQL error
-            if( $this->db->errno() ) {
-                $this->_err( "Failed to create website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-                $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-                exit;
-            }
-        }
+        if ( '1' == $account->social_media )
+        $account->set_settings( array(
+            'social-media-add-ons' => 'a:10:{i:0;s:13:"email-sign-up";i:1;s:9:"fan-offer";i:2;s:11:"sweepstakes";i:3;s:14:"share-and-save";i:4;s:13:"facebook-site";i:5;s:10:"contact-us";i:6;s:8:"about-us";i:7;s:8:"products";i:8;s:10:"current-ad";i:9;s:7:"posting";}'
+        ) );
 
         // Set Industries if they got craigslist
-        if ( '1' == $website['craigslist'] ) {
-            $this->db->query( 'INSERT INTO `website_industries` ( `website_id`, `industry_id` ) VALUES ( $website_id, 1 ), ( $website_id, 2 ), ( $website_id, 3 )' );
-
-            // If there was a MySQL error
-            if( $this->db->errno() ) {
-                $this->_err( "Failed to create website industries.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-                $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-                exit;
-            }
-        }
+        if ( '1' == $account->craigslist )
+            $account->add_industries( array( 1, 2, 3 ) );
 
         // Create WHM account and setup Password
-        if ( '1' == $website['pages'] ) {
+        if ( '1' == $account->pages ) {
             library('pm-api');
 
             // First we need to create the group and the password
-            $pm = new PM_API( config::key('s98-pm-key') );
+            $pm = new PM_API( Config::key('s98-pm-key') );
 
             // Get the group ID
-            $group_id = $pm->create_group( $website['title'], $this->group_ids[strtoupper( $website['title'][0] )] );
+            $group_id = $pm->create_group( $account->title, $this->group_ids[strtoupper( $account->title[0] )] );
 			
             if ( $group_id ) {
                 library('whm-api');
                 $this->whm = new WHM_API();
-                $c = new Companies();
+                $company = new Company();
 				
                 // Make sure it's a unique username
-                $company = $c->get( $this->company_id );
-                $email = 'serveradmin@' . url::domain( $company['domain'], false );
-                $domain = $this->_unique_domain( $website['title'] );
-                $username = $this->_unique_username( $website['title'] );
+                $company->get( $this->company_id );
+                $email = 'serveradmin@' . url::domain( $company->domain, false );
+                $domain = $this->unique_domain( $account->title );
+                $username = $this->unique_username( $account->title );
                 $password = security::generate_password();
 				
 				// Create the password
                 $password_id = $pm->create_password( $group_id, 'cPanel/FTP', $username, $password, '199.79.48.137' );
 
                 if ( !$password_id ) {
-                    $this->_err( "Failed to create password:\n" . $pm->error(), __LINE__, __METHOD__ );
                     $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-                    exit;
+                    return;
                 }
-				
+
                 // Now, create the WHM API accounts
                 if ( !$this->whm->create_account( $username, $domain, 'Basic No Shopping Cart', 'serveradmin@imagineretailer.com', $password ) ) {
-                    $this->_err( "Failed to create WHM/cPanel Account:\n$username\n" . $this->whm->message(), __LINE__, __METHOD__ );
                     $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-					exit;
+					return;
                 }
 				
                 // Update the domain field
-                $this->db->update( 'websites', array( 'domain' => $domain ), array( 'website_id' => $website_id ), 's', 'i' );
+                $account->domain = $domain;
+                $account->update();
 
-                // If there was a MySQL error -- don't stop the intallation
-                if( $this->db->errno() )
-                    $this->_err( "Failed to update website domain.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-
-                $w = new Websites();
-                // Now install
-
-                // Now, create the WHM API accounts
-                if ( !$w->install( $website_id, $username ) ) {
-                    $this->_err( "Failed to install website", __LINE__, __METHOD__ );
-                    $this->add_response( array( 'success' => false, 'message' => 'failed-create-website' ) );
-                    exit;
-                }
+                // Now need to install the service
+                $install_service = new InstallService();
+                $install_service->install_website( $account );
 
 				// Setup DNS
 				library('r53');
 
-				$r53 = new Route53( config::key('aws_iam-access-key'), config::key('aws_iam-secret-key') );
+				$r53 = new Route53( Config::key('aws_iam-access-key'), Config::key('aws_iam-secret-key') );
 				
 				// Add to domain.blinkyblinky.me
 		        $r53->changeResourceRecordSets( 'hostedzone/Z20FV3IPLIV928', array( $r53->prepareChange( 'CREATE', $domain . '.', 'CNAME', '14400', 'blinkyblinky.me.' ) ) );
@@ -426,40 +393,32 @@ class APIRequest {
         }
 
 		// Everything was successful
-		$this->add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $website_id ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $website['user_id'] . "\nWebsite ID: $website_id", true );
+		$this->add_response( array( 'success' => true, 'message' => 'success-create-website', 'website_id' => $account->id ) );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $account->user_id . "\nWebsite ID: {$account->id}", true );
 	}
 
     /**
      * Install Package
-     *
-     * @param int $website_id
-     * @param int $company_package_id
-     * @return bool
      */
     protected function install_package() {
-        // Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'website_id', 'company_package_id' ) );
-		
-        // Include Classes
-        inc('classes/admin/websites');
-        inc('classes/admin/products');
-        inc('classes/admin/files');
-        inc('classes/admin/categories');
+        /**
+         *  @param int $website_id
+         * @param int $company_package_id
+         */
+        extract( $this->get_parameters( 'website_id', 'company_package_id' ) );
 
-        // Generate fake user
-        global $user;
-        $user['role'] = 7;
-        $user['company_id'] = $this->company_id;
+        if ( !$this->verify_website( $website_id ) )
+            return;
 
-        $w = new Websites();
+        // Get the account and update the package
+        $account = new Account;
+        $account->get( $website_id );
+        $account->company_package_id = $company_package_id;
+        $account->update();
 
-        $success = $w->install_package( $website_id, $company_package_id );
-
-        if ( !$success ) {
-            $this->_err( "Failed to install package", __LINE__, __METHOD__ );
-            $this->add_response( array( 'success' => false, 'message' => 'failed-install-package' ) );
-        }
+        // Install the package
+        $install_service = new InstallService();
+        $install_service->install_package( $account );
 
         // Everything was successful
         $this->add_response( array( 'success' => true, 'message' => 'success-install-package', 'website_id' => $website_id ) );
@@ -468,24 +427,24 @@ class APIRequest {
 
     /**
 	 * Add Note
-	 *
-	 * @param int $website_id
-     * @param int $user_id
-	 * @param string $message
-	 * @return int|bool
 	 */
 	protected function add_note() {
-		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'website_id', 'user_id', 'message' ) );
+        /**
+         * @param int $website_id
+         * @param int $user_id
+         * @param string $message
+         */
+        extract( $this->get_parameters( 'website_id', 'user_id', 'message' ) );
 
-		$this->db->insert( 'website_notes', array( 'website_id' => $website_id, 'user_id' => $user_id, 'message' => $message, 'date_created' => dt::date('Y-m-d H:i:s') ), 'iiss' );
+        if ( !$this->verify_website( $website_id ) )
+            return;
 
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to add website note', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-add-note' ) );
-			exit;
-		}
+        // Create account note
+        $account_note = new AccountNote();
+        $account_note->website_id = $website_id;
+        $account_note->user_id = $user_id;
+        $account_note->message = $message;
+        $account_note->create();
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-add-note' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nWebsite ID: $website_id\nUser ID: $user_id", true );
@@ -493,20 +452,21 @@ class APIRequest {
 
     /**
 	 * Update Social Media
-	 *
-	 * @param int $website_id
-	 * @param array $social_media_add_ons
 	 */
 	protected function update_social_media() {
-		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'website_id', 'website_social_media_add_ons' ) );
+        /**
+         * @param int $website_id
+         * @param array $website_social_media_add_ons
+         */
+        extract( $this->get_parameters( 'website_id', 'website_social_media_add_ons' ) );
 
         // Make sure we can edit this website
-        $this->verify_website( $website_id );
+        if ( !$this->verify_website( $website_id ) )
+            return;
 
         if ( !is_array( $website_social_media_add_ons ) ) {
             $this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
-            exit;
+            return;
         }
 
         // Master list of social media add ons
@@ -532,24 +492,15 @@ class APIRequest {
         // Check again to make sure it is an array
         if ( !is_array( $website_social_media_add_ons ) ) {
             $this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
-            exit;
+            return;
         }
 
         // Type Juggling
-        $website_id = (int) $website_id;
-
-        // Make the variable
-        $db_website_social_media_add_ons = $this->db->escape( serialize( $website_social_media_add_ons ) );
-
-        // Insert/update website settings
-        $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( $website_id, 'social-media-add-ons', '$db_website_social_media_add_ons' ) ON DUPLICATE KEY UPDATE `value` = '$db_website_social_media_add_ons'" );
-
-        // If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( "Failed to update website settings.\n\Website ID: $website_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-social-media' ) );
-			exit;
-		}
+        $account = new Account;
+        $account->get( $website_id );
+        $account->set_settings( array(
+            'social-media-add-ons' => serialize( $website_social_media_add_ons )
+        ) );
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-update-social-media' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
@@ -557,48 +508,55 @@ class APIRequest {
 
 	/**
 	 * Update User
-	 *
-	 * @param string $email
-	 * @param string $password
-	 * @param string $contact_name
-	 * @param string $store_name
-	 * @param string $work_phone
-	 * @param string $cell_phone
-	 * @param string $billing_first_name
-	 * @param string $billing_last_name
-	 * @param string $billing_address1
-	 * @param string $billing_city
-	 * @param string $billing_state
-	 * @param string $billing_zip
-	 * @param int $user_id
 	 */
 	protected function update_user() {
-		// Gets parameters and errors out if something is missing
-		$personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' );
+        /**
+         * @param string $email
+         * @param string $password
+         * @param string $contact_name
+         * @param string $store_name
+         * @param string $work_phone
+         * @param string $cell_phone
+         * @param string $billing_first_name
+         * @param string $billing_last_name
+         * @param string $billing_address1
+         * @param string $billing_city
+         * @param string $billing_state
+         * @param string $billing_zip
+         * @param int $user_id
+         */
+        $personal_information = $this->get_parameters( 'email', 'password', 'contact_name', 'store_name', 'work_phone', 'cell_phone', 'billing_first_name', 'billing_last_name', 'billing_address1', 'billing_city', 'billing_state', 'billing_zip', 'user_id' );
 		
 		// Get the user_id, but we don't want it in the update data
 		$user_id = $personal_information['user_id'];
 		unset( $personal_information['user_id'] );
 		
 		// Make sure he exists, if not, create user
-		if( !$this->user_exists( $user_id ) ) {
-			$this->create_user();
-			return;
-		}
-		
-		$personal_information['password'] = md5( $personal_information['password'] );
-		$personal_information['date_created'] = dt::date('Y-m-d H:i:s');
-		
-		// Update the user
-		$this->db->update( 'users', $personal_information, array( 'user_id' => $user_id, 'company_id' => $this->company_id ), str_repeat( 's', count( $personal_information ) ), 'ii' );
-		
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to update user', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
-			exit;
-		}
-		
+        $user = new User();
+        $user->get( $user_id );
+
+        $user->email = $email;
+        $user->contact_name = $contact_name;
+        $user->store_name = $store_name;
+        $user->work_phone = $work_phone;
+        $user->cell_phone = $cell_phone;
+        $user->billing_first_name = $billing_first_name;
+        $user->billing_last_name = $billing_last_name;
+        $user->billing_address1 = $billing_address1;
+        $user->billing_city = $billing_city;
+        $user->billing_state = $billing_state;
+        $user->billing_zip = $billing_zip;
+
+        if ( $user->id ) {
+            $user->update();
+        } else {
+            $user->role = 5;
+            $user->status = 1;
+            $user->create();
+        }
+
+        $user->set_password( $password );
+
 		$this->add_response( array( 'success' => true, 'message' => 'success-update-user' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
 	}
@@ -607,30 +565,24 @@ class APIRequest {
 	 * Set ARB Subscription
 	 *
 	 * ARB is Automatic Recurring Billing (part of Authorize.net)
-	 *
-	 * @param int $arb_subscription_id
-	 * @param int $website_id
-	 * @return bool
 	 */
 	protected function set_arb_subscription() {
-		// Gets parameters and errors out if something is missing
-		extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
+        /**
+         * @param int $arb_subscription_id
+         * @param int $website_id
+         */
+        extract( $this->get_parameters( 'arb_subscription_id', 'website_id' ) );
 
         // Make sure we can edit this website
         $this->verify_website( $website_id );
 
-        // Protection
-		$website_id = (int) $website_id;
-        $arb_subscription_id = $this->db->escape( $arb_subscription_id );
+        $account = new Account();
+        $account->get( $website_id );
 
-		$this->db->query( "INSERT INTO `website_settings` (`website_id`, `key`, `value`) VALUES ( $website_id, 'arb-subscription-id', '$arb_subscription_id' ) ON DUPLICATE KEY UPDATE `value` = '$arb_subscription_id' " );
-		
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( "Failed to set ARB subscription id.\n\nWebsite ID: $website_id\nARB Subscription ID:$arb_subscription_id", __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-set-arb-subscription' ) );
-			exit;
-		}
+        // Protection
+		$account->set_settings( array(
+            'arb-subscription-id' => $arb_subscription_id
+        ) );
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-set-arb-subscription' ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. Website ID: ' . $website_id, true );
@@ -648,12 +600,12 @@ class APIRequest {
 	 * @param string $title
 	 * @return string
 	 */
-	public function _unique_username( $title ) {
-		$username = $this->_generate_username( $title );
+	protected function unique_username( $title ) {
+		$username = $this->generate_username( $title );
 		$available = $this->whm->account_summary( $username );
 		
 		while ( false != $available ) {
-			$username = $this->_generate_username( $title, true );
+			$username = $this->generate_username( $title, true );
 			$available = $this->whm->account_summary( $username );
 			
 			if ( false != $available )
@@ -672,7 +624,7 @@ class APIRequest {
      * @param bool $complicated [optional]
      * @return string
      */
-    protected function _generate_username( $title, $complicated = false ) {
+    protected function generate_username( $title, $complicated = false ) {
         $pieces = explode( ' ', preg_replace( '/[^a-z0-9 ]/', '', strtolower( $title ) ) );
         $increment = ( $complicated ) ? 0 : 2;
 
@@ -697,13 +649,13 @@ class APIRequest {
 	 * @param string $title
 	 * @return string
 	 */
-	public function _unique_domain( $title ) {
-		$domain = $this->_generate_domain( $title );
+	protected function unique_domain( $title ) {
+		$domain = $this->generate_domain( $title );
 		
 		$available = $this->whm->domain_user_data( $domain );
 		
 		while ( false != $available ) {
-			$domain = $this->_generate_domain( $title, true );
+			$domain = $this->generate_domain( $title, true );
 			$available = $this->whm->domain_user_data( $domain );
 			
 			if ( false != $available )
@@ -722,7 +674,7 @@ class APIRequest {
      * @param bool $complicated [optional
      * @return string
 	 */
-	public function _generate_domain( $title, $complicated = false ) {
+	protected function generate_domain( $title, $complicated = false ) {
 		$domain = preg_replace( '/[^a-z]/', '', strtolower( $title ) );
 		
 		if ( $complicated )
@@ -755,29 +707,6 @@ class APIRequest {
 
         return true;
     }
-
-	/**
-	 * Checks to see if a user exists
-	 *
-	 * @param int $user_id
-	 * @return bool
-	 */
-	protected function user_exists( $user_id ) {
-        // Type Juggling
-        $user_id = (int) $user_id;
-        $company_id = (int) $this->company_id;
-
-		$email = $this->db->get_var( "SELECT `email` FROM `users` WHERE `user_id` = $user_id AND `company_id` = $company_id" );
-		
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to check if user exists', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-update-user' ) );
-			exit;
-		}
-		
-		return ( $email ) ? true : false;
-	}
     
     /**
 	 * This loads all the variables that we need
@@ -812,36 +741,21 @@ class APIRequest {
 			exit;
 		}
 
-        $auth_key = $this->db->escape( $_POST['auth_key'] );
-		$this->company_id = (int) $this->db->get_var( "SELECT `company_id` FROM `api_keys` WHERE `status` = 1 AND `key` = '$auth_key'" );
+        $api_key = new ApiKey;
+        $api_key->get_by_key( $_POST['auth_key'] );
 
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to retrieve company id', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
-			exit;
-		}
-		
+        $this->company_id = (int) $api_key->company_id;
+
 		// If failed to grab any company id
 		if( !$this->company_id ) {
 			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
 			
 			$this->error = true;
 			$this->error_message = 'There was no company to match API key';
-			exit;
+			return;
 		}
 
-        // Need to set domain
-        $domain = $this->db->get_var( 'SELECT `domain` FROM `companies` WHERE `company_id` = ' . $this->company_id );
-
-        // If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to get domain from companies', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-authentication' ) );
-			exit;
-		}
-
-        define( 'DOMAIN', $domain );
+        define( 'DOMAIN', $api_key->domain );
 
 		$this->statuses['auth'] = true;
 	}
@@ -933,22 +847,21 @@ class APIRequest {
 	 * @param string $type the type of log entry
 	 * @param string $message message to be put into the log
  	 * @param bool $success whether the call was successful
-	 * @param bool $setlogged (optional) whether to set the logged variable as true
+	 * @param bool $set_logged (optional) whether to set the logged variable as true
 	 */
-	protected function log( $type, $message, $success, $setlogged = true ) { 
+	protected function log( $type, $message, $success, $set_logged = true ) {
 		// Set before hand so that a loop isn't caught in the destructor
-		if( $setlogged )
+		if( $set_logged )
 			$this->logged = true;
-		
-		// If it fails to insert, send an email with the information
-		$this->db->insert( 'apilog', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssis' );
 
-        if( $this->db->errno() ) {
-			$this->_err( "Failed to add entry to log\n\nType: $type\nMessage:\n$message", __LINE__, __METHOD__ );
-			
-			// Let the client know that something broke
-			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-		}
+        // Create log entry
+        $api_log = new ApiLog();
+        $api_log->company_id = $this->company_id;
+        $api_log->type = $type;
+        $api_log->method = $this->method;
+        $api_log->message = $message;
+        $api_log->success = $success;
+        $api_log->create();
 	}
 	
 	/**

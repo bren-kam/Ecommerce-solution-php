@@ -32,7 +32,7 @@ class ChecklistTest extends BaseDatabaseTest {
      *
      * @depends testGet
      */
-    public function create() {
+    public function testCreate() {
         // Declare variables
         $account_id = -5;
 
