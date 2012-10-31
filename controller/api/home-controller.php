@@ -14,7 +14,7 @@ class HomeController extends BaseController {
      * @return JsonResponse
      */
     protected function index() {
-        $api_request = new APIRequest();
+        $api_request = new ApiRequest();
 
         return new JsonResponse( $api_request->get_response() );
     }

@@ -1,5 +1,5 @@
 <?php
-class APIRequest {
+class ApiRequest {
 	/**
 	 * Constant paths to include files
 	 */
@@ -779,7 +779,7 @@ class APIRequest {
 			$this->method = $_POST['method'];
 			$this->statuses['method_called'] = true;
 			
-			call_user_func( array( 'Requests', $_POST['method'] ) );
+			call_user_func( array( 'ApiRequest', $_POST['method'] ) );
 
             // used to be destruct
             // Make sure we haven't already logged something
