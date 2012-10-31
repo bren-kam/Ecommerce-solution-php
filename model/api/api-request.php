@@ -129,12 +129,21 @@ class APIRequest {
 		// Parse method
 		$this->parse();
 	}
-	
-	/**************************/
-	/* START: GSR API Methods */
-	/**************************/
-	
-	/**
+
+    /**
+     * Get response
+     *
+     * @return array
+     */
+    public function get_response() {
+        return $this->response;
+    }
+
+    /**************************/
+    /* START: GSR API Methods */
+    /**************************/
+
+    /**
 	 * Add Order Item
 	 */
 	protected function add_order_item() {
@@ -771,12 +780,30 @@ class APIRequest {
 			$this->statuses['method_called'] = true;
 			
 			call_user_func( array( 'Requests', $_POST['method'] ) );
+
+            // used to be destruct
+            // Make sure we haven't already logged something
+            if( !$this->logged )
+            if( $this->error ) {
+                $message = '';
+
+                foreach( $this->statuses as $status => $value ) {
+                    // Set the message status name
+                    $message_status = ucwords( str_replace( '_', ' ', $status ) );
+
+                    $message .= ( $this->statuses[$status] ) ? "$message_status: True" : "$message_status: False";
+                    $message .= "\n";
+                }
+
+                $this->log( 'error', 'Error: ' . $this->error_message . "\n\n" . rtrim( $message, "\n" ), false );
+            } else {
+                $this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+            }
 		} else {
 			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
 			
 			$this->error = true;
 			$this->error_message = 'The method, "' . $_POST['method'] . '", is not a valid method.';
-			exit;
 		}
 	}
 	
@@ -862,31 +889,5 @@ class APIRequest {
         $api_log->message = $message;
         $api_log->success = $success;
         $api_log->create();
-	}
-	
-	/**
-	 * Destructor which creates the log and any information that we should know about it
-	 */
-	public function __destruct() {
-		// Make sure we haven't already logged something
-		if( !$this->logged )
-		if( $this->error ) {
-            $message = '';
-
-			foreach( $this->statuses as $status => $value ) {
-				// Set the message status name
-				$message_status = ucwords( str_replace( '_', ' ', $status ) );
-				
-				$message .= ( $this->statuses[$status] ) ? "$message_status: True" : "$message_status: False";
-				$message .= "\n";
-			}
-			
-			$this->log( 'error', 'Error: ' . $this->error_message . "\n\n" . rtrim( $message, "\n" ), false );
-		} else {
-			$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
-		}
-		
-		// Respond in JSON
-		echo json_encode( $this->response );
 	}
 }

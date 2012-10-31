@@ -16,6 +16,6 @@ class HomeController extends BaseController {
     protected function index() {
         $api_request = new APIRequest();
 
-        return new JsonResponse( $api_request->json );
+        return new JsonResponse( $api_request->get_response() );
     }
 }
