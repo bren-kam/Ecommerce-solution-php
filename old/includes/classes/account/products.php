@@ -1913,6 +1913,7 @@ class Products extends Base_Class {
             $child_categories = $c->get_child_categories( $cid );
             $child_category_ids = array();
 
+            if ( is_array( $child_categories ) )
             foreach ( $child_categories as $cc ) {
                 $child_category_ids[] = $cc['category_id'];
             }

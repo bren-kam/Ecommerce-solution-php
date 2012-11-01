@@ -52,7 +52,8 @@ $upload_url = 'http://websites.retailcatalog.us/' . $user['website']['website_id
 // Set the website data, if successful, delete the local file
 $ajax->ok( $website_attachment_id = $wa->create( $_POST['wpid'], 'banner', $upload_url ), _('An error occurred while trying to upload your banner. Please refresh the page and try again.') );
 
-unlink( $banner_path ); // Delete file
+if ( file_exists( $banner_path ) )
+    unlink( $banner_path ); // Delete file
 
 $settings = $w->get_settings( 'banner-width', 'banner-height' );
 
