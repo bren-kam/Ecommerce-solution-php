@@ -342,7 +342,7 @@ abstract class ActiveRecordBase {
         // Throw an error if it doesn't work
         if ( 00000 != $this->_statement->errorCode() ) {
             $error_info = $this->_statement->errorInfo();
-            throw new ModelException( 'SQL Error: ' . $error_info[2] );
+            throw new ModelException( 'SQL Error: ' . $error_info[2], NULL, $this->_statement->errorCode() );
         }
     }
 
