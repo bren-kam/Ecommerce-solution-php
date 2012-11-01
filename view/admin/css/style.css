@@ -405,7 +405,7 @@ table.format tr.last td { border-bottom: 0 }
 .generic tr.last td { border-bottom: 1px solid #BCBCBC !important }
 
 /*** Notifications ***/
-.sticky p, .floated p, .fixed p, .ondemand p, .sticky.error{ text-align: center; padding:0px; margin:0px; /*margin-left:10px;*/ line-height:45px; color:#fff; font-size:15px; }
+.sticky p, .floated p, .fixed p, .ondemand p{ text-align: center; padding:0px; margin:0px; margin-left:10px; line-height:45px; color:#fff; font-size:15px; }
 .sticky a, .floated a, .fixed a, .ondemand a{ float:right; margin:13px 10px 0px 0px; }
 
 .sticky {
@@ -421,7 +421,6 @@ table.format tr.last td { border-bottom: 0 }
 
     /* FireFox 3.6 */
     /* Safari4+, Chrome */
-    /*-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#91BD09', endColorstr='#91BD09')";*/
     -pie-background: linear-gradient(#91BD09, #91BD09 100%);
     behavior: url(/resources/PIE.htc);
     -moz-box-shadow: 1px 1px 7px #676767;
@@ -440,7 +439,6 @@ table.format tr.last td { border-bottom: 0 }
 
     /* FireFox 3.6 */
     /* Safari4+, Chrome */
-    /*-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#BD2B0B', endColorstr='#BD2B0B')" !important;*/
     -pie-background: linear-gradient(#BD2B0B, #BD2B0B 100%);
     background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0, #BD2B0B),color-stop(1, #BD2B0B));/* IE6,IE7 */
     /* IE8 */
@@ -458,7 +456,6 @@ table.format tr.last td { border-bottom: 0 }
     background: #0e59ae; /* Old browsers */
     background: -moz-linear-gradient(top, #0e59ae 0%, #0e59ae 100%); /* FF3.6+ */
 
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#0E59AE', endColorstr='#0E59AE')";
 
     -moz-box-shadow: 1px 1px 7px #676767;
     -webkit-box-shadow: 1px 1px 7px #676767;
@@ -481,7 +478,6 @@ table.format tr.last td { border-bottom: 0 }
 
 	/* FireFox 3.6 */
 	/* Safari4+, Chrome */
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#660099', endColorstr='#660099')";
 	-pie-background: linear-gradient(#660099, #660099 100%);
 	behavior: url(/resources/PIE.htc);
 	-moz-box-shadow: 1px 1px 7px #676767;
@@ -507,7 +503,6 @@ table.format tr.last td { border-bottom: 0 }
 
     /* FireFox 3.6 */
     /* Safari4+, Chrome */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#CC0000', endColorstr='#CC0000')";
     -pie-background: linear-gradient(#CC0000, #CC0000 100%);
     behavior: url(/resources/PIE.htc);
     -moz-box-shadow: 1px 1px 7px #676767;
@@ -536,7 +531,6 @@ table.format tr.last td { border-bottom: 0 }
 
     /* FireFox 3.6 */
     /* Safari4+, Chrome */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#CC0000', endColorstr='#CC0000')";
     -pie-background: linear-gradient(#CC0000, #CC0000 100%);
     behavior: url(/resources/PIE.htc);
     -moz-box-shadow: 1px 1px 7px #676767;
