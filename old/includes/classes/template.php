@@ -59,7 +59,7 @@ class Template extends Base_Class {
 		
 		inc( 'template' );
 		
-		if ( 'www' != SUBDOMAIN )
+		if ( defined( 'DOMAIN' ) && 'www' != SUBDOMAIN )
 			$this->css[] = 'labels/' . DOMAIN;
 	}
 	
