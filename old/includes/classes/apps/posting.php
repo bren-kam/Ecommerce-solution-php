@@ -48,12 +48,12 @@ class Posting extends Base_Class {
 	 * Update Access Token
 	 *
 	 * @param int $fb_user_id
-	 * @param int $fb_page_id
 	 * @param string $access_token
+	 * @param int $fb_page_id
 	 * @return bool
 	 */
-	public function update_access_token( $fb_user_id, $fb_page_id, $access_token ) {
-		$this->db->update( 'sm_posting', array( 'access_token' => $access_token ), array( 'fb_user_id' => $fb_user_id, 'fb_page_id' => $fb_page_id ), 's', 'ii' );
+	public function update_access_token( $fb_user_id, $access_token, $fb_page_id ) {
+		$this->db->update( 'sm_posting', array( 'fb_user_id' => $fb_user_id, 'access_token' => $access_token ), array( 'fb_page_id' => $fb_page_id ), 'is', 'i' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
