@@ -1,7 +1,7 @@
 <?php
 class Notification extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $user_id, $message;
+    public $id, $user_id, $message, $success;
 
     /**
      * Setup the initial data
@@ -19,7 +19,11 @@ class Notification extends ActiveRecordBase {
         if ( is_null( $this->user_id ) || is_null( $this->message ) )
             throw new InvalidParametersException( 'Both user_id and message parameters must be filled' );
 
-        $this->insert( array( 'user_id' => $this->user_id, 'message' => $this->message ), 'is' );
+        $this->insert( array(
+            'user_id' => $this->user_id
+            , 'message' => $this->message
+            , 'success' => $this->success
+        ), 'isi' );
     }
 
     /**
@@ -30,7 +34,7 @@ class Notification extends ActiveRecordBase {
      */
     public function get_by_user( $user_id ) {
         return $this->prepare(
-            'SELECT `message` FROM `notification` WHERE `user_id` = :user_id'
+            'SELECT `message`, `success` FROM `notification` WHERE `user_id` = :user_id'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_results( PDO::FETCH_CLASS, 'Notification' );

@@ -164,8 +164,29 @@ class UsersController extends BaseController {
                 $user->update();
                 $this->notify( _('Your user has been successfully updated!') );
             } else {
-                $user->create();
-                $this->notify( _('Your user has been successfully created!') );
+                try {
+                    $user->create();
+                    $this->notify( _('Your user has been successfully created!') );
+                } catch ( ModelException $e ) {
+                    switch ( $e->getCode() ) {
+                        case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                            // Let's see if we can get the user they were trying to get
+                            $user->get_by_email( $user->email, false );
+
+                            // Let them know what happened
+                            $this->notify( _('Your user was not created. The user already existed, we have redirected you to edit the existing user.' ), false );
+
+                            return new RedirectResponse( url::add_query_arg( 'uid', $user->id, '/users/add-edit/' ) );
+                        break;
+
+                        default:
+                            // Don't know what happened
+                            $this->notify( _('An error occurred while trying to add your user: ') . $e->getCode() . '. Please create a support request so we can fix it.', false );
+
+                            return new RedirectResponse( '/users/add-edit/' );
+                        break;
+                    }
+                }
             }
 
             // Set the password

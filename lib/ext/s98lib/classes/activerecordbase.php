@@ -17,6 +17,11 @@ abstract class ActiveRecordBase {
     CONST DB_NAME = 'imaginer_system';
 
     /**
+     * Define Exceptions
+     */
+    const EXCEPTION_DUPLICATE_ENTRY = 23000;
+
+    /**
      * Hold the PDO object
      * @var PDO
      */
