@@ -38,7 +38,7 @@ if ( isset( $_REQUEST["code"] ) ) {
 	
 	$fb->setAccessToken( $params['access_token'] );
 	$fb->setExtendedAccessToken();
-	$p->update_access_token( $user, $_REQUEST['fb_page_id'], $fb->getAccessToken() );
+	$p->update_access_token( $user, $fb->getAccessToken(), $_REQUEST['fb_page_id'] );
 	
 	echo("<script> top.location.href='" . $_REQUEST['gsr_redirect'] . "'</script>");
 	exit;
