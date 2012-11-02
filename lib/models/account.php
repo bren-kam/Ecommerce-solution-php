@@ -345,7 +345,7 @@ class Account extends ActiveRecordBase {
             $values[] = "( $account_id, $iid )";
         }
 
-        $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) );
+        $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) . ' ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )' );
     }
 
 

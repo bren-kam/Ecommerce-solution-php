@@ -269,16 +269,22 @@ class AccountTest extends BaseDatabaseTest {
      */
     public function testGetIndustries() {
         // Declare variables
-        $account_id = 96; // Testing account
+        $account_id = -5; // Testing account
+
+        $this->db->insert( 'websites', array( 'website_id' => -5 ), 'i' );
+        $this->db->query( "INSERT INTO `website_industries` VALUES ( $account_id, 1), ( $account_id, 5 ), ( $account_id, 3 ) ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )" );
 
         // Get the testing account
         $this->account->get( $account_id );
 
         // Get the industries
         $industries = $this->account->get_industries();
-
+        
         // House Plans industry
         $this->assertTrue( in_array( 5, $industries ) );
+
+        $this->db->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**

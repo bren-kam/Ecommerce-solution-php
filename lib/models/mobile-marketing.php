@@ -23,6 +23,26 @@ class MobileMarketing extends ActiveRecordBase {
         // Get data
         $user_ids = $this->get_customers();
 
+        /** To be explored
+         *$w = new Websites;
+
+        $websites = $this->db->get_results( "SELECT ws.`website_id`, ws.`value` AS user_id, ws2.`value` AS api_key FROM `website_settings` AS ws LEFT JOIN `website_settings` AS ws2 ON ( ws.`website_id` = ws2.`website_id` ) WHERE ws.`key` = 'trumpia-user-id' AND ws2.`key` = 'trumpia-api-key' AND ws.`website_id` = 1122", ARRAY_A );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get user_ids.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+		// Include the library
+        library('trumpia-v1');
+
+		foreach ( $websites as $website ) {
+			$trumpia = new TrumpiaV1( $website['api_key'], $website['user_id'] );
+			$subscriptions = $trumpia->get_subscriptions();
+			print_r( $subscriptions );
+		} */
+
         // Make sure we have a reason to continue
         if ( empty( $user_ids ) )
             return;

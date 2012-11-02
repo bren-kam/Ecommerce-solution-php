@@ -24,8 +24,8 @@ class CronsController extends BaseController {
 
 
         /** Update Scheduled Messages from Trumpia */
-        $mobile_marketing = new MobileMarketing();
-        $mobile_marketing->update_scheduled_messages();
+        $mobile_message = new MobileMessage();
+        $mobile_message->update_scheduled();
 
         /** Remove uploads that were never used */
 

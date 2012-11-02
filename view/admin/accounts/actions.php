@@ -32,12 +32,8 @@
 <?php echo $template->start( _('Actions') ); ?>
 
 <?php if ( 0 == $account->version ) { ?>
-    <p><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_website' ), '/accounts/install-website/' ) ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
-<?php
-}
-
-if ( 0 != $account->version ) {
-?>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-website/' ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
+<?php } else { ?>
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-package/' ); ?>" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></p>
 <?php } ?>
 
