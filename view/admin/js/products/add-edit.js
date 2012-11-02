@@ -25,6 +25,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
             $.post( '/products/create/', { _nonce : $('#_create_product').val() }, ajaxResponse , 'json');
 	});
 
+    /**
+     * Make sure it also contains a proper slug
+     */
+    $('#tProductSlug').change( function() {
+        $(this).val( $(this).val().slug() );
+    });
+
     // Date Picker
 	$('#tPublishDate').datepicker({
 		dateFormat: 'MM d, yy'

@@ -279,7 +279,7 @@ class AccountTest extends BaseDatabaseTest {
 
         // Get the industries
         $industries = $this->account->get_industries();
-        
+
         // House Plans industry
         $this->assertTrue( in_array( 5, $industries ) );
 
