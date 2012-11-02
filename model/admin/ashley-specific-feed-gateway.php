@@ -123,12 +123,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
             $all_skus[] = $sku;
 
-			if ( !stristr( $sku, '-' ) ) {
-				if ( !array_key_exists( $sku, $products ) )
-					$new_product_skus[] = $sku;
+            // Add any products they don't have
+            if ( !array_key_exists( $sku, $products ) )
+                $new_product_skus[] = $sku;
 
+            // Setup packages
+			if ( !stristr( $sku, '-' ) )
 				continue;
-			}
 
 			list( $series, $item ) = explode( '-', $sku, 2 );
 
@@ -142,14 +143,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Go through each item
 			foreach ( $items as $product_id => $package_pieces ) {
 				// See if they have all the items necessary
-				foreach ( $package_pieces as $item ) { 
-					if ( in_array( $item, $skus[$series] ) ) { // Check if it is a series such as "W123-45"
-						$remove_skus[] = "$series-$item";
+				foreach ( $package_pieces as $item ) {
+                    // Check if it is a series such as "W123-45" or "W12345"
+					if ( in_array( $item, $skus[$series] ) || in_array( $series . $item, $all_skus ) )
 						continue;
-					} elseif( in_array( $series . $item, $all_skus ) ) { // Check if it is straight like "W12345"
-						$remove_skus[] = $series . $item;
-						continue;
-					}
+
+                    //$remove_skus[] = "$series-$item";
+                    //$remove_skus[] = $series . $item;
 
                     // If they don't have both, then stop this item
 					continue 2; // Drop out of both
@@ -161,13 +161,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
         // Only need one of each
-		$remove_skus = array_unique( $remove_skus );
-		
+		//$remove_skus = array_unique( $remove_skus );
+
 		// Now remove skus
-		if ( !empty( $remove_skus ) )
+		/* if ( !empty( $remove_skus ) )
 		foreach ( $remove_skus as $sku ) {
 			unset( $new_product_skus[array_search( $sku, $new_product_skus )] );
-		}
+		}*/
 
 		if ( is_array( $products ) )
 		foreach ( $products as $sku => $product_id ) {
@@ -178,7 +178,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		// Add new products
         $industries = $account->get_industries();
 		$this->add_bulk( $account->id, $industries, $new_product_skus );
-        $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
+
+        // Check testing sites
+        $testing_sites = array( 477, 571, 829, 476, 458 );
+
+        if ( in_array( $account->id, $testing_sites ) )
+            $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
 
 		// Deactivate old products
         $account_product = new AccountProduct();
