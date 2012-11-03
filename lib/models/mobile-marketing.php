@@ -21,7 +21,7 @@ class MobileMarketing extends ActiveRecordBase {
         $mobile_list = new MobileList();
 
         // Get data
-        $user_ids = $this->get_customers();
+        $accounts = $this->get_customers();
 
         /** To be explored
          *$w = new Websites;
@@ -35,17 +35,17 @@ class MobileMarketing extends ActiveRecordBase {
 		}
 
 		// Include the library
-        library('trumpia-v1');
+         */
 
-		foreach ( $websites as $website ) {
-			$trumpia = new TrumpiaV1( $website['api_key'], $website['user_id'] );
+        library('trumpia-v1');
+        fn::info( $accounts );exit;
+		foreach ( $accounts as $account ) {
+			$trumpia = new TrumpiaV1( $account->api_key, 'bahama-bucks' );
 			$subscriptions = $trumpia->get_subscriptions();
 			print_r( $subscriptions );
-		} */
+		}
 
-        // Make sure we have a reason to continue
-        if ( empty( $user_ids ) )
-            return;
+        exit;
 
         // Login
         $login_fields = array(
@@ -282,7 +282,7 @@ class MobileMarketing extends ActiveRecordBase {
      * @return array
      */
     public function get_customers() {
-        return ar::assign_key( $this->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'trumpia-user-id'", PDO::FETCH_ASSOC ), 'value', true );
+        return $this->get_results( "SELECT ws.`website_id`, ws.`value` AS user_id, ws2.`value` AS api_key FROM `website_settings` AS ws LEFT JOIN `website_settings` AS ws2 ON ( ws.`website_id` = ws2.`website_id` ) WHERE ws.`key` = 'trumpia-user-id' AND ws2.`key` = 'trumpia-api-key' AND ws.`website_id` = 1122", PDO::FETCH_CLASS, 'Account' );
     }
 
     /**

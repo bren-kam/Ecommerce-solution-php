@@ -105,7 +105,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         ini_set( 'max_execution_time', 600 ); // 10 minutes
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
-        
+
         // Get libraries
         library('ashley-api/ashley-api');
         $this->ashley = new Ashley_API();
