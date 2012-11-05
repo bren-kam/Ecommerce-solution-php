@@ -116,6 +116,7 @@ class Product extends ActiveRecordBase {
             array(
                 'brand_id' => $this->brand_id
                 , 'industry_id' => $this->industry_id
+                , 'website_id' => $this->website_id
                 , 'name' => $this->name
                 , 'slug' => $this->slug
                 , 'description' => $this->description
@@ -128,7 +129,7 @@ class Product extends ActiveRecordBase {
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iisssssisssi'
+            , 'iiisssssisssi'
             , 'i'
         );
     }
