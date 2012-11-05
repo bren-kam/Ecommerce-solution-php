@@ -114,7 +114,7 @@ if ( !empty( $product_id ) ) {
 	$p = $products->get_custom_product( $product_id );
 	
 	if ( !$p )
-		url::redirect('/custom-products/');
+		url::redirect('/products/custom-products/');
 	
 	$images = $products->get_images( $product_id );
 	$categories_list = $products->get_categories( $product_id );

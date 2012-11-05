@@ -24,6 +24,7 @@ class TestController extends BaseController {
 
         foreach ( $product_ids as $pid ) {
             $product->clone_product( $pid, $this->user->id );
+            $product->get( $product->id );
             $product->website_id = 651;
             $product->update();
         }
