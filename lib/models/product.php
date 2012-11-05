@@ -128,7 +128,7 @@ class Product extends ActiveRecordBase {
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iisssssisss'
+            , 'iisssssisssi'
             , 'i'
         );
     }
