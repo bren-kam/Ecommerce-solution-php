@@ -1,7 +1,7 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created;
+    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified;
 
     // Artificial columns
     public $images;
@@ -125,6 +125,7 @@ class Product extends ActiveRecordBase {
                 , 'product_specifications' => $this->product_specifications
                 , 'publish_date' => $this->publish_date
                 , 'publish_visibility' => $this->publish_visibility
+                , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
             , 'iisssssisss'

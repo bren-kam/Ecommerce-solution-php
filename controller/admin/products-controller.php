@@ -124,6 +124,7 @@ class ProductsController extends BaseController {
             $product->status = $_POST['sProductStatus'];
             $product->publish_date = $_POST['hPublishDate'];
             $product->publish_visibility = $_POST['sStatus'];
+            $product->user_id_modified = $this->user->id;
 
             $product_specs = array();
             $sequence = 0;
