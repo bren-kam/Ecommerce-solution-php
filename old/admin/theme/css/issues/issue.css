@@ -1,0 +1,34 @@
+/***************/
+/* View Issue */
+/***************/
+h2 { font-size: 23px; font-weight: bold; padding-bottom:7px }
+td { padding: 6px 10px 6px 0; font-size: 14px !important; color: #5f5f66 }
+td label, td strong { font-size: 14px !important; font-weight: bold; color:#5f5f66 }
+td.move label, td.move strong{ position:relative; top: 4px; }
+td input.tb { width: 147px }
+blockquote { line-height: 17px; font-size: 14px; }
+
+/*** Comments ***/
+.comment { margin: 10px 10px 20px 0; clear:left; position:relative; color: #5f5f66 }
+.comment p { font-size: 12px; color: #464A4C }
+.comment br { clear: both }
+.comment .name { font-weight: bold; background-color: #F1F1F1; border: 1px solid #b6b6ba; padding: 5px; height: 38px; font-size: 15px; line-height: 36px; margin-bottom: 14px; color: #5f5f66 }
+.private { position: relative; top: 2px }
+.comment .date { font-size: 12px; font-weight: normal; margin-left: 5px; }
+.divider { clear: both; height: 1px; background-color: #E3E3E3; margin: 0 10px }
+.delete-comment { position: absolute; top: 18px; right: 6px; display: none }
+.comment:hover .delete-comment { display: inline }
+.comment .message { font-size: 14px; color: #5f5f66; margin-left: 7px; }
+
+#taIssueComments { width: 100%; height: 16px; border: 1px #ddd solid; padding: 2px; font-size: 14px; font-family: Arial, Helvetica, sans-serif; color: #777 }
+#aAddComment { float:right; display: none; margin: 3px 10px 0 }
+#dPrivate { float:right; display: none; margin: 12px 10px 0; }
+#dPrivate input { position: relative; top: 2px }
+#dTAIssueCommentsWrapper { margin: 0 14px 0 0 }
+#dIssueCommentsDivider { margin-top: 10px }
+
+.normal { color: #6abe00 }
+.high { color: #d70000;  }
+ol li { list-style-type: decimal !important; margin-left: 15px; margin-bottom: 15px; }
+ol li p { padding-bottom: 7px; font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif }
+blockquote { line-height: 15px; margin-left: 15px }

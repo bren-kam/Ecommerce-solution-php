@@ -1,0 +1,21 @@
+.contact {
+	border: 1px solid #eee;
+	display: block;
+	float: left;
+	line-height: 19px;
+	margin: 10px 10px 0 0;
+	padding: 5px 10px;
+	position:relative;
+	width: 300px;
+}
+
+.actions { display: none; }
+.contact:hover { background-color: #EFFCFF; border-color: #ddd; }
+.contact:hover .actions { display: block }
+
+.contact-left, .contact-right { width: 150px; float:left; }
+.contact-right { text-align:right; }
+
+.delete-address { position: absolute; top: 5px; right: 5px; }
+.edit-address { position: absolute; top: 5px; right: 27px; }
+span.location { font-size: 19px }

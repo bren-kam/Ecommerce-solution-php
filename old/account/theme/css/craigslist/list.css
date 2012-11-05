@@ -1,0 +1,43 @@
+/************/
+/* Craigslist Templates */
+/************/
+#dNarrowSearchContainer { margin-right: 30px }
+#dNarrowSearch { padding: 13px 14px 31px; border: 1px solid #AFAFAF; background:#E9E9E9; width: 100%; position:relative }
+#dNarrowSearch h2 { font-size: 24px; font-weight: bold; float:left; padding-right: 32px; }
+#dNarrowSearch h2, #dNarrowSearch td, #dNarrowSearch label { color: #606060 }
+#dNarrowSearch label { font-size: 15px; }
+#iNYSArrow { position:absolute; top: 100%; left: 94px }
+
+/* Table Sorter */
+#tListCraigslist {empty-cells:show; word-wrap:break-word; background:#ffffff; clear:left}
+#tListCraigslist th, #tListCraigslist td { font-weight: bold; vertical-align:middle; padding-bottom: 7px; padding-left: 5px; }
+#tListCraigslist tr {margin:1px 0px;}
+#tListCraigslist th { border: 1px solid #606060; background-color: #606060; border-right-width: 7px; color:#fafafa; line-height:26px; text-align:left !important; padding-bottom: 0; cursor:pointer}
+#tListCraigslist td { color:#333333; padding-bottom: 0; height: 40px; vertical-align: top; padding-top: 5px; padding-left: 10px; }
+#tListCraigslist tr.odd{ background:#E3E3E3; }
+#tListCraigslist span { position: relative; top: 5px; }
+
+#tListCraigslist th.header {
+    background-color: #606060;
+	cursor: pointer;
+	text-align: center;
+} 
+
+#tListCraigslist th.headerSortUp { 
+    background: #FFA500 url(/images/icons/arrow-up.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+#tListCraigslist th.headerSortDown { 
+    background: #FFA500 url(/images/icons/arrow-down.gif) center right no-repeat;
+	border-color: #FFA500;
+}
+
+#tNarrowSearch { padding-top: 24px; float:left }
+#tAutoComplete { border: 1px solid #AFAFAF }
+#dNarrowSearch td.col-1 { padding-right: 25px }
+
+#tListTemplates_wrapper { position: relative; bottom: 25px; }
+.ui-autocomplete { width:245px }
+.ui-menu-item a { width: 235px; display: block; padding: 2px 5px; }
+#tdSearch { padding-left:49px;text-align:right; }

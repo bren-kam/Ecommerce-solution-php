@@ -1,0 +1,30 @@
+/***************/
+/* Form Styles */
+/***************/
+form td { padding: 0 10px 7px 0; }
+label { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; }
+input.tb, select { 
+	border: 1px solid #636363;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	height: 19px;
+	padding: 2px;
+	width: 263px;
+}
+.cb { position: relative; top: 3px; }
+select { height:23px; width:267px }
+select.multiple { height: 150px }
+textarea {
+	border: 1px solid #636363;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	padding: 2px;
+	width: 263px;
+}
+.top { vertical-align: top }
+
+table.format th { font-weight: bold; }
+table.format tr td, table.format tr th{ padding-top: 3px; padding-bottom: 7px; padding-right: 10px; border-bottom: 1px solid #929292 }
+table.format tr.last td { border-bottom: 0 }

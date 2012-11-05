@@ -1,0 +1,136 @@
+/* Reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, input,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight:inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+	color: #595F65;
+}
+strong{font-weight:bold;}
+em {font-style:italic;}
+
+/* remember to define focus styles! */
+a, a:focus, a:active, a:visited, input:focus {
+	outline:none;
+}
+body {
+	line-height: 1;
+	color: #595F65;
+	background: white;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {
+	text-align: left;
+	font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+}
+blockquote, q {
+	quotes: "" "";
+}
+
+/* Common Styles */
+body { font-family:Arial, Helvetica, sans-serif; color:#63656B; font-size:14px;}
+h1 { font-size:22px; color: #404040; padding-bottom: 10px }
+h2 { font-size:18px; color: #404040; padding-bottom: 7px; font-weight: bold; }
+h3 { font-size:15px; color: #404040; padding-bottom: 7px; font-weight: bold; }
+textarea { font-family:Arial, Helvetica, sans-serif; color:#63656B; font-size:14px; }
+
+a { text-decoration:none; color:#3b5998 }
+a:hover { color:#595f65 }
+a img { border: none }
+ol { list-style: decimal; padding-left: 15px; }
+ol li { margin-left: 10px; padding-bottom: 7px }
+
+/* Classes */
+.button {
+	font-size: 16px;
+	font-weight: bold;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	color: #fff !important;
+	padding: 5px 30px;
+	position: relative;
+	background-color: #ffb005;
+	border: 1px solid #F79D04;
+	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+   -o-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+   -webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+   -moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #F79D04, 0 0 3px #d5d4d4;
+}
+
+input.button {
+	margin:0;
+	cursor: pointer;
+	padding:6px 10px;
+	#padding:2px 10px 2px;
+}
+
+.button object { background: transparent; display: inline; position:absolute; }
+
+.hidden, .dialog { display: none }
+
+.col-1 { width: 100% }
+.col-1.info-box { width: 97.5% }
+.col-2 { width: 50%; }
+.float-left { float:left; position:relative }
+.float-right { float:right; position:relative }
+.small { font-size: 0.66em }
+.big { font-size: 1.5em }
+.bold { font-weight: bold }
+.text-right { text-align:right; }
+.text-center { text-align:center; }
+.success, .success p { color: #090 }
+.alert, .error{ color: #F00; }
+.share-save { font-size: 22px; font-weight: bold; text-align:right }
+
+/* Form Styles */
+form td, form th, .form td, .form th { padding: 0 10px 7px 0; font-size: 14px }
+.form td.top { vertical-align:top }
+label, span.label { font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+td label, span.label { font-weight: bold; }
+input.tb, select { 
+	border: 1px solid #636363;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	height: 19px;
+	padding: 2px;
+	width: 263px;
+}
+textarea {	
+	border: 1px solid #636363;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	padding: 2px;
+	width: 263px;
+}
+.cb, .rb { position: relative; top: 2px; }
+select { height:23px; width:267px }
+td.title { padding-bottom:10px }
+td.title strong { font-size: 20px }
+
+/* Temporary Values */
+.tmpval { color: #929292 }
+p { padding-bottom:7px }

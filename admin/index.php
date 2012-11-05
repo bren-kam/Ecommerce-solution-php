@@ -1,16 +1,10 @@
 <?php
 /**
- * Front to Imagine Retailer - Admin. This file doesn't do anything, but loads
- * load.php which does and tells RS what to do next.
- *
- * Be aware that the Studio98 Framework is included by default
- *
- * @package Grey Suit Retail
+ * Created by JetBrains PhpStorm.
+ * User: Kerry
+ * Date: 10/16/12
+ * Time: 7:52 PM
+ * To change this template use File | Settings | File Templates.
  */
 
-// This is not a cron job
-define( 'CRON', false );
-
-// Loads the setup process for the whole website
-require_once( './load.php' );
-
+require '../load.php';
