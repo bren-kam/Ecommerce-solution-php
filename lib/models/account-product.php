@@ -102,4 +102,13 @@ class AccountProduct extends ActiveRecordBase {
             )->query();
 		}
 	}
+
+    /**
+     * Delete from accounts
+     *
+     * @param int $product_id
+     */
+    public function delete_by_product( $product_id ) {
+        parent::update( array( 'active' => 0 ), array( 'product_id' => $product_id ), 'i', 'i' );
+    }
 }

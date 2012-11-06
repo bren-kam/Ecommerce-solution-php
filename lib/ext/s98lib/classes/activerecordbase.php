@@ -17,6 +17,11 @@ abstract class ActiveRecordBase {
     CONST DB_NAME = 'imaginer_system';
 
     /**
+     * Define Exceptions
+     */
+    const EXCEPTION_DUPLICATE_ENTRY = 23000;
+
+    /**
      * Hold the PDO object
      * @var PDO
      */
@@ -342,7 +347,7 @@ abstract class ActiveRecordBase {
         // Throw an error if it doesn't work
         if ( 00000 != $this->_statement->errorCode() ) {
             $error_info = $this->_statement->errorInfo();
-            throw new ModelException( 'SQL Error: ' . $error_info[2] );
+            throw new ModelException( 'SQL Error: ' . $error_info[2], NULL, $this->_statement->errorCode() );
         }
     }
 
@@ -427,7 +432,7 @@ abstract class ActiveRecordBase {
 
             // Doesn't exist, then create it
             if ( !$this->_pdo ) {
-                if ( stristr( $_SERVER['DOCUMENT_ROOT'], '/gsr/systems/' ) ) {
+                if ( stristr( ABS_PATH, '/gsr/systems/' ) ) {
                     require '/gsr/systems/db.php';
 
                     try {

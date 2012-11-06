@@ -70,8 +70,11 @@ class ProductsController extends BaseController {
             // Get the industry as it may be needed
             if ( $this->verified() )
                 $industry->get( $product->industry_id );
+
+            $account = new Account();
+            $accounts = $account->get_by_product( $product->id );
         } else {
-            $product_attribute_items = $tags = $product_images = array();
+            $product_attribute_items = $tags = $product_images = $accounts = array();
 
             $date = new DateTime();
 
@@ -90,6 +93,27 @@ class ProductsController extends BaseController {
         }
 
         if ( $this->verified() && $product->id ) {
+            // Need to delete it from all websites
+            if ( 'deleted' == $_POST['sStatus'] ) {
+                // We need to remove it from all user websites
+                $account_product = new AccountProduct();
+                $account_category = new AccountCategory();
+
+                /**
+                 * Get variables
+                 * @var Account $account
+                 */
+                $accounts = $account->get_by_product( $product->id );
+
+                // Delete product from all accounts
+                $account_product->delete_by_product( $product->id );
+
+                // Recategorize them
+                foreach ( $accounts as $account ) {
+                    $account_category->reorganize_categories( $account->id, $category );
+                }
+            }
+
             $product->brand_id = $_POST['sBrand'];
             $product->industry_id = $_POST['sIndustry'];
             $product->name = $_POST['tName'];
@@ -100,14 +124,15 @@ class ProductsController extends BaseController {
             $product->status = $_POST['sProductStatus'];
             $product->publish_date = $_POST['hPublishDate'];
             $product->publish_visibility = $_POST['sStatus'];
+            $product->user_id_modified = $this->user->id;
 
             $product_specs = array();
             $sequence = 0;
 
             if ( isset( $_POST['product-specs'] ) )
-            foreach( $_POST['product_spec'] as $ps ) {
+            foreach( $_POST['product-specs'] as $ps ) {
                 list ( $spec_name, $spec_value ) = explode( '|', $ps );
-                $product_specs[] = array( $spec_name, $spec_value, $sequence );
+                $product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ), $sequence );
 
                 $sequence++;
             }
@@ -163,7 +188,7 @@ class ProductsController extends BaseController {
         $template_response = $this->get_template_response( 'add-edit' )
             ->select( 'products', 'add' )
             ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items' ) );
+            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
 
         $this->resources
             ->javascript( 'fileuploader', 'products/add-edit' )
@@ -463,7 +488,7 @@ class ProductsController extends BaseController {
 
 
     /**
-     * Delete a user
+     * Delete a product
      *
      * @return AjaxResponse
      */
@@ -481,6 +506,24 @@ class ProductsController extends BaseController {
 
         // Deactivate product
         if ( $product->id && 'deleted' != $product->publish_visibility ) {
+            // We need to remove it from all user websites
+            $account = new Account();
+            $account_product = new AccountProduct();
+            $account_category = new AccountCategory();
+            $category = new Category();
+
+            // Get variables
+            $accounts = $account->get_by_product( $product->id );
+
+            // Delete product from all accounts
+            $account_product->delete_by_product( $product->id );
+
+            // Recategorize them
+            foreach ( $accounts as $account ) {
+                $account_category->reorganize_categories( $account->id, $category );
+            }
+
+            // Delete the product
             $product->publish_visibility = 'deleted';
             $product->update();
 

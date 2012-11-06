@@ -93,6 +93,16 @@ class AccountsController extends BaseController {
             $account->type = $_POST['sType'];
             $account->create();
 
+            // Needs to create a checklist
+            $checklist = new Checklist();
+            $checklist->website_id = $account->id;
+            $checklist->type = 'Website Setup';
+            $checklist->create();
+
+            // Add checklist website items
+            $checklist_website_item = new ChecklistWebsiteItem();
+            $checklist_website_item->add_all_to_checklist( $checklist->id );
+
             $this->notify( _('Your account was successfully created!') );
 
             return new RedirectResponse('/accounts/');
@@ -832,7 +842,7 @@ class AccountsController extends BaseController {
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        set_cookie( 'aid', $_GET['aid'], 172800 ); // 2 days
+        set_cookie( 'wid', $_GET['aid'], 172800 ); // 2 days
         set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
 
         $url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) );
@@ -974,14 +984,39 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Run the feed
         $ashley_specific_feed = new AshleySpecificFeedGateway();
-        $ashley_specific_feed->run( $_GET['aid'] );
+        $ashley_specific_feed->run( $account );
 
         // Give them a notification
         $this->notify( _('The ashley feed has been successfully run!') );
 
         // Redirect them to accounts page
         return new RedirectResponse('/accounts/');
+    }
+
+    /**
+     * Reorganize categories
+     *
+     * @return RedirectResponse
+     */
+    protected function reorganize_categories() {
+        // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get the account category
+        $account_category = new AccountCategory();
+        $account_category->reorganize_categories( $_GET['aid'], new Category() );
+
+        // Give them a notification
+        $this->notify( _('The categories have been successfully reorganized!') );
+
+        // Redirect them to accounts page
+        return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'], '/accounts/actions/' ) );
     }
 
     /**
@@ -1173,14 +1208,14 @@ class AccountsController extends BaseController {
             $title .= '<a href="/accounts/notes/?aid=' . $a->id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
 
             if ( isset( $incomplete_checklists[$a->id] ) )
-                $title .= ' | <a href="/checklists/view/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
+                $title .= ' | <a href="/checklists/checklist/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
 
             $title .= '</span>';
 
             $data[] = array(
                 $image
                 , $title
-                , '<a href="/users/edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
+                , '<a href="/users/add-edit/?uid=' . $a->user_id . '" title="' . $contact_title . '">' . $a->contact_name . '</a>'
                 , $a->online_specialist
             );
         }

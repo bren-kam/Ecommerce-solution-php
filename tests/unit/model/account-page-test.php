@@ -29,7 +29,7 @@ class AccountPageTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test creating an attribute
+     * Test create
      */
     public function testCreate() {
         $this->account_page->website_id = -3;

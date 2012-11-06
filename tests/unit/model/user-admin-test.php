@@ -394,10 +394,18 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->role = 7;
         $this->user->company_id = 4;
 
-        // Get Users
-        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+        // Create user
+        $this->db->insert( 'users', array( 'company_id' => 4, 'email' => md5(time()), 'password' => md5(microtime()), 'contact_name' => 'Habba dashery', 'role' => 8 ), 'isssi' );
 
-        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+        $user_id = $this->db->get_insert_id();
+
+        // Get Users
+        $users = $this->user->autocomplete( 'Habba', 'contact_name' );
+
+        $this->assertEquals( $users[0]['contact_name'], 'Habba dashery' );
+
+        // Delete
+        $this->db->delete( 'users', array( 'user_id' => $user_id ), 'i' );
     }
 
     /**
@@ -408,10 +416,19 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->role = 7;
         $this->user->company_id = 1;
 
+        // Create user
+        $this->db->insert( 'users', array( 'company_id' => 3, 'email' => md5(time()), 'password' => md5(microtime()), 'contact_name' => 'Habba dashery', 'role' => 8 ), 'isssi' );
+
+        $user_id = $this->db->get_insert_id();
+
         // Get Users
-        $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
+        $users = $this->user->autocomplete( 'Habba', 'contact_name' );
+
 
         $this->assertFalse( isset( $users[0] ) );
+
+        // Delete
+        $this->db->delete( 'users', array( 'user_id' => $user_id ), 'i' );
     }
 
     /**

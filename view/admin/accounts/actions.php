@@ -32,12 +32,8 @@
 <?php echo $template->start( _('Actions') ); ?>
 
 <?php if ( 0 == $account->version ) { ?>
-    <p><a href="<?php echo url::add_query_arg( array( 'aid' => $account->id, '_nonce' => nonce::create('install_website' ), '/accounts/install-website/' ) ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
-<?php
-}
-
-if ( 0 != $account->version ) {
-?>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-website/' ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
+<?php } else { ?>
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-package/' ); ?>" title="<?php echo _('Install Package'); ?>"><?php echo _('Install Package'); ?></a></p>
 <?php } ?>
 
@@ -53,7 +49,8 @@ if ( 0 != $account->version ) {
 
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
 
-<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley FTP'); ?>"><?php echo _('Run Ashley FTP'); ?></a></p>
+<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
+<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reorganize-categories/' ); ?>" title="<?php echo _('Reorganize Categories'); ?>"><?php echo _('Reorganize Categories'); ?></a></p>
 
 
 <?php echo $template->end(); ?>

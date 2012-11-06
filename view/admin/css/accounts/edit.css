@@ -8,3 +8,5 @@ input.tb { width: 368px; }
 #tFeatures label { position: relative; bottom: 3px }
 .on-off{ display: block; width: 76px; height: 25px; background: url(/images/accounts/edit/on-off.png) 0 -25px no-repeat; position: relative; top: 5px; }
 .on-off.selected { background-position: 0 0 }
+
+#sIndustries { height: 150px; }

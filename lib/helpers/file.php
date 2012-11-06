@@ -28,6 +28,8 @@ class File {
 
     /**
      * Set bucket
+     *
+     * @param string $bucket
      */
     public function set_bucket( $bucket ) {
         $this->bucket = $bucket;
@@ -36,6 +38,8 @@ class File {
     /**
 	 * Uploads an Image to Amazon
 	 *
+     * @throws InvalidParametersException|HelperException
+     *
 	 * @param file|string $image the product image file
 	 * @param string $new_image_name the new image name
 	 * @param int $width the width you want the image to be
@@ -43,27 +47,27 @@ class File {
 	 * @param string $industry the industry to upload it under
 	 * @param string $directory (Optional) any path to the directory you want the file to be in
 	 * @param bool $keep_proportions (Optional|true) keep image proportions
-	 * @param bool fill_constraints (Optional|true) fill the constraints given
-	 * @return bool/string
+	 * @param bool $fill_constraints (Optional|true) fill the constraints given
+     * @return string
 	 */
 	public function upload_image( $image, $new_image_name, $width, $height, $industry, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
         // Get hte image path
         $image_path = ( is_string( $image ) ) ? $image : $image['tmp_name'];
 
 		if ( empty( $image_path ) || empty( $industry ) )
-			return false;
+			throw new InvalidParametersException( 'The image path could not be determined.' );
 
 		list( $result, $image_file ) = image::resize( $image_path, TMP_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
 
 		if ( !$result || !$image_file || !is_file( $image_file ) )
-			return false;
+            throw new HelperException( "Failed to resize image" );
 
 		// Define the base name
 		$base_name = basename( $image_file );
 
 		// Upload the image
 		if ( !$this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ ) )
-			return false;
+			throw new HelperException( "Failed to put image on Amazon S3" );
 
         // Delete the local image
         unlink( $image_file );
@@ -75,6 +79,8 @@ class File {
     /**
      * Upload File
      *
+     * @throws HelperException
+     * 
      * @param string $file_path
      * @param string $key
      * @param string $dir [optional]
@@ -82,7 +88,7 @@ class File {
      */
     public function upload_file( $file_path, $key, $dir = '' ) {
 		if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ ) )
-            return false;
+            throw new HelperException( 'Amazon S3 failed to upload file' );
 
         unlink( $file_path );
 
@@ -94,6 +100,8 @@ class File {
      *
      * Copes a file in Amazon S3
 	 *
+     * @throws HelperException
+     * 
 	 * @param int $account_id
 	 * @param string $url
      * @param string $bucket
@@ -106,7 +114,7 @@ class File {
         $new_uri = preg_replace( '/^([0-9]+)/', $account_id, $uri );
 
 		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri, S3::ACL_PUBLIC_READ ) )
-            return false;
+            throw new HelperException( 'Amazon S3 failed to copy file' );
 
         return 'http://' . $bucket . '/' . $new_uri;
 	}

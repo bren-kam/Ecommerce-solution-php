@@ -503,7 +503,7 @@ class FormTable_Select extends FormTable_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        $html = '<tr><td>';
+        $html = '<tr><td class="top">';
         $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
 
         if ( $this->required )

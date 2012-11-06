@@ -118,11 +118,11 @@ class CompaniesController extends BaseController {
         $data = false;
 
         if ( is_array( $companies ) )
-        foreach ( $companies as $c ) {
+        foreach ( $companies as $company ) {
             $date = new DateTime( $company->date_created );
 
             $data[] = array(
-                '<a href="/accounts/companies/add-edit/?cid=' . $c->id . '" title="' . _('Edit Company') . '">' . $c->name . '</a>'
+                '<a href="/accounts/companies/add-edit/?cid=' . $company->id . '" title="' . _('Edit Company') . '">' . $company->name . '</a>'
                 , $company->domain
                 , $date->format( 'F jS, Y' )
             );

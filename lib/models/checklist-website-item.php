@@ -29,6 +29,19 @@ class ChecklistWebsiteItem extends ActiveRecordBase {
     }
 
     /**
+     * Add Items to Checklist
+     *
+     * @param int $checklist_id
+     */
+    public function add_all_to_checklist( $checklist_id ) {
+        $this->prepare(
+            'INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT :checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = 1'
+            , 'i'
+            , array( ':checklist_id' => $checklist_id )
+        )->query();
+    }
+
+    /**
      * Update an item
      */
     public function update() {

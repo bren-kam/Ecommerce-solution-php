@@ -71,7 +71,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
             <?php } ?>
         </td>
         <td>
-            <strong><?php echo _('Browser/OS'); ?></strong>
+            <strong><?php echo _('Browser'); ?></strong>
             <?php echo $ticket->browser_name, ' ', $ticket->browser_version ?>
         </td>
     </tr>
@@ -202,7 +202,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
         if ( is_array( $comment->uploads ) )
         foreach ( $comment->uploads as $upload ) {
         ?>
-            <p><a href="http://s3.amazonaws.com/retailcatalog.us/attachments/<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a></p>
+            <p><a href="<?php echo $upload['link']; ?>" target="_blank" title="<?php echo _('Download'); ?>"><?php echo $upload['name']; ?></a></p>
         <?php } ?>
         </div>
         <br clear="left" />

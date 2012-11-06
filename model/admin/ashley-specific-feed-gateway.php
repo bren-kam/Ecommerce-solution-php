@@ -33,7 +33,9 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		
         if ( is_array( $accounts ) )
         foreach( $accounts as $account ) {
-            $this->run( $account, $file );
+            // Need to make this not timeout and remove half the products first
+            // @fix
+            // $this->run( $account, $file );
         }
     }
 
@@ -62,7 +64,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$products = array();
 
         // Setup FTP
-		$ftp = new FTP( "/CustEDI/$folder/$subfolder/" );
+		$ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
 
 		// Set login information
 		$ftp->host     = self::FTP_URL;
@@ -121,12 +123,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
             $all_skus[] = $sku;
 
-			if ( !stristr( $sku, '-' ) ) {
-				if ( !array_key_exists( $sku, $products ) )
-					$new_product_skus[] = $sku;
+            // Add any products they don't have
+            if ( !array_key_exists( $sku, $products ) )
+                $new_product_skus[] = $sku;
 
+            // Setup packages
+			if ( !stristr( $sku, '-' ) )
 				continue;
-			}
 
 			list( $series, $item ) = explode( '-', $sku, 2 );
 
@@ -140,14 +143,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Go through each item
 			foreach ( $items as $product_id => $package_pieces ) {
 				// See if they have all the items necessary
-				foreach ( $package_pieces as $item ) { 
-					if ( in_array( $item, $skus[$series] ) ) { // Check if it is a series such as "W123-45"
-						$remove_skus[] = "$series-$item";
+				foreach ( $package_pieces as $item ) {
+                    // Check if it is a series such as "W123-45" or "W12345"
+					if ( in_array( $item, $skus[$series] ) || in_array( $series . $item, $all_skus ) )
 						continue;
-					} elseif( in_array( $series . $item, $all_skus ) ) { // Check if it is straight like "W12345"
-						$remove_skus[] = $series . $item;
-						continue;
-					}
+
+                    //$remove_skus[] = "$series-$item";
+                    //$remove_skus[] = $series . $item;
 
                     // If they don't have both, then stop this item
 					continue 2; // Drop out of both
@@ -159,13 +161,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
         // Only need one of each
-		$remove_skus = array_unique( $remove_skus );
-		
+		//$remove_skus = array_unique( $remove_skus );
+
 		// Now remove skus
-		if ( !empty( $remove_skus ) )
+		/* if ( !empty( $remove_skus ) )
 		foreach ( $remove_skus as $sku ) {
 			unset( $new_product_skus[array_search( $sku, $new_product_skus )] );
-		}
+		}*/
 
 		if ( is_array( $products ) )
 		foreach ( $products as $sku => $product_id ) {
@@ -175,12 +177,17 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		// Add new products
         $industries = $account->get_industries();
-        $account_product = new AccountProduct();
-		$account_product->add_bulk( $account->id, $industries, $new_product_skus );
-        $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
+		$this->add_bulk( $account->id, $industries, $new_product_skus );
+
+        // Check testing sites
+        $testing_sites = array( 477, 571, 829, 476, 458 );
+
+        if ( in_array( $account->id, $testing_sites ) )
+            $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
 
 		// Deactivate old products
-		$account_product->remove_bulk( $account->id, $remove_products );
+        $account_product = new AccountProduct();
+        $account_product->remove_bulk( $account->id, $remove_products );
 		
 		// Reorganize Categories
         $account_category = new AccountCategory();
@@ -197,7 +204,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		return $this->prepare(
             'SELECT wp.`product_id`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`user_id_created` = :user_id_created'
             , 'ii'
-            , array( ':account_id' => $account_id, ':user_id_created' => SELF::USER_ID )
+            , array( ':account_id' => $account_id, ':user_id_created' => self::USER_ID )
         )->get_results( PDO::FETCH_ASSOC );
 	}
 
@@ -207,7 +214,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      * @return mixed
      */
     protected function get_feed_accounts() {
-        return $this->get_results( "SELECT `website_id` FROM `website_settings` WHERE `key` = 'ashley-ftp-password' AND `value` <> ''", PDO::FETCH_CLASS, 'Account' );
+        return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1", PDO::FETCH_CLASS, 'Account' );
     }
 
     /**
@@ -229,6 +236,48 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		}
 
 		return $ashley_packages;
+	}
+
+    /**
+	 * Add Bulk
+	 *
+	 * @param int $account_id
+     * @param array $industry_ids
+	 * @param array $product_skus
+	 */
+	public  function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
+        // Make sure they entered in SKUs
+        if ( 0 == count( $product_skus ) || 0 == $industry_ids )
+            return;
+
+        // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Split into chunks so we can do queries one at a time
+		$product_sku_chunks = array_chunk( $product_skus, 500 );
+
+		foreach ( $product_sku_chunks as $product_skus ) {
+            // Get the count
+            $product_sku_count = count( $product_skus );
+
+			// Turn it into a string
+			$product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
+
+			// Magical Query
+			// Insert website products
+			$this->prepare(
+                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 353 AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
+                , str_repeat( 's', $product_sku_count )
+                , $product_skus
+            )->query();
+		}
 	}
 
     /**

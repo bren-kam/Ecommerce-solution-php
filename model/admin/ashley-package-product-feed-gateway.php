@@ -84,6 +84,14 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     );
 
     /**
+     * Categories by template description
+     * @var array
+     */
+    protected $category_by_template_description = array(
+        'Dresser, Mirror' => 696
+    );
+
+    /**
      * Construct
      */
     public function __construct() {
@@ -97,7 +105,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         ini_set( 'max_execution_time', 600 ); // 10 minutes
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
-        
+
         // Get libraries
         library('ashley-api/ashley-api');
         $this->ashley = new Ashley_API();
@@ -244,7 +252,11 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             }
 
             // Get Category ID
-            $category_id = $this->categories[(string)$package_series->Grouping];
+            if ( isset( $this->category_by_template_description[(string)$template->Descr] ) ) {
+                $category_id = $this->category_by_template_description[(string)$template->Descr];
+            } else {
+                $category_id = $this->categories[(string)$package_series->Grouping];
+            }
 
             /***** ADD PRODUCT DATA *****/
 

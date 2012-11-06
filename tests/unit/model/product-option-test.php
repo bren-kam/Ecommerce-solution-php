@@ -88,7 +88,7 @@ class ProductOptionTest extends BaseDatabaseTest {
      */
     public function testDelete() {
         // Create product option
-        $this->db->insert( 'product_options', array( 'type' => 'select', 'title' => 'Temp Color Test', 'name' => 'Color Test' ), 'sss' );
+        $this->db->insert( 'product_options', array( 'option_type' => 'select', 'option_title' => 'Temp Color Test', 'option_name' => 'Color Test' ), 'sss' );
 
         $product_option_id = $this->db->get_insert_id();
 

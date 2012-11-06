@@ -25,6 +25,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
             $.post( '/products/create/', { _nonce : $('#_create_product').val() }, ajaxResponse , 'json');
 	});
 
+    /**
+     * Make sure it also contains a proper slug
+     */
+    $('#tProductSlug').change( function() {
+        $(this).val( $(this).val().slug() );
+    });
+
     // Date Picker
 	$('#tPublishDate').datepicker({
 		dateFormat: 'MM d, yy'
@@ -247,7 +254,7 @@ $.fn.disableAttributes = function() {
     $('#attribute-items-list input').each( function() {
         $('option[value=' + $(this).val() + ']', sAttributes).attr( 'disabled', true );
     });
-}
+};
 
 // Turns text into a slug
-String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); }
+String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); };

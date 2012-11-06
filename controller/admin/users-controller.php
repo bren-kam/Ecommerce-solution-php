@@ -102,7 +102,7 @@ class UsersController extends BaseController {
             ));
 
         $ft->add_field( 'select', _('Role'), 'sRole', $user->role )
-            ->options( array(
+            ->options( array_slice( array(
                 1 => '1 - ' ._('Authorized User')
                 , 2 => '2'
                 , 3 => '3'
@@ -112,7 +112,8 @@ class UsersController extends BaseController {
                 , 7 => '7 - ' . _('Online Specialist')
                 , 8 => '8 - ' . _('Admin')
                 , 9 => '9'
-                , 10 => '10 - ' . _('Super Admin') )
+                , 10 => '10 - ' . _('Super Admin')
+            ), 0, $this->user->role, true )
         );
 
         $ft->add_field( 'blank', '' );
@@ -163,8 +164,29 @@ class UsersController extends BaseController {
                 $user->update();
                 $this->notify( _('Your user has been successfully updated!') );
             } else {
-                $user->create();
-                $this->notify( _('Your user has been successfully created!') );
+                try {
+                    $user->create();
+                    $this->notify( _('Your user has been successfully created!') );
+                } catch ( ModelException $e ) {
+                    switch ( $e->getCode() ) {
+                        case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                            // Let's see if we can get the user they were trying to get
+                            $user->get_by_email( $user->email, false );
+
+                            // Let them know what happened
+                            $this->notify( _('Your user was not created. The user already existed, we have redirected you to edit the existing user.' ), false );
+
+                            return new RedirectResponse( url::add_query_arg( 'uid', $user->id, '/users/add-edit/' ) );
+                        break;
+
+                        default:
+                            // Don't know what happened
+                            $this->notify( _('An error occurred while trying to add your user: ') . $e->getCode() . '. Please create a support request so we can fix it.', false );
+
+                            return new RedirectResponse( '/users/add-edit/' );
+                        break;
+                    }
+                }
             }
 
             // Set the password
@@ -206,7 +228,7 @@ class UsersController extends BaseController {
         $accounts = $account->get_by_user( $_GET['uid'] );
 
         set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), 172800 );
-        set_cookie( 'aid', $accounts[0]->id, 172800 ); // 2 days
+        set_cookie( 'wid', $accounts[0]->id, 172800 ); // 2 days
         set_cookie( 'action', base64_encode( security::encrypt( 'bypass', ENCRYPTION_KEY ) ), 172800 ); // 2 days
 
         $url = 'http://' . ( ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( 'admin', 'account', $_SERVER['HTTP_X_FORWARDED_HOST'] ) : str_replace( 'admin', 'account', $_SERVER['HTTP_HOST'] ) ) . '/';

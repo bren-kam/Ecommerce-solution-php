@@ -28,6 +28,30 @@ class ChecklistTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Create
+     *
+     * @depends testGet
+     */
+    public function testCreate() {
+        // Declare variables
+        $account_id = -5;
+
+        $this->checklist->website_id = $account_id;
+        $this->checklist->type = 'Website Setup';
+        $this->checklist->create();
+
+        $this->assertTrue( !is_null( $this->checklist->id ) );
+
+        // Make sure it's in the database
+        $this->checklist->get( $this->checklist->id );
+
+        $this->assertTrue( !is_null( $this->checklist->website_id ) );
+
+        // Delete the account
+        $this->db->delete( 'checklists', array( 'checklist_id' => $this->checklist->id ), 'i' );
+    }
+
+    /**
      * Tests getting incomplete checklists
      */
     public function testGetIncomplete() {
@@ -50,8 +74,8 @@ class ChecklistTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( 'days_left', 'b.`title`', 'a.`type`', 'a.`date_created`' );
-        $dt->search( array( 'b.`title`' => false ) );
+        $dt->order_by( 'days_left', 'w.`title`', 'u2.`contact_name`', 'c.`type`', 'c.`date_created`' );
+        $dt->search( array( 'w.`title`' => false ) );
 
         $checklists = $this->checklist->list_all( $dt->get_variables() );
 
@@ -76,8 +100,8 @@ class ChecklistTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( 'days_left', 'b.`title`', 'a.`type`', 'a.`date_created`' );
-        $dt->search( array( 'b.`title`' => false ) );
+        $dt->order_by( 'days_left', 'w.`title`', 'u2.`contact_name`', 'c.`type`', 'c.`date_created`' );
+        $dt->search( array( 'w.`title`' => false ) );
 
         $count = $this->checklist->count_all( $dt->get_count_variables() );
 

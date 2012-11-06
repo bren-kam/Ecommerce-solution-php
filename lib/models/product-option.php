@@ -4,6 +4,10 @@ class ProductOption extends ActiveRecordBase {
     public $id, $product_option_id, $type, $title, $name;
 
     /**
+     * @fix needs to remove the option_
+     */
+
+    /**
      * Setup the initial data
      */
     public function __construct() {
@@ -20,7 +24,7 @@ class ProductOption extends ActiveRecordBase {
      */
     public function get( $product_option_id ) {
         $this->prepare(
-            'SELECT * FROM `product_options` WHERE `product_option_id` = :product_option_id'
+            'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name FROM `product_options` WHERE `product_option_id` = :product_option_id'
             , 's'
             , array( ':product_option_id' => $product_option_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -34,7 +38,7 @@ class ProductOption extends ActiveRecordBase {
      * @return array
      */
     public function get_all() {
-        return $this->get_results( 'SELECT * FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
+        return $this->get_results( 'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
     }
 
     /**
@@ -42,9 +46,9 @@ class ProductOption extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array(
-            'type' => $this->type
-            , 'title' => $this->title
-            , 'name' => $this->name
+            'option_type' => $this->type
+            , 'option_title' => $this->title
+            , 'option_name' => $this->name
         ), 'sss' );
 
         $this->product_option_id = $this->id = $this->get_insert_id();
@@ -55,9 +59,9 @@ class ProductOption extends ActiveRecordBase {
      */
     public function update() {
         parent::update( array(
-            'type' => $this->type
-            , 'title' => $this->title
-            , 'name' => $this->name
+            'option_type' => $this->type
+            , 'option_title' => $this->title
+            , 'option_name' => $this->name
         ), array(
             'product_option_id' => $this->id
         ), 'sss', 'i' );
@@ -130,7 +134,7 @@ class ProductOption extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-		return $this->prepare( "SELECT `product_option_id`, `title`, `name`, `type` FROM `product_options` WHERE 1 $where $order_by LIMIT $limit"
+		return $this->prepare( "SELECT `product_option_id`, `option_title` AS title, `option_name` AS name, `option_type` AS type FROM `product_options` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'ProductOption' );

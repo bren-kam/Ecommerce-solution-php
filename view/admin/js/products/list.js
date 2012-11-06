@@ -44,6 +44,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         return false;
     } );
 
+    // Choose type
+    $('#sAutoComplete').change( function() {
+        $.post( '/accounts/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'products', 'type' ], value : $(this).val() }, endStoreSession );
+    });
+
 	// Search functionality - Trigger (Click)
 	$('#aSearch').click( function() {
         $.post( '/accounts/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'products', 'search' ], value : $('#tAutoComplete').val() }, endStoreSession );

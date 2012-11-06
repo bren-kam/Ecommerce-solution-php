@@ -26,13 +26,16 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test getting acounts by a user
+     * Test getting accounts by a user
      */
     public function testGetByUser() {
-        // Get the account
-        $accounts = $this->account->get_by_user( 1 );
+        // Declare variables
+        $user_id = 1;
 
-        $this->assertTrue( $accounts[0] instanceof Account );
+        // Get the account
+        $accounts = $this->account->get_by_user( $user_id );
+
+        $this->assertTrue( current( $accounts ) instanceof Account );
 
         $testing_account_exists = false;
 
@@ -44,6 +47,19 @@ class AccountTest extends BaseDatabaseTest {
         }
 
         $this->assertTrue( $testing_account_exists );
+    }
+
+    /**
+     * Test getting accounts by a product
+     */
+    public function testGetByProduct() {
+        // Declare variable
+        $product_id = 38;
+
+        // Get the account
+        $accounts = $this->account->get_by_product( $product_id );
+
+        $this->assertTrue( current( $accounts ) instanceof Account );
     }
 
     /**
@@ -253,7 +269,10 @@ class AccountTest extends BaseDatabaseTest {
      */
     public function testGetIndustries() {
         // Declare variables
-        $account_id = 96; // Testing account
+        $account_id = -5; // Testing account
+
+        $this->db->insert( 'websites', array( 'website_id' => -5 ), 'i' );
+        $this->db->query( "INSERT INTO `website_industries` VALUES ( $account_id, 1), ( $account_id, 5 ), ( $account_id, 3 ) ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )" );
 
         // Get the testing account
         $this->account->get( $account_id );
@@ -263,6 +282,9 @@ class AccountTest extends BaseDatabaseTest {
 
         // House Plans industry
         $this->assertTrue( in_array( 5, $industries ) );
+
+        $this->db->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**

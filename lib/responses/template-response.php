@@ -132,8 +132,12 @@ class TemplateResponse extends Response {
             // We ony want to show them once
             $notification->delete_by_user( $user->user_id );
 
+            /**
+             * @var Notification $n
+             */
             foreach ( $notifications as $n ) {
-                $notification_html = '<div class="notification sticky hidden">';
+                $error = ( $n->success ) ? '' : ' error';
+                $notification_html = '<div class="notification sticky hidden' . $error . '">';
                 $notification_html .= '<a class="close" href="#"><img src="/images/icons/close.png" alt="' . _('Close') . '" /></a>';
                 $notification_html .= '<p>' . $n->message . '</p>';
                 $notification_html .= '</div>';

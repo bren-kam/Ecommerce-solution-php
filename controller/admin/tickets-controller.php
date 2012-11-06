@@ -38,6 +38,10 @@ class TicketsController extends BaseController {
         // Reset any defaults
         unset( $_SESSION['tickets'] );
 
+        // Set first one to be me
+        if ( $this->user->has_permission( 7 ) )
+            $_SESSION['tickets']['assigned-to'] = $this->user->id;
+
         return $template_response;
     }
 
@@ -123,12 +127,62 @@ class TicketsController extends BaseController {
             $ticket->create();
         }
 
+        // Special words
+        $words = array(
+            247 => '@sales'  // Chad
+            , 73 => '@products' // Chris
+            , 54 => '@accounting' // Craig
+        );
+
+        $variables = array(
+            $_POST['tTicketSummary']
+            , $_POST['taTicketMessage']
+        );
+
+        // Special hash priorities
+        $priorities = array(
+            1 => '#high' // high priority
+            , 2 => '#urgent' // urgent priority
+        );
+
+        $variables = array(
+            $_POST['tTicketSummary']
+            , $_POST['taTicketMessage']
+        );
+
+        // Figure out who we're assigned to
+        $assigned_to_user_id = 493; // Technical user (default)
+        $priority = 0; // Normal
+
+        // Find out if they are trying to direct it to a particular person
+        foreach ( $variables as $string ) {
+            $string = strtolower( $string );
+
+            if ( 493 == $assigned_to_user_id )
+            foreach ( $words as $user_id => $word ) {
+                if ( stristr( $string, $word ) ) {
+                    // Found it -- we're done here
+                    $assigned_to_user_id = $user_id;
+                    break;
+                }
+            }
+
+            if ( 0 == $priority )
+            foreach ( $priorities as $priority_id => $hash ) {
+                if ( stristr( $string, $hash ) ) {
+                    // Found it -- we're done here
+                    $priority = $priority_id;
+                    break;
+                }
+            }
+        }
+
         // Get browser information
         $browser = fn::browser();
 
         // Set ticket information
         $ticket->user_id = $this->user->id;
-        $ticket->assigned_to_user_id = 493; // Technical user
+        $ticket->assigned_to_user_id = $assigned_to_user_id; // Technical user
         $ticket->website_id = 0; // Admin side -- no website
         $ticket->summary = $_POST['tTicketSummary'];
         $ticket->message = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['taTicketMessage'] ), array('&') ), true , true ) );
@@ -137,6 +191,7 @@ class TicketsController extends BaseController {
         $ticket->browser_platform = $browser['platform'];
         $ticket->browser_user_agent = $browser['user_agent'];
         $ticket->status = 0;
+        $ticket->priority = $priority;
 
         // Update the ticket
         $ticket->update();
@@ -157,9 +212,9 @@ class TicketsController extends BaseController {
 
         // Send email
         $assigned_user = new User();
-        $assigned_user->get( 493 ); // Technical user
+        $assigned_user->get( $assigned_to_user_id ); // Technical user
 
-        //fn::mail( $assigned_user->email, 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary, "Name: " . $this->user->contact_name . "\nEmail: " . $this->user->email . "\nSummary: " . $ticket->summary . "\n\n" . $ticket->message . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id );
+        fn::mail( $assigned_user->email, 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary, "Name: " . $this->user->contact_name . "\nEmail: " . $this->user->email . "\nSummary: " . $ticket->summary . "\n\n" . $ticket->message . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id );
 
         // Close the window
         jQuery('a.close:visible:first')->click();
@@ -543,7 +598,7 @@ class TicketsController extends BaseController {
         );
 
         $assigned_user = new User();
-        $assigned_user->get( $_POST['atui'] );
+        $assigned_user->get( $_POST['auid'] );
 
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
@@ -553,6 +608,12 @@ class TicketsController extends BaseController {
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
         fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+
+        // Change who it's assigned to
+        jQuery('#sAssignedTo')->val( $assigned_user->id );
+
+        // Add jQuery
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -661,7 +722,7 @@ class TicketsController extends BaseController {
             if ( '-1' == $_SESSION['tickets']['assigned-to'] ) {
                 $dt->add_where( ' AND c.`role` <= ' . (int) $this->user->role );
             } else {
-                $assigned_to = ( $this->user->has_permission(8) ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
+                $assigned_to = ( $this->user->has_permission(9) ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
                 $dt->add_where( $assigned_to );
             }
         }
@@ -674,6 +735,7 @@ class TicketsController extends BaseController {
 
         // Get accounts
         $tickets = $ticket->list_all( $dt->get_variables() );
+
         $dt->set_row_count( $ticket->count_all( $dt->get_count_variables() ) );
 
         // Set initial data

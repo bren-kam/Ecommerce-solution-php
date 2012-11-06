@@ -27,7 +27,7 @@ if ( extension_loaded('newrelic') )
     set_error_handler( 'newrelic_notice_error' );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', realpath( $_SERVER['DOCUMENT_ROOT'] . '/../' ) . '/' );
+define( 'ABS_PATH', realpath( __DIR__ ) . '/' );
 
 // Hold the library path
 define( 'LIB_PATH', ABS_PATH . 'lib/' );

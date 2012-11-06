@@ -28,6 +28,26 @@ class ChecklistWebsiteItemTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test adding all the checklist items to a checklist
+     */
+    public function testAddAllToChecklist() {
+        // Declare variables
+        $checklist_id = -5;
+
+        // Should insert over 30 items
+        $this->checklist_website_item->add_all_to_checklist( $checklist_id );
+
+        // Get items
+        $checklist_website_items = $this->db->get_results( "SELECT FROM `checklist_website_items` WHERE `checklist_id` = $checklist_id" );
+
+        // Make sure that there are many of them
+        $this->assertGreaterThan( count( $checklist_website_items ), 20 );
+
+        // Delete
+        $this->db->delete( 'checklist_website_items', array( 'checklist_id' => $checklist_id ), 'i' );
+    }
+
+    /**
      * Test update
      *
      * @depends testGet

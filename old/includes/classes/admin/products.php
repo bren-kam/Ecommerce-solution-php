@@ -189,58 +189,22 @@ class Products extends Base_Class {
 			return true;
 			
 		// Don't call a function if its blank
-		if ( count( $website_results ) > 0 ) {
-			$website_ids = implode( ',', $website_results );
-						
-			// Set all the products as inactive
-			$this->db->query( "UPDATE `website_products` SET `active` = 0 WHERE `product_id` = $product_id AND `website_id` IN ($website_ids)" );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->_err( 'Failed to delete website product.', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
-		
-		// Get the product categories
-		$category_ids = $this->get_product_categories( $product_id );
-		
-		if ( !$category_ids )
-			return false;
-		
-		// @Fix there should be a more efficient way then a double loop with sql queries
-		foreach ( $category_ids as $cid ) {
-			$parent_categories = $c->get_parent_category_ids( $cid );
-			
-			// Delete parent categories if the website doesn't have any products
-			foreach ( $parent_categories as $pc_id ) {
-				$websites_without_products = $this->websites_without_products( $pc_id, $website_ids, $c );
-				
-				if ( empty( $websites_without_products ) )
-					continue;
-				
-				$this->db->query( "DELETE FROM `website_categories` WHERE `website_id` IN($websites_without_products) AND `category_id` = $pc_id" );
-				
-				// Handle any error
-				if ( $this->db->errno() ) {
-					$this->_err( 'Failed to deleted website categories.', __LINE__, __METHOD__ );
-					return false;
-				}
-			}
-			
-			$websites_without_products = $this->websites_without_products( $cid, $website_ids, $c );
-			
-			if ( empty( $websites_without_products ) )
-				continue;
-			
-			$this->db->query( "DELETE FROM `website_categories` WHERE `website_id` IN($websites_without_products) AND `category_id` = $cid" );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->_err( 'Failed to deleted parent website categories.', __LINE__, __METHOD__ );
-				return false;
-			}
-		}
+        $website_ids = implode( ',', $website_results );
+
+        // Set all the products as inactive
+        $this->db->query( "UPDATE `website_products` SET `active` = 0 WHERE `product_id` = $product_id AND `website_id` IN ($website_ids)" );
+
+        // Handle any error
+        if ( $this->db->errno() ) {
+            $this->_err( 'Failed to delete website product.', __LINE__, __METHOD__ );
+            return false;
+        }
+
+        // Reorganize the cateogries
+        foreach ( $website_results as $wid ) {
+            $this->reorganize_categories( $wid );
+        }
+
 		
 		return $website_ids;
 	}
@@ -266,67 +230,12 @@ class Products extends Base_Class {
 			return false;
 		}
 
-		/**
-		 * Check if category do not exists insert it
-		 */
-		foreach ( $categories_array as $category_id ) {
-			if ( empty( $category_id ) )
-				continue;
-			
-			// @Fix don't think we need to do this each time
-			$category_results = $this->db->get_results( "SELECT `website_id`, `category_id` FROM `website_categories` WHERE `website_id` IN($website_ids)", ARRAY_A );
-			
-			// Handle any error
-			if ( $this->db->errno() ) {
-				$this->_err( 'Failed to get website categories.', __LINE__, __METHOD__ );
-				return false;
-			}
-			
-			$category_ids = array();
-			
-			// Create an array having the categories based on the website
-			if ( is_array( $category_results ) )
-			foreach ( $category_results as $cr ) {
-				$category_ids[$cr['website_id']][] = $cr['category_id'];
-			}
-			
-			$website_ids_array = array_keys( $category_ids );
-			$website_without_category_ids = array();
-			$website_without_parent_category_ids = array();
-			$parent_categories = $c->get_parent_category_ids( $category_id );
-			
-			// Cycle through the websites and findout if they already have the category
-			foreach ( $website_ids_array as $wid ) {
-				if ( !is_array( $category_results ) || !in_array( $category_id, $category_ids[$wid] ) ) {
-					$website_without_category_ids[] = $wid;
-					
-					// Add the parent category_ids
-					foreach ( $parent_categories as $cat ) {
-						if ( !in_array( $cat, $category_ids[$wid] ) )
-							$website_without_parent_category_ids[$cat][] = $wid;
-					}
-				}
-			}
-			
-			// Check to see if any websites need to add their categories
-			if ( count( $website_without_category_ids ) > 0 ) {
-				$parent_categories = $c->get_parent_category_ids( $category_id );
-				
-				// Add the main category
-				$this->add_product_category( $product_id, $category_id, $website_without_category_ids );
-				
-				// Foreach parent categories
-				$without_parent_category_ids = array_keys( $website_without_parent_category_ids );
-				
-				
-				// @Fix this is a looped sql statement
-				if ( is_array( $without_parent_category_ids ) && count( $without_parent_category_ids ) > 0 )
-				foreach ( $without_parent_category_ids as $wpci ) {
-					if ( is_array( $website_without_parent_category_ids[$wpci] ) )
-						$this->add_product_category( $product_id, $wpci, $website_without_parent_category_ids[$wpci] );
-				}
-			}
-		}
+        // Reorganize categories
+        $website_ids = explode( ',', $website_ids );
+
+        foreach ( $website_ids as $wid ) {
+            $this->reorganize_categories( $wid );
+        }
 		
 		return true;
 	}
@@ -378,50 +287,6 @@ class Products extends Base_Class {
 		// Handle any error
 		if ( $this->db->errno() ) {
 			$this->_err( 'Failed to add product images.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Adds a product category
-	 *
-	 * @param int $product_id
-	 * @param int $category_id
-	 * @param array $website_ids
-	 * @return bool
-	 */
-	private function add_product_category( $product_id, $category_id, $website_ids ) {
-		
-		// Insert a new website category
-		$image = $this->db->get_var( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id AND `sequence` = 0 LIMIT 1" );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to get product image.', __LINE__, __METHOD__ );
-			return false;
-		}
-		
-		// Instantiate new class
-		$i = new Industries;
-		
-		$image_url = 'http://' . $i->get_by_product( $product_id ) . '.retailcatalog.us/products/' . $product_id . '/small/' . $image;
-		
-		$values = '';
-		
-		foreach ( $website_ids as $wid ) {
-			if ( !empty( $values ) )
-				$values .= ',';
-			
-			$values .= "( $wid, $category_id, '$image_url' )";
-		}
-		
-		$this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES " . $values );
-		
-		// Handle any error
-		if ( $this->db->errno() ) {
-			$this->_err( 'Failed to add website category.', __LINE__, __METHOD__ );
 			return false;
 		}
 		
@@ -964,6 +829,32 @@ class Products extends Base_Class {
 		// Need to get the parent categories
 		$c = new Categories;
 
+        // Get blocked categories
+        $blocked_categories = $this->db->get_col( "SELECT `category_id` FROM `website_blocked_category` WHERE `website_id` = $website_id" );
+
+        // Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to get blocked website categories.', __LINE__, __METHOD__ );
+			return false;
+		}
+
+        foreach ( $blocked_categories as $cid ) {
+            // Get child category IDs
+            $child_categories = $c->get_child_categories( $cid );
+            $child_category_ids = array();
+
+            foreach ( $child_categories as $cc ) {
+                $child_category_ids[] = $cc['category_id'];
+            }
+
+            // Merge with them -- if you block a parent, you can't add anything below it
+            $blocked_categories = array_merge( $blocked_categories, $child_category_ids );
+        }
+
+		// We only need each ID once
+        $blocked_categories = array_unique( $blocked_categories );
+
+        // Now start the loop
 		$new_category_ids = $product_category_ids = $remove_category_ids = array();
 
 		// Find out what categories we need to add
@@ -975,8 +866,8 @@ class Products extends Base_Class {
 			// Start forming complete list of product categories
 			$product_category_ids[] = $cid;
 
-			// If the website does not already have the category and it has not already been added
-			if ( !in_array( $cid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) )
+			// If the website does not already have the category and it has not already been added and it's not on the block list
+			if ( !in_array( $cid, $website_category_ids ) && !in_array( $cid, $new_category_ids ) && !in_array( $cid, $blocked_categories ) )
 				$new_category_ids[] = $cid;
 
 			// Get the parent categories of this category
@@ -988,8 +879,8 @@ class Products extends Base_Class {
 				// Forming complete list
 				$product_category_ids[] = $pcid;
 
-				// If the website does not already have it and it has not already been added
-				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) )
+				// If the website does not already have it and it has not already been added and it is not in the blocked list
+				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) && !in_array( $cid, $blocked_categories ) )
 					$new_category_ids[] = $pcid;
 			}
 		}
@@ -1004,7 +895,8 @@ class Products extends Base_Class {
 		sort( $product_category_ids );
 
 		foreach ( $website_category_ids as $wcid ) {
-			if ( !in_array( $wcid, $product_category_ids ) )
+            // If it's not in their products or if it's blocked, remove
+			if ( !in_array( $wcid, $product_category_ids ) || in_array( $wcid, $blocked_categories ) )
 				$remove_category_ids[] = $wcid;
 		}
 		

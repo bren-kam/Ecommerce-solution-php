@@ -235,10 +235,10 @@ class Categories extends Base_Class {
 	 * @return array
 	 */
 	public function get_parent_category_ids( $category_id, $parent_category_ids = array() ) {
-		$category = $this->categories_list[$category_id];
+		$category = ( isset( $this->categories_list[$category_id] ) ) ? $this->categories_list[$category_id] : NULL;
 		 
 		// If they went too far, return what we have
-		if ( empty( $category ) )
+		if ( is_null( $category ) )
 		 	return $parent_category_ids;
 		
 		// Find out if there is a parent

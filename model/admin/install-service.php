@@ -209,6 +209,10 @@ class InstallService {
          */
         if ( is_array( $template_account_attachments )  )
         foreach ( $template_account_attachments as $taa ) {
+			// Needs to be a value that we can copy
+			if ( !stristr( $taa->value, 'retailcatalog.us' ) )
+				continue;
+			
             $value = $file->copy_file( $account->id, $taa->value, 'websites' );
 
             if ( $value ) {
@@ -234,11 +238,9 @@ class InstallService {
 
         // Copy Account Pagemeta
         $account_pagemeta = new AccountPagemeta();
-
         $pagemeta_keys = array( 'display-coupon', 'email-coupon', 'hide-all-maps' );
-		$template_account_page_ids = implode( ', ', array_keys( $template_account_pages ) );
 
-        $template_pagemeta = $account_pagemeta->get_by_keys( $template_account_page_ids, $pagemeta_keys );
+        $template_pagemeta = $account_pagemeta->get_by_keys( array_keys( $template_account_pages ), $pagemeta_keys );
 
         $new_pagemeta = array();
 
@@ -319,8 +321,8 @@ class InstallService {
 
         // Login to Grey Suit Apps
         $login_fields = array(
-            'username' => config::key('trumpia-admin-username')
-            , 'password' => config::key('trumpia-admin-password')
+            'username' => Config::key('trumpia-admin-username')
+            , 'password' => Config::key('trumpia-admin-password')
         );
 
         $curl->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
@@ -345,7 +347,7 @@ class InstallService {
         );
 
         $page = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_createCustomer.php', $post_fields );
-
+		
         if ( !preg_match( '/action="[^"]+"/', $page ) )
             return _('Failed to create Trumpia customer');
 
@@ -371,11 +373,13 @@ class InstallService {
             , 'arg1' => $mobile_plan->trumpia_plan_id
         );
 
-        $update_plan = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_plan_fields );
-
+        $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_plan_fields );
+		
+		/** Assuming it's working -- the page it brought back changed
+		$update_plan = 
         if ( '<script type="text/javascript">history.go(-1);</script>' != $update_plan )
             return _("Failed to update customer's plan");
-
+		*/
         // Update Credits
         $update_credits_fields = array(
             'mode' => 'addCredit'

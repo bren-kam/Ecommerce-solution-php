@@ -108,6 +108,32 @@ class AccountProductTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test removing all products from accounts by an id
+     */
+    public function testDeleteByProduct() {
+        // Declare variables
+        $product_id = -5;
+        $account_id1 = -3;
+        $account_id2 = -2;
+
+        // Insert into accounts
+        $this->db->insert( 'website_products', array( 'product_id' => $product_id, 'website_id' => $account_id1, 'active' => 1 ), 'iii' );
+        $this->db->insert( 'website_products', array( 'product_id' => $product_id, 'website_id' => $account_id2, 'active' => 1 ), 'iii' );
+
+        // Delete them
+        $this->account_product->delete_by_product( $product_id );
+
+        // We should be able to get them
+        $active = $this->db->get_col( "SELECT `active` FROM `website_products` WHERE `product_id` = $product_id" );
+
+        $this->assertEquals( 2, count( $active ) );
+        $this->assertEquals( '0', $active[0] );
+
+        // Delete them
+        $this->db->delete( 'website_products', array( 'product_id' => $product_id ), 'i' );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

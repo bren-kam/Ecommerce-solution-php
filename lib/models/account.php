@@ -5,7 +5,7 @@ class Account extends ActiveRecordBase {
         , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog
         , $room_planner, $blog, $craigslist, $email_marketing, $domain_registration, $mobile_marketing
         , $additional_email_Addresses, $social_media, $ftp_username, $ga_profile_id, $ga_tracking_key
-        , $wordpress_username, $wordpress_password, $mc_list_id, $version, $live, $type, $status;
+        , $wordpress_username, $wordpress_password, $mc_list_id, $version, $live, $type, $status, $date_created;
 
     // Columns belonging to another table but which may reside here
     public $company_id;
@@ -52,9 +52,24 @@ class Account extends ActiveRecordBase {
     }
 
     /**
+     * Get Accounts by Product
+     *
+     * @param int $product_id
+     * @return array
+     */
+    public function get_by_product( $product_id ) {
+        return $this->prepare( "SELECT w.`website_id`, w.`title`, `domain` FROM `websites` AS w LEFT JOIN `website_products` AS wp ON ( wp.`website_id` = w.`website_id` ) WHERE w.`status` = 1 AND wp.`product_id` = :product_id AND wp.`blocked` = 0 AND wp.`active` = 1 ORDER BY w.`title`"
+            , 'i'
+            , array( ':product_id' => $product_id )
+        )->get_results( PDO::FETCH_CLASS, 'Account' );
+    }
+
+    /**
      * Create an account
      */
     public function create() {
+        $this->date_created = dt::now();
+
         $this->insert( array(
             'user_id' => $this->user_id
             , 'os_user_id' => $this->os_user_id
@@ -62,7 +77,8 @@ class Account extends ActiveRecordBase {
             , 'title' => $this->title
             , 'type' => $this->type
             , 'status' => 1
-            , 'date_created' => dt::date('Y-m-d H:i:s') ), 'iisssis' );
+            , 'date_created' => $this->date_created
+        ), 'iisssis' );
 
         $this->website_id = $this->id = $this->get_insert_id();
     }
@@ -329,7 +345,7 @@ class Account extends ActiveRecordBase {
             $values[] = "( $account_id, $iid )";
         }
 
-        $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) );
+        $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) . ' ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )' );
     }
 
 
