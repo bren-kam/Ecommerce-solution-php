@@ -29,7 +29,7 @@ define( 'ACCOUNT', false );
 define( 'APPS', true );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', '/gsr/systems/backend/' );
+define( 'ABS_PATH', realpath( __DIR__ . '/../' ) . '/' );
 
 /** Define OPERATING_PATH as the main directory to get things from */
 define( 'OPERATING_PATH', ABS_PATH . 'apps/' );

@@ -98,6 +98,7 @@ class format extends Base_Class {
             , '™' => '&trade;'
             , '’' => "'"
             , '–' => '-'
+            , ' ' => '' // Changing a non-break space to nothing
         );
 
         return str_replace( array_keys( $conversion ), array_values( $conversion ), $string );
