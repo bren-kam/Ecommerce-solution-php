@@ -844,7 +844,7 @@ class ApiRequest {
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			exit;
+			return array();
 		}
 
         $parameters = array();
