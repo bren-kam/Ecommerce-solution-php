@@ -46,7 +46,7 @@ class ReportTest extends BaseDatabaseTest {
      */
     public function testAutocompleteOnlineSpecialists() {
         // Declare variables
-        $query = 'Ashley';
+        $query = 'Heather';
         $where = '';
 
         // Get autocomplete entries
