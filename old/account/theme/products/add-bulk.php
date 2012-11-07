@@ -31,7 +31,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'add-bulk' ) 
 	if ( empty( $errs ) ) {
 		$p = new Products;
 		
-		list( $success, $quantity, $no_industries ) = $p->add_bulk( $_POST['taProductSKUs'] );
+		list( $success, $quantity, $no_industries, $already_existed, $not_added_skus ) = $p->add_bulk( $_POST['taProductSKUs'] );
 
 		if ( !$success ) {
 			if ( $no_industries ) {
@@ -54,7 +54,35 @@ get_header();
 	<div id="subcontent">
 		<?php if ( $success ) { ?>
 			<p class="success"><?php echo $quantity, _(' products added successfully!'); ?> <a href="/products/" title="<?php echo _('View Products'); ?>"><?php echo _('View products here.'); ?></a></p>
-		<?php
+            <?php
+            $not_added_count = count( $not_added_skus );
+            if ( $not_added_count > 0 ) {
+                if ( $already_existed > 0 ) {
+                    ?>
+                    <p><?php echo number_format( $already_existed ), ' ', _('were already on the website.'); ?></p>
+                <?php
+                }
+
+                $other_not_added_sku_count = $not_added_count - $already_existed;
+                if ( $other_not_added_sku_count > 0 ) {
+                    ?>
+                    <p><?php echo _('The following'), ' ', $other_not_added_sku_count, ' ', _('SKU(s) were not added for one of the following reasons:'); ?></p>
+                    <br />
+                    <ol>
+                        <li><?php echo _('The SKU is not a valid SKU or does not match the SKU in our master catalog'); ?></li>
+                        <li><?php echo _('The SKUs are for industries not associated with this account'); ?></li>
+                        <li><?php echo _('There is no image associated with the SKU'); ?></li>
+                    </ol>
+                    <br />
+                    <blockquote style="border-left: 1px solid #929292; margin-left: 20px; padding-left: 20px">
+                        <?php echo implode( '<br />', $not_added_skus ); ?>
+                    </blockquote>
+                    <br />
+                    <hr />
+                    <br /><br />
+            <?php
+                }
+            }
 		}
 		
 		if ( isset( $errs ) )
