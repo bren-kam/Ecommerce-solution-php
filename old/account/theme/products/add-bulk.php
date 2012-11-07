@@ -59,7 +59,7 @@ get_header();
             if ( $not_added_count > 0 ) {
                 if ( $already_existed > 0 ) {
                     ?>
-                    <p><?php echo number_format( $already_existed ), ' ', _('were already on the website.'); ?></p>
+                    <p><?php echo number_format( $already_existed ), ' ', _('SKU(s) were already on the website.'); ?></p>
                 <?php
                 }
 

@@ -1704,8 +1704,7 @@ class Products extends Base_Class {
 		$quantity = $product_count;
         $not_added_skus = array_diff( $original_product_skus_array, $adding_skus );
 
-
-        if ( $not_added > 0 ) {
+        if ( count( $not_added_skus ) > 0 ) {
             // Magical Query #2
             // Insert website products
             $already_existed = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`sku` IN ( $product_skus ) AND b.`active` = 1" );
