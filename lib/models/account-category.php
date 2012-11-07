@@ -28,6 +28,21 @@ class AccountCategory extends ActiveRecordBase {
 		$website_category_ids = $this->get_website_category_ids( $account_id );
         $blocked_categories = $this->get_blocked_website_category_ids( $account_id );
 
+        // Incorporate all the child categories of the array;
+        // @Fix perhaps we should include all of this at the time of blocking a category?
+        foreach ( $blocked_categories as $cid ) {
+            $child_categories = $category->get_all_children( $cid );
+
+            /**
+             * @var Category $child_category
+             */
+            foreach( $child_categories as $child_category ) {
+                $blocked_categories[] = $child_category->id;
+            }
+        }
+
+        $blocked_categories = array_unique( $blocked_categories );
+
         // Clean data
         if ( $key = array_search( NULL, $category_ids ) )
 			unset( $category_ids[$key] );
@@ -61,7 +76,7 @@ class AccountCategory extends ActiveRecordBase {
 				$product_category_ids[] = $pcid;
 
 				// If the website does not already have it and it has not already been added and it is not in the blocked list
-				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) && !in_array( $cid, $blocked_categories ) )
+				if ( !in_array( $pcid, $website_category_ids ) && !in_array( $pcid, $new_category_ids ) && !in_array( $pcid, $blocked_categories ) )
 					$new_category_ids[] = $pcid;
 			}
 		}
