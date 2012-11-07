@@ -30,7 +30,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                         <option value="brand"><?php echo _('Brand'); ?></option>
                         <option value="online_specialist"><?php echo _('Online Specialist'); ?></option>
                         <option value="marketing_specialist"><?php echo _('Marketing Specialist'); ?></option>
-                        <?php if ( $user->has_permission(7) ) { ?>
+                        <?php if ( $user->has_permission(8) ) { ?>
                             <option value="company"><?php echo _('Company'); ?></option>
                         <?php } ?>
                         <option value="billing_state"><?php echo _('State'); ?></option>
