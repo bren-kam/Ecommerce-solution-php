@@ -19,7 +19,7 @@
             <?php if ( $user->has_permission(8) ) { ?>
                 <a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a> |
             <?php } ?>
-            <a href="/support/" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
+            <a href="/help/" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
         <?php } ?>
     </p>
 </div>
