@@ -267,7 +267,7 @@ class TicketsController extends BaseController {
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
         $ticket_comment->user_id = $this->user->user_id;
-        $ticket_comment->comment = nl2br( format::links_to_anchors( format::htmlentities( $_POST['comment'], array('&') ), true, true ) );
+        $ticket_comment->comment = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['comment'] ), array('&') ), true, true ) );
         $ticket_comment->private = (int) isset( $_POST['private'] );
 
         $ticket_comment->create();
