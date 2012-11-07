@@ -85,7 +85,21 @@ class InstallService {
             $account_page->slug = $slug;
             $account_page->title = $page['title'];
             $account_page->content = $page['content'];
-            $account_page->create();
+
+            try {
+                $account_page->create();
+            } catch ( ModelException $e ) {
+                switch ( $e->getCode() ) {
+                    // It's fine if that was the error
+                    case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                    break;
+
+                    default:
+                        // Hopefully this shouldn't happen, but be prepared if it does
+                        die( '<strong>Fatal Error (' . $e->getCode() . '):</strong> ' . $e->getMessage() . "<br /><br />\n\n" . $e->getTraceAsString() );
+                    break;
+                }
+            }
 
             // Need to keep sidebar page
             if ( 'sidebar' == $slug )
