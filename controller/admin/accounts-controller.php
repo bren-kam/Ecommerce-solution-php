@@ -396,6 +396,8 @@ class AccountsController extends BaseController {
             , 'facebook-url'
             , 'advertising-url'
             , 'trumpia-api-key'
+            , 'trumpia-username'
+            , 'trumpia-password'
             , 'facebook-pages'
         );
 
@@ -415,6 +417,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
         $ft->add_field( 'text', _('Trumpia API Key'), 'tTrumpiaAPIKey', $settings['trumpia-api-key'] );
+        $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
+        $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
 
         if ( $ft->posted() ) {
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
@@ -437,12 +441,14 @@ class AccountsController extends BaseController {
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
+                , 'trumpia-username' => $_POST['tTrumpiaUsername']
+                , 'trumpia-password' => $_POST['tTrumpiaPassword']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
 
             // Redirect to main page
-            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/edit/' ) );
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
         }
 
         // Create Form
