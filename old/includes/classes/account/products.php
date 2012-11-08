@@ -1702,7 +1702,14 @@ class Products extends Base_Class {
 
 		// How many products are we adding?
 		$quantity = $product_count;
-        $not_added_skus = array_diff( $original_product_skus_array, $adding_skus );
+        $remove_skus = array_diff( $adding_skus, $original_product_skus_array );
+		$not_added_skus = array();
+		
+		foreach ( $original_product_skus_array as $sku ) {
+			$sku = trim( $sku );
+			if ( !in_array( $sku, $remove_skus ) )
+				$not_added_skus[] = $sku;
+		}
 
         if ( count( $not_added_skus ) > 0 ) {
             // Magical Query #2
