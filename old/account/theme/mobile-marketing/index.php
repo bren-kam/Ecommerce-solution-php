@@ -47,6 +47,12 @@ get_header();
 						$('#iframe').show();
 					 }, 2000 );
 				}, 2000 );
+
+                // Keep us logged in
+                setInterval( function() {
+                    $("#refresh").remove();
+                    $('body').append('<iframe src="/mobile-marketing/trumpia-form/" width="100%" height="600" id="refresh" class="hidden"></iframe>');
+                }, 300000 );
 			</script>
 		<?php } else { ?>
 			<p><?php echo _('Mobile Marketing setup has not been completed. Please contact your online specialist for assistance'); ?></p>
