@@ -164,6 +164,23 @@ class AccountsController extends BaseController {
                 $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
 
                 $account->update();
+
+                if ( 1 == $account->social_media )
+                $account->set_settings( array(
+                    'social-media-add-ons' => serialize( array(
+                        'email-sign-up'
+                        , 'fan-offer'
+                        , 'sweepstakes'
+                        , 'share-and-save'
+                        , 'facebook-site'
+                        , 'contact-us'
+                        , 'about-us'
+                        , 'products'
+                        , 'current-ad'
+                        , 'posting'
+                    ) )
+                ) );
+
                 $this->notify( _('This account has been successfully updated!') );
             }
         }
