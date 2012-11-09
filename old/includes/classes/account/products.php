@@ -1653,7 +1653,7 @@ class Products extends Base_Class {
 		global $user;
 
         // Turn the SKUs into an array
-        $original_product_skus_array = $product_skus_array = explode( "\n", $product_skus );
+        $product_skus_array = explode( "\n", $product_skus );
 
         // Make sure they entered in SKUs
         if ( !is_array( $product_skus_array ) || empty( $product_skus_array ) )
@@ -1661,7 +1661,9 @@ class Products extends Base_Class {
 
         // Escape all the SKUs
         foreach ( $product_skus_array as &$ps ) {
-            $ps = "'" . $this->db->escape( trim( $ps ) ) . "'";
+			$sku = trim( $ps );
+			$original_product_skus_array[] = $sku;
+            $ps = "'" . $this->db->escape( $sku ) . "'";
         }
 
         // Turn it into a string
@@ -1702,29 +1704,32 @@ class Products extends Base_Class {
 
 		// How many products are we adding?
 		$quantity = $product_count;
-        $remove_skus = array_diff( $adding_skus, $original_product_skus_array );
-		$not_added_skus = array();
+		$pre_not_added_skus = $not_added_skus = array();
 		
 		foreach ( $original_product_skus_array as $sku ) {
 			$sku = trim( $sku );
-			if ( !in_array( $sku, $remove_skus ) )
-				$not_added_skus[] = $sku;
+			if ( !in_array( $sku, $adding_skus ) )
+				$pre_not_added_skus[] = $sku;
 		}
-
-        if ( count( $not_added_skus ) > 0 ) {
+		
+        if ( count( $pre_not_added_skus ) > 0 ) {
             // Magical Query #2
             // Insert website products
-            $already_existed = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`sku` IN ( $product_skus ) AND b.`active` = 1" );
+            $already_existed_skus = $this->db->get_col( "SELECT a.`sku` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`sku` IN ( $product_skus ) AND b.`active` = 1" );
 
             // Handle any error
             if ( $this->db->errno() ) {
                 $this->_err( 'Failed to count how many already existed.', __LINE__, __METHOD__ );
                 return false;
             }
+			
+			foreach ( $pre_not_added_skus as $sku ) {
+				if ( !in_array( $sku, $already_existed_skus ) )
+					$not_added_skus[] = $sku;
+			}
         } else {
             $already_existed = 0;
         }
-
 
 		// Magical Query #2
 		// Insert website products
@@ -1739,7 +1744,7 @@ class Products extends Base_Class {
         // Reorganize categories
 		$this->reorganize_categories( $website_id );
 
-		return array( true, $quantity, false, $already_existed, $not_added_skus );
+		return array( true, $quantity, false, count( $already_existed_skus ), $not_added_skus );
 	}
 
     /**
