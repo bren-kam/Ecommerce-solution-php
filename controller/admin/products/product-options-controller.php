@@ -124,7 +124,7 @@ class ProductOptionsController extends BaseController {
             if ( $validated ) {
                 // Update or create as necessary
                 if ( $product_option->id ) {
-                    $product_option->update();
+                    $product_option->save();
                     $message = _('Your product option was successfully updated!');
                 } else {
                     $product_option->create();
@@ -148,7 +148,7 @@ class ProductOptionsController extends BaseController {
                         $product_option_list_item->sequence = $sequence;
 
                         // Update it
-                        $product_option_list_item->update();
+                        $product_option_list_item->save();
                     } else {
                         // Set properties
                         $product_option_list_item = new ProductOptionListItem();

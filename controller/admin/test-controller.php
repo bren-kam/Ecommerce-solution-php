@@ -27,7 +27,7 @@ class TestController extends BaseController {
             $product->clone_product( $pid, $this->user->id );
             $product->get( $product->id );
             $product->website_id = 651;
-            $product->update();
+            $product->save();
         }*/
 
         return new HtmlResponse('eh');

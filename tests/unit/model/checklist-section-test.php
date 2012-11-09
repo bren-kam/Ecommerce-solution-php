@@ -69,7 +69,7 @@ class ChecklistSectionTest extends BaseDatabaseTest {
 
         // Update test
         $this->checklist_section->name = "Sweet jumpin' jambalaya";
-        $this->checklist_section->update();
+        $this->checklist_section->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->checklist_section->id ) );

@@ -87,7 +87,7 @@ class UserAccountTest extends BaseDatabaseTest {
         // Update test
         $this->user->contact_name = 'Jiminy Cricket';
         $this->user->email = 'jiminy@cricket.com';
-        $this->user->update();
+        $this->user->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->user->id ) );

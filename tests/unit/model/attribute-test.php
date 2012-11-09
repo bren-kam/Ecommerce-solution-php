@@ -68,7 +68,7 @@ class AttributeTest extends BaseDatabaseTest {
 
         // Update test
         $this->attribute->title = 'noitceS - eetseT';
-        $this->attribute->update();
+        $this->attribute->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->attribute->id ) );

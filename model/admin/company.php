@@ -49,7 +49,7 @@ class Company extends ActiveRecordBase {
     /**
      * Update the company
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'name' => $this->name
             , 'domain' => $this->domain

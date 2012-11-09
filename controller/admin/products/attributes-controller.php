@@ -64,7 +64,7 @@ class AttributesController extends BaseController {
                 $attribute->name = $_POST['tName'];
 
                 if ( $attribute_id ) {
-                    $attribute->update();
+                    $attribute->save();
                     $message = _('Your attribute has been successfully updated!' );
                 } else {
                     $attribute->create();
@@ -87,7 +87,7 @@ class AttributesController extends BaseController {
                         $attribute_item->sequence = $sequence;
 
                         // Update it
-                        $attribute_item->update();
+                        $attribute_item->save();
                     } else {
                         // New attribute item
 

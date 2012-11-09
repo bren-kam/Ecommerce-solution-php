@@ -118,7 +118,7 @@ class AttributeItemTest extends BaseDatabaseTest {
 
         // Update test
         $this->attribute_item->name = 'eetseT';
-        $this->attribute_item->update();
+        $this->attribute_item->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->attribute_item->id ) );

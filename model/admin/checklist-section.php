@@ -49,7 +49,7 @@ class ChecklistSection extends ActiveRecordBase {
     /**
      * Update
      */
-    public function update() {
+    public function save() {
         parent::update(
             array(
                 'name' => $this->name

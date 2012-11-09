@@ -57,7 +57,7 @@ class ProductOption extends ActiveRecordBase {
     /**
      * Update an attribute item
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'option_type' => $this->type
             , 'option_title' => $this->title

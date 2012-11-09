@@ -67,7 +67,7 @@ class ProductOptionTest extends BaseDatabaseTest {
 
         // Update test
         $this->product_option->name = 'ofnI artxE';
-        $this->product_option->update();
+        $this->product_option->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->product_option->id ) );

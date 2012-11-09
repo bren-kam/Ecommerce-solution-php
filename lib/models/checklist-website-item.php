@@ -44,7 +44,7 @@ class ChecklistWebsiteItem extends ActiveRecordBase {
     /**
      * Update an item
      */
-    public function update() {
+    public function save() {
         parent::update(
             array(
                 'checked' => $this->checked

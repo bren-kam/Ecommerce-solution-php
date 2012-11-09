@@ -163,7 +163,7 @@ class AccountsController extends BaseController {
                 $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                 $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
 
-                $account->update();
+                $account->save();
 
                 if ( 1 == $account->social_media )
                 $account->set_settings( array(
@@ -355,7 +355,7 @@ class AccountsController extends BaseController {
             $account->domain = $_POST['tDomain'];
             $account->theme = $_POST['tTheme'];
             $account->live = (int) isset( $_POST['cbLive'] ) && $_POST['cbLive'];
-            $account->update();
+            $account->save();
 
             // Update the settings
             $account->set_settings( array( 'custom-image-size' => $_POST['tCustomImageSize'] ));
@@ -445,7 +445,7 @@ class AccountsController extends BaseController {
             $account->wordpress_password = security::encrypt( $_POST['tWPPassword'], ENCRYPTION_KEY, true );
             $account->mc_list_id = $_POST['tMCListID'];
 
-            $account->update();
+            $account->save();
 
             // Update settings
             $account->set_settings( array(
@@ -973,7 +973,7 @@ class AccountsController extends BaseController {
 
         // Deactivate account
         $account->status = 0;
-        $account->update();
+        $account->save();
 
         // Give them a notification
         $this->notify( _('The account, "' . $account->title . '", has been deactivated.' ) );

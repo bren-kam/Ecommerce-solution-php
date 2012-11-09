@@ -41,7 +41,7 @@ class InstallService {
 
         // Updated website version
         $account->version = 1;
-        $account->update();
+        $account->save();
 
         // Insert pages
         $pages = array(
@@ -172,7 +172,7 @@ class InstallService {
         // Update theme and logo
         $account->theme = $template_account->theme;
         $account->logo = $template_account->logo;
-        $account->update();
+        $account->save();
 
         // Get FTP Username
         $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );

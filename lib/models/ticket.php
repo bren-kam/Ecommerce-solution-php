@@ -65,7 +65,7 @@ class Ticket extends ActiveRecordBase {
     /**
      * Update a ticket
      */
-    public function update() {
+    public function save() {
         parent::update(
             array(
                 'user_id' => $this->user_id
