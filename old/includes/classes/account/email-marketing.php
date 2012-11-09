@@ -503,12 +503,12 @@ class Email_Marketing extends Base_Class {
 		global $user;
 		
 		// Typecast
-		$user['website']['website_id'] = (int) $user['website']['website_id'];
+		$website_id = (int) $user['website']['website_id'];
 		
 		// @Fix remove the subquery
 		// @Fix need a way to remove these subscribers
 		// Transfer new emails to emails table
-		$this->db->query( 'INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = ' . $user['website']['website_id'] . ' AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = ' . $user['website']['website_id'] . ' )' );
+		$this->db->query( "INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = $website_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = $website_id )" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -519,7 +519,7 @@ class Email_Marketing extends Base_Class {
 		
 		// Add the associations for each list
 		foreach ( $email_lists as $el_id ) {
-			$this->db->query( 'INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) SELECT a.`email_id`, ' . (int) $el_id . ' FROM `emails` AS a INNER JOIN `email_import_emails` AS b ON ( a.`email` = b.`email` ) WHERE a.`website_id` = ' . $user['website']['website_id'] );
+			$this->db->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) SELECT a.`email_id`, ' . (int) $el_id . ' FROM `emails` AS a INNER JOIN `email_import_emails` AS b ON ( a.`email` = b.`email` ) WHERE a.`website_id` = $website_id ON DUPLICATE KEY UPDATE `email_id` = VALUES( `email_id` )" );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
