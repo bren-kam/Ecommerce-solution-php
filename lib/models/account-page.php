@@ -51,6 +51,7 @@ class AccountPage extends ActiveRecordBase {
      * @param int $account_id
      */
     public function copy_by_account( $template_account_id, $account_id ) {
+
         $this->copy( $this->table, array(
                 'website_id' => $account_id
                 , 'slug' => NULL
@@ -61,7 +62,6 @@ class AccountPage extends ActiveRecordBase {
                 , 'meta_keywords' => NULL
                 , 'mobile' => NULL
                 , 'status' => 1
-                , 'date_created' => "'" . dt::now() . "'"
             ), array( 'website_id' => $template_account_id )
         );
     }
