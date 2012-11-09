@@ -127,5 +127,5 @@ function remove_cookie( $name ) {
 
     // If it's set on the admin side, we also want to set it on the account side.
     if ( stristr( SUBDOMAIN, 'admin') )
-        setcookie( COOKIE_ABBR . $name, ' ', time() - 31536000, '/', '.' . str_replace( 'admin', 'account', SUBDOMAIN ) . '.' . DOMAIN, $secure, true );
+        setcookie( COOKIE_ABBR . $name, ' ', time() - 31536000, '/', '.' . str_replace( 'admin', 'account', SUBDOMAIN ) . '.' . DOMAIN, NULL, true );
 }
