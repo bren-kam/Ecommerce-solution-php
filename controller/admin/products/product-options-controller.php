@@ -210,8 +210,8 @@ class ProductOptionsController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set Order by
-        $dt->order_by( '`title`', '`name`', '`type`' );
-        $dt->search( array( '`title`' => true, '`name`' => true, '`type`' => true ) );
+        $dt->order_by( '`option_title`', '`option_name`', '`option_type`' );
+        $dt->search( array( '`option_title`' => true, '`option_name`' => true, '`option_type`' => true ) );
 
         // Get product option
         $product_option = new ProductOption();
