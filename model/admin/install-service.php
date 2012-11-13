@@ -247,6 +247,31 @@ class InstallService {
             $new_account_page_attachment->create();
         }
 
+        // Get account files
+        $account_file = new AccountFile();
+        $template_account_files = $account_file->get_by_account( $template_account->id );
+
+        /**
+         * @var AccountFile $taf
+         */
+        if ( !empty( $template_account_files ) )
+        foreach( $template_account_files as $taf ) {
+            // Needs to be a value that we can copy
+			if ( !stristr( $taa->value, 'retailcatalog.us' ) )
+				continue;
+
+            $value = $file->copy_file( $account->id, $taf->file_path, 'websites' );
+
+            if ( !$value )
+                continue;
+
+            // Create the link in website files
+            $account_file = new AccountFile();
+            $account_file->website_id = $account->id;
+            $account_file->file_path = $value;
+            $account_file->create();
+        }
+
         // Copy Account industries
         $account->copy_industries_by_account( $template_account->id, $account->id );
 

@@ -34,6 +34,30 @@ class AccountFileTest extends BaseDatabaseTest {
         $this->db->delete( 'website_files', array( 'website_file_id' => $this->account_file->id ), 'i' );
     }
 
+
+    /**
+     * Test Get By Account
+     *
+     * @depends testCreate
+     */
+    public function testGetByAccount() {
+        // Declare variables
+        $account_id = -5;
+
+        // Create test file
+        $this->account_file->website_id = $account_id;
+        $this->account_file->file_path = 'gobbledy-gook.jpg';
+        $this->account_file->create();
+
+        // Get the files
+        $account_files = $this->account_file->get_by_account( $account_id );
+
+        $this->assertTrue( current( $account_files ) instanceof AccountFile );
+
+        // Delete
+        $this->db->delete( 'website_files', array( 'website_id' => $account_id ), 'i' );
+    }
+
     /**
      * Will be executed after every test
      */
