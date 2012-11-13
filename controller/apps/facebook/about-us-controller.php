@@ -42,7 +42,7 @@ class AboutUsController extends BaseController {
             $form->add_field( 'text', _('Facebook Connection Key'), 'tFBConnectionKey' )
                 ->add_validation( 'req', _('The "Facebook Connection Key" field is required') );
 
-            $form->add_field( 'hidden', $_REQUEST['app_data'] );
+            $form->add_field( 'hidden', 'app_data', $_REQUEST['app_data'] );
 
             // Make sure it's a valid request
             if( $other_user_id == $this->fb->user_id && $page_id ) {
