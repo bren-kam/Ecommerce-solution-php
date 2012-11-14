@@ -170,7 +170,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_customers() {
-        return ar::assign_key( $this->db->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", PDO::FETCH_ASSOC ), 'value', true );
+        return ar::assign_key( $this->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", PDO::FETCH_ASSOC ), 'value', true );
     }
 
     /**
