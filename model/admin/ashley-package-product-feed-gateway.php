@@ -59,7 +59,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
     /**
      * Hold the ashley categories
      */
-    protected  $categories = array(
+    protected $categories = array(
         'Accents' => 360
         , 'Stationary Upholstery' => 218
         , 'Motion Upholstery' => 348
@@ -69,7 +69,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         , 'Recliners' => 222
         , 'Motion Leather' => 255
         , 'Dining' => 347
-        , 'Master Bedroom' => 228
+        , 'Master Bedroom' => 228 // Bedroom > Bedroom Groups
         , 'Metal Beds' => 685
         , 'Youth Bedroom' => 267
         , 'Top of Bed' => 463
@@ -81,6 +81,131 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         , 'Occasional' => 382
         , 'Walls' => 336
         , 'Entertainment' => 335
+    );
+
+    /**
+     * Hold Name Translation
+     */
+    protected $names = array(
+        'LAFSectional,RAFSectional' => 'Sectional'
+        , 'Sofa, Love Seat' => 'Sofa & Loveseat'
+        , 'Recl Sofa' => 'Reclining Sofa'
+        , 'Rec Sofa, Rec LoveSeat, Wdge' => 'Reclining Sofa, Reclining Loveseat, Wedge'
+        , 'Sofa' => 'Sofa'
+        , 'LAF, RAF, Wdge' => 'Sectional with wedge'
+        , 'Rec Sofa, Rec LoveSeat' => 'Reclining Sofa & Reclining Loveseat'
+        , 'Table, 4 Sides' => 'Table & 4 Side Chairs'
+        , 'Table, 4 Sides, 2 Arms' => 'Table, 4 side chairs & 2 arm chairs'
+        , 'Desk and Top - Roll Top / Hutch top' => 'Desk & Top - Roll Top/Hutch Top'
+        , 'Rec Sofa, LoveSeat' => 'Reclining Sofa & Loveseat'
+        , 'Sofa, Love Seat, Reclining Chair' => 'Sofa, Loveseat & Chair'
+        , 'Sofa, Love Seat, Chair' => 'Reclining Sofa, Loveseat and Chair'
+        , 'Sofa, Sleeper, Chair' => 'Sleeper Sofa & Chair'
+        , 'Throw' => 'Throw'
+        , 'Twin Bed w/Trundle, Dresser,Mirror' => 'Twin Bed w/Trundle, Dresser & Mirror'
+        , 'Bunk Bed - Twin/Twin, Dresser, Mirror' => 'Bunk Bed (twin/twin), Dresser & Mirror'
+        , 'Full Bed, Dresser, Mirror' => 'Full Bed, Dresser & Mirror'
+        , 'Twin Bed w/Trundle' => 'Twin bed w/Trundle'
+        , 'Dresser, Mirror' => 'Dresser & Mirror'
+        , 'Twin Bed' => 'Twin Bed (Headboard, footboard, rails)'
+        , 'Full Bed' => 'Full Bed (Headboard, footboard, rails)'
+        , 'Twin Bed, Dresser, Mirror' => 'Twin Bed, Dresser & Mirror'
+        , 'Full Bed w/ Trundle' => 'Full Bed w/Trundle'
+        , 'Bunk Bed - Twin/Twin' => 'Bunk Bed (twin/twin)'
+        , 'Q Bed' => 'Queen Bed (Headboard, Footboard, Rails)'
+        , 'Q Bed, Dresser, Mirror' => 'Queen Bed (Headboard, Footboard, Rails), Dresser & Mirror'
+        , 'Q Hdbd, Dresser, Mirror' => 'Queen Headboard, Dresser & Mirror'
+        , 'Q HdBd, Dresser, Mirror, 1NS' => 'Queen Headboard, Dresser, Mirror & Nightstand'
+        , 'Q Bed, Dresser, Mirror, Chest, 1NS' => 'Queen Bed (Headboard, Footboard, Rails), Mirror, Chest & Nightstand'
+        , 'Q Hdbd, Dresser, Mirror, Chest' => 'Queen Headboard, Dresser, Mirror & Chest'
+        , 'Q Bed w/Storage, Dresser, Mirror' => 'Queen Storage Bed, Dresser & Mirror'
+        , 'Bunk Bed' => 'Bunk Bed'
+        , 'Loft Bed' => 'Loft Bed'
+        , 'Queen Metal Bed' => 'Queen Metal Bed'
+        , 'King Metal Bed' => 'King Metal Bed'
+        , 'Twin Bed w/ Storage, Dresser, Mirror' => 'Twin Storage Bed, Dresser & Mirror'
+        , 'Full Bed w/ Storage, Dresser, Mirror' => 'Full Storage Bed, Dresser & Mirror'
+        , 'Twin Bed w/ Storage' => 'Twin Headboard, Dresser, Mirror & Chest'
+        , 'Twin Hdbd, Dresser, Mirror, Chest' => 'Twin Headboard, Dresser, Mirror & Chest'
+        , 'Twin Hdbd, Dresser, Mirror' => 'Twin Headboard, Dresser & Mirror'
+        , 'Full Captain Storage Bed' => 'Full Captains Bed with Storage'
+        , 'Full Bed w/Trundle, Dresser,Mirror' => 'Full Bed w/Trundle, Dresser & Mirror'
+        , 'Full Capt Bed, Storage 2 Sides' => 'Full Captains Bed with 2 sides Storage'
+        , 'Twin Captain Storage Bed' => 'Twin Captains Bed with storage'
+        , 'Full Bed w/ Storage' => 'Full Bed (Headboard, footboard, rails) with storage'
+        , 'Q Bed, Dresser, Mirror, 2NS' => 'Queen Bed (Headboard, Footboard, Rails), Dresser, Mirror & 2 Nightstands'
+        , 'K Bed' => 'King Bed (Headboard, Footboard, Rails)'
+        , 'King Bed w/Storage' => 'King Bed with Storage'
+        , 'Q Bed w/Storage' => 'Queen Bed with Storage'
+        , 'Desk' => 'Desk'
+        , 'Bunk Bed - Twin/Full' => 'Bund Bed (Twin/Full)'
+        , 'Bed' => 'Bed (Headboard, Footboard, Rails)'
+        , 'Day Bed w/Trundle' => 'Day Bed, Dresser & Mirror'
+        , 'DayBed, Dresser, Mirror' => 'Day Bed, Dresser & Mirror'
+        , 'Full Hdbd, Dresser, Mirror' => 'Full Headboard, Dresser & Mirror'
+        , 'Twin Bed w/Canopy' => 'Twin Bed w/Canopy'
+        , 'Full Bed w/Canopy' => 'Full Bed w/Canopy'
+        , 'Day Bed' => 'Day Bed'
+        , 'Full Bed, Dresser, Mirror, Chest' => 'Full Bed (Headboard, footboard, rails), Dresser, Mirror & Chest'
+        , 'Twin Bed, Dresser, Mirror, Chest' => 'Twin Bed, Dresser, Mirror & Chest'
+        , 'Armoire' => 'Armoire'
+        , 'Q Bed, Dresser, Mirror, 1NS' => 'Queen Bed, Dresser, Mirror & Nightstand'
+        , 'Q Bed, Dresser, Mirror, Chest' => 'Queen Bed, Dresser, Mirror & Chest'
+        , 'HdBd, Dresser, Mirror' => 'Headboard, Dresser & Mirror'
+        , 'Q HdBd, Dresser, Mirror, 2NS' => 'Queen Headboard, Dresser, Mirror & 2 Nightstands'
+        , 'Q Hdbd, Dresser, Mirror, Chest, 1NS' => 'Queen Headboard, Dresser, Mirror, Chest & Nighstand'
+        , 'SprdHdBd, 2 NS' => 'Spread Headboard & 2 Nightstands'
+        , 'Bunk Bed - Twin/Full, Dresser, Mirror' => 'Bunk Bed (twin/full), Dresser & Mirror'
+        , 'QBed,Dressr,Mrror,Chest,2NS' => 'Queen Bed, Dresser, Mirror, Chest & 2 Nightstands'
+        , 'HdBd, Dresser, Mirror, Chest' => 'Headboard, Dresser, Mirror & Chest'
+        , 'Cal King Bed' => 'Cal King Bed'
+        , 'Q Bed, Dresser, Mirror, Armoire' => 'Queen Bed, Dresser, Mirror & Armoire'
+        , 'QBed,Dressr,Mirror,Armr,2NS' => 'Queen Bed, Dresser, Mirror, Armoire, 2 Nightstands'
+        , 'KBed,Dressr,Mirror,Armr,2NS' => 'King Bed, Dresser, Mirror, Armoire, 2 Nightstands'
+        , 'KBed,Dressr,Mrror,Chest,2NS' => 'King Bed, Dresser, Mirror, Chest, 2 Nightstands'
+        , 'K Bed, Dresser, Mirror, 1 NS' => 'King Bed, Dresser, Mirror, Nightstand'
+        , 'K Bed, Dresser, Mirror' => 'King Bed, Dresser & Mirror'
+        , 'Bunk Bed, Dresser, Mirror' => 'Bunk Bed, Dresser & Mirror'
+        , 'Twin Bed, Dresser, Mirror, NS' => 'Twin Bed, Dresser, Mirror & Nighstand'
+        , 'Full/Full Bunk, Dresser, Mirror' => 'Full/Full Bunk Bed, Dresser & Mirror'
+        , 'Q Hdbd' => 'Queen Headboard'
+        , 'Bunk Bed - Twin/Full, Dresser, Mirror, Chest' => 'Bunk Bed (twin/full), Dresser, Mirror & Chest'
+        , 'Bunk Bed - Twin/Full, Dresser, Mirror, NS' => 'Bunk Bed (twin/full), Dresser, Mirror & Nighstand'
+        , 'K Bed, Dresser, Mirror, Chest' => 'King Bed, Dresser, Mirror & Chest'
+        , 'K Bed, Dresser, Mirror, Armoire' => 'King Bed, Dresser, Mirror & Armoire'
+        , 'Cal King Bed, Dresser, Mirror' => 'Cal King Bed, Dresser & Mirror'
+        , 'Cal King, Dresser, Mirror, Chest' => 'Cal King Bed, Dresser, Mirror & Chest'
+        , 'Cal King, Dresser, Mirror, Armoire' => 'Cal King Bed, Dresser, Mirror & Armoire'
+        , 'Cal King, Dresser, Mirror, 1NS' => 'Cal King Bed, Dresser, Mirror & Nighstand'
+        , 'Media Chest' => 'Media Chest'
+        , 'Pub / Breakfast Table, 4 Bar Stools' => 'Pub Table & 4 Bar Stools'
+        , 'Pub / Breakfast Table, 2 Bar Stools' => 'Pub Table & 2 Bar Stools'
+        , 'Pub/Breakfast Table, 5 Bar Stools' => 'Pub Table & 5 Bar Stools'
+        , 'Table, 2 Sides, 2 Double Chairs, Corner Chair' => 'Table, 2 Side Chairs, 2 Double Chairs, Corner Chair'
+        , 'Table, 2 Sides, 2 Double Chairs' => 'Table, 2 Side Chairs, 2 Double Chairs'
+        , 'Table, 6 Sides' => 'Table & 6 Side Chairs'
+        , 'Table, 6 Sides, Bench' => 'Table, 6 Side Chairs & Bench'
+        , 'Table, 8 Sides' => 'Table & 8 Side Chairs'
+        , 'Storage Piece' => 'Storage Piece'
+        , 'Table, 4 Sides, Bench' => 'Table, 4 Side Chairs & Bench'
+        , 'Table, 2 Sides' => 'Table & 2 Side Chairs'
+        , 'Bar Stools' => 'Bar Stools'
+        , 'Table, 4 Sides, Storage' => 'Table, 4 Side Chairs & Storage'
+        , 'Table, 6 Sides, Storage' => 'Table, 6 Side Chairs & Storage'
+        , 'Dining Table' => 'Dining Table'
+        , 'Pub Table / 2 Dbl Bar Stools / Corner Stool' => 'Pub Table, 2 Bar Stools & Corner Stool'
+        , 'Table, 2 Sides, Bench' => 'Table, 2 side chairs & bench'
+        , 'Pub / Breakfast Table, Bench, 4 Bar Stools' => 'Pub Table, Bench & 4 Bar Stools'
+        , 'Pub Table, 2 Bar Stools, 2 Double Bar Stools, Corner Stool' => 'Pub Table, 2 Bar Stools, 2 Double Bar Stools, Corner Stool'
+        , 'Pub / Breakfast Table, 6 Bar Stools' => 'Pub Table & 6 Bar Stools'
+        , 'Bar, 2 Bar Stools' => 'Bar & 2 Bar Stools'
+        , 'Butterfly Table, 4 Barstools' => 'Butterfly Table & 4 Bar Stools'
+        , 'Pub/Breakfast Table, 3 Bar Stools' => 'Pub Table & 3 Bar Stools'
+        , 'Table, 4 Sides, 2 Arms, Storage' => 'Table, 4 Side Chairs, 2 Arm Chairs, Storage'
+        , 'Pub / Breakfast Table, 2 Benches, 2 Bar Stools' => 'Table, 2 Benches, 2 Bar Stools'
+        , 'Desk Chair' => 'Desk Chair'
+        , 'Desk, Hutch' => 'Desk & Hutch'
+
     );
 
     /**
@@ -151,6 +276,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * Now process everything with the data we have
      */
     protected function process() {
+        $grouped_packages = array();
+
         // Generate array of our items
 		foreach ( $this->packages as $item ) {
 			/***** SETUP OF PRODUCT *****/
@@ -223,7 +350,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
 				$name = $item->SeriesName . ' - ' . implode( ', ', $name_pieces );
 			} else {
-				$name = $item->SeriesName . ' ' . $template->Descr;
+				$name = $item->SeriesName . ' ' . $this->names[$template->Descr];
 			}
 
             // Will have to format this
@@ -256,6 +383,48 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $category_id = $this->category_by_template_description[(string)$template->Descr];
             } else {
                 $category_id = $this->categories[(string)$package_series->Grouping];
+            }
+
+            // If we have to group products
+            switch ( $category_id ) {
+                // Sectionals
+                case 226:
+                    if ( isset( $grouped_packages[(string)$item->SeriesNo] ) )
+                        $product->publish_visibility = 'deleted';
+
+                    $grouped_packages[(string)$item->SeriesNo] = true;
+                    $name = $item->SeriesName . ' Sectional';
+                break;
+
+                // Bedroom Groups
+                case 228:
+                    $last_sku = preg_match( '/([0-9]+)S?$/', $sku, $matches );
+
+                    if ( isset( $grouped_packages[(string)$item->SeriesNo][$last_sku] ) )
+                        $product->publish_visibility = 'deleted';
+
+                    switch ( $last_sku ) {
+                        case '57':
+                            $name = $item->SeriesName . ' Sleigh Bedroom Group';
+                            $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
+                        break;
+
+                        case '96':
+                            $name = $item->SeriesName . ' Panel Bedroom Group';
+                            $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
+                        break;
+
+                        case '98':
+                            $name = $item->SeriesName . ' Poster Bedroom Group';
+                            $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
+                        break;
+
+                        default:break;
+                    }
+
+                break;
+
+                default:break;
             }
 
             /***** ADD PRODUCT DATA *****/
