@@ -159,7 +159,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_all_market_links() {
-        $market_links = $this->db->get_results( "SELECT cml.`craigslist_market_id`, cml.`market_id` FROM `craigslist_market_links` AS cml LEFT JOIN `craigslist_markets` AS cm ON ( cm.`craigslist_market_id` = cml.`craigslist_market_id` ) WHERE cm.`status` = 1", PDO::FETCH_ASSOC );
+        $market_links = $this->get_results( "SELECT cml.`craigslist_market_id`, cml.`market_id` FROM `craigslist_market_links` AS cml LEFT JOIN `craigslist_markets` AS cm ON ( cm.`craigslist_market_id` = cml.`craigslist_market_id` ) WHERE cm.`status` = 1", PDO::FETCH_ASSOC );
 
         return ( $market_links ) ? ar::assign_key( $market_links, 'market_id', true ) : array();
     }
@@ -179,7 +179,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_unlinked_tags() {
-        return $this->db->get_col( "SELECT ac.`craigslist_tag_id` FROM `analytics_craigslist` AS ac LEFT JOIN `craigslist_tags` AS ct ON ( ct.`craigslist_tag_id` = ac.`craigslist_tag_id` ) WHERE ac.`date` > DATE_SUB( ac.`date`, INTERVAL 30 DAY ) AND ct.`craigslist_tag_id` IS NULL" );
+        return $this->get_col( "SELECT ac.`craigslist_tag_id` FROM `analytics_craigslist` AS ac LEFT JOIN `craigslist_tags` AS ct ON ( ct.`craigslist_tag_id` = ac.`craigslist_tag_id` ) WHERE ac.`date` > DATE_SUB( ac.`date`, INTERVAL 30 DAY ) AND ct.`craigslist_tag_id` IS NULL" );
     }
 
     /**
