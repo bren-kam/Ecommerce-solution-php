@@ -28,16 +28,28 @@ class AboutUsController extends BaseController {
      * @return JsonResponse
      */
     protected function index() {
-        $about_us = new AboutUs();
+        $form = new stdClass();
 
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
+            // Instantiate App
+            $about_us = new AboutUs();
+
             // Get App Data
             $app_data = url::decode( $_REQUEST['app_data'] );
             $other_user_id = security::decrypt( $app_data['uid'], 'SecREt-Us3r!' );
             $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 
+            if ( $page_id ) {
+                $website = $about_us->get_connected_website( $page_id );
+                $website_title = $website->title;
+            } else {
+                $website_title = 'N/A';
+            }
+
             $form = new FormTable( 'fAboutUs' );
+
+            $website_row = $form->add_field( 'row', _('Website'), $website_title );
 
             $form->add_field( 'text', _('Facebook Connection Key'), 'tFBConnectionKey' )
                 ->add_validation( 'req', _('The "Facebook Connection Key" field is required') );
@@ -45,35 +57,17 @@ class AboutUsController extends BaseController {
             $form->add_field( 'hidden', 'app_data', $_REQUEST['app_data'] );
 
             // Make sure it's a valid request
-            if( $other_user_id == $this->fb->user_id && $page_id ) {
-                if( nonce::verify( $_POST['_nonce'], 'connect-to-field' ) ) {
-                    $errs = $v->validate();
+            if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
+                $about_us->connect( $page_id, $_POST['tFBConnectionKey'] );
 
-                    // if there are no errors
-                    if( empty( $errs ) )
-                        $about_us->connect( $page_id, $_POST['tFBConnectionKey'] );
-                }
-            }
-
-            if( $page_id )
                 $website = $about_us->get_connected_website( $page_id );
+                $website_row->set_value( $website->title );
+            }
         }
 
-        add_footer('<div id="fb-root"></div>
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({appId: "' . self::APP_ID . '", status: true, cookie: true,
-             xfbml: true});
-	FB.setSize({ width: 720, height: 500 });
-  };
-  (function() {
-    var e = document.createElement("script"); e.async = true;
-    e.src = document.location.protocol +
-      "//connect.facebook.net/en_US/all.js";
-    document.getElementById("fb-root").appendChild(e);
-  }());
-</script>');
+        $response = $this->get_template_response( 'facebook/about-us', 'Connect' );
+        $response->set( array( 'form' => $form, 'app_id' => self::APP_ID ) );
 
-        return new JsonResponse( $api_request->get_response() );
+        return $response;
     }
 }

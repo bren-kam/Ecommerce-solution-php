@@ -1,6 +1,5 @@
 // When the page has loaded
 jQuery(function($) {
-	
 	if ( $('body').hasClass('apps') )
 		$('body').attr( 'app', document.body.className.replace('apps ', '') );
 	
@@ -17,10 +16,7 @@ jQuery(function($) {
 		// Hide other tabs
 		$('.fb-tab-wrapper').hide();			
 		
-		// SHow the tab
+		// Show the tab
 		$('#' + tab_holder_id).show();
-		
-
 	});
-	
 });
