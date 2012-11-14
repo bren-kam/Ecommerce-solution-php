@@ -134,7 +134,7 @@ class Craigslist extends ActiveRecordBase {
                 $tag_ids[] = $tag->tag_id;
 
                 // Add Marketing
-                $values[] = "( $account_id, $craigslist_market_id, " . (int) $tag->tag_id . ", " . (int) $tag->unique . ', ' . (int) $tag->views . ', ' . $t->posts . ", ? )";
+                $values[] = "( $account_id, $craigslist_market_id, " . (int) $tag->tag_id . ", " . (int) $tag->unique . ', ' . (int) $tag->views . ', ' . $tag->posts . ", ? )";
             }
         }
 
