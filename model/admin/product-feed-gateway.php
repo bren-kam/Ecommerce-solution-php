@@ -68,7 +68,7 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
     /**
      * Run the gateway
      */
-    public function run() {
+    public final function run() {
         $this->setup();
         $this->get_existing_products();
         $this->get_data();
