@@ -22,7 +22,13 @@ class Craigslist extends ActiveRecordBase {
         $yesterday->sub( new DateInterval('P1D') );
 
         // Add stats
-        $this->add_stats( $craigslist->get_stats( $yesterday->format('Y-m-d') ), $this->get_customers(), $this->get_all_market_links() );
+        $customers = $this->get_customers();
+        $market_links = $this->get_all_market_links();
+
+        foreach ( $customers as $customer ) {
+            $stats = $craigslist->get_stats( $customer->value, $yesterday->format('Y-m-d') );
+            $this->add_stats( $customer->website_id, $stats, $market_links );
+        }
     }
 
     /**
@@ -113,15 +119,14 @@ class Craigslist extends ActiveRecordBase {
     /**
      * Add Stats
      *
+     * @param int $account_id
      * @param array $stats
-     * @param array $customers
      * @param array $market_links
      */
-    protected function add_stats( array $stats, array $customers, array $market_links ) {
+    protected function add_stats( $account_id, array $stats, array $market_links ) {
         $values = $tag_ids = $dates = array();
 
         foreach ( $stats as $stat ) {
-            $account_id = (int) $customers[$stat->customer_id];
             $craigslist_market_id = (int) $market_links[$stat->market_id];
             $dates[] = $stat->date;
 
@@ -170,7 +175,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_customers() {
-        return ar::assign_key( $this->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", PDO::FETCH_ASSOC ), 'value', true );
+        return $this->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", PDO::FETCH_OBJ );
     }
 
     /**

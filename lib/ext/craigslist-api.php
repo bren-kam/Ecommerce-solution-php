@@ -166,6 +166,7 @@ class Craigslist_API {
     /**
      * Get Stats
      *
+     * @param int $customer_id
      * @param string $date_start
      * @param string $date_end (optional)
      * @return array
@@ -182,13 +183,13 @@ class Craigslist_API {
      *      )
      *  )
      */
-    public function get_stats( $date_start, $date_end = NULL ) {
+    public function get_stats( $customer_id, $date_start, $date_end = NULL ) {
         // Just get the stats for a day
         if ( is_null( $date_end ) )
             $date_end = $date_start;
 
         // Add customer
-        $response = $this->_execute( 'dailystats', compact( 'date_start', 'date_end' ) );
+        $response = $this->_execute( 'dailystats', compact( 'customer_id', 'date_start', 'date_end' ) );
 
         return $response;
     }
