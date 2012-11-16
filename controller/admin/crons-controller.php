@@ -37,16 +37,15 @@ class CronsController extends BaseController {
         // Get data
         $keys = $ticket_upload->get_keys_by_uncreated_tickets();
 
-        if ( empty( $keys ) )
-            return;
-
-        // Remove uploads
-        foreach ( $keys as $key ) {
-            $file->delete_file( "attachments/{$key}" );
-        }
-
-        // Delete everything relating to them
-        $ticket->deleted_uncreated_tickets();
+        if ( !empty( $keys ) ) {
+			// Remove uploads
+			foreach ( $keys as $key ) {
+				$file->delete_file( "attachments/{$key}" );
+			}
+	
+			// Delete everything relating to them
+			$ticket->deleted_uncreated_tickets();
+		}
 
         /** Have Social media send out facebook posts */
         $social_media_posting_post = new SocialMediaPostingPost();
