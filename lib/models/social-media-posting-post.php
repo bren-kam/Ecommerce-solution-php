@@ -11,7 +11,7 @@ class SocialMediaPostingPost extends ActiveRecordBase {
      * Setup the account initial data
      */
     public function __construct() {
-        parent::__construct( 'sm_post' );
+        parent::__construct( 'sm_posting_posts' );
 
         // We want to make sure they match
         if ( isset( $this->sm_posting_post_id ) )
