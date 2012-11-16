@@ -19,7 +19,7 @@ class ContactUsController extends BaseController {
         parent::__construct();
 
         $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
-        $this->section = _('About Us');
+        $this->section = _('Contact Us');
     }
 
     /**

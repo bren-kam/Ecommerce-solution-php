@@ -65,7 +65,7 @@ get_header('facebook/');
         </div><!-- #logo -->
         
         
-	<?php if( $success && $website ) { ?>
+	<?php if ( $success && $website ) { ?>
 	<div class="success">
 		<p><?php echo _('Your information has been successfully updated!'); ?></p>
 	</div>
