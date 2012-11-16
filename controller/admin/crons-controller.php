@@ -82,7 +82,7 @@ class CronsController extends BaseController {
                 $social_media_posting_post->mark_errors( $sm_error_ids );
         }
 
-        return new HtmlResponse( $this->resources, 'Hourly Jobs Completed');
+        return new HtmlResponse( 'Hourly Jobs Completed');
     }
 
     /**
@@ -116,7 +116,7 @@ class CronsController extends BaseController {
         $email_marketing = new EmailMarketing();
         $email_marketing->synchronize_email_lists();
 
-        return new HtmlResponse( $this->resources, 'Daily Jobs Completed' );
+        return new HtmlResponse( 'Daily Jobs Completed' );
     }
 
     /**
@@ -133,6 +133,6 @@ class CronsController extends BaseController {
         $ashley = new AshleySpecificFeedGateway();
         $ashley->run_all();
 
-        return new HtmlResponse( $this->resources, 'Weekly Jobs Completed' );
+        return new HtmlResponse( 'Weekly Jobs Completed' );
     }
 }
