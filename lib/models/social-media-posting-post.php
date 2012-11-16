@@ -49,4 +49,15 @@ class SocialMediaPostingPost extends ActiveRecordBase {
 			$statement->query();
 		}
 	}
+
+    /**
+     * Save
+     */
+    public function save() {
+        parent::update( array(
+            'status' => $this->status
+        ), array(
+            'sm_posting_post_id' => $this->id
+        ), 'i', 'i' );
+    }
 }
