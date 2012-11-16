@@ -67,8 +67,6 @@ class CronsController extends BaseController {
                 // http://developers.facebook.com/docs/reference/api/page/#posts
                 try {
                     $fb->api( $post->fb_page_id . '/feed', 'POST', array( 'message' => $post->post, 'link' => $post->link ) );
-                    $post->status = 1;
-                    $post->save();
                 } catch ( Exception $e ) {
                     $error_message = $e->getMessage();
 
@@ -77,6 +75,9 @@ class CronsController extends BaseController {
                     fn::mail( $post->email, $post->company . ' - Unable to Post to Facebook', "We were unable to send the following post to Facebook:\n\n" . $post->post . "\n\nFor the following reason(s):\n\n" . $error_message . "\n\nTo fix this, please login to the dashboard, go to Social Media > Posting, then delete this post and recreate it following the rules above.\n\n" . $post->account . "\nhttp://admin." . $post->domain . "/accounts/control/?aid=" . $post->website_id . "\n\nHave a great day!", $post->company . ' <noreply@' . $post->domain . '>' );
                     continue;
                 }
+
+                $post->status = 1;
+                $post->save();
             }
 
             // Mark post errors
