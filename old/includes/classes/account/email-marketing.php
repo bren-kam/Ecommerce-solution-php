@@ -769,8 +769,8 @@ class Email_Marketing extends Base_Class {
 		
 		// No campaign, try to create
 		if ( 0 == $em['mc_campaign_id'] ) {
-			$em['mc_campaign_id'] = $this->mc_create_campaign( $em );
-			
+			$em['mc_campaign_id'] = $this->mc_create_campaign( $em )->get('mc_campaign_id');
+
 			// Still failing, now report an error
 			if ( 0 == $em['mc_campaign_id'] ) {
 				$this->_err( "Failed to schedule email, no Campaign ID has been assigned.", __LINE__, __METHOD__ );
