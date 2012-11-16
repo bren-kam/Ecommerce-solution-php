@@ -11,7 +11,7 @@ class CronsController extends BaseController {
     /**
      * Hourly
      *
-     * @return TemplateResponse
+     * @return CustomResponse
      */
     protected function hourly() {
         // Set it as a background job
@@ -82,12 +82,14 @@ class CronsController extends BaseController {
             if ( !empty( $sm_error_ids ) )
                 $social_media_posting_post->mark_errors( $sm_error_ids );
         }
+
+        return new CustomResponse( $this->resources, 'Hourly Jobs Completed');
     }
 
     /**
      * Daily
      *
-     * @return RedirectResponse|TemplateResponse
+     * @return CustomResponse
      */
     public function daily() {
         // Set it as a background job
@@ -114,12 +116,14 @@ class CronsController extends BaseController {
         /** Sync Email Lists */
         $email_marketing = new EmailMarketing();
         $email_marketing->synchronize_email_lists();
+
+        return new CustomResponse( $this->resources, 'Daily Jobs Completed' );
     }
 
     /**
      * Weekly
      *
-     * @return RedirectResponse|TemplateResponse
+     * @return CustomResponse
      */
     public function weekly() {
         // Set it as a background job
@@ -129,5 +133,7 @@ class CronsController extends BaseController {
         // Run Ashley Feed
         $ashley = new AshleySpecificFeedGateway();
         $ashley->run_all();
+
+        return new CustomResponse( $this->resources, 'Weekly Jobs Completed' );
     }
 }
