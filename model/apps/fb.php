@@ -6,7 +6,7 @@
  * @since 1.0
  */
 
-class FB {
+class Fb {
     /**
      * Hold the User ID
      * @var int
