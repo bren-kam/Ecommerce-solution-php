@@ -67,6 +67,8 @@ class CronsController extends BaseController {
                 // http://developers.facebook.com/docs/reference/api/page/#posts
                 try {
                     $fb->api( $post->fb_page_id . '/feed', 'POST', array( 'message' => $post->post, 'link' => $post->link ) );
+                    $post->status = 1;
+                    $post->save();
                 } catch ( Exception $e ) {
                     $error_message = $e->getMessage();
 

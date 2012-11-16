@@ -190,15 +190,20 @@ class DB {
      *
      * @param string|PDOStatement $query [optional]
      * @param int $style [optional] FETCH_OBJ, FETCH_ASSOC,
+     * @param mixed $fetch_argument [optional]
      * @return mixed
      */
-    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ ) {
+    public function get_row( $query = NULL, $style = PDO::FETCH_OBJ, $fetch_argument = NULL ) {
         // Make sure we have a statement
         if ( !is_null( $query ) )
             $this->query( $query );
 
         // Make sure we have a statement
         $this->_statement();
+
+        // Make it possible to do the FETCH_CLASS
+        if ( in_array( $style, array( PDO::FETCH_CLASS, PDO::FETCH_INTO ) ) && !is_null( $fetch_argument ) )
+            $this->_statement->setFetchMode( $style, $fetch_argument );
 
         return $this->_statement->fetch( $style );
     }

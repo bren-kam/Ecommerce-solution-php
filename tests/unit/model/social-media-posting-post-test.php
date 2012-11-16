@@ -76,6 +76,34 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test updating a product
+     *
+     * @depends testGet
+     */
+    public function testSave() {
+        // Create posting post
+        $this->db->insert( 'sm_posting_posts', array(
+            'sm_facebook_page_id' => -5
+            , 'access_token' => 'glkasjdlkajs123jklasd'
+            , 'post' => 'Test Save Post'
+            , 'status' => 0
+            , 'date_created' => '2012-11-16'
+        ), 'issis' );
+
+        $sm_posting_post_id = $this->db->get_insert_id();
+
+        $this->db->get_row( "SELECT * FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id", PDO::FETCH_INTO, $this->post );
+
+        // Update test
+        $this->post->status = 1;
+        $this->post->save();
+
+        $status = $this->db->get_var( "SELECT `status` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id" );
+
+        $this->assertEquals( $status, '1' );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {
