@@ -171,15 +171,17 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			$('#tStoreSKU').val( p['store_sku'] );
 			$('#tShipsIn').val( p['ships_in'] );
 			
-			var shipping_type = ( 'Flat Rate' == p['additional_shipping_type'] ) ? 'FlatRate' : 'Percentage';
+			var shipping_type = ( 'Percentage' == p['additional_shipping_type'] ) ? 'Percentage' : 'FlatRate';
 			$( '#rShippingMethod' + shipping_type ).attr( 'checked', true );
             $( '#tShippingPercentage, #tShippingFlatRate' ).val('').css( 'visibility', 'hidden' );
-            $( '#tShipping' + ( 'FlatRate' != shipping_type ) ? 'Percentage' : 'FlatRate' ).val( p['additional_shipping_amount'] ).css( 'visibility', 'visible' );
+            $( '#tShipping' + ( 'Percentage' == shipping_type ) ? 'Percentage' : 'FlatRate' ).val( p['additional_shipping_amount'] ).css( 'visibility', 'visible' );
+            alert( '#tShipping' + ( 'Percentage' == shipping_type ) ? 'Percentage' : 'FlatRate' );
 
-			var protection_type =  ( 'Flat Rate' == p['protection_type'] ) ? 'FlatRate' : 'Percentage';
+			var protection_type =  ( 'Percentage' == p['protection_type'] ) ? 'Percentage' : 'FlatRate';
 			$( '#rProtectionMethod' + protection_type ).attr( 'checked', true );
             $( '#tProtectionPercentage, #tProtectionFlatRate' ).val('').css( 'visibility', 'hidden' );
-            $( '#tProtection' + ( 'FlatRate' != protection_type ) ? 'Percentage' : 'FlatRate' ).val(  p['protection_amount'] ).css( 'visibility', 'visible' );
+            $( '#tProtection' + ( 'Percentage' == protection_type ) ? 'Percentage' : 'FlatRate' ).val(  p['protection_amount'] ).css( 'visibility', 'visible' );
+            alert( '#tShipping' + ( 'Percentage' == protection_type ) ? 'Percentage' : 'FlatRate' );
 
 			$('#tWholesalePrice').val( p['wholesale_price'] );
 			$('#tWeight').val( p['weight'] );
