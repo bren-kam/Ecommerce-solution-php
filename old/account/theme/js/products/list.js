@@ -175,7 +175,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			$( '#rShippingMethod' + shipping_type ).attr( 'checked', true );
 			$( '#tShipping' + shipping_type ).val( p['additional_shipping_amount'] ).css( 'visibility', 'visible' );
 
-            if ( '' == shipping_type ) {
+            if ( '' == p['additional_shipping_type'] ) {
                 $( '#tShippingPercentage, #tShippingFlatRate' ).val('').css( 'visibility', 'hidden' );
             } else {
                 $( '#tShipping' + ( 'FlatRate' == shipping_type ) ? 'Percentage' : 'FlatRate' ).val('').css( 'visibility', 'hidden' );
@@ -185,7 +185,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			$( '#rProtectionMethod' + protection_type ).attr( 'checked', true );
 			$( '#tProtection' + protection_type ).val( p['protection_amount'] ).css( 'visibility', 'visible' );
 
-            if ( '' == protection_type ) {
+            if ( '' == p['protection_type'] ) {
                 $( '#tProtectionPercentage, #tProtectionFlatRate' ).val('').css( 'visibility', 'hidden' );
             } else {
                 $( '#tProtection' + ( 'FlatRate' == protection_type ) ? 'Percentage' : 'FlatRate' ).val('').css( 'visibility', 'hidden' );
