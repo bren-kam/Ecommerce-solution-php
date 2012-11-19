@@ -168,7 +168,7 @@ class CategoriesController extends BaseController {
             $category->slug = $_POST['tSlug'];
 
             if ( $category_id ) {
-                $category->update();
+                $category->save();
                 $message = _('Your category has been successfully updated!');
                 $parent_category_id = $_GET['pcid'];
 

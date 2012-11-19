@@ -219,7 +219,7 @@ class ApiRequest {
 
         // See if already exists
         if ( $user->id ) {
-            $user->update();
+            $user->save();
         } else {
             $user->email = $email;
             $user->contact_name = $contact_name;
@@ -324,7 +324,7 @@ class ApiRequest {
 
         // Create and update
         $account->create(); // Doesn't add them all
-        $account->update();
+        $account->save();
 
         // Needs to create a checklist
         $checklist = new Checklist();
@@ -384,7 +384,7 @@ class ApiRequest {
 				
                 // Update the domain field
                 $account->domain = $domain;
-                $account->update();
+                $account->save();
 
                 // Now need to install the service
                 $install_service = new InstallService();
@@ -423,7 +423,7 @@ class ApiRequest {
         $account = new Account;
         $account->get( $website_id );
         $account->company_package_id = $company_package_id;
-        $account->update();
+        $account->save();
 
         // Install the package
         $install_service = new InstallService();
@@ -557,7 +557,7 @@ class ApiRequest {
         $user->billing_zip = $billing_zip;
 
         if ( $user->id ) {
-            $user->update();
+            $user->save();
         } else {
             $user->role = 5;
             $user->status = 1;
@@ -844,7 +844,7 @@ class ApiRequest {
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			exit;
+			return array();
 		}
 
         $parameters = array();

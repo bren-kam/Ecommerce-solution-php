@@ -85,7 +85,7 @@ class ChecklistItemTest extends BaseDatabaseTest {
         // Update test
         $this->checklist_item->name = 'Bloom';
         $this->checklist_item->assigned_to = 'Morning Glory';
-        $this->checklist_item->update();
+        $this->checklist_item->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->checklist_item->id ) );

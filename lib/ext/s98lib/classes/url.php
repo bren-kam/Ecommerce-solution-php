@@ -74,8 +74,8 @@ class url extends Base_Class {
 	public static function decode( $data ) {
 		return unserialize( gzuncompress( stripslashes( base64_decode( strtr( $data, '-_,', '+/=' ) ) ) ) );
 	}
-	
-	/**
+
+    /**
 	 * Retrieve a modified URL query string.
 	 *
 	 * You can rebuild the URL and append a new query variable to the URL query by

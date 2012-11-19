@@ -11,7 +11,7 @@ class CronsController extends BaseController {
     /**
      * Hourly
      *
-     * @return TemplateResponse
+     * @return HtmlResponse
      */
     protected function hourly() {
         // Set it as a background job
@@ -37,16 +37,15 @@ class CronsController extends BaseController {
         // Get data
         $keys = $ticket_upload->get_keys_by_uncreated_tickets();
 
-        if ( empty( $keys ) )
-            return;
-
-        // Remove uploads
-        foreach ( $keys as $key ) {
-            $file->delete_file( "attachments/{$key}" );
-        }
-
-        // Delete everything relating to them
-        $ticket->deleted_uncreated_tickets();
+        if ( !empty( $keys ) ) {
+			// Remove uploads
+			foreach ( $keys as $key ) {
+				$file->delete_file( "attachments/{$key}" );
+			}
+	
+			// Delete everything relating to them
+			$ticket->deleted_uncreated_tickets();
+		}
 
         /** Have Social media send out facebook posts */
         $social_media_posting_post = new SocialMediaPostingPost();
@@ -76,18 +75,23 @@ class CronsController extends BaseController {
                     fn::mail( $post->email, $post->company . ' - Unable to Post to Facebook', "We were unable to send the following post to Facebook:\n\n" . $post->post . "\n\nFor the following reason(s):\n\n" . $error_message . "\n\nTo fix this, please login to the dashboard, go to Social Media > Posting, then delete this post and recreate it following the rules above.\n\n" . $post->account . "\nhttp://admin." . $post->domain . "/accounts/control/?aid=" . $post->website_id . "\n\nHave a great day!", $post->company . ' <noreply@' . $post->domain . '>' );
                     continue;
                 }
+
+                $post->status = 1;
+                $post->save();
             }
 
             // Mark post errors
             if ( !empty( $sm_error_ids ) )
                 $social_media_posting_post->mark_errors( $sm_error_ids );
         }
+
+        return new HtmlResponse( 'Hourly Jobs Completed');
     }
 
     /**
      * Daily
      *
-     * @return RedirectResponse|TemplateResponse
+     * @return HtmlResponse
      */
     public function daily() {
         // Set it as a background job
@@ -114,12 +118,14 @@ class CronsController extends BaseController {
         /** Sync Email Lists */
         $email_marketing = new EmailMarketing();
         $email_marketing->synchronize_email_lists();
+
+        return new HtmlResponse( 'Daily Jobs Completed' );
     }
 
     /**
      * Weekly
      *
-     * @return RedirectResponse|TemplateResponse
+     * @return HtmlResponse
      */
     public function weekly() {
         // Set it as a background job
@@ -129,5 +135,7 @@ class CronsController extends BaseController {
         // Run Ashley Feed
         $ashley = new AshleySpecificFeedGateway();
         $ashley->run_all();
+
+        return new HtmlResponse( 'Weekly Jobs Completed' );
     }
 }

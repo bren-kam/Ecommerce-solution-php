@@ -171,7 +171,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		if ( is_array( $products ) )
 		foreach ( $products as $sku => $product_id ) {
-			if ( !in_array( $sku, $skus ) )
+			if ( !in_array( $sku, $all_skus ) )
 				$remove_products[] = (int) $product_id;
 		}
 

@@ -66,6 +66,13 @@ class AjaxResponse extends Response {
      * Spit out the json response
      */
     protected function respond() {
+        // If it's not an AJAX request, refresh the current page
+        if ( !fn::is_ajax() ) {
+            $response = new RedirectResponse( $_SERVER['HTTP_REFERER'] );
+            $response->send_response();
+            return;
+        }
+
         // Let them know we were sucessful
         $this->add_response( 'success', !$this->has_error() );
 

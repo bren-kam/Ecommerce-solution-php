@@ -163,7 +163,24 @@ class AccountsController extends BaseController {
                 $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                 $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
 
-                $account->update();
+                $account->save();
+
+                if ( 1 == $account->social_media )
+                $account->set_settings( array(
+                    'social-media-add-ons' => serialize( array(
+                        'email-sign-up'
+                        , 'fan-offer'
+                        , 'sweepstakes'
+                        , 'share-and-save'
+                        , 'facebook-site'
+                        , 'contact-us'
+                        , 'about-us'
+                        , 'products'
+                        , 'current-ad'
+                        , 'posting'
+                    ) )
+                ) );
+
                 $this->notify( _('This account has been successfully updated!') );
             }
         }
@@ -338,7 +355,7 @@ class AccountsController extends BaseController {
             $account->domain = $_POST['tDomain'];
             $account->theme = $_POST['tTheme'];
             $account->live = (int) isset( $_POST['cbLive'] ) && $_POST['cbLive'];
-            $account->update();
+            $account->save();
 
             // Update the settings
             $account->set_settings( array( 'custom-image-size' => $_POST['tCustomImageSize'] ));
@@ -396,6 +413,8 @@ class AccountsController extends BaseController {
             , 'facebook-url'
             , 'advertising-url'
             , 'trumpia-api-key'
+            , 'trumpia-username'
+            , 'trumpia-password'
             , 'facebook-pages'
         );
 
@@ -415,6 +434,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
         $ft->add_field( 'text', _('Trumpia API Key'), 'tTrumpiaAPIKey', $settings['trumpia-api-key'] );
+        $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
+        $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
 
         if ( $ft->posted() ) {
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
@@ -424,7 +445,7 @@ class AccountsController extends BaseController {
             $account->wordpress_password = security::encrypt( $_POST['tWPPassword'], ENCRYPTION_KEY, true );
             $account->mc_list_id = $_POST['tMCListID'];
 
-            $account->update();
+            $account->save();
 
             // Update settings
             $account->set_settings( array(
@@ -437,12 +458,14 @@ class AccountsController extends BaseController {
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
+                , 'trumpia-username' => $_POST['tTrumpiaUsername']
+                , 'trumpia-password' => $_POST['tTrumpiaPassword']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
 
             // Redirect to main page
-            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/edit/' ) );
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
         }
 
         // Create Form
@@ -950,7 +973,7 @@ class AccountsController extends BaseController {
 
         // Deactivate account
         $account->status = 0;
-        $account->update();
+        $account->save();
 
         // Give them a notification
         $this->notify( _('The account, "' . $account->title . '", has been deactivated.' ) );

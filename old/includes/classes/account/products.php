@@ -1653,19 +1653,21 @@ class Products extends Base_Class {
 		global $user;
 
         // Turn the SKUs into an array
-        $product_skus = explode( "\n", $product_skus );
+        $product_skus_array = explode( "\n", $product_skus );
 
         // Make sure they entered in SKUs
-        if ( !is_array( $product_skus ) || empty( $product_skus ) )
+        if ( !is_array( $product_skus_array ) || empty( $product_skus_array ) )
             return false;
 
         // Escape all the SKUs
-        foreach ( $product_skus as &$ps ) {
-            $ps = "'" . $this->db->escape( trim( $ps ) ) . "'";
+        foreach ( $product_skus_array as &$ps ) {
+			$sku = trim( $ps );
+			$original_product_skus_array[] = $sku;
+            $ps = "'" . $this->db->escape( $sku ) . "'";
         }
 
         // Turn it into a string
-        $product_skus = implode( ",", $product_skus );
+        $product_skus = implode( ",", $product_skus_array );
         
 		// Instantiate class
 		$w = new Websites;
@@ -1681,7 +1683,7 @@ class Products extends Base_Class {
 
 		// Magical Query #1
 		// Get the count of the products that would be added (exclude ones that the website already has)
-		$product_count = $this->db->get_var( "SELECT COUNT( a.`product_id` ) FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN ( $industries ) AND ( a.`website_id` = 0 OR a.`website_id` = " . (int) $user['website']['website_id'] . " ) AND a.`publish_visibility` = 'public' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 )" );
+		$adding_skus = $this->db->get_col( "SELECT a.`sku` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`industry_id` IN ( $industries ) AND ( a.`website_id` = 0 OR a.`website_id` = " . (int) $user['website']['website_id'] . " ) AND a.`publish_visibility` = 'public' AND a.`sku` IN ( $product_skus ) AND ( b.`product_id` IS NULL OR b.`active` = 0 )" );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
@@ -1690,6 +1692,7 @@ class Products extends Base_Class {
 		}
 
 		// How many free slots do we have
+        $product_count = count( $adding_skus );
 		$free_slots = $user['website']['products'] - $this->get_website_products_count();
 
 		// Get the quantity
@@ -1701,6 +1704,32 @@ class Products extends Base_Class {
 
 		// How many products are we adding?
 		$quantity = $product_count;
+		$pre_not_added_skus = $not_added_skus = array();
+		
+		foreach ( $original_product_skus_array as $sku ) {
+			$sku = trim( $sku );
+			if ( !in_array( $sku, $adding_skus ) )
+				$pre_not_added_skus[] = $sku;
+		}
+		
+        if ( count( $pre_not_added_skus ) > 0 ) {
+            // Magical Query #2
+            // Insert website products
+            $already_existed_skus = $this->db->get_col( "SELECT a.`sku` FROM `products` AS a LEFT JOIN `website_products` AS b ON ( a.`product_id` = b.`product_id` AND b.`website_id` = $website_id ) WHERE a.`sku` IN ( $product_skus ) AND b.`active` = 1" );
+
+            // Handle any error
+            if ( $this->db->errno() ) {
+                $this->_err( 'Failed to count how many already existed.', __LINE__, __METHOD__ );
+                return false;
+            }
+			
+			foreach ( $pre_not_added_skus as $sku ) {
+				if ( !in_array( $sku, $already_existed_skus ) )
+					$not_added_skus[] = $sku;
+			}
+        } else {
+            $already_existed = 0;
+        }
 
 		// Magical Query #2
 		// Insert website products
@@ -1715,7 +1744,7 @@ class Products extends Base_Class {
         // Reorganize categories
 		$this->reorganize_categories( $website_id );
 
-		return array( true, $quantity, false );
+		return array( true, $quantity, false, count( $already_existed_skus ), $not_added_skus );
 	}
 
     /**

@@ -19,7 +19,7 @@
             <?php if ( $user->has_permission(8) ) { ?>
                 <a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a> |
             <?php } ?>
-            <a href="/support/" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
+            <a href="/help/" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
         <?php } ?>
     </p>
 </div>
@@ -45,7 +45,7 @@
 </div>
 
 <!-- End: Footer -->
-<script type="text/javascript">head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
+<script type="text/javascript">head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js', '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
 <?php $template->get_footer(); ?>
 </body>
 </html>

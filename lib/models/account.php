@@ -86,7 +86,7 @@ class Account extends ActiveRecordBase {
     /**
      * Update an account
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'company_package_id' => $this->company_package_id
             , 'user_id' => $this->user_id

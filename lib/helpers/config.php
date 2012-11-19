@@ -44,7 +44,7 @@ class Config {
         , 'server-ip'           => '199.79.48.137'
         , 'server-username'     => 'root'
         , 'server-password'     => 'WIxp2sDfRgLMDTL5'
-        , 'defualt-timezone'    => 'America/New_York'
+        , 'default-timezone'    => 'America/New_York'
     );
 
     /**

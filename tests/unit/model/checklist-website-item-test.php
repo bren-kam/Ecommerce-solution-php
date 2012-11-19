@@ -62,7 +62,7 @@ class ChecklistWebsiteItemTest extends BaseDatabaseTest {
 
         // Update
         $this->checklist_website_item->date_checked = $now;
-        $this->checklist_website_item->update();
+        $this->checklist_website_item->save();
 
         // Now check it!
         $date_checked = $this->db->get_var( 'SELECT `date_checked` FROM `checklist_website_items` WHERE `checklist_website_item_id` = ' . (int) $this->checklist_website_item->id );

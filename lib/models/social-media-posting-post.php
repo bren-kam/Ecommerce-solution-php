@@ -11,7 +11,7 @@ class SocialMediaPostingPost extends ActiveRecordBase {
      * Setup the account initial data
      */
     public function __construct() {
-        parent::__construct( 'sm_post' );
+        parent::__construct( 'sm_posting_posts' );
 
         // We want to make sure they match
         if ( isset( $this->sm_posting_post_id ) )
@@ -49,4 +49,15 @@ class SocialMediaPostingPost extends ActiveRecordBase {
 			$statement->query();
 		}
 	}
+
+    /**
+     * Save
+     */
+    public function save() {
+        parent::update( array(
+            'status' => $this->status
+        ), array(
+            'sm_posting_post_id' => $this->id
+        ), 'i', 'i' );
+    }
 }

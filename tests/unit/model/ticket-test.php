@@ -90,7 +90,7 @@ class TicketTest extends BaseDatabaseTest {
 
         // Update test
         $this->ticket->priority = 1;
-        $this->ticket->update();
+        $this->ticket->save();
 
         // Get priority
         $priority = $this->db->get_var( "SELECT `priority` FROM `tickets` WHERE `ticket_id` = $ticket_id" );

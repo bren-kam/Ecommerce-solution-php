@@ -59,7 +59,7 @@ class User extends ActiveRecordBase {
     /**
      * Update the user
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'company_id' => $this->company_id
             , 'email' => $this->email

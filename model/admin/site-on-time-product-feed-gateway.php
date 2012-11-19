@@ -379,7 +379,7 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
 
             /***** UPDATE PRODUCT *****/
 
-			$product->update();
+			$product->save();
 
             // Increment product count
 	        $this->new_product( $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );

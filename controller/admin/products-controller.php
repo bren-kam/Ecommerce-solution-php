@@ -140,7 +140,7 @@ class ProductsController extends BaseController {
             $product->product_specifications = serialize( $product_specs );
 
             // Update the product
-            $product->update();
+            $product->save();
 
             // Delete all the things
             $product->delete_categories();
@@ -525,7 +525,7 @@ class ProductsController extends BaseController {
 
             // Delete the product
             $product->publish_visibility = 'deleted';
-            $product->update();
+            $product->save();
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();

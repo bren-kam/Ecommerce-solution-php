@@ -21,6 +21,12 @@ class TemplateResponse extends Response {
     protected $variables = array( 'title' => '' );
 
     /**
+     * Hold sub path
+     * @var string
+     */
+    protected $sub_path = '';
+
+    /**
      * Pass in which file will be the View
      *
      * @param Resources $resources
@@ -104,6 +110,18 @@ class TemplateResponse extends Response {
     }
 
     /**
+     * Set sub includes (header, footer)
+     *
+     * @param string $sub_path
+     * @return TemplateResponse
+     */
+    public function set_sub_includes( $sub_path ) {
+        $this->sub_path = $sub_path . '/';
+
+        return $this;
+    }
+
+    /**
      * Get Errors
      *
      * @return array
@@ -146,10 +164,10 @@ class TemplateResponse extends Response {
             }
         }
 
-        require VIEW_PATH . 'header.php';
+        require VIEW_PATH . $this->sub_path . 'header.php';
 
         require VIEW_PATH . $this->_file_to_render . '.php';
 
-        require VIEW_PATH . 'footer.php';
+        require VIEW_PATH . $this->sub_path . 'footer.php';
     }
 }

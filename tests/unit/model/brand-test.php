@@ -114,7 +114,7 @@ class BrandTest extends BaseDatabaseTest {
 
         // Update test
         $this->brand->slug = 'dnarb-tset';
-        $this->brand->update();
+        $this->brand->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->brand->id ) );

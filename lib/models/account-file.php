@@ -14,6 +14,20 @@ class AccountFile extends ActiveRecordBase {
     }
 
     /**
+     * Get By Account
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            'SELECT * FROM `website_files` WHERE `website_id` = :account_id'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'AccountFile' );
+    }
+
+    /**
      * Create
      */
     public function create() {

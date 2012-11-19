@@ -93,7 +93,7 @@ class AccountTest extends BaseDatabaseTest {
 
         // Update test
         $this->account->title = 'Piglatin';
-        $this->account->update();
+        $this->account->save();
 
         // Get title
         $title = $this->db->get_var( 'SELECT `title` FROM `websites` WHERE `website_id` = 96' );

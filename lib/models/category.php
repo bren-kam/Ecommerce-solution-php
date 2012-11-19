@@ -162,7 +162,7 @@ class Category extends ActiveRecordBase {
     /**
      * Update a Category
      */
-    public function update() {
+    public function save() {
         // We cannot let this happen
         if ( $this->id == $this->parent_category_id )
             return;

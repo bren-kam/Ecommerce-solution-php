@@ -22,7 +22,13 @@ class Craigslist extends ActiveRecordBase {
         $yesterday->sub( new DateInterval('P1D') );
 
         // Add stats
-        $this->add_stats( $craigslist->get_stats( $yesterday->format('Y-m-d') ), $this->get_customers(), $this->get_all_market_links() );
+        $customers = $this->get_customers();
+        $market_links = $this->get_all_market_links();
+
+        foreach ( $customers as $customer ) {
+            $stats = $craigslist->get_stats( $customer->value, $yesterday->format('Y-m-d') );
+            $this->add_stats( $customer->website_id, $stats, $market_links );
+        }
     }
 
     /**
@@ -113,15 +119,14 @@ class Craigslist extends ActiveRecordBase {
     /**
      * Add Stats
      *
+     * @param int $account_id
      * @param array $stats
-     * @param array $customers
      * @param array $market_links
      */
-    protected function add_stats( array $stats, array $customers, array $market_links ) {
+    protected function add_stats( $account_id, array $stats, array $market_links ) {
         $values = $tag_ids = $dates = array();
 
         foreach ( $stats as $stat ) {
-            $account_id = (int) $customers[$stat->customer_id];
             $craigslist_market_id = (int) $market_links[$stat->market_id];
             $dates[] = $stat->date;
 
@@ -134,7 +139,7 @@ class Craigslist extends ActiveRecordBase {
                 $tag_ids[] = $tag->tag_id;
 
                 // Add Marketing
-                $values[] = "( $account_id, $craigslist_market_id, " . (int) $tag->tag_id . ", " . (int) $tag->unique . ', ' . (int) $tag->views . ', ' . $t->posts . ", ? )";
+                $values[] = "( $account_id, $craigslist_market_id, " . (int) $tag->tag_id . ", " . (int) $tag->unique . ', ' . (int) $tag->views . ', ' . $tag->posts . ", ? )";
             }
         }
 
@@ -159,7 +164,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_all_market_links() {
-        $market_links = $this->db->get_results( "SELECT cml.`craigslist_market_id`, cml.`market_id` FROM `craigslist_market_links` AS cml LEFT JOIN `craigslist_markets` AS cm ON ( cm.`craigslist_market_id` = cml.`craigslist_market_id` ) WHERE cm.`status` = 1", PDO::FETCH_ASSOC );
+        $market_links = $this->get_results( "SELECT cml.`craigslist_market_id`, cml.`market_id` FROM `craigslist_market_links` AS cml LEFT JOIN `craigslist_markets` AS cm ON ( cm.`craigslist_market_id` = cml.`craigslist_market_id` ) WHERE cm.`status` = 1", PDO::FETCH_ASSOC );
 
         return ( $market_links ) ? ar::assign_key( $market_links, 'market_id', true ) : array();
     }
@@ -170,7 +175,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_customers() {
-        return ar::assign_key( $this->db->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", PDO::FETCH_ASSOC ), 'value', true );
+        return $this->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'craigslist-customer-id'", PDO::FETCH_OBJ );
     }
 
     /**
@@ -179,7 +184,7 @@ class Craigslist extends ActiveRecordBase {
      * @return array
      */
     protected function get_unlinked_tags() {
-        return $this->db->get_col( "SELECT ac.`craigslist_tag_id` FROM `analytics_craigslist` AS ac LEFT JOIN `craigslist_tags` AS ct ON ( ct.`craigslist_tag_id` = ac.`craigslist_tag_id` ) WHERE ac.`date` > DATE_SUB( ac.`date`, INTERVAL 30 DAY ) AND ct.`craigslist_tag_id` IS NULL" );
+        return $this->get_col( "SELECT ac.`craigslist_tag_id` FROM `analytics_craigslist` AS ac LEFT JOIN `craigslist_tags` AS ct ON ( ct.`craigslist_tag_id` = ac.`craigslist_tag_id` ) WHERE ac.`date` > DATE_SUB( ac.`date`, INTERVAL 30 DAY ) AND ct.`craigslist_tag_id` IS NULL" );
     }
 
     /**

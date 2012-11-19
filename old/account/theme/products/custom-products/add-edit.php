@@ -192,6 +192,10 @@ get_header();
 						<?php
 						if ( !empty( $p['product_specifications'] ) ) {
 							$specifications = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES, 'UTF-8' ) );
+
+                            if ( !$specifications )
+								$specifications = unserialize( $p['product_specifications'] );
+
 							$new_slugs = 0;
 							
 							if ( is_array( $specifications ) && count( $specifications ) > 0 )

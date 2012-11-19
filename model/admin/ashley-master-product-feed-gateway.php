@@ -7,7 +7,6 @@
  */
 class AshleyMasterProductFeedGateway extends ProductFeedGateway {
     const FTP_URL = 'ftp.ashleyfurniture.com';
-    const IMAGE_URL = 'https://www.ashleydirect.com/graphics/';
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
     const USER_ID = 353; // Ashley
@@ -372,7 +371,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             /***** UPDATE PRODUCT *****/
 
-			$product->update();
+			$product->save();
 
             // Increment product count
 	        $this->new_product( $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );

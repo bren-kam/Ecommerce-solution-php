@@ -6,7 +6,7 @@ class TrumpiaV1 {
 	/**
 	 * Constant paths to include files
 	 */
-	const URL_API = 'http://greysuitmobile.com/rest/v1/';
+	const URL_API = 'http://api.greysuitmobile.com/rest/v1/';
 	const DEBUG = true;
 	
 	/**

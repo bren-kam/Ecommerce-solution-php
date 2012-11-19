@@ -126,7 +126,7 @@ class CategoryTest extends BaseDatabaseTest {
         // Update test
         $this->category->name = 'Cat Test';
         $this->category->slug = 'cat-test';
-        $this->category->update();
+        $this->category->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->category->id ) );

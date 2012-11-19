@@ -165,7 +165,7 @@ class ReportsController extends BaseController {
 
         $report = new Report();
 
-        $where = '';
+        $where = $joins = '';
 
         // Define available services
         $services = array(
@@ -240,7 +240,8 @@ class ReportsController extends BaseController {
                 break;
 
                 case 'marketing_specialist':
-                    $where .= ' AND ( u.`role` = 6 AND u.`user_id` IN( ';
+                    $joins = 'LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = auw.`user_id` )';
+                    $where .= ' AND ( u2.`role` = 6 AND auw.`user_id` IN( ';
 
                     $marketing_specialist_where = '';
 
@@ -291,7 +292,7 @@ class ReportsController extends BaseController {
             $where .= " AND u.`company_id` = " . (int) $this->user->company_id . " ";
 
         // Do the search
-        $accounts = $report->search( $where );
+        $accounts = $report->search( $where, $joins );
 
         // Form HTML
         $html = '';

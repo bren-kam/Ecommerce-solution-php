@@ -161,7 +161,7 @@ class UsersController extends BaseController {
 
             // Update or create the user
             if ( $user_id ) {
-                $user->update();
+                $user->save();
                 $this->notify( _('Your user has been successfully updated!') );
             } else {
                 try {
@@ -333,7 +333,7 @@ class UsersController extends BaseController {
         // Deactivate user
         if ( $user->id && 1 == $user->status ) {
             $user->status = 0;
-            $user->update();
+            $user->save();
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();
