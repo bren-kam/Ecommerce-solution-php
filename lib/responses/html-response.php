@@ -1,5 +1,4 @@
 <?php
-
 class HtmlResponse extends Response {
     protected $html;
 

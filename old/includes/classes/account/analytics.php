@@ -902,29 +902,24 @@ class Analytics extends Base_Class {
 		// Determine what it's supposed to be
 		switch ( $metric ) {
 			case 'bounce_rate':
-				// $sql_select = "ROUND( SUM( `bounces` ) / SUM(`entrances`) * 100, 2 )";
                 $ga_metric = 'entranceBounceRate';
 			break;
 			
 			case 'direct':
-				// $sql_select = "ROUND( SUM( IF( '(none)' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
                 $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==(none)';
 			break;
 			
 			case 'exit_rate':
-				//$sql_select = "ROUND( SUM( `exits` ) / SUM( `page_views` ) * 100, 2 )";
                 $ga_metric = 'exitRate';
 			break;
 				
 			case 'new_visits':
-				//$sql_select = "ROUND( SUM( `new_visits` ) / SUM( `visits` ) * 100, 2 )";
                 $ga_metric = 'percentNewVisits';
 			break;
 			
 			case 'pages_by_visits':
-				//$sql_select = "ROUND( SUM( `page_views` ) / SUM( `visits` ), 2 )";
                 $ga_metric = 'pageviewsPerVisit';
 			break;
 
@@ -933,26 +928,22 @@ class Analytics extends Base_Class {
             break;
 			
 			case 'referring':
-				//$sql_select = "ROUND( SUM( IF( 'referral' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
                 $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==referral';
 			break;
 
 			case 'search_engines':
-				//$sql_select = "ROUND( SUM( IF( 'organic' = `medium`, 1, 0 ) ) / SUM( 1 ) * 100, 2 )";
                 $ga_metric = 'visits';
                 $ga_dimension = 'medium';
                 $ga_filter = 'medium==organic';
 			break;
 
 			case 'time_on_site':
-                //$sql_select = "( SUM( `time_on_page` ) / SUM(`visits`) ) * 1000";
                 $ga_metric = 'avgTimeOnSite';
 			break;
 			
 			case 'time_on_page':
-				//$sql_select = "SUM( `time_on_page` ) / ( SUM( `page_views` ) - SUM( `exits` ) ) * 1000";
                 $ga_metric = 'avgTimeOnPage';
 			break;
 
