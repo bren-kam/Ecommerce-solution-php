@@ -1,5 +1,5 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
 	// Make attributes sortable
 	$("#items-list").sortable({
         forcePlaceholderSize : true

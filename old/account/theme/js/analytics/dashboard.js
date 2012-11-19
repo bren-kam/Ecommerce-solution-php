@@ -3,7 +3,7 @@ jQuery(function($) {
 	decimal = false;
 
     // Load the datepicker
-    head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+    head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
         // Date Picker
         $('#tDateStart, #tDateEnd').datepicker({
             maxDate: -1

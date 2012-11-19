@@ -1,5 +1,5 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
     // Make the form verify that the images is a proper field
 	$('#fAddEditProduct').submit( function() {
 		if ( 'public' == $('#sStatus').val() && ( $('#images-list .image') ).length < 1 ) {
