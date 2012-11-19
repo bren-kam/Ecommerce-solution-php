@@ -171,16 +171,16 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 			$('#tStoreSKU').val( p['store_sku'] );
 			$('#tShipsIn').val( p['ships_in'] );
 			
-			var shipping_type = ( 'Flat Rate' == p['additional_shipping_type'] ) ? 'FlatRate' : 'Percentage';
+			var shipping_type = ( 'Percentage' == p['additional_shipping_type'] ) ? 'Percentage' : 'FlatRate';
 			$( '#rShippingMethod' + shipping_type ).attr( 'checked', true );
-			$( '#tShipping' + shipping_type ).val( p['additional_shipping_amount'] ).css( 'visibility', 'visible' );
-			$( '#tShipping' + ( 'FlatRate' == shipping_type ) ? 'Percentage' : 'FlatRate' ).val('').css( 'visibility', 'hidden' );
-			
-			var protection_type =  ( 'Flat Rate' == p['protection_type'] ) ? 'FlatRate' : 'Percentage';
+            $( '#tShippingPercentage, #tShippingFlatRate' ).val('');
+            $( '#tShipping' + shipping_type ).val( p['additional_shipping_amount'] );
+
+			var protection_type =  ( 'Percentage' == p['protection_type'] ) ? 'Percentage' : 'FlatRate';
 			$( '#rProtectionMethod' + protection_type ).attr( 'checked', true );
-			$( '#tProtection' + protection_type ).val( p['protection_amount'] ).css( 'visibility', 'visible' );
-			$( '#tProtection' + ( 'FlatRate' == protection_type ) ? 'Percentage' : 'FlatRate' ).val('').css( 'visibility', 'hidden' );
-			
+            $( '#tProtectionPercentage, #tProtectionFlatRate' ).val('');
+            $( '#tProtection' + protection_type ).val(  p['protection_amount'] );
+
 			$('#tWholesalePrice').val( p['wholesale_price'] );
 			$('#tWeight').val( p['weight'] );
 			
@@ -209,47 +209,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
         var aMasterCatalog = $('#aMasterCatalog');
         aMasterCatalog.attr( 'href', aMasterCatalog.attr('rel') + productID );
 	});
-	
-	// The Shopping Cart Shipping radio buttons
-	$('#dEditProduct .rb-shipping').change( function() {
-		if( $(this).attr('checked') ) {
-			var value = $(this).val();
-			$('.additional-shipping.selected:first').css( 'visibility', 'hidden' ).removeClass('selected');
 
-			switch( value ) {
-				case 'Flat Rate':
-					$('#tShippingFlatRate').parent().css( 'visibility', 'visible' ).addClass('selected');
-				break;
-				
-				case 'Percentage':
-					$('#tShippingPercentage').parent().css( 'visibility', 'visible' ).addClass('selected');
-				break;
-				
-				default:break;
-			}
-		}
-	});
-	
-	// The Shopping Cart Protection radio buttons
-	$('#dEditProduct .rb-protection').change( function() {
-		if( $(this).attr('checked') ) {
-			var value = $(this).val();
-			$('.protection.selected:first').css( 'visibility', 'hidden' ).removeClass('selected');
-			
-			switch( value ) {
-				case 'Flat Rate':
-					$('#tProtectionFlatRate').parent().css( 'visibility', 'visible' ).addClass('selected');
-				break;
-				
-				case 'Percentage':
-					$('#tProtectionPercentage').parent().css( 'visibility', 'visible' ).addClass('selected');
-				break;
-				
-				default:break;
-			}
-		}
-	});
-	
 	// Make the tabs in Edit Product dialog work
 	$('#dEditProduct .screen-selector').click( function() {
 		if( $(this).hasClass('selected') || 'aMasterCatalog' == $(this).attr('id') )

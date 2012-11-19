@@ -78,7 +78,7 @@ class CompanyTest extends BaseDatabaseTest {
         // Update test
         $this->company->name = 'Mister Hoppers';
         $this->company->domain = 'misterhoppers.com';
-        $this->company->update();
+        $this->company->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->company->id ) );

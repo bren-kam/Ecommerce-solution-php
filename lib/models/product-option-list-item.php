@@ -58,7 +58,7 @@ class ProductOptionListItem extends ActiveRecordBase {
     /**
      * Update an attribute item
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'value' => $this->value
             , 'sequence' => $this->sequence

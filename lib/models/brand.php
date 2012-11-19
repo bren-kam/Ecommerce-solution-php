@@ -91,7 +91,7 @@ class Brand extends ActiveRecordBase {
     /**
      * Update
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'name' => $this->name
             , 'slug' => $this->slug

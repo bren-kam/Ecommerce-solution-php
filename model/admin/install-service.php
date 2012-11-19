@@ -41,7 +41,7 @@ class InstallService {
 
         // Updated website version
         $account->version = 1;
-        $account->update();
+        $account->save();
 
         // Insert pages
         $pages = array(
@@ -85,7 +85,21 @@ class InstallService {
             $account_page->slug = $slug;
             $account_page->title = $page['title'];
             $account_page->content = $page['content'];
-            $account_page->create();
+
+            try {
+                $account_page->create();
+            } catch ( ModelException $e ) {
+                switch ( $e->getCode() ) {
+                    // It's fine if that was the error
+                    case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                    break;
+
+                    default:
+                        // Hopefully this shouldn't happen, but be prepared if it does
+                        die( '<strong>Fatal Error (' . $e->getCode() . '):</strong> ' . $e->getMessage() . "<br /><br />\n\n" . $e->getTraceAsString() );
+                    break;
+                }
+            }
 
             // Need to keep sidebar page
             if ( 'sidebar' == $slug )
@@ -158,7 +172,7 @@ class InstallService {
         // Update theme and logo
         $account->theme = $template_account->theme;
         $account->logo = $template_account->logo;
-        $account->update();
+        $account->save();
 
         // Get FTP Username
         $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
@@ -231,6 +245,31 @@ class InstallService {
             $new_account_page_attachment->meta = $taa->meta;
             $new_account_page_attachment->sequence = $taa->sequence;
             $new_account_page_attachment->create();
+        }
+
+        // Get account files
+        $account_file = new AccountFile();
+        $template_account_files = $account_file->get_by_account( $template_account->id );
+
+        /**
+         * @var AccountFile $taf
+         */
+        if ( !empty( $template_account_files ) )
+        foreach( $template_account_files as $taf ) {
+            // Needs to be a value that we can copy
+			if ( !stristr( $taa->value, 'retailcatalog.us' ) )
+				continue;
+
+            $value = $file->copy_file( $account->id, $taf->file_path, 'websites' );
+
+            if ( !$value )
+                continue;
+
+            // Create the link in website files
+            $account_file = new AccountFile();
+            $account_file->website_id = $account->id;
+            $account_file->file_path = $value;
+            $account_file->create();
         }
 
         // Copy Account industries

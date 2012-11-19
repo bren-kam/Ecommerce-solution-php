@@ -3,6 +3,7 @@
 	<h2><?php echo _('Sidebar'); ?></h2>
 	<a href="/mobile-marketing/" title="<?php echo _('Dashboard'); ?>" class="top<?php if ( isset( $dashboard ) ) echo ' selected'; ?>"><?php echo _('Dashboard'); ?></a>
 
+    <?php /*
 	<a href="/mobile-marketing/messages/add-edit/" title="<?php echo _('Send Message'); ?>" class="top<?php if ( isset( $send_message ) ) echo ' selected'; ?>"><?php echo _('Send Message'); ?></a>
 	<?php if ( isset( $send_message ) ) { ?>
 		<a href="/mobile-marketing/messages/" title="<?php echo _('View Messages'); ?>" class="sub<?php if ( isset( $messages ) ) echo ' selected'; ?>"><?php echo _('View'); ?></a>
@@ -25,16 +26,16 @@
 	<?php if ( isset( $mobile_lists ) ) { ?>
 		<a href="/mobile-marketing/lists/add-edit/" title="<?php echo _('Add Mobile List'); ?>" class="sub<?php if ( isset( $add_edit_mobile_list ) ) echo ' selected'; ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
-
+    */ ?>
 	<a href="/mobile-marketing/website/" class="top<?php if ( isset( $website ) ) echo ' selected"'; ?>" title="<?php echo _('Mobile Website'); ?>"><?php echo _('Mobile Website'); ?></a>
     <?php if ( isset( $website ) ) { ?>
     	<a href="/mobile-marketing/website/" title="<?php echo _('Pages'); ?>" class="sub<?php if ( isset( $website ) ) echo ' selected'; ?>"><?php echo _('Pages'); ?></a>
         <a href="/mobile-marketing/website/add-edit/" class="sub<?php if ( isset( $add_page ) ) echo ' selected'; ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a>
     <?php } ?>
-
+    <!--
     <a href="/mobile-marketing/settings/" class="top<?php if ( isset( $settings ) ) echo ' selected'; ?>" title="<?php echo _('Settings'); ?>"><?php echo _('Settings'); ?></a>
 
-	<!--
+
 	<a href="/mobile-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php if ( isset( $autoresponders ) ) echo ' selected'; ?>"><?php echo _('Autoresponders'); ?></a>
 	<?php if ( isset( $autoresponders ) ) { ?>
 		<a href="/mobile-marketing/autoresponders/" title="<?php echo _('View Autoresponders'); ?>" class="sub<?php if ( isset( $view_autoresponders ) ) echo ' selected'; ?>"><?php echo _('View'); ?></a>

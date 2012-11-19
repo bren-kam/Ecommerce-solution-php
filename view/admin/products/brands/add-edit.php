@@ -50,6 +50,7 @@ if ( $errs )
                     $product_options = array();
 
                     foreach ( $product_options_array as $po ) {
+                        $product_options[$po->id] = $po;
                         $disabled = ( in_array( $po->id, $product_option_ids ) ) ? ' disabled="disabled"' : '';
                     ?>
                         <option value="<?php echo $po->id; ?>"<?php echo $disabled; ?>><?php echo $po->name; ?></option>

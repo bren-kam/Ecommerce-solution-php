@@ -90,7 +90,7 @@ input.login-button {
 
 /* Main Containers */
 #login-logo { text-align: center }
-#login { width: 310px; margin: 0 auto; background-color: #fff;
+#login { width: 310px; margin: 0 auto; background-color: #fff; height: 158px;
     padding: 20px;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;

@@ -119,7 +119,7 @@ class AttributeItem extends ActiveRecordBase {
     /**
      * Update an attribute item
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'attribute_item_name' => $this->name
             , 'sequence' => $this->sequence

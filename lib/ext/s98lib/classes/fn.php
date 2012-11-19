@@ -198,4 +198,13 @@ class fn extends Base_Class {
 		
 		return false;
 	}
+
+    /**
+     * Check if it's an AJAX request
+     *
+     * @return bool
+     */
+    public static function is_ajax() {
+        return isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' == strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] );
+    }
 }

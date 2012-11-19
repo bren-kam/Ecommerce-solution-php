@@ -89,7 +89,7 @@ class BrandsController extends BaseController {
                 }
 
                 if ( $brand_id ) {
-                    $brand->update();
+                    $brand->save();
                     $message = _('Your brand has been successfully updated!' );
 
                     // Delete any relations there may have been

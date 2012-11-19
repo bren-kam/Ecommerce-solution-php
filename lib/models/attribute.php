@@ -44,7 +44,7 @@ class Attribute extends ActiveRecordBase {
     /**
      * Update an attribute
      */
-    public function update() {
+    public function save() {
         parent::update( array(
             'brand_id' => $this->brand_id
             , 'title' => $this->title

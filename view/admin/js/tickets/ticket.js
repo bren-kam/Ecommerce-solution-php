@@ -22,7 +22,8 @@ jQuery(function($) {
     });
 
     // Comments
-	$('#comment').click( function() {
+    var comment = $('#comment');
+	comment.click( function() {
         var value = $(this).val();
 		if ( $(this).attr('tmpval') == value || '' == value ) {
 			$(this).val('').css( 'height', '39px' );
@@ -71,6 +72,15 @@ jQuery(function($) {
     $('#attach').click( function() {
         $('#uploader input:first').click();
     });
+
+    // Make sure it works even if they click on it super fast
+    if ( comment.is(':focus') ) {
+        var value = $(this).val();
+		if ( comment.attr('tmpval') == value || '' == value ) {
+			comment.val('').css( 'height', '39px' );
+			$('#add-comment, #private-wrapper, #attach').show();
+		}
+    }
 });
 
 // Update assigned to

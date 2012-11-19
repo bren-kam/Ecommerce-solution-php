@@ -72,7 +72,7 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
 
         // Update test
         $this->product_option_list_item->value = 'eetseT';
-        $this->product_option_list_item->update();
+        $this->product_option_list_item->save();
 
         // Make sure we have an ID still
         $this->assertTrue( !is_null( $this->product_option_list_item->id ) );

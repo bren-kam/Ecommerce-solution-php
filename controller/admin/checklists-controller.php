@@ -150,7 +150,7 @@ class ChecklistsController extends BaseController {
                     $section->status = 0;
                 }
 
-                $section->update();
+                $section->save();
 
                 // Remove sections
                 unset( $_POST['sections'][$section->checklist_section_id] );
@@ -170,7 +170,7 @@ class ChecklistsController extends BaseController {
                         $item->status = 0;
                     }
 
-                    $item->update();
+                    $item->save();
                 }
             }
 
@@ -334,7 +334,7 @@ class ChecklistsController extends BaseController {
             $checklist_website_item->checked = 0;
         }
 
-        $checklist_website_item->update();
+        $checklist_website_item->save();
 
         // Add jQuery Response
         jQuery('#item-' . $checklist_website_item->id)->toggleClass('done');
@@ -428,7 +428,7 @@ class ChecklistsController extends BaseController {
         // Deactivate user
         if ( $user->id && 1 == $user->status ) {
             $user->status = 0;
-            $user->update();
+            $user->save();
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();

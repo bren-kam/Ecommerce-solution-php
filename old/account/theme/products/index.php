@@ -226,14 +226,14 @@ get_header();
 				<td valign="top"><?php echo _('Additional Shipping'); ?>:</td>
 				<td>
 					<p style="padding-bottom:7px"><input type="radio" class="rb-shipping" name="rShippingMethod" id="rShippingMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tShippingFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="additional-shipping selected">$ <input type="text" class="tb price" name="tShippingFlatRate" id="tShippingFlatRate" maxlength="10" /></span></p>
-					<p><input type="radio" class="rb-shipping" name="rShippingMethod" id="rShippingMethodPercentage" value="Percentage" /> <label for="tShippingPercentage"><?php echo _('Percentage'); ?></label> &nbsp;<span class="additional-shipping" style="visibility:hidden">% <input type="text" class="tb price" name="tShippingPercentage" id="tShippingPercentage" maxlength="10" /></span></p>
+					<p><input type="radio" class="rb-shipping" name="rShippingMethod" id="rShippingMethodPercentage" value="Percentage" /> <label for="tShippingPercentage"><?php echo _('Percentage'); ?></label> &nbsp;% <input type="text" class="tb price" name="tShippingPercentage" id="tShippingPercentage" maxlength="10" /></p>
 				</td>
 			</tr>
 			<tr>
 				<td valign="top"><?php echo _('Protection'); ?>:</td>
 				<td>
-					<p style="padding-bottom:7px"><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tProtectionFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="protection selected">$ <input type="text" class="tb price"name="tProtectionFlatRate" id="tProtectionFlatRate" maxlength="10" /></span></p>
-					<p><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodPercentage" value="Percentage" /> <label for="tProtectionPercentage"><?php echo _('Percentage'); ?></label> &nbsp;<span class="protection" style="visibility:hidden">% <input type="text" class="tb price" name="tProtectionPercentage" id="tProtectionPercentage" maxlength="10" /></span></p>
+					<p style="padding-bottom:7px"><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tProtectionFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="protection selected">$ <input type="text" class="tb price" name="tProtectionFlatRate" id="tProtectionFlatRate" maxlength="10" /></span></p>
+					<p><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodPercentage" value="Percentage" /> <label for="tProtectionPercentage"><?php echo _('Percentage'); ?></label> &nbsp;% <input type="text" class="tb price" name="tProtectionPercentage" id="tProtectionPercentage" maxlength="10" /></p>
 				</td>
 			</tr>
 			<tr>

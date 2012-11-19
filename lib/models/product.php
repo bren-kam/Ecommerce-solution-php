@@ -111,7 +111,7 @@ class Product extends ActiveRecordBase {
     /**
      * Update
      */
-    public function update() {
+    public function save() {
         parent::update(
             array(
                 'brand_id' => $this->brand_id

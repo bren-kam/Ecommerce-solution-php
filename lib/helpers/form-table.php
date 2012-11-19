@@ -268,6 +268,15 @@ abstract class FormTable_Field {
     }
 
     /**
+     * Set Value
+     *
+     * @param string $value
+     */
+    public function set_value( $value ) {
+        $this->value = $value;
+    }
+
+    /**
      * Validation
      *
      * Adds validation to the validator
@@ -678,5 +687,32 @@ class FormTable_Blank extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         return '<tr><td colspan="2">&nbsp;</td></tr>';
+    }
+}
+
+/**
+ * Blank Row
+ */
+class FormTable_Row extends FormTable_Field {
+    /**
+     * Constructor -- Create a row
+     *
+     * @param string $name
+     * @param string $value [optional] the preset value of the field (other than the post)
+     */
+    public function __construct( $name, $value = '' ) {
+        parent::__construct( '', $name, $value );
+
+        $this->type = 'row';
+    }
+
+    /**
+     * Generate HTML
+     *
+     * @param int $count [optional]
+     * @return string
+     */
+    public function generate_html( $count = 0 ) {
+        return '<tr><td>' . $this->name . '</td><td><strong>' . $this->value . '</strong></td></tr>';
     }
 }

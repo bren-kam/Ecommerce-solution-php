@@ -194,7 +194,7 @@ class TicketsController extends BaseController {
         $ticket->priority = $priority;
 
         // Update the ticket
-        $ticket->update();
+        $ticket->save();
 
         // Add links if there are any
         if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
@@ -267,7 +267,7 @@ class TicketsController extends BaseController {
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
         $ticket_comment->user_id = $this->user->user_id;
-        $ticket_comment->comment = nl2br( format::links_to_anchors( format::htmlentities( $_POST['comment'], array('&') ), true, true ) );
+        $ticket_comment->comment = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['comment'] ), array('&') ), true, true ) );
         $ticket_comment->private = (int) isset( $_POST['private'] );
 
         $ticket_comment->create();
@@ -588,7 +588,7 @@ class TicketsController extends BaseController {
         $ticket->assigned_to_user_id = $_POST['auid'];
 
         // Update ticket
-        $ticket->update();
+        $ticket->save();
 
         // Send out email
         $priorities = array(
@@ -642,7 +642,7 @@ class TicketsController extends BaseController {
         $ticket->priority = $_POST['priority'];
 
         // Update ticket
-        $ticket->update();
+        $ticket->save();
 
         return $response;
     }
@@ -671,7 +671,7 @@ class TicketsController extends BaseController {
         $ticket->status = $_POST['status'];
 
         // Update ticket
-        $ticket->update();
+        $ticket->save();
 
         // Mark statistic for updated tickets if it's a GSR user
         if ( 1 == $ticket->status && in_array( $this->user->id, array( 493, 1, 814, 305, 85, 19 ) ) ) {

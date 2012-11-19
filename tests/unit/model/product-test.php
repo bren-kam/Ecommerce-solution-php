@@ -131,7 +131,7 @@ class ProductTest extends BaseDatabaseTest {
 
         // Update test
         $this->product->publish_visibility = 'public';
-        $this->product->update();
+        $this->product->save();
 
         $publish_visibility = $this->db->get_var( "SELECT `publish_visibility` FROM `products` WHERE `product_id` = $product_id" );
 

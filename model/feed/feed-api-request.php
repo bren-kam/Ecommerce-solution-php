@@ -56,6 +56,7 @@ class FeedApiRequest {
 	);
 	protected $logged = false;
 	protected $error = false;
+    protected $feed;
 
 	/**
 	 * Construct class will initiate and run everything
@@ -68,7 +69,9 @@ class FeedApiRequest {
 		// Do we need to debug
 		if( self::DEBUG )
 			error_reporting( E_ALL );
-		
+
+        $this->feed = new Feed();
+
 		// Load everything that needs to be loaded
 		$this->statuses['init'] = true;
 
@@ -158,7 +161,7 @@ class FeedApiRequest {
 		}
 	}
 	
-	/***************(***************/
+	/*******************************/
 	/* START: GSR Feed API Methods */
 	/*******************************/
 
@@ -166,7 +169,10 @@ class FeedApiRequest {
 	 * Get Products
 	 */
 	protected function get_products() {
-        /*
+        // Give them a value no matter what
+        $start_date = $end_date = $starting_point = $limit = NULL;
+
+        /**
          * @param string $start_date (optional)
          * @param string $end_date (optional)
          * @param int $starting_point (optional)
@@ -175,23 +181,7 @@ class FeedApiRequest {
          */
         extract( $this->_get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
 
-        // Use the variables if necessary
-        $where = '';
-
-        if ( isset( $start_date ) && !empty( $start_date ) )
-            $where .= " AND a.`timestamp` >= '" . $this->db->escape( $start_date ) . "'";
-
-        if ( isset( $end_date ) && !empty( $end_date ) )
-            $where .= " AND a.`timestamp` < '" . $this->db->escape( $end_date ) . "'";
-
-        $starting_point = ( isset( $starting_point ) && !empty( $starting_point ) ) ? (int) $starting_point : 0;
-        $limit = ( isset( $limit ) && !empty( $limit ) ) ? (int) $limit : 10000;
-
-        if ( $limit > 10000 )
-            $limit = 10000;
-
-    	$products = $this->db->get_results( "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, a.`date_created`, a.`timestamp`, b.`name` AS industry, GROUP_CONCAT( DISTINCT c.`category_id` ) AS categories, GROUP_CONCAT( DISTINCT d.`image` ) AS images, GROUP_CONCAT( DISTINCT e.`attribute_item_id` ) AS attributes, GROUP_CONCAT( DISTINCT f.`product_group_id` ) AS product_groups FROM `products` AS a LEFT JOIN `industries` AS b ON ( a.`industry_id` = b.`industry_id` ) LEFT JOIN `product_categories` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_images` AS d ON ( a.`product_id` = d.`product_id` ) LEFT JOIN `attribute_item_relations` AS e ON ( a.`product_id` = e.`product_id` ) LEFT JOIN `product_group_relations` AS f ON ( a.`product_id` = f.`product_id` ) WHERE a.`publish_visibility` <> 'deleted' $where GROUP BY a.`product_id` ORDER BY a.`product_id` LIMIT $starting_point, $limit", ARRAY_A );
-
+    	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
 
 		if ( is_array( $products ) )
         foreach ( $products as &$p ) {
@@ -233,23 +223,14 @@ class FeedApiRequest {
 			$products = array();
 		
         $this->add_response( array( 'success' => true, 'message' => 'success-get-products', 'products' => $products ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called. User ID: ' . $user_id, true );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}
 
     /**
      * Get Brands
      */
     protected function get_brands() {
-		$brands = $this->db->get_results( "SELECT * FROM `brands`", ARRAY_A );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to Get Brands', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-to-get-brands' ) );
-			exit;
-		}
-
-        $this->add_response( array( 'success' => true, 'message' => 'success-get-brands', 'brands' => $brands ) );
+        $this->add_response( array( 'success' => true, 'message' => 'success-get-brands', 'brands' => $this->feed->get_brands() ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}
 
@@ -257,16 +238,7 @@ class FeedApiRequest {
      * Get Categories
      */
     protected function get_categories() {
-		$categories = $this->db->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug`, `sequence`, `date_updated` FROM `categories`", ARRAY_A );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to Get Categories', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-to-get-categories' ) );
-			exit;
-		}
-
-        $this->add_response( array( 'success' => true, 'message' => 'success-get-categories', 'categories' => $categories ) );
+        $this->add_response( array( 'success' => true, 'message' => 'success-get-categories', 'categories' => $this->feed->get_categories() ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}
 
@@ -274,16 +246,7 @@ class FeedApiRequest {
      * Get Industries
      */
     protected function get_industries() {
-		$industries = $this->db->get_results( "SELECT * FROM `industries`", ARRAY_A );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to Get Industries', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-to-get-industries' ) );
-			exit;
-		}
-
-        $this->add_response( array( 'success' => true, 'message' => 'success-get-industries', 'industries' => $industries ) );
+        $this->add_response( array( 'success' => true, 'message' => 'success-get-industries', 'industries' => $this->feed->get_industries() ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}
 
@@ -291,25 +254,8 @@ class FeedApiRequest {
      * Get Attributes
      */
     protected function get_attributes() {
-		$attributes = $this->db->get_results( "SELECT a.*, GROUP_CONCAT( b.`category_id` ) AS categories FROM `attributes` AS a LEFT JOIN `attribute_relations` AS b ON ( a.`attribute_id` = b.`attribute_id` ) GROUP BY a.`attribute_id`", ARRAY_A );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to Get Attributes', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-to-get-attributes' ) );
-			exit;
-		}
-
-        $attribute_items = $this->db->get_results( "SELECT * FROM `attribute_items`", ARRAY_A );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to Get Attributes Items', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-to-get-attributes' ) );
-			exit;
-		}
-
-        $attributes = ar::assign_key( $attributes, 'attribute_id' );
+		$attributes = ar::assign_key( $this->feed->get_attributes(), 'attribute_id' );
+        $attribute_items = $this->feed->get_attribute_items();
 
         foreach ( $attribute_items as $ai ) {
             $attributes[$ai['attribute_id']]['items'][] = $ai;
@@ -332,22 +278,13 @@ class FeedApiRequest {
      * Get Product Groups
      */
     protected function get_product_groups() {
-		$product_groups = $this->db->get_results( "SELECT * FROM `product_groups`", ARRAY_A );
-
-		// If there was a MySQL error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to Get Product Groups', __LINE__, __METHOD__ );
-			$this->add_response( array( 'success' => false, 'message' => 'failed-to-get-product-groups' ) );
-			exit;
-		}
-
-        $this->add_response( array( 'success' => true, 'message' => 'success-get-product-groups', 'product_groups' => $product_groups ) );
+        $this->add_response( array( 'success' => true, 'message' => 'success-get-product-groups', 'product_groups' => $this->feed->get_product_groups() ) );
 		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
 	}
 
-	/******************************/
-	/* START: IR Feed API Methods */
-	/******************************/
+	/*****************************/
+	/* END: GSR Feed API Methods */
+	/*****************************/
 
 	/**
 	 * Add a response to be sent
@@ -360,10 +297,8 @@ class FeedApiRequest {
 	protected function add_response( $key, $value = '' ) {
 		if( empty( $value ) && !is_array( $key ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			
-			$this->_err( "Tried to add a response without a valid key and value\nKey: \n----------\n" . fn::info( $key, false ) . "\n----------\n" . $value, __LINE__, __METHOD__ );
 		}
-		
+
 		// Set the response
 		if( is_array( $key ) ) {
 			foreach( $key as $k => $v ) {
@@ -372,7 +307,7 @@ class FeedApiRequest {
 			}
 		} else {
 			// Makes sure there isn't a premade message
-			$this->response[$key] = ( !is_array( $v ) && array_key_exists( $v, $this->messages ) ) ? $this->messages[$v] : $v;
+			$this->response[$key] = ( !is_array( $value ) && array_key_exists( $value, $this->messages ) ) ? $this->messages[$value] : $value;
 		}
 	}
 	
@@ -388,10 +323,11 @@ class FeedApiRequest {
 		// Make sure the arguments are correct
 		if( !is_array( $args ) ) {
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-			$this->_err( "Call to get_parameters with incorrect arguments\nArguments:\n" . fn::info( $args ), __LINE__, __METHOD__ );
-			exit;
+			return array();
 		}
-		
+
+        $parameters = array();
+
 		// Go through each argument
 		foreach( $args as $a ) {
 			// Make sure the argument is set
@@ -417,44 +353,20 @@ class FeedApiRequest {
 	 * @param string $type the type of log entry
 	 * @param string $message message to be put into the log
  	 * @param bool $success whether the call was successful
-	 * @param bool $setlogged (optional) whether to set the logged variable as true
+	 * @param bool $set_logged (optional) whether to set the logged variable as true
 	 */
-	protected function log( $type, $message, $success, $setlogged = true ) { 
+	protected function log( $type, $message, $success, $set_logged = true ) {
 		// Set before hand so that a loop isn't caught in the destructor
-		if( $setlogged )
+		if( $set_logged )
 			$this->logged = true;
 
-		// If it fails to insert, send an email with the information
-		if( !$this->db->insert( 'apilog', array( 'company_id' => $this->company_id, 'type' => $type, 'method' => $this->method, 'message' => $message, 'success' => $success, 'date_created' => dt::date('Y-m-d H:i:s') ), 'isssis' ) ) {
-			$this->_err( "Failed to add entry to log\nType: $type\nMessage:\n$message", __LINE__, __METHOD__ );
-			
-			// Let the client know that something broke
-			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-		}
-	}
-	
-	/**
-	 * Destructor which creates the log and any information that we should know about it
-	 */
-	public function __destruct() {
-		// Make sure we haven't already logged something
-		if( !$this->logged )
-		if( $this->error ) {
-            $message = '';
-
-			foreach( $this->statuses as $status => $value ) {
-				// Set the message status name
-				$message_status = ucwords( str_replace( '_', ' ', $status ) );
-
-				$message .= ( $this->statuses[$status] ) ? "$message_status: True" : "$message_status: False";
-				$message .= "\n";
-			}
-
-			$this->log( 'error', 'Error: ' . $this->error_message . "\n\n" . rtrim( $message, "\n" ), false );
-		} else {
-			$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
-		}
-
-        echo json_encode( $this->response );
+        // Create log entry
+        $api_log = new ApiLog();
+        $api_log->company_id = $this->company_id;
+        $api_log->type = $type;
+        $api_log->method = $this->method;
+        $api_log->message = $message;
+        $api_log->success = $success;
+        $api_log->create();
 	}
 }

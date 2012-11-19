@@ -74,7 +74,7 @@ class CompaniesController extends BaseController {
             $company->email = $_POST['tEmail'];
 
             if ( $company_id ) {
-                $company->update();
+                $company->save();
                 $this->notify( _('The company was successfully updated!') );
             } else {
                 $company->create();
