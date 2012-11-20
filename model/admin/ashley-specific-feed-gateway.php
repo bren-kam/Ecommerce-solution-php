@@ -97,12 +97,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         }
 		
 		// Grab the latest file
-		if( file_exists( $local_folder . $file ) ) {
-			$this->xml = simplexml_load_file( $local_folder . $file );
-		} else {
-			$this->xml = simplexml_load_string( $ftp->ftp_get_contents( $file ) );
-		}
+		if( !file_exists( $local_folder . $file ) )
+			$ftp->get( $file, '', $local_folder );
+			
+		$this->xml = simplexml_load_file( $local_folder . $file );
 
+        // Now remove the file
+        unlink( $local_folder . $file );
+		
         // Declare array
         $packages = $this->get_ashley_packages();
         $skus = $remove_products = $new_product_skus = $all_skus = array();
