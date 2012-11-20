@@ -153,7 +153,7 @@ class image extends Base_Class {
 				imagealphablending( $resized_image, false );
 		   
 				// Create a new transparent color for image
-				$transparent_allocated_color = imagecolorallocatealpha( $resized_image, 0, 0, 0, 127 );
+				$transparent_allocated_color = imagecolorallocatealpha( $resized_image, 255, 255, 255, 127 );
 		   
 				// Completely fill the background of the new image with allocated color.
 				imagefill( $resized_image, 0, 0, $transparent_allocated_color );
