@@ -57,6 +57,9 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
     $('#images-list').sortable({
         forcePlaceholderSize : true
         , placeholder: 'image-placeholder'
+    }).on( 'click', 'a.delete', function() { // Make sure deleting works
+        if ( confirm( $(this).attr('confirm') ) )
+            $(this).parent().parent().remove();
     });
 
     // The 'Add Spec' button
@@ -176,12 +179,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
         // Make it look good
         applyListClasses( list );
-    });
-
-    // Make Images delete work
-    $('#images-list').on( 'click', 'a.delete', function() {
-        if ( confirm( $(this).attr('confirm') ) )
-            $(this).parent().parent().remove();
     });
 
     // Make attribute items delete work
