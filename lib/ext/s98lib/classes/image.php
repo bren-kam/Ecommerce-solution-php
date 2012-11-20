@@ -168,7 +168,7 @@ class image extends Base_Class {
 			$destination_y = ceil( ( $height_constraint - $new_height ) / 2 );
 
             // Determine allocated color -- special ternary operator
-            $allocated_color = isset( $transparent_allocated_color ) ?: imagecolorallocate( $resized_image, 255, 255, 255 );
+            $allocated_color = isset( $transparent_allocated_color ) ? $transparent_allocated_color : imagecolorallocate( $resized_image, 255, 255, 255 );
 
 			imagefilledrectangle( $resized_image, 0, 0, $width_constraint, $height_constraint, $allocated_color );
 		} else {
