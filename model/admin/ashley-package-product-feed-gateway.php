@@ -418,12 +418,25 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                             $name = $item->SeriesName . ' Queen Panel Bedroom Group';
                         break;
 
+                        case '67':
+                            $name = $item->SeriesName . ' Queen Poster Headboard Only Bedroom Group';
+                        break;
+
                         case '71':
                             $name = $item->SeriesName . ' Queen Poster Bedroom Group';
                         break;
 
+                        case '77':
+                            $name = $item->SeriesName . ' Queen Sleigh Bedroom Group';
+                        break;
+
                         case '86':
                             $name = $item->SeriesName . ' Full Panel Bedroom Group';
+                        break;
+
+                        case '87':
+                        case '88':
+                            $name = $item->SeriesName . ' Full Sleigh Bedroom Group';
                         break;
 
                         case '96':
