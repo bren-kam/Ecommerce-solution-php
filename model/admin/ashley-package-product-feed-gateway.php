@@ -350,9 +350,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
 				$name = $item->SeriesName . ' - ' . implode( ', ', $name_pieces );
 			} else {
-				$name = $item->SeriesName . ' ' . $this->names[$template->Descr];
+				$name = $item->SeriesName . ' ' . $this->names[(string)$template->Descr];
 			}
-
+				
             // Will have to format this
             $style_description = trim( (string) $package_series->StyleDescription );
 
@@ -398,31 +398,58 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
                 // Bedroom Groups
                 case 228:
-                    $last_sku = preg_match( '/([0-9]+)S?$/', $sku, $matches );
-
+                    preg_match( '/([0-9]+)S?$/', $sku, $matches );
+					$last_sku = $matches[1];
+                    $add = true;
+					
                     if ( isset( $grouped_packages[(string)$item->SeriesNo][$last_sku] ) )
                         $product->publish_visibility = 'deleted';
 
                     switch ( $last_sku ) {
+                        case '55':
+                            $name = $item->SeriesName . ' Queen Panel Headboard Only Bedroom Group';
+                        break;
+
                         case '57':
                             $name = $item->SeriesName . ' Sleigh Bedroom Group';
-                            $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
+                        break;
+
+                        case '65':
+                            $name = $item->SeriesName . ' Queen Panel Bedroom Group';
+                        break;
+
+                        case '71':
+                            $name = $item->SeriesName . ' Queen Poster Bedroom Group';
+                        break;
+
+                        case '86':
+                            $name = $item->SeriesName . ' Full Panel Bedroom Group';
                         break;
 
                         case '96':
                             $name = $item->SeriesName . ' Panel Bedroom Group';
-                            $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
                         break;
 
                         case '98':
-                            $name = $item->SeriesName . ' Poster Bedroom Group';
-                            $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
+                            $name = $item->SeriesName . ' Queen Poster Bedroom Group';
                         break;
 
-                        default:break;
+                        case '99':
+                            $name = $item->SeriesName . ' King Poster Bedroom Group';
+                        break;
+
+                        default:
+                            $add = false;
+                        break;
                     }
 
+                    if ( $add )
+                        $grouped_packages[(string)$item->SeriesNo][$last_sku] = true;
                 break;
+
+                // Lamps
+				case 194:
+				break;
 
                 default:break;
             }
@@ -528,8 +555,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Send report to everyone else
         if( count( $this->new_products ) > 0 ) {
 			$message = "-----New Products-----" . PHP_EOL . $new_products;
-
-			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
+			//, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com
+			fn::mail( 'kerry@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
 		}
     }
 
