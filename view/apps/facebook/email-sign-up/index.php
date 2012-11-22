@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Current Ad
+ * @page Email Sign Up
  * @package Grey Suit Retail
  *
  * @var int $app_id
@@ -64,15 +64,15 @@
 
             <div id="apps-content" class="clear">
                 <div id="apps-icon">
-                    <img src="https://www.greysuitapps.com/fb/images/icons/ad.png" alt="Ads" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/email-sign-up.png" alt="Email Sign Up" />
                 </div>
                 <div id="apps-desc">
-                    <h1>Current Ad</h1>
-                    <h3>Display your latest promotions and flyers directly on your Facebook page</h3>
+                    <h1>Email Sign Up</h1>
+                    <h3>Collect the names and email addresses from fans who opt-in to your email marketing campaign</h3>
                     <ul>
-                        <li>Showcase your newest print or digital advertising on your Facebook page</li>
-                        <li>Keep your fans up-to-date and highlight your biggest bargains</li>
-                        <li>Log into your dashboard, upload your TV spot, direct mail and latest flyer and showoff your super savings</li>
+                        <li>Build up a database of thousands of subscribers</li>
+                        <li>Send timely, targeted email blasts and get in front of your competition</li>
+                        <li>Blast your latest promotions and advertisements to your legion of subscribers</li>
                     </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
                     <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=<?php echo $app_id; ?>&pages=1'" title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
