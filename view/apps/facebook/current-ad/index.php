@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Contact Us
+ * @page Current Ad
  * @package Grey Suit Retail
  *
  * @var int $app_id
@@ -64,15 +64,16 @@
 
             <div id="apps-content" class="clear">
                 <div id="apps-icon">
-                    <img src="https://www.greysuitapps.com/fb/images/icons/contact.png" alt="Contact Us" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/ad.png" alt="Ads" />
                 </div>
                 <div id="apps-desc">
-                    <h1>Contact Us</h1>
-                    <h3>Conveniently display store address, phone number and hours right on your Facebook page</h3>
-                    <ul>
-                        <li>Fans will never leave your Facebook page to find your vital contact information</li>
-                        <li>Comes complete with a Google map that your fans can interact with directly</li>
-                    </ul>
+                    <h1>Current Ad</h1>
+	                    <h3>Display your latest promotions and flyers directly on your Facebook page</h3>
+	                    <ul>
+	                        <li>Showcase your newest print or digital advertising on your Facebook page</li>
+	                        <li>Keep your fans up-to-date and highlight your biggest bargains</li>
+	                        <li>Log into your dashboard, upload your TV spot, direct mail and latest flyer and showoff your super savings</li>
+	                    </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
                     <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=<?php echo $app_id; ?>&pages=1'" title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
                     <p class="sml-text">gives you access to ALL apps</p>
@@ -86,7 +87,7 @@
     <?php } else { ?>
     </div> <!-- end #header -->
     <div id="content">
-        <form name="fConnect" id="fConnect" method="post" action="/facebook/contact-us/">
+        <form name="fConnect" id="fConnect" method="post" action="/facebook/current-ad/">
             <table cellpadding="0" cellspacing="0">
                 <tr>
                     <td width="220" class="align-right"><strong><?php echo _('Website'); ?>:</strong></td>

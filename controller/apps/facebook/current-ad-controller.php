@@ -1,8 +1,8 @@
 <?php
-class AboutUsController extends BaseController {
-    const APP_ID = '233746136649331';
-    const APP_SECRET = '298bb76cda7b2c964e0bf752cf239799';
-    const APP_URI = 'op-about-us';
+class CurrentAdController extends BaseController {
+    const APP_ID = '186618394735117';
+    const APP_SECRET = 'd4cbf0c45ed772cf1ca0d98e0adb1383';
+    const APP_URI = 'current-ad';
 
     /**
      * FB Class
@@ -19,7 +19,7 @@ class AboutUsController extends BaseController {
         parent::__construct();
 
         $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
-        $this->section = _('About Us');
+        $this->section = _('Current Ad');
     }
 
     /**
@@ -34,7 +34,7 @@ class AboutUsController extends BaseController {
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
             // Instantiate App
-            $about_us = new AboutUs();
+            $contact_us = new ContactUs();
 
             // Get App Data
             $app_data = url::decode( $_REQUEST['app_data'] );
@@ -42,13 +42,13 @@ class AboutUsController extends BaseController {
             $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 
             if ( $page_id ) {
-                $website = $about_us->get_connected_website( $page_id );
+                $website = $contact_us->get_connected_website( $page_id );
                 $website_title = $website->title;
             } else {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fAboutUs' );
+            $form = new FormTable( 'fContactUs' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 
@@ -59,15 +59,15 @@ class AboutUsController extends BaseController {
 
             // Make sure it's a valid request
             if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
-                $about_us->connect( $page_id, $_POST['tFBConnectionKey'] );
+                $contact_us->connect( $page_id, $_POST['tFBConnectionKey'] );
 
-                $website = $about_us->get_connected_website( $page_id );
+                $website = $contact_us->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
                 $success = true;
             }
         }
 
-        $response = $this->get_template_response( 'facebook/about-us/index', 'Connect' );
+        $response = $this->get_template_response( 'facebook/contact-us/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
             ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
@@ -82,9 +82,9 @@ class AboutUsController extends BaseController {
      */
     public function tab() {
         // Setup variables
-        $about_us = new AboutUs;
+        $contact_us = new ContactUs;
         $signed_request = $this->fb->getSignedRequest();
-        $tab = $about_us->get_tab( $signed_request['page']['id'] );
+        $tab = $contact_us->get_tab( $signed_request['page']['id'] );
 
         // If it's secured, make the images secure
         if ( security::is_ssl() )
@@ -96,14 +96,14 @@ class AboutUsController extends BaseController {
             $admin .= url::add_query_arg(
                 'app_data'
                 , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
-                , 'http://apps.facebook.com/op-about-us/'
+                , 'http://apps.facebook.com/op-contact-us/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
 
             $tab = $admin . $tab;
         }
 
-        $response = $this->get_template_response( 'facebook/about-us/tab' );
+        $response = $this->get_template_response( 'facebook/contact-us/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )
             ->set( compact( 'tab' ) );
@@ -122,7 +122,7 @@ class AboutUsController extends BaseController {
         return new RedirectResponse( url::add_query_arg(
             'app_data'
             , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
-            , '/facebook/about-us/'
+            , '/facebook/current-ad/'
         ) );
     }
 }

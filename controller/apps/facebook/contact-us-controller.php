@@ -29,6 +29,7 @@ class ContactUsController extends BaseController {
      */
     protected function index() {
         $form = new stdClass();
+        $success = $website = false;
 
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
@@ -62,13 +63,14 @@ class ContactUsController extends BaseController {
 
                 $website = $contact_us->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
+                $success = true;
             }
         }
 
         $response = $this->get_template_response( 'facebook/contact-us/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
-            ->set( array( 'form' => $form, 'app_id' => self::APP_ID ) );
+            ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
 
         return $response;
     }
