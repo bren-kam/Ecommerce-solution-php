@@ -34,7 +34,7 @@ class CurrentAdController extends BaseController {
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
             // Instantiate App
-            $contact_us = new ContactUs();
+            $current_ad = new CurrentAd();
 
             // Get App Data
             $app_data = url::decode( $_REQUEST['app_data'] );
@@ -42,13 +42,13 @@ class CurrentAdController extends BaseController {
             $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 
             if ( $page_id ) {
-                $website = $contact_us->get_connected_website( $page_id );
+                $website = $current_ad->get_connected_website( $page_id );
                 $website_title = $website->title;
             } else {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fContactUs' );
+            $form = new FormTable( 'fCurrentAd' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 
@@ -59,15 +59,15 @@ class CurrentAdController extends BaseController {
 
             // Make sure it's a valid request
             if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
-                $contact_us->connect( $page_id, $_POST['tFBConnectionKey'] );
+                $current_ad->connect( $page_id, $_POST['tFBConnectionKey'] );
 
-                $website = $contact_us->get_connected_website( $page_id );
+                $website = $current_ad->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
                 $success = true;
             }
         }
 
-        $response = $this->get_template_response( 'facebook/contact-us/index', 'Connect' );
+        $response = $this->get_template_response( 'facebook/current-ad/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
             ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
@@ -82,9 +82,30 @@ class CurrentAdController extends BaseController {
      */
     public function tab() {
         // Setup variables
-        $contact_us = new ContactUs;
+        $current_ad = new CurrentAd;
         $signed_request = $this->fb->getSignedRequest();
-        $tab = $contact_us->get_tab( $signed_request['page']['id'] );
+
+        $v = new Validator();
+        $v->form_name = 'fSignUp';
+        $v->add_validation( 'tName', 'req', 'The "Name" field is required' );
+        $v->add_validation( 'tName', '!val=Name:', 'The "Name" field is required' );
+
+        $v->add_validation( 'tEmail', 'req', 'The "Email" field is required' );
+        $v->add_validation( 'tEmail', '!val=Email:', 'The "Email" field is required' );
+        $v->add_validation( 'tEmail', 'email', 'The "Email" field must contain a valid email' );
+
+        $success = false;
+
+        if ( nonce::verify( $_POST['_nonce'], 'sign-up' ) ) {
+            $errs = $v->validate();
+
+            // Insert email into the default category
+            if( empty( $errs ) )
+                $success = $current_ad->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+        }
+
+        $tab = $current_ad->get_tab( $signed_request['page']['id'], $success );
+        $tab .= $v->js_validation();
 
         // If it's secured, make the images secure
         if ( security::is_ssl() )
@@ -96,14 +117,14 @@ class CurrentAdController extends BaseController {
             $admin .= url::add_query_arg(
                 'app_data'
                 , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
-                , 'http://apps.facebook.com/op-contact-us/'
+                , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
 
             $tab = $admin . $tab;
         }
 
-        $response = $this->get_template_response( 'facebook/contact-us/tab' );
+        $response = $this->get_template_response( 'facebook/current-ad/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )
             ->set( compact( 'tab' ) );

@@ -96,7 +96,7 @@ class AboutUsController extends BaseController {
             $admin .= url::add_query_arg(
                 'app_data'
                 , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
-                , 'http://apps.facebook.com/op-about-us/'
+                , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
 
