@@ -85,27 +85,30 @@ class EmailSignUpController extends BaseController {
         $email_sign_up = new EmailSignUp;
         $signed_request = $this->fb->getSignedRequest();
 
-        $v = new Validator();
-        $v->form_name = 'fSignUp';
-        $v->add_validation( 'tName', 'req', 'The "Name" field is required' );
-        $v->add_validation( 'tName', '!val=Name:', 'The "Name" field is required' );
 
-        $v->add_validation( 'tEmail', 'req', 'The "Email" field is required' );
-        $v->add_validation( 'tEmail', '!val=Email:', 'The "Email" field is required' );
-        $v->add_validation( 'tEmail', 'email', 'The "Email" field must contain a valid email' );
+        $form = new FormTable( 'fSignUp' );
+
+        $form->add_field( 'text', 'Name', 'tName' )
+            ->add_validation( 'req', 'The "Name" field is required' )
+            ->add_validation( '!val=Name:', 'The "Name" field is required' );
+
+        $form->add_field( 'text', 'Email', 'tEmail' )
+            ->add_validation( 'req', 'The "Email" field is required' )
+            ->add_validation( '!val=Email:', 'The "Email" field is required' )
+            ->add_validation( 'email', 'The "Email" field must contain a valid email' );
+
+        $form->add_field( 'hidden', 'signed_request', $_REQUEST['signed_request'] );
 
         $success = false;
 
-        if ( nonce::verify( $_POST['_nonce'], 'sign-up' ) ) {
-            $errs = $v->validate();
+        if ( $form->posted() )
+            $success = $email_sign_up->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
 
-            // Insert email into the default category
-            if( empty( $errs ) )
-                $success = $email_sign_up->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
-        }
+        $tab = $email_sign_up->get_tab( $signed_request['page']['id'] );
+        $tab .= $form->generate_form();
 
-        $tab = $email_sign_up->get_tab( $signed_request['page']['id'], $success );
-        $tab .= $v->js_validation();
+        if ( $success )
+            $tab = '<p>Your have been successfully added to our email list!</p>' . $tab;
 
         // If it's secured, make the images secure
         if ( security::is_ssl() )
