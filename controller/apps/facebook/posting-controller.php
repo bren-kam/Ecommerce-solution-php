@@ -1,8 +1,8 @@
 <?php
-class AboutUsController extends BaseController {
-    const APP_ID = '233746136649331';
-    const APP_SECRET = '298bb76cda7b2c964e0bf752cf239799';
-    const APP_URI = 'op-about-us';
+class PostingController extends BaseController {
+    const APP_ID = '268649406514419';
+    const APP_SECRET = '6ca6df4c7e9d909a58d95ce7360adbf3';
+    const APP_URI = 'op-posting';
 
     /**
      * FB Class
@@ -18,8 +18,8 @@ class AboutUsController extends BaseController {
         // Pass in the base for all the views
         parent::__construct();
 
-        $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
-        $this->section = _('About Us');
+        $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
+        $this->section = _('Posting');
     }
 
     /**
@@ -34,7 +34,7 @@ class AboutUsController extends BaseController {
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
             // Instantiate App
-            $about_us = new AboutUs();
+            $facebook_site = new FacebookSite();
 
             // Get App Data
             $app_data = url::decode( $_REQUEST['app_data'] );
@@ -42,13 +42,13 @@ class AboutUsController extends BaseController {
             $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 
             if ( $page_id ) {
-                $website = $about_us->get_connected_website( $page_id );
+                $website = $facebook_site->get_connected_website( $page_id );
                 $website_title = $website->title;
             } else {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fAboutUs' );
+            $form = new FormTable( 'fFacebookSite' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 
@@ -59,61 +59,21 @@ class AboutUsController extends BaseController {
 
             // Make sure it's a valid request
             if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
-                $about_us->connect( $page_id, $_POST['tFBConnectionKey'] );
+                $facebook_site->connect( $page_id, $_POST['tFBConnectionKey'] );
 
-                $website = $about_us->get_connected_website( $page_id );
+                $website = $facebook_site->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
                 $success = true;
             }
-
-            // Get the string
-            $form = $form->generate_form();
         }
 
-        $response = $this->get_template_response( 'facebook/about-us/index', 'Connect' );
+        $response = $this->get_template_response( 'facebook/facebook-site/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
             ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
 
         return $response;
     }
-
-    /**
-     * Show the tab
-     *
-     * @return TemplateResponse
-     */
-    public function tab() {
-        // Setup variables
-        $about_us = new AboutUs;
-        $signed_request = $this->fb->getSignedRequest();
-        $tab = $about_us->get_tab( $signed_request['page']['id'] );
-
-        // If it's secured, make the images secure
-        if ( security::is_ssl() )
-            $tab = ( stristr( $tab, 'websites.retailcatalog.us' ) ) ? preg_replace( '/(?<=src=")(http:\/\/)/i', 'https://s3.amazonaws.com/', $tab ) : preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab );
-
-        // Add Admin URL
-        if( $signed_request['page']['admin'] ) {
-            $admin = '<p><strong>Admin:</strong> <a href="#" onclick="top.location.href=' . "'";
-            $admin .= url::add_query_arg(
-                'app_data'
-                , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
-                , 'http://apps.facebook.com/' . self::APP_URI . '/'
-            );
-            $admin .= "'" . ';">Update Settings</a></p>';
-
-            $tab = $admin . $tab;
-        }
-
-        $response = $this->get_template_response( 'facebook/about-us/tab' );
-        $response
-            ->set_sub_includes( 'facebook/tabs' )
-            ->set( compact( 'tab' ) );
-
-        return $response;
-    }
-
 
     /**
      * Settings
@@ -125,7 +85,7 @@ class AboutUsController extends BaseController {
         return new RedirectResponse( url::add_query_arg(
             'app_data'
             , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
-            , '/facebook/about-us/'
+            , '/facebook/posting/'
         ) );
     }
 }

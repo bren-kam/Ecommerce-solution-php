@@ -65,6 +65,9 @@ class EmailSignUpController extends BaseController {
                 $website_row->set_value( $website->title );
                 $success = true;
             }
+
+            // Get the string
+            $form = $form->generate_form();
         }
 
         $response = $this->get_template_response( 'facebook/email-sign-up/index', 'Connect' );

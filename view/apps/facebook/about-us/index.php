@@ -6,6 +6,7 @@
  * @var int $app_id
  * @var bool $success
  * @var array $website
+ * @var string $form
  */
 ?>
 
@@ -86,25 +87,9 @@
 <?php } else { ?>
 </div>
 <div id="content">
-    <form name="fConnect" id="fConnect" method="post" action="/facebook/about-us/">
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <td width="220" class="align-right"><strong><?php echo _('Website'); ?>:</strong></td>
-                <td><?php echo ( $website ) ? $website['title'] : 'N/A'; ?></td>
-            </tr>
-            <tr>
-                <td class="align-right"><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
-                <td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="<?php echo ( $website ) ? $website['key'] : ''; ?>" /> <strong><?php echo ( $website ) ? '<span class="success">(' . _('Connected') . ')</span>' : '<span class="error">(' . _('Not Connected') . ')</span>'; ?></strong></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
-            </tr>
-        </table>
-        <input type="hidden" name="app_data" value="<?php echo $_REQUEST['app_data']; ?>" />
-        <?php nonce::field('connect-to-field'); ?>
-    </form>
-<?php } ?>
+    <?php echo $form;
+}
+?>
 </div>  <!-- #content -->
 
 <div id="fb-root"></div>
