@@ -1,8 +1,8 @@
 <?php
-class FanOfferController extends BaseController {
-    const APP_ID = '165348580198324';
-    const APP_SECRET = 'dbd93974b5b4ee0c48ae34cb3aab9c4a';
-    const APP_URI = 'op-fan-offer';
+class ShareAndSaveController extends BaseController {
+    const APP_ID = '118945651530886';
+    const APP_SECRET = 'ef922d64f1f526079f48e0e0efa47fb7';
+    const APP_URI = 'share-and-save';
 
     /**
      * FB Class
@@ -19,11 +19,11 @@ class FanOfferController extends BaseController {
         parent::__construct();
 
         $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
-        $this->section = _('Fan Offer');
+        $this->section = _('Share and Save');
     }
 
     /**
-     * Fan Offer
+     * Share and Save
      *
      * @return TemplateResponse
      */
@@ -34,7 +34,7 @@ class FanOfferController extends BaseController {
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
             // Instantiate App
-            $fan_offer = new FanOffer();
+            $share_and_save = new ShareAndSave();
 
             // Get App Data
             $app_data = url::decode( $_REQUEST['app_data'] );
@@ -42,13 +42,13 @@ class FanOfferController extends BaseController {
             $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 
             if ( $page_id ) {
-                $website = $fan_offer->get_connected_website( $page_id );
+                $website = $share_and_save->get_connected_website( $page_id );
                 $website_title = $website->title;
             } else {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fFanOffer' );
+            $form = new FormTable( 'fShareAndSave' );
             $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
@@ -60,9 +60,9 @@ class FanOfferController extends BaseController {
 
             // Make sure it's a valid request
             if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
-                $fan_offer->connect( $page_id, $_POST['tFBConnectionKey'] );
+                $share_and_save->connect( $page_id, $_POST['tFBConnectionKey'] );
 
-                $website = $fan_offer->get_connected_website( $page_id );
+                $website = $share_and_save->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
                 $success = true;
             }
@@ -71,7 +71,7 @@ class FanOfferController extends BaseController {
             $form = $form->generate_form();
         }
 
-        $response = $this->get_template_response( 'facebook/fan-offer/index', 'Connect' );
+        $response = $this->get_template_response( 'facebook/share-and-save/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
             ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
@@ -86,10 +86,10 @@ class FanOfferController extends BaseController {
      */
     public function tab() {
         // Setup variables
-        $fan_offer = new FanOffer;
+        $share_and_save = new ShareAndSave;
         $signed_request = $this->fb->getSignedRequest();
 
-        $tab = $fan_offer->get_tab( $signed_request['page']['id'], $signed_request['page']['liked'] );
+        $tab = $share_and_save->get_tab( $signed_request['page']['id'], $signed_request['page']['liked'] );
 
         // If it's secured, make the images secure
         if ( security::is_ssl() )
@@ -111,7 +111,7 @@ class FanOfferController extends BaseController {
         $success = false;
 
         if ( $form->posted() )
-            $success = $fan_offer->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+            $success = $share_and_save->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
 
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {
@@ -126,11 +126,11 @@ class FanOfferController extends BaseController {
             $tab->content = $admin . $tab->content;
         }
 
-        $response = $this->get_template_response( 'facebook/fan-offer/tab' );
+        $response = $this->get_template_response( 'facebook/share-and-save/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )
             ->set( array(
-                'fan_offer' => $tab
+                'share_and_save' => $tab
                 , 'success' => $success
                 , 'form' => $form->generate_form()
                 , 'signed_request' => $signed_request
@@ -151,7 +151,7 @@ class FanOfferController extends BaseController {
         return new RedirectResponse( url::add_query_arg(
             'app_data'
             , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
-            , '/facebook/fan-offer/'
+            , '/facebook/share-and-save/'
         ) );
     }
 }

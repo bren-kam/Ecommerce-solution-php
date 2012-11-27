@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Contact Us
+ * @page Products
  * @package Grey Suit Retail
  *
  * @var string $tab
