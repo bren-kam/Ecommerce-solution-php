@@ -25,7 +25,7 @@ class AboutUsController extends BaseController {
     /**
      * About Us
      *
-     * @return JsonResponse
+     * @return TemplateResponse
      */
     protected function index() {
         $form = new stdClass();
@@ -49,6 +49,7 @@ class AboutUsController extends BaseController {
             }
 
             $form = new FormTable( 'fAboutUs' );
+            $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 

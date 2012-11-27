@@ -23,9 +23,9 @@ class ContactUsController extends BaseController {
     }
 
     /**
-     * About Us
+     * Contact Us
      *
-     * @return JsonResponse
+     * @return TemplateResponse
      */
     protected function index() {
         $form = new stdClass();
@@ -49,6 +49,7 @@ class ContactUsController extends BaseController {
             }
 
             $form = new FormTable( 'fContactUs' );
+            $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 

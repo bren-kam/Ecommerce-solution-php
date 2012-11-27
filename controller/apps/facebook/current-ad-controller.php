@@ -23,9 +23,9 @@ class CurrentAdController extends BaseController {
     }
 
     /**
-     * About Us
+     * Current Ad
      *
-     * @return JsonResponse
+     * @return TemplateResponse
      */
     protected function index() {
         $form = new stdClass();
@@ -49,6 +49,7 @@ class CurrentAdController extends BaseController {
             }
 
             $form = new FormTable( 'fCurrentAd' );
+            $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 

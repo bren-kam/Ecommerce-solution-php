@@ -23,9 +23,9 @@ class EmailSignUpController extends BaseController {
     }
 
     /**
-     * About Us
+     * Email Sign Up
      *
-     * @return JsonResponse
+     * @return TemplateResponse
      */
     protected function index() {
         $form = new stdClass();
@@ -49,6 +49,7 @@ class EmailSignUpController extends BaseController {
             }
 
             $form = new FormTable( 'fEmailSignUp' );
+            $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 

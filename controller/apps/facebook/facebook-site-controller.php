@@ -23,9 +23,9 @@ class FacebookSiteController extends BaseController {
     }
 
     /**
-     * About Us
+     * Facebook Site
      *
-     * @return JsonResponse
+     * @return TemplateResponse
      */
     protected function index() {
         $form = new stdClass();
@@ -49,6 +49,7 @@ class FacebookSiteController extends BaseController {
             }
 
             $form = new FormTable( 'fFacebookSite' );
+            $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 

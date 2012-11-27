@@ -7,7 +7,7 @@ class PostingController extends BaseController {
     /**
      * FB Class
      *
-     * @var FB $fb;
+     * @var FB $fb
      */
     protected $fb;
 
@@ -23,54 +23,78 @@ class PostingController extends BaseController {
     }
 
     /**
-     * About Us
+     * Posting
      *
-     * @return JsonResponse
+     * @return TemplateResponse|HtmlResponse
      */
     protected function index() {
-        $form = new stdClass();
-        $success = $website = false;
+        $success = false;
+        $options = array();
+        $posting = new Posting();
 
-        // Make sure they are validly editing the app
-        if ( isset( $_REQUEST['app_data'] ) ) {
-            // Instantiate App
-            $facebook_site = new FacebookSite();
+        // For auto-reconnecting to the posting app
+        if ( isset( $_REQUEST["code"] ) ) {
+            $token_url = url::add_query_arg( array(
+                    'client_id' => self::APP_ID
+                    , 'redirect_uri' => url::add_query_arg( array(
+                        'fb_page_id' => $_REQUEST['fb_page_id']
+                        , 'gsr_redirect' => $_REQUEST['gsr_redirect']
+                    ), 'http://apps.facebook.com/' . self::APP_URI . '/'
+                )
+                , 'client_secret' => self::APP_SECRET
+                , 'code' => $_REQUEST['code']
+                , 'display' => 'popup'
+            ), 'https://graph.facebook.com/oauth/access_token' );
 
-            // Get App Data
-            $app_data = url::decode( $_REQUEST['app_data'] );
-            $other_user_id = security::decrypt( $app_data['uid'], 'SecREt-Us3r!' );
-            $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
+            $response = file_get_contents( $token_url );
+            $params = null;
+            parse_str( $response, $params );
 
-            if ( $page_id ) {
-                $website = $facebook_site->get_connected_website( $page_id );
-                $website_title = $website->title;
-            } else {
-                $website_title = 'N/A';
-            }
+            $this->fb->setAccessToken( $params['access_token'] );
+            $this->fb->setExtendedAccessToken();
+            $posting->update_access_token( $this->fb->user_id, $this->fb->getAccessToken(), $_REQUEST['fb_page_id'] );
 
-            $form = new FormTable( 'fFacebookSite' );
-
-            $website_row = $form->add_field( 'row', _('Website'), $website_title );
-
-            $form->add_field( 'text', _('Facebook Connection Key'), 'tFBConnectionKey' )
-                ->add_validation( 'req', _('The "Facebook Connection Key" field is required') );
-
-            $form->add_field( 'hidden', 'app_data', $_REQUEST['app_data'] );
-
-            // Make sure it's a valid request
-            if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
-                $facebook_site->connect( $page_id, $_POST['tFBConnectionKey'] );
-
-                $website = $facebook_site->get_connected_website( $page_id );
-                $website_row->set_value( $website->title );
-                $success = true;
-            }
+            return new HtmlResponse("<script>top.location.href='" . $_REQUEST['gsr_redirect'] . "'</script>");
         }
 
-        $response = $this->get_template_response( 'facebook/facebook-site/index', 'Connect' );
+        $form = new FormTable( 'fFacebookSite' );
+        $form->submit( 'Connect' );
+
+        $form->add_field( 'text', _('Facebook Connection Key'), 'tFBConnectionKey' )
+            ->add_validation( 'req', _('The "Facebook Connection Key" field is required') );
+
+        // Make sure it's a valid request
+        if ( $form->posted() ) {
+            $this->fb->setExtendedAccessToken();
+            $success = $posting->connect( $this->fb->user_id, $_POST['sFBPageID'], $this->fb->getAccessToken(), $_POST['tFBConnectionKey'] );
+        }
+
+        // See if we're connected
+        $connected = $posting->connected( $this->fb->user_id );
+
+        // Connected pages
+        $pages = ( $connected ) ? $posting->get_connected_pages( $this->fb->user_id ) : array();
+
+        // Get the accounts of the user
+        $accounts = $this->fb->api( "/$this->fb->user_id/accounts" );
+
+        // Get a list of the pages they have available
+        if ( is_array( $accounts['data'] ) )
+        foreach ( $accounts['data'] as $page ) {
+            if ( 'Application' == $page['category'] || in_array( $page['id'], $pages ) )
+                continue;
+
+            $options[$page['id']] = $page['name'];
+        }
+
+        // Add the last field (didn't have validation so it can be after the posting)
+        $form->add_field( 'select', 'Facebook Page', 'sFBPageID' );
+
+        // Get template response
+        $response = $this->get_template_response( 'facebook/posting/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
-            ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
+            ->set( array( 'form' => $form->generate_form(), 'app_id' => self::APP_ID, 'success' => $success, 'connected' => $connected, 'pages' => $pages ) );
 
         return $response;
     }

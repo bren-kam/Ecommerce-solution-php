@@ -43,26 +43,35 @@ class Posting extends ActiveRecordBase {
 
     /**
      * Connect
+     *
+     * @param int $fb_user_id
+     * @param int $fb_page_id
+     * @param string $access_token
+     * @param string $key
      */
-    public function connect() {
+    public function connect( $fb_user_id, $fb_page_id, $access_token, $key ) {
         parent::update( array(
-            'fb_user_id' => $this->fb_user_id
-            , 'fb_page_id' => $this->fb_page_id
-            , 'access_token' => $this->access_token
+            'fb_user_id' => $fb_user_id
+            , 'fb_page_id' => $fb_page_id
+            , 'access_token' => $access_token
         ), array(
-            'key' => $this->key
+            'key' => $key
         ), 'iis', 's' );
     }
 
     /**
      * Update Token
+     *
+     * @param int $fb_user_id
+     * @param string $access_token
+     * @param int $fb_page_id
      */
-    public function update_token() {
+    public function update_access_token( $fb_user_id, $access_token, $fb_page_id ) {
         parent::update( array(
-            'fb_user_id' => $this->fb_user_id
-            , 'access_token' => $this->access_token
+            'fb_user_id' => $fb_user_id
+            , 'access_token' => $access_token
         ), array(
-            'fb_page_id' => $this->fb_page_id
+            'fb_page_id' => $fb_page_id
         ), 'is', 'i' );
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Posting
+ * @page Products
  * @package Grey Suit Retail
  *
  * @var int $app_id
@@ -65,18 +65,19 @@
 
             <div id="apps-content" class="clear">
                 <div id="apps-icon">
-                    <img src="https://www.greysuitapps.com/fb/images/icons/posting.png" alt="Posting" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/products.png" alt="Products" />
                 </div>
                 <div id="apps-desc">
-                    <h1>Posting</h1>
-                    <h3>Stop logging into your Facebook page to add a post every single day with our Posting Service app</h3>
+                    <h1>Products</h1>
+                    <h3>Let your fans browse your awesome product catalog with our Products app</h3>
                     <ul>
-                        <li>Log into your dashboard and pick a time, date, then add your post and presto, your post will update like clockwork</li>
-                        <li>Schedule your daily posts up to six months in advance</li>
-                        <li>View your scheduled posts and even look at previous posts</li>
-                        <li>Take the time out of daily posting to do what you do best, making money</li>
+                        <li>Showcase your product inventory right on your Facebook page</li>
+                        <li>Comes complete with gorgeous product photos and categories</li>
+                        <li>Log into you dashboard, add products and give your customers one more way shop your products right on your Facebook page</li>
                     </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
+                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=<?php echo $app_id; ?>&pages=1'" title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
+                    <p class="sml-text">gives you access to ALL apps</p>
                 </div>
             </div>
         </div><!-- #apps-container .clear -->
@@ -87,15 +88,10 @@
     <?php } else { ?>
     </div> <!-- end #header -->
     <div id="content">
-        <?php if( $connected ) { ?>
-            <p class="success">You are connected!</p>
-            <p>You can now sign into your dashboard to control the posting to your pages.</p>
-
-            <br /><br />
-            <p>You can connect another account with a different Facebook Connection Key.</p>
-        <?php }
+        <?php
         echo $form;
-    } ?>
+    }
+    ?>
 </div>
 
 <div id="fb-root"></div>
