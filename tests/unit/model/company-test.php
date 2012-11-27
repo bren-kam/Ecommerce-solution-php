@@ -70,7 +70,7 @@ class CompanyTest extends BaseDatabaseTest {
      *
      * @depends testCreate
      */
-    public function testUpdate() {
+    public function testSave() {
         // Create test
         $this->company->name = 'Master Hoppers';
         $this->company->create();
