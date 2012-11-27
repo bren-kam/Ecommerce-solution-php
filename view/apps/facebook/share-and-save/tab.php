@@ -40,7 +40,7 @@
 		$link .= 'picture=' . $share_and_save->share_image_url . '&';
 		$link .= 'name=' . urlencode( $share_and_save->share_title ) . '&';
 		$link .= 'description=' . urlencode( $share_and_save->share_text ) . '&';
-		$link .= 'message=' . urlencode( 'Checkout this Fan Offer!' ) . '&';
+		$link .= 'message=' . urlencode( 'Checkout this Offer!' ) . '&';
 		$link .= 'redirect_uri=http://www.facebook.com/pages/Test/' . $signed_request['page']['id'] . '?sk=app_' . $app_id;
 	    ?>
 	    <p style="float:right"><a href="#" onclick="top.location.href='<?php echo $link; ?>';" title="Share"><img src="http://apps.imagineretailer.com/images/buttons/share.png" width="72" height="32" alt="<?php echo _('Share'); ?>" /></a>
