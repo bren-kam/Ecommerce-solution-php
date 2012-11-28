@@ -1,7 +1,7 @@
 <?php
 class FacebookSite extends ActiveRecordBase {
     // The columns we will have access to
-    public $sm_facebook_page_id, $fb_page_id, $website_page_id, $key, $content, $date_created;
+    public $sm_facebook_page_id, $fb_page_id, $key, $content, $date_created;
 
     /**
      * Setup the account initial data

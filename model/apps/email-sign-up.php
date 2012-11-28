@@ -1,7 +1,7 @@
 <?php
 class EmailSignUp extends ActiveRecordBase {
     // The columns we will have access to
-    public $sm_facebook_page_id, $fb_page_id, $website_page_id, $key, $tab, $date_created;
+    public $sm_facebook_page_id, $fb_page_id, $email_list_id, $key, $tab, $date_created;
 
     /**
      * Setup the account initial data
@@ -19,7 +19,7 @@ class EmailSignUp extends ActiveRecordBase {
 	public function get_tab( $fb_page_id ) {
 		return $this->prepare(
             'SELECT `tab` FROM `sm_email_sign_up` WHERE `fb_page_id` = :fb_page_id'
-            , 's'
+            , 'i'
             , array( ':fb_page_id' => $fb_page_id )
         )->get_var();
 	}
@@ -32,7 +32,7 @@ class EmailSignUp extends ActiveRecordBase {
      */
     protected function get_account( $fb_page_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`domain` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_email_sign_up` AS smesu ON ( smesu.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`id`.`status` = 1 AND smesu.`fb_page_id` = :fb_page_id'
+            'SELECT w.`website_id`, w.`domain`, smesu.`email_list_id` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_email_sign_up` AS smesu ON ( smesu.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`id`.`status` = 1 AND smesu.`fb_page_id` = :fb_page_id'
             , 's'
             , array( ':fb_page_id' => $fb_page_id )
         )->get_row( PDO::FETCH_CLASS, 'Account' );
@@ -103,6 +103,6 @@ class EmailSignUp extends ActiveRecordBase {
         $email_list->get_default_email_list( $account->id );
 
         // Add association
-        $email->add_associations( array( $email_list->id ) );
+        $email->add_associations( array( $email_list->id, $account->email_list_id ) );
 	}
 }

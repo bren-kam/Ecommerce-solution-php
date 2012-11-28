@@ -62,16 +62,10 @@ function load_model( $model ) {
     // Form the model name, i.e., AccountListing to account-listing.php
     $model_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $model ) ) . '.php', 1 );
 
-    // Get all the model paths we can
-    $model_paths = scandir( ABS_PATH . 'model' );
-    unset( $model_paths[0], $model_paths[1] );
-
-    foreach( $model_paths as &$mp ) {
-        $mp = ABS_PATH . 'model/' . $mp . '/';
-    }
+    $model_path = end( explode( '/', dirname( $_SERVER['argv'][1] ) ) );
 
     // Define the paths to search
-    $paths = array_merge( $model_paths, array( LIB_PATH . 'models/' ) );
+    $paths = array( ABS_PATH . 'model/' . $model_path . '/', LIB_PATH . 'models/' );
 
     // Loop through each path and see if it exists
     foreach ( $paths as $path ) {

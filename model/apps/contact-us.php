@@ -30,7 +30,7 @@ class ContactUs extends ActiveRecordBase {
 
 			$tab .= html_entity_decode( $account_page->content, ENT_QUOTES, 'UTF-8' );
 
-			$addresses = unserialize( html_entity_decode( $pagemeta['addresses'], ENT_QUOTES, 'UTF-8') );
+            $addresses = unserialize( html_entity_decode( $pagemeta['addresses'], ENT_QUOTES, 'UTF-8') );
 
 			if ( is_array( $addresses ) ) {
 				if ( 'true' == $pagemeta['multiple-location-map'] ) {
@@ -173,8 +173,8 @@ class ContactUs extends ActiveRecordBase {
      * @return array
      */
     protected function get_tab_page_meta( $fb_page_id, $website_page_id ) {
-        return ar::assign_key( $this->prepare( 
-            'SELECT wpm.`key`, wpm.`value` FROM `website_pagemeta` AS a LEFT JOIN `website_pages` AS wp ON ( wp.`website_page_id` = wpm.`website_page_id` ) LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = wp.`website_id` ) LEFT JOIN `sm_contact_us` AS smcu ON ( smcu.`sm_facebook_page_id` = smfbp.`id` ) WHERE wpm.`website_page_id` = :website_page_id AND smfbp.`status` = 1 AND smcu.`fb_page_id` = :fb_page_id'
+        return ar::assign_key( $this->prepare(
+            'SELECT wpm.`key`, wpm.`value` FROM `website_pagemeta` AS wpm LEFT JOIN `website_pages` AS wp ON ( wp.`website_page_id` = wpm.`website_page_id` ) LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = wp.`website_id` ) LEFT JOIN `sm_contact_us` AS smcu ON ( smcu.`sm_facebook_page_id` = smfbp.`id` ) WHERE wpm.`website_page_id` = :website_page_id AND smfbp.`status` = 1 AND smcu.`fb_page_id` = :fb_page_id'
             , 'is'
             , array( ':website_page_id' => $website_page_id, ':fb_page_id' => $fb_page_id )
         )->get_results( PDO::FETCH_ASSOC ), 'key', true );

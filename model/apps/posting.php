@@ -24,7 +24,7 @@ class Posting extends ActiveRecordBase {
             , array( ':fb_user_id' => $fb_user_id )
         )->get_var();
 
-		return $website_id > 0;
+		return $website_id != 0;
 	}
 
     /**

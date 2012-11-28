@@ -37,6 +37,7 @@ class Products extends ActiveRecordBase {
 			$ssl = security::is_ssl();
 
 			// Create rows
+            if ( is_array( $top_categories ) )
 			foreach ( $top_categories as $category ) {
 				if ( 1 == $i % 3 ) {
 					$last_class = ( $total_categories - $i < 3 ) ? ' last' : '';

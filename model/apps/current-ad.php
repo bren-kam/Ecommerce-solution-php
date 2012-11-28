@@ -35,6 +35,7 @@ class CurrentAd extends ActiveRecordBase {
             /**
              * @var AccountPageAttachment $attachment
              */
+            if ( is_array( $attachments ) )
             foreach ( $attachments as $attachment ) {
 				$k = $attachment->key;
 				$v = $attachment->value;
@@ -181,7 +182,7 @@ class CurrentAd extends ActiveRecordBase {
      */
     protected function get_account( $fb_page_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`domain` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_current_ad` AS smca ON ( smca.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`id`.`status` = 1 AND smca.`fb_page_id` = :fb_page_id'
+            'SELECT w.`website_id`, w.`domain` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_current_ad` AS smca ON ( smca.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`status` = 1 AND smca.`fb_page_id` = :fb_page_id'
             , 's'
             , array( ':fb_page_id' => $fb_page_id )
         )->get_row( PDO::FETCH_CLASS, 'Account' );
