@@ -77,13 +77,13 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
 
     /**
      * Test updating a product
-     *
-     * @depends testGet
      */
     public function testSave() {
+        $sm_facebook_page_id = -5;
+
         // Create posting post
         $this->db->insert( 'sm_posting_posts', array(
-            'sm_facebook_page_id' => -5
+            'sm_facebook_page_id' => $sm_facebook_page_id
             , 'access_token' => 'glkasjdlkajs123jklasd'
             , 'post' => 'Test Save Post'
             , 'status' => 0
@@ -93,6 +93,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $sm_posting_post_id = $this->db->get_insert_id();
 
         $this->db->get_row( "SELECT * FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id", PDO::FETCH_INTO, $this->post );
+        $this->post->id = $this->post->sm_posting_post_id;
 
         // Update test
         $this->post->status = 1;
@@ -101,6 +102,9 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $status = $this->db->get_var( "SELECT `status` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id" );
 
         $this->assertEquals( $status, '1' );
+
+        // Delete
+        $this->db->delete( 'sm_posting_posts', array( 'sm_facebook_page_id' => $sm_facebook_page_id ), 'i' );
     }
 
     /**

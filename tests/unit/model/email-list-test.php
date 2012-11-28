@@ -16,6 +16,26 @@ class EmailListTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting the Default Email List
+     */
+    public function testGetDefaultEmailList() {
+        // Declare variables
+        $account_id = -5;
+
+        // Insert an email list
+        $this->db->insert( 'email_lists', array( 'website_id' => $account_id, 'category_id' => 0 ), 'ii' );
+
+        $email_list_id = $this->db->get_insert_id();
+
+        $default_email_list = $this->email_list->get_default_email_list( $account_id );
+
+        $this->assertEquals( $email_list_id, $default_email_list->id );
+
+        // Delete
+        $this->db->delete( 'email_lists', array( 'website_id' => $account_id ), 'i' );
+    }
+
+    /**
      * Test create
      */
     public function testCreate() {
@@ -31,7 +51,7 @@ class EmailListTest extends BaseDatabaseTest {
         $this->assertEquals( 'Test Default', $name );
 
         // Delete
-        $this->db->delete( 'email_lists', array( 'email_list_id' => $this->email_list->id ), 'i' );
+        $this->db->delete( 'email_lists', array( 'website_id' => $this->email_list->website_id ), 'i' );
     }
 
     /**

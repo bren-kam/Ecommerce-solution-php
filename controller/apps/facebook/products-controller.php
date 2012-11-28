@@ -1,8 +1,8 @@
 <?php
-class AboutUsController extends BaseController {
-    const APP_ID = '233746136649331';
-    const APP_SECRET = '298bb76cda7b2c964e0bf752cf239799';
-    const APP_URI = 'op-about-us';
+class ProductsController extends BaseController {
+    const APP_ID = '163636730371197';
+    const APP_SECRET = '3dbe8bc58cf03523ad51603654ca50a6';
+    const APP_URI = 'op-products';
 
     /**
      * FB Class
@@ -19,11 +19,11 @@ class AboutUsController extends BaseController {
         parent::__construct();
 
         $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
-        $this->section = _('About Us');
+        $this->section = _('Products');
     }
 
     /**
-     * About Us
+     * Products
      *
      * @return TemplateResponse
      */
@@ -34,7 +34,7 @@ class AboutUsController extends BaseController {
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
             // Instantiate App
-            $about_us = new AboutUs();
+            $products = new Products();
 
             // Get App Data
             $app_data = url::decode( $_REQUEST['app_data'] );
@@ -42,13 +42,13 @@ class AboutUsController extends BaseController {
             $page_id = security::decrypt( $app_data['pid'], 'sEcrEt-P4G3!' );
 
             if ( $page_id ) {
-                $website = $about_us->get_connected_website( $page_id );
+                $website = $products->get_connected_website( $page_id );
                 $website_title = $website->title;
             } else {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fAboutUs' );
+            $form = new FormTable( 'fProducts' );
             $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
@@ -60,9 +60,9 @@ class AboutUsController extends BaseController {
 
             // Make sure it's a valid request
             if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
-                $about_us->connect( $page_id, $_POST['tFBConnectionKey'] );
+                $products->connect( $page_id, $_POST['tFBConnectionKey'] );
 
-                $website = $about_us->get_connected_website( $page_id );
+                $website = $products->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
                 $success = true;
             }
@@ -71,7 +71,7 @@ class AboutUsController extends BaseController {
             $form = $form->generate_form();
         }
 
-        $response = $this->get_template_response( 'facebook/about-us/index', 'Connect' );
+        $response = $this->get_template_response( 'facebook/products/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
             ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
@@ -86,9 +86,9 @@ class AboutUsController extends BaseController {
      */
     public function tab() {
         // Setup variables
-        $about_us = new AboutUs;
+        $products = new Products;
         $signed_request = $this->fb->getSignedRequest();
-        $tab = $about_us->get_tab( $signed_request['page']['id'] );
+        $tab = $products->get_tab( $signed_request['page']['id'] );
 
         // If it's secured, make the images secure
         if ( security::is_ssl() )
@@ -107,7 +107,7 @@ class AboutUsController extends BaseController {
             $tab = $admin . $tab;
         }
 
-        $response = $this->get_template_response( 'facebook/about-us/tab' );
+        $response = $this->get_template_response( 'facebook/products/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )
             ->set( compact( 'tab' ) );
@@ -126,7 +126,7 @@ class AboutUsController extends BaseController {
         return new RedirectResponse( url::add_query_arg(
             'app_data'
             , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
-            , '/facebook/about-us/'
+            , '/facebook/products/'
         ) );
     }
 }

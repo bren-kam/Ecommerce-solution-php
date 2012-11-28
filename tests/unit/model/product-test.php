@@ -114,6 +114,9 @@ class ProductTest extends BaseDatabaseTest {
         $fetched_images = $this->db->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id ORDER BY `image` ASC" );
 
         $this->assertEquals( $images, $fetched_images );
+
+        // Delete any images from before hand
+        $this->db->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
     }
 
     /**
@@ -121,7 +124,7 @@ class ProductTest extends BaseDatabaseTest {
      *
      * @depends testGet
      */
-    public function testUpdate() {
+    public function testSave() {
         // Declare variables
         $product_id = 36385;
 

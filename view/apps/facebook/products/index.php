@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Contact Us
+ * @page Products
  * @package Grey Suit Retail
  *
  * @var int $app_id
@@ -65,14 +65,15 @@
 
             <div id="apps-content" class="clear">
                 <div id="apps-icon">
-                    <img src="https://www.greysuitapps.com/fb/images/icons/contact.png" alt="Contact Us" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/products.png" alt="Products" />
                 </div>
                 <div id="apps-desc">
-                    <h1>Contact Us</h1>
-                    <h3>Conveniently display store address, phone number and hours right on your Facebook page</h3>
+                    <h1>Products</h1>
+                    <h3>Let your fans browse your awesome product catalog with our Products app</h3>
                     <ul>
-                        <li>Fans will never leave your Facebook page to find your vital contact information</li>
-                        <li>Comes complete with a Google map that your fans can interact with directly</li>
+                        <li>Showcase your product inventory right on your Facebook page</li>
+                        <li>Comes complete with gorgeous product photos and categories</li>
+                        <li>Log into you dashboard, add products and give your customers one more way shop your products right on your Facebook page</li>
                     </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
                     <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=<?php echo $app_id; ?>&pages=1'" title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>

@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Contact Us
+ * @page Share and Save
  * @package Grey Suit Retail
  *
  * @var int $app_id
@@ -65,14 +65,16 @@
 
             <div id="apps-content" class="clear">
                 <div id="apps-icon">
-                    <img src="https://www.greysuitapps.com/fb/images/icons/contact.png" alt="Contact Us" />
+                    <img src="https://www.greysuitapps.com/fb/images/icons/share-save.png" alt="Share &amp; Save" />
                 </div>
                 <div id="apps-desc">
-                    <h1>Contact Us</h1>
-                    <h3>Conveniently display store address, phone number and hours right on your Facebook page</h3>
+                    <h1>Share &amp; Save</h1>
+                    <h3>Sell more stuff when you entice groups of fans to Like your page to access online discounts!</h3>
                     <ul>
-                        <li>Fans will never leave your Facebook page to find your vital contact information</li>
-                        <li>Comes complete with a Google map that your fans can interact with directly</li>
+                        <li>Entice fans to pool together to unlock your group discount</li>
+                        <li>Set a minimum and maximum number of fans required to access the discount</li>
+                        <li>Create a start and finish date for your group discount</li>
+                        <li>Establish any and all price points for your promotions</li>
                     </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
                     <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=<?php echo $app_id; ?>&pages=1'" title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>

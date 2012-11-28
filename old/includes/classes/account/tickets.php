@@ -29,7 +29,7 @@ class Tickets extends Base_Class {
 			$assigned_to_user_id = 73; // Chris @ the lively merchant
 		} else {
 			// Techincal : Online Specialist
-			$assigned_to_user_id = ( $user['role'] > 5 ) ? 493 : $user['website']['os_user_id'];
+			$assigned_to_user_id = ( $user['role'] > 6 ) ? 493 : $user['website']['os_user_id'];
 
             // Mark statistic for created tickets if assigned to "Technical"
             if ( 493 == $assigned_to_user_id ) {
