@@ -71,7 +71,7 @@ abstract class BaseController {
         spl_autoload_register( array( $this, '_load_model' ) );
 
         // Make sure the user is logged in
-        if ( !$this->get_logged_in_user() )
+        if ( ( 'admin' == SUBDOMAIN || 'account' == SUBDOMAIN ) && !$this->get_logged_in_user() )
             $this->login();
 
         // Set the resources up
