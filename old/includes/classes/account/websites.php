@@ -98,7 +98,7 @@ class Websites extends Base_Class {
 		$mobile = (int) $mobile;
 		
 		// Update existing request
-		$this->db->update( 'website_pages', array( 'slug' => $slug, title => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'mobile' => $mobile, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssii', 'ii' );
+		$this->db->update( 'website_pages', array( 'slug' => $slug, 'title' => $title, 'content' => stripslashes($content), 'meta_title' => $meta_title, 'meta_description' => $meta_description, 'meta_keywords' => $meta_keywords, 'mobile' => $mobile, 'updated_user_id' => $user['user_id'] ), array( 'website_page_id' => $website_page_id, 'website_id' => $user['website']['website_id'] ), 'ssssssii', 'ii' );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
