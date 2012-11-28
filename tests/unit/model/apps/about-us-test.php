@@ -12,6 +12,7 @@ class AboutUsTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
+        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->about_us = new AboutUs();
     }
 
@@ -94,7 +95,7 @@ class AboutUsTest extends BaseDatabaseTest {
         $key = 'Red Baron';
 
         // Insert About Us
-        $this->db->insert( 'sm_about_us', array( 'key' => $key,  ), 's' );
+        $this->db->insert( 'sm_about_us', array( 'key' => $key ), 's' );
 
         // Get it
         $this->about_us->connect( $fb_page_id, $key );
@@ -112,6 +113,7 @@ class AboutUsTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        unset( $_SERVER['MODEL_PATH'] );
         $this->about_us = null;
     }
 }

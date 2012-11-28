@@ -12,6 +12,7 @@ class PostingTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
+        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->posting = new Posting();
     }
 
@@ -60,6 +61,28 @@ class PostingTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Getting Connected Pages
+     */
+    public function testGetConnectedPages() {
+        // Declare variables
+        $sm_facebook_page_id = -7;
+        $fb_user_id = -3;
+
+        // Add posting
+        $this->db->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+
+        $fb_page_id = $this->db->get_insert_id();
+
+        // Get the IDS
+        $fb_page_ids = $this->posting->get_connected_pages( $fb_user_id );
+
+        $this->assertTrue( in_array( $fb_page_id, $fb_page_ids ) );
+
+        // Delete
+        $this->db->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
+    }
+
+    /**
      * Test Connect
      */
     public function testConnect() {
@@ -85,9 +108,34 @@ class PostingTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Update Access Token
+     */
+    public function testUpdateAccessToken() {
+        // Declare variables
+        $fb_user_id = -3;
+        $fb_page_id = -5;
+        $access_token = 'Ring around the rosey';
+
+        // Insert About Us
+        $this->db->insert( 'sm_posting', array( 'fb_page_id' => $fb_page_id, 'fb_user_id' => $fb_user_id ), 's' );
+
+        // Get it
+        $this->posting->update_access_token( $fb_user_id, $access_token, $fb_page_id );
+
+        // Get the key
+        $fetched_access_token = $this->db->get_var( 'SELECT `access_token` FROM `sm_posting` WHERE `fb_page_id` = ' . (int) $fb_page_id );
+
+        $this->assertEquals( $fetched_access_token, $access_token );
+
+        // Delete it
+        $this->db->delete( 'sm_posting', array( 'fb_page_id' => $fb_page_id ), 'i' );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {
+        unset( $_SERVER['MODEL_PATH'] );
         $this->posting = null;
     }
 }

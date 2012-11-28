@@ -12,6 +12,7 @@ class ShareAndSaveTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
+        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->share_and_save = new ShareAndSave();
     }
 
@@ -109,6 +110,7 @@ class ShareAndSaveTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        unset( $_SERVER['MODEL_PATH'] );
         $this->share_and_save = null;
     }
 }

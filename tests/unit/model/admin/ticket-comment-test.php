@@ -12,6 +12,7 @@ class TicketCommentTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
+        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->ticket_comment = new TicketComment();
     }
 
@@ -142,6 +143,7 @@ class TicketCommentTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        unset( $_SERVER['MODEL_PATH'] );
         $this->ticket_comment = null;
     }
 }

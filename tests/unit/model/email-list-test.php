@@ -32,7 +32,7 @@ class EmailListTest extends BaseDatabaseTest {
         $this->assertEquals( $email_list_id, $default_email_list->id );
 
         // Delete
-        $this->db->delete( 'email_lists', array( 'account_id' => $account_id ), 'i' );
+        $this->db->delete( 'email_lists', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -51,7 +51,7 @@ class EmailListTest extends BaseDatabaseTest {
         $this->assertEquals( 'Test Default', $name );
 
         // Delete
-        $this->db->delete( 'email_lists', array( 'email_list_id' => $this->email_list->id ), 'i' );
+        $this->db->delete( 'email_lists', array( 'website_id' => $this->email_list->website_id ), 'i' );
     }
 
     /**
