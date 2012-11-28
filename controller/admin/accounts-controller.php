@@ -598,8 +598,18 @@ class AccountsController extends BaseController {
                 if ( !empty( $account->phone ) )
                     $store['storephone'] = $account['phone'];
 
+                $craigslist_customer_id = $account->get_settings('craigslist_customer_id');
+
+                if ( empty( $craigslist_customer_id ) ) {
+                    // Create the customer
+                    $craigslist_customer_id = $craigslist_api->add_customer( $website['title'] );
+
+                    if ( $craigslist_customer_id )
+                        $account->set_settings( array( 'craigslist-customer-id' => $craigslist_customer_id ) );
+                }
+
                 // Get the market id
-                $market_id = $craigslist_api->add_market( $account->get_settings('craigslist_customer_id'), $craigslist_market->cl_market_id, $locations, $_POST['sCLCategoryId'], $store );
+                $market_id = $craigslist_api->add_market( $craigslist_customer_id, $craigslist_market->cl_market_id, $locations, $_POST['sCLCategoryId'], $store );
 
                 // Link it in our database
                 if ( $market_id ) {

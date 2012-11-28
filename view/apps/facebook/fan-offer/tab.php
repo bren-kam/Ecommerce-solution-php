@@ -33,7 +33,8 @@
 	}
     ?>
     <p style="float:left; margin-top: 10px"><a href="#" onclick="window.print();" title="Print">Print</a></p>
-
+	<br clear="left" /><br />
+	<p>Sign up for our newsletter!</p>
     <?php
     if ( $signed_request['page']['liked'] && !$success )
         echo $form;
