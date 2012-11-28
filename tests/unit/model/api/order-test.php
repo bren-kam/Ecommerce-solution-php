@@ -12,6 +12,7 @@ class OrderTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
+        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->order = new Order();
     }
 
@@ -41,6 +42,7 @@ class OrderTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        unset( $_SERVER['MODEL_PATH'] );
         $this->order = null;
     }
 }

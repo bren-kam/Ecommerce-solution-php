@@ -153,7 +153,7 @@ class image extends Base_Class {
 				imagealphablending( $resized_image, false );
 		   
 				// Create a new transparent color for image
-				$transparent_allocated_color = imagecolorallocatealpha( $resized_image, 0, 0, 0, 127 );
+				$transparent_allocated_color = imagecolorallocatealpha( $resized_image, 255, 255, 255, 127 );
 		   
 				// Completely fill the background of the new image with allocated color.
 				imagefill( $resized_image, 0, 0, $transparent_allocated_color );
@@ -168,7 +168,7 @@ class image extends Base_Class {
 			$destination_y = ceil( ( $height_constraint - $new_height ) / 2 );
 
             // Determine allocated color -- special ternary operator
-            $allocated_color = isset( $transparent_allocated_color ) ?: imagecolorallocate( $resized_image, 255, 255, 255 );
+            $allocated_color = isset( $transparent_allocated_color ) ? $transparent_allocated_color : imagecolorallocate( $resized_image, 255, 255, 255 );
 
 			imagefilledrectangle( $resized_image, 0, 0, $width_constraint, $height_constraint, $allocated_color );
 		} else {

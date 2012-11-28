@@ -1,5 +1,5 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
     // Make the form verify that the images is a proper field
 	$('#fAddEditProduct').submit( function() {
 		if ( 'public' == $('#sStatus').val() && ( $('#images-list .image') ).length < 1 ) {
@@ -57,6 +57,9 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
     $('#images-list').sortable({
         forcePlaceholderSize : true
         , placeholder: 'image-placeholder'
+    }).on( 'click', 'a.delete', function() { // Make sure deleting works
+        if ( confirm( $(this).attr('confirm') ) )
+            $(this).parent().parent().remove();
     });
 
     // The 'Add Spec' button
@@ -176,12 +179,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js'
 
         // Make it look good
         applyListClasses( list );
-    });
-
-    // Make Images delete work
-    $('#images-list').on( 'click', 'a.delete', function() {
-        if ( confirm( $(this).attr('confirm') ) )
-            $(this).parent().parent().remove();
     });
 
     // Make attribute items delete work

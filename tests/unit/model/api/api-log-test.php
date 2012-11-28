@@ -12,6 +12,7 @@ class ApiLogTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
+        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->api_log = new ApiLog();
     }
 
@@ -41,6 +42,7 @@ class ApiLogTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        unset( $_SERVER['MODEL_PATH'] );
         $this->api_log = null;
     }
 }

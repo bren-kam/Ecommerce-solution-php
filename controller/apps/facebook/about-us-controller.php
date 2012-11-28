@@ -25,10 +25,11 @@ class AboutUsController extends BaseController {
     /**
      * About Us
      *
-     * @return JsonResponse
+     * @return TemplateResponse
      */
     protected function index() {
         $form = new stdClass();
+        $success = $website = false;
 
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
@@ -48,6 +49,7 @@ class AboutUsController extends BaseController {
             }
 
             $form = new FormTable( 'fAboutUs' );
+            $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
 
@@ -62,13 +64,17 @@ class AboutUsController extends BaseController {
 
                 $website = $about_us->get_connected_website( $page_id );
                 $website_row->set_value( $website->title );
+                $success = true;
             }
+
+            // Get the string
+            $form = $form->generate_form();
         }
 
         $response = $this->get_template_response( 'facebook/about-us/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
-            ->set( array( 'form' => $form, 'app_id' => self::APP_ID ) );
+            ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
 
         return $response;
     }
@@ -94,7 +100,7 @@ class AboutUsController extends BaseController {
             $admin .= url::add_query_arg(
                 'app_data'
                 , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
-                , 'http://apps.facebook.com/op-about-us/'
+                , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
 

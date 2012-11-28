@@ -58,32 +58,29 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
  *
  * @var string $model
  */
-function load_model( $model ) {
-    // Form the model name, i.e., AccountListing to account-listing.php
-    $model_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $model ) ) . '.php', 1 );
+if ( !function_exists( 'load_model' ) ) {
+    function load_model( $model ) {
+        // Form the model name, i.e., AccountListing to account-listing.php
+        $model_file = substr( strtolower( preg_replace( '/(?<!-)[A-Z]/', '-$0', $model ) ) . '.php', 1 );
 
-    // Get all the model paths we can
-    $model_paths = scandir( ABS_PATH . 'model' );
-    unset( $model_paths[0], $model_paths[1] );
+        // Define the paths to search
+        $paths = array( LIB_PATH . 'models/' );
 
-    foreach( $model_paths as &$mp ) {
-        $mp = ABS_PATH . 'model/' . $mp . '/';
-    }
+        if ( isset( $_SERVER['MODEL_PATH'] ) )
+            array_unshift( $paths, ABS_PATH . 'model/' . $_SERVER['MODEL_PATH'] . '/' );
 
-    // Define the paths to search
-    $paths = array_merge( $model_paths, array( LIB_PATH . 'models/' ) );
+        // Loop through each path and see if it exists
+        foreach ( $paths as $path ) {
+            $full_path = $path . $model_file;
 
-    // Loop through each path and see if it exists
-    foreach ( $paths as $path ) {
-        $full_path = $path . $model_file;
-
-        if ( is_file( $full_path ) ) {
-            require_once $full_path;
-            break;
+            if ( is_file( $full_path ) ) {
+                require_once $full_path;
+                break;
+            }
         }
     }
+    spl_autoload_register( 'load_model' );
 }
-spl_autoload_register( 'load_model' );
 
 /**
  * Load a model

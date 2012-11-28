@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js', '/js2/?f=charCount', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/js2/?f=charCount', function() {
     $('#taResponse').keyup( function() {
         $(this).val( $(this).val().replace(/\n/, '') );
     }).charCount({

@@ -2,6 +2,11 @@
 /**
  * @page About Us
  * @package Grey Suit Retail
+ *
+ * @var int $app_id
+ * @var bool $success
+ * @var array $website
+ * @var string $form
  */
 ?>
 
@@ -10,21 +15,20 @@
         <a href="http://www.greysuitapps.com/" title="Grey Suit Apps"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Grey Suit Apps" /></a>
     </div><!-- #logo -->
 
+    <?php if ( $success && $website ) { ?>
+    <div class="success">
+        <p><?php echo _('Your information has been successfully updated!'); ?></p>
+    </div>
+    <?php
+    }
 
-<?php if( $success && $website ) { ?>
-<div class="success">
-    <p><?php echo _('Your information has been successfully updated!'); ?></p>
-</div>
-<?php
-}
-
-if( isset( $errs ) )
+    if ( isset( $errs ) )
         echo "<p class='error'>$errs</p>";
 
-if( ! $page_id ) {
-?>
+    if ( !$page_id ) {
+    ?>
 
-<div id="nav">
+    <div id="nav">
         <ul>
             <li id="nav-apps"><a id="aTabApps" class="fb-tab" href="#" title="Apps"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Apps" /></a></li>
             <li id="nav-pricing"><a id="aTabPricing" class="fb-tab" href="#" title="Pricing"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Pricing" /></a></li>
@@ -55,7 +59,7 @@ if( ! $page_id ) {
         </div><!-- #apps-header -->
         <div id="apps-container" class="clear">
 
-            <?php theme_inc( 'facebook/app-sidebar', true); ?>
+            <?php require VIEW_PATH . 'facebook/app-sidebar.php'; ?>
 
             <div id="apps-content" class="clear">
                 <div id="apps-icon">
@@ -70,36 +74,35 @@ if( ! $page_id ) {
                         <li>Log into your dashboard, add any information and turn yourself into a rockstar</li>
                     </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
-                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=233746136649331&pages=1'"title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
-                    <p class="sml-text">gives you acces to ALL apps</p>
+                    <p><a href="#" onclick="top.location.href='http://www.facebook.com/add.php?api_key=<?php echo $app_id; ?>&pages=1'" title="Install this App" class="install-app"><img src="https://www.greysuitapps.com/fb/images/trans.gif" alt="Install this App" /></a></p>
+                    <p class="sml-text">gives you access to ALL apps</p>
                 </div>
             </div>
         </div><!-- #apps-container .clear -->
     </div><!-- #install -->
 
-    <?php theme_inc( 'facebook/price-tab', true ); ?>
-    <?php theme_inc( 'facebook/faq-tab', true ); ?>
+    <?php require VIEW_PATH . 'facebook/price-tab.php'; ?>
+    <?php require VIEW_PATH . 'facebook/faq-tab.php'; ?>
 
 <?php } else { ?>
 </div>
 <div id="content">
-    <form name="fConnect" id="fConnect" method="post" action="/facebook/about-us/">
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <td width="220" class="align-right"><strong><?php echo _('Website'); ?>:</strong></td>
-                <td><?php echo ( $website ) ? $website['title'] : 'N/A'; ?></td>
-            </tr>
-            <tr>
-                <td class="align-right"><label for="tFBConnectionKey"><?php echo _('Facebook Connection Key'); ?>:</label></td>
-                <td><input type="text" class="tb" name="tFBConnectionKey" id="tFBConnectionKey" value="<?php echo ( $website ) ? $website['key'] : ''; ?>" /> <strong><?php echo ( $website ) ? '<span class="success">(' . _('Connected') . ')</span>' : '<span class="error">(' . _('Not Connected') . ')</span>'; ?></strong></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="submit" class="button" value="<?php echo _('Connect'); ?>" /></td>
-            </tr>
-        </table>
-        <input type="hidden" name="app_data" value="<?php echo $_REQUEST['app_data']; ?>" />
-        <?php nonce::field('connect-to-field'); ?>
-    </form>
-<?php } ?>
+    <?php echo $form;
+}
+?>
 </div>  <!-- #content -->
+
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({appId: "<?php echo $app_id; ?>", status: true, cookie: true,
+             xfbml: true});
+	FB.setSize({ width: 720, height: 500 });
+  };
+  (function() {
+    var e = document.createElement("script"); e.async = true;
+    e.src = document.location.protocol +
+      "//connect.facebook.net/en_US/all.js";
+    document.getElementById("fb-root").appendChild(e);
+  }());
+</script>
