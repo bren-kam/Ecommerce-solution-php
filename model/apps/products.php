@@ -88,7 +88,7 @@ class Products extends ActiveRecordBase {
      * @return stdClass
      */
     protected function get_top_categories( $account_id ) {
-        $this->prepare(
+        return $this->prepare(
             'SELECT c.`name`, c.`slug`, wc.`image_url` FROM `categories` AS c LEFT JOIN `website_categories` AS wc ON ( wc.`category_id` = c.`category_id` ) WHERE c.`parent_category_id` = 0 AND wc.`website_id` = :account_id GROUP BY c.`category_id`'
             , 'i'
             , array( ':account_id' => $account_id )
