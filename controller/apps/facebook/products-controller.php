@@ -107,6 +107,7 @@ class ProductsController extends BaseController {
             $tab = $admin . $tab;
         }
 
+        $this->resources->css( 'facebook/products' );
         $response = $this->get_template_response( 'facebook/products/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )

@@ -89,8 +89,7 @@ class CurrentAdController extends BaseController {
         $current_ad = new CurrentAd;
         $signed_request = $this->fb->getSignedRequest();
 
-        $v = new Validator();
-        $v->form_name = 'fSignUp';
+        $v = new Validator('fSignUp');
         $v->add_validation( 'tName', 'req', 'The "Name" field is required' );
         $v->add_validation( 'tName', '!val=Name:', 'The "Name" field is required' );
 
