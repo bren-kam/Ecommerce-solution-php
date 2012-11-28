@@ -602,7 +602,7 @@ class AccountsController extends BaseController {
 
                 if ( empty( $craigslist_customer_id ) ) {
                     // Create the customer
-                    $craigslist_customer_id = $craigslist_api->add_customer( $website['title'] );
+                    $craigslist_customer_id = $craigslist_api->add_customer( $account->title );
 
                     if ( $craigslist_customer_id )
                         $account->set_settings( array( 'craigslist-customer-id' => $craigslist_customer_id ) );
