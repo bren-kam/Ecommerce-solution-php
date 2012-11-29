@@ -36,8 +36,8 @@ class Feed extends ActiveRecordBase {
             "SELECT a.`product_id`, a.`brand_id`, a.`industry_id`, a.`slug`, a.`description`, a.`status`, a.`sku`, a.`weight`, a.`volume`, a.`product_specifications`, a.`publish_visibility`, a.`publish_date`, a.`date_created`, a.`timestamp`, b.`name` AS industry, GROUP_CONCAT( DISTINCT c.`category_id` ) AS categories, GROUP_CONCAT( DISTINCT d.`image` ) AS images, GROUP_CONCAT( DISTINCT e.`attribute_item_id` ) AS attributes, GROUP_CONCAT( DISTINCT f.`product_group_id` ) AS product_groups FROM `products` AS a LEFT JOIN `industries` AS b ON ( a.`industry_id` = b.`industry_id` ) LEFT JOIN `product_categories` AS c ON ( a.`product_id` = c.`product_id` ) LEFT JOIN `product_images` AS d ON ( a.`product_id` = d.`product_id` ) LEFT JOIN `attribute_item_relations` AS e ON ( a.`product_id` = e.`product_id` ) LEFT JOIN `product_group_relations` AS f ON ( a.`product_id` = f.`product_id` ) WHERE a.`publish_visibility` <> 'deleted' $where GROUP BY a.`product_id` ORDER BY a.`product_id` LIMIT :starting_point, :limit"
             , 'ii'
             , array(
-                ':starting_point' => $starting_point
-                , ':limit' => $limit
+                ':starting_point' => (int) $starting_point
+                , ':limit' => (int) $limit
             )
         )->get_results( PDO::FETCH_ASSOC );
     }
