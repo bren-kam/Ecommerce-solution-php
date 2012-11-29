@@ -26,7 +26,7 @@ class Email extends ActiveRecordBase {
      * @param string $email
      * @return Email
      */
-    public function get_email_by_email( $account_id, $email ) {
+    public function get_by_email( $account_id, $email ) {
 		return $this->prepare( 'SELECT `email_id` FROM `emails` WHERE `website_id` = :account_id AND `email` = :email'
             , 'is'
             , array(

@@ -233,7 +233,7 @@ class CurrentAd extends ActiveRecordBase {
 
 		// We need to get the email_id
         $email = new Email();
-        $email->get_email_by_email( $account->id, $email_address );
+        $email->get_by_email( $account->id, $email_address );
 
         // The status needs to be 1 in either case of existence or lack thereof
         $email->status = 1;
