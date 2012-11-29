@@ -93,7 +93,7 @@ class AuthUserWebsite extends ActiveRecordBase {
         if ( in_array( $email, $this->blocked_emails ) )
             return;
 
-        $intro = new Email();
+        $intro = new EmailHelper();
         $intro->to = $email;
         $intro->message = $message;
         $intro->from = "{$account->title} <{$user->email}>";
