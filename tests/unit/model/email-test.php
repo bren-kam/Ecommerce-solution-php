@@ -29,7 +29,7 @@ class EmailTest extends BaseDatabaseTest {
         $email_id = $this->db->get_insert_id();
 
         // Get unsynced emails
-        $email = $this->email->get_email_by_email( $account_id, $email_address );
+        $email = $this->email->get_by_email( $account_id, $email_address );
 
         $this->assertEquals( $email->id, $email_id );
 

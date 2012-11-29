@@ -71,7 +71,7 @@ class Sweepstakes extends ActiveRecordBase {
      */
     protected function get_account( $fb_page_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`domain` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_email_sign_up` AS smesu ON ( smesu.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`id`.`status` = 1 AND smesu.`fb_page_id` = :fb_page_id'
+            'SELECT w.`website_id`, w.`domain` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_email_sign_up` AS smesu ON ( smesu.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`status` = 1 AND smesu.`fb_page_id` = :fb_page_id'
             , 's'
             , array( ':fb_page_id' => $fb_page_id )
         )->get_row( PDO::FETCH_CLASS, 'Account' );
@@ -94,7 +94,7 @@ class Sweepstakes extends ActiveRecordBase {
 
 		// We need to get the email_id
         $email = new Email();
-        $email->get_email_by_email( $account->id, $email_address );
+        $email->get_by_email( $account->id, $email_address );
 
         // The status needs to be 1 in either case of existence or lack thereof
         $email->status = 1;
