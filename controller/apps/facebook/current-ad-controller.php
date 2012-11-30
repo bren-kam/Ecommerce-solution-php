@@ -103,8 +103,10 @@ class CurrentAdController extends BaseController {
             $errs = $v->validate();
 
             // Insert email into the default category
-            if( empty( $errs ) )
-                $success = $current_ad->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+            if( empty( $errs ) ) {
+                $current_ad->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+                $success = true;
+            }
         }
 
         $tab = $current_ad->get_tab( $signed_request['page']['id'], $success );

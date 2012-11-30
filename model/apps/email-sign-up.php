@@ -28,14 +28,14 @@ class EmailSignUp extends ActiveRecordBase {
      * Get Domain
      *
      * @param int $fb_page_id
-     * @return Account
+     * @return stdClass
      */
     protected function get_account( $fb_page_id ) {
         return $this->prepare(
             'SELECT w.`website_id`, w.`domain`, smesu.`email_list_id` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_email_sign_up` AS smesu ON ( smesu.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`status` = 1 AND smesu.`fb_page_id` = :fb_page_id'
             , 's'
             , array( ':fb_page_id' => $fb_page_id )
-        )->get_row( PDO::FETCH_CLASS, 'Account' );
+        )->get_row( PDO::FETCH_OBJ );
     }
 
     /**
@@ -72,7 +72,6 @@ class EmailSignUp extends ActiveRecordBase {
 	 * @param int $fb_page_id
 	 * @param string $name
 	 * @param string $email_address
-	 * @return bool
 	 */
 	public function add_email( $fb_page_id, $name, $email_address ) {
         // We only want lowercase email addresses
