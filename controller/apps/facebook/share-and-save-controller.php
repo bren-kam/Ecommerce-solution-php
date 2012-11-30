@@ -110,8 +110,10 @@ class ShareAndSaveController extends BaseController {
 
         $success = false;
 
-        if ( $form->posted() )
-            $success = $share_and_save->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+        if ( $form->posted() ) {
+            $share_and_save->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+            $success = true;
+        }
 
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {

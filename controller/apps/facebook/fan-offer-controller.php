@@ -110,8 +110,10 @@ class FanOfferController extends BaseController {
 
         $success = false;
 
-        if ( $form->posted() )
-            $success = $fan_offer->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+        if ( $form->posted() ) {
+            $fan_offer->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+            $success = true;
+        }
 
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {

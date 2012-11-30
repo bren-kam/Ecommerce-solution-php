@@ -114,8 +114,10 @@ class SweepstakesController extends BaseController {
 
         $success = false;
 
-        if ( $form->posted() )
-            $success = $sweepstakes->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+        if ( $form->posted() ) {
+            $sweepstakes->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+            $success = true;
+        }
 
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {

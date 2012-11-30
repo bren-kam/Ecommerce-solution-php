@@ -222,7 +222,6 @@ class CurrentAd extends ActiveRecordBase {
 	 * @param int $fb_page_id
 	 * @param string $name
 	 * @param string $email_address
-	 * @return bool
 	 */
 	public function add_email( $fb_page_id, $name, $email_address ) {
         // We only want lowercase email addresses
