@@ -52,6 +52,7 @@ class PostingController extends BaseController {
 
             $this->fb->setAccessToken( $params['access_token'] );
             $this->fb->setExtendedAccessToken();
+			
             $posting->update_access_token( $this->fb->user_id, $this->fb->getAccessToken(), $_REQUEST['fb_page_id'] );
 
             return new HtmlResponse("<script>top.location.href='" . $_REQUEST['gsr_redirect'] . "'</script>");
@@ -76,8 +77,8 @@ class PostingController extends BaseController {
         $pages = ( $connected ) ? $posting->get_connected_pages( $this->fb->user_id ) : array();
 
         // Get the accounts of the user
-        $accounts = $this->fb->api( "/$this->fb->user_id/accounts" );
-
+        $accounts = $this->fb->api( "/{$this->fb->user_id}/accounts" );
+		
         // Get a list of the pages they have available
         if ( is_array( $accounts['data'] ) )
         foreach ( $accounts['data'] as $page ) {
@@ -86,9 +87,10 @@ class PostingController extends BaseController {
 
             $options[$page['id']] = $page['name'];
         }
-
+		
         // Add the last field (didn't have validation so it can be after the posting)
-        $form->add_field( 'select', 'Facebook Page', 'sFBPageID' );
+        $form->add_field( 'select', 'Facebook Page', 'sFBPageID' )
+			->options( $options );
 
         // Get template response
         $response = $this->get_template_response( 'facebook/posting/index', 'Connect' );

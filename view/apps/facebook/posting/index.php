@@ -27,7 +27,6 @@
     if ( isset( $errs ) )
         echo "<p class='error'>$errs</p>";
 
-    if ( !$page_id ) {
     ?>
 
     <div id="nav">
@@ -77,6 +76,18 @@
                         <li>Take the time out of daily posting to do what you do best, making money</li>
                     </ul>
                     <p><a href="#" onclick="top.location.href='http://www.greysuitapps.com/pricing/'" title="Purchase this App"><img src="https://www.greysuitapps.com/fb/images/buttons/purchase-app.png" alt="Purchase this App" /></a></p>
+					<br />
+					<?php if( $connected ) { ?>
+						<p class="success">You are connected!</p>
+						<p>You can now sign into your dashboard to control the posting to your pages.</p>
+			
+						<br /><br />
+						<p>You can connect another account with a different Facebook Connection Key.</p>
+					<?php 
+					}
+					
+					echo $form;
+					?>
                 </div>
             </div>
         </div><!-- #apps-container .clear -->
@@ -84,19 +95,7 @@
 
     <?php require VIEW_PATH . 'facebook/price-tab.php'; ?>
     <?php require VIEW_PATH . 'facebook/faq-tab.php'; ?>
-    <?php } else { ?>
     </div> <!-- end #header -->
-    <div id="content">
-        <?php if( $connected ) { ?>
-            <p class="success">You are connected!</p>
-            <p>You can now sign into your dashboard to control the posting to your pages.</p>
-
-            <br /><br />
-            <p>You can connect another account with a different Facebook Connection Key.</p>
-        <?php }
-        echo $form;
-    } ?>
-</div>
 
 <div id="fb-root"></div>
 <script>

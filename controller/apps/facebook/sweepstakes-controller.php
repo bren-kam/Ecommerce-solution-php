@@ -70,7 +70,7 @@ class SweepstakesController extends BaseController {
             // Get the string
             $form = $form->generate_form();
         }
-
+		
         $response = $this->get_template_response( 'facebook/sweepstakes/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
@@ -88,7 +88,7 @@ class SweepstakesController extends BaseController {
         // Setup variables
         $sweepstakes = new Sweepstakes;
         $signed_request = $this->fb->getSignedRequest();
-
+		
         $tab = $sweepstakes->get_tab( $signed_request['page']['id'], $signed_request['page']['liked'] );
 
         // Add on the Sweepstakes Rules URL if it's not empty
@@ -131,7 +131,10 @@ class SweepstakesController extends BaseController {
 
             $tab->content = $admin . $tab->content;
         }
-
+		
+		// Get page information
+		$page = $this->fb->api( '/' . $signed_request['page']['id'] );
+		
         $response = $this->get_template_response( 'facebook/sweepstakes/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )
@@ -139,8 +142,9 @@ class SweepstakesController extends BaseController {
                 'sweepstakes' => $tab
                 , 'success' => $success
                 , 'form' => $form->generate_form()
-                , 'signed_request' => $signed_request
+				, 'signed_request' => $signed_request
                 , 'app_id' => self::APP_ID
+                , 'url' => url::add_query_arg( 'sk', 'app_' . self::APP_ID, $page['link'] )
         ) );
 
         return $response;

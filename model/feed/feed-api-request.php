@@ -182,7 +182,7 @@ class FeedApiRequest {
          * @param int $limit (optional)
          * @return bool
          */
-        extract( $this->_get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
+        extract( $this->get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
 
     	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
 
@@ -319,7 +319,7 @@ class FeedApiRequest {
 	 * @param mixed $args the args that contain the parameters to get
 	 * @return array $parameters
 	 */
-	protected function _get_parameters() {
+	protected function get_parameters() {
 		$args = func_get_args();
 		
 		// Make sure the arguments are correct
@@ -339,7 +339,7 @@ class FeedApiRequest {
 				
 				$this->error = true;
 				$this->error_message = $message;
-				exit;
+				return array();
 			}
 			
 			$parameters[$a] = $_POST[$a];

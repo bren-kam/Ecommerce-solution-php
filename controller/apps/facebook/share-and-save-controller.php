@@ -128,6 +128,9 @@ class ShareAndSaveController extends BaseController {
             $tab->content = $admin . $tab->content;
         }
 
+		// Get page information
+		$page = $this->fb->api( '/' . $signed_request['page']['id'] );
+
         $response = $this->get_template_response( 'facebook/share-and-save/tab' );
         $response
             ->set_sub_includes( 'facebook/tabs' )
@@ -137,6 +140,7 @@ class ShareAndSaveController extends BaseController {
                 , 'form' => $form->generate_form()
                 , 'signed_request' => $signed_request
                 , 'app_id' => self::APP_ID
+                , 'url' => url::add_query_arg( 'sk', 'app_' . self::APP_ID, $page['link'] )
         ) );
 
         return $response;

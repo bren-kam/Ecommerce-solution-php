@@ -49,26 +49,26 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'sweepstakes'
 		$end_date = dt::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
 		
 		// Turn start time into machine-readable time
-		list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
-		
-		if ( 'pm' == $am_pm ) {
-			list( $hour, $minute ) = explode( ':', $start_time );
-			
-			$start_date .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
-		} else {
-			$start_date .= ' ' . $start_time . ':00';
-		}
+        list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
 
-		// Turn end time into machine-readable time
-		list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
-		
-		if ( 'pm' == $am_pm ) {
-			list( $hour, $minute ) = explode( ':', $end_time );
-			
-			$end_date .= ( 12 == $hour ) ? ' ' . $time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
-		} else {
-			$end_date .= ' ' . $end_time . ':00';
-		}
+        if ( 'pm' == $am_pm ) {
+            list( $hour, $minute ) = explode( ':', $start_time );
+
+            $start_date .= ( 12 == $hour ) ? ' ' . $start_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+        } else {
+            $start_date .= ' ' . $start_time . ':00';
+        }
+
+        // Turn end time into machine-readable time
+        list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
+
+        if ( 'pm' == $am_pm ) {
+            list( $hour, $minute ) = explode( ':', $end_time );
+
+            $end_date .= ( 12 == $hour ) ? ' ' . $end_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+        } else {
+            $end_date .= ' ' . $end_time . ':00';
+        }
 		
 		// Adjust for time zone
 		$start_date = dt::adjust_timezone( $start_date, $timezone, config::setting('server-timezone') );
