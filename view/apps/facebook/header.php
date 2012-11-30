@@ -22,7 +22,6 @@
     <style>
     	.hidden { display: none; }
     </style>
-    <?php head(); ?>
 </head>
 
 <body class="apps <?php echo $template->v('title'); ?>">
