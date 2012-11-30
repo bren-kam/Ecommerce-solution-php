@@ -25,7 +25,7 @@ class Sweepstakes extends ActiveRecordBase {
 		if ( $liked ) {
 			$fields = '`after` AS content, `contest_rules_url`, IF ( NOW() > `start_date` AND NOW() < `end_date`, 1, 0 ) AS valid, `share_title`, `share_image_url`, `share_text`';
 		} else {
-			$fields = '`before` AS content, 0 AS valid';
+			$fields = '`before` AS content, 1 AS valid';
 		}
 
 		return $this->prepare(

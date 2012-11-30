@@ -122,12 +122,18 @@ class ApiRequest {
 
 		// Load everything that needs to be loaded
 		$this->init();
+
+        if ( $this->error )
+            return;
 		
 		// Authenticate & load company id
 		$this->authenticate();
 		
+        if ( $this->error )
+            return;
+
 		// Parse method
-		$this->parse();
+        $this->parse();
 	}
 
     /**
@@ -729,7 +735,7 @@ class ApiRequest {
 			
 			$this->error = true;
 			$this->error_message = 'The request was made without SSL';
-			exit;
+			return;
 		}
 		
 		$this->statuses['init'] = true;
@@ -747,7 +753,7 @@ class ApiRequest {
 			
 			$this->error = true;
 			$this->error_message = 'There was no authentication key';
-			exit;
+			return;
 		}
 
         $api_key = new ApiKey;
@@ -824,7 +830,7 @@ class ApiRequest {
 		if( is_array( $key ) ) {
 			foreach( $key as $k => $v ) {
 				// Makes sure there isn't a premade message
-				$this->response[$k] = ( is_string( $v ) || is_int( $v ) && array_key_exists( $v, $this->messages ) ) ? $this->messages[$v] : $v;
+				$this->response[$k] = ( ( is_string( $v ) || is_int( $v ) ) && array_key_exists( $v, $this->messages ) ) ? $this->messages[$v] : $v;
 			}
 		} else {
 			// Makes sure there isn't a premade message
@@ -858,7 +864,7 @@ class ApiRequest {
 				
 				$this->error = true;
 				$this->error_message = $message;
-				exit;
+				return array();
 			}
 			
 			$parameters[$a] = $_POST[$a];
