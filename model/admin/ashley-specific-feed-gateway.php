@@ -138,7 +138,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$skus[$series][] = $item;
 		}
         
-        $new_product_ids = $remove_skus = array();
+        $new_product_ids = $remove_skus = $group_items = array();
 		
         // Add packages if they have all the pieces
 		foreach ( $packages as $series => $items ) {
@@ -147,13 +147,21 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 				// See if they have all the items necessary
 				foreach ( $package_pieces as $item ) {
                     // Check if it is a series such as "W123-45" or "W12345"
-					if ( in_array( $item, $skus[$series] ) || in_array( $series . $item, $all_skus ) )
+					if ( in_array( $item, $skus[$series] ) ) {
+                        $group_items[$product_id][] = "$series-$item";
 						continue;
+                    }
+                    
+					if ( in_array( $series . $item, $all_skus ) ) {
+                        $group_items[$product_id][] = $series . $item;
+						continue;
+                    }
 
                     //$remove_skus[] = "$series-$item";
                     //$remove_skus[] = $series . $item;
 
                     // If they don't have both, then stop this item
+                    unset ( $group_items[$product_id] );
 					continue 2; // Drop out of both
 				}
 
@@ -184,8 +192,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Check testing sites
         $testing_sites = array( 477, 571, 829, 476, 458 );
 
-        if ( in_array( $account->id, $testing_sites ) )
+        if ( in_array( $account->id, $testing_sites ) ) {
             $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
+            $this->add_product_groups( $account->id, $group_items );
+        }
 
 		// Deactivate old products
         $account_product = new AccountProduct();
@@ -247,7 +257,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      * @param array $industry_ids
 	 * @param array $product_skus
 	 */
-	public  function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
+	public function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
         // Make sure they entered in SKUs
         if ( 0 == count( $product_skus ) || 0 == $industry_ids )
             return;
@@ -321,4 +331,42 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			$this->query( "INSERT INTO `website_products` ( `website_id`, `product_id`, `sequence` ) SELECT DISTINCT $account_id, `product_id`, 10000 FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `user_id_created` = 1477 AND `product_id` IN ( $product_ids ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1" );
 		}
 	}
+
+    /**
+     * Add Product Groups
+     *
+     * @param int $account_id
+     * @param array $group_items
+     */
+    protected function add_product_groups( $account_id, array $group_items ) {
+        // Delete all the relations
+        $this->delete_by_account( $account_id );
+
+        // If they have nothing to add, go home!
+        if ( empty( $group_items ) )
+            return;
+
+        $account_product_group = new AccountProductGroup();
+        $account_product_group->website_id = $account_id;
+
+        foreach ( $group_items as $product_id => $skus ) {
+            $account_product_group->name = "Ashley Feed ($product_id)";
+            $account_product_group->create();
+
+            $account_product_group->add_relations_by_sku( $skus );
+        }
+    }
+
+    /**
+     * Delete relations
+     *
+     * @param int $account_id
+     */
+    protected function delete_by_account( $account_id ) {
+        $this->prepare(
+            "DELETE wpg.*, wpgr.* FROM `website_product_groups` AS wpg LEFT JOIN `website_product_group_relations` AS wpgr ON( wpg.`website_product_group_id` = wpgr.`website_product_group_id` )WHERE wpg.`website_id` = :account_id` AND wpg.`name` LIKE 'Ashley Feed (%)'"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->query();
+    }
 }
