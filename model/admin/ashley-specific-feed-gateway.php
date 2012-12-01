@@ -354,6 +354,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $account_product_group->create();
 
             $account_product_group->add_relations_by_sku( $skus );
+            $account_product_group->add_relations( array( $product_id ) );
         }
     }
 
@@ -364,7 +365,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      */
     protected function delete_by_account( $account_id ) {
         $this->prepare(
-            "DELETE wpg.*, wpgr.* FROM `website_product_groups` AS wpg LEFT JOIN `website_product_group_relations` AS wpgr ON( wpg.`website_product_group_id` = wpgr.`website_product_group_id` )WHERE wpg.`website_id` = :account_id` AND wpg.`name` LIKE 'Ashley Feed (%)'"
+            "DELETE wpg.*, wpgr.* FROM `website_product_groups` AS wpg LEFT JOIN `website_product_group_relations` AS wpgr ON( wpg.`website_product_group_id` = wpgr.`website_product_group_id` ) WHERE wpg.`website_id` = :account_id AND wpg.`name` LIKE 'Ashley Feed (%)'"
             , 'i'
             , array( ':account_id' => $account_id )
         )->query();

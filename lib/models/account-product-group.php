@@ -61,4 +61,23 @@ class AccountProductGroup extends ActiveRecordBase {
             , array_merge( array( $this->website_product_group_id, $this->website_id ), $skus )
         )->query();
     }
+
+    /**
+     * Add Images
+     *
+     * @param array $product_ids
+     */
+    public function add_relations( array $product_ids ) {
+        $values = '';
+
+        foreach ( $product_ids as $pid ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= '( ' . $this->id . ', ' . (int) $pid . ')';
+        }
+
+        // Insert the values
+        $this->query( "INSERT INTO `website_product_group_relations` ( `website_product_group_id`, `product_id` ) VALUES $values" );
+    }
 }
