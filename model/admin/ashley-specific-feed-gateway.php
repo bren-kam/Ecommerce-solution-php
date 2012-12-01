@@ -339,7 +339,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      * @param array $group_items
      */
     protected function add_product_groups( $account_id, array $group_items ) {
-        // Delete all the relations
+        // Delete all the relations created in the past
         $this->delete_by_account( $account_id );
 
         // If they have nothing to add, go home!
@@ -354,7 +354,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $account_product_group->create();
 
             $account_product_group->add_relations_by_sku( $skus );
-            $account_product_group->add_relations( array( $product_id ) );
+
+            if ( $account_product_group->get_row_count() > 0 ) {
+                $account_product_group->add_relations( array( $product_id ) );
+            } else {
+                // If it didn't add anything, that means they were blocked products or belonged to hidden categories -- let's remove the group
+                $account_product_group->remove();
+            }
         }
     }
 
