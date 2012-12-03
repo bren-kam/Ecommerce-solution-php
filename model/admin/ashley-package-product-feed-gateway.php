@@ -398,7 +398,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
                 // Bedroom Groups
                 case 228:
-                    preg_match( '/([0-9]+)(?:[SN]|\/91|\/92|\/93)?$/', $sku, $matches );
+                    preg_match( '/([0-9]+)(?:[SN]|\/91|\/92|\/93|\/96S?|\/98|\/99)?$/', $sku, $matches );
 					$last_sku = $matches[1];
                     $add = true;
 					
@@ -411,7 +411,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                         break;
 
                         case '57':
-                            $name = $item->SeriesName . ' Sleigh Bedroom Group';
+                            $name = $item->SeriesName . ' Bedroom Group';
                         break;
 
                         case '65':
@@ -437,18 +437,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                         case '87':
                         case '88':
                             $name = $item->SeriesName . ' Full Sleigh Bedroom Group';
-                        break;
-
-                        case '96':
-                            $name = $item->SeriesName . ' Panel Bedroom Group';
-                        break;
-
-                        case '98':
-                            $name = $item->SeriesName . ' Queen Poster Bedroom Group';
-                        break;
-
-                        case '99':
-                            $name = $item->SeriesName . ' King Poster Bedroom Group';
                         break;
 
                         default:

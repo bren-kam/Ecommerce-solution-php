@@ -453,7 +453,7 @@ abstract class ActiveRecordBase {
                     try {
                         $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
                     } catch( PDOException $e ) {
-                        throw new ModelException( $exception->getMessage(), $e );
+                        throw new ModelException( $e->getMessage(), $e );
                     }
                 }
 

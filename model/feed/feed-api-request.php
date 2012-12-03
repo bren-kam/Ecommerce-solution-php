@@ -79,7 +79,8 @@ class FeedApiRequest {
 		$this->authenticate();
 		
 		// Parse method
-		$this->parse();
+		if ( !$this->error )
+			$this->parse();
 	}
     
     /**
@@ -103,7 +104,7 @@ class FeedApiRequest {
 
 			$this->error = true;
 			$this->error_message = 'There was no authentication key';
-			exit;
+			return;
 		}
 
         $api_key = new ApiKey;
@@ -129,11 +130,13 @@ class FeedApiRequest {
 	 * @access protected
 	 */
 	protected function parse() {
-		if( in_array( $_POST['method'], $this->methods ) ) {
-			$this->method = $_POST['method'];
+		$method = ( isset( $_POST['method'] ) ) ? $_POST['method'] : '';
+		
+		if( in_array( $method, $this->methods ) ) {
+			$this->method = $method;
 			$this->statuses['method_called'] = true;
 			
-			call_user_func( array( 'FeedAPIRequest', $_POST['method'] ) );
+			call_user_func( array( 'FeedAPIRequest', $method ) );
 
             // used to be destruct
             // Make sure we haven't already logged something
@@ -154,10 +157,10 @@ class FeedApiRequest {
                 $this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
             }
 		} else {
-			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $_POST['method'] . '", is not a valid method.' ) );
+			$this->add_response( array( 'success' => false, 'message' => 'The method, "' . $method . '", is not a valid method.' ) );
 
 			$this->error = true;
-			$this->error_message = 'The method, "' . $_POST['method'] . '", is not a valid method.';
+			$this->error_message = 'The method, "' . $method . '", is not a valid method.';
 		}
 	}
 	
@@ -179,7 +182,7 @@ class FeedApiRequest {
          * @param int $limit (optional)
          * @return bool
          */
-        extract( $this->_get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
+        extract( $this->get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
 
     	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
 
@@ -295,15 +298,14 @@ class FeedApiRequest {
 	 * @param string $value (optional) $value of the $key. Only optional if $key is an array
 	 */
 	protected function add_response( $key, $value = '' ) {
-		if( empty( $value ) && !is_array( $key ) ) {
+		if( empty( $value ) && !is_array( $key ) )
 			$this->add_response( array( 'success' => false, 'message' => 'error' ) );
-		}
 
 		// Set the response
 		if( is_array( $key ) ) {
 			foreach( $key as $k => $v ) {
 				// Makes sure there isn't a premade message
-				$this->response[$k] = ( is_string( $v ) || is_int( $v ) && array_key_exists( $v, $this->messages ) ) ? $this->messages[$v] : $v;
+				$this->response[$k] = ( ( is_string( $v ) || is_int( $v ) ) && array_key_exists( $v, $this->messages ) ) ? $this->messages[$v] : $v;
 			}
 		} else {
 			// Makes sure there isn't a premade message
@@ -317,7 +319,7 @@ class FeedApiRequest {
 	 * @param mixed $args the args that contain the parameters to get
 	 * @return array $parameters
 	 */
-	protected function _get_parameters() {
+	protected function get_parameters() {
 		$args = func_get_args();
 		
 		// Make sure the arguments are correct
@@ -337,7 +339,7 @@ class FeedApiRequest {
 				
 				$this->error = true;
 				$this->error_message = $message;
-				exit;
+				return array();
 			}
 			
 			$parameters[$a] = $_POST[$a];

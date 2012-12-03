@@ -1,5 +1,5 @@
 <?php
-class HomeController extends BaseController {
+class RequestsController extends BaseController {
     /**
      * Setup the base for creating template responses
      */

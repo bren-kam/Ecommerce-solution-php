@@ -2,7 +2,7 @@
 /**
  * Email helper
  */
-class Email {
+class EmailHelper {
     /**
      * Variables to send out
      */

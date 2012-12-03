@@ -83,7 +83,7 @@ class Authorized_Users extends Base_Class {
 		global $user, $u;
 
 		if ( $au = $u->get_user_by_email( $email, false ) ) {
-			if ( $au['role'] > 1 )
+			if ( !in_array( $au['role'], array( 1, 6 ) ) )
                 return false;
 			
 			// If they are already authorized, nothing else to do

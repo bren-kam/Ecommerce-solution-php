@@ -222,7 +222,6 @@ class CurrentAd extends ActiveRecordBase {
 	 * @param int $fb_page_id
 	 * @param string $name
 	 * @param string $email_address
-	 * @return bool
 	 */
 	public function add_email( $fb_page_id, $name, $email_address ) {
         // We only want lowercase email addresses
@@ -233,7 +232,7 @@ class CurrentAd extends ActiveRecordBase {
 
 		// We need to get the email_id
         $email = new Email();
-        $email->get_email_by_email( $account->id, $email_address );
+        $email->get_by_email( $account->id, $email_address );
 
         // The status needs to be 1 in either case of existence or lack thereof
         $email->status = 1;

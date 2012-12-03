@@ -105,8 +105,10 @@ class EmailSignUpController extends BaseController {
 
         $success = false;
 
-        if ( $form->posted() )
-            $success = $email_sign_up->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+        if ( $form->posted() ) {
+            $email_sign_up->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+            $success = true;
+        }
 
         $tab = $email_sign_up->get_tab( $signed_request['page']['id'] );
         $tab .= $form->generate_form();
