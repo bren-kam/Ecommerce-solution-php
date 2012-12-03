@@ -50,6 +50,30 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test getting accounts by a user
+     */
+    public function testGetByAuthorizedUser() {
+        // Declare variables
+        $user_id = 24;
+
+        // Get the account
+        $accounts = $this->account->get_by_authorized_user( $user_id );
+
+        $this->assertTrue( current( $accounts ) instanceof Account );
+
+        $testing_account_exists = false;
+
+        foreach ( $accounts as $account ) {
+            if ( 57 == $account->id ) {
+                $testing_account_exists = true;
+                break;
+            }
+        }
+
+        $this->assertTrue( $testing_account_exists );
+    }
+
+    /**
      * Test getting accounts by a product
      */
     public function testGetByProduct() {

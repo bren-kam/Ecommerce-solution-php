@@ -40,26 +40,24 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
 	</div>
 	<div id="nav">
 		<div id="nav-links">
-			<?php if ( $user && $user->id ) { ?>
-                <a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php echo $template->v('section_accounts'); ?>><?php echo _('Accounts'); ?></a>
-                <a href="/products/" title="<?php echo _('Products'); ?>"<?php echo $template->v('section_products'); ?>><?php echo _('Products'); ?></a>
-                <?php if ( $user->has_permission(7) ) { ?>
-                    <a href="/users/" title="<?php echo _('Users'); ?>"<?php echo $template->v('section_users'); ?>><?php echo _('Users'); ?></a>
-                <?php } ?>
-                <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
-                <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
-                <?php if ( $user->has_permission(7) ) { ?>
-                <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
-                <?php } ?>
-                <div id="nav-right">
-                    <div id="support">
-                        <a href="#" id="aSupport" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
-                        <div id="support-drop-down" class="hidden">
-                            <a href="#" id="aTicket" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support Request'); ?></a>
-                            <a href="/help/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Knowledge Base'); ?></a>
-                        </div>
+            <a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php echo $template->v('section_accounts'); ?>><?php echo _('Accounts'); ?></a>
+            <a href="/products/" title="<?php echo _('Products'); ?>"<?php echo $template->v('section_products'); ?>><?php echo _('Products'); ?></a>
+            <?php if ( $user->has_permission(7) ) { ?>
+                <a href="/users/" title="<?php echo _('Users'); ?>"<?php echo $template->v('section_users'); ?>><?php echo _('Users'); ?></a>
+            <?php } ?>
+            <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
+            <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
+            <?php if ( $user->has_permission(7) ) { ?>
+            <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
+            <?php } ?>
+            <div id="nav-right">
+                <div id="support">
+                    <a href="#" id="aSupport" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
+                    <div id="support-drop-down" class="hidden">
+                        <a href="#" id="aTicket" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support Request'); ?></a>
+                        <a href="/help/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Knowledge Base'); ?></a>
                     </div>
                 </div>
-			<?php } ?>
+            </div>
 		</div>
 	</div>

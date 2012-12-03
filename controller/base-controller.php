@@ -163,6 +163,43 @@ abstract class BaseController {
         if ( !$this->user->has_permission( $permission ) )
             return false;
 
+        // Account Side
+        if ( 'admin' != SUBDOMAIN ) {
+            // We need to get the account(s)
+            $account_id = get_cookie('wid');
+            $account = new Account();
+
+            // Grab all the accounts for the type of user they are
+            if ( in_array( $this->user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) ) {
+                $accounts = $account->get_by_authorized_user( $this->user->id );
+            } else {
+                $accounts = $account->get_by_user( $this->user->id );
+            }
+
+            // They don't have any accounts, they can't login
+            if ( !is_array( $accounts ) ) {
+                url::redirect('/logout/');
+                return true;
+            }
+
+            // If they have a specific account, get that
+            if ( $account_id ) {
+                /**
+                 * @var Account $account
+                 */
+                foreach ( $accounts as $account ) {
+                    if ( $account_id == $account->id ) {
+                        $this->user->account = $account;
+                        break;
+                    }
+                }
+            }
+
+            // If they don't have a specific account, grab the first one they can
+            if ( !$this->user->account )
+                $this->user->account = array_shift( $accounts );
+        }
+
         return true;
     }
 

@@ -1,5 +1,9 @@
 <?php
 class User extends ActiveRecordBase {
+    const ROLE_AUTHORIZED_USER = 1;
+    const ROLE_STORE_OWNER = 5;
+    const ROLE_MARKETING_SPECIALIST = 6;
+
     /**
      * Hold whether admin is active or not
      * @var int
@@ -14,6 +18,12 @@ class User extends ActiveRecordBase {
 
     // These columns belong to another table but might be available from the user
     public $company, $domain;
+
+    /**
+     * Holds the account if it has it
+     * @var Account
+     */
+    public $account;
 
     private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role' );
 

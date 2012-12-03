@@ -8,7 +8,7 @@ class HomeController extends BaseController {
         parent::__construct();
 
         $this->view_base = 'home/';
-        $this->title = 'Home';
+        $this->title = 'Dashboard';
     }
 
     /**
@@ -16,7 +16,10 @@ class HomeController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        return $this->get_template_response( 'index' );
+        $response = $this->get_template_response( 'index' );
+        $response->select('dashboard');
+
+        return $response;
     }
 }
 
