@@ -1,0 +1,120 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+    width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/*** END RESET ***/
+
+/*** START COMMON ***/
+
+/* Common Styles */
+html { border-top: 6px solid #5B666E; }
+body { font-family:Arial, Helvetica, sans-serif; font-size:14px; background: #DADFE3 !important; border-top: 1px solid #646F76; }
+
+a { text-decoration:none; }
+a:hover { color:#595f65 }
+a img { border: none }
+.center { text-align: center }
+
+/* Common Classes */
+.login-button {
+	font-size: 17px;
+	font-weight: bold;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	color: #fff !important;
+	padding: 5px 20px;
+
+}
+
+input.login-button {
+    font-family:Arial, Helvetica, sans-serif;
+	margin:0;
+	cursor: pointer;
+	padding:5px 20px;
+}
+
+
+.float-right { float:right; position:relative }
+.tmpval { color: #929292 }
+
+
+/*** END COMMON ***/
+
+/*** START TEMPLATE SPECIFICS ***/
+
+/* Main Containers */
+#login-logo { text-align: center }
+#login { width: 310px; margin: 0 auto; background-color: #fff; height: 158px;
+    padding: 20px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+#remember-me { position: relative; top: 5px; float: left;}
+
+#lost-your-password { margin-top: 25px }
+#lost-your-password a { color: #5B666E; font-size: 12px; }
+
+/***** FORM *****/
+input.tb {
+	border: 1px solid #B3B3B3;
+    font-size: 20px;
+    color: #4b4f51;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+	height: 25px;
+	padding: 7px 10px;
+	width: 288px;
+    margin-bottom: 21px;
+}
+
+.cb { position: relative; top: 3px; }
+label { font-size: 12px; color: #5B666E }

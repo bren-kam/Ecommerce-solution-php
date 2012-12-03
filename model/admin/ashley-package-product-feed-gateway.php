@@ -398,7 +398,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
                 // Bedroom Groups
                 case 228:
-                    preg_match( '/([0-9]+)(?:[SN]|\/91|\/92|\/93|\/96|\/98|\/99)?$/', $sku, $matches );
+                    preg_match( '/([0-9]+)(?:[SN]|\/91|\/92|\/93|\/96S?|\/98|\/99)?$/', $sku, $matches );
 					$last_sku = $matches[1];
                     $add = true;
 					

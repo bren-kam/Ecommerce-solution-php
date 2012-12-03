@@ -7,4 +7,4 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require '../old/account/load.php';
+require '../load.php';

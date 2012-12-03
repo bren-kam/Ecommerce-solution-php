@@ -27,12 +27,12 @@
     if ( $signed_request['page']['liked'] && !empty( $sweepstakes->share_text ) ) {
 		$link = 'http://www.facebook.com/dialog/feed?';
 		$link .= 'app_id=' . $app_id . '&';
-		$link .= 'link=' . $url . '&';
+		$link .= 'link=' . urlencode( $url ) . '&';
 		$link .= 'picture=' . $sweepstakes->share_image_url . '&';
 		$link .= 'name=' . urlencode( $sweepstakes->share_title ) . '&';
 		$link .= 'description=' . urlencode( $sweepstakes->share_text ) . '&';
 		$link .= 'message=' . urlencode( 'Checkout these Sweepstakes!' ) . '&';
-		$link .= 'redirect_uri=' . $url;
+		$link .= 'redirect_uri=' . urlencode( $url );
 	    ?>
 	    <p style="float:right"><a href="#" onclick="top.location.href='<?php echo $link; ?>';" title="Share"><img src="http://apps.imagineretailer.com/images/buttons/share.png" width="72" height="32" alt="<?php echo _('Share'); ?>" /></a>
     	<?php

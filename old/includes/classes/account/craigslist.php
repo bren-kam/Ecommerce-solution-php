@@ -345,14 +345,16 @@ class Craigslist extends Base_Class {
             $values .= "( $craigslist_ad_id, $cmid )";
         }
 
-        // Delete all the ones that are not there
-        $this->db->query( "DELETE a.* FROM `craigslist_ad_markets` AS a LEFT JOIN `craigslist_ads` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) WHERE a.`craigslist_ad_id` = $craigslist_ad_id AND a.`craigslist_market_id` NOT IN (" . implode( ',', $craigslist_market_ids ) . ")AND b.`website_id` = $website_id" );
+        if ( !empty( $craigslist_market_ids ) ) {
+            // Delete all the ones that are not there
+            $this->db->query( "DELETE a.* FROM `craigslist_ad_markets` AS a LEFT JOIN `craigslist_ads` AS b ON ( a.`craigslist_ad_id` = b.`craigslist_ad_id` ) WHERE a.`craigslist_ad_id` = $craigslist_ad_id AND a.`craigslist_market_id` NOT IN (" . implode( ',', $craigslist_market_ids ) . ")AND b.`website_id` = $website_id" );
 
-        // Handle any error
-		if( $this->db->errno() ) {
-			$this->_err( 'Failed to delete Craigslist Ad Markets.', __LINE__, __METHOD__ );
-			return false;
-		}
+            // Handle any error
+            if( $this->db->errno() ) {
+                $this->_err( 'Failed to delete Craigslist Ad Markets.', __LINE__, __METHOD__ );
+                return false;
+            }
+        }
 
         // If there are no values to add, we're done
         if ( empty( $values ) )
