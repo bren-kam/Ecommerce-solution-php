@@ -66,7 +66,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
                 <br />
                 (<a href="/accounts/control/?aid=<?php echo $ticket->website_id; ?>" target="_blank" title="<?php echo _('Control'); ?>"><?php echo _('Control'); ?></a>
 
-                <?php if ( $user->has_permission(10) ) { ?>
+                <?php if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ) { ?>
                     | <a href="/accounts/edit/?aid=<?php echo $ticket->website_id; ?>" target="_blank" title="<?php echo _('Edit'); ?>"><?php echo _('Edit'); ?></a><?php } ?>)
             <?php } ?>
         </td>

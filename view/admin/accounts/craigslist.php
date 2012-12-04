@@ -24,7 +24,7 @@
     <?php
     }
 
-    if ( $user->has_permission(10) ) {
+    if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ) {
         ?>
         <div class="tab-link"><a href="/accounts/dns/?aid=<?php echo $account->id; ?>" title="<?php echo _('DNS'); ?>"><?php echo _('DNS'); ?></a></div>
     <?php } ?>

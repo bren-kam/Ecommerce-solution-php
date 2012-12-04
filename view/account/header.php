@@ -88,3 +88,16 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
             </div>
 		</div>
 	</div>
+    <div id="current-site">
+        <div class="float-left">
+            <h3><?php echo _('Site'), ': ', $user->account->title; ?></h3>
+            <?php if ( count( $user->accounts ) > 1 ) { ?>
+                <p><a href="/home/select-account/" class="highlight" title="<?php echo _('Change Account'); ?>">(<?php echo _('Change'); ?>)</a></p>
+            <?php } ?>
+        </div>
+        <?php if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) ) { ?>
+        <div id="return-to-admin">
+            <p><a href="http://admin.<?php echo DOMAIN; ?>/accounts/" class="button" title="<?php echo _('Back to Admin'); ?>"><?php echo _('Back to Admin'); ?></a></p>
+        </div>
+        <?php } ?>
+    </div>

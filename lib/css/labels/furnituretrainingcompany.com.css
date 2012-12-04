@@ -4,7 +4,7 @@
 body { background-color: #A2AAB0 }
 #log-out, #log-out a { color: #4B4F51 }
 #nav { border-bottom-color: #BE1E25; }
-#nav-right a { color: #BE1E25 }
+#nav-right a, .highlight { color: #BE1E25 }
 #footer, #footer a { color: #DADFE3 }
 #footer a:hover { color:  #fff }
 #sidebar a.sub { color: #BE1E25 }

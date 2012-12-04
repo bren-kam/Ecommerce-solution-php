@@ -157,6 +157,12 @@ input.button {
     / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(63,65,66)), color-stop(0.56, rgb(33,33,34)) );
 }
 
+#current-site { height: 32px; padding: 18px 19px 0; background-color: #ECF1F4 }
+#current-site h3 { font-size: 17px; font-weight: bold; display: inline; color: #4B4F51 }
+#current-site p { display: inline }
+#current-site a { font-size: 15px; font-weight: bold }
+
+#return-to-admin { position: relative; bottom: 9px; float: right }
 
 #sidebar { margin-top: 47px; width: 150px; background: #282829 url(/images/backgrounds/sidebar.png) 0 0 no-repeat; padding: 5px; position: absolute; }
 #actions { border: 1px solid #212121; }

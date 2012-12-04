@@ -47,8 +47,8 @@ if ( !empty( $selected ) )
 			<?php if ( $user && '/select-website/' != $_SERVER['REQUEST_URI'] ) { ?>
 				<a href="/" title="<?php echo _('Home'); ?>"<?php if ( isset( $home ) ) echo $home; ?>><?php echo _('Home'); ?></a>
 				<?php
-				if ( isset( $user['website'] ) ) { 
-					$links = array( 
+				if ( isset( $user['website'] ) ) {
+					$links = array(
 						'pages'				=> array( 'website', _('Website') )
 						, 'product_catalog'	=> ( 'High Impact' == $user['website']['type'] ) ? array( 'products/top-brands', _('Brands') ) : array( 'products', _('Products') )
 						, 'live' 				=> array( 'analytics', _('Analytics') )
@@ -59,16 +59,16 @@ if ( !empty( $selected ) )
 						, 'social_media'	=> array( 'social-media', _('Social Media') )
                         , 'mobile_marketing' => array( 'mobile-marketing', _('Mobile Marketing') )
 					);
-					
+
 					$keys = array_keys( $links );
-					
+
 					foreach ( $user['website'] as $k => $v ) {
 						// Don't need to deal with antyhing other keys
 						if ( 'email_marketing' != $k && ( !in_array( $k, $keys ) || !$v ) )
 							continue;
-						
+
 						$selectedClass = ( $k == $selected ) ? ' class="selected"' : '';
-						
+
 						if ( 'blog' == $k ) {
 						?>
 						<form action="http://<?php echo ( ( $user['website']['subdomain'] != '' ) ? $user['website']['subdomain'] . '.' : '' ) . $user['website']['domain']; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm">

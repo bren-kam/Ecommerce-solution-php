@@ -42,12 +42,12 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
 		<div id="nav-links">
             <a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php echo $template->v('section_accounts'); ?>><?php echo _('Accounts'); ?></a>
             <a href="/products/" title="<?php echo _('Products'); ?>"<?php echo $template->v('section_products'); ?>><?php echo _('Products'); ?></a>
-            <?php if ( $user->has_permission(7) ) { ?>
+            <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
                 <a href="/users/" title="<?php echo _('Users'); ?>"<?php echo $template->v('section_users'); ?>><?php echo _('Users'); ?></a>
             <?php } ?>
             <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
             <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
-            <?php if ( $user->has_permission(7) ) { ?>
+            <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
             <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
             <?php } ?>
             <div id="nav-right">

@@ -362,7 +362,7 @@ class ChecklistsController extends BaseController {
         $dt->add_where( " AND c.`checklist_id` {$not}IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )" );
 
         // If they are below 8, that means they are a partner
-		if ( !$this->user->has_permission(8) )
+		if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
 			$dt->add_where( ' AND u.`company_id` = ' . (int) $this->user->company_id );
 
         $checklist = new Checklist();
