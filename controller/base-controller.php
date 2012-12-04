@@ -184,20 +184,28 @@ abstract class BaseController {
 
             // If they have a specific account, get that
             if ( $account_id ) {
+                $account->get( $account_id );
+                $this->user->account = $account;
+
                 /**
                  * @var Account $account
                  */
-                foreach ( $this->user->accounts as $account ) {
-                    if ( $account_id == $account->id ) {
-                        $this->user->account = $account;
-                        break;
+                if ( !$this->user->account ) {
+                    foreach ( $this->user->accounts as $account ) {
+                        if ( $account_id == $account->id ) {
+                            $this->user->account = $account;
+                            break;
+                        }
                     }
+
+                    if ( !$this->user->account )
+                        $this->user->account = reset( $this->user->accounts );
+
+                    // Set the cookie
+                    if ( $this->user->account )
+                        set_cookie( 'wid', $this->user->account->id, 172800 );
                 }
             }
-
-            // If they don't have a specific account, grab the first one they can
-            if ( !$this->user->account )
-                $this->user->account = reset( $this->user->accounts );
         }
 
         return true;
