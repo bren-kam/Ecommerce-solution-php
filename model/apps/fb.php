@@ -51,7 +51,7 @@ class Fb {
 		}
 		
 		// Login or logout url will be needed depending on current user state.
-		if ( !$this->user_id && !$skip) {
+		if ( !$this->user_id && !$skip ) {
             // If we need to get permission
             $permissions = ( !empty( $parameters ) ) ? '&' . http_build_query( $parameters ) : '';
             $redirect_uri = urlencode( "http://apps.facebook.com/$uri/" );

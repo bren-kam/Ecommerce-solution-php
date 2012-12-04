@@ -5,20 +5,12 @@ class AboutUsController extends BaseController {
     const APP_URI = 'op-about-us';
 
     /**
-     * FB Class
-     *
-     * @var FB $fb;
-     */
-    protected $fb;
-
-    /**
      * Setup the base for creating template responses
      */
     public function __construct() {
         // Pass in the base for all the views
         parent::__construct();
 
-        $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
         $this->section = _('About Us');
     }
 
@@ -28,6 +20,7 @@ class AboutUsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
         $form = new stdClass();
         $success = $website = false;
 
@@ -59,7 +52,7 @@ class AboutUsController extends BaseController {
             $form->add_field( 'hidden', 'app_data', $_REQUEST['app_data'] );
 
             // Make sure it's a valid request
-            if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
+            if( $other_user_id == $fb->user_id && $page_id && $form->posted() ) {
                 $about_us->connect( $page_id, $_POST['tFBConnectionKey'] );
 
                 $website = $about_us->get_connected_website( $page_id );
@@ -87,7 +80,9 @@ class AboutUsController extends BaseController {
     public function tab() {
         // Setup variables
         $about_us = new AboutUs;
-        $signed_request = $this->fb->getSignedRequest();
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, true );
+
+        $signed_request = $fb->getSignedRequest();
         $tab = $about_us->get_tab( $signed_request['page']['id'] );
 
         // If it's secured, make the images secure
@@ -99,7 +94,7 @@ class AboutUsController extends BaseController {
             $admin = '<p><strong>Admin:</strong> <a href="#" onclick="top.location.href=' . "'";
             $admin .= url::add_query_arg(
                 'app_data'
-                , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
+                , url::encode( array( 'uid' => security::encrypt( $fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
                 , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
@@ -122,10 +117,12 @@ class AboutUsController extends BaseController {
      * @return RedirectResponse
      */
     public function settings() {
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
+
         // Redirect to correct location
         return new RedirectResponse( url::add_query_arg(
             'app_data'
-            , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
+            , url::encode( array( 'uid' => security::encrypt( $fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
             , '/facebook/about-us/'
         ) );
     }

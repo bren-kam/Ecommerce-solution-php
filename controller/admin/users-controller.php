@@ -65,7 +65,7 @@ class UsersController extends BaseController {
         if ( $this->user->has_permission( User::ROLE_ADMIN ) ) {
             $companies = ar::assign_key( $company->get_all( PDO::FETCH_ASSOC ), 'company_id', true );
 
-            $ft->add_field( 'select', _('Company'), 'sCompany', $user->company )
+            $ft->add_field( 'select', _('Company'), 'sCompany', $user->company_id )
                 ->options( $companies );
         }
 
