@@ -27,13 +27,4 @@ class ErrorController extends BaseController {
     protected function http_403() {
         return $this->get_template_response('403');
     }
-
-    /**
-     * Override login function
-     * @return bool
-     */
-    protected function get_logged_in_user() {
-        $this->user = new User();
-        return true;
-    }
 }
