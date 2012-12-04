@@ -5,20 +5,12 @@ class PostingController extends BaseController {
     const APP_URI = 'op-posting';
 
     /**
-     * FB Class
-     *
-     * @var FB $fb
-     */
-    protected $fb;
-
-    /**
      * Setup the base for creating template responses
      */
     public function __construct() {
         // Pass in the base for all the views
         parent::__construct();
 
-        $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
         $this->section = _('Posting');
     }
 
@@ -28,6 +20,7 @@ class PostingController extends BaseController {
      * @return TemplateResponse|HtmlResponse
      */
     protected function index() {
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
         $success = false;
         $options = array();
         $posting = new Posting();
@@ -50,10 +43,10 @@ class PostingController extends BaseController {
             $params = null;
             parse_str( $response, $params );
 
-            $this->fb->setAccessToken( $params['access_token'] );
-            $this->fb->setExtendedAccessToken();
+            $fb->setAccessToken( $params['access_token'] );
+            $fb->setExtendedAccessToken();
 			
-            $posting->update_access_token( $this->fb->user_id, $this->fb->getAccessToken(), $_REQUEST['fb_page_id'] );
+            $posting->update_access_token( $fb->user_id, $fb->getAccessToken(), $_REQUEST['fb_page_id'] );
 
             return new HtmlResponse("<script>top.location.href='" . $_REQUEST['gsr_redirect'] . "'</script>");
         }
@@ -66,18 +59,18 @@ class PostingController extends BaseController {
 
         // Make sure it's a valid request
         if ( $form->posted() ) {
-            $this->fb->setExtendedAccessToken();
-            $success = $posting->connect( $this->fb->user_id, $_POST['sFBPageID'], $this->fb->getAccessToken(), $_POST['tFBConnectionKey'] );
+            $fb->setExtendedAccessToken();
+            $success = $posting->connect( $fb->user_id, $_POST['sFBPageID'], $fb->getAccessToken(), $_POST['tFBConnectionKey'] );
         }
 
         // See if we're connected
-        $connected = $posting->connected( $this->fb->user_id );
+        $connected = $posting->connected( $fb->user_id );
 
         // Connected pages
-        $pages = ( $connected ) ? $posting->get_connected_pages( $this->fb->user_id ) : array();
+        $pages = ( $connected ) ? $posting->get_connected_pages( $fb->user_id ) : array();
 
         // Get the accounts of the user
-        $accounts = $this->fb->api( "/{$this->fb->user_id}/accounts" );
+        $accounts = $fb->api( "/{$fb->user_id}/accounts" );
 		
         // Get a list of the pages they have available
         if ( is_array( $accounts['data'] ) )
@@ -107,10 +100,12 @@ class PostingController extends BaseController {
      * @return RedirectResponse
      */
     public function settings() {
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
+
         // Redirect to correct location
         return new RedirectResponse( url::add_query_arg(
             'app_data'
-            , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
+            , url::encode( array( 'uid' => security::encrypt( $fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
             , '/facebook/posting/'
         ) );
     }
