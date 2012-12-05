@@ -13,9 +13,9 @@
 echo $template->start( _('Website Categories') );
 ?>
 
-<div>
+<div class="relative">
     <select id="sParentCategoryID">
-        <option value="0">-- <?php echo _('Parent Category - Top'); ?> --</option>
+        <option value="0">-- <?php echo _('Parent Category (Top) '); ?> --</option>
         <?php
         foreach ( $categories as $category ) {
             ?>

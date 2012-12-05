@@ -22,11 +22,180 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Edit Page
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function edit() {
+        // Make sure they can be here
+        if ( !isset( $_GET['apid'] ) )
+            return new RedirectResponse('/website/');
+
+        // Initialize variables
+        $page = new AccountPage();
+        $page->get( $_GET['apid'] );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $account_pagemeta = new AccountPagemeta();
+
+        /***** VALIDATION *****/
+        $v = new Validator( 'fEditPage' );
+
+        // Products can be blank
+        if ( 'products' != $page->slug )
+            $v->add_validation( 'taContent', 'req', _('Page Content is required.') );
+
+        // Custom validation
+        switch ( $page->slug ) {
+            case 'financing':
+                $v->add_validation( 'tApplyNowLink', 'URL', _('The "Apply Now Link" field must contain a valid link') );
+            break;
+
+            case 'current-offer':
+                $v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
+                $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
+            break;
+
+            default:break;
+        }
+
+        /***** HANDLE SUBMIT *****/
+
+        // Initialize variable
+        $success = false;
+
+        // Make sure it's a valid request
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            // if there are no errors
+            if ( empty( $errs ) ) {
+                // Home page can't update their slug
+                $slug = ( 'home' == $page->slug ) ? 'home' : $_POST['tPageSlug'];
+                $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : $_POST['tTitle'];
+                $mobile = (int) 'on' == $_POST['cbIsMobile'];
+
+                // Update the page
+                $page->slug = $slug;
+                $page->title = $title;
+                $page->content = $_POST['taContent'];
+                $page->meta_title = $_POST['tMetaTitle'];
+                $page->meta_description = $_POST['tMetaDescription'];
+                $page->meta_keywords = $_POST['tMetaKeywords'];
+                $page->mobile = $mobile;
+                $page->save();
+
+                $success = true;
+
+                // Update custom meta
+                switch ( $page->slug ) {
+                    case 'contact-us':
+                        $pagemeta = array( 'addresses' => htmlspecialchars( $_POST['hAddresses'] ) );
+                    break;
+
+                    case 'current-offer':
+                        $pagemeta = array(
+                            'email' => $_POST['tEmail']
+                            , 'display-coupon' => $_POST['cbDisplayCoupon']
+                            , 'email-coupon' => ( isset( $_POST['cbEmailCoupon'] ) ) ? 'yes' : 'no'
+                        );
+                    break;
+
+                    case 'financing':
+                        $pagemeta = array( 'apply-now' => $_POST['tApplyNowLink'] );
+                    break;
+
+                    case 'products':
+                        $pagemeta = array(
+                            'top' => $_POST['sTop']
+                            , 'page-title' => $page->title
+                        );
+                    break;
+
+                    default:break;
+                }
+
+                // Set pagemeta
+                if ( isset( $pagemeta ) )
+                    $account_pagemeta->add_bulk_by_page( $page->id, $pagemeta );
+            }
+        }
+
+        /***** ATTACHMENTS & PAGEMETA *****/
+
+        $resources = array();
+
+        switch ( $page->slug ) {
+            case 'contact-us':
+                $this->resources
+                    ->css('website/pages/contact-us')
+                    ->javascript('website/pages/contact-us');
+
+                list( $contacts, $multiple_location_map, $hide_all_maps ) = array_values( $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' ) );
+                $resources = compact( 'contacts', 'multiple_location_map', 'hide_all_maps' );
+            break;
+
+            case 'current-offer':
+                // Need to get an attachment
+                $account_page_attachment = new AccountPageAttachment();
+
+                $coupon = $account_page_attachment->get_by_key( $page->id, 'coupon' );
+                $metadata = $account_pagemeta->get_by_keys( $page->id, 'email', 'display-coupon', 'email-coupon' );
+
+                $this->resources->javascript( 'website/pages/current-offer' );
+                $resources = compact( 'coupon', 'metadata' );
+            break;
+
+            case 'financing':
+                // Need to get an attachment
+                $account_page_attachment = new AccountPageAttachment();
+
+                $apply_now = $account_page_attachment->get_by_key( $page->id, 'apply-now' );
+                $apply_now_link = $account_pagemeta->get_by_keys( $page->id, 'apply-now' );
+
+                $this->resources->javascript('website/pages/financing');
+                $resources = compact( 'apply_now', 'apply_now_link' );
+            break;
+
+            case 'products':
+                $top = $account_pagemeta->get_by_keys( $page->id, 'top' );
+                $resources = compact( 'top' );
+            break;
+
+            default:break;
+        }
+
+        if ( 'products' == $page->slug ) {
+            $page_title = $account_pagemeta->get_by_keys( $page->id, 'page-title' );
+        } else {
+            $page_title = $page->title;
+        }
+
+        /***** NORMAL PAGE FUNCTIONS *****/
+
+        // Setup response
+        $js_validation = $v->js_validation();
+
+        $this->resources->css('website/pages/page');
+
+        $response = $this->get_template_response( 'edit' )
+            ->select( 'website', 'edit' )
+            ->set( array_merge( compact( 'files', 'js_validation', 'success', 'page_title' ), $resources ) );
+
+        return $response;
+    }
+
+    /**
      * List Website Categories
      *
      * @return TemplateResponse
      */
     protected function categories() {
+        // Reset any defaults
+        unset( $_SESSION['categories'] );
+
         $category = new Category();
         $account_category = new AccountCategory();
 
@@ -43,6 +212,10 @@ class WebsiteController extends BaseController {
 
             $categories[] = $category;
         }
+
+        $this->resources
+            ->css('website/categories')
+            ->javascript('website/categories');
 
         return $this->get_template_response( 'categories' )
             ->select( 'website', 'categories' )
@@ -112,7 +285,7 @@ class WebsiteController extends BaseController {
             $data[] = array(
                 $title . '<div class="actions">' .
                     '<a href="http://' . $this->user->account->domain . '/' . $page->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( 'wpid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
+                    '<a href="' . url::add_query_arg( 'apid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
                     '</div>'
                 , ( $page->status ) ? _('Visible') : _('Not Visible')
                 , $date_update->format('F jS, Y')
@@ -136,7 +309,7 @@ class WebsiteController extends BaseController {
         $account_category = new AccountCategory();
         $category = new Category();
 
-        $parent_category_id = ( isset( $_GET['pcid'] ) ) ? $_GET['pcid'] : 0;
+        $parent_category_id = ( isset( $_SESSION['categories']['pcid'] ) ) ? $_SESSION['categories']['pcid'] : 0;
 
         // Set Order by
         $dt->order_by( 'title', 'wc.`date_updated`' );

@@ -1,6 +1,6 @@
 <?php
 class AccountPage extends ActiveRecordBase {
-    public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $status, $date_created, $date_updated;
+    public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile, $status, $date_created, $date_updated;
 
     /**
      * Setup the account initial data
@@ -11,6 +11,21 @@ class AccountPage extends ActiveRecordBase {
         // We want to make sure they match
         if ( isset( $this->website_page_id ) )
             $this->id = $this->website_page_id;
+    }
+
+    /**
+     * Get
+     *
+     * @param int $account_page_id
+     */
+    public function get( $account_page_id ) {
+        $this->prepare(
+            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_page_id` = :account_page_id'
+            , 'i'
+            , array( ':account_page_id' => $account_page_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_page_id;
     }
 
     /**
@@ -42,6 +57,22 @@ class AccountPage extends ActiveRecordBase {
         ), 'issss' );
 
         $this->id = $this->website_page_id = $this->get_insert_id();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        parent::update( array(
+            'slug' => $this->slug
+            , 'title' => $this->title
+            , 'content' => $this->content
+            , 'meta_title' => $this->meta_title
+            , 'meta_description' => $this->meta_description
+            , 'meta_keywords' => $this->meta_keywords
+            , 'mobile' => $this->mobile
+        ), array( 'website_page_id' => $this->id )
+        , 'ssssssi', 'i' );
     }
 
     /**

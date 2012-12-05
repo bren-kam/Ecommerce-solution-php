@@ -58,23 +58,36 @@ class AccountPagemeta extends ActiveRecordBase {
     /**
      * Get by keys
      *
-     * @param array $account_page_ids
-     * @param array $pagemeta_keys
+     * @param array|int $account_page_ids
+     * @param array|string $pagemeta_keys
      * @return array
      */
-    public function get_by_keys( array $account_page_ids, array $pagemeta_keys ) {
-        foreach ( $account_page_ids as &$apid ) {
-            $apid = (int) $apid;
+    public function get_by_keys( $account_page_ids, array $pagemeta_keys ) {
+        $arguments = func_get_args();
+        $account_page_ids = array_shift( $arguments );
+
+        if ( is_array( $account_page_ids ) ) {
+            foreach ( $account_page_ids as &$apid ) {
+                $apid = (int) $apid;
+            }
+        } else {
+            $account_page_ids = array( (int) $account_page_ids );
         }
+
+        // They can add in multiple ways
+        if ( !is_array( $arguments[0] ) )
+            $pagemeta_keys = $arguments;
 
         $pagemeta_keys_count = count( $pagemeta_keys );
         $account_page_ids = implode( ', ', $account_page_ids );
 
-        return $this->prepare(
+        $pagemeta = $this->prepare(
             "SELECT `website_page_id`, `key`, `value` FROM `website_pagemeta` WHERE `website_page_id` IN ( $account_page_ids ) AND `key` IN( ?" . str_repeat( ', ?', $pagemeta_keys_count - 1 ) . ' )'
             , str_repeat( 's', $pagemeta_keys_count )
             , $pagemeta_keys
         )->get_results( PDO::FETCH_CLASS, 'AccountPagemeta' );
+
+        return ( 1 == count( $pagemeta ) ) ? reset( $pagemeta ) : $pagemeta;
     }
 
     /**
@@ -93,6 +106,33 @@ class AccountPagemeta extends ActiveRecordBase {
             $values .= '( ' . (int) $pm['website_page_id'] . ', ?, ? )';
             $key_values[] = $pm['key'];
             $key_values[] = $pm['value'];
+        }
+
+        $this->prepare(
+            "INSERT INTO `website_pagemeta` ( `website_page_id`, `key`, `value` ) VALUES $values ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )"
+            , str_repeat( 's', count( $pagemeta ) * 2 )
+            , $key_values
+        )->query();
+    }
+
+    /**
+     * Add Bulk by Page
+     *
+     * @param int
+     * @param array $pagemeta
+     */
+    public function add_bulk_by_page( $account_page_id, array $pagemeta ) {
+        $values = '';
+        $account_page_id = (int) $account_page_id;
+        $key_values = array();
+
+        foreach ( $pagemeta as $key => $value ) {
+            if ( !empty( $values ) )
+                $values .= ', ';
+
+            $values .= "( $account_page_id, ?, ? )";
+            $key_values[] = $key;
+            $key_values[] = $value;
         }
 
         $this->prepare(

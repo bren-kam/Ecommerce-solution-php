@@ -14,6 +14,23 @@ class AccountPageAttachment extends ActiveRecordBase {
     }
 
     /**
+	 * Check whether an attachment exists of specific key
+	 *
+	 * @param int $account_page_id
+	 * @param string $key
+	 * @return array
+	 */
+	public function get_by_key( $account_page_id, $key ) {
+		$attachments = $this->prepare(
+            'SELECT `website_attachment_id`, `key`, `value`, `extra`, `meta` FROM `website_attachments` WHERE `key` = :key AND `website_page_id` = :account_page_id'
+            , 'si'
+            , array( ':key' => $key, ':account_page_id' => $account_page_id )
+        )->get_results( PDO::FETCH_CLASS, 'AccountPageAttachment' );
+
+		return ( 1 == count( $attachments ) ) ? $attachments[0] : $attachments;
+	}
+
+    /**
      * Get by account page ids
      *
      * @param array $account_page_ids
