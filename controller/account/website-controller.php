@@ -272,6 +272,51 @@ class WebsiteController extends BaseController {
             ->set( compact( 'categories' ) );
     }
 
+    /**
+     * Add Page
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    public function edit_category() {
+        // Make sure they can be here
+        if ( !isset( $_GET['cid'] ) )
+            return new RedirectResponse('/website/categories/');
+
+        $category = new AccountCategory();
+        $category->get( $this->user->account->id, $_GET['cid'] );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        if ( $this->verified() ) {
+            if ( _('Category Title...') == $_POST['tTitle'] )
+                $_POST['tTitle'] = '';
+
+            $category->title = $_POST['tTitle'];
+            $category->content = $_POST['taContent'];
+            $category->meta_title = $_POST['tMetaTitle'];
+            $category->meta_description = $_POST['tMetaDescription'];
+            $category->meta_keywords = $_POST['tMetaKeywords'];
+            $category->top = $_POST['rPosition'];
+            $category->save();
+
+            $this->notify( _('Your category has been successfully saved!') );
+
+            return new RedirectResponse('/website/categories/');
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        $response = $this->get_template_response('edit-category')
+            ->select( 'website', 'edit-category' )
+            ->add_title( _('Edit Category') )
+            ->set( compact( 'category', 'files' ) );
+
+        return $response;
+    }
+
     /***** AJAX *****/
 
     /**

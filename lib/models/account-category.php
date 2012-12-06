@@ -1,6 +1,6 @@
 <?php
 class AccountCategory extends ActiveRecordBase {
-    public $website_id, $category_id, $title, $date_updated;
+    public $website_id, $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top, $date_updated;
 
     // Available from other tables
     public $parent_category_id;
@@ -10,6 +10,21 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function __construct() {
         parent::__construct( 'website_categories' );
+    }
+
+    /**
+     * Get
+     *
+     * @param int $account_id
+     * @param int $category_id
+     * @return array
+     */
+    public function get( $account_id, $category_id ) {
+        $this->prepare(
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id AND wc.`category_id` = :category_id AND wc.`status` = 1"
+            , 'ii'
+            , array( ':account_id' => $account_id, ':category_id' => $category_id )
+        )->get_row( PDO::FETCH_INTO, $this );
     }
 
     /**
@@ -24,6 +39,23 @@ class AccountCategory extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_col();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->update( array(
+            'title' => $this->title
+            , 'content' => $this->content
+            , 'meta_title' => $this->meta_title
+            , 'meta_description' => $this->meta_description
+            , 'meta_keywords' => $this->meta_keywords
+            , 'top' => $this->top
+        ), array(
+            'website_id' => $this->website_id
+        , 'category_id' => $this->category_id
+        ), 'sssssi', 'ii' );
     }
 
     /**

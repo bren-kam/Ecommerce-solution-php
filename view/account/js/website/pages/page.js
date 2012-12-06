@@ -68,7 +68,10 @@ jQuery(function($) {
     /********** Page Link  **********/
 	// Trigger the check to make sure the slug is available
     $('#tTitle').change( function() {
-        $('#tPageSlug').val( $(this).val().slug() );
+        var tPageSlug = $('#tPageSlug');
+
+        if ( tPageSlug.is('input') )
+            tPageSlug.val( $(this).val().slug() );
 	});
 });
 
