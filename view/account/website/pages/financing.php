@@ -4,18 +4,20 @@
  * @var User $user
  */
 ?>
-<table cellpadding="0" cellspacing="0" class="form">
+<table>
 	<tr>
-		<td class="top" style="padding-top: 7px" width="140"><label for="fApplyNow"><?php echo _('Apply Now Button'); ?>:</label></td>
+		<td class="top" width="140"><label><?php echo _('Apply Now Button'); ?>:</label></td>
 		<td>
 			<div id="dApplyNowContent">
 				<?php if ( !empty( $apply_now ) ) { ?>
-					<img src="http://<?php echo $user->account->domain, $apply_now->value; ?>" alt="<?php echo _('Apply Now'); ?>" style="padding-bottom: 10px;" />
+					<img src="<?php echo $apply_now->value; ?>" alt="<?php echo _('Apply Now'); ?>" style="padding-bottom: 10px;" />
 					<br />
 					<p><?php echo _('Place "[apply-now]" into the page content above to place the location of your image. When you view your website, this will be replaced with the image uploaded.'); ?></p>
 				<?php } ?>
 			</div>
-			<input type="file" name="fApplyNow" id="fApplyNow" />
+			<a href="#" id="aUploadImage" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
+            <div class="hidden" id="upload-image"></div>
+            <?php nonce::field( 'upload_image', '_upload_image' ); ?>
 		</td>
 	</tr>
 	<tr>

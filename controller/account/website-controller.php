@@ -433,7 +433,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['fn'], $_GET['aid'] ), _('Image failed to upload') );
+        $response->check( isset( $_GET['fn'], $_GET['aid'] ), _('File failed to upload') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -479,6 +479,99 @@ class WebsiteController extends BaseController {
         jQuery('#tFileName')
             ->val('')
             ->trigger('blur');
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload Image
+     *
+     * @return AjaxResponse
+     */
+    public function upload_image() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['fn'], $_GET['aid'], $_GET['apid'], $_GET['fn'] ), _('Not enough data to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File();
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+        $uploader = new qqFileUploader( array( 'gif', 'jpg', 'jpeg', 'png' ), 6144000 );
+
+        // Get some stuff
+        $page->get( $_GET['apid'] );
+
+        switch ( $_GET['fn'] ) {
+            case 'coupon':
+                $name = $key = 'coupon';
+                $width = 405;
+                $height = 450;
+            break;
+
+            case 'financing':
+                $name = 'btn.apply-now';
+                $key = 'apply-now';
+                $width = 200;
+                $height = 70;
+            break;
+
+            default:
+                $response->check( false, _('Wrong data found to upload image') );
+                return $response;
+            break;
+        }
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $image_dir = $this->user->account->id . "/$key/";
+        $image_name = $file->upload_image( $result['file_path'], $name, $width, $height, 'websites', $image_dir );
+
+        // Form image url
+        $image_url = 'http://websites.retailcatalog.us/' . $image_dir . $image_name;
+
+        // Create/update the account attachment
+        $attachment = $attachment->get_by_key( $page->id, $key );
+
+        // Set variables
+        $attachment->website_page_id = $page->id;
+        $attachment->key = $key;
+        $attachment->value = $image_url;
+
+        if ( $attachment->id ) {
+            $attachment->save();
+        } else {
+            $attachment->create();
+        }
+
+        switch ( $page->slug ) {
+            case 'current-offer':
+                jQuery('#dCouponContent')->html('<img src="' . $image_url . '" style="padding-bottom:20px" alt="' . _('Coupon') . '" /><br />');
+            break;
+
+            case 'financing':
+                jQuery('#dApplyNowContent')->html('<img src="' . $image_url . '" style="padding-bottom:10px" alt="' . _('Apply Now') . '" /><br /><p>' . _('Place "[apply-now]" into the page content above to place the location of your image. When you view your website, this will be replaced with the image uploaded.') . '</p>' );
+            break;
+        }
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );

@@ -70,7 +70,7 @@ if ( !empty( $errs ) )
         <?php
         if ( !empty( $files ) ) {
             // Set variables
-            $ajax_delete_file_nonce = nonce::create('delete-file');
+            $delete_file_nonce = nonce::create('delete_file');
             $confirm = _('Are you sure you want to delete this file?');
 
             /**
@@ -78,7 +78,7 @@ if ( !empty( $errs ) )
              */
             foreach ( $files as $file ) {
                 $file_name = f::name( $file->file_path );
-                echo '<li id="li' . $file->id . '"><a href="', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '">', $file_name, '</a><a href="/ajax/website/page/delete-file/?_nonce=' . $ajax_delete_file_nonce . '&amp;wfid=' . $wf['website_file_id'] . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
+                echo '<li id="li' . $file->id . '"><a href="', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '">', $file_name, '</a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></li>';
             }
         } else {
             echo '<li class="no-files">', _('You have not uploaded any files.') . '</li>';
@@ -96,10 +96,7 @@ if ( !empty( $errs ) )
         <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
     </div>
 </div>
-<?php
-nonce::field( 'upload_file', '_upload_file' );
-nonce::field( 'upload_image', '_upload_image' );
-?>
+<?php nonce::field( 'upload_file', '_upload_file' ); ?>
 <input type="hidden" id="hAccountId" value="<?php echo $user->account->id; ?>" />
 <input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
 <?php echo $template->end(); ?>

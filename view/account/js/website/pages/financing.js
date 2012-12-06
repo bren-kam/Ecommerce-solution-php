@@ -1,23 +1,27 @@
 jQuery(function(){
-	// Make the upload image icon work with uploadify
-	$('#fApplyNow').uploadify({
-		auto      	: true,
-		displayData	: 'speed',
-		buttonImg 	: '/images/buttons/products/upload-images.png',
-		cancelImg 	: '/images/icons/cancel.png',
-		fileExt		: '*.pdf;*.mov;*.wmv;*.flv;*.swf;*.f4v;*mp4;*.avi;*.mp3;*.aif;*.wma;*.wav;*.csv;*.doc;*.docx;*.rtf;*.xls;*.xlsx;*.wpd;*.txt;*.wps;*.pps,*.ppt,*.wks,*.bmp,*.gif;*.jpg;*.jpeg;*.png,*.psd;*.tif;*.zip;*.7z;*.rar;*.zipx;',
-		fileDesc	: 'Valid File Formats', // @Fix needs to be put in PHP
-		scriptData	: { '_nonce' : $('#_ajax_upload_file').val(), 'wid' : $('#hWebsiteID').val() },
-		onComplete	: function( e, queueID, fileObj, response ) {
-			ajaxResponse( $.parseJSON( response ) );
-		},
-		onSelect	: function() {
-			// $('#fCoupon').uploadifySettings( 'scriptData', { '_nonce' : $('#_ajax_upload_image').val(), 'wid' : $('#hWebsiteID').val() } );
-			$('#fApplyNow').uploadifySettings( 'scriptData', { '_nonce' : $('#_ajax_upload_image' ).val(), 'wid' : $('#hWebsiteID').val(), 'wpid' : $('#hWebsitePageID').val(), 'fn' : 'apply-now' } );
-			return true;
-		},
-		sizeLimit	: 6291456,// (6mb) In bytes? Really?
-		script    	: '/ajax/website/page/upload-image/',
-		uploader  	: '/media/flash/uploadify.swf'
-	});	
+    // Setup File Uploader
+    var uploader = new qq.FileUploader({
+        action: '/website/upload-image/'
+        , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
+        , element: $('#upload-image')[0]
+        , sizeLimit: 6291456 // 6 mb's
+        , onSubmit: function( id, fileName ) {
+            uploader.setParams({
+                _nonce : $('#_upload_image').val()
+                , aid : $('#hAccountId').val()
+                , apid : $('#hAccountPageId').val()
+                , fn : 'financing'
+            })
+        }
+        , onComplete: function( id, fileName, responseJSON ) {
+            ajaxResponse( responseJSON );
+        }
+    });
+
+    /**
+     * Make the uploader work
+     */
+    $('#aUploadImage').click( function() {
+        $('#upload-image input:first').click();
+    });
 });

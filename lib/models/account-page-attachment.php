@@ -18,7 +18,7 @@ class AccountPageAttachment extends ActiveRecordBase {
 	 *
 	 * @param int $account_page_id
 	 * @param string $key
-	 * @return array
+	 * @return array|AccountPageAttachment
 	 */
 	public function get_by_key( $account_page_id, $key ) {
 		$attachments = $this->prepare(
@@ -58,6 +58,21 @@ class AccountPageAttachment extends ActiveRecordBase {
         ), 'isssss' );
 
         $this->id = $this->website_attachment_id = $this->get_insert_id();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->update( array(
+            'website_page_id' => $this->website_page_id
+            , 'key' => $this->key
+            , 'value' => $this->value
+            , 'extra' => $this->extra
+            , 'meta' => $this->meta
+            , 'sequence' => $this->sequence
+        ), array( 'website_attachment_id' => $this->id )
+        , 'isssss', 'i' );
     }
 
     /**

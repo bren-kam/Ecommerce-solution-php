@@ -23,7 +23,9 @@ jQuery(function($) {
 	});
 	
 	// Show the current link
-	$('body').on( 'click', 'a.file', function() {
+	$('body').on( 'click', 'a.file', function(e) {
+        e.preventDefault();
+
 		$(this).parents('ul:first').find('.file.bold').removeClass('bold');
 		$(this).addClass('bold');
 		
