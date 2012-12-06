@@ -176,21 +176,17 @@ abstract class BaseController {
                 $this->user->accounts = $account->get_by_user( $this->user->id );
             }
 
-            // They don't have any accounts, they can't login
-            if ( !is_array( $this->user->accounts ) ) {
-                url::redirect('/logout/');
-                return true;
-            }
-
             // If they have a specific account, get that
             if ( $account_id ) {
                 $account->get( $account_id );
-                $this->user->account = $account;
+
+                if ( $account->id )
+                    $this->user->account = $account;
 
                 /**
                  * @var Account $account
                  */
-                if ( !$this->user->account ) {
+                if ( !$this->user->account && is_array( $this->user->accounts ) ) {
                     foreach ( $this->user->accounts as $account ) {
                         if ( $account_id == $account->id ) {
                             $this->user->account = $account;
@@ -205,6 +201,12 @@ abstract class BaseController {
                     if ( $this->user->account )
                         set_cookie( 'wid', $this->user->account->id, 172800 );
                 }
+            }
+
+            if ( !$this->user->account && '/select-account/' != $_SERVER['REQUEST_URI'] ) {
+                $url = ( count( $this->user->accounts ) > 0 ) ? '/select-account/' : '/logout/';
+                url::redirect($url);
+                return true;
             }
         }
 

@@ -279,7 +279,7 @@ class InstallService {
         $account_pagemeta = new AccountPagemeta();
         $pagemeta_keys = array( 'display-coupon', 'email-coupon', 'hide-all-maps' );
 
-        $template_pagemeta = $account_pagemeta->get_by_keys( array_keys( $template_account_pages ), $pagemeta_keys );
+        $template_pagemeta = $account_pagemeta->get_for_pages_by_keys( array_keys( $template_account_pages ), $pagemeta_keys );
 
         $new_pagemeta = array();
 

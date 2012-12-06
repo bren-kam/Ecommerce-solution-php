@@ -58,25 +58,56 @@ class AccountPagemeta extends ActiveRecordBase {
     /**
      * Get by keys
      *
-     * @param array|int $account_page_ids
-     * @param array|string $pagemeta_keys
+     * @param int $account_page_id
+     * @param string $pagemeta_keys
      * @return array
      */
-    public function get_by_keys( $account_page_ids, array $pagemeta_keys ) {
+    public function get_by_keys( $account_page_id, $pagemeta_keys ) {
+        // Get arguments
         $arguments = func_get_args();
-        $account_page_ids = array_shift( $arguments );
+        $account_page_id = array_shift( $arguments );
 
-        if ( is_array( $account_page_ids ) ) {
-            foreach ( $account_page_ids as &$apid ) {
-                $apid = (int) $apid;
-            }
-        } else {
-            $account_page_ids = array( (int) $account_page_ids );
+        // Setup keys
+        $pagemeta_keys = $arguments;
+        $pagemeta_keys_count = count( $pagemeta_keys );
+
+        // Get pagemeta
+        $pagemeta_array = $this->get_for_pages_by_keys( array( $account_page_id ), $pagemeta_keys );
+        $pagemeta_count = count( $pagemeta_array );
+
+        // Format
+        if ( 1 == $pagemeta_count )
+            return $pagemeta_array[0]->value;
+
+        $pagemeta = array();
+
+        /**
+         * @var AccountPagemeta $pm
+         */
+        foreach ( $pagemeta_array as $pm ) {
+            $pagemeta[$pm->key] = $pm->value;
         }
 
-        // They can add in multiple ways
-        if ( !is_array( $arguments[0] ) )
-            $pagemeta_keys = $arguments;
+        if ( $pagemeta_count != $pagemeta_keys_count )
+        foreach ( $pagemeta_keys as $key ) {
+            if ( !array_key_exists( $key, $pagemeta ) )
+                $pagemeta[$key] = '';
+        }
+
+        return $pagemeta;
+    }
+
+    /**
+     * Get For Pages By Keys
+     *
+     * @param array $account_page_ids
+     * @param array $pagemeta_keys
+     * @return array
+     */
+    public function get_for_pages_by_keys( $account_page_ids, $pagemeta_keys ) {
+        foreach ( $account_page_ids as &$apid ) {
+            $apid = (int) $apid;
+        }
 
         $pagemeta_keys_count = count( $pagemeta_keys );
         $account_page_ids = implode( ', ', $account_page_ids );
@@ -87,7 +118,7 @@ class AccountPagemeta extends ActiveRecordBase {
             , $pagemeta_keys
         )->get_results( PDO::FETCH_CLASS, 'AccountPagemeta' );
 
-        return ( 1 == count( $pagemeta ) ) ? reset( $pagemeta ) : $pagemeta;
+        return $pagemeta;
     }
 
     /**

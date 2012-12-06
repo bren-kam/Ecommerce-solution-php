@@ -33,7 +33,7 @@ class WebsiteController extends BaseController {
 
         // Initialize variables
         $page = new AccountPage();
-        $page->get( $_GET['apid'] );
+        $page->get( $_GET['apid'], $this->user->account->id );
 
         $account_file = new AccountFile();
         $files = $account_file->get_by_account( $this->user->account->id );
@@ -178,11 +178,55 @@ class WebsiteController extends BaseController {
         // Setup response
         $js_validation = $v->js_validation();
 
-        $this->resources->css('website/pages/page');
+        $this->resources
+            ->css('website/pages/page')
+            ->javascript('website/pages/page');
 
         $response = $this->get_template_response( 'edit' )
             ->select( 'website', 'edit' )
-            ->set( array_merge( compact( 'files', 'js_validation', 'success', 'page_title' ), $resources ) );
+            ->add_title( $page->title . ' | ' . _('Pages') )
+            ->set( array_merge( compact( 'files', 'js_validation', 'success', 'page', 'page_title' ), $resources ) );
+
+        return $response;
+    }
+
+    /**
+     * Add Page
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    public function add() {
+
+        $form = new FormTable( 'fAddPage' );
+        $form->submit( _('Add') );
+
+        $form->add_field( 'text', _('Title'), 'tTitle' )
+            ->add_validation( 'req', _('The "Title" field is required') );
+
+        $form->add_field( 'text', _('URL'), 'tSlug' )
+            ->add_validation( 'req', _('The "URL" field is required') );
+
+        if ( $form->posted() ) {
+            $page = new AccountPage();
+
+            $page->website_id = $this->user->account->id;
+            $page->title = $_POST['tTitle'];
+            $page->slug = $_POST['tSlug'];
+            $page->create();
+
+            $this->notify( _('Your page has been successfully added!') );
+
+            return new RedirectResponse('/website/');
+        }
+
+        $form = $form->generate_form();
+
+        $this->resources->javascript('website/add');
+
+        $response = $this->get_template_response('add')
+            ->select( 'website', 'add' )
+            ->add_title( _('Add Page') )
+            ->set( compact( 'form') );
 
         return $response;
     }
@@ -250,7 +294,7 @@ class WebsiteController extends BaseController {
 
         if ( $can_delete ) {
             $confirm = _('Are you sure you want to delete this page? This cannot be undone.');
-            $delete_page_nonce = nonce::create( 'delete-page' );
+            $delete_page_nonce = nonce::create( 'delete_page' );
         }
 
         $dont_show = array( 'sidebar', 'furniture', 'brands' );
@@ -272,7 +316,7 @@ class WebsiteController extends BaseController {
             if ( $can_delete && !in_array( $page->slug, $standard_pages ) ) {
                 $url = url::add_query_arg( array(
                     '_nonce' => $delete_page_nonce
-                    , 'wpid' => $page->id
+                    , 'apid' => $page->id
                 ), '/website/delete-page/' );
 
                $actions = ' | <a href="' .  $url . '" title="' . _('Delete Page') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
@@ -343,6 +387,35 @@ class WebsiteController extends BaseController {
         $dt->set_data( $data );
 
         return $dt;
+    }
+
+    /**
+     * Delete page
+     *
+     * @return AjaxResponse
+     */
+    public function delete_page() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have everything right
+        $response->check( isset( $_GET['apid'] ), _('You cannot delete this page') );
+        $response->check( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ), _('You do not have permission to delete this page') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        // Remove the page
+        $page = new AccountPage();
+        $page->get( $_GET['apid'], $this->user->account->id );
+        $page->remove();
+
+        // Redraw the table
+        jQuery('.dt:first')->dataTable()->fnDraw();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
     }
 }
 

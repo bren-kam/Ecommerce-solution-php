@@ -82,7 +82,6 @@ class AccountPage extends ActiveRecordBase {
      * @param int $account_id
      */
     public function copy_by_account( $template_account_id, $account_id ) {
-
         $this->copy( $this->table, array(
                 'website_id' => $account_id
                 , 'slug' => NULL
@@ -130,4 +129,11 @@ class AccountPage extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Delete
+     */
+    public function remove() {
+        $this->delete( array( 'website_page_id' => $this->id ), 'i' );
+    }
 }
