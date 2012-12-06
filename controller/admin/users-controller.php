@@ -144,7 +144,6 @@ class UsersController extends BaseController {
         // Make sure it's posted and verified
         if ( $ft->posted() ) {
             // Update all the fields
-            $user->company_id = $_POST['sCompany'];
             $user->email = $_POST['tEmail'];
             $user->contact_name = $_POST['tContactName'];
             $user->work_phone = $_POST['tWorkPhone'];
@@ -161,9 +160,16 @@ class UsersController extends BaseController {
 
             // Update or create the user
             if ( $user_id ) {
+                // If they're an admin, then we need to adjust the company
+                if ( ( $this->user->has_permission( USER::ROLE_ADMIN ) ) )
+                    $user->company_id = $_POST['sCompany'];
+
                 $user->save();
                 $this->notify( _('Your user has been successfully updated!') );
             } else {
+                // If they're an admin, then we need to adjust the company, if not, use the same as the user
+                $user->company_id = ( ( $this->user->has_permission( USER::ROLE_ADMIN ) ) ) ? $_POST['sCompany'] : $this->user->company_id;
+
                 try {
                     $user->create();
                     $this->notify( _('Your user has been successfully created!') );
