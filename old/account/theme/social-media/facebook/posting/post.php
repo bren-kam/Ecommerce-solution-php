@@ -214,7 +214,9 @@ get_header();
                         <?php nonce::field('fb-post'); ?>
                     </form>
                 <?php } elseif ( empty( $errs ) ) { ?>
-                    <p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?> <a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
+                    <p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?></p>
+                    <p><strong><?php echo _('Connection key'), ': '; ?></strong> <?php echo $posting['key']; ?></p>
+                    <p></p><a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
                 <?php
                 }
             }
