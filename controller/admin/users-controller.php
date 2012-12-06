@@ -161,14 +161,14 @@ class UsersController extends BaseController {
             // Update or create the user
             if ( $user_id ) {
                 // If they're an admin, then we need to adjust the company
-                if ( ( $this->user->has_permission( USER::ROLE_ADMIN ) ) )
+                if ( ( $this->user->has_permission( 8 ) ) )
                     $user->company_id = $_POST['sCompany'];
 
                 $user->save();
                 $this->notify( _('Your user has been successfully updated!') );
             } else {
                 // If they're an admin, then we need to adjust the company, if not, use the same as the user
-                $user->company_id = ( ( $this->user->has_permission( USER::ROLE_ADMIN ) ) ) ? $_POST['sCompany'] : $this->user->company_id;
+                $user->company_id = ( ( $this->user->has_permission( 8 ) ) ) ? $_POST['sCompany'] : $this->user->company_id;
 
                 try {
                     $user->create();
