@@ -8,7 +8,7 @@ class WebsiteController extends BaseController {
         parent::__construct();
 
         $this->view_base = 'website/';
-        $this->title = 'Website';
+        $this->section = 'website';
     }
 
     /**
@@ -18,7 +18,7 @@ class WebsiteController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
-            ->select( 'website', 'pages' );
+            ->select( 'pages', 'view' );
     }
 
     /**
@@ -190,7 +190,7 @@ class WebsiteController extends BaseController {
             ->javascript( 'fileuploader', 'website/pages/page' );
 
         $response = $this->get_template_response( 'edit' )
-            ->select( 'website', 'edit' )
+            ->select( 'pages', 'edit' )
             ->add_title( $page->title . ' | ' . _('Pages') )
             ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title' ), $resources ) );
 
@@ -230,7 +230,7 @@ class WebsiteController extends BaseController {
         $this->resources->javascript('website/add');
 
         $response = $this->get_template_response('add')
-            ->select( 'website', 'add' )
+            ->select( 'pages', 'add' )
             ->add_title( _('Add Page') )
             ->set( compact( 'form') );
 
@@ -268,7 +268,7 @@ class WebsiteController extends BaseController {
             ->javascript('website/categories');
 
         return $this->get_template_response( 'categories' )
-            ->select( 'website', 'category-pages' )
+            ->select( 'pages', 'category-pages' )
             ->set( compact( 'categories' ) );
     }
 
@@ -310,7 +310,7 @@ class WebsiteController extends BaseController {
             ->javascript( 'fileuploader', 'website/pages/page' );
 
         $response = $this->get_template_response('edit-category')
-            ->select( 'website', 'edit-category' )
+            ->select( 'pages', 'edit-category' )
             ->add_title( _('Edit Category') )
             ->set( compact( 'category', 'files' ) );
 
@@ -318,9 +318,83 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Sale
+     */
+    public function sale() {
+        // Instantiate classes
+        $form = new FormTable( 'fSale' );
+
+        // Get settings
+        $settings = $this->user->account->get_settings( 'page_sale-slug', 'page_sale-title' );
+
+        $form->add_field( 'text', _('Page Title'), 'tPageTitle', $settings['page_sale-title'] )
+            ->attribute( 'maxlength', '50' );
+
+        $form->add_field( 'text', _('Page Slug'), 'tPageSlug', $settings['page_sale-slug'] )
+            ->attribute( 'maxlength', '50' );
+
+        if ( $form->posted() ) {
+            $this->user->account->set_settings( array(
+                    'page_sale-title' => $_POST['tPageTitle']
+                    , 'page_sale-slug' => format::slug( $_POST['tPageSlug'] )
+                )
+            );
+
+            $this->notify( _('Your sale page has been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/website/sale/');
+        }
+
+        $response = $this->get_template_response( 'sale' )
+            ->add_title( _('Sale') )
+            ->select( 'sale' )
+            ->set( array( 'form' => $form->generate_form() ) );
+
+        return $response;
+    }
+
+    /**
+     * Room Planner
+     */
+    public function room_planner() {
+        // Instantiate classes
+        $form = new FormTable( 'fRoomPlanner' );
+
+        // Get settings
+        $settings = $this->user->account->get_settings( 'page_room-planner-slug', 'page_room-planner-title' );
+
+        $form->add_field( 'text', _('Page Title'), 'tPageTitle', $settings['page_room-planner-title'] )
+            ->attribute( 'maxlength', '50' );
+
+        $form->add_field( 'text', _('Page Slug'), 'tPageSlug', $settings['page_room-planner-slug'] )
+            ->attribute( 'maxlength', '50' );
+
+        if ( $form->posted() ) {
+            $this->user->account->set_settings( array(
+                    'page_room-planner-title' => $_POST['tPageTitle']
+                    , 'page_room-planner-slug' => format::slug( $_POST['tPageSlug'] )
+                )
+            );
+
+            $this->notify( _('Your room planner page has been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/website/room-planner/');
+        }
+
+        $response = $this->get_template_response( 'room-planner' )
+            ->add_title( _('Room Planner') )
+            ->select( 'room-planner' )
+            ->set( array( 'form' => $form->generate_form() ) );
+
+        return $response;
+    }
+
+    /**
      * Settings page
      *
-     * @return TemplateResponse
+     * @return TemplateResponse|RedirectResponse
      */
     public function settings() {
         // Instantiate classes
@@ -405,7 +479,9 @@ class WebsiteController extends BaseController {
             return new RedirectResponse('/website/settings/');
         }
 
-        $response = $this->get_template_response( 'settings', _('Settings') )
+        $response = $this->get_template_response( 'settings' )
+            ->add_title( _('Settings') )
+            ->select( 'settings' )
             ->set( array( 'form' => $form->generate_form() ) );
 
         return $response;
@@ -774,6 +850,9 @@ class WebsiteController extends BaseController {
 
         $response->check( isset( $_POST['apid'], $_POST['k'], $_POST['v'] ), _('Image failed to upload') );
 
+        if ( $response->has_error() )
+            return $response;
+
         switch ( $_POST['k'] ) {
             case 'ham':
                 $key = 'hide-all-maps';
@@ -791,6 +870,25 @@ class WebsiteController extends BaseController {
 
         $account_pagemeta = new AccountPagemeta();
         $account_pagemeta->add_bulk_by_page( $_POST['apid'], array( $key => $_POST['v'] ) );
+
+        return $response;
+    }
+
+    /**
+     * Remove Sale Items
+     */
+    public function remove_sale_items() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $account_product = new AccountProduct();
+        $account_product->remove_sale_items( $this->user->account->id );
+
+        // Let them know we did so successfully
+        $response->check( false, _('All sale items were removed!') );
 
         return $response;
     }

@@ -5,9 +5,9 @@
  */
 ?>
 <div id="sidebar">
-    <a href="/website/" title="<?php echo _('Pages'); ?>" class="top first<?php $template->select('website'); ?>"><?php echo _('Pages'); ?></a>
-    <?php if ( $template->v('website') ) { ?>
-        <a href="/website/" title="<?php echo _('Website Pages'); ?>" class="sub view first<?php $template->select('pages'); ?>"><?php echo _('Website'); ?></a>
+    <a href="/website/" title="<?php echo _('Pages'); ?>" class="top first<?php $template->select('pages'); ?>"><?php echo _('Pages'); ?></a>
+    <?php if ( $template->v('pages') ) { ?>
+        <a href="/website/" title="<?php echo _('Website Pages'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('Website'); ?></a>
         <a href="/website/categories/" title="<?php echo _('Website Categories'); ?>" class="sub view<?php $template->select('category-pages'); ?>"><?php echo _('Categories'); ?></a>
         <a href="/website/add/" title="<?php echo _('Add Page'); ?>" class="sub add last<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
     <?php } ?>

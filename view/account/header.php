@@ -53,7 +53,7 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
             );
 
             $keys = array_keys( $links );
-
+            
             foreach ( $links as $key => $link ) {
                 if ( 'email_marketing' != $key && !$user->account->$key )
                     continue;

@@ -104,6 +104,19 @@ class AccountProduct extends ActiveRecordBase {
 	}
 
     /**
+	 * Removes all sale items from a website
+     *
+     * @param int $account_id
+	 */
+	public function remove_sale_items( $account_id ) {
+		$this->update(
+            array( 'on_sale' => 0 )
+            , array( 'website_id' => $account_id )
+            , 'i', 'i'
+        );
+	}
+
+    /**
      * Delete from accounts
      *
      * @param int $product_id
