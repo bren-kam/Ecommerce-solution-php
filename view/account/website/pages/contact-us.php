@@ -9,10 +9,10 @@
 
 	<div id="dContactUsList">
 		<?php
-		nonce::field( 'set-pagemeta', '_ajax_set_pagemeta' );
+		nonce::field( 'set_pagemeta', '_set_pagemeta' );
 		if ( !empty( $contacts ) ) {
 			$i = 0;
-			$addresses = unserialize( $contacts );
+			$addresses = unserialize( htmlspecialchars_decode( $contacts ) );
 
 			if ( is_array( $addresses ) )
 			foreach ( $addresses as $contact ) {

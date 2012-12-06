@@ -63,8 +63,7 @@ class WebsiteController extends BaseController {
 
         /***** HANDLE SUBMIT *****/
 
-        // Initialize variable
-        $success = false;
+        $errs = false;
 
         // Make sure it's a valid request
         if ( $this->verified() ) {
@@ -86,8 +85,6 @@ class WebsiteController extends BaseController {
                 $page->meta_keywords = $_POST['tMetaKeywords'];
                 $page->mobile = $mobile;
                 $page->save();
-
-                $success = true;
 
                 // Update custom meta
                 switch ( $page->slug ) {
@@ -120,6 +117,10 @@ class WebsiteController extends BaseController {
                 // Set pagemeta
                 if ( isset( $pagemeta ) )
                     $account_pagemeta->add_bulk_by_page( $page->id, $pagemeta );
+
+                $this->notify( _('Your page has been successfully saved!') );
+
+                return new RedirectResponse('/website/');
             }
         }
 
@@ -133,7 +134,13 @@ class WebsiteController extends BaseController {
                     ->css('website/pages/contact-us')
                     ->javascript('website/pages/contact-us');
 
-                list( $contacts, $multiple_location_map, $hide_all_maps ) = array_values( $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' ) );
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' );
+
+                foreach ( $pagemeta as $key => $value ) {
+                    $key = str_replace( '-', '_', $key );
+                    $$key = $value;
+                }
+
                 $resources = compact( 'contacts', 'multiple_location_map', 'hide_all_maps' );
             break;
 
@@ -180,12 +187,12 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css('website/pages/page')
-            ->javascript('website/pages/page');
+            ->javascript( 'fileuploader', 'website/pages/page' );
 
         $response = $this->get_template_response( 'edit' )
             ->select( 'website', 'edit' )
             ->add_title( $page->title . ' | ' . _('Pages') )
-            ->set( array_merge( compact( 'files', 'js_validation', 'success', 'page', 'page_title' ), $resources ) );
+            ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title' ), $resources ) );
 
         return $response;
     }
@@ -196,7 +203,6 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     public function add() {
-
         $form = new FormTable( 'fAddPage' );
         $form->submit( _('Add') );
 
@@ -262,7 +268,7 @@ class WebsiteController extends BaseController {
             ->javascript('website/categories');
 
         return $this->get_template_response( 'categories' )
-            ->select( 'website', 'categories' )
+            ->select( 'website', 'category-pages' )
             ->set( compact( 'categories' ) );
     }
 
@@ -414,6 +420,145 @@ class WebsiteController extends BaseController {
         jQuery('.dt:first')->dataTable()->fnDraw();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload File
+     *
+     * @return AjaxResponse
+     */
+    public function upload_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['fn'], $_GET['aid'] ), _('Image failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+        $account_file = new AccountFile();
+        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v;*mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
+
+        // Change the name
+        $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $file_url = $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
+
+        // Create the account file
+        $account_file->website_id = $this->user->account->id;
+        $account_file->file_path = $file_url;
+        $account_file->create();
+
+        // If they don't have any files, remove the message that is sitting there
+        jQuery('#ulUploadFile li.no-files')->remove();
+
+        // Add the new link and apply sparrow to it
+        jQuery('#ulUploadFile')
+            ->append( '<li id="li' . $account_file->id . '"><a href="' . $account_file->file_path . '" id="aFile' . $account_file->id . '" title="' . $file_name . '" class="file">' . $file_name . '</a><a href="' . url::add_query_arg( array( '_nonce' => nonce::create('delete_file'), 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . _('Are you sure you want to delete this file?') . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a>' )
+            ->sparrow();
+
+        // Adjust back to original name
+        jQuery('#tFileName')
+            ->val('')
+            ->trigger('blur');
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Delete File
+     *
+     * @return AjaxResponse
+     */
+    public function delete_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['afid'] ), _('Image failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate classes
+        $bucket = 'websites' . Config::key('aws-bucket-domain');
+        $file = new File( $bucket );
+        $account_file = new AccountFile();
+
+        // Get the account file
+        $account_file->get( $_GET['afid'], $this->user->account->domain );
+
+        $url_info = parse_url( $account_file->file_path );
+        $key = substr( str_replace( $bucket . '/', '', $url_info['path'] ), 1 );
+
+        // Delete from Amazon
+        $file->delete_file( $key );
+
+        // Remove that li
+        jQuery('#li' . $account_file->id )->remove();
+
+        // Delete record
+        $account_file->remove();
+
+        // Get the files, see how many there are
+        if ( 0 == count( $account_file->get_by_account( $this->user->account->id ) ) )
+            jQuery('#ulUploadFile')->append( '<li class="no-files">' . _('You have not uploaded any files.') . '</li>'); // Add a message
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Set Pagemeta
+     *
+     * @return AjaxResponse
+     */
+    public function set_pagemeta() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['apid'], $_POST['k'], $_POST['v'] ), _('Image failed to upload') );
+
+        switch ( $_POST['k'] ) {
+            case 'ham':
+                $key = 'hide-all-maps';
+            break;
+
+            case 'mlm':
+                $key = 'multiple-location-map';
+            break;
+
+            default:
+                $response->check( false, _('An error occurred when trying to change your setting. Please refresh the page and try again') );
+                return $response;
+            break;
+        }
+
+        $account_pagemeta = new AccountPagemeta();
+        $account_pagemeta->add_bulk_by_page( $_POST['apid'], array( $key => $_POST['v'] ) );
 
         return $response;
     }

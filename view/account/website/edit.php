@@ -7,27 +7,19 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var bool $success
  * @var AccountPage $page
  * @var string $page_title
  * @var array $files
+ * @var string $js_validation
+ * @var string $errs
  */
 
 echo $template->start( _('Edit Page') );
-?>
 
-<?php if ( $success ) { ?>
-<div class="success">
-    <p><?php echo _('Your page has been updated.'); ?> <a href="http://<?php echo $user->account->domain, '/', $page->slu; ?>/" title="<?php echo _('View Page'); ?>" target="_blank"><?php echo _('View the page.'); ?></a></p>
-    <p><a href="/website/" title="<?php echo _('Edit Other Pages'); ?>"><?php echo _('Click here to edit other pages.'); ?></a></p>
-</div>
-<?php
-}
-
-if ( isset( $errs ) )
+if ( !empty( $errs ) )
     echo "<p class='red'>$errs</p>";
 ?>
-<form name="fEditPage" action="<?php echo url::encode( 'apid', $page->id, '/website/edit/' ); ?>" method="post">
+<form name="fEditPage" action="<?php echo url::add_query_arg( 'apid', $page->id, '/website/edit/' ); ?>" method="post">
     <div id="title-container">
         <input name="tTitle" id="tTitle" class="tb" value="<?php echo $page_title; ?>" tmpval="<?php echo _('Page Title...'); ?>" />
     </div>
@@ -70,12 +62,13 @@ if ( isset( $errs ) )
     <p><input type="submit" id="bSubmit" value="<?php echo _('Save'); ?>" class="button" /></p>
     <?php nonce::field( 'edit' ); ?>
 </form>
+<?php echo $js_validation; ?>
 <br />
 
 <div id="dUploadFile" class="hidden">
     <ul id="ulUploadFile">
         <?php
-        if ( is_array( $files ) ) {
+        if ( !empty( $files ) ) {
             // Set variables
             $ajax_delete_file_nonce = nonce::create('delete-file');
             $confirm = _('Are you sure you want to delete this file?');
@@ -94,8 +87,9 @@ if ( isset( $errs ) )
     </ul>
     <br />
 
-    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" style="position:relative; bottom: 11px;" />
-    <input type="file" name="fUploadFile" id="fUploadFile" />
+    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
+    <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
+    <div class="hidden" id="upload-file"></div>
     <br /><br />
     <div id="dCurrentLink" class="hidden">
         <p><strong><?php echo _('Current Link'); ?>:</strong></p>
@@ -103,9 +97,9 @@ if ( isset( $errs ) )
     </div>
 </div>
 <?php
-nonce::field( 'upload-file', '_ajax_upload_file' );
-nonce::field( 'upload-image', '_ajax_upload_image' );
+nonce::field( 'upload_file', '_upload_file' );
+nonce::field( 'upload_image', '_upload_image' );
 ?>
-<input type="hidden" id="hWebsiteID" value="<?php echo $user->account->id; ?>" />
-<input type="hidden" id="hWebsitePageID" value="<?php echo $page->id; ?>" />
+<input type="hidden" id="hAccountId" value="<?php echo $user->account->id; ?>" />
+<input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
 <?php echo $template->end(); ?>

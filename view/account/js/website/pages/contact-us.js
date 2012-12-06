@@ -82,12 +82,12 @@ jQuery(function(){
 	
 	// Multiple Location Map toggle
 	$('#cbMultipleLocationMap').click( function() {
-		$.post( '/ajax/website/page/set-pagemeta/', { _nonce: $('#_ajax_set_pagemeta').val(), k : 'mlm', v : $(this).is(':checked') ? true : false, wpid : $('#hWebsitePageID').val() }, ajaxResponse, 'json' );
+		$.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'mlm', v : $(this).is(':checked') ? true : false, apid : $('#hAccountPageId').val() }, ajaxResponse, 'json' );
 	});
 	
 	// Hide All Maps toggle
 	$('#cbHideAllMaps').click( function() {
-		$.post( '/ajax/website/page/set-pagemeta/', { _nonce: $('#_ajax_set_pagemeta').val(), k : 'ham', v : $(this).is(':checked') ? true : false, wpid : $('#hWebsitePageID').val() }, ajaxResponse, 'json' );
+		$.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'ham', v : $(this).is(':checked') ? true : false, apid : $('#hAccountPageId').val() }, ajaxResponse, 'json' );
 	});
 });
 
@@ -326,7 +326,7 @@ function nl2br (str, is_xhtml) {
     // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
     // +   improved by: Philip Peterson
     // +   improved by: Onno Marsman
-    // +   improved by: Atli Þór
+    // +   improved by: Atli ï¿½ï¿½r
     // +   bugfixed by: Onno Marsman
     // +      input by: Brett Zamir (http://brett-zamir.me)
     // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)

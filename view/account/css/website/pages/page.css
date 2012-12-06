@@ -6,3 +6,5 @@
 
 #dPageSlug { margin-top: 10px; margin-bottom:10px; display:block; }
 #tPageSlug { border: 1px solid #D4D0C8; width: 100px; margin: 0 2px; }
+
+#tFileName { width: 250px }

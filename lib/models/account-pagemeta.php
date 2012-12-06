@@ -112,13 +112,11 @@ class AccountPagemeta extends ActiveRecordBase {
         $pagemeta_keys_count = count( $pagemeta_keys );
         $account_page_ids = implode( ', ', $account_page_ids );
 
-        $pagemeta = $this->prepare(
+        return $this->prepare(
             "SELECT `website_page_id`, `key`, `value` FROM `website_pagemeta` WHERE `website_page_id` IN ( $account_page_ids ) AND `key` IN( ?" . str_repeat( ', ?', $pagemeta_keys_count - 1 ) . ' )'
             , str_repeat( 's', $pagemeta_keys_count )
             , $pagemeta_keys
         )->get_results( PDO::FETCH_CLASS, 'AccountPagemeta' );
-
-        return $pagemeta;
     }
 
     /**

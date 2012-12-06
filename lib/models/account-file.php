@@ -14,6 +14,23 @@ class AccountFile extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $account_file_id
+     * @param string $domain
+     * @return AccountFile
+     */
+    public function get( $account_file_id, $domain ) {
+        $this->prepare(
+            "SELECT `website_file_id`, `website_id`, REPLACE( `file_path`, '[domain]', :domain ) AS file_path, `date_created` FROM `website_files` WHERE `website_file_id` = :account_file_id"
+            , 'si'
+            , array( ':domain' => $domain, ':account_file_id' => $account_file_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_file_id;
+    }
+
+    /**
      * Get By Account
      *
      * @param int $account_id
@@ -40,5 +57,12 @@ class AccountFile extends ActiveRecordBase {
         ), 'iss' );
 
         $this->id = $this->website_file_id = $this->get_insert_id();
+    }
+
+    /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array( 'website_file_id' => $this->id ), 'i' );
     }
 }
