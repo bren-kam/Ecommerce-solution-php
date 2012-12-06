@@ -317,6 +317,100 @@ class WebsiteController extends BaseController {
         return $response;
     }
 
+    /**
+     * Settings page
+     *
+     * @return TemplateResponse
+     */
+    public function settings() {
+        // Instantiate classes
+        $form = new FormTable( 'fSettings' );
+
+        // Get settings
+        $settings_array = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt' );
+        $settings = $this->user->account->get_settings( $settings_array );
+
+        // Create form
+        $form->add_field( 'title', _('Banners') );
+
+        $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
+            ->attribute( 'maxlength', '4' )
+            ->add_validation( 'req', _('The "Banners - Width" field is required') )
+            ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
+
+        $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
+            ->attribute( 'maxlength', '3' )
+            ->add_validation( 'req', _('The "Banners - Height" field is required') )
+            ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
+
+        $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
+            ->attribute( 'maxlength', '2' )
+            ->add_validation( 'req', _('The "Banners - Speed" field is required') )
+            ->add_validation( 'num', _('The "Banners - Speed" field may only contain a number') );
+
+        $effects = array(
+            'random' => _('Random')
+            , 'fade' => _('Fade')
+            , 'fold' => _('Fold')
+            , 'sliceDownRight' => _('Slice Down-Right')
+            , 'sliceDownLeft' => _('Slice Down-Left')
+            , 'sliceUpRight' => _('Slice Up-Right')
+            , 'sliceUpLeft' => _('Slice Up-Left')
+            , 'sliceUpDown' => _('Slice Up-Down')
+            , 'sliceUpDownLeft' => _('Slice Up-Down-Left')
+            , 'boxRandom' => _('Box Random')
+            , 'boxRain' => _('Box Rain')
+            , 'boxRainReverse' => _('Box Rain-Reverse')
+            , 'boxRainGrow' => _('Box Rain-Grow')
+            , 'boxRainGrowReverse' => _('Box Rain-Grow-Reverse')
+        );
+
+        $form->add_field( 'select', _('Effect'), 'banner-effect', $settings['banner-effect'] )
+            ->options( $effects );
+
+        $form->add_field( 'text', _('Background Color'), 'banner-background-color', $settings['banner-background-color'] )
+            ->attribute( 'maxlength', '6' );
+
+        $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
+
+        // Next section
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'title', _('Sidebar Images') );
+
+        $form->add_field( 'text', _('Width'), 'sidebar-image-width', $settings['sidebar-image-width'] )
+            ->attribute( 'maxlength', '4' )
+            ->add_validation( 'num', _('The "Sidebar Image - Width" field may only contain a number') );
+
+        // Next section
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'title', _('Other') );
+
+        $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+            ->options( data::timezones( false, false, true ) );
+
+        $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
+
+        if ( $form->posted() ) {
+            $new_settings = array();
+
+            foreach ( $settings_array as $k ) {
+                $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            $this->user->account->set_settings( $new_settings );
+
+            $this->notify( _('Your settings have been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/website/settings/');
+        }
+
+        $response = $this->get_template_response( 'settings', _('Settings') )
+            ->set( array( 'form' => $form->generate_form() ) );
+
+        return $response;
+    }
+
     /***** AJAX *****/
 
     /**

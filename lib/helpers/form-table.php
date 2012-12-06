@@ -661,7 +661,7 @@ class FormTable_Title extends FormTable_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        return '<tr><td>&nbsp;</td><td><strong>' . $this->nice_name . '</strong></td></tr>';
+        return '<tr><td><strong class="big">' . $this->nice_name . '</strong></td><td>&nbsp;</td></tr>';
     }
 }
 

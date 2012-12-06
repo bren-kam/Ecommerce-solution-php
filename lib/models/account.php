@@ -210,7 +210,7 @@ class Account extends ActiveRecordBase {
     /**
      * Get Settings
      *
-     * @param string $key1, $key2
+     * @param string|array $key1, $key2
      * @return mixed
      */
     public function get_settings() {
@@ -220,35 +220,53 @@ class Account extends ActiveRecordBase {
             return false;
 
         // Determine the keys
-        if ( 1 == count( $arguments ) ) {
+        if ( 1 == count( $arguments ) && !is_array( $arguments[0] ) ) {
             // Getting one value -- return it
-            return $this->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = :website_id AND `key` = :key'
-                , 'is'
-                , array(
-                    ':website_id' => $this->id
-                    , ':key' => $arguments[0]
-                )
-            )->get_var();
+            return $this->get_setting( $arguments[0] );
         } else {
-            $keys = $arguments;
+            $keys = ( is_array( $arguments[0] ) ) ? $arguments[0] : $arguments;
         }
 
-        $count = count( $keys );
+        $settings = ar::assign_key( $this->get_settings_array( $keys ), 'key', true );
 
-        // Getting multiple values, return them
-        $values = $this->prepare( 'SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = ? AND `key` IN( ?' . str_repeat( ', ?', $count - 1 ) . ')'
-            , 'i' . str_repeat( 's', $count )
-            , array_merge( array( $this->id ), $keys )
-        )->get_results( PDO::FETCH_ASSOC );
-
-        $settings = ar::assign_key( $values, 'key', true );
-
-        foreach ( $arguments as $arg ) {
-            if ( !isset( $settings[$arg] ) )
-                $settings[$arg] = '';
+        foreach ( $keys as $key ) {
+            if ( !isset( $settings[$key] ) )
+                $settings[$key] = '';
         }
 
         return $settings;
+    }
+
+    /**
+     * Get setting
+     *
+     * @param string $key
+     * @return string
+     */
+    protected function get_setting( $key ) {
+        return $this->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = :account_id AND `key` = :key'
+            , 'is'
+            , array(
+                ':account_id' => $this->id
+                , ':key' => $key
+            )
+        )->get_var();
+    }
+
+    /**
+     * Get Settings as Array
+     *
+     * @param array $keys
+     * @return array
+     */
+    protected function get_settings_array( array $keys ) {
+        $count = count ( $keys );
+
+        // Getting multiple values, return them
+        return $this->prepare( 'SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = ? AND `key` IN( ?' . str_repeat( ', ?', $count - 1 ) . ')'
+            , 'i' . str_repeat( 's', $count )
+            , array_merge( array( $this->id ), $keys )
+        )->get_results( PDO::FETCH_ASSOC );
     }
 
     /**
