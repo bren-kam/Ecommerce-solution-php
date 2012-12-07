@@ -92,6 +92,25 @@ class AccountPageAttachment extends ActiveRecordBase {
     }
 
     /**
+     * Update Seqence
+     *
+     * @param int $account_id
+     * @param array $sequence
+     */
+    public function update_sequence( $account_id, array $sequence ) {
+        $account_id = (int) $account_id;
+
+         // Prepare statement
+		$statement = $this->prepare_raw( "UPDATE `website_attachments` AS wa LEFT JOIN `website_pages` AS wp ON ( wp.`website_page_id` = wp.`website_page_id` ) SET wa.`sequence` = :sequence WHERE wa.`website_attachment_id` = :account_page_attachment_id AND wp.`website_id` = $account_id" );
+		$statement->bind_param( ':sequence', $count, PDO::PARAM_INT );
+        $statement->bind_param( ':account_page_attachment_id', $account_page_attachment_id, PDO::PARAM_INT );
+
+		foreach ( $sequence as $count => $account_page_attachment_id ) {
+			$statement->query();
+		}
+    }
+
+    /**
      * Remove
      */
     public function remove() {

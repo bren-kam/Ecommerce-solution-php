@@ -55,7 +55,7 @@ function updateElementOrder() {
 	var idList = $('#dElementBoxes').sortable('serialize');
 	
 	// Use Sidebar's -- it's the same thing
-	$.post( '/website/update_sequence/', { _nonce : $('#_update_sequence').val(), 's' : idList }, ajaxResponse, 'json' );
+	$.post( '/website/update_attachment_sequence/', { _nonce : $('#_update_attachment_sequence').val(), 's' : idList }, ajaxResponse, 'json' );
 	
 	return this;
 }

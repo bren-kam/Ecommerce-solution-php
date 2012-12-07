@@ -1026,6 +1026,8 @@ class WebsiteController extends BaseController {
 
     /**
      * Remove Sale Items
+     *
+     * @return AjaxResponse
      */
     public function remove_sale_items() {
         // Make sure it's a valid ajax call
@@ -1045,6 +1047,8 @@ class WebsiteController extends BaseController {
 
     /**
      * Update Attachment Extra
+     *
+     * @return AjaxResponse
      */
     public function update_attachment_extra() {
         // Make sure it's a valid ajax call
@@ -1087,6 +1091,8 @@ class WebsiteController extends BaseController {
 
     /**
      * Update Attachment status
+     *
+     * @return AjaxResponse
      */
     public function update_attachment_status() {
         // Make sure it's a valid ajax call
@@ -1130,6 +1136,8 @@ class WebsiteController extends BaseController {
 
     /**
      * Remove Attachment
+     *
+     * @return AjaxResponse
      */
     public function remove_attachment() {
         // Make sure it's a valid ajax call
@@ -1182,6 +1190,29 @@ class WebsiteController extends BaseController {
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Attachment Sequence
+     *
+     * @return AjaxResponse
+     */
+    public function update_attachment_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('You do not have permission to change the sequence of this attachment') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&dAttachment[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 14 );
+
+        $attachment = new AccountPageAttachment();
+        $attachment->update_sequence( $this->user->account->id, $sequence );
 
         return $response;
     }

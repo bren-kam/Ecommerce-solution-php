@@ -25,7 +25,7 @@ echo $template->start( _('Banners') );
 <input type="hidden" id="hBannerWidth" value="<?php echo $settings['banner-width']; ?>" />
 <?php
 nonce::field( 'upload_banner', '_upload_banner' );
-nonce::field( 'update_sequence', '_update_sequence' );
+nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
 ?>
 <div id="dElementBoxes">
     <?php
