@@ -914,25 +914,25 @@ class WebsiteController extends BaseController {
             , 'si' => '1'
         ), '/website/sidebar/remove_attachment/' );
 
-        $banner = '<div class="banner-box" id="dAttachment_' . $attachment->id . '" style="width:' . $settings['banner-width'] . 'px">';
+        $banner = '<div class="element-box" id="dAttachment_' . $attachment->id . '" style="width:' . $settings['banner-width'] . 'px">';
         $banner .= '<h2>' . _('Banner') . '</h2>';
         $banner .= '<p><small>' . $settings['banner-width'] . 'x' . $settings['banner-height'] . '</small></p>';
         $banner .= '<a href="' . $enable_disable_url . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this banner?') . '"><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
         $banner .= '<div id="dBanner' . $attachment->id . '" class="text-center">';
         $banner .= '<img src="' . $banner_url . '" alt="' . _('Banner Image') . '" />';
         $banner .= '</div><br />';
-        $banner .= '<form action="/website/update_extra/" method="post" ajax="1">';
+        $banner .= '<form action="/website/update-attachment-extra/" method="post" ajax="1">';
         $banner .= '<p id="pTempSuccess' . $attachment->id . '" class="success hidden">' . _('Your banner link has been successfully updated.') . '</p>';
         $banner .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
         $banner .= '<input type="submit" class="button" value="' . _('Save') . '" />';
         $banner .= '<input type="hidden" name="hAccountPageAttachmentId" value="' . $attachment->id . '" />';
         $banner .= '<input type="hidden" name="target" value="pTempSuccess' . $attachment->id . '" />';
-        $banner .= nonce::field( 'update_extra', '_nonce', false );
+        $banner .= nonce::field( 'update_attachment_extra', '_nonce', false );
         $banner .= '</form>';
         $banner .= '<a href="' . $remove_attachment_url . '" class="remove" title="' . _('Remove Banner') . '" ajax="1" confirm="' . _('Are you sure you want to remove this banner?') . '">' . _('Remove') . '</a></p>';
         $banner .= '<br clear="all" /></div>';
         
-        jQuery('#dBannerBoxes')
+        jQuery('#dElementBoxes')
             ->append( $banner )
             ->updateElementOrder()
             ->updateDividers()
@@ -965,7 +965,7 @@ class WebsiteController extends BaseController {
         $account_file = new AccountFile();
 
         // Get the account file
-        $account_file->get( $_GET['afid'], $this->user->account->domain );
+        $account_file->get( $_GET['afid'], $this->user->account->domain, $this->user->account->id );
 
         $url_info = parse_url( $account_file->file_path );
         $key = substr( str_replace( $bucket . '/', '', $url_info['path'] ), 1 );
@@ -1039,6 +1039,149 @@ class WebsiteController extends BaseController {
 
         // Let them know we did so successfully
         $response->check( false, _('All sale items were removed!') );
+
+        return $response;
+    }
+
+    /**
+     * Update Attachment Extra
+     */
+    public function update_attachment_extra() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $attachment = new AccountPageAttachment();
+        $attachment->get( $_GET['apaid'], $this->user->account->id );
+
+        // Empty it the link they didn't enter anything
+        if ( 'Enter Link...' == $_POST['extra'] || 'http://' == $_POST['extra'] )
+            $_POST['extra'] = '';
+
+        $meta = ( isset( $_POST['meta'] ) ) ? $_POST['meta'] : '';
+
+        // Do validation
+        $v = new Validator();
+        $v->add_validation( 'extra', 'URL' );
+
+        $response->check( empty( $errs ) && ( empty( $_POST['extra'] ) || stristr( $_POST['extra'], 'http' ) ), _('Please make sure you enter in a valid link') );
+
+        if ( !$response->has_error() )
+            return $response;
+
+        // Update attachment
+        $attachment->extra = $_POST['extra'];
+        $attachment->meta = $meta;
+        $attachment->save();
+
+        // Show and hide success
+        jQuery( '#' . $_POST['target'] )->show()->delay(5000)->hide();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Attachment status
+     */
+    public function update_attachment_status() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['apaid'], $_GET['s'] ), _('You do not have permission to update this item') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $attachment = new AccountPageAttachment();
+        $attachment->get( $_GET['apaid'], $this->user->account->id );
+
+        $enable_disable_url = url::add_query_arg( array(
+            '_nonce' => nonce::create( 'update_attachment_status' )
+            , 'apaid' => $attachment->id
+            , 's' => ( '0' == $_GET['s'] ) ? '1' : '0'
+        ), '/website/update-attachment-status/' );
+
+        jQuery('#aEnableDisable' . $attachment->id)
+            ->replaceWith('<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable disabled" title="' . _('Enable/Disable') . '" ajax="1"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>')
+            ->sparrow();
+
+        if ( '0' == $_GET['s'] ) {
+            // Disabled
+                jQuery('#dAttachment_' . $attachment->id)
+                ->addClass('disabled')
+                ->insertAfter('#dElementBoxes .element-box:last:not(#dAttachment_' . $attachment->id . ')')
+                ->updateElementOrder()
+                ->updateDividers();
+        } else {
+            // Enabled
+            jQuery('#dAttachment_' . $attachment->id)->removeClass('disabled');
+        }
+        
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Remove Attachment
+     */
+    public function remove_attachment() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['si'], $_GET['t'] ), _('You do not have permission to remove this attachment') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $account_file = new AccountFile();
+        $file = new File();
+        $attachment = new AccountPageAttachment();
+        $attachment->get( $_GET['apaid'], $this->user->account->id );
+
+        if ( stristr( $attachment->value, 'http://' ) ) {
+            $account_file->get_by_file_path( $attachment['value'], $this->user->account->domain, $this->user->account->id );
+
+            // Delete from Amazon S3 (Not checking because it may have been removed other ways )
+            $file->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $account_file->file_path ) );
+        }
+
+        if ( '1' == $_GET['si'] ) {
+            $attachment->remove();
+
+            jQuery('#' . $_GET['t'])->remove()->updateDividers();
+        } else {
+            $attachment->value = '';
+            $attachment->save();
+
+            // Figure out what it's getting replaced with
+            switch ( $_GET['t'] ) {
+                case 'dRoomPlannerContent':
+                    $replacement = '<img src="/media/images/placeholders/240x100.png" width="200" height="100" alt="' . _('Placeholder') . '" />';
+                break;
+
+                case 'dVideoContent':
+                    $replacement = '<img src="/media/images/placeholders/354x235.png" width="354" height="235" alt="' . _('Placeholder') . '" />';
+                break;
+
+                default:
+                    $replacement = '<img src="/media/images/placeholders/240x300.png" width="240" height="300" alt="' . _('Placeholder') . '" />';
+                break;
+            }
+
+            // Replace the current image and remove the remove link
+            jQuery('#' . $_GET['t'])->html($replacement);
+            jQuery('#aRemove' . $attachment->id)->remove();
+        }
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

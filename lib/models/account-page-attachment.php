@@ -16,6 +16,22 @@ class AccountPageAttachment extends ActiveRecordBase {
     /**
 	 * Check whether an attachment exists of specific key
 	 *
+	 * @param int $account_page_attachment_id
+     * @param int $account_id
+	 */
+	public function get( $account_page_attachment_id, $account_id ) {
+		$this->prepare(
+            'SELECT wa.`website_attachment_id`, wa.`key`, wa.`value`, wa.`extra`, wa.`meta` FROM `website_attachments` AS wa LEFT JOIN `website_pages` AS wp ON( wp.`website_page_id` = wa.`website_page_id` ) WHERE wa.`website_page_id` = :account_page_attachment_id AND wp.`website_id` = :account_id'
+            , 'ii'
+            , array( ':account_page_attachment_id' => $account_page_attachment_id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_attachment_id;
+	}
+
+    /**
+	 * Check whether an attachment exists of specific key
+	 *
 	 * @param int $account_page_id
 	 * @param string $key
 	 * @return array|AccountPageAttachment
@@ -73,6 +89,13 @@ class AccountPageAttachment extends ActiveRecordBase {
             , 'sequence' => $this->sequence
         ), array( 'website_attachment_id' => $this->id )
         , 'isssss', 'i' );
+    }
+
+    /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array( 'website_attachment_id' => $this->id ), 'i' );
     }
 
     /**

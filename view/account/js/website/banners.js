@@ -8,8 +8,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	updateDividers();
 	
 	// Make the elements sortable
-	$('#dBannerBoxes').sortable({
-		'items'			: '.banner-box',
+	$('#dElementBoxes').sortable({
+		'items'			: '.element-box',
 		'placeholder'	: 'box-placeholder',
 		'revert'		: true,
 		'forcePlaceholderSize' : true,
@@ -18,7 +18,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Change the width of all the items
-	$(".banner-box, .box-divider").css("width", $('#hBannerWidth').val() + "px");
+	$(".element-box, .box-divider").css("width", $('#hBannerWidth').val() + "px");
 
     // Setup File Uploader
     var uploader = new qq.FileUploader({
@@ -52,7 +52,7 @@ function updateElementOrder() {
 	 * This means we would have to loop through the array on the serverside to determine everything.
 	 * When it is serialized like a string, it means that we can use the PHP explode function to determine the right IDs, very easily.
 	 */
-	var idList = $('#dBannerBoxes').sortable('serialize');
+	var idList = $('#dElementBoxes').sortable('serialize');
 	
 	// Use Sidebar's -- it's the same thing
 	$.post( '/website/update_sequence/', { _nonce : $('#_update_sequence').val(), 's' : idList }, ajaxResponse, 'json' );
@@ -64,7 +64,7 @@ $.fn.updateElementOrder = updateElementOrder;
 
 // Update dividers
 function updateDividers() {
-	$('#dBannerBoxes').find('.box-divider').remove().end().find('.banner-box:not(:last)').after('<div class="box-divider"></div>');
+	$('#dElementBoxes').find('.box-divider').remove().end().find('.element-box:not(:last)').after('<div class="box-divider"></div>');
 	
 	return this;
 }
