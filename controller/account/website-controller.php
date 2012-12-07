@@ -1043,5 +1043,3 @@ class WebsiteController extends BaseController {
         return $response;
     }
 }
-
-

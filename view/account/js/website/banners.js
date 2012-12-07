@@ -9,7 +9,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	
 	// Make the elements sortable
 	$('#dBannerBoxes').sortable({
-		'items'			: '.contact-box',
+		'items'			: '.banner-box',
 		'placeholder'	: 'box-placeholder',
 		'revert'		: true,
 		'forcePlaceholderSize' : true,
@@ -18,7 +18,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Change the width of all the items
-	$(".contact-box, .box-divider").css("width", $('#hBannerWidth').val() + "px");
+	$(".banner-box, .box-divider").css("width", $('#hBannerWidth').val() + "px");
 
     // Setup File Uploader
     var uploader = new qq.FileUploader({
@@ -64,7 +64,7 @@ $.fn.updateElementOrder = updateElementOrder;
 
 // Update dividers
 function updateDividers() {
-	$('#dBannerBoxes').find('.box-divider').remove().end().find('.contact-box:not(:last)').after('<div class="box-divider"></div>');
+	$('#dBannerBoxes').find('.box-divider').remove().end().find('.banner-box:not(:last)').after('<div class="box-divider"></div>');
 	
 	return this;
 }
