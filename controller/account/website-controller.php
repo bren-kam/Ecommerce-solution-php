@@ -318,7 +318,57 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Banners
+     *
+     * @return TemplateResponse
+     */
+    public function banners() {
+        // Initialize classes
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+
+        // Get variables
+        $page->get_by_slug( $this->user->account->id, 'home' );
+        $attachments = $attachment->get_by_account_page_ids( array( $page->id ) );
+
+        $settings = $this->user->account->get_settings( 'banner-width', 'banner-height', 'images-alt' );
+        $new_settings = array();
+
+        // Set dimensions if they are empty
+        foreach ( $settings as $k => &$v ) {
+            if ( !empty( $v ) )
+                continue;
+
+            $v = ( 'banner-width' == $k ) ? 680 : 300;
+
+            $new_settings[$k] = $v;
+        }
+
+        // Update settings
+        if ( !empty( $new_settings ) )
+            $this->user->account->set_settings( $new_settings );
+
+        // Determinve variables
+        $dimensions = $settings['banner-width'] . 'x' . $settings['banner-height'];
+        $images_alt = '1' == $settings['images-alt'];
+
+        $this->resources
+            ->css( 'website/banners' )
+            ->javascript( 'fileuploader', 'website/banners' );
+
+        $response = $this->get_template_response( 'banners' )
+            ->select( 'banners' )
+            ->add_title( _('Banners') )
+            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page', 'settings' ) );
+
+        return $response;
+    }
+
+
+    /**
      * Sale
+     *
+     * @return TemplateResponse|RedirectResponse
      */
     public function sale() {
         // Instantiate classes
@@ -648,7 +698,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['fn'], $_GET['aid'] ), _('File failed to upload') );
+        $response->check( isset( $_GET['fn'] ), _('File failed to upload') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -710,7 +760,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['fn'], $_GET['aid'], $_GET['apid'], $_GET['fn'] ), _('Not enough data to upload image') );
+        $response->check( isset( $_GET['fn'], $_GET['apid'], $_GET['fn'] ), _('Not enough data to upload image') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -787,6 +837,106 @@ class WebsiteController extends BaseController {
                 jQuery('#dApplyNowContent')->html('<img src="' . $image_url . '" style="padding-bottom:10px" alt="' . _('Apply Now') . '" /><br /><p>' . _('Place "[apply-now]" into the page content above to place the location of your image. When you view your website, this will be replaced with the image uploaded.') . '</p>' );
             break;
         }
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload Banner
+     *
+     * @return AjaxResponse
+     */
+    public function upload_banner() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['apid'] ), _('Not enough data to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File();
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+        $uploader = new qqFileUploader( array( 'gif', 'jpg', 'jpeg', 'png' ), 6144000 );
+
+        // Get some stuff
+        $page->get( $_GET['apid'] );
+        $settings = $this->user->account->get_settings( 'banner-width', 'banner-height' );
+
+        $max_width = ( empty ( $settings['banner-width'] ) ) ? 1000 : $settings['banner-width'];
+        $max_height = ( empty ( $settings['banner-height'] ) ) ? 1000 : $settings['banner-height'];
+
+        $banner_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $banner_dir = $this->user->account->id . "/banners/";
+        $banner_name = $file->upload_image( $result['file_path'], $banner_name, $max_width, $max_height, 'websites', $banner_dir );
+
+        // Form image url
+        $banner_url = 'http://websites.retailcatalog.us/' . $banner_dir . $banner_name;
+
+        // Set variables
+        $attachment->website_page_id = $page->id;
+        $attachment->key = 'banner';
+        $attachment->value = $banner_url;
+        $attachment->create();
+        
+        // Create new box
+
+        $enable_disable_url = url::add_query_arg( array(
+            '_nonce' => nonce::create( 'update_status' )
+            , 'apaid' => $attachment->id
+            , 's' => '0'
+        ), '/website/update-status/' );
+
+        $remove_attachment_url = url::add_query_arg( array(
+            '_nonce' => nonce::create('remove_attachment')
+            , 'apaid' => $attachment->id
+            , 't' => 'dAttachment_' . $attachment->id
+            , 'si' => '1'
+        ), '/website/sidebar/remove_attachment/' );
+
+        $banner = '<div class="banner-box" id="dAttachment_' . $attachment->id . '" style="width:' . $settings['banner-width'] . 'px">';
+        $banner .= '<h2>' . _('Banner') . '</h2>';
+        $banner .= '<p><small>' . $settings['banner-width'] . 'x' . $settings['banner-height'] . '</small></p>';
+        $banner .= '<a href="' . $enable_disable_url . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this banner?') . '"><img src="/images/trans.gif" width="76" height="25" alt="' . _('Enable/Disable') . '" /></a>';
+        $banner .= '<div id="dBanner' . $attachment->id . '" class="text-center">';
+        $banner .= '<img src="' . $banner_url . '" alt="' . _('Banner Image') . '" />';
+        $banner .= '</div><br />';
+        $banner .= '<form action="/website/update_extra/" method="post" ajax="1">';
+        $banner .= '<p id="pTempSuccess' . $attachment->id . '" class="success hidden">' . _('Your banner link has been successfully updated.') . '</p>';
+        $banner .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
+        $banner .= '<input type="submit" class="button" value="' . _('Save') . '" />';
+        $banner .= '<input type="hidden" name="hAccountPageAttachmentId" value="' . $attachment->id . '" />';
+        $banner .= '<input type="hidden" name="target" value="pTempSuccess' . $attachment->id . '" />';
+        $banner .= nonce::field( 'update_extra', '_nonce', false );
+        $banner .= '</form>';
+        $banner .= '<a href="' . $remove_attachment_url . '" class="remove" title="' . _('Remove Banner') . '" ajax="1" confirm="' . _('Are you sure you want to remove this banner?') . '">' . _('Remove') . '</a></p>';
+        $banner .= '<br clear="all" /></div>';
+        
+        jQuery('#dBannerBoxes')
+            ->append( $banner )
+            ->updateElementOrder()
+            ->updateDividers()
+            ->sparrow();
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );

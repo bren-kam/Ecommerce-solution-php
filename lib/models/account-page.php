@@ -29,6 +29,22 @@ class AccountPage extends ActiveRecordBase {
     }
 
     /**
+     * Get by slug
+     *
+     * @param int $account_id
+     * @param string $slug
+     */
+    public function get_by_slug( $account_id, $slug ) {
+        $this->prepare(
+            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_id` = :account_id AND `slug` = :slug'
+            , 'is'
+            , array( ':account_id' => $account_id, ':slug' => $slug )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_page_id;
+    }
+
+    /**
      * Get all
      *
      * @param int $account_id

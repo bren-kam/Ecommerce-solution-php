@@ -8,7 +8,6 @@ jQuery(function(){
         , onSubmit: function( id, fileName ) {
             uploader.setParams({
                 _nonce : $('#_upload_image').val()
-                , aid : $('#hAccountId').val()
                 , apid : $('#hAccountPageId').val()
                 , fn : 'financing'
             })

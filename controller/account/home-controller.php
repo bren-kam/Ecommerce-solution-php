@@ -51,7 +51,7 @@ class HomeController extends BaseController {
             // If it's amongst the user's accounts, redirect him
             if ( $account->id == $_GET['aid'] ) {
                 set_cookie( 'wid', $account->id, 172800 ); // 2 Days
-                $url = '/';
+                $url = ( empty( $_GET['r'] ) ) ? '/' : $_GET['r'];
                 break;
             }
         }

@@ -97,6 +97,5 @@ if ( !empty( $errs ) )
     </div>
 </div>
 <?php nonce::field( 'upload_file', '_upload_file' ); ?>
-<input type="hidden" id="hAccountId" value="<?php echo $user->account->id; ?>" />
 <input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
 <?php echo $template->end(); ?>

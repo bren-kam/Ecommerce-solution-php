@@ -50,7 +50,6 @@ jQuery(function($) {
             uploader.setParams({
                 _nonce : $('#_upload_file').val()
                 , fn : $('#tFileName').val()
-                , aid : $('#hAccountId').val()
             })
         }
         , onComplete: function( id, fileName, responseJSON ) {
