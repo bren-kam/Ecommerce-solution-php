@@ -21,7 +21,7 @@ class AccountPageAttachment extends ActiveRecordBase {
 	 */
 	public function get( $account_page_attachment_id, $account_id ) {
 		$this->prepare(
-            'SELECT wa.`website_attachment_id`, wa.`key`, wa.`value`, wa.`extra`, wa.`meta` FROM `website_attachments` AS wa LEFT JOIN `website_pages` AS wp ON( wp.`website_page_id` = wa.`website_page_id` ) WHERE wa.`website_page_id` = :account_page_attachment_id AND wp.`website_id` = :account_id'
+            'SELECT wa.`website_attachment_id`, wa.`website_page_id`, wa.`key`, wa.`value`, wa.`extra`, wa.`meta`, wa.`status` FROM `website_attachments` AS wa LEFT JOIN `website_pages` AS wp ON( wp.`website_page_id` = wa.`website_page_id` ) WHERE wa.`website_attachment_id` = :account_page_attachment_id AND wp.`website_id` = :account_id'
             , 'ii'
             , array( ':account_page_attachment_id' => $account_page_attachment_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -38,7 +38,7 @@ class AccountPageAttachment extends ActiveRecordBase {
 	 */
 	public function get_by_key( $account_page_id, $key ) {
 		$attachments = $this->prepare(
-            'SELECT `website_attachment_id`, `key`, `value`, `extra`, `meta` FROM `website_attachments` WHERE `key` = :key AND `website_page_id` = :account_page_id'
+            'SELECT `website_attachment_id`, `key`, `value`, `extra`, `meta`, `status` FROM `website_attachments` WHERE `key` = :key AND `website_page_id` = :account_page_id'
             , 'si'
             , array( ':key' => $key, ':account_page_id' => $account_page_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountPageAttachment' );
@@ -57,7 +57,11 @@ class AccountPageAttachment extends ActiveRecordBase {
             $apid = (int) $apid;
         }
 
-        return $this->get_results( 'SELECT `website_attachment_id`, `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence` FROM `website_attachments` WHERE `status` = 1 AND `website_page_id` IN (' . implode( ', ', $account_page_ids ) . ')', PDO::FETCH_CLASS, 'AccountPageAttachment' );
+        return $this->get_results(
+            'SELECT `website_attachment_id`, `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence`, `status` FROM `website_attachments` WHERE `website_page_id` IN (' . implode( ', ', $account_page_ids ) . ') ORDER BY `sequence`'
+            , PDO::FETCH_CLASS
+            , 'AccountPageAttachment'
+        );
     }
 
     /**
@@ -87,8 +91,9 @@ class AccountPageAttachment extends ActiveRecordBase {
             , 'extra' => $this->extra
             , 'meta' => $this->meta
             , 'sequence' => $this->sequence
+            , 'status' => $this->status
         ), array( 'website_attachment_id' => $this->id )
-        , 'isssss', 'i' );
+        , 'issssii', 'i' );
     }
 
     /**
@@ -98,12 +103,12 @@ class AccountPageAttachment extends ActiveRecordBase {
      * @param array $sequence
      */
     public function update_sequence( $account_id, array $sequence ) {
-        $account_id = (int) $account_id;
-
          // Prepare statement
-		$statement = $this->prepare_raw( "UPDATE `website_attachments` AS wa LEFT JOIN `website_pages` AS wp ON ( wp.`website_page_id` = wp.`website_page_id` ) SET wa.`sequence` = :sequence WHERE wa.`website_attachment_id` = :account_page_attachment_id AND wp.`website_id` = $account_id" );
-		$statement->bind_param( ':sequence', $count, PDO::PARAM_INT );
-        $statement->bind_param( ':account_page_attachment_id', $account_page_attachment_id, PDO::PARAM_INT );
+		$statement = $this->prepare_raw( "UPDATE `website_attachments` AS wa LEFT JOIN `website_pages` AS wp ON ( wp.`website_page_id` = wp.`website_page_id` ) SET wa.`sequence` = :sequence WHERE wa.`website_attachment_id` = :account_page_attachment_id AND wp.`website_id` = :account_id" );
+		$statement
+            ->bind_param( ':sequence', $count, PDO::PARAM_INT )
+            ->bind_param( ':account_page_attachment_id', $account_page_attachment_id, PDO::PARAM_INT )
+            ->bind_value( ':account_id', $account_id, PDO::PARAM_INT );
 
 		foreach ( $sequence as $count => $account_page_attachment_id ) {
 			$statement->query();

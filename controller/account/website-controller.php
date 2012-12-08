@@ -318,6 +318,48 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Sidebar
+     *
+     * @return TemplateResponse
+     */
+    public function sidebar() {
+        // Initialize classes
+        $account_file = new AccountFile();
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+
+        // Get variables
+        $files = $account_file->get_by_account( $this->user->account->id );
+        $page->get_by_slug( $this->user->account->id, 'sidebar' );
+        $attachments_array = $attachment->get_by_account_page_ids( array( $page->id ) );
+        $settings = $this->user->account->get_settings( 'sidebar-image-width', 'images-alt' );
+
+        // Do stuff with variables
+        $dimensions = ( empty( $settings['sidebar-image-width'] ) ) ? '' : _('Width') . ': ' . $settings['sidebar-image-width'];
+        $images_alt = '1' == $settings['images-alt'];
+
+        $attachments = array();
+
+        /**
+         * @var AccountPageAttachment $a
+         */
+        foreach( $attachments_array as $a ) {
+            $attachments[$a->key] = $a;
+        }
+
+        $this->resources
+            ->css( 'website/website-sidebar' )
+            ->javascript( 'fileuploader', 'website/pages/page', 'website/website-sidebar' );
+
+        $response = $this->get_template_response( 'website-sidebar' )
+            ->select( 'sidebar' )
+            ->add_title( _('Sidebar') )
+            ->set( compact( 'dimensions', 'files', 'attachments', 'page', 'images_alt' ) );
+
+        return $response;
+    }
+
+    /**
      * Banners
      *
      * @return TemplateResponse
@@ -363,7 +405,6 @@ class WebsiteController extends BaseController {
 
         return $response;
     }
-
 
     /**
      * Sale
@@ -1058,7 +1099,7 @@ class WebsiteController extends BaseController {
             return $response;
 
         $attachment = new AccountPageAttachment();
-        $attachment->get( $_GET['apaid'], $this->user->account->id );
+        $attachment->get( $_POST['hAccountPageAttachmentId'], $this->user->account->id );
 
         // Empty it the link they didn't enter anything
         if ( 'Enter Link...' == $_POST['extra'] || 'http://' == $_POST['extra'] )
@@ -1067,12 +1108,12 @@ class WebsiteController extends BaseController {
         $meta = ( isset( $_POST['meta'] ) ) ? $_POST['meta'] : '';
 
         // Do validation
-        $v = new Validator();
+        $v = new Validator( 'fUpdateExtra' );
         $v->add_validation( 'extra', 'URL' );
 
         $response->check( empty( $errs ) && ( empty( $_POST['extra'] ) || stristr( $_POST['extra'], 'http' ) ), _('Please make sure you enter in a valid link') );
 
-        if ( !$response->has_error() )
+        if ( $response->has_error() )
             return $response;
 
         // Update attachment
@@ -1105,6 +1146,9 @@ class WebsiteController extends BaseController {
 
         $attachment = new AccountPageAttachment();
         $attachment->get( $_GET['apaid'], $this->user->account->id );
+
+        $attachment->status = $_GET['s'];
+        $attachment->save();
 
         $enable_disable_url = url::add_query_arg( array(
             '_nonce' => nonce::create( 'update_attachment_status' )
@@ -1149,12 +1193,12 @@ class WebsiteController extends BaseController {
             return $response;
 
         $account_file = new AccountFile();
-        $file = new File();
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
         $attachment = new AccountPageAttachment();
         $attachment->get( $_GET['apaid'], $this->user->account->id );
 
         if ( stristr( $attachment->value, 'http://' ) ) {
-            $account_file->get_by_file_path( $attachment['value'], $this->user->account->domain, $this->user->account->id );
+            $account_file->get_by_file_path( $attachment->value, $this->user->account->domain, $this->user->account->id );
 
             // Delete from Amazon S3 (Not checking because it may have been removed other ways )
             $file->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $account_file->file_path ) );
