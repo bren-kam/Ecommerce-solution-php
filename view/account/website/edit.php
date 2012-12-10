@@ -49,7 +49,7 @@ if ( !empty( $errs ) )
     </div>
 
     <?php if ( $user->account->mobile_marketing ) { ?>
-        <p><input type="checkbox" class="cb" name="cbIsMobile" id="cbIsMobile" <?php if ( $page['mobile'] ) echo "checked"; ?> /> <label for="cbIsMobile"><?php echo _('Link to Mobile Website'); ?></label></p>
+        <p><input type="checkbox" class="cb" name="cbIsMobile" id="cbIsMobile" <?php if ( $page->mobile ) echo "checked"; ?> /> <label for="cbIsMobile"><?php echo _('Link to Mobile Website'); ?></label></p>
         <br />
     <?php
     }

@@ -886,6 +886,106 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Upload Sidebar Image
+     *
+     * @return AjaxResponse
+     */
+    public function upload_sidebar_image() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['apid'] ), _('Not enough data to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File();
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+        $uploader = new qqFileUploader( array( 'gif', 'jpg', 'jpeg', 'png' ), 6144000 );
+
+        // Get some stuff
+        $sidebar_image_width = $this->user->account->get_settings( 'sidebar-image-width' );
+        $max_width = ( empty ( $settings['sidebar-image-width'] ) ) ? 1000 : $settings['sidebar-image-width'];
+
+        $image_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+        $page->get( $_GET['apid'] );
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $image_dir = $this->user->account->id . "/sidebar/";
+        $image_name = $file->upload_image( $result['file_path'], $image_name, $max_width, 1000, 'websites', $image_dir );
+
+        // Form image url
+        $image_url = 'http://websites.retailcatalog.us/' . $image_dir . $image_name;
+
+        // Create the account attachment
+        $attachment->website_page_id = $page->id;
+        $attachment->key = 'sidebar-image';
+        $attachment->value = $image_url;
+        $attachment->create();
+
+        $element_box = '<div class="element_box" id="dAttachment_' . $attachment->id . '">';
+        $element_box .= '<h2>' . _('Sidebar Image') . '</h2>';
+        
+        // Add Sidebar Image
+        if ( !empty( $sidebar_image_width ) )
+            $element_box .= '<p><small>' . _('Width') . " $sidebar_image_width</small></p>";
+
+        $enable_disable_url = url::add_query_arg( array(
+            '_nonce' => nonce::create( 'update_status' )
+            , 'apaid' => $attachment->id
+            , 's' => '0'
+        ), '/website/update-status/' );
+
+        $remove_attachment_url = url::add_query_arg( array(
+            '_nonce' => nonce::create('remove_attachment')
+            , 'apaid' => $attachment->id
+            , 't' => 'dAttachment_' . $attachment->id
+            , 'si' => '1'
+        ), '/website/remove-attachment/' );
+
+        $element_box .= '<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this sidebar element? This will remove it from the sidebar on your website.') . '"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>';
+        $element_box .= '<div id="dSidebarImage' . $attachment->id . '"><br />';
+        $element_box .= '<form action="/website/update-attachment-extra/" method="post" ajax="1">';
+        $element_box .= '<div align="center">';
+        $element_box .= '<p><img src="' . $image_url . '" alt="' . _('Sidebar Image') . '" /></p>';
+        $element_box .= '<p><a href="' . $remove_attachment_url . '" id="aRemove' . $attachment->id . '" title="' . _('Remove Image') . '" ajax="1" confirm="' . _('Are you sure you want to remove this sidebar element?') . '">' . _('Remove') . '</a></p>';
+        $element_box .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
+        $element_box .= '<p id="pTempSidebarImage' . $attachment->id . '" class="success hidden">' . _('Your Sidebar Image link has been successfully updated.') . '</p><br />';
+        $element_box .= '<p align="center"><input type="submit" class="button" value="' . _('Save') . '" /></p>';
+        $element_box .= '</div>';
+        $element_box .= '<input type="hidden" name="hWebsiteAttachmentID" value="' . $attachment->id . '" />';
+        $element_box .= '<input type="hidden" name="target" value="pTempSidebarImage' . $attachment->id . '" />';
+        $element_box .= nonce::field( 'update_attachment_extra', '_nonce', false );
+        $element_box .= '</form></div></div>';
+        
+        jQuery('#dElementBoxes')
+            ->append( $element_box )
+            ->updateElementOrder()
+            ->updateDividers()
+            ->sparrow();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
      * Upload Banner
      *
      * @return AjaxResponse
@@ -953,7 +1053,7 @@ class WebsiteController extends BaseController {
             , 'apaid' => $attachment->id
             , 't' => 'dAttachment_' . $attachment->id
             , 'si' => '1'
-        ), '/website/sidebar/remove_attachment/' );
+        ), '/website/remove-attachment/' );
 
         $banner = '<div class="element-box" id="dAttachment_' . $attachment->id . '" style="width:' . $settings['banner-width'] . 'px">';
         $banner .= '<h2>' . _('Banner') . '</h2>';
@@ -1156,11 +1256,9 @@ class WebsiteController extends BaseController {
             , 's' => ( '0' == $_GET['s'] ) ? '1' : '0'
         ), '/website/update-attachment-status/' );
 
-        jQuery('#aEnableDisable' . $attachment->id)
-            ->replaceWith('<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable disabled" title="' . _('Enable/Disable') . '" ajax="1"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>')
-            ->sparrow();
-
         if ( '0' == $_GET['s'] ) {
+            jQuery('#aEnableDisable' . $attachment->id)->replaceWith('<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable disabled" title="' . _('Enable/Disable') . '" ajax="1"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>');
+
             // Disabled
                 jQuery('#dAttachment_' . $attachment->id)
                 ->addClass('disabled')
@@ -1168,10 +1266,43 @@ class WebsiteController extends BaseController {
                 ->updateElementOrder()
                 ->updateDividers();
         } else {
+            jQuery('#aEnableDisable' . $attachment->id)->replaceWith('<a href="' . $enable_disable_url . '" id="aEnableDisable' . $attachment->id . '" class="enable-disable" title="' . _('Enable/Disable') . '" ajax="1" confirm="' . _('Are you sure you want to deactivate this sidebar element? This will remove it from the sidebar on your website.') . '"><img src="/images/trans.gif" width="26" height="28" alt="' . _('Enable/Disable') . '" /></a>');
+
             // Enabled
             jQuery('#dAttachment_' . $attachment->id)->removeClass('disabled');
         }
-        
+
+        jQuery('#aEnableDisable' . $attachment->id)->parent()->sparrow();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Sidebar Email
+     *
+     * @return AjaxResponse
+     */
+    public function update_sidebar_email() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['hAccountPageAttachmentId'], $_POST['taEmail'] ), _('You do not have permission to update this item') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $attachment = new AccountPageAttachment();
+        $attachment->get( $_POST['hAccountPageAttachmentId'], $this->user->account->id );
+
+        $attachment->value = $_POST['taEmail'];
+        $attachment->save();
+
+        // Show and hide success
+        jQuery('#pTempEmailMessage')->show()->delay(5000)->hide();
+
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 

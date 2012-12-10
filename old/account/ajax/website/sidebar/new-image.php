@@ -61,7 +61,7 @@ $ajax->ok( $website_file_id = $wf->add_file( $upload_url ), _('An error occurred
 // Delete the file
 if ( is_file( $file_path ) )
     unlink( $file_path );
-		
+
 $contact_box = '<div class="contact-box" id="dAttachment_' . $website_attachment_id . '">';
 $contact_box .= '<h2>' . _('Sidebar Image') . '</h2>';
 

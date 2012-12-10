@@ -229,10 +229,9 @@ foreach ( $attachments as $a ) {
 
             $remove = false;
 
-            ?>
-            <a href="#" id="aUploadSidebarVideo" class="button" title="<?php echo _('Upload Video'); ?>"><?php echo _('Upload'); ?></a>
-            <div class="hidden" id="upload-sidebar-video"></div>
-            <?php
+
+            $value .= '<br /><a href="#" id="aUploadSidebarVideo" class="button" title="' . _('Upload Video') . '">' . _('Upload') . '</a>';
+            $value .= '<div class="hidden" id="upload-sidebar-video"></div>';
         break;
 
         case 'current-ad-pdf':
