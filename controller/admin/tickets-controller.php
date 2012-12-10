@@ -25,7 +25,7 @@ class TicketsController extends BaseController {
          * @var User $user
          */
         foreach ( $users as $user ) {
-            if ( $user->has_permission(6) && !empty( $user->contact_name ) )
+            if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) && !empty( $user->contact_name ) )
                 $assigned_to_users[$user->id] = $user->contact_name;
         }
 
@@ -39,7 +39,7 @@ class TicketsController extends BaseController {
         unset( $_SESSION['tickets'] );
 
         // Set first one to be me
-        if ( $this->user->has_permission( 7 ) )
+        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
             $_SESSION['tickets']['assigned-to'] = $this->user->id;
 
         return $template_response;
@@ -280,7 +280,7 @@ class TicketsController extends BaseController {
         $comment = strip_tags( $ticket_comment->comment );
 
         // If it's not private, send an email to the client
-        if ( 0 == $ticket_comment->private && ( 1 == $ticket->status || !$ticket_creator->has_permission(8) ) )
+        if ( 0 == $ticket_comment->private && ( 1 == $ticket->status || !$ticket_creator->has_permission( User::ROLE_ADMIN ) ) )
             fn::mail( $ticket->email, 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>' );
 
         // Send the assigned user an email if they are not submitting the comment
@@ -709,7 +709,7 @@ class TicketsController extends BaseController {
         $dt->add_where( $where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )' );
 
         // If they are below 8, that means they are a partner
-		if ( !$this->user->has_permission(8) )
+		if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
 			$dt->add_where( ' AND ( c.`company_id` = ' . (int) $this->user->company_id . ' OR a.`user_id` = ' . (int) $this->user->id . ' )' );
 
         $status = ( isset( $_SESSION['tickets']['status'] ) ) ? (int) $_SESSION['tickets']['status'] : 0;
@@ -722,7 +722,7 @@ class TicketsController extends BaseController {
             if ( '-1' == $_SESSION['tickets']['assigned-to'] ) {
                 $dt->add_where( ' AND c.`role` <= ' . (int) $this->user->role );
             } else {
-                $assigned_to = ( $this->user->has_permission(9) ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
+                $assigned_to = ( $this->user->has_permission( User::ROLE_SUPER_ADMIN ) ) ? ' AND c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] : ' AND ( b.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] . ' OR c.`user_id` = ' . (int) $_SESSION['tickets']['assigned-to'] .' )';
                 $dt->add_where( $assigned_to );
             }
         }

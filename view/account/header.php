@@ -11,8 +11,6 @@
 
 $resources->css_before( 'labels/' . DOMAIN, 'style' );
 $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
-
-$template->set( 'section_' . $template->v('section'), ' class="selected"');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -40,26 +38,66 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
 	</div>
 	<div id="nav">
 		<div id="nav-links">
-			<?php if ( $user && $user->id ) { ?>
-                <a href="/accounts/" title="<?php echo _('Accounts'); ?>"<?php echo $template->v('section_accounts'); ?>><?php echo _('Accounts'); ?></a>
-                <a href="/products/" title="<?php echo _('Products'); ?>"<?php echo $template->v('section_products'); ?>><?php echo _('Products'); ?></a>
-                <?php if ( $user->has_permission(7) ) { ?>
-                    <a href="/users/" title="<?php echo _('Users'); ?>"<?php echo $template->v('section_users'); ?>><?php echo _('Users'); ?></a>
-                <?php } ?>
-                <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
-                <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
-                <?php if ( $user->has_permission(7) ) { ?>
-                <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
-                <?php } ?>
-                <div id="nav-right">
-                    <div id="support">
-                        <a href="#" id="aSupport" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
-                        <div id="support-drop-down" class="hidden">
-                            <a href="#" id="aTicket" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support Request'); ?></a>
-                            <a href="/help/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Knowledge Base'); ?></a>
-                        </div>
+            <a href="/" title="<?php echo _('Dashboard'); ?>"<?php $template->select( 'dashboard', true ); ?>><?php echo _('Dashboard'); ?></a>
+            <?php
+            $links = array(
+                'pages'				    => array( 'website', _('Website') )
+                , 'product_catalog'	    => array( 'products', _('Products') )
+                , 'live' 			    => array( 'analytics', _('Analytics') )
+                , 'blog'			    => array( '', 'Blog' )
+                , 'email_marketing'	    => array( 'email-marketing', _('Email Marketing') )
+                , 'shopping_cart'	    => array( 'shopping-cart/users', _('Shopping Cart') )
+                , 'craigslist'		    => array( 'craigslist', _('Craigslist Ads') )
+                , 'social_media'	    => array( 'social-media', _('Social Media') )
+                , 'mobile_marketing'    => array( 'mobile-marketing', _('Mobile Marketing') )
+            );
+
+            $keys = array_keys( $links );
+            
+            foreach ( $links as $key => $link ) {
+                if ( 'email_marketing' != $key && !$user->account->$key )
+                    continue;
+
+                switch ( $key ) {
+                    case 'blog':
+                    ?>
+                    <form action="http://<?php echo $user->account->domain; ?>/blog/wp-login.php" target="_blank" method="post" id="fBlogForm" class="hidden">
+                        <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
+                        <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
+                    </form>
+                    <a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $link[1]; ?>"<?php $template->select( $link[0], true ); ?>><?php echo $link[1]; ?></a>
+                    <?php
+                    break;
+
+                    default:
+                        ?>
+                        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>"<?php $template->select( $link[0], true ); ?>><?php echo $link[1]; ?></a>
+                        <?php
+                    break;
+                }
+            }
+			?>
+            <div id="nav-right">
+                <div id="support">
+                    <a href="#" id="aSupport" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
+                    <div id="support-drop-down" class="hidden">
+                        <a href="#" id="aTicket" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support Request'); ?></a>
+                        <a href="/help/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Knowledge Base'); ?></a>
                     </div>
                 </div>
-			<?php } ?>
+            </div>
 		</div>
 	</div>
+    <div id="current-site">
+        <div class="float-left">
+            <h3><?php echo _('Site'), ': ', $user->account->title; ?></h3>
+            <?php if ( count( $user->accounts ) > 1 ) { ?>
+                <p><a href="/home/select-account/" class="highlight" title="<?php echo _('Change Account'); ?>">(<?php echo _('Change'); ?>)</a></p>
+            <?php } ?>
+        </div>
+        <?php if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) ) { ?>
+        <div id="return-to-admin">
+            <p><a href="http://admin.<?php echo DOMAIN; ?>/accounts/" class="button" title="<?php echo _('Back to Admin'); ?>"><?php echo _('Back to Admin'); ?></a></p>
+        </div>
+        <?php } ?>
+    </div>

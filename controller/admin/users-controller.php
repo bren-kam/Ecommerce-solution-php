@@ -50,7 +50,7 @@ class UsersController extends BaseController {
             $user->get( $user_id );
 
             // Make sure they can access this user
-            if ( ( !$this->user->has_permission(8) && $this->user->company_id != $user->company_id ) || $this->user->role < $user->role )
+            if ( ( !$this->user->has_permission( User::ROLE_ADMIN ) && $this->user->company_id != $user->company_id ) || $this->user->role < $user->role )
                 return new RedirectResponse('/users/');
         }
 
@@ -62,7 +62,7 @@ class UsersController extends BaseController {
         $ft->add_field( 'title', _('Personal Information') );
 
         // Add companies if there is one
-        if ( $this->user->has_permission(8) ) {
+        if ( $this->user->has_permission( User::ROLE_ADMIN ) ) {
             $companies = ar::assign_key( $company->get_all( PDO::FETCH_ASSOC ), 'company_id', true );
 
             $ft->add_field( 'select', _('Company'), 'sCompany', $user->company_id )
@@ -227,7 +227,7 @@ class UsersController extends BaseController {
         $user->get( $_GET['uid'] );
 
         // Make sure they're not trying to control someone with the same role or a higher role
-        if ( $this->user->role <= $user->role || ( !$this->user->has_permission(8) && $this->user->company_id != $user->company_id ) )
+        if ( $this->user->role <= $user->role || ( !$this->user->has_permission( User::ROLE_ADMIN ) && $this->user->company_id != $user->company_id ) )
             return new RedirectResponse( '/accounts/' );
 
         // Get the websites that user controls
@@ -258,7 +258,7 @@ class UsersController extends BaseController {
         $dt->search( array( 'a.`contact_name`' => true, 'a.`email`' => true, 'b.`domain`' => true ) );
 
         // If they are below 8, that means they are a partner
-		if ( !$this->user->has_permission(8) )
+		if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
 			$dt->add_where( ' AND a.`company_id` = ' . (int) $this->user->company_id );
 
         // Get accounts

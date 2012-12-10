@@ -23,7 +23,7 @@ echo $template->start( _('Tickets'), false );
 		<option value="-1"><?php echo _('Peers'); ?></option>
 		<?php
 		foreach ( $assigned_to_users as $user_id => $contact_name ) {
-			$selected = ( $user->has_permission(8) && $user_id == $user->id ) ? ' selected="selected"' : '';
+			$selected = ( $user->has_permission( User::ROLE_ADMIN ) && $user_id == $user->id ) ? ' selected="selected"' : '';
 			?>
 			<option value="<?php echo $user_id; ?>"<?php echo $selected; ?>><?php echo $contact_name; ?></option>
 		<?php } ?>

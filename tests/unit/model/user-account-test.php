@@ -180,7 +180,7 @@ class UserAccountTest extends BaseDatabaseTest {
     public function testValidHasPermission() {
         $this->user->role = 5;
 
-        $this->assertFalse( $this->user->has_permission( 7 ) );
+        $this->assertFalse( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) );
     }
 
     /**
@@ -189,7 +189,7 @@ class UserAccountTest extends BaseDatabaseTest {
     public function testInvalidHasPermission() {
         $this->user->role = 5;
 
-        $this->assertTrue( $this->user->has_permission( 5 ) );
+        $this->assertTrue( $this->user->has_permission( User::ROLE_STORE_OWNER ) );
     }
 
     /**
