@@ -224,7 +224,7 @@ class InstallService {
         if ( is_array( $template_account_attachments )  )
         foreach ( $template_account_attachments as $taa ) {
 			// Needs to be a value that we can copy
-			if ( !stristr( $taa->value, 'retailcatalog.us' ) )
+			if ( 1 != $taa->status || !stristr( $taa->value, 'retailcatalog.us' ) )
 				continue;
 			
             $value = $file->copy_file( $account->id, $taa->value, 'websites' );
@@ -279,7 +279,7 @@ class InstallService {
         $account_pagemeta = new AccountPagemeta();
         $pagemeta_keys = array( 'display-coupon', 'email-coupon', 'hide-all-maps' );
 
-        $template_pagemeta = $account_pagemeta->get_by_keys( array_keys( $template_account_pages ), $pagemeta_keys );
+        $template_pagemeta = $account_pagemeta->get_for_pages_by_keys( array_keys( $template_account_pages ), $pagemeta_keys );
 
         $new_pagemeta = array();
 

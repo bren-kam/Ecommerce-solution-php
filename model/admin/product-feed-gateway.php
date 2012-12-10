@@ -225,7 +225,7 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
 
         // Close file
 		fclose( $fp );
-
+		
 		$this->file->upload_image( $image_path, $new_image_name, 320, 320, $industry, "products/{$product_id}/", false, true );
 		$this->file->upload_image( $image_path, $new_image_name, 46, 46, $industry, "products/{$product_id}/thumbnail/", false, true );
 		$this->file->upload_image( $image_path, $new_image_name, 200, 200, $industry, "products/{$product_id}/small/", false, true );

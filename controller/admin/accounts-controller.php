@@ -130,7 +130,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Make sure he has permission
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         $v = new Validator( 'fEditAccount' );
@@ -296,7 +296,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Make sure he has permission
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         // Setup objects
@@ -397,7 +397,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Make sure he has permission
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         // Setup objects
@@ -498,7 +498,7 @@ class AccountsController extends BaseController {
         $settings = $account->get_settings( 'trumpia-api-key', 'craigslist-customer-id' );
 
         // Make sure he has permission
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         $template_response = $this->get_template_response('actions')
@@ -679,14 +679,14 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Make sure he has permission
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
-        if ( !$this->user->has_permission(10) )
+        if ( !$this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
             return new RedirectResponse('/accounts/edit/?aid=' . $_GET['aid']);
 
         // Make sure they have permission
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         library('r53');
@@ -836,7 +836,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Make sure they have access
-        if ( !$this->user->has_permission(8) && $account->company_id != $this->user->company_id )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
         $account_note = new AccountNote();
@@ -951,7 +951,7 @@ class AccountsController extends BaseController {
      */
     protected function delete_categories_and_products() {
         // Make sure it was a valid request
-        if ( !isset( $_GET['aid'] ) && $this->user->has_permission(7) )
+        if ( !isset( $_GET['aid'] ) && $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
             return new RedirectResponse('/accounts/');
 
         // Get the website products and categories
@@ -974,7 +974,7 @@ class AccountsController extends BaseController {
      */
     protected function cancel() {
         // Make sure it was a valid request
-        if ( !isset( $_GET['aid'] ) && $this->user->has_permission(10) )
+        if ( !isset( $_GET['aid'] ) && $this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
             return new RedirectResponse('/accounts/');
 
         // Get the account
@@ -1203,12 +1203,12 @@ class AccountsController extends BaseController {
             $dt->add_where( ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $this->user->company_id . ' )' );
         } else {
             // If they are below 8, that means they are a partner
-            if ( !$this->user->has_permission(8) )
+            if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
                 $dt->add_where( ' AND b.`company_id` = ' . $this->user->company_id );
         }
 
 		// What other sites we might need to omit
-		$omit_sites = ( !$this->user->has_permission(8) ) ? ', 96, 114, 115, 116' : '';
+		$omit_sites = ( !$this->user->has_permission( User::ROLE_ADMIN ) ) ? ', 96, 114, 115, 116' : '';
 
 		// Form the where
 		$dt->add_where( " AND a.`website_id` NOT IN ( 75, 76, 77, 95{$omit_sites} )" );

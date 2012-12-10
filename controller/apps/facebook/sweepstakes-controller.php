@@ -5,20 +5,12 @@ class SweepstakesController extends BaseController {
     const APP_URI = 'op-sweepstakes';
 
     /**
-     * FB Class
-     *
-     * @var FB $fb;
-     */
-    protected $fb;
-
-    /**
      * Setup the base for creating template responses
      */
     public function __construct() {
         // Pass in the base for all the views
         parent::__construct();
 
-        $this->fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
         $this->section = _('Sweepstakes');
     }
 
@@ -28,6 +20,7 @@ class SweepstakesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
         $form = new stdClass();
         $success = $website = false;
 
@@ -59,7 +52,7 @@ class SweepstakesController extends BaseController {
             $form->add_field( 'hidden', 'app_data', $_REQUEST['app_data'] );
 
             // Make sure it's a valid request
-            if( $other_user_id == $this->fb->user_id && $page_id && $form->posted() ) {
+            if( $other_user_id == $fb->user_id && $page_id && $form->posted() ) {
                 $sweepstakes->connect( $page_id, $_POST['tFBConnectionKey'] );
 
                 $website = $sweepstakes->get_connected_website( $page_id );
@@ -86,8 +79,9 @@ class SweepstakesController extends BaseController {
      */
     public function tab() {
         // Setup variables
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, true );
         $sweepstakes = new Sweepstakes;
-        $signed_request = $this->fb->getSignedRequest();
+        $signed_request = $fb->getSignedRequest();
 		
         $tab = $sweepstakes->get_tab( $signed_request['page']['id'], $signed_request['page']['liked'] );
 
@@ -124,7 +118,7 @@ class SweepstakesController extends BaseController {
             $admin = '<p><strong>Admin:</strong> <a href="#" onclick="top.location.href=' . "'";
             $admin .= url::add_query_arg(
                 'app_data'
-                , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
+                , url::encode( array( 'uid' => security::encrypt( $fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $signed_request['page']['id'], 'sEcrEt-P4G3!' ) ) )
                 , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
@@ -133,7 +127,7 @@ class SweepstakesController extends BaseController {
         }
 		
 		// Get page information
-		$page = $this->fb->api( '/' . $signed_request['page']['id'] );
+		$page = $fb->api( '/' . $signed_request['page']['id'] );
 		
         $response = $this->get_template_response( 'facebook/sweepstakes/tab' );
         $response
@@ -157,10 +151,12 @@ class SweepstakesController extends BaseController {
      * @return RedirectResponse
      */
     public function settings() {
+        $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
+
         // Redirect to correct location
         return new RedirectResponse( url::add_query_arg(
             'app_data'
-            , url::encode( array( 'uid' => security::encrypt( $this->fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
+            , url::encode( array( 'uid' => security::encrypt( $fb->user_id, 'SecREt-Us3r!' ), 'pid' => security::encrypt( $_GET['fb_page_id'], 'sEcrEt-P4G3!' ) ) )
             , '/facebook/sweepstakes/'
         ) );
     }

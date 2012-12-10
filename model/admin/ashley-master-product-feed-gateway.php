@@ -97,7 +97,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 		set_time_limit( 600 );
 
         // Time how long we've been on this page
-        $this->ftp = new FTP( '/CustEDI/3400-/Outbound/' );
+        $this->ftp = new Ftp( '/CustEDI/3400-/Outbound/' );
 
         // Set login information
 		$this->ftp->host     = self::FTP_URL;
@@ -117,24 +117,23 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
         $files = $this->ftp->dir_list();
 
         $count = count( $files );
-
-        while ( is_null( $this->file ) && 0 != $count ) {
+		
+        while ( !isset( $file ) && 0 != $count ) {
             $last_file = array_pop( $files );
 
             if ( 'xml' == f::extension( $last_file ) )
-                $this->file = $last_file;
-
+                $file = $last_file;
+			
             $count = count( $files );
         }
 
         $xml_reader = new XMLReader();
 
 		// Grab the latest file
-		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $this->file ) )
-			$this->ftp->get( $this->file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
-
-		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $this->file );
-
+		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file ) )
+			$this->ftp->get( $file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
+		
+		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file );
 		$j = -1;
 
 		while( $xml_reader->read() ) {
@@ -417,6 +416,6 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 	 * @return int
 	 */
 	protected function get_brand( $retail_sales_category_code ) {
-		return $this->codes[$retail_sales_category_code];
+		return ( array_key_exists( $retail_sales_category_code, $this->codes ) ) ? $this->codes[$retail_sales_category_code] : '';
 	}
 }

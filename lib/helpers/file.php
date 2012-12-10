@@ -44,17 +44,17 @@ class File {
 	 * @param string $new_image_name the new image name
 	 * @param int $width the width you want the image to be
 	 * @param int $height the height you want the image to be
-	 * @param string $industry the industry to upload it under
+	 * @param string $subdomain the industry to upload it under
 	 * @param string $directory (Optional) any path to the directory you want the file to be in
 	 * @param bool $keep_proportions (Optional|true) keep image proportions
 	 * @param bool $fill_constraints (Optional|true) fill the constraints given
      * @return string
 	 */
-	public function upload_image( $image, $new_image_name, $width, $height, $industry, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
+	public function upload_image( $image, $new_image_name, $width, $height, $subdomain, $directory = '', $keep_proportions = true, $fill_constraints = true ) {
         // Get hte image path
         $image_path = ( is_string( $image ) ) ? $image : $image['tmp_name'];
-
-		if ( empty( $image_path ) || empty( $industry ) )
+        
+		if ( empty( $image_path ) || empty( $subdomain ) )
 			throw new InvalidParametersException( 'The image path could not be determined.' );
 
 		list( $result, $image_file ) = image::resize( $image_path, TMP_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
@@ -66,7 +66,7 @@ class File {
 		$base_name = basename( $image_file );
 
 		// Upload the image
-		if ( !$this->s3->putObjectFile( $image_file, $industry . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ ) )
+		if ( !$this->s3->putObjectFile( $image_file, $subdomain . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ ) )
 			throw new HelperException( "Failed to put image on Amazon S3" );
 
         // Delete the local image
@@ -123,11 +123,11 @@ class File {
 	 * Deletes an image from the Amazon S3
 	 *
 	 * @param string $image_path (key)
-	 * @param string $industry
+	 * @param string $subdomain
 	 * @return bool
 	 */
-	public function delete_image( $image_path, $industry ) {
-		return $this->s3->deleteObject( $industry . $this->bucket, $image_path );
+	public function delete_image( $image_path, $subdomain ) {
+		return $this->s3->deleteObject( $subdomain . $this->bucket, $image_path );
 	}
 
     /**

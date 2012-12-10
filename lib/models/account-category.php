@@ -1,10 +1,61 @@
 <?php
 class AccountCategory extends ActiveRecordBase {
+    public $website_id, $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top, $date_updated;
+
+    // Available from other tables
+    public $parent_category_id;
+
     /**
      * Setup the account initial data
      */
     public function __construct() {
         parent::__construct( 'website_categories' );
+    }
+
+    /**
+     * Get
+     *
+     * @param int $account_id
+     * @param int $category_id
+     * @return array
+     */
+    public function get( $account_id, $category_id ) {
+        $this->prepare(
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id AND wc.`category_id` = :category_id AND wc.`status` = 1"
+            , 'ii'
+            , array( ':account_id' => $account_id, ':category_id' => $category_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get All
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_all_ids( $account_id ) {
+        return $this->prepare(
+            'SELECT DISTINCT wc.`category_id` FROM `website_categories` AS wc LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = wc.`category_id` AND wbc.`website_id` = wc.`website_id` ) WHERE wc.`website_id` = :account_id AND wc.`status` = 1 AND wbc.`category_id` IS NULL'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_col();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->update( array(
+            'title' => $this->title
+            , 'content' => $this->content
+            , 'meta_title' => $this->meta_title
+            , 'meta_description' => $this->meta_description
+            , 'meta_keywords' => $this->meta_keywords
+            , 'top' => $this->top
+        ), array(
+            'website_id' => $this->website_id
+        , 'category_id' => $this->category_id
+        ), 'sssssi', 'ii' );
     }
 
     /**
@@ -264,4 +315,38 @@ class AccountCategory extends ActiveRecordBase {
             , $images
         )->query();
     }
+
+    /**
+	 * Get all information of the checklists
+	 *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+	 * @return array
+	 */
+	public function list_all( $variables ) {
+		// Get the variables
+		list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`date_updated`, c.`slug` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'AccountCategory' );
+	}
+
+	/**
+	 * Count all the checklists
+	 *
+	 * @param array $variables
+	 * @return int
+	 */
+	public function count_all( $variables ) {
+        // Get the variables
+		list( $where, $values ) = $variables;
+
+		// Get the website count
+        return $this->prepare( "SELECT COUNT( wc.`category_id` )  FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+	}
 }

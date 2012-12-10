@@ -1,5 +1,12 @@
 <?php
 class User extends ActiveRecordBase {
+    const ROLE_AUTHORIZED_USER = 1;
+    const ROLE_STORE_OWNER = 5;
+    const ROLE_MARKETING_SPECIALIST = 6;
+    const ROLE_ONLINE_SPECIALIST = 7;
+    const ROLE_ADMIN = 8;
+    const ROLE_SUPER_ADMIN = 10;
+
     /**
      * Hold whether admin is active or not
      * @var int
@@ -13,7 +20,13 @@ class User extends ActiveRecordBase {
     public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
 
     // These columns belong to another table but might be available from the user
-    public $company, $domain;
+    public $company, $domain, $accounts;
+
+    /**
+     * Holds the account if it has it
+     * @var Account
+     */
+    public $account;
 
     private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role' );
 
@@ -180,7 +193,7 @@ class User extends ActiveRecordBase {
         }
 
         // Make sure they can only see what they're supposed to
-        if ( !$this->has_permission(8) )
+        if ( !$this->has_permission( self::ROLE_ADMIN ) )
             $where .= ' AND ( `company_id` = ' . $this->company_id . ' OR `user_id` IN( ' . implode( ', ', $user_ids ) . ' ) ) ';
 
         return $this->get_results(
@@ -200,7 +213,7 @@ class User extends ActiveRecordBase {
             return false;
 
         // Make sure they can only see what they're supposed to
-        $where = ( !$this->has_permission(8) ) ? ' AND a.`company_id` = ' . (int) $this->company_id : '';
+        $where = ( !$this->has_permission( self::ROLE_ADMIN ) ) ? ' AND a.`company_id` = ' . (int) $this->company_id : '';
 
         return $this->get_results(
             "SELECT DISTINCT a.`user_id`, a.`contact_name` FROM `users` AS a INNER JOIN `products` AS b ON ( a.`user_id` = b.`user_id_created` || a.`user_id` = b.`user_id_modified` ) WHERE b.`publish_date` <> '0000-00-00 00:00:00' $where"
@@ -220,7 +233,7 @@ class User extends ActiveRecordBase {
 	 */
 	public function autocomplete( $query, $field ) {
 		// Construct WHERE
-		$where = ( !$this->has_permission(8) ) ? ' AND `company_id` = ' . (int) $this->company_id : '';
+		$where = ( !$this->has_permission( self::ROLE_ADMIN ) ) ? ' AND `company_id` = ' . (int) $this->company_id : '';
 
 		// Get results
 		return $this->prepare(

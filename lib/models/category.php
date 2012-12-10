@@ -143,7 +143,65 @@ class Category extends ActiveRecordBase {
             $categories_by_parent = Category::$categories_by_parent;
         }
 
-        return ( isset( $categories_by_parent[$parent_category_id] ) ) ? $categories_by_parent[$parent_category_id] : false;
+        return ( $this->has_parent( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : false;
+    }
+
+    /**
+     * Get URL
+     *
+     * @param int $category_id [optional]
+     * @return string
+     */
+    public function get_url( $category_id = NULL ) {
+        if ( is_null( $category_id ) )
+            $category_id = $this->id;
+
+        if ( empty( Category::$categories ) )
+            $this->get_all();
+
+		// If there is no category, return
+		if ( !array_key_exists( $category_id, Category::$categories ) )
+			return '';
+
+        // Get Main category
+        $category = Category::$categories[$category_id];
+
+		// Get the parent cateogires
+		$parent_categories = $this->get_all_parents( $category_id );
+
+		// Initialize category URL
+		$category_url = '';
+
+        /**
+         * @var Category $parent_category
+         */
+        foreach ( $parent_categories as $parent_category ) {
+			$category_url = $parent_category->slug . '/' . $category_url;
+		}
+
+		return '/' . $category_url . $category->slug . '/';
+    }
+
+    /**
+     * Check to see if a category has a parent
+     *
+     * @param int $category_id [optional]
+     * @return bool
+     */
+    public function has_parent( $category_id = NULL ) {
+        // Get the categories
+        $categories_by_parent = Category::$categories_by_parent;
+
+        if ( is_null( $categories_by_parent ) ) {
+            $this->sort_by_parent();
+
+            $categories_by_parent = Category::$categories_by_parent;
+        }
+
+        if ( is_null( $category_id ) )
+            $category_id = $this->id;
+
+        return isset( $categories_by_parent[$category_id] );
     }
 
     /**

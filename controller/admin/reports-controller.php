@@ -115,7 +115,7 @@ class ReportsController extends BaseController {
             break;
 
             case 'online_specialist':
-                $where = ( $this->user->has_permission(8) ) ? '' : ' AND a.`company_id` = ' . (int) $this->user->company_id;
+                $where = ( $this->user->has_permission( User::ROLE_ADMIN ) ) ? '' : ' AND a.`company_id` = ' . (int) $this->user->company_id;
 
                 $results = $report->autocomplete_online_specialists( $_POST['term'], $where );
             break;
@@ -125,8 +125,8 @@ class ReportsController extends BaseController {
             break;
 
             case 'company':
-                if ( $this->user->has_permission( 7 ) ) {
-                    $where = ( $this->user->has_permission(8) ) ? '' : ' AND `company_id` = ' . (int) $this->user->company_id;
+                if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) {
+                    $where = ( $this->user->has_permission( User::ROLE_ADMIN ) ) ? '' : ' AND `company_id` = ' . (int) $this->user->company_id;
                     $results = $report->autocomplete_companies( $_POST['term'], $where );
                 } else {
                     $results = array();
@@ -144,7 +144,7 @@ class ReportsController extends BaseController {
             break;
 
             case 'package':
-                $where = ( $this->user->has_permission(8) ) ? '' : ' AND `company_id` = ' . (int) $this->user->company_id;
+                $where = ( $this->user->has_permission( User::ROLE_ADMIN ) ) ? '' : ' AND `company_id` = ' . (int) $this->user->company_id;
                 $results = $report->autocomplete_company_packages( $_POST['term'], $where );
             break;
         }
@@ -288,7 +288,7 @@ class ReportsController extends BaseController {
             }
         }
 
-        if ( !$this->user->has_permission(8) )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
             $where .= " AND u.`company_id` = " . (int) $this->user->company_id . " ";
 
         // Do the search

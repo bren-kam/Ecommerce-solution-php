@@ -130,6 +130,7 @@ abstract class BaseController {
         $template_response = new TemplateResponse( $this->resources, $this->view_base . $file, $title );
         $template_response->set( 'user', $this->user );
         $template_response->set( 'section', $this->section );
+        $template_response->set( $this->section, true );
 
         if ( is_null( $this->title ) )
             $this->title = ucwords( $this->section );
@@ -162,6 +163,53 @@ abstract class BaseController {
         // See if we can get the user
         if ( !$this->user->has_permission( $permission ) )
             return false;
+
+        // Account Side
+        if ( 'admin' != SUBDOMAIN ) {
+            // We need to get the account(s)
+            $account_id = get_cookie('wid');
+            $account = new Account();
+
+            // Grab all the accounts for the type of user they are
+            if ( in_array( $this->user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) ) {
+                $this->user->accounts = $account->get_by_authorized_user( $this->user->id );
+            } else {
+                $this->user->accounts = $account->get_by_user( $this->user->id );
+            }
+
+            // If they have a specific account, get that
+            if ( $account_id ) {
+                $account->get( $account_id );
+
+                if ( $account->id )
+                    $this->user->account = $account;
+
+                /**
+                 * @var Account $account
+                 */
+                if ( !$this->user->account && is_array( $this->user->accounts ) ) {
+                    foreach ( $this->user->accounts as $account ) {
+                        if ( $account_id == $account->id ) {
+                            $this->user->account = $account;
+                            break;
+                        }
+                    }
+
+                    if ( !$this->user->account )
+                        $this->user->account = reset( $this->user->accounts );
+
+                    // Set the cookie
+                    if ( $this->user->account )
+                        set_cookie( 'wid', $this->user->account->id, 172800 );
+                }
+            }
+
+            if ( !$this->user->account && '/select-account/' != $_SERVER['REQUEST_URI'] ) {
+                $url = ( count( $this->user->accounts ) > 0 ) ? '/select-account/' : '/logout/';
+                url::redirect($url);
+                return true;
+            }
+        }
 
         return true;
     }

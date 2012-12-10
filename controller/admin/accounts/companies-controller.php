@@ -19,7 +19,7 @@ class CompaniesController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        if ( !$this->user->has_permission(8) )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
             return new RedirectResponse('/accounts/');
 
         $template_response = $this->get_template_response( 'index' )
@@ -34,7 +34,7 @@ class CompaniesController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function add_edit() {
-        if ( !$this->user->has_permission(8) )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
             return new RedirectResponse('/accounts/');
 
         // Get the company_id if there is one
@@ -107,7 +107,7 @@ class CompaniesController extends BaseController {
         $dt->order_by( '`name`', '`domain`', '`date_created`' );
         $dt->search( array( '`name`' => true, '`domain`' => true ) );
 
-        if ( !$this->user->has_permission(8) )
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
             $dt->add_where( ' AND `company_id` = ' . (int) $this->user->id );
 
         // Get rows

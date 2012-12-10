@@ -16,7 +16,7 @@ class Config {
         // Amazon IAM
         'aws_iam-access-key'        => 'AKIAJAQUNFY65EV5HJ7A'
         , 'aws_iam-secret-key'      => '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'
-		// Amazon S3
+		// Amazon S3 - Manager: http://www.s3fm.com/
 		, 'aws-access-key'			=> 'AKIAIM64EVOSIJZMTA3Q'
 		, 'aws-secret-key'			=> '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'
 		, 'aws-bucket-domain'		=> '.retailcatalog.us'
