@@ -172,7 +172,7 @@ class ApiRequest {
         $order_item->create();
 		
 		$this->add_response( array( 'success' => true, 'message' => 'success-add-order-item' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item['order_id'], true );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item->id, true );
 	}
 	
 	/**
@@ -195,7 +195,7 @@ class ApiRequest {
         $order->create();
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-create-order', 'order_id' => $order->id ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $order['user_id'] . "\nOrder ID:" . $order->id, true );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $order->user_id . "\nOrder ID:" . $order->id, true );
 	}
 	
 	/**
