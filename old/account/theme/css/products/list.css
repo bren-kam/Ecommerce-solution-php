@@ -21,7 +21,7 @@
 .product h4 { font-weight: bold; margin-top: 0px; margin-left: 5px; display: inline-block;}
 .product p { padding-bottom: 0; }
 .product a { margin-left: 0; }
-.product .product-actions { display: inline-block; position: absolute; left: 25px; color: #9E9E9E; }
+.product .product-actions { display: inline-block; position: absolute; left: 14px; color: #9E9E9E; }
 .product a.tb { font-weight: normal; margin: 0; }
 
 /** Bottom 5 **/

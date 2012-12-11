@@ -9,7 +9,7 @@ $ajax = new AJAX( $_GET['_nonce'], 'block-product' );
 $ajax->ok( $user, _('You must be signed in to block a product.') );
 
 $p = new Products;
-$product = $p->get( $_GET['pid'] );
+$product = $p->get_product( $_GET['pid'] );
 
 // Delete the product
 $ajax->ok( $p->block_products( $product['sku'] ), _('An error occurred while trying to block your product. Please refresh the page and try again.') );
