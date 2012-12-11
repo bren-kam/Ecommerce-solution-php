@@ -23,6 +23,7 @@
 .product a { margin-left: 0; }
 .product .product-actions { display: inline-block; position: absolute; left: 14px; color: #9E9E9E; }
 .product a.tb { font-weight: normal; margin: 0; }
+.product-actions a { font-size: 13px }
 
 /** Bottom 5 **/
 .product .product-actions, #dSelectedCategory {
