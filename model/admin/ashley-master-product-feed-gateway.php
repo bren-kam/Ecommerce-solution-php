@@ -312,6 +312,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Reset the product to being "not" identical
             $this->reset_identical();
 
+            $product->industry_id = 1;
             $product->name = $this->identical( $name, $product->name, 'name' );
             $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
@@ -341,10 +342,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             $images = explode( '|', $product->images );
 
             if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-                /**
-                 * @var string $industry
-                 */
-                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, $industry );
+                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
 
                 if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
                     $this->not_identical[] = 'images';
