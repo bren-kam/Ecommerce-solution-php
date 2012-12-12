@@ -94,6 +94,7 @@ class SweepstakesController extends BaseController {
             $tab->content = ( stristr( $tab->content, 'websites.retailcatalog.us' ) ) ? preg_replace( '/(?<=src=")(http:\/\/)/i', 'https://s3.amazonaws.com/', $tab->content ) : preg_replace( '/(?<=src=")(http:)/i', 'https:', $tab->content );
 
         $form = new FormTable( 'fSignUp' );
+        $form->submit( 'Subscribe' );
 
         $form->add_field( 'text', 'Name', 'tName' )
             ->add_validation( 'req', 'The "Name" field is required' )
