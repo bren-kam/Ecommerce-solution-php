@@ -20,11 +20,13 @@ class EmailList extends ActiveRecordBase {
      * @return EmailList
      */
     public function get_default_email_list( $account_id ) {
-        return $this->prepare(
+        $this->prepare(
             'SELECT `email_list_id` FROM `email_lists` WHERE `website_id` = :account_id AND `category_id` = 0'
             , 'i'
             , array( ':account_id' => $account_id )
-        )->get_row( PDO::FETCH_CLASS, 'EmailList' );
+        )->get_row( PDO::FETCH_INTO, $this );
+		
+		$this->id = $this->email_list_id;
     }
 
     /**
