@@ -901,7 +901,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Make sure it's not already installed
-		if ( '0' != $account->version )
+		if ( '0' != $account->version && !empty( $account->version ) )
             return new RedirectResponse('/accounts/');
 
         // Get install service
