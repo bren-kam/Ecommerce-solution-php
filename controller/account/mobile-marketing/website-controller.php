@@ -8,6 +8,7 @@ class WebsiteController extends BaseController {
         parent::__construct();
 
         $this->view_base = 'mobile-marketing/website/';
+        $this->section = 'mobile-marketing';
         $this->title = _('Website | Mobile Marketing' );
     }
 
@@ -18,7 +19,70 @@ class WebsiteController extends BaseController {
      */
     protected function index() {
         $response = $this->get_template_response( 'index' )
-            ->select( 'mobile-marketing', 'website' );
+            ->select( 'mobile-pages', 'view' );
+
+        return $response;
+    }
+
+    /**
+     * Add/Edit
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function add_edit() {
+        // Determine if we're adding or editing the user
+        $mobile_page_id = ( isset( $_GET['mpid'] ) ) ? (int) $_GET['mpid'] : false;
+
+        $page = new MobilePage();
+
+        if ( $mobile_page_id )
+            $page->get( $mobile_page_id, $this->user->account->id );
+
+        $v = new Validator('fAddEditPage' );
+
+        $v->add_validation( 'tTitle', 'req', _('The "Title" field is required') );
+        $v->add_validation( 'tTitle', '!val=Page Title...', _('The "Title" field is required') );
+
+        if ( 'home' != $page->slug )
+            $v->add_validation( 'tSlug', 'req', _('The "Link" field is required') );
+
+        $errs = '';
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                if ( $mobile_page_id ) {
+                    $page->title = $_POST['tTitle'];
+                    $page->slug = ( 'home' == $page->slug ) ? 'home' : $_POST['tSlug'];
+                    $page->content = $_POST['taContent'];
+                    $page->save();
+
+                    $this->notify( _('Your page has been updated successfully!') );
+                } else {
+                    $page->website_id = $this->user->account->id;
+                    $page->title = $_POST['tTitle'];
+                    $page->slug = $_POST['tSlug'];
+                    $page->content = $_POST['taContent'];
+                    $page->create();
+
+                    $this->notify( _('Your page has been added successfully!') );
+                }
+
+                return new RedirectResponse('/mobile-marketing/website/');
+            }
+        }
+
+        $js_validation = $v->js_validation();
+
+        $this->resources
+            ->css( 'mobile-marketing/website/add-edit' )
+            ->javascript( 'mobile-marketing/website/add-edit' );
+
+        $response = $this->get_template_response( 'add-edit' )
+            ->select( 'mobile-pages', 'add' )
+            ->set( compact( 'page', 'errs', 'js_validation' ) )
+            ->add_title( ( ( $mobile_page_id ) ? _('Edit') : _('Add') ) );
 
         return $response;
     }
@@ -48,7 +112,7 @@ class WebsiteController extends BaseController {
         // Set initial data
         $data = false;
         $confirm = _('Are you sure you want to delete this page? This cannot be undone.');
-        $delete_page_nonce = nonce::create( 'delete_mobile_page' );
+        $delete_page_nonce = nonce::create( 'delete' );
 
         /**
          * @var MobilePage $mobile_page

@@ -39,10 +39,25 @@ class MobilePage extends ActiveRecordBase {
             'website_id' => $this->website_id
             , 'slug' => $this->slug
             , 'title' => $this->title
+            , 'content' => $this->content
             , 'date_created' => $this->date_created
-        ), 'isss' );
+        ), 'issss' );
 
         $this->id = $this->mobile_page_id = $this->get_insert_id();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->update( array(
+                'slug' => $this->slug
+                , 'title' => $this->title
+                , 'content' => $this->content
+            ), array(
+                'mobile_page_id' => $this->id
+            ), 'sss', 'i'
+        );
     }
 
     /**
