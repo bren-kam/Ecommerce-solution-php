@@ -406,10 +406,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                         $product->publish_visibility = 'deleted';
 
                     switch ( $last_sku ) {
-                        case '55':
+                        /*case '55':
                             $name = $item->SeriesName . ' Queen Panel Headboard Only Bedroom Group';
                         break;
+                        */
 
+                        case '81':
                         case '57':
                             $name = $item->SeriesName . ' Bedroom Group';
                         break;
@@ -418,9 +420,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                             $name = $item->SeriesName . ' Queen Panel Bedroom Group';
                         break;
 
-                        case '67':
-                            $name = $item->SeriesName . ' Queen Poster Headboard Only Bedroom Group';
-                        break;
+//                        case '67':
+//                            $name = $item->SeriesName . ' Queen Poster Headboard Only Bedroom Group';
+//                        break;
 
                         case '71':
                             $name = $item->SeriesName . ' Queen Poster Bedroom Group';
