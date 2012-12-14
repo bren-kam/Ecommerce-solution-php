@@ -9,7 +9,7 @@ class UsersController extends BaseController {
 
         $this->view_base = 'shopping-cart/users/';
         $this->section = 'shopping-cart';
-        $this->title = 'Users | Shopping Cart';
+        $this->title = _('Users | Shopping Cart');
     }
 
     /**
@@ -118,10 +118,9 @@ class UsersController extends BaseController {
             ->attribute( 'maxlength', 10 )
             ->add_validation( 'zip', _('The "Billing Information - Zip Code" field must contain a valid zip code' ) );
 
-        $form->add_field( 'blank', '');
+        $form->add_field( 'blank', '' );
 
         // Account Information
-
         $form->add_field( 'title', _('Account Information') );
 
         $form->add_field( 'select', _('Status'), 'sStatus', $user->status )

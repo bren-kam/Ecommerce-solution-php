@@ -9,7 +9,7 @@
  * @var User $user
  */
 
-echo $template->start( _('Shopping Cart'), '../sidebar' );
+echo $template->start( _('Users'), '../sidebar' );
 ?>
 
 <table ajax="/shopping-cart/users/list-users/" perPage="30,50,100" sort="1">

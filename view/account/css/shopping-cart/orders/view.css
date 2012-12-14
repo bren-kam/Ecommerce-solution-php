@@ -1,0 +1,4 @@
+/* Tables */
+#tItemList { border:1px solid #CCC; }
+#tItemList th { padding:10px; border:1px solid #CCC; background-color:#CCC; }
+#tItemList td { padding:10px; border:1px solid #CCC; vertical-align:top; }
