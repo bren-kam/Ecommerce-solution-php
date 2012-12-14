@@ -80,7 +80,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			// Get al ist of the files
 			$files = $ftp->dir_list();
 			
-			$file = $files[count($files)-1];
+			while ( !empty( $files ) ) {
+				$file = array_pop( $files );
+				
+				if ( 'xml' != f::extension( $file ) )
+					continue;
+				
+				break;
+			}
 		}
 
         // Can't do anything without a file
