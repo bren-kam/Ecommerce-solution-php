@@ -113,7 +113,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         , 'Full Bed w/ Trundle' => 'Full Bed w/Trundle'
         , 'Bunk Bed - Twin/Twin' => 'Bunk Bed (twin/twin)'
         , 'Q Bed' => 'Queen Bed (Headboard, Footboard, Rails)'
-        , 'Q Bed, Dresser, Mirror' => 'Queen Bed (Headboard, Footboard, Rails), Dresser & Mirror'
+        , 'Q Bed, Dresser, Mirror' => 'Queen Bedroom Group'//'Queen Bed (Headboard, Footboard, Rails), Dresser & Mirror'
         , 'Q Hdbd, Dresser, Mirror' => 'Queen Headboard, Dresser & Mirror'
         , 'Q HdBd, Dresser, Mirror, 1NS' => 'Queen Headboard, Dresser, Mirror & Nightstand'
         , 'Q Bed, Dresser, Mirror, Chest, 1NS' => 'Queen Bed (Headboard, Footboard, Rails), Mirror, Chest & Nightstand'
