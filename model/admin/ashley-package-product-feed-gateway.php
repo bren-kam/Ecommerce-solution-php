@@ -425,6 +425,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 //                            $name = $item->SeriesName . ' Queen Poster Headboard Only Bedroom Group';
 //                        break;
 
+                        case '67':
                         case '71':
                             $name = $item->SeriesName . ' Queen Poster Bedroom Group';
                         break;
