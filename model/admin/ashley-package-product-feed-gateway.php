@@ -414,6 +414,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                             $name = $item->SeriesName . ' Bedroom Group';
                         break;
 
+                        case '55':
                         case '65':
                             $name = $item->SeriesName . ' Queen Panel Bedroom Group';
                         break;
