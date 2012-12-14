@@ -86,10 +86,11 @@ class User extends ActiveRecordBase {
             , 'billing_first_name' => $this->billing_first_name
             , 'billing_last_name' => $this->billing_last_name
             , 'billing_address1' => $this->billing_address1
+            , 'billing_city' => $this->billing_city
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
         ), array( 'user_id' => $this->id )
-            , 'isssssiiisssss', 'i'
+            , 'isssssiiissssss', 'i'
         );
     }
 

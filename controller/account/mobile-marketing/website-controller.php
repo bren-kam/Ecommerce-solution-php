@@ -13,7 +13,7 @@ class WebsiteController extends BaseController {
     }
 
     /**
-     * Allow them to login to mobile marketing
+     * List Mobile Pages
      *
      * @return TemplateResponse
      */

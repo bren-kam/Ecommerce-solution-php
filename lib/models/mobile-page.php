@@ -78,7 +78,7 @@ class MobilePage extends ActiveRecordBase {
 	}
 
     /**
-	 * Count all the checklists
+	 * Count all the pages
 	 *
 	 * @param array $variables
 	 * @return int
