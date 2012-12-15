@@ -9,9 +9,9 @@
     <a href="/shopping-cart/orders/" title="<?php echo _('Orders'); ?>" class="top<?php $template->select('orders'); ?>"><?php echo _('Orders'); ?></a>
 	<a href="/shopping-cart/shipping/" title="<?php echo _('Shipping Settings'); ?>" class="top<?php $template->select('shipping'); ?>"><?php echo _('Shipping'); ?></a>
 	<?php if ( $template->v('shipping') ) { ?>
-		<a href="/shopping-cart/shipping/add-edit-custom/" title="<?php echo _('Add Custom'); ?>" class="sub<?php $template->select('add-custom'); ?>"><?php echo _('Add Custom'); ?></a>
-		<a href="/shopping-cart/shipping/add-edit-ups/" title="<?php echo _('Add UPS'); ?>" class="sub<?php $template->select('add-ups'); ?>"><?php echo _('Add UPS'); ?></a>
-		<a href="/shopping-cart/shipping/add-edit-fedex/" title="<?php echo _('Add FedEx'); ?>" class="sub<?php $template->select('add-fedex'); ?>"><?php echo _('Add FedEx'); ?></a>
+		<a href="/shopping-cart/shipping/add-edit-custom/" title="<?php echo _('Add Custom'); ?>" class="sub<?php $template->select('add-edit-custom'); ?>"><?php echo _('Add Custom'); ?></a>
+		<a href="/shopping-cart/shipping/add-edit-ups/" title="<?php echo _('Add UPS'); ?>" class="sub<?php $template->select('add-edit-ups'); ?>"><?php echo _('Add UPS'); ?></a>
+		<a href="/shopping-cart/shipping/add-edit-fedex/" title="<?php echo _('Add FedEx'); ?>" class="sub<?php $template->select('add-edit-fedex'); ?>"><?php echo _('Add FedEx'); ?></a>
 		<a href="/shopping-cart/shipping/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
 	<?php } ?>
 

@@ -52,18 +52,17 @@ class WebsiteController extends BaseController {
             $errs = $v->validate();
 
             if ( empty( $errs ) ) {
+                $page->title = $_POST['tTitle'];
+                $page->content = $_POST['taContent'];
+
                 if ( $mobile_page_id ) {
-                    $page->title = $_POST['tTitle'];
                     $page->slug = ( 'home' == $page->slug ) ? 'home' : $_POST['tSlug'];
-                    $page->content = $_POST['taContent'];
                     $page->save();
 
                     $this->notify( _('Your page has been updated successfully!') );
                 } else {
                     $page->website_id = $this->user->account->id;
-                    $page->title = $_POST['tTitle'];
                     $page->slug = $_POST['tSlug'];
-                    $page->content = $_POST['taContent'];
                     $page->create();
 
                     $this->notify( _('Your page has been added successfully!') );
