@@ -78,6 +78,12 @@ if ( 0 != $posting['fb_page_id'] ) {
 	}
 	
 	$pages = ar::assign_key( $accounts['data'], 'id' );
+	
+	if ( !isset( $pages[$posting['fb_page_id']] ) ) {
+		// @add Notify in reprogramming
+		$sm->reset_posting( $posting['fb_page_id'] );
+		url::redirect('/social-media/facebook/posting/post/');
+	}
 } elseif ( !$posting ) {
 	$posting = array(
 		'key' => $sm->create_posting()
