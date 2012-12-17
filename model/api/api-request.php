@@ -715,7 +715,6 @@ class ApiRequest {
         $account = new Account;
         $account->get( $website_id );
 
-
         // Verify that it exists
         if ( !$account->company_id != $company_id ) {
             $this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
