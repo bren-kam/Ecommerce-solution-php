@@ -856,6 +856,31 @@ class Social_Media extends Base_Class {
 		
 		return $count;
 	}
+	
+	/**
+	 * Reset Posting
+	 *
+	 * @param int $facebook_page_id
+	 * @return bool
+	 */
+	public function reset_posting( $facebook_page_id ) {
+		$this->db->update( 'sm_posting', array( 
+			'fb_user_id' => 0
+			, 'fb_page_id' => 0
+			, 'access_token' => ''
+		), array( 
+			'sm_facebook_page_id' => $_SESSION['sm_facebook_page_id']
+			, 'fb_page_id' => $facebook_page_id 
+		), 'iis', 'ii' );
+		
+		// Handle any error
+		if ( $this->db->errno() ) {
+			$this->_err( 'Failed to reset posting.', __LINE__, __METHOD__ );
+			return false;
+		}
+		
+		return true;
+	}
 
     /**
      * Delete posting post
