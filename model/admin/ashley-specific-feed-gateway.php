@@ -155,12 +155,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 				foreach ( $package_pieces as $item ) {
                     // Check if it is a series such as "W123-45" or "W12345"
 					if ( in_array( $item, $skus[$series] ) ) {
-                        $group_items[$product_id][] = "$series-$item";
+                        $group_items[$series] = true;
 						continue;
                     }
                     
 					if ( in_array( $series . $item, $all_skus ) ) {
-                        $group_items[$product_id][] = $series . $item;
+                        $group_items[$series] = true;
 						continue;
                     }
 
@@ -168,7 +168,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                     //$remove_skus[] = $series . $item;
 
                     // If they don't have both, then stop this item
-                    unset ( $group_items[$product_id] );
+                    unset ( $group_items[$series] );
 					continue 2; // Drop out of both
 				}
 
@@ -197,11 +197,11 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		$this->add_bulk( $account->id, $industries, $new_product_skus );
 
         // Check testing sites
-        $testing_sites = array( 477, 571, 829, 476, 458 );
+        $testing_sites = array( 477, 571, 829, 476, 458, 357, 337 );
 
         if ( in_array( $account->id, $testing_sites ) ) {
             $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
-            $this->add_product_groups( $account->id, $group_items );
+            $this->add_product_groups( $account->id, array_keys( $group_items ) );
         }
 
 		// Deactivate old products
@@ -356,18 +356,15 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         $account_product_group = new AccountProductGroup();
         $account_product_group->website_id = $account_id;
 
-        foreach ( $group_items as $product_id => $skus ) {
-            $account_product_group->name = "Ashley Feed ($product_id)";
+        foreach ( $group_items as $series ) {
+            $account_product_group->name = "Ashley Feed ($series)";
             $account_product_group->create();
 
-            $account_product_group->add_relations_by_sku( $skus );
+            $account_product_group->add_relations_by_series( $series );
 
-            if ( $account_product_group->get_row_count() > 0 ) {
-                $account_product_group->add_relations( array( $product_id ) );
-            } else {
-                // If it didn't add anything, that means they were blocked products or belonged to hidden categories -- let's remove the group
+            // If it didn't add anything, that means they were blocked products or belonged to hidden categories -- let's remove the group
+            if ( $account_product_group->get_row_count() <= 0 )
                 $account_product_group->remove();
-            }
         }
     }
 

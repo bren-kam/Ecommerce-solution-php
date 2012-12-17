@@ -46,19 +46,20 @@ class AccountProductGroup extends ActiveRecordBase {
     }
 
     /**
-     * Add Images
+     * Add relational items by series
      *
-     * @param array $skus
+     * @param string $series
      */
-    public function add_relations_by_sku( array $skus ) {
-        $sku_count = count( $skus );
-        $sku_values = substr( str_repeat( ', ?', $sku_count ), 2 );
-
+    public function add_relations_by_series( $series ) {
         // Insert the values
         $this->prepare(
-            "INSERT INTO `website_product_group_relations` ( `website_product_group_id`, `product_id` ) SELECT ?, wp.`product_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = pc.`category_id` ) WHERE wp.`website_id` = ? AND wp.`active` = 1 AND wp.`blocked` = 0 AND p.`sku` IN( $sku_values ) AND wbc.`category_id` IS NULL GROUP BY wp.`product_id`"
-            , 'ii' . str_repeat( 's', $sku_count )
-            , array_merge( array( $this->website_product_group_id, $this->website_id ), $skus )
+            "INSERT INTO `website_product_group_relations` ( `website_product_group_id`, `product_id` ) SELECT :website_product_group_id, wp.`product_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = pc.`category_id` ) WHERE wp.`website_id` = :account_id AND wp.`active` = 1 AND wp.`blocked` = 0 AND p.`sku` LIKE :series AND wbc.`category_id` IS NULL GROUP BY wp.`product_id`"
+            , 'iis'
+            , array(
+                ':website_product_group_id' => $this->website_product_group_id
+                , ':account_id' => $this->website_id
+                , ':series' => $series . '%'
+            )
         )->query();
     }
 
