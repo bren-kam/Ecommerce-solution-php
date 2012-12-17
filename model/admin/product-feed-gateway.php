@@ -201,6 +201,8 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
     /**
 	 * Upload image
 	 *
+     * @throws InvalidParametersException
+     * 
 	 * @param string $image_url
 	 * @param string $slug
 	 * @param int $product_id
@@ -208,6 +210,9 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
      * @return string
 	 */
 	protected function upload_image( $image_url, $slug, $product_id, $industry ) {
+        if ( is_null( $industry ) )
+			throw new InvalidParametersException( _('Industry must not be null') );
+        
 		$new_image_name = $slug;
 		$image_extension = strtolower( f::extension( $image_url ) );
         $full_image_name = "{$new_image_name}.{$image_extension}";

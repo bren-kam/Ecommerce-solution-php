@@ -134,7 +134,7 @@ class UsersController extends BaseController {
         $states[''] = _('-- Select a State --');
         $states = array_merge( $states, data::states( false ) );
 
-        $ft->add_field( 'select', _('State'), 'sBillingState', $user->billing_state )
+        $ft->add_field( 'select', _('State'), 'sState', $user->billing_state )
             ->options( $states );
 
         $ft->add_field( 'text', _('Zip'), 'tZip', $user->billing_zip )
@@ -143,6 +143,25 @@ class UsersController extends BaseController {
 
         // Make sure it's posted and verified
         if ( $ft->posted() ) {
+            if ( $user->email != $_POST['tEmail'] ) {
+                $potential_user = new User();
+                $potential_user->get_by_email( $_POST['tEmail'], false );
+
+                if ( $potential_user->id ) {
+                    if ( 1 == $potential_user->status ) {
+                        $this->notify( _('That email is already taken by another active user. Please choose a different email.'), false );
+
+                        // Generate the form
+                        $template_response->set( 'form', $ft->generate_form() );
+
+                        return $template_response;
+                    } else {
+                        // Override that user
+                        $user = $potential_user;
+                    }
+                }
+            }
+
             // Update all the fields
             $user->email = $_POST['tEmail'];
             $user->contact_name = $_POST['tContactName'];
@@ -156,7 +175,7 @@ class UsersController extends BaseController {
             $user->billing_address1 = $_POST['tAddress'];
             $user->billing_city = $_POST['tCity'];
             $user->billing_state = $_POST['sState'];
-            $user->billing_zip= $_POST['tZip'];
+            $user->billing_zip = $_POST['tZip'];
 
             // Update or create the user
             if ( $user_id ) {

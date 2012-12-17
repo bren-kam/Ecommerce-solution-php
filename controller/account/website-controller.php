@@ -655,7 +655,7 @@ class WebsiteController extends BaseController {
     }
 
     /**
-     * List Cateogires
+     * List Categories
      *
      * @return DataTableResponse
      */
@@ -817,7 +817,7 @@ class WebsiteController extends BaseController {
         $uploader = new qqFileUploader( array( 'gif', 'jpg', 'jpeg', 'png' ), 6144000 );
 
         // Get some stuff
-        $page->get( $_GET['apid'] );
+        $page->get( $_GET['apid'], $this->user->account->id );
 
         switch ( $_GET['fn'] ) {
             case 'coupon':
@@ -914,7 +914,7 @@ class WebsiteController extends BaseController {
         $max_width = ( empty ( $settings['sidebar-image-width'] ) ) ? 1000 : $settings['sidebar-image-width'];
 
         $image_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
-        $page->get( $_GET['apid'] );
+        $page->get( $_GET['apid'], $this->user->account->id );
 
         // Upload file
         $result = $uploader->handleUpload( 'gsr_' );
@@ -1010,7 +1010,7 @@ class WebsiteController extends BaseController {
         $uploader = new qqFileUploader( array( 'gif', 'jpg', 'jpeg', 'png' ), 6144000 );
 
         // Get some stuff
-        $page->get( $_GET['apid'] );
+        $page->get( $_GET['apid'], $this->user->account->id );
         $settings = $this->user->account->get_settings( 'banner-width', 'banner-height' );
 
         $max_width = ( empty ( $settings['banner-width'] ) ) ? 1000 : $settings['banner-width'];

@@ -172,7 +172,7 @@ class ApiRequest {
         $order_item->create();
 		
 		$this->add_response( array( 'success' => true, 'message' => 'success-add-order-item' ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item['order_id'], true );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nOrder ID: " . $order_item->id, true );
 	}
 	
 	/**
@@ -195,7 +195,7 @@ class ApiRequest {
         $order->create();
 
 		$this->add_response( array( 'success' => true, 'message' => 'success-create-order', 'order_id' => $order->id ) );
-		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $order['user_id'] . "\nOrder ID:" . $order->id, true );
+		$this->log( 'method', 'The method "' . $this->method . '" has been successfully called.' . "\nUser ID: " . $order->user_id . "\nOrder ID:" . $order->id, true );
 	}
 	
 	/**
@@ -238,6 +238,7 @@ class ApiRequest {
             $user->billing_city = $billing_city;
             $user->billing_zip = $billing_zip;
             $user->role = 5;
+            $user->company_id = $this->company_id;
 
             // Create user
             $user->create();
@@ -565,6 +566,7 @@ class ApiRequest {
         if ( $user->id ) {
             $user->save();
         } else {
+            $user->company_id = $this->company_id;
             $user->role = 5;
             $user->status = 1;
             $user->create();
@@ -712,7 +714,6 @@ class ApiRequest {
         // See if we can grab the website ID
         $account = new Account;
         $account->get( $website_id );
-
 
         // Verify that it exists
         if ( !$account->company_id != $company_id ) {

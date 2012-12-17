@@ -73,7 +73,9 @@ $product_count = $p->get_website_products_count( $where );
 <?php
 if ( is_array( $products ) ) {
 	$remove_product_nonce = nonce::create('remove-product');
+	$block_product_nonce = nonce::create('block-product');
 	$confirm_remove_product = _('Are you sure you want to remove this product? It cannot be undone.');
+	$confirm_block_product = _('Are you sure you want to block this product?');
 	$set_category_image_nonce = nonce::create('set-category-image');
 	
 foreach ( $products as $product ) {
@@ -99,7 +101,8 @@ foreach ( $products as $product ) {
 	<p class="product-actions" id="pProductAction<?php echo $product['product_id']; ?>">
 		<a href="<?php echo $product['link']; ?>" title='View "<?php echo $product['name']; ?>"' target="_blank"><?php echo _('View'); ?></a> | 
 		<a href="/ajax/products/remove/?_nonce=<?php echo $remove_product_nonce; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo _('Remove Product'); ?>" ajax="1" confirm="<?php echo $confirm_remove_product; ?>"><?php echo _('Remove'); ?></a> |
-		<a href="javascript:;" class="edit-product" title="<?php echo _('Edit Product'); ?>"><?php echo _('Edit'); ?></a><br />
+		<a href="javascript:;" class="edit-product" title="<?php echo _('Edit Product'); ?>"><?php echo _('Edit'); ?></a> |
+		<a href="/ajax/products/block/?_nonce=<?php echo $block_product_nonce; ?>&amp;pid=<?php echo $product['product_id']; ?>" title="<?php echo _('Block Product'); ?>" ajax="1" confirm="<?php echo $confirm_block_product; ?>"><?php echo _('Block'); ?></a><br />
 		<a href="/ajax/products/set-category-image/?_nonce=<?php echo $set_category_image_nonce; ?>&amp;i=<?php echo urlencode( $image_url ); ?>&amp;cid=<?php echo $_POST['cid']; ?>" title="<?php echo _('Set as Category Picture'); ?>" ajax="1"><?php echo _('Set as Category Picture'); ?></a>
 	</p>
 </div>

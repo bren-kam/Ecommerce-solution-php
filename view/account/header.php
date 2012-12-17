@@ -65,7 +65,7 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                         <input type="hidden" name="log" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_username ), ENCRYPTION_KEY ); ?>" />
                         <input type="hidden" name="pwd" value="<?php echo security::decrypt( base64_decode( $user->account->wordpress_password ), ENCRYPTION_KEY ); ?>" />
                     </form>
-                    <a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $link[1]; ?>"<?php $template->select( $link[0], true ); ?>><?php echo $link[1]; ?></a>
+                    <a href="javascript:document.getElementById('fBlogForm').submit();" title="<?php echo $link[1]; ?>"><?php echo $link[1]; ?></a>
                     <?php
                     break;
 

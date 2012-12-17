@@ -17,12 +17,13 @@ class AccountPage extends ActiveRecordBase {
      * Get
      *
      * @param int $account_page_id
+     * @param int $account_id
      */
-    public function get( $account_page_id ) {
+    public function get( $account_page_id, $account_id ) {
         $this->prepare(
-            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_page_id` = :account_page_id'
-            , 'i'
-            , array( ':account_page_id' => $account_page_id )
+            'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_page_id` = :account_page_id AND `website_id` = :account_id'
+            , 'ii'
+            , array( ':account_page_id' => $account_page_id, $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->website_page_id;

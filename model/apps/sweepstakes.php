@@ -67,14 +67,14 @@ class Sweepstakes extends ActiveRecordBase {
      * Get Domain
      *
      * @param int $fb_page_id
-     * @return Account
+     * @return stdClass
      */
     protected function get_account( $fb_page_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`domain` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_email_sign_up` AS smesu ON ( smesu.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`status` = 1 AND smesu.`fb_page_id` = :fb_page_id'
+            'SELECT w.`website_id` AS id, w.`domain`, sms.`email_list_id` FROM `websites` AS w LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = w.`website_id` ) LEFT JOIN `sm_sweepstakes` AS sms ON ( sms.`sm_facebook_page_id` = smfbp.`id` ) WHERE smfbp.`status` = 1 AND sms.`fb_page_id` = :fb_page_id'
             , 's'
             , array( ':fb_page_id' => $fb_page_id )
-        )->get_row( PDO::FETCH_CLASS, 'Account' );
+        )->get_row( PDO::FETCH_OBJ );
     }
 
     /**
@@ -111,8 +111,8 @@ class Sweepstakes extends ActiveRecordBase {
 		// Get default email list id
         $email_list = new EmailList();
         $email_list->get_default_email_list( $account->id );
-
+		
         // Add association
-        $email->add_associations( array( $email_list->id ) );
+        $email->add_associations( array( $email_list->id, $account->email_list_id ) );
 	}
 }
