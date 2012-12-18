@@ -52,6 +52,10 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                 , 'mobile_marketing'    => array( 'mobile-marketing', _('Mobile Marketing') )
             );
 
+            $exceptions = array(
+                'shopping-cart/users' => 'shopping-cart'
+            );
+
             $keys = array_keys( $links );
             
             foreach ( $links as $key => $link ) {
@@ -70,8 +74,9 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                     break;
 
                     default:
+                        $selection = ( isset( $exceptions[$link[0]] ) ) ? $exceptions[$link[0]] : $link[0];
                         ?>
-                        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>"<?php $template->select( $link[0], true ); ?>><?php echo $link[1]; ?></a>
+                        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>"<?php $template->select( $selection, true ); ?>><?php echo $link[1]; ?></a>
                         <?php
                     break;
                 }

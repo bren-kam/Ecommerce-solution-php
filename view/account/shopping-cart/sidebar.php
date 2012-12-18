@@ -15,10 +15,10 @@
 		<a href="/shopping-cart/shipping/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('shipping-settings'); ?>"><?php echo _('Settings'); ?></a>
 	<?php } ?>
 
-    <a href="/shopping-cart/settings/" title="<?php echo _('Settings'); ?>" class="top"><?php echo _('Settings'); ?></a>
+    <a href="/shopping-cart/settings/" title="<?php echo _('Settings'); ?>" class="top<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
 	<?php if ( $template->v('settings') ) { ?>
     	<a href="/shopping-cart/settings/" title="<?php echo _('General Settings'); ?>" class="sub<?php $template->select('general'); ?>"><?php echo _('General'); ?></a>
 		<a href="/shopping-cart/settings/payment-gateway/" title="<?php echo _('Payment Gateway Settings'); ?>" class="sub<?php $template->select('payment-gateway'); ?>"><?php echo _('Payment Gateway'); ?></a>
-		<a href="/shopping-cart/settings/taxes/" title="<?php echo _('Tax Settings'); ?>" class="sub<?php $template->select('taxes'); ?>"><?php echo _('Taxes'); ?></a>
+		<a href="/shopping-cart/settings/taxes/" title="<?php echo _('Tax Settings'); ?>" class="sub<?php $template->select('tax-settings'); ?>"><?php echo _('Taxes'); ?></a>
 	<?php } ?>
 </div>
