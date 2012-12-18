@@ -215,49 +215,53 @@ class ShippingController extends BaseController {
                 $shipping_method->extra = unserialize( $shipping_method->extra );
         }
 
+        $shipping_fedex = $this->user->account->get_settings( 'shipping-fedex' );
+
+        if ( !empty( $shipping_fedex ) )
+            $shipping_fedex = unserialize( $shipping_fedex );
+
+        if ( empty( $shipping_fedex ) || in_array( '', $shipping_fedex ) ) {
+            $this->notify( _('You must set up your Fedex Account before adding Fedex shipping methods.'), false );
+            url::redirect('/shopping-cart/shipping/settings/');
+        }
+
         /***** CREATE FORM *****/
 
         $form = new FormTable( 'fAddEditFedex' );
 
         $services = array(
-            '02' => _('UPS Second Day Air')
-            , '03' => _('UPS Ground')
-            , '07' => _('UPS Worldwide Express')
-            , '08' => _('UPS Worldwide Expedited')
-            , '11' => _('UPS Standard')
-            , '12' => _('UPS Three-Day Select')
-            , '13' => _('Next Day Air Saver')
-            , '14' => _('UPS Next Day Air Early AM')
-            , '54' => _('UPS Worldwide Express Plus')
-            , '59' => _('UPS Second Day Air AM')
-            , '65' => _('UPS Saver')
+            'EUROPE_FIRST_INTERNATIONAL_PRIORITY' => _('Europe First International Priority')
+            , 'FEDEX_1_DAY_FREIGHT' => _('FedEx 1 Day Freight')
+            , 'FEDEX_2_DAY' => _('FedEx 2 Day')
+            , 'FEDEX_2_DAY_FREIGHT' => _('FedEx 2 Day Freight')
+            , 'FEDEX_3_DAY_FREIGHT' => _('FedEx 3 Day Freight')
+            , 'FEDEX_EXPRESS_SAVER' => _('FedEx Express Saver')
+            , 'FEDEX_GROUND' => _('FedEx Ground')
+            , 'FIRST_OVERNIGHT' => _('First Overnight')
+            , 'GROUND_HOME_DELIVERY' => _('Ground Home Delivery')
+            , 'INTERNATIONAL_ECONOMY' => _('International Economy')
+            , 'INTERNATIONAL_ECONOMY_FREIGHT' => _('International Economy Freight')
+            , 'INTERNATIONAL_FIRST' => _('International First')
+            , 'INTERNATIONAL_PRIORITY' => _('International Priority')
+            , 'INTERNATIONAL_PRIORITY_FREIGHT' => _('International Priority Freight')
+            , 'PRIORITY_OVERNIGHT' => _('Priority Overnight')
+            , 'SMART_POST' => _('Smart Post')
+            , 'STANDARD_OVERNIGHT' => _('Standard Overnight')
+            , 'FEDEX_FREIGHT' => _('FedEx Freight')
+            , 'FEDEX_NATIONAL_FREIGHT' => _('FedEx National Freight')
         );
 
         $form->add_field( 'select', _('Service'), 'sService', $shipping_method->name )
             ->options( $services );
 
-        $pickup_types = array(
-            '01' => _('Daily Pickup')
-            , '03' => _('Customer Counter')
-            , '06' => _('One Time Pickup')
-            , '07' => _('On Call Air')
-        );
-
-        $form->add_field( 'select', _('Pickup Type'), 'sPickupType', $shipping_method->extra['pickup_type'] )
-            ->options( $pickup_types );
-
         $packaging_types = array(
-            '01' => 'UPS Letter'
-            , '02' => 'Your Packaging'
-            , '03' => 'Tube'
-            , '04' => 'PAK'
-            , '21' => 'Express Box'
-            , '24' => '25KG Box'
-            , '25' => '10KG Box'
-            , '30' => 'Pallet'
-            , '2a' => 'Small Express Box'
-            , '2b' => 'Medium Express Box'
-            , '2c' => 'Large Express Box'
+            'YOUR_PACKAGING' => _('Your Packaging')
+            , 'FEDEX_BOX' => _('FedEx Box')
+            , 'FEDEX_ENVELOPE' => _('FedEx Evelope')
+            , 'FEDEX_PAK' => _('FedEx Pak')
+            , 'FEDEX_TUBE' => _('FedEx Tube')
+            , 'FEDEX_10KG_BOX' => _('FedEx 10Kg Box')
+            , 'FEDEX_25KG_BOX' => _('FedEx 25Kg Box')
         );
 
         $form->add_field( 'select', _('Packaging Type'), 'sPackagingType', $shipping_method->extra['packaging_type'] )
@@ -287,13 +291,171 @@ class ShippingController extends BaseController {
         }
 
         $response = $this->get_template_response( 'add-edit' )
-            ->select( 'shipping', 'add-edit-ups' )
+            ->select( 'shipping', 'add-edit-fedex' )
             ->set( array(
                 'form' => $form->generate_form()
                 , 'shipping_method' => $shipping_method
                 , 'type' => 'FedEx'
             ) )
             ->add_title( ( ( $website_shipping_method_id ) ? _('Edit FedEx') : _('Add FedEx') ) );
+
+        return $response;
+    }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function settings() {
+        $shipping_settings = array(
+            'shipper_company' => ''
+            , 'shipper_contact' => ''
+            , 'shipper_address' => ''
+            , 'shipper_city' => ''
+            , 'shipper_state' => ''
+            , 'shipper_zip' => ''
+            , 'shipper_country' => ''
+        );
+
+        $shipping_ups = array(
+            'access_key' => ''
+            , 'username' => ''
+            , 'password' => ''
+            , 'account_number' => ''
+        );
+
+        $shipping_fedex = array(
+            'development_key' => ''
+            , 'password' => ''
+            , 'account_number' => ''
+            , 'meter_number' => ''
+        );
+
+        $settings = $this->user->account->get_settings( 'shipping-settings', 'shipping-ups', 'shipping-fedex', 'taxable-shipping' );
+
+        if ( !empty( $settings['shipping-settings'] ) )
+            $shipping_settings = unserialize( $settings['shipping-settings'] );
+
+        if ( !empty( $settings['shipping-ups'] ) )
+            $shipping_ups = unserialize( $settings['shipping-ups'] );
+
+        if ( !empty( $settings['shipping-fedex'] ) )
+            $shipping_fedex = unserialize( $settings['shipping-fedex'] );
+
+        // Create form
+
+        $form = new FormTable( 'fShippingSettings' );
+
+        // Generic Settings
+        $form->add_field( 'title', _('Generic Settings') );
+        $form->add_field( 'text', _('Shipper Company'), 'tShipperCompany', $shipping_settings['shipper_company'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Shipper Contact'), 'tShipperContact', $shipping_settings['shipper_contact'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Shipper Address'), 'tShipperAddress', $shipping_settings['shipper_address'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Shipper City'), 'tShipperCity', $shipping_settings['shipper_city'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Shipper State'), 'tShipperState', $shipping_settings['shipper_state'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Shipper Zip'), 'tShipperZip', $shipping_settings['shipper_zip'] )
+            ->attribute( 'maxlength', 10 )
+            ->add_validation( 'zip', _('The "Shipping Zip" field must contain a valid zip code') );
+
+        $form->add_field( 'select', _('Shipper Country'), 'sShipperCountry', $shipping_settings['shipper_country'] )
+            ->options( data::countries( false ) );
+
+        $form->add_field( 'blank', '' );
+
+        // UPS Settings
+        $form->add_field( 'title', _('UPS Settings') );
+
+        $form->add_field( 'text', _('Access Key'), 'tUPSAccessKey', $shipping_ups['access_key'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Username'), 'tUPSUsername', $shipping_ups['username'] )
+            ->attribute( 'maxlength', 30 );
+
+        $form->add_field( 'password', _('Password'), 'pUPSPassword', $shipping_ups['password'] )
+            ->attribute( 'maxlength', 30 );
+
+        $form->add_field( 'text', _('Account Number'), 'tUPSAccountNumber', $shipping_ups['account_number'] )
+            ->attribute( 'maxlength', 32 );
+
+        $form->add_field( 'row', _('Weight Unit:'), 'Pounds' );
+        $form->add_field( 'row', _('Length Unit:'), 'Inches' );
+        $form->add_field( 'blank', '' );
+
+        // FedEx Settings
+        $form->add_field( 'title', _('FedEx Settings') );
+
+        $form->add_field( 'text', _('Development Key'), 'tFedExDevelopmentKey', $shipping_fedex['development_key'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'password', _('Password'), 'pFedExPassword', $shipping_fedex['password'] )
+            ->attribute( 'maxlength', 30 );
+
+        $form->add_field( 'text', _('Account Number'), 'tFedExAccountNumber', $shipping_fedex['account_number'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Meter Number'), 'tFedExMeterNumber', $shipping_fedex['meter_number'] )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'row', _('Weight Unit:'), 'Pounds' );
+        $form->add_field( 'row', _('Length Unit:'), 'Inches' );
+        $form->add_field( 'blank', '' );
+
+        // Tax Settings
+        $form->add_field( 'title', _('Tax Settings') );
+
+        $form->add_field( 'checkbox', _('Taxable Shipping'), 'cbTaxableShipping', $settings['taxable-shipping'] );
+
+        // Handle posting
+
+        if ( $form->posted() ) {
+            $this->user->account->set_settings( array(
+                'shipping-settings' => serialize( array(
+                    'shipper_company' => $_POST['tShipperCompany']
+                    , 'shipper_contact' => $_POST['tShipperContact']
+                    , 'shipper_address' => $_POST['tShipperAddress']
+                    , 'shipper_city' => $_POST['tShipperCity']
+                    , 'shipper_state' => $_POST['tShipperState']
+                    , 'shipper_zip' => $_POST['tShipperZip']
+                    , 'shipper_country' => $_POST['sShipperCountry']
+                ) )
+                , 'shipping-ups' => serialize( array(
+                    'access_key' => $_POST['tUPSAccessKey']
+                    , 'username' => $_POST['tUPSUsername']
+                    , 'password' => $_POST['pUPSPassword']
+                    , 'account_number' => $_POST['tUPSAccountNumber']
+                ) )
+                , 'shipping-fedex' => serialize( array(
+                    'development_key' => $_POST['tFedExDevelopmentKey']
+                    , 'password' => $_POST['pFedExPassword']
+                    , 'account_number' => $_POST['tFedExAccountNumber']
+                    , 'meter_number' => $_POST['tFedExMeterNumber']
+                ) )
+                , 'taxable-shipping' => ( isset( $_POST['cbTaxableShipping'] ) ) ? '1' : '0'
+            ));
+
+            $this->notify( _('Your settings have been successfully saved!') );
+
+            // Simply refresh the page
+            return new RedirectResponse( '/shopping-cart/shipping/settings/' );
+        }
+
+        $response = $this->get_template_response( 'settings' )
+            ->select( 'shipping', 'shipping-settings' )
+            ->set( array(
+                'form' => $form->generate_form()
+            ) )
+            ->add_title( _('Settings') );
 
         return $response;
     }

@@ -713,6 +713,6 @@ class FormTable_Row extends FormTable_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        return '<tr><td>' . $this->name . '</td><td><strong>' . $this->value . '</strong></td></tr>';
+        return '<tr><td><strong>' . $this->name . '</strong></td><td><strong>' . $this->value . '</strong></td></tr>';
     }
 }

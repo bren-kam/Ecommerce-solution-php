@@ -12,7 +12,7 @@
 		<a href="/shopping-cart/shipping/add-edit-custom/" title="<?php echo _('Add Custom'); ?>" class="sub<?php $template->select('add-edit-custom'); ?>"><?php echo _('Add Custom'); ?></a>
 		<a href="/shopping-cart/shipping/add-edit-ups/" title="<?php echo _('Add UPS'); ?>" class="sub<?php $template->select('add-edit-ups'); ?>"><?php echo _('Add UPS'); ?></a>
 		<a href="/shopping-cart/shipping/add-edit-fedex/" title="<?php echo _('Add FedEx'); ?>" class="sub<?php $template->select('add-edit-fedex'); ?>"><?php echo _('Add FedEx'); ?></a>
-		<a href="/shopping-cart/shipping/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
+		<a href="/shopping-cart/shipping/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('shipping-settings'); ?>"><?php echo _('Settings'); ?></a>
 	<?php } ?>
 
     <a href="/shopping-cart/settings/" title="<?php echo _('Settings'); ?>" class="top"><?php echo _('Settings'); ?></a>
