@@ -390,6 +390,7 @@ class ApiRequest {
                 }
 				
                 // Update the domain field
+                $account->ftp_username = security::encrypt( $username, ENCRYPTION_KEY, true );
                 $account->domain = $domain;
                 $account->save();
 
@@ -716,7 +717,7 @@ class ApiRequest {
         $account->get( $website_id );
 
         // Verify that it exists
-        if ( !$account->company_id != $company_id ) {
+        if ( $account->company_id != $company_id ) {
             $this->add_response( array( 'success' => false, 'message' => 'failed-website-verification' ) );
             return false;
         }

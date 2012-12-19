@@ -56,7 +56,7 @@ class WebsiteOrderItem extends ActiveRecordBase {
 
             $items[$item->id] = $item;
             $items[$item->id]->image = $image_link;
-            $items[$item->id]->product_options = $item_options[$item->id];
+            $items[$item->id]->product_options = ( isset( $item_options[$item->id] ) ) ? $item_options[$item->id] : array();
             $items[$item->id]->extra = unserialize( $item->extra );
         }
 
