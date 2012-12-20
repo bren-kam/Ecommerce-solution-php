@@ -356,7 +356,7 @@ class InstallService {
             $mobile = '8185551234';
 
         // Get email
-        $email = 'mobile@' . url::domain( $account->domain, false );
+        $email = $account_user->email;//'mobile@' . url::domain( $account->domain, false );
 
         // Login to Grey Suit Apps
         $login_fields = array(
