@@ -330,6 +330,7 @@ class InstallService {
         $industry->get( current( $account_industries ) );
         $timezone_object = new DateTimeZone( $account->get_settings( 'timezone' ) );
         $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
+		$username = format::slug( $account->title );
         $password = security::generate_password();
 
         if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )
@@ -371,7 +372,7 @@ class InstallService {
             'wlw_uid' => 7529
             , 'mode' => 'signup'
             , 'promo_code' => ''
-            , 'username' => format::slug( $account->title )
+            , 'username' => $username
             , 'password1' => $password
             , 'password2' => $password
             , 'organization_name' => $account->title
@@ -466,7 +467,13 @@ class InstallService {
         $api_key = $matches[1];
 
         // Update the setting with the API Key. YAY!
-        $account->set_settings( array( 'trumpia-api-key' => $api_key, 'trumpia-user-id' => $user_id, 'mobile-plan-id' => $mobile_plan->id ) );
+        $account->set_settings( array( 
+			'trumpia-api-key' => $api_key
+			, 'trumpia-user-id' => $user_id
+			, 'mobile-plan-id' => $mobile_plan->id 
+			, 'trumpia-username' => $username
+			, 'trupmia-password' => $password
+		) );
 
         // Now we want to create the home page for mobile
         $mobile_page = new MobilePage();
