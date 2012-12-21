@@ -38,6 +38,7 @@ class ProductsController extends BaseController {
         $product_count = $account_product->count( $this->user->account->id );
 
         $this->resources->javascript( 'products/index' )
+            ->css( 'products/index' )
             ->css_url( Config::resource('jquery-ui') );
 
         $response = $this->get_template_response( 'index', _('Products') )
