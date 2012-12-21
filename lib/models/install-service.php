@@ -366,7 +366,7 @@ class InstallService {
         );
 
         $curl->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
-
+		
         // Create customer
         $post_fields = array(
             'wlw_uid' => 7529
@@ -378,9 +378,10 @@ class InstallService {
             , 'organization_name' => $account->title
             , 'firstname' => $first_name
             , 'lastname' => $last_name
+			, 'countrycode_uid' => '1||1'
             , 'email' => $email
             , 'mobile' => $mobile
-            , 'industry' => $industry
+            , 'industry' => $industry->name
             , 'timezone' => $timezone
             , 'send_confirmation' => 0
             , 'send_welcome' => 0
@@ -428,10 +429,11 @@ class InstallService {
         );
 
         $update_credits = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_credits_fields );
+		
+        //if ( '<script type="text/javascript">history.go(-1);</script>' != $update_credits )
+            //return _("Failed to update customer's credits");
 
-        if ( '<script type="text/javascript">history.go(-1);</script>' != $update_credits )
-            return _("Failed to update customer's credits");
-
+		$user_id = 387815;
         // Create API Key
         $api_fields = array(
             'mode' => 'createAPIKey'
@@ -440,8 +442,8 @@ class InstallService {
         );
 
         $api_creation = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $api_fields );
-
-        if ( !preg_match( '/action="[^"]+"/', $api_creation ) )
+		
+        if ( !preg_match( '/href="[^"]+"/', $api_creation ) )
             return _('Failed to create API key');
 
         // Assign API to All IP Addresses

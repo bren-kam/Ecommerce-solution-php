@@ -49,7 +49,7 @@ class AuthUserWebsite extends ActiveRecordBase {
         // See if they already exist as a user
         if ( $user->id ) {
             // You must have role 1 to be an authorized user
-            if ( $user->role > 1 || $this->is_authorized( $user->id, $account_id ) )
+            if ( !in_array( $user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) || $this->is_authorized( $user->id, $account_id ) )
                 return;
 
             $message = '<br /><strong>' . $account->title . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';

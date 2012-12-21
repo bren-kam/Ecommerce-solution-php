@@ -23,8 +23,9 @@ class AccountsController extends BaseController {
         $template_response = $this->get_template_response( 'index' )
             ->select( 'accounts', 'view' );
 
-        $this->resources->javascript('accounts/list');
-        $this->resources->css_url( Config::resource('jquery-ui') );
+        $this->resources
+            ->javascript('accounts/list')
+            ->css_url( Config::resource('jquery-ui') );
 
         return $template_response;
     }
