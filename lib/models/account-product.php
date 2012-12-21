@@ -138,6 +138,19 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Remove Discontinued products
+     *
+     * @param int $account_id
+     */
+    public function remove_discontinued( $account_id ) {
+        $this->prepare(
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`active` = 0 WHERE wp.`website_id` = :account_id AND wp.`active` = 1 AND p.`status` = 'discontinued'"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->query();
+    }
+
+    /**
 	 * Gets the data for an autocomplete request by account
 	 *
 	 * @param string $query

@@ -54,7 +54,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                 <td>
                     <input type="checkbox" class="cb" id="cbOnlyDiscontinued" value="1" /> <label for="cbOnlyDiscontinued"><?php echo _('Search Only Discontinued Products'); ?></label>
                     <br />
-                    &nbsp; &nbsp; &nbsp; (<a href="<?php echo url::add_query_arg( '_nonce', nonce::create('remove-all-discontinued-products'), '/products/remove-all-discontinued-products/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove all discontinued products? This cannot be undone.'); ?>" title="<?php echo _('Remove All Discontinued Products'); ?>"><?php echo _('Remove All Discontinued Products'); ?></a>)
+                    &nbsp; &nbsp; &nbsp; (<a href="<?php echo url::add_query_arg( '_nonce', nonce::create('remove_all_discontinued_products'), '/products/remove-all-discontinued-products/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove all discontinued products? This cannot be undone.'); ?>" title="<?php echo _('Remove All Discontinued Products'); ?>"><?php echo _('Remove All Discontinued Products'); ?></a>)
                 </td>
             </tr>
         </table>

@@ -102,6 +102,36 @@ class ProductsController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Remove All Discontinued Products
+     */
+    protected function remove_all_discontinued_products() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Initialize objects
+        $account_product = new AccountProduct();
+        $account_category = new AccountCategory();
+
+        // Remove discontinued and reorganize categories
+        $account_product->remove_discontinued( $this->user->account->id );
+        $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+        // Let them know
+        $response->check( false, _('All discontinued products have been removed') );
+
+        // Reset products to blank
+        jQuery('#dProductList')->empty();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
 }
 
 
