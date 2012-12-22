@@ -35,7 +35,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         foreach( $accounts as $account ) {
             // Need to make this not timeout and remove half the products first
             // @fix
-            // $this->run( $account, $file );
+            $this->run( $account, $file );
         }
     }
 
