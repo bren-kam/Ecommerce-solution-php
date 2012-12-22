@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Shopping Cart - Products
+ * @page Products
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -18,7 +18,6 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     <div id="narrow-your-search-wrapper">
     <div id="narrow-your-search">
         <?php
-        nonce::field( 'get-products', '_get_products' );
         nonce::field( 'autocomplete', '_autocomplete' );
         nonce::field( 'update-website-product-sequence', '_update_website_product_sequence' );
         nonce::field( 'get-product-dialog-info', '_get_product_dialog_info' );

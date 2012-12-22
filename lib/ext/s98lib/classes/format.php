@@ -212,7 +212,7 @@ class format extends Base_Class {
 
 		preg_match( '/^.{' . ( $limit - 1 ) . '}\S*/us', $str, $matches );
 
-		return rtrim( $matches[0] ) . ( strlen( $matches[0] ) == strlen( $str ) ? '' : $end_char );
+		return ( empty( $matches ) ) ? $str : rtrim( $matches[0] ) . ( strlen( $matches[0] ) == strlen( $str ) ? '' : $end_char );
 	}
 
 	/**

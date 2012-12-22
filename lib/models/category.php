@@ -67,7 +67,7 @@ class Category extends ActiveRecordBase {
      *
      * @param int $category_id
      * @param array $child_categories [optional] Pseudo-optional -- shouldn't be filled in
-     * @return array
+     * @return Category[]
      */
     public function get_all_children( $category_id, array $child_categories = array() ) {
         $categories = $this->get_by_parent( $category_id );

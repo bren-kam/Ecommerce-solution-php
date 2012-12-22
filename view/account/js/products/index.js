@@ -362,7 +362,7 @@ function loadProducts() {
 	}
 	
 	// Get the products
-	$.post( '/products/get-products/', { _nonce : $('#_get_products').val(), cid : categoryID, s : $('#sAutoComplete').val(), v : autoComplete, n : itemsPerPage, p : currentPage, od : cbOnlyDiscontinued }, function( html ) { //trigger this on success
+	$.post( '/products/search/', { cid : categoryID, s : $('#sAutoComplete').val(), v : autoComplete, n : itemsPerPage, p : currentPage, od : cbOnlyDiscontinued }, function( html ) { //trigger this on success
 		// Load the content
 		$('#dProductList').html( html ).sparrow();
 		

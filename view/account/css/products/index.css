@@ -1,5 +1,5 @@
 #tListRequests_info { clear:left; float:right; position:relative }
-#tListProducts_length { position:absolute; top: -33px; right: -23px; }
+#tListProducts_length { position:absolute; top: -40px; right: -15px; left: auto; width: 250px }
 #dProductList { padding: 0; position:relative; float:left; width:100% }
 .product { min-height: inherit; }
 .product, .product_heading, .product-placeholder {
