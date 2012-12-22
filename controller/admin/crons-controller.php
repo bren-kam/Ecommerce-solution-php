@@ -22,11 +22,6 @@ class CronsController extends BaseController {
         $email_message = new EmailMessage;
         $email_message->update_scheduled_emails();
 
-
-        /** Update Scheduled Messages from Trumpia */
-        $mobile_message = new MobileMessage();
-        $mobile_message->update_scheduled();
-
         /** Remove uploads that were never used */
 
         // Instantiate classes
@@ -97,15 +92,6 @@ class CronsController extends BaseController {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
-
-        /** Update Craigslist Stats */
-        $craigslist = new Craigslist;
-        $craigslist->update_stats();
-        $craigslist->update_tags();
-
-        /** Synchronize Mobile Marketing */
-        $mobile_marketing = new MobileMarketing();
-        $mobile_marketing->synchronize_contacts();
 
         /** Run Ashley Feed */
         $ashley = new AshleyMasterProductFeedGateway();
