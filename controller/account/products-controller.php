@@ -52,6 +52,8 @@ class ProductsController extends BaseController {
 
     /**
      * Autocomplete
+     *
+     * @return AjaxResponse
      */
     protected function autocomplete() {
         // Make sure it's a valid ajax call
@@ -106,6 +108,8 @@ class ProductsController extends BaseController {
 
     /**
      * Remove All Discontinued Products
+     *
+     * @return AjaxResponse
      */
     protected function remove_all_discontinued_products() {
         // Make sure it's a valid ajax call
@@ -209,6 +213,8 @@ class ProductsController extends BaseController {
 
     /**
      * Remove All Discontinued Products
+     *
+     * @return AjaxResponse
      */
     protected function remove() {
         // Make sure it's a valid ajax call
@@ -243,6 +249,8 @@ class ProductsController extends BaseController {
 
     /**
      * Remove All Discontinued Products
+     *
+     * @return AjaxResponse
      */
     protected function block() {
         // Make sure it's a valid ajax call
@@ -280,6 +288,8 @@ class ProductsController extends BaseController {
 
     /**
      * Set Category Image
+     *
+     * @return AjaxResponse
      */
     protected function set_category_image() {
         // Make sure it's a valid ajax call
@@ -300,6 +310,34 @@ class ProductsController extends BaseController {
         $account_category->set_image( $_GET['i'] );
 
         $response->check( false, _('Your category image has been set!') );
+
+        return $response;
+    }
+
+    /**
+     * Get Product Dialog Info
+     *
+     * @return AjaxResponse
+     */
+    protected function get_product_dialog_info() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['pid'] ), _('Please select a product to edit') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $account_product = new AccountProduct();
+        $website_coupons = new WebsiteCoupon();
+
+        $account_product->get_complete( $_POST['pid'], $this->user->account->id );
+
+        $response
+            ->add_response( 'product', $p->get_complete_website_product( $_POST['pid'] ) )
+            ->add_response( 'product_options', $p->brand_product_options( $_POST['pid'] ) );
+
 
         return $response;
     }

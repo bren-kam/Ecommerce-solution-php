@@ -4,7 +4,7 @@ class AccountProduct extends ActiveRecordBase {
     public $website_id, $product_id, $alternate_price, $alternate_price_name, $price;
 
     // Artificial columns
-    public $link, $industry;
+    public $link, $industry, $coupons, $product_options;
 
     // Columns from other tables
     public $category_id, $brand, $slug, $sku, $name, $image;
@@ -28,6 +28,14 @@ class AccountProduct extends ActiveRecordBase {
             , 'ii'
             , array( ':product_id' => $product_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get Complete
+     */
+    public function get_complete( $product_id, $account_id ) {
+        $this->get( $product_id, $account_id );
+        $this->product_options = false;
     }
 
     /**

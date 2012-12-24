@@ -30,10 +30,14 @@ class AjaxResponse extends Response {
      *
      * @param string $key
      * @param string $value
+     *
+     * @return AjaxResponse
      */
     public function add_response( $key, $value ) {
         // Set the variable
         $this->json_response[$key] = $value;
+
+        return $this;
     }
 
     /**
