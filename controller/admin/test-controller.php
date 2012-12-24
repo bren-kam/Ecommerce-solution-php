@@ -17,15 +17,14 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        /** Update Craigslist Stats
+         //Update Craigslist Stats
         $craigslist = new Craigslist;
         $craigslist->update_stats();
-        $craigslist->update_tags();
-        */
 
+        /**
         $ashley_package_feed = new AshleyPackageProductFeedGateway();
         $ashley_package_feed->run();
-
+        */
         /*$mobile_marketing = new MobileMarketing();
         $mobile_marketing->synchronize_contacts();
 

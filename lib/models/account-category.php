@@ -349,4 +349,36 @@ class AccountCategory extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Set Image
+     *
+     * @param string $image
+     */
+    public function set_image( $image ) {
+        $image = $this->_small_image( $image );
+
+		$this->prepare(
+            'INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES ( :account_id, :category_id, :image ) ON DUPLICATE KEY UPDATE `image_url` = :image2'
+            , 'iiss'
+            , array(
+                ':account_id' => $this->website_id
+                , ':category_id' => $this->category_id
+                , ':image' => $image
+                , ':image2' => $image
+            )
+        )->query();
+    }
+
+    /**
+     * Small Image
+     *
+     * Turns a product image to its small version (200x200)
+     *
+     * @param string $image
+     * @return string
+     */
+    private function _small_image( $image ) {
+        return preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", $image );
+    }
 }

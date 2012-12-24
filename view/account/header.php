@@ -52,8 +52,13 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                 , 'mobile_marketing'    => array( 'mobile-marketing', _('Mobile Marketing') )
             );
 
+            $exceptions = array(
+                'shopping-cart/users' => 'shopping-cart'
+            );
+
             $keys = array_keys( $links );
-            
+
+            if ( isset( $user->account ) )
             foreach ( $links as $key => $link ) {
                 if ( 'email_marketing' != $key && !$user->account->$key )
                     continue;
@@ -70,8 +75,9 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                     break;
 
                     default:
+                        $selection = ( isset( $exceptions[$link[0]] ) ) ? $exceptions[$link[0]] : $link[0];
                         ?>
-                        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>"<?php $template->select( $link[0], true ); ?>><?php echo $link[1]; ?></a>
+                        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>"<?php $template->select( $selection, true ); ?>><?php echo $link[1]; ?></a>
                         <?php
                     break;
                 }
@@ -89,13 +95,17 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 		</div>
 	</div>
     <div id="current-site">
+        <?php if ( isset( $user->account ) ) { ?>
         <div class="float-left">
             <h3><?php echo _('Site'), ': ', $user->account->title; ?></h3>
             <?php if ( count( $user->accounts ) > 1 ) { ?>
                 <p><a href="/home/select-account/" class="highlight" title="<?php echo _('Change Account'); ?>">(<?php echo _('Change'); ?>)</a></p>
             <?php } ?>
         </div>
-        <?php if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) ) { ?>
+        <?php
+        }
+        if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) ) {
+        ?>
         <div id="return-to-admin">
             <p><a href="http://admin.<?php echo DOMAIN; ?>/accounts/" class="button" title="<?php echo _('Back to Admin'); ?>"><?php echo _('Back to Admin'); ?></a></p>
         </div>

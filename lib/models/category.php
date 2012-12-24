@@ -67,7 +67,7 @@ class Category extends ActiveRecordBase {
      *
      * @param int $category_id
      * @param array $child_categories [optional] Pseudo-optional -- shouldn't be filled in
-     * @return array
+     * @return Category[]
      */
     public function get_all_children( $category_id, array $child_categories = array() ) {
         $categories = $this->get_by_parent( $category_id );
@@ -297,7 +297,7 @@ class Category extends ActiveRecordBase {
      * @param int $parent_category_id [optional]
      * @param int $depth [optional]
      * @param array $hierarchical_categories
-     * @return array
+     * @return Category[]
      */
     public function sort_by_hierarchy( $parent_category_id = 0, $depth = 0, array $hierarchical_categories = array() ) {
         $categories = $this->get_by_parent( $parent_category_id );

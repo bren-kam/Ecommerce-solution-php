@@ -23,8 +23,9 @@ class AccountsController extends BaseController {
         $template_response = $this->get_template_response( 'index' )
             ->select( 'accounts', 'view' );
 
-        $this->resources->javascript('accounts/list');
-        $this->resources->css_url( Config::resource('jquery-ui') );
+        $this->resources
+            ->javascript('accounts/list')
+            ->css_url( Config::resource('jquery-ui') );
 
         return $template_response;
     }
@@ -266,12 +267,13 @@ class AccountsController extends BaseController {
         }
 
         // Include Resources
-        $this->resources->javascript('accounts/edit');
-        $this->resources->css('accounts/edit');
+        $this->resources
+            ->javascript('accounts/edit')
+            ->css('accounts/edit');
 
         $template_response = $this->get_template_response('edit')
             ->select( 'accounts' )
-            ->add_title('Edit')
+            ->add_title( _('Edit') )
             ->set( compact( 'account', 'owner', 'checkboxes', 'errs' ) );
 
         foreach ( $fields as $field ) {
@@ -374,6 +376,7 @@ class AccountsController extends BaseController {
         $form = $ft->generate_form();
 
         $template_response = $this->get_template_response('website-settings')
+            ->add_title( _('Website Settings') )
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
 
@@ -472,6 +475,7 @@ class AccountsController extends BaseController {
         $form = $ft->generate_form();
 
         $template_response = $this->get_template_response('other-settings')
+            ->add_title( _('Other Settings') )
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
 
@@ -502,6 +506,7 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         $template_response = $this->get_template_response('actions')
+            ->add_title( _('Actions') )
             ->set( compact( 'account', 'settings' ) )
             ->select('accounts');
 
