@@ -64,14 +64,16 @@ class AccountPage extends ActiveRecordBase {
      */
     public function create() {
         $this->date_created = dt::now();
+        $this->status = 1;
 
         $this->insert( array(
             'website_id' => $this->website_id
             , 'slug' => $this->slug
             , 'title' => $this->title
             , 'content' => $this->content
+            , 'status' => $this->status
             , 'date_created' => $this->date_created
-        ), 'issss' );
+        ), 'isssis' );
 
         $this->id = $this->website_page_id = $this->get_insert_id();
     }

@@ -9,7 +9,7 @@ class ShoppingCartController extends BaseController {
 
         $this->view_base = 'shopping-cart/';
         $this->section = 'shopping-cart';
-        $this->title = 'Shopping Cart';
+        $this->title = _('Shopping Cart');
     }
 
     /**

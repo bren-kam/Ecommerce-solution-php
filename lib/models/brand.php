@@ -153,4 +153,33 @@ class Brand extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+	 * Gets the data for autocomplete on all brands
+	 *
+	 * @param string $query
+	 * @return array
+	 */
+	public function autocomplete_all( $query ) {
+        return $this->prepare(
+            'SELECT `brand_id` AS value, `name` FROM `brands` WHERE `name` LIKE :query ORDER BY `name` LIMIT 10'
+            , 's'
+            , array( ':query' => $query . '%' )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+	 * Gets the data for an autocomplete request by account
+	 *
+	 * @param string $query
+     * @param int $account_id
+	 * @return array
+	 */
+	public function autocomplete_by_account( $query, $account_id ) {
+        return $this->prepare(
+            'SELECT DISTINCT b.`brand_id` AS value, b.`name` FROM `brands` AS b LEFT JOIN `products` AS p ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE b.`name` LIKE :query AND wp.`website_id` = :account_id ORDER BY b.`name` LIMIT 10'
+            , 'si'
+            , array( ':query' => $query . '%', ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
 }

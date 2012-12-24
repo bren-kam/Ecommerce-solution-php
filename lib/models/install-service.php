@@ -330,6 +330,7 @@ class InstallService {
         $industry->get( current( $account_industries ) );
         $timezone_object = new DateTimeZone( $account->get_settings( 'timezone' ) );
         $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
+		$username = format::slug( $account->title );
         $password = security::generate_password();
 
         if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )
@@ -356,7 +357,7 @@ class InstallService {
             $mobile = '8185551234';
 
         // Get email
-        $email = 'mobile@' . url::domain( $account->domain, false );
+        $email = $account_user->email;//'mobile@' . url::domain( $account->domain, false );
 
         // Login to Grey Suit Apps
         $login_fields = array(
@@ -365,21 +366,22 @@ class InstallService {
         );
 
         $curl->post( 'http://greysuitmobile.com/admin/action/action_login.php', $login_fields );
-
+		
         // Create customer
         $post_fields = array(
             'wlw_uid' => 7529
             , 'mode' => 'signup'
             , 'promo_code' => ''
-            , 'username' => format::slug( $account->title )
+            , 'username' => $username
             , 'password1' => $password
             , 'password2' => $password
             , 'organization_name' => $account->title
             , 'firstname' => $first_name
             , 'lastname' => $last_name
+			, 'countrycode_uid' => '1||1'
             , 'email' => $email
             , 'mobile' => $mobile
-            , 'industry' => $industry
+            , 'industry' => $industry->name
             , 'timezone' => $timezone
             , 'send_confirmation' => 0
             , 'send_welcome' => 0
@@ -427,10 +429,11 @@ class InstallService {
         );
 
         $update_credits = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $update_credits_fields );
+		
+        //if ( '<script type="text/javascript">history.go(-1);</script>' != $update_credits )
+            //return _("Failed to update customer's credits");
 
-        if ( '<script type="text/javascript">history.go(-1);</script>' != $update_credits )
-            return _("Failed to update customer's credits");
-
+		$user_id = 387815;
         // Create API Key
         $api_fields = array(
             'mode' => 'createAPIKey'
@@ -439,8 +442,8 @@ class InstallService {
         );
 
         $api_creation = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $api_fields );
-
-        if ( !preg_match( '/action="[^"]+"/', $api_creation ) )
+		
+        if ( !preg_match( '/href="[^"]+"/', $api_creation ) )
             return _('Failed to create API key');
 
         // Assign API to All IP Addresses
@@ -466,7 +469,13 @@ class InstallService {
         $api_key = $matches[1];
 
         // Update the setting with the API Key. YAY!
-        $account->set_settings( array( 'trumpia-api-key' => $api_key, 'trumpia-user-id' => $user_id, 'mobile-plan-id' => $mobile_plan->id ) );
+        $account->set_settings( array( 
+			'trumpia-api-key' => $api_key
+			, 'trumpia-user-id' => $user_id
+			, 'mobile-plan-id' => $mobile_plan->id 
+			, 'trumpia-username' => $username
+			, 'trupmia-password' => $password
+		) );
 
         // Now we want to create the home page for mobile
         $mobile_page = new MobilePage();

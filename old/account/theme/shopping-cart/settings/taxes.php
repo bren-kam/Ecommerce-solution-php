@@ -53,9 +53,9 @@ get_header();
 		<form name="fTaxes" id="fTaxes" action="/shopping-cart/settings/taxes/" method="post">
 			<table id="tWebsiteTaxes" width="700">
 				<tr>
-					<th width="40%"><strong><?php echo _('State'); ?></strong></th>
-					<th><strong><?php echo _('Cost'); ?></strong></th>
-					<th width="40%"><strong><?php echo _('Actions'); ?></strong></th>
+					<th width="40%"><strong class="text-left"><?php echo _('State'); ?></strong></th>
+					<th><strong class="text-left"><?php echo _('Cost'); ?></strong></th>
+					<th width="40%"><strong class="text-left"><?php echo _('Actions'); ?></strong></th>
 				</tr>
 				<?php foreach ( $taxes['states'] as $abbr => $tax ) { ?>
 				<tr id="trTax<?php echo $abbr; ?>">
