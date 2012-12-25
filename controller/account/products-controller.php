@@ -22,10 +22,12 @@ class ProductsController extends BaseController {
         $category = new Category();
         $account_category = new AccountCategory();
         $account_product = new AccountProduct();
+        $coupon = new WebsiteCoupon();
 
         // Sort categories
         $categories_array = $category->sort_by_hierarchy();
         $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
+        $coupons = $coupon->get_by_account( $this->user->account->id );
         $categories = array();
 
         foreach ( $categories_array as $category ) {
@@ -43,7 +45,7 @@ class ProductsController extends BaseController {
 
         $response = $this->get_template_response( 'index', _('Products') )
             ->select( 'sub-products', 'view' )
-            ->set( compact( 'categories', 'product_count' ) );
+            ->set( compact( 'categories', 'product_count', 'coupons' ) );
 
         return $response;
     }
@@ -323,21 +325,192 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['pid'] ), _('Please select a product to edit') );
+        $response->check( isset( $_POST['pid'] ), _('Please select a product to edit') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
 
+        // Instantiate objects
         $account_product = new AccountProduct();
+        $account_product_option = new AccountProductOption();
+        $product_option = new ProductOption();
         $website_coupons = new WebsiteCoupon();
 
-        $account_product->get_complete( $_POST['pid'], $this->user->account->id );
+        // Get variables
+        $account_product->get( $_POST['pid'], $this->user->account->id );
+        $account_product->coupons = $website_coupons->get_by_product( $this->user->account->id, $_POST['pid'] );
+        $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_POST['pid'] );
+        $product_options_array = $product_option->get_by_product( $_POST['pid'] );
 
+        $product_options = array();
+
+        if ( $product_options_array )
+		foreach ( $product_options_array as $po ) {
+			$product_options[$po->id]['option_type'] = $po->type;
+			$product_options[$po->id]['option_name'] = $po->name;
+			$product_options[$po->id]['list_items'][$po->product_option_list_item_id] = $po->value;
+		}
+
+        // Add to response
         $response
-            ->add_response( 'product', $p->get_complete_website_product( $_POST['pid'] ) )
-            ->add_response( 'product_options', $p->brand_product_options( $_POST['pid'] ) );
+            ->add_response( 'product', (array) $account_product )
+            ->add_response( 'product_options', $product_options );
 
+        return $response;
+    }
+
+    /**
+     * Update Product
+     *
+     * @return AjaxResponse
+     */
+    protected function update_product() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['hProductID'] ), _('Please select a product to edit') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Initialize objects
+        $account_product = new AccountProduct();
+        $website_coupon = new WebsiteCoupon();
+        $account_product_option = new AccountProductOption();
+
+        // Get variables
+        $account_product->get( $account_product['hProductID'], $this->user->account->id );
+
+        /***** UPDATE PRODUCT *****/
+        $account_product->alternate_price = $_POST['tAlternatePrice'];
+        $account_product->price = $_POST['tPrice'];
+        $account_product->sale_price = $_POST['tSalePrice'];
+        $account_product->inventory = $_POST['tInventory'];
+        $account_product->alternate_price_name = $_POST['tAlternatePriceName'];
+        $account_product->price_note = $_POST['tPriceNote'];
+        $account_product->product_note = $_POST['taProductNote'];
+        $account_product->warranty_length = $_POST['tWarrantyLength'];
+        $account_product->display_inventory = ( isset( $_POST['cbDisplayInventory'] ) ) ? 1 : 0;
+        $account_product->on_sale = ( isset( $_POST['cbOnSale'] ) ) ? 1 : 0;
+        $account_product->status = $_POST['sStatus'];
+        $account_product->meta_title = $_POST['tMetaTitle'];
+        $account_product->meta_description = $_POST['tMetaDescription'];
+        $account_product->meta_keywords = $_POST['tMetaKeywords'];
+
+        if ( $this->user->account->shopping_cart ) {
+            $account_product->wholesale_price = $_POST['tWholesalePrice'];
+            $account_product->additional_shipping_amount = ( 'Flat Rate' == $_POST['rShippingMethod'] ) ? $_POST['tShippingFlatRate'] : $_POST['tShippingPercentage'];
+            $account_product->weight = $_POST['tWeight'];
+            $account_product->protection_amount = ( 'Flat Rate' == $_POST['rProtectionMethod'] ) ? $_POST['tProtectionFlatRate'] : $_POST['tProtectionPercentage'];
+            $account_product->additional_shipping_type = $_POST['rShippingMethod'];
+            $account_product->protection_type = $_POST['rProtectionMethod'];
+            $account_product->ships_in = $_POST['tShipsIn'];
+            $account_product->store_sku = $_POST['tStoreSKU'];
+
+            $coupons = ( empty( $_POST['hCoupons'] ) ) ? false : explode( '|', $_POST['hCoupons'] );
+        } else {
+
+            $coupons = false;
+        }
+
+        // Update product
+        $account_product->save();
+
+        /***** UPDATE COUPONS *****/
+        $website_coupon->delete_by_product( $this->user->account->id, $account_product->product_id );
+
+        if ( $coupons ) {
+            // Get website coupon IDs
+            $website_coupons = $website_coupon->get_by_account( $this->user->account->id );
+            $new_coupons = array();
+
+            // Only add coupons that belong to this account
+            foreach ( $website_coupons as $wc ) {
+                if ( in_array( $wc->id, $coupons ) )
+                    $new_coupons[] = $wc->id;
+
+            }
+
+            // Add the relations
+            $website_coupon->add_relations( $account_product->product_id, $new_coupons );
+        }
+
+        /***** UPDATE PRODUCT OPTIONS *****/
+        $account_product_option->delete_by_product( $this->user->account->id, $account_product->product_id );
+
+        // Set the product options
+        $product_options = array();
+
+        if ( isset( $_POST['product_options'] ) )
+        foreach ( $_POST['product_options'] as $po_id => $value ) {
+            if ( isset( $_POST['tPrice' . $po_id] ) ) {
+                $product_options[$po_id] = $_POST['tPrice' . $po_id];
+            } else {
+                $product_options[$po_id]['required'] = ( isset( $_POST['cbRequired' . $po_id] ) ) ? 1 : 0;
+            }
+
+            if ( isset( $_POST['product_list_items'][$po_id] ) )
+            foreach ( $_POST['product_list_items'][$po_id] as $li_id => $val ) {
+                $product_options[$po_id]['list_items'][(int) $li_id] = $_POST['tPrices'][$po_id][$li_id];
+            }
+        }
+
+        if ( !empty( $product_options ) ) {
+        	$product_option_values = $product_option_list_item_values = $product_option_ids = $product_option_list_item_ids = '';
+
+			foreach ( $product_options as $po_id => $po ) {
+				$dropdown = is_array( $po );
+
+				if ( $dropdown ) {
+					$price = 0;
+					$required = $po['required'];
+				} else {
+					$price = $po;
+					$required = 0;
+				}
+
+				if ( !empty( $product_option_values ) )
+					$product_option_values .= ', ';
+
+				if ( !empty( $product_option_ids ) )
+					$product_option_ids .= ', ';
+
+				// Add the values
+				$product_option_values .= sprintf( "( $website_id, $product_id, %d, %f, %d )", $po_id, $price, $required );
+
+				// For error handling
+				$product_option_ids .= $po_id;
+
+				// If it's a drop down, set the values
+				if ( $dropdown )
+				foreach ( $po['list_items'] as $li_id => $price ) {
+					if ( !empty( $product_option_list_item_values ) )
+						$product_option_list_item_values .= ',';
+
+					if ( !empty( $product_option_list_item_ids ) )
+						$product_option_list_item_ids .= ',';
+
+					$product_option_list_item_values .= sprintf( "( $website_id, $product_id, %d, %d, %f )", $po_id, $li_id, $price );
+				}
+			}
+
+			// Insert new product options
+			$this->db->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $product_option_values" );
+
+			if ( $product_option_list_item_values != '' ) {
+				// Insert new product option list items
+				$this->db->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price` ) VALUES $product_option_list_item_values" );
+			}
+		}
+
+        jQuery('.close:visible:first')->click();
+        jQuery( '#sPrice' . $account_product->product_id )->text( $account_product->price );
+        jQuery( '#sAlternatePrice' . $account_product->product_id )->text( $account_product->alternate_price );
+        jQuery( '#sAlternatePriceName' . $account_product->product_id )->text( $account_product->alternate_price_name );
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
