@@ -4,7 +4,7 @@ class Product extends ActiveRecordBase {
     public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified;
 
     // Artificial columns
-    public $images;
+    public $images, $industry;
 
     // Columns from other tables
     public $brand, $category_id;
@@ -30,6 +30,21 @@ class Product extends ActiveRecordBase {
             'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`product_id` = :product_id GROUP BY p.`product_id`'
             , 'i'
             , array( ':product_id' => $product_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->product_id;
+    }
+
+    /**
+     * Get by sku
+     *
+     * @param string $sku
+     */
+    public function get_by_sku( $sku ) {
+        $this->prepare(
+            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`sku` = :sku GROUP BY p.`product_id`'
+            , 's'
+            , array( ':sku' => $sku )
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->product_id;
@@ -197,7 +212,7 @@ class Product extends ActiveRecordBase {
 	 * Get all information of the products
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return Product[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables

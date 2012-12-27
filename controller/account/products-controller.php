@@ -13,7 +13,7 @@ class ProductsController extends BaseController {
     }
 
     /**
-     * List Shopping Cart Users
+     * List Products
      *
      * @return TemplateResponse
      */
@@ -43,9 +43,54 @@ class ProductsController extends BaseController {
             ->css( 'products/index' )
             ->css_url( Config::resource('jquery-ui') );
 
-        $response = $this->get_template_response( 'index', _('Products') )
+        $response = $this->get_template_response( 'index')
             ->select( 'sub-products', 'view' )
             ->set( compact( 'categories', 'product_count', 'coupons' ) );
+
+        return $response;
+    }
+
+    /**
+     * Add Products by hand
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function add() {
+        // Make sure they can be here
+        if ( $this->user->role <= 5  && '1' == $this->user->account->get_settings( 'limited-products' ) )
+            return new RedirectResponse('/products/');
+
+        // Instantiate Variables
+        $account_product = new AccountProduct();
+        $category = new Category();
+        $brand = new Brand();
+
+        if ( $this->verified() ) {
+            $account_category = new AccountCategory();
+
+            $account_product->add_bulk_by_ids( $this->user->account->id, $_POST['products'] );
+            $account_category->reorganize_categories( $this->user->account->id, $category );
+
+            $this->notify( _('Your product(s) have been successfully added!') );
+
+            return new RedirectResponse('/products/');
+        }
+
+        // Get variables
+        $product_count = $account_product->count( $this->user->account->id );
+        $categories = $category->sort_by_hierarchy();
+        $brands = $brand->get_all();
+
+        if ( $product_count > $this->user->account->products )
+            $this->notify( _('Please contact your Online Specialist to add additional products. Product Usage has exceeded the number of items allowed.'), false );
+
+        $this->resources->javascript( 'products/add' )
+            ->css( 'products/add' )
+            ->css_url( Config::resource('jquery-ui') );
+
+        $response = $this->get_template_response( 'add' )
+            ->select( 'sub-products', 'add' )
+            ->set( compact( 'product_count', 'categories', 'brands' ) );
 
         return $response;
     }
@@ -89,6 +134,57 @@ class ProductsController extends BaseController {
             case 'sku-products':
                 $account_product = new AccountProduct();
                 $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
+            break;
+
+            default: break;
+        }
+
+        // It needs to be empty if nothing else
+        $suggestions = array();
+
+        if ( is_array( $ac_suggestions ) )
+        foreach ( $ac_suggestions as $acs ) {
+            $suggestions[] = array( 'name' => html_entity_decode( $acs['name'], ENT_QUOTES, 'UTF-8' ), 'value' => $acs['value'] );
+        }
+
+        // Sent by the autocompleter
+        $response->add_response( 'suggestions', $suggestions );
+
+        return $response;
+    }
+
+    /**
+     * Autocomplete
+     *
+     * @return AjaxResponse
+     */
+    protected function autocomplete_owned() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $ac_suggestions = array();
+
+        // Get the right suggestions for the right type
+        switch ( $_POST['type'] ) {
+            case 'brand':
+                $brand = new Brand;
+                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
+            break;
+
+            case 'product':
+                $account_product = new AccountProduct();
+                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'name', $this->user->account->id );
+            break;
+
+            case 'sku':
+                $account_product = new AccountProduct();
+                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'sku', $this->user->account->id );
             break;
 
             default: break;
@@ -514,6 +610,191 @@ class ProductsController extends BaseController {
 
         return $response;
     }
+
+    /**
+     * Check to see if a SKU already exists
+     *
+     * @return AjaxResponse
+     */
+    protected function sku_exists() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['sku'] ), _('Please type in a SKU') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate objects
+        $product = new Product();
+
+        // Check to see if it already exists
+        $product->get_by_sku( $_POST['sku'] );
+
+        if ( $product->id ) {
+            $account_product = new AccountProduct();
+            $account_product->get( $product->id, $this->user->account->id );
+
+            $response->check( $account_product->product_id && 1 == $account_product->active, _('A product with same SKU already exists in record and it is already added in your website.') );
+
+            if ( $response->has_error() )
+                return $response;
+
+            // Now we know what to do
+            $response
+                ->add_response( 'product', array( 'product_id' => $product->id, 'name' => $product->name ) )
+                ->add_response( 'confirm', _('A product with same SKU already exists in record. Do you want to add into your product list?') );
+        } else {
+            $response->add_response( 'product', false );
+        }
+
+        return $response;
+    }
+
+    /**
+     * List Add Products
+     *
+     * @return DataTableResponse
+     */
+    protected function list_add_products() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+        $product = new Product();
+
+        // Set Order by
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`' );
+        $dt->add_where( ' AND ( p.`website_id` = 0 || p.`website_id` = ' . $this->user->account->id . ')' );
+        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00'" );
+
+        switch ( $_GET['sType'] ) {
+        	case 'sku':
+        		if ( _('Enter SKU...') != $_GET['s'] )
+        			$dt->add_where( " AND p.`sku` LIKE " . $product->quote( $_GET['s'] . '%' ) );
+        	break;
+
+        	case 'product':
+        		if ( _('Enter Product Name...') != $_GET['s'] )
+        			$dt->add_where( " AND p.`name` LIKE " . $product->quote( $_GET['s'] . '%' ) );
+        	break;
+
+        	case 'brand':
+        		if ( _('Enter Brand...') != $_GET['s'] )
+        			$dt->add_where( " AND b.`name` LIKE " . $product->quote( $_GET['s'] . '%' ) );
+        	break;
+        }
+
+        // Do a category search
+        if ( !empty( $_GET['c'] ) ) {
+        	$category = new Category;
+        	$categories = $category->get_all_children( $_GET['c'] );
+            $category_ids[] = (int) $_GET['c'];
+
+            foreach( $categories as $category ) {
+                $category_ids[] = (int) $category->id;
+            }
+
+        	$dt->add_where( ' AND c.`category_id` IN(' . implode( ',', $category_ids ) . ')' );
+        }
+
+        // Get account pages
+        $products = $product->list_all( $dt->get_variables() );
+        $dt->set_row_count( $product->count_all( $dt->get_count_variables() ) );
+
+        // Nonce
+        $data = array();
+
+        // Create output
+        if ( is_array( $products ) )
+        foreach ( $products as $product ) {
+        	$dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
+        	$actions = '<a href="#" class="add-product" id="aAddProduct' . $product->id . '" name="' . $product->name . '" title="' . _('Add') . '">' . _('Add Product') . '</a>';
+
+        	$data[] = array(
+        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>',
+        		$product->brand,
+        		$product->sku,
+        		ucwords( $product->status )
+        	);
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
+    /**
+     * Get Product
+     *
+     * @return CustomResponse
+     */
+    protected function get_product() {
+        // Instantiate Object
+        $product = new Product();
+        $category = new Category();
+
+        // Get Product
+        $product->get( $_GET['pid'] );
+        $product->images = $product->get_images();
+
+        $category->get( $product->category_id );
+
+        $response = new CustomResponse( $this->resources, 'products/get-product' );
+        $response->set( compact( 'product', 'category' ) );
+
+        return $response;
+    }
+
+    /**
+     * Handle a request
+     *
+     * @return AjaxResponse
+     */
+    protected function request() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['requests'] ), _('Please click "Add Request" before sending the request') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Add the request
+        $ticket = new Ticket;
+
+        $ticket_message = $subject = '';
+
+        foreach ( $_POST['requests'] as $r ) {
+        	if ( !empty( $ticket_message ) )
+        		$ticket_message .= "\n\n";
+
+        	// Get the brand, sku and collection
+        	$ticket_array = explode( '|', $r );
+
+        	// Add it to the message
+        	$ticket_message .= 'Brand: ' . $ticket_array[0] . "\n";
+        	$ticket_message .= 'SKU: ' . $ticket_array[1] . "\n";
+        	$ticket_message .= 'Collection: ' . $ticket_array[2];
+
+        	$subject = ( $this->user->account->live ) ? 'Live' : 'Staging';
+        }
+
+        // Create Ticket
+        $ticket->summary = "$subject - Product Request";
+        $ticket->message = $ticket_message;
+        $ticket->status = 1;
+        $ticket->create();
+
+        // Empty the list
+        jQuery('#dRequestList')->empty();
+
+        // Close Dialog
+        jQuery('#aClose')->click();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
 }
-
-

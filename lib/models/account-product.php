@@ -208,6 +208,33 @@ class AccountProduct extends ActiveRecordBase {
 	}
 
     /**
+	 * Add Bulk By Product IDs
+	 *
+	 * @param int $account_id
+     * @param array $product_ids
+	 */
+	public  function add_bulk_by_ids( $account_id, array $product_ids ) {
+        // Make sure they entered in SKUs
+        if ( empty( $product_ids ) )
+            return;
+
+        // Make account id safe
+        $account_id = (int) $account_id;
+        $values = '';
+
+        // Make industry IDs safe
+        foreach ( $product_ids as $product_id ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= "( $account_id, " . (int) $product_id . ' )';
+        }
+
+        // Insert website products
+        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `active` = 1" );
+	}
+
+    /**
 	 * Deactivate a bunch of products at once
 	 *
 	 * @param int $account_id
@@ -309,6 +336,39 @@ class AccountProduct extends ActiveRecordBase {
             , str_repeat( 's', $sku_count )
             , $skus
         );
+    }
+
+    /**
+	 * Gets the data for an autocomplete request by account
+	 *
+	 * @param string $query
+     * @param string|array $field
+     * @param int $account_id
+	 * @return array
+	 */
+	public function autocomplete_all( $query, $field, $account_id ) {
+        $where = '';
+
+        // Support more than one field
+		if ( is_array( $field ) ) {
+			// The initial and last parent are needed due to the multiple static-WHERE's
+			foreach ( $field as $f ) {
+				$where .= ( empty( $where ) ) ? ' AND ( ' : ' OR ';
+
+				$where .= "`{$f}` LIKE " . $this->quote( '%' . $query . '%' );
+			}
+
+			// Close the open paren
+			$where .= ' )';
+		} else {
+			$where = " AND `{$field}` LIKE " . $this->quote( '%' . $query . '%' );
+		}
+
+        return $this->prepare(
+            "SELECT DISTINCT p.`product_id` AS value, p.`$field` AS name FROM `products` AS p LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND ( p.`website_id` = 0 OR p.`website_id` = :account_id ) $where ORDER BY `$field` LIMIT 10"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_ASSOC );
     }
 
     /**
