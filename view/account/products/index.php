@@ -9,6 +9,7 @@
  * @var User $user
  * @var Category[] $categories
  * @var int $product_count
+ * @var WebsiteCoupon[] $coupons
  */
 
 require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
@@ -19,8 +20,8 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     <div id="narrow-your-search">
         <?php
         nonce::field( 'autocomplete', '_autocomplete' );
-        nonce::field( 'update-website-product-sequence', '_update_website_product_sequence' );
-        nonce::field( 'get-product-dialog-info', '_get_product_dialog_info' );
+        nonce::field( 'update_website_product_sequence', '_update_website_product_sequence' );
+        nonce::field( 'get_product_dialog_info', '_get_product_dialog_info' );
         ?>
         <h2 class="col-2 float-left"><?php echo _('Narrow Your Search'); ?></h2>
         <h3 class="col-2 float-left text-right"><?php echo _('Product Usage'); ?>: <?php echo number_format( $product_count ), ' / ', number_format( $user->account->products ); ?></h3>
@@ -174,7 +175,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 	</div>
 	<div class="screen hidden" id="dShoppingCart">
         <br />
-		<table cellpadding="0" cellspacing="0">
+		<table>
 			<tr>
 				<td><label for="tStoreSKU"><?php echo _('Store SKU'); ?></label></td>
 				<td><input type="text" class="tb" name="tStoreSKU" id="tStoreSKU" maxlength="25" /></td>
@@ -186,14 +187,14 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 			<tr>
 				<td valign="top"><?php echo _('Additional Shipping'); ?>:</td>
 				<td>
-					<p style="padding-bottom:7px"><input type="radio" class="rb-shipping" name="rShippingMethod" id="rShippingMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tShippingFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="additional-shipping selected">$ <input type="text" class="tb price" name="tShippingFlatRate" id="tShippingFlatRate" maxlength="10" /></span></p>
+					<p><input type="radio" class="rb-shipping" name="rShippingMethod" id="rShippingMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tShippingFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="additional-shipping selected">$ <input type="text" class="tb price" name="tShippingFlatRate" id="tShippingFlatRate" maxlength="10" /></span></p>
 					<p><input type="radio" class="rb-shipping" name="rShippingMethod" id="rShippingMethodPercentage" value="Percentage" /> <label for="tShippingPercentage"><?php echo _('Percentage'); ?></label> &nbsp;% <input type="text" class="tb price" name="tShippingPercentage" id="tShippingPercentage" maxlength="10" /></p>
 				</td>
 			</tr>
 			<tr>
 				<td valign="top"><?php echo _('Protection'); ?>:</td>
 				<td>
-					<p style="padding-bottom:7px"><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tProtectionFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="protection selected">$ <input type="text" class="tb price" name="tProtectionFlatRate" id="tProtectionFlatRate" maxlength="10" /></span></p>
+					<p><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tProtectionFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="protection selected">$ <input type="text" class="tb price" name="tProtectionFlatRate" id="tProtectionFlatRate" maxlength="10" /></span></p>
 					<p><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodPercentage" value="Percentage" /> <label for="tProtectionPercentage"><?php echo _('Percentage'); ?></label> &nbsp;% <input type="text" class="tb price" name="tProtectionPercentage" id="tProtectionPercentage" maxlength="10" /></p>
 				</td>
 			</tr>
@@ -211,11 +212,8 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 				<div id="dCouponList"></div>
 				<select id="sCoupons">
 					<option value="">-- <?php echo _('Select a Coupon'); ?> --</option>
-					<?php 
-					if ( is_array( $coupons ) )
-					foreach ( $coupons as $c ) {
-					?>
-					<option value="<?php echo $c['website_coupon_id']; ?>"><?php echo $c['name']; ?></option>
+					<?php foreach ( $coupons as $coupon ) { ?>
+                        <option value="<?php echo $coupon->id; ?>"><?php echo $coupon->name; ?></option>
 					<?php } ?>
 				</select>
 				<a href="#" id="aAddCoupon" title="<?php echo _('Add Coupon'); ?>"><?php echo _('Add Coupon'); ?>...</a>
@@ -225,7 +223,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 	</div>
 
 	<input type="hidden" id="hProductID" name="hProductID" />
-	<?php nonce::field( 'update-product' , '_update_product' ); ?>
+	<?php nonce::field( 'update_product' , '_update_product' ); ?>
 	</form>
 	<input type="hidden" id="dDialogHeight" value="500" />
     <div class="boxy-footer hidden">
