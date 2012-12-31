@@ -97,12 +97,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			$('#tMetaTitle').val( p['meta_title'] );
 			$('#tMetaDescription').val( p['meta_description'] );
 			$('#tMetaKeywords').val( p['meta_keywords'] );
-			
+
 			// Show the dialog as the first screen is ready
 			new Boxy( $('#dEditProduct'), {
 				title : 'Edit Product'
 			});
-			
+
 			// Product Options
 			var newOptions = '<option value="">-- Select a Product Option --</option>', newDivs = '', divContent = '';
 			
