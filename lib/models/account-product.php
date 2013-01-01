@@ -11,7 +11,7 @@ class AccountProduct extends ActiveRecordBase {
     public $link, $industry, $coupons, $product_options;
 
     // Columns from other tables
-    public $category_id, $brand, $slug, $sku, $name, $image;
+    public $category_id, $category, $brand, $slug, $sku, $name, $image;
 
     /**
      * Setup the account initial data
@@ -32,6 +32,21 @@ class AccountProduct extends ActiveRecordBase {
             , 'ii'
             , array( ':product_id' => $product_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get By Account
+     *
+     * @param int $account_id
+     *
+     * @return AccountProduct[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
     }
 
     /**

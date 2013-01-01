@@ -12,10 +12,10 @@
             <a href="/products/add/" title="<?php echo _('Add Product'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
         <?php } ?>
 
-        <a href="/products/all-products/" title="<?php echo _('All Products'); ?>" class="sub<?php $template->select('all-products'); ?>"><?php echo _('All Products'); ?></a>
+        <a href="/products/all/" title="<?php echo _('All Products'); ?>" class="sub view<?php $template->select('all'); ?>"><?php echo _('All Products'); ?></a>
 
         <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
-            <a href="/products/catalog-dump/" title="<?php echo _('Catalog Dump'); ?>" class="sub<?php $template->select('catalog-dump'); ?>"><?php echo _('Catalog Dump'); ?></a>
+            <a href="/products/catalog-dump/" title="<?php echo _('Catalog Dump'); ?>" class="sub add<?php $template->select('catalog-dump'); ?>"><?php echo _('Catalog Dump'); ?></a>
         <?php } ?>
 
         <a href="/products/add-bulk/" title="<?php echo _('Add Bulk'); ?>" class="sub add<?php $template->select('add-bulk'); ?>"><?php echo _('Add Bulk'); ?></a>

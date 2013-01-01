@@ -95,6 +95,37 @@ class ProductsController extends BaseController {
         return $response;
     }
 
+    /**
+     * All
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function all() {
+        $account_product = new AccountProduct();
+
+        $products = $account_product->get_by_account( $this->user->account->id );
+
+        $response = $this->get_template_response( 'all' )
+            ->add_title( _('All Products') )
+            ->select( 'sub-products', 'all' )
+            ->set( compact( 'products' ) );
+
+        return $response;
+    }
+
+    /**
+     * Catalog Dump
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function catalog_dump() {
+        $response = $this->get_template_response( 'catalog-dump' )
+            ->add_title( _('Catalog Dump') )
+            ->select( 'sub-products', 'catalog-dump' );
+
+        return $response;
+    }
+
     /***** AJAX *****/
 
     /**
