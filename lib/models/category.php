@@ -143,7 +143,7 @@ class Category extends ActiveRecordBase {
             $categories_by_parent = Category::$categories_by_parent;
         }
 
-        return ( $this->has_parent( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : false;
+        return ( $this->has_parent( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : array();
     }
 
     /**
