@@ -19,10 +19,13 @@ class AccountTest extends BaseDatabaseTest {
      * Test getting an account
      */
     public function testGet() {
-        // Get the account
-        $this->account->get( 160 );
+        // Setup variables
+        $account_id = 96; // Testing account
 
-        $this->assertEquals( 160, $this->account->id );
+        // Get the account
+        $this->account->get( $account_id );
+
+        $this->assertEquals( $account_id, $this->account->id );
     }
 
     /**
