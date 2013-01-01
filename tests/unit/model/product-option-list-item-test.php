@@ -33,7 +33,6 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
         $product_option_list_items = $this->product_option_list_item->get_all( $product_option_id );
 
         $this->assertTrue( current( $product_option_list_items ) instanceof ProductOptionListItem );
-        $this->assertEquals( count( $product_option_list_items ), 17 );
     }
 
     /**

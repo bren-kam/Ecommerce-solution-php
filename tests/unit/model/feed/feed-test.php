@@ -26,7 +26,7 @@ class FeedTest extends BaseDatabaseTest {
 
         $products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
 
-        $this->assertTrue( isset( $products[0]['brand_id'] ) );
+        $this->assertTrue( !empty( $products ) );
         $this->assertEquals( $limit, count( $products ) );
     }
 

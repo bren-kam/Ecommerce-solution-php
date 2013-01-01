@@ -37,15 +37,6 @@ class CategoryTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test getting all the categories
-     */
-    public function testGetAll() {
-        $categories = $this->category->get_all();
-
-        $this->assertTrue( current( $categories ) instanceof Category );
-    }
-
-    /**
      * Test getting all the children
      */
     public function testGetAllChildren() {
@@ -87,7 +78,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
         $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
-    
+
     /**
      * Test getting all the parnets
      */
@@ -123,13 +114,23 @@ class CategoryTest extends BaseDatabaseTest {
         $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
 
         // Get the categories
+        Category::$categories_by_parent = NULL;
         $categories = $this->category->get_by_parent( $category_id );
 
-        $this->assertTrue( reset( $categories ) instanceof Category );
+        $this->assertTrue( current( $categories ) instanceof Category );
 
         // Delete
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
         $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+    }
+
+    /**
+     * Test getting all the categories
+     */
+    public function testGetAll() {
+        $categories = $this->category->get_all();
+
+        $this->assertTrue( current( $categories ) instanceof Category );
     }
 
     /**
