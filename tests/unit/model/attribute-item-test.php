@@ -64,11 +64,24 @@ class AttributeItemTest extends BaseDatabaseTest {
      * Test Getting all attribute items for a category
      */
     public function testGetByCategory() {
-        $category_id = 99;
+        // Initialize variables
+        $attribute_id = -2;
+        $attribute_item_id = -3;
+        $category_id = -4;
+
+        // Create attribute
+        $this->db->insert( 'attributes', array( 'attribute_id' => $attribute_id ), 'i' );
+        $this->db->insert( 'attribute_items', array( 'attribute_item_id' => $attribute_item_id, 'attribute_id' => $attribute_id ), 'ii' );
+        $this->db->insert( 'attribute_relations', array( 'attribute_id' => $attribute_id, 'category_id' => $category_id ), 'ii' );
+
         $attribute_items = $this->attribute_item->get_by_category( $category_id );
 
         $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
-        $this->assertEquals( count( $attribute_items ), 36 );
+
+        // Delete
+        $this->db->delete( 'attributes', array( 'attribute_id' => $attribute_id ), 'i' );
+        $this->db->delete( 'attribute_items', array( 'attribute_id' => $attribute_id ), 'i' );
+        $this->db->delete( 'attribute_relations', array( 'attribute_id' => $attribute_id ), 'i' );
     }
 
     /**

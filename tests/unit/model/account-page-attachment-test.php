@@ -20,13 +20,18 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
      */
     public function testGetByAccountPageIds() {
         // Declare variables
-        $account_page_ids = array( 5, 10 );
+        $account_page_ids = array( -5 );
+
+        // Insert attachment
+        $this->db->insert( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
 
         // Get by account page ids
         $attachments = $this->account_page_attachment->get_by_account_page_ids( $account_page_ids );
 
         $this->assertTrue( current( $attachments ) instanceof AccountPageAttachment );
-        $this->assertEquals( 8, count( $attachments ) );
+
+        // Delete
+        $this->db->delete( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
     }
 
     /**

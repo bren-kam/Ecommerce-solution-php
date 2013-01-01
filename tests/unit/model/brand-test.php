@@ -41,14 +41,24 @@ class BrandTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGetProductOptionRelations() {
-        // Get a brand
-        $brand_id = 8;
+        // Setup variables
+        $brand_id = -8;
+        $product_option_id = -7;
+
+        // Create
+        $this->db->insert( 'brands', compact( 'brand_id' ), 'i' );
+        $this->db->insert( 'product_option_relations', compact( 'brand_id', 'product_option_id' ), 'ii' );
+
+        // Get
         $this->brand->get( $brand_id );
 
         $product_option_ids = $this->brand->get_product_option_relations();
 
         $this->assertTrue( is_array( $product_option_ids ) );
-        $this->assertEquals( count( $product_option_ids ), 7 );
+
+        // Delete
+        $this->db->delete( 'brands', compact( 'brand_id' ), 'i' );
+        $this->db->delete( 'product_option_relations', compact( 'brand_id' ), 'i' );
     }
 
     /**

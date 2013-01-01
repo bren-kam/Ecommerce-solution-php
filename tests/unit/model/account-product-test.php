@@ -22,18 +22,25 @@ class AccountProductTest extends BaseDatabaseTest {
         // Declare variables
         $account_id = -2;
         $industry_ids = array( 1 );
-        $skus = array( '2010', '2470', '010-433' ); // 010-433 has two products -- we should only get one
+
+        $this->db->insert( 'products', array( 'product_id' => -3, 'industry_id' => 1, 'sku' => '2010', 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'product_id' => -4, 'industry_id' => 1, 'sku' => '2470', 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'product_id' => -5, 'industry_id' => 1, 'sku' => '2470', 'publish_visibility' => 'public' ), 'iiss' );
+        $skus = array( '2010', '2470' ); // 2470 has two products -- we should only get one
 
         $this->account_product->add_bulk( $account_id, $industry_ids, $skus );
 
         // Lets get the products
-        $product_ids = $this->db->get_results( 'SELECT `product_id` FROM `website_products` WHERE `active` = 1 AND `website_id` = ' . (int) $account_id );
+        $count = $this->db->get_var( 'SELECT COUNT( `product_id` ) FROM `website_products` WHERE `active` = 1 AND `website_id` = ' . (int) $account_id );
 
         // Count products
-        $this->assertEquals( 3, count( $product_ids ) );
+        $this->assertEquals( 2, $count );
 
         // Delete
         $this->db->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'products', array( 'product_id' => -3 ), 'i' );
+        $this->db->delete( 'products', array( 'product_id' => -4 ), 'i' );
+        $this->db->delete( 'products', array( 'product_id' => -5 ), 'i' );
     }
 
     /**
@@ -89,10 +96,14 @@ class AccountProductTest extends BaseDatabaseTest {
      */
     public function testRemoveBulk() {
         // Declare variables
-        $bulk_items_product_ids = array( 17, 1899, 37370 );
+        $bulk_items_product_ids = array( -3, -4, -5 );
         $account_id = -2;
         $industry_ids = array( 1 );
-        $skus = array( '2010', '2470', '010-433' ); // 010-433 has two products -- we should only get one
+        $skus = array( '2010', '2470' ); // 2470 has two products -- we should only get one
+
+        $this->db->insert( 'products', array( 'product_id' => -3, 'industry_id' => 1, 'sku' => '2010', 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'product_id' => -4, 'industry_id' => 1, 'sku' => '2470', 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'product_id' => -5, 'industry_id' => 1, 'sku' => '2470', 'publish_visibility' => 'public' ), 'iiss' );
 
         // Add bulk
         $this->account_product->add_bulk( $account_id, $industry_ids, $skus );
@@ -101,10 +112,10 @@ class AccountProductTest extends BaseDatabaseTest {
         $this->account_product->remove_bulk( $account_id, $bulk_items_product_ids );
 
         // Lets get the products
-        $product_ids = $this->db->get_results( 'SELECT `product_id` FROM `website_products` WHERE `active` = 1 AND `website_id` = ' . (int) $account_id );
+        $product_id_count = $this->db->get_var( 'SELECT COUNT( `product_id` ) FROM `website_products` WHERE `active` = 1 AND `website_id` = ' . (int) $account_id );
 
         // Count products
-        $this->assertEquals( count( $product_ids ), 0 );
+        $this->assertEquals( 0, $product_id_count );
     }
 
     /**

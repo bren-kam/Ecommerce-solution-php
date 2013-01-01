@@ -200,7 +200,7 @@ class AccountProduct extends ActiveRecordBase {
 			// Magical Query
 			// Insert website products
 			$this->prepare(
-                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
+                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE ( `website_id` = 0 OR `website_id` = $account_id ) AND `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
                 , str_repeat( 's', $product_sku_count )
                 , $product_skus
             )->query();

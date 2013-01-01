@@ -54,23 +54,22 @@ class AccountTest extends BaseDatabaseTest {
      */
     public function testGetByAuthorizedUser() {
         // Declare variables
-        $user_id = 24;
+        $account_id = -7;
+        $user_id = -4;
+
+        // Create website/product
+        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'i' );
+        $this->db->insert( 'auth_user_websites', array( 'website_id' => $account_id, 'user_id' => $user_id ), 'ii' );
 
         // Get the account
+
         $accounts = $this->account->get_by_authorized_user( $user_id );
 
         $this->assertTrue( current( $accounts ) instanceof Account );
 
-        $testing_account_exists = false;
-
-        foreach ( $accounts as $account ) {
-            if ( 57 == $account->id ) {
-                $testing_account_exists = true;
-                break;
-            }
-        }
-
-        $this->assertTrue( $testing_account_exists );
+        // Delete
+        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'auth_user_websites', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -78,12 +77,21 @@ class AccountTest extends BaseDatabaseTest {
      */
     public function testGetByProduct() {
         // Declare variable
-        $product_id = 38;
+        $product_id = -10;
+        $account_id = -5;
+
+        // Create website/product
+        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'i' );
+        $this->db->insert( 'website_products', array( 'website_id' => $account_id, 'product_id' => $product_id, 'blocked' => 0 ), 'iii' );
 
         // Get the account
         $accounts = $this->account->get_by_product( $product_id );
 
         $this->assertTrue( current( $accounts ) instanceof Account );
+
+        // Delete
+        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -200,12 +208,25 @@ class AccountTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGetOneSetting() {
+        // Setup variables
+        $account_id = -7;
+        $key = 'email-receipt';
+        $value = 'haunted@echoes.com';
+
+        // Create website/product
+        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'ii' );
+        $this->db->insert( 'website_settings', array( 'website_id' => $account_id, 'key' => $key, 'value' => $value ), 'iss' );
+
         // Get the account
-        $this->account->get( 160 );
+        $this->account->get( $account_id );
 
-        $email_receipt = $this->account->get_settings( 'email-receipt' );
+        $setting = $this->account->get_settings( $key );
 
-        $this->assertEquals( 'info@connells.com', $email_receipt );
+        $this->assertEquals( $value, $setting );
+
+        // Delete
+        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'website_settings', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -433,8 +454,7 @@ class AccountTest extends BaseDatabaseTest {
         // Get brand ids
         $brand_ids = $this->db->get_col( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $account_id" );
 
-        $this->assertEquals( count( $brand_ids ), 15 );
-        $this->assertTrue( in_array( $brand_id, $brand_ids ) );
+        $this->assertGreaterThan( 1, count( $brand_ids ) );
 
         // Delete
         $this->db->delete( 'website_top_brands', array( 'website_id' => $account_id ) , 'i' );
