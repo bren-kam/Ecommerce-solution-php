@@ -119,9 +119,30 @@ class ProductsController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function catalog_dump() {
+        // Setup validation
+        $v = new Validator( 'fCatalogDump' );
+        $v->add_validation( 'hBrandID', 'req', _('You must select a brand before dumping') );
+
+        // Setup variables
+        $js_validation = $v->js_validation();
+        $errs = '';
+
+        // If they posted
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+
+            }
+        }
+
+        $this->resources->javascript( 'products/catalog-dump' )
+            ->css_url( Config::resource('jquery-ui') );
+
         $response = $this->get_template_response( 'catalog-dump' )
             ->add_title( _('Catalog Dump') )
-            ->select( 'sub-products', 'catalog-dump' );
+            ->select( 'sub-products', 'catalog-dump' )
+            ->set( compact( 'js_validation', 'errs' ) );
 
         return $response;
     }
@@ -149,22 +170,22 @@ class ProductsController extends BaseController {
         switch ( $_POST['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
             break;
 
             case 'product':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'name', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'name', $this->user->account->id );
             break;
 
             case 'sku':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'sku', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'sku', $this->user->account->id );
             break;
 
             case 'sku-products':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
             break;
 
             default: break;
@@ -185,7 +206,7 @@ class ProductsController extends BaseController {
     }
 
     /**
-     * Autocomplete
+     * Autocomplete Owned
      *
      * @return AjaxResponse
      */
@@ -205,17 +226,17 @@ class ProductsController extends BaseController {
         switch ( $_POST['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
             break;
 
             case 'product':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'name', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'name', $this->user->account->id );
             break;
 
             case 'sku':
                 $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'sku', $this->user->account->id );
+                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'sku', $this->user->account->id );
             break;
 
             default: break;
