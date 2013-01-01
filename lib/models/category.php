@@ -131,7 +131,7 @@ class Category extends ActiveRecordBase {
      * Get Categories By Parent
      *
      * @param int $parent_category_id
-     * @return array
+     * @return Category[]
      */
     public function get_by_parent( $parent_category_id ) {
         // Get the categories

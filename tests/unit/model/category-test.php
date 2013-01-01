@@ -41,24 +41,15 @@ class CategoryTest extends BaseDatabaseTest {
      */
     public function testGetAllChildren() {
         // Setup Variables
-        $category_id = -59;
-        $sub_category_id = -80;
-
-        // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $category_id = 283; // Appliances
 
         $categories = $this->category->get_all_children( $category_id );
 
-        $this->assertEquals( $sub_category_id, $categories[0]->id );
-
-        // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->assertEquals( $category_id, $categories[0]->parent_category_id );
     }
 
     /**
-     * Test getting all the parnets
+     * Test getting all the parents
      */
     public function testGetAllParents() {
         // Setup Variables
@@ -106,22 +97,12 @@ class CategoryTest extends BaseDatabaseTest {
      */
     public function testGetByParent() {
         // Setup Variables
-        $category_id = -59;
-        $sub_category_id = -80;
-
-        // Create Categories
-        $this->db->insert( 'categories', array( 'category_id' => $category_id, 'parent_category_id' => 0 ), 'ii' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $category_id = 283; // Appliances
 
         // Get the categories
-        Category::$categories_by_parent = NULL;
         $categories = $this->category->get_by_parent( $category_id );
 
-        $this->assertTrue( current( $categories ) instanceof Category );
-
-        // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->assertEquals( $category_id, $categories[0]->parent_category_id );
     }
 
     /**
