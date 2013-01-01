@@ -44,12 +44,19 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
      */
     public function testGetByAccount() {
         // Declare variables
-        $account_id = 160;
+        $craigslist_market_id = 1;
+        $account_id = -16;
+
+        // Create market link
+        $this->db->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id ), 'ii' );
 
         // Now get them
         $craigslist_markets = $this->craigslist_market_link->get_by_account( $account_id );
 
         $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarketLink );
+
+        // Delete
+        $this->db->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -59,13 +66,21 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
      */
     public function testGetClCategoryIdsByAccount() {
         // Declare variables
-        $account_id = 160;
-        $cl_market_id = 382;
+        $craigslist_market_id = 1;
+        $cl_category_id = 2086;
+        $account_id = -16;
+        $cl_market_id = 222;
+
+        // Create market link
+        $this->db->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id, 'cl_category_id' => $cl_category_id ), 'ii' );
 
         // Get the IDs
         $cl_category_ids = $this->craigslist_market_link->get_cl_category_ids_by_account( $account_id, $cl_market_id );
 
         $this->assertEquals( array( '2086' ), $cl_category_ids );
+
+        // Delete
+        $this->db->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**

@@ -110,7 +110,7 @@ class CategoryTest extends BaseDatabaseTest {
         $sub_category_id = -80;
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->insert( 'categories', array( 'category_id' => $category_id, 'parent_category_id' => 0 ), 'ii' );
         $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
 
         // Get the categories
