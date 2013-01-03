@@ -166,7 +166,7 @@ function addProductToList( productID, productName ) {
 	}
 	
 	// Needs to be done in PHP
-	$('#dProductsList').append( '<div id="dProduct' + productID + '" class="added-product">' + productName + '<a href="javascript:;" class="delete-product" id="aDel' + productID + '" title="Delete Product"><img src="/images/icons/x.png" width="15" height="17" alt="Delete Product" /></a></div>' ).stripe('added-product');
+	$('#dProductsList').append( '<div id="dProduct' + productID + '" class="added-product">' + productName + '<a href="#" class="delete-product" id="aDel' + productID + '" title="Delete Product"><img src="/images/icons/x.png" width="15" height="17" alt="Delete Product" /></a></div>' ).stripe('added-product');
 	$('#fAddProducts').append( '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' + productID + '" value="' + productID + '" />' );
 	
 	//Increase number of count
@@ -181,7 +181,7 @@ function addProductRequest(){
 	var brand = $('#sRequestBrand option:selected').text().replace( /|/, '' ), sku = $('#tRequestSKU').val().replace( /|/, '' ), collection = $('#tCollection').val().replace( /|/, '' );
 	
 	var requestItem = '<div class="dRequestItem">' + brand + ' - ' + sku + ' - ' + collection;
-	requestItem += '<a href="javascript:;" class="delete-request" title="Delete"><img src="/images/icons/x.png" width="15" height="17" alt="Delete" /></a>'; // PHP needs to do this
+	requestItem += '<a href="#" class="delete-request" title="Delete"><img src="/images/icons/x.png" width="15" height="17" alt="Delete" /></a>'; // PHP needs to do this
 	requestItem += '<input type="hidden" name="requests[]" value="' + brand + '|' + sku + '|' + collection + '" /></div>';
 	
 	$('#dRequestList').append(requestItem).stripe('dRequestItem');

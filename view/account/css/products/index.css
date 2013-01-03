@@ -43,6 +43,8 @@
 .screen-selector.selected, .screen-selector:hover { color: #999; }
 #dEditProduct .price{ width:50px; }
 
+#dEditProduct .tb, #dEditProduct textarea { width: 205px }
+#dEditProduct select { width: 207px }
 #dEditProduct { color: #333 }
 #dEditProduct h4 { color: #999; font-size: 18px; font-weight: normal; padding-bottom: 2px }
 
@@ -61,3 +63,5 @@
 
 #dEditProduct .cb { position:relative; top: 2px }
 #bottom { padding-top:8px; padding-right:0px; clear: both; }
+
+#dShoppingCart { height: auto !important }

@@ -3,6 +3,9 @@ class ProductOption extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $product_option_id, $type, $title, $name;
 
+    // Columns from other tables
+    public $product_option_list_item_id, $value;
+
     /**
      * @fix needs to remove the option_
      */
@@ -39,6 +42,20 @@ class ProductOption extends ActiveRecordBase {
      */
     public function get_all() {
         return $this->get_results( 'SELECT `product_option_id`, `option_type` AS type, `option_title` AS title, `option_name` AS name FROM `product_options`', PDO::FETCH_CLASS, 'ProductOption' );
+    }
+
+    /**
+     * Get by product
+     *
+     * @param int $product_id
+     * @return ProductOption[]
+     */
+    public function get_by_product( $product_id ) {
+        return $this->prepare(
+            'SELECT po.`product_option_id`, po.`option_type` AS type, po.`option_name` AS name, poli.`product_option_list_item_id`, poli.`value` FROM `product_options` AS po LEFT JOIN `product_option_list_items` AS poli ON ( poli.`product_option_id` = po.`product_option_id` ) LEFT JOIN `product_option_relations` AS por ON ( por.`product_option_id` = po.`product_option_id` ) LEFT JOIN `products` AS p ON ( p.`brand_id` = por.`brand_id` ) WHERE p.`product_id` = :product_id ORDER BY poli.`sequence`'
+            , 'i'
+            , array( ':product_id' => $product_id )
+        )->get_results( PDO::FETCH_CLASS, 'ProductOption' );
     }
 
     /**

@@ -37,9 +37,11 @@ class Ticket extends ActiveRecordBase {
         $this->date_created = dt::now();
 
         $this->insert( array(
-            'status' => $this->status
+            'summary' => $this->summary
+            , 'message' => $this->message
+            , 'status' => $this->status
             , 'date_created' => $this->date_created
-        ), 'is' );
+        ), 'ssis' );
 
         $this->id = $this->ticket_id = $this->get_insert_id();
     }

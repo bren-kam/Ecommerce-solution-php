@@ -35,7 +35,7 @@
 
 	<?php if ( $user->account->shopping_cart ) { ?>
 		<a href="/products/coupons/" title="<?php echo _('Coupons'); ?>" class="top<?php $template->select('coupons'); ?>"><?php echo _('Coupons'); ?></a>
-		<?php if ( $template->v('coupons') ) { ?>
+		<?php if ( true === $template->v('coupons') ) { ?>
 			<a href="/products/coupons/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
 			<a href="/products/coupons/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
 		<?php
