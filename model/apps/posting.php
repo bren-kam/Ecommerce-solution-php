@@ -62,14 +62,12 @@ class Posting extends ActiveRecordBase {
     /**
      * Update Token
      *
-     * @param int $fb_user_id
      * @param string $access_token
      * @param int $fb_page_id
      */
-    public function update_access_token( $fb_user_id, $access_token, $fb_page_id ) {
+    public function update_access_token( $access_token, $fb_page_id ) {
         parent::update( array(
-            'fb_user_id' => $fb_user_id
-            , 'access_token' => $access_token
+           'access_token' => $access_token
         ), array(
             'fb_page_id' => $fb_page_id
         ), 'is', 'i' );
