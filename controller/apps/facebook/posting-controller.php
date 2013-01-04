@@ -46,7 +46,7 @@ class PostingController extends BaseController {
             $fb->setAccessToken( $params['access_token'] );
             $fb->setExtendedAccessToken();
 			
-            $posting->update_access_token( $fb->user_id, $fb->getAccessToken(), $_REQUEST['fb_page_id'] );
+            $posting->update_access_token( $fb->getAccessToken(), $_REQUEST['fb_page_id'] );
 
             return new HtmlResponse("<script>top.location.href='" . $_REQUEST['gsr_redirect'] . "'</script>");
         }
