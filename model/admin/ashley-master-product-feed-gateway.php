@@ -336,7 +336,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             // Let's hope it's big!
 			$image = $item['image'];
-            $image_url = 'http://www.studio98.com/ashley/Images/' . $image;
+            $image_url = 'https://www.ashleydirect.com/graphics/' . $image;
 
             // Setup images array
             $images = explode( '|', $product->images );
