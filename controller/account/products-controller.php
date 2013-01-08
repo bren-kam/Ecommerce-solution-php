@@ -132,7 +132,30 @@ class ProductsController extends BaseController {
             $errs = $v->validate();
 
             if ( empty( $errs ) ) {
+                // Get industries
+                $industries = $this->user->account->get_industries();
 
+                if ( empty( $industries ) ) {
+                    $this->notify( _("This website has no industries.  Please contact your online specialist for assistance with this issue."), false );
+                } else {
+                    // Instantiate objects
+                    $account_product = new AccountProduct();
+
+                    // How many free slots do we have
+                    $free_slots = $this->user->account->products - $account_product->count( $this->user->account->id );
+                    $quantity = $free_slots - $account_product->add_bulk_by_brand_count( $this->user->account->id, $_POST['hBrandID'], $industries );
+
+                    if ( $quantity < 0 ) {
+                        $this->notify( _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog."), false );
+                    } else {
+                        // Add bulk
+                        $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
+
+                        // Reorganize categogires
+                        $account_category = new AccountCategory();
+                        $account_category->reorganize_categories( $this->user->account->id, new Category() );
+                    }
+                }
             }
         }
 

@@ -228,7 +228,7 @@ class AccountProduct extends ActiveRecordBase {
 	 * @param int $account_id
      * @param array $product_ids
 	 */
-	public  function add_bulk_by_ids( $account_id, array $product_ids ) {
+	public function add_bulk_by_ids( $account_id, array $product_ids ) {
         // Make sure they entered in SKUs
         if ( empty( $product_ids ) )
             return;
@@ -248,6 +248,47 @@ class AccountProduct extends ActiveRecordBase {
         // Insert website products
         $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `active` = 1" );
 	}
+
+    /**
+     * Add Bulk by Brand
+     *
+     * @param int $account_id
+     * @param int $brand_id
+     * @param array $industries
+     * @return int
+     */
+    public function add_bulk_by_brand( $account_id, $brand_id, array $industries ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        $brand_id = (int) $brand_id;
+
+        foreach ( $industries as &$industry_id ) {
+            $industry_id = (int) $industry_id;
+        }
+
+        // Magical Query - Insert website products
+        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN(" . implode( ',', $industries ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) ON DUPLICATE KEY UPDATE wp.`active` = 1" );
+    }
+
+    /**
+     * Add Bulk By Brand Count
+     *
+     * @param int $account_id
+     * @param int $brand_id
+     * @param array $industries
+     * @return int
+     */
+    public function add_bulk_by_brand_count( $account_id, $brand_id, array $industries ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        $brand_id = (int) $brand_id;
+
+        foreach ( $industries as &$industry_id ) {
+            $industry_id = (int) $industry_id;
+        }
+
+        return $this->get_var( "SELECT COUNT( p.`product_id` ) FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN ( " . implode( ',', $industries ) . " ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 )" );
+    }
 
     /**
 	 * Deactivate a bunch of products at once
