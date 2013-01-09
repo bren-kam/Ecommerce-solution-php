@@ -197,7 +197,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		$this->add_bulk( $account->id, $industries, $new_product_skus );
 
         // Check testing sites
-        $testing_sites = array( 477, 571, 829, 476, 458, 357, 337, 743, 1140, 1141 );
+        $testing_sites = array( 186, 335, 477, 571, 829, 476, 458, 357, 337, 743, 1067, 1140, 1141, 1184, 1197, 1198 );
 
         if ( in_array( $account->id, $testing_sites ) ) {
             $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
