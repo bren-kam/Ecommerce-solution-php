@@ -22,15 +22,21 @@ class UserAdminTest extends BaseDatabaseTest {
      * Test Getting a user
      */
     public function testGet() {
-        $user_id = 514;
-        $email = 'test@greysuitretail.com';
+        // Setup Variables
+        $user_id = -51;
+        $email = 'test@greysu1tretail.com';
 
+        // Create User
+        $this->db->insert( 'users', compact( 'user_id', 'email' ), 'is' );
+
+        // Get User
         $this->user->get( $user_id );
 
         $this->assertEquals( $this->user->email, $email );
+
+        // Delete
+        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
     }
-
-
 
     /**
      * Test Getting Users
@@ -153,25 +159,43 @@ class UserAdminTest extends BaseDatabaseTest {
      */
     public function testValidLoginOnAdminRole7() {
         // Admin Role - 7
-        $valid_email = 'test@greysuitretail.com';
-        $valid_pass = 'sapp123';
+        $email = 'test@greysu1tretail.com';
+        $straight_password = 'sapp123';
+        $password = md5( $straight_password );
+        $user_id = -37;
+        $role = 7;
 
-        $result = $this->user->login( $valid_email, $valid_pass );
+        // Create User
+        $this->db->insert( 'users', compact( 'user_id', 'email', 'password', 'role' ), 'issi' );
+
+        $result = $this->user->login( $email, 'sapp123', $straight_password );
 
         $this->assertNotNull( $this->user->id );
         $this->assertTrue( $result );
+
+        // Delete User
+        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
      * Get getting a valid email
      */
     public function testValidGetByEmail() {
-         // Account - Role 5
-        $valid_email = 'test@studio98.com';
+        // Account - Role 5
+        $email = 'test@ground-testing.com';
+        $user_id = -33;
+        $role = 5;
+        $status = 1;
 
-        $this->user->get_by_email( $valid_email );
+        // Create User
+        $this->db->insert( 'users', compact( 'user_id', 'email', 'role', 'status' ), 'isii' );
+
+        $this->user->get_by_email( $email );
 
         $this->assertNotNull( $this->user->id );
+
+        // Delete User
+        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
@@ -275,8 +299,6 @@ class UserAdminTest extends BaseDatabaseTest {
      * Test listing all accounts
      */
     public function testListAll() {
-        $this->user->get_by_email('test@greysuitretail.com');
-
         // Determine length
         $_GET['iDisplayLength'] = 30;
         $_GET['iSortingCols'] = 1;
@@ -292,29 +314,19 @@ class UserAdminTest extends BaseDatabaseTest {
         // Make sure we have an array
         $this->assertTrue( is_array( $users ) );
 
-        // Joe Schmoe is a user with ID 496
-        $joe_schmoe_exists = false;
-
-        if ( is_array( $users ) )
-        foreach ( $users as $user ) {
-            if ( 496 == $user->id ) {
-                $joe_schmoe_exists = true;
-                break;
-            }
-        }
 
         // Make sure they exist
-        $this->assertTrue( $joe_schmoe_exists );
+        $this->assertTrue( current( $users ) instanceof User );
 
         // Get rid of everything
-        unset( $user, $_GET, $dt, $users, $account, $joe_schmoe_exists );
+        unset( $_GET, $dt, $users );
     }
 
     /**
      * Test counting the accounts
      */
     public function testCountAll() {
-        $this->user->get_by_email('test@greysuitretail.com');
+        $this->user->get_by_email('test@greysu1tretail.com');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;

@@ -79,7 +79,7 @@ class MobileSubscriber extends ActiveRecordBase {
                  $id = (int) $id;
             }
 
-            $assocation_values[] = '(' . implode( ',', $value_array) . ')';
+            $assocation_values[] = '(' . implode( ',', $value_array ) . ')';
         }
 
         $values = implode( ',', $assocation_values );

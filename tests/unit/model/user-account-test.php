@@ -19,12 +19,19 @@ class UserAccountTest extends BaseDatabaseTest {
      * Test Getting a user
      */
     public function testGet() {
-        $user_id = 513;
-        $email = 'test@studio98.com';
+        // Setup Variables
+        $user_id = -21;
+        $email = 'test@studio89.com';
+
+        // Create User
+        $this->db->insert( 'users', compact( 'user_id', 'email' ), 'is' );
 
         $this->user->get( $user_id );
 
         $this->assertEquals( $this->user->email, $email );
+
+        // Delete
+        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
@@ -133,26 +140,43 @@ class UserAccountTest extends BaseDatabaseTest {
      * Tests a valid login on the account side
      */
     public function testValidLoginOnAccountRole5() {
-        // Account - Role 5
-        $valid_email = 'test@studio98.com';
-        $valid_pass = 'pass123';
+        // Admin Role - 7
+        $email = 'test@studio89.com';
+        $straight_password = 'pass321';
+        $password = md5( $straight_password );
+        $user_id = -42;
+        $role = 5;
 
-        $result = $this->user->login( $valid_email, $valid_pass );
+        // Create User
+        $this->db->insert( 'users', compact( 'user_id', 'email', 'password', 'role' ), 'issi' );
+
+        $result = $this->user->login( $email, $straight_password );
 
         $this->assertNotNull( $this->user->id );
         $this->assertTrue( $result );
+
+        // Delete User
+        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
      * Get getting a valid email
      */
     public function testValidGetByEmail() {
-         // Account - Role 5
-        $valid_email = 'test@studio98.com';
+        // Account - Role 5
+        $email = 'test@ground-testing.com';
+        $user_id = -33;
+        $role = 5;
+        $status = 1;
 
-        $this->user->get_by_email( $valid_email );
+        // Create User
+        $this->db->insert( 'users', compact( 'user_id', 'email', 'role', 'status' ), 'isi' );
+
+        $this->user->get_by_email( $email );
 
         $this->assertNotNull( $this->user->id );
+
+        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
@@ -231,8 +255,6 @@ class UserAccountTest extends BaseDatabaseTest {
      * Test listing all accounts
      */
     public function testListAll() {
-        $this->user->get_by_email('test@studio98.com');
-
         // Determine length
         $_GET['iDisplayLength'] = 30;
         $_GET['iSortingCols'] = 1;
@@ -248,22 +270,11 @@ class UserAccountTest extends BaseDatabaseTest {
         // Make sure we have an array
         $this->assertTrue( is_array( $users ) );
 
-        // Joe Schmoe is a user with ID 496
-        $joe_schmoe_exists = false;
-
-        if ( is_array( $users ) )
-        foreach ( $users as $user ) {
-            if ( 496 == $user->id ) {
-                $joe_schmoe_exists = true;
-                break;
-            }
-        }
-
         // Make sure they exist
-        $this->assertTrue( $joe_schmoe_exists );
+        $this->assertTrue( current( $users ) instanceof User );
 
         // Get rid of everything
-        unset( $user, $_GET, $dt, $users, $account, $joe_schmoe_exists );
+        unset( $_GET, $dt, $users);
     }
 
     /**

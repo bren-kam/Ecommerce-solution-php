@@ -131,7 +131,7 @@ class Category extends ActiveRecordBase {
      * Get Categories By Parent
      *
      * @param int $parent_category_id
-     * @return array
+     * @return Category[]
      */
     public function get_by_parent( $parent_category_id ) {
         // Get the categories
@@ -143,7 +143,7 @@ class Category extends ActiveRecordBase {
             $categories_by_parent = Category::$categories_by_parent;
         }
 
-        return ( $this->has_parent( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : false;
+        return ( $this->has_parent( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : array();
     }
 
     /**

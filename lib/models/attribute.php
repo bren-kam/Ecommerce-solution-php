@@ -1,7 +1,7 @@
 <?php
 class Attribute extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $attribute_id, $brand_id, $title, $name;
+    public $id, $attribute_id, $title, $name;
 
     /**
      * Setup the initial data
@@ -33,8 +33,7 @@ class Attribute extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array(
-            'brand_id' => $this->brand_id
-            , 'title' => $this->title
+            'title' => $this->title
             , 'name' => $this->name
         ), 'iss' );
 
@@ -46,8 +45,7 @@ class Attribute extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'brand_id' => $this->brand_id
-            , 'title' => $this->title
+            'title' => $this->title
             , 'name' => $this->name
         ), array(
             'attribute_id' => $this->id

@@ -38,7 +38,6 @@ class AttributeTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testCreate() {
-        $this->attribute->brand_id = 0;
         $this->attribute->title = 'Testee - Section';
         $this->attribute->name = 'Testee';
         $this->attribute->create();
@@ -61,7 +60,6 @@ class AttributeTest extends BaseDatabaseTest {
      */
     public function testUpdate() {
         // Create test
-        $this->attribute->brand_id = 0;
         $this->attribute->title = 'Testee - Section';
         $this->attribute->name = 'Testee';
         $this->attribute->create();
@@ -157,7 +155,7 @@ class AttributeTest extends BaseDatabaseTest {
      */
     public function testDelete() {
         // Create attribute
-        $this->db->insert( 'attributes', array( 'brand_id' => 0, 'title' => 'Temp Test', 'name' => 'Temp' ), 'iss' );
+        $this->db->insert( 'attributes', array( 'title' => 'Temp Test', 'name' => 'Temp' ), 'iss' );
 
         $attribute_id = $this->db->get_insert_id();
 

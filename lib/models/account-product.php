@@ -11,7 +11,7 @@ class AccountProduct extends ActiveRecordBase {
     public $link, $industry, $coupons, $product_options;
 
     // Columns from other tables
-    public $category_id, $brand, $slug, $sku, $name, $image;
+    public $category_id, $category, $brand, $slug, $sku, $name, $image;
 
     /**
      * Setup the account initial data
@@ -32,6 +32,21 @@ class AccountProduct extends ActiveRecordBase {
             , 'ii'
             , array( ':product_id' => $product_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get By Account
+     *
+     * @param int $account_id
+     *
+     * @return AccountProduct[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
     }
 
     /**
@@ -200,7 +215,7 @@ class AccountProduct extends ActiveRecordBase {
 			// Magical Query
 			// Insert website products
 			$this->prepare(
-                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
+                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE ( `website_id` = 0 OR `website_id` = $account_id ) AND `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
                 , str_repeat( 's', $product_sku_count )
                 , $product_skus
             )->query();
@@ -213,7 +228,7 @@ class AccountProduct extends ActiveRecordBase {
 	 * @param int $account_id
      * @param array $product_ids
 	 */
-	public  function add_bulk_by_ids( $account_id, array $product_ids ) {
+	public function add_bulk_by_ids( $account_id, array $product_ids ) {
         // Make sure they entered in SKUs
         if ( empty( $product_ids ) )
             return;
@@ -233,6 +248,47 @@ class AccountProduct extends ActiveRecordBase {
         // Insert website products
         $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) VALUES $values ON DUPLICATE KEY UPDATE `active` = 1" );
 	}
+
+    /**
+     * Add Bulk by Brand
+     *
+     * @param int $account_id
+     * @param int $brand_id
+     * @param array $industries
+     * @return int
+     */
+    public function add_bulk_by_brand( $account_id, $brand_id, array $industries ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        $brand_id = (int) $brand_id;
+
+        foreach ( $industries as &$industry_id ) {
+            $industry_id = (int) $industry_id;
+        }
+
+        // Magical Query - Insert website products
+        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN(" . implode( ',', $industries ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) ON DUPLICATE KEY UPDATE wp.`active` = 1" );
+    }
+
+    /**
+     * Add Bulk By Brand Count
+     *
+     * @param int $account_id
+     * @param int $brand_id
+     * @param array $industries
+     * @return int
+     */
+    public function add_bulk_by_brand_count( $account_id, $brand_id, array $industries ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        $brand_id = (int) $brand_id;
+
+        foreach ( $industries as &$industry_id ) {
+            $industry_id = (int) $industry_id;
+        }
+
+        return $this->get_var( "SELECT COUNT( p.`product_id` ) FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN ( " . implode( ',', $industries ) . " ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 )" );
+    }
 
     /**
 	 * Deactivate a bunch of products at once
