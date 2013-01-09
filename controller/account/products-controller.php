@@ -95,6 +95,81 @@ class ProductsController extends BaseController {
         return $response;
     }
 
+    /**
+     * All
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function all() {
+        $account_product = new AccountProduct();
+
+        $products = $account_product->get_by_account( $this->user->account->id );
+
+        $response = $this->get_template_response( 'all' )
+            ->add_title( _('All Products') )
+            ->select( 'sub-products', 'all' )
+            ->set( compact( 'products' ) );
+
+        return $response;
+    }
+
+    /**
+     * Catalog Dump
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function catalog_dump() {
+        // Setup validation
+        $v = new Validator( 'fCatalogDump' );
+        $v->add_validation( 'hBrandID', 'req', _('You must select a brand before dumping') );
+
+        // Setup variables
+        $js_validation = $v->js_validation();
+        $errs = '';
+
+        // If they posted
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                // Get industries
+                $industries = $this->user->account->get_industries();
+
+                if ( empty( $industries ) ) {
+                    $this->notify( _("This website has no industries.  Please contact your online specialist for assistance with this issue."), false );
+                } else {
+                    // Instantiate objects
+                    $account_product = new AccountProduct();
+
+                    // How many free slots do we have
+                    $free_slots = $this->user->account->products - $account_product->count( $this->user->account->id );
+                    $quantity = $free_slots - $account_product->add_bulk_by_brand_count( $this->user->account->id, $_POST['hBrandID'], $industries );
+
+                    if ( $quantity < 0 ) {
+                        $this->notify( _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog."), false );
+                    } else {
+                        // Add bulk
+                        $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
+
+                        // Reorganize categogires
+                        $account_category = new AccountCategory();
+                        $account_category->reorganize_categories( $this->user->account->id, new Category() );
+                    }
+                }
+            }
+        }
+
+        $this->resources->javascript( 'products/catalog-dump' )
+            ->css_url( Config::resource('jquery-ui') );
+
+        $response = $this->get_template_response( 'catalog-dump' )
+            ->add_title( _('Catalog Dump') )
+            ->select( 'sub-products', 'catalog-dump' )
+            ->set( compact( 'js_validation', 'errs' ) );
+
+        return $response;
+    }
+
     /***** AJAX *****/
 
     /**
@@ -103,62 +178,6 @@ class ProductsController extends BaseController {
      * @return AjaxResponse
      */
     protected function autocomplete() {
-        // Make sure it's a valid ajax call
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
-
-        // If there is an error or now user id, return
-        if ( $response->has_error() )
-            return $response;
-
-        $ac_suggestions = array();
-
-        // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
-            case 'brand':
-                $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
-            break;
-
-            case 'product':
-                $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'name', $this->user->account->id );
-            break;
-
-            case 'sku':
-                $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'sku', $this->user->account->id );
-            break;
-
-            case 'sku-products':
-                $account_product = new AccountProduct();
-                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
-            break;
-
-            default: break;
-        }
-
-        // It needs to be empty if nothing else
-        $suggestions = array();
-
-        if ( is_array( $ac_suggestions ) )
-        foreach ( $ac_suggestions as $acs ) {
-            $suggestions[] = array( 'name' => html_entity_decode( $acs['name'], ENT_QUOTES, 'UTF-8' ), 'value' => $acs['value'] );
-        }
-
-        // Sent by the autocompleter
-        $response->add_response( 'suggestions', $suggestions );
-
-        return $response;
-    }
-
-    /**
-     * Autocomplete
-     *
-     * @return AjaxResponse
-     */
-    protected function autocomplete_owned() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -185,6 +204,62 @@ class ProductsController extends BaseController {
             case 'sku':
                 $account_product = new AccountProduct();
                 $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], 'sku', $this->user->account->id );
+            break;
+
+            case 'sku-products':
+                $account_product = new AccountProduct();
+                $ac_suggestions = $account_product->autocomplete_all( $_POST['term'], array( 'name', 'sku' ), $this->user->account->id );
+            break;
+
+            default: break;
+        }
+
+        // It needs to be empty if nothing else
+        $suggestions = array();
+
+        if ( is_array( $ac_suggestions ) )
+        foreach ( $ac_suggestions as $acs ) {
+            $suggestions[] = array( 'name' => html_entity_decode( $acs['name'], ENT_QUOTES, 'UTF-8' ), 'value' => $acs['value'] );
+        }
+
+        // Sent by the autocompleter
+        $response->add_response( 'suggestions', $suggestions );
+
+        return $response;
+    }
+
+    /**
+     * Autocomplete Owned
+     *
+     * @return AjaxResponse
+     */
+    protected function autocomplete_owned() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['type'], $_POST['term'] ), _('Autocomplete failed') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $ac_suggestions = array();
+
+        // Get the right suggestions for the right type
+        switch ( $_POST['type'] ) {
+            case 'brand':
+                $brand = new Brand;
+                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
+            break;
+
+            case 'product':
+                $account_product = new AccountProduct();
+                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'name', $this->user->account->id );
+            break;
+
+            case 'sku':
+                $account_product = new AccountProduct();
+                $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], 'sku', $this->user->account->id );
             break;
 
             default: break;

@@ -17,7 +17,6 @@ class EmailList extends ActiveRecordBase {
      * Get Default Email List
      *
      * @param int $account_id
-     * @return EmailList
      */
     public function get_default_email_list( $account_id ) {
         $this->prepare(

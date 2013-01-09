@@ -83,6 +83,9 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $numbers = $this->db->get_col( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $account_id AND `status` = 1" );
 
         $this->assertTrue( empty( $numbers ) );
+
+        // Delete
+        $this->db->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -129,9 +132,10 @@ class MobileSubscriberTest extends BaseDatabaseTest {
     public function testGetAssociationsByAccount() {
         // Declare variables
         $account_id = -5;
+        $mobile_subscriber_id = -55;
 
         // Create subscriber
-        $this->db->insert( 'mobile_subscribers', array( 'website_id' => $account_id, 'phone' => '8185551234' ), 'is' );
+        $this->db->insert( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id, 'website_id' => $account_id, 'phone' => '8185551234', 'status' => 1 ), 'iisi' );
 
         $mobile_subscriber_id = $this->db->get_insert_id();
 

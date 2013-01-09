@@ -47,7 +47,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     <div id="narrow-your-search-wrapper">
         <div id="narrow-your-search">
             <?php
-            nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
+            nonce::field( 'autocomplete', '_autocomplete' );
             nonce::field( 'sku_exists', '_sku_exists' );
             ?>
 

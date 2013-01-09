@@ -28,7 +28,7 @@ class User extends ActiveRecordBase {
      */
     public $account;
 
-    private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'products', 'role', 'status' );
+    private $_columns = array( 'user_id', 'company_id', 'email', 'contact_name', 'store_name', 'role', 'status' );
 
     /**
      * Setup the account initial data
