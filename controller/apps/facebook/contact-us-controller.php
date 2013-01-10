@@ -21,7 +21,7 @@ class ContactUsController extends BaseController {
     protected function index() {
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
         $form = new stdClass();
-        $success = $website = false;
+        $success = $website = $page_id = false;
 
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
@@ -40,7 +40,7 @@ class ContactUsController extends BaseController {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fContactUs' );
+            $form = new FormTable( 'fConnect' );
             $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
@@ -66,7 +66,7 @@ class ContactUsController extends BaseController {
         $response = $this->get_template_response( 'facebook/contact-us/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
-            ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
+            ->set( array( 'form' => $form, 'page_id' => $page_id, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
 
         return $response;
     }

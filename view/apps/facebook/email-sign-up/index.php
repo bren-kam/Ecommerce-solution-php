@@ -7,6 +7,7 @@
  * @var bool $success
  * @var array $website
  * @var string $form
+ * @var int|bool $page_id
  */
 
 ?>
