@@ -109,6 +109,8 @@ class ShareAndSaveController extends BaseController {
             $success = true;
         }
 
+        $admin = '';
+
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {
             $admin = '<p><strong>Admin:</strong> <a href="#" onclick="top.location.href=' . "'";
@@ -118,8 +120,6 @@ class ShareAndSaveController extends BaseController {
                 , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
-
-            $tab->content = $admin . $tab->content;
         }
 
 		// Get page information
@@ -135,6 +135,7 @@ class ShareAndSaveController extends BaseController {
                 , 'signed_request' => $signed_request
                 , 'app_id' => self::APP_ID
                 , 'url' => url::add_query_arg( 'sk', 'app_' . self::APP_ID, $page['link'] )
+                , 'admin' => $admin
         ) );
 
         return $response;
