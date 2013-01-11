@@ -9,6 +9,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
     const USER_ID = 353; // Ashley
 
+    protected $testing_sites = array( 186, 335, 477, 571, 476, 458, 357, 337, 674, 743, 829, 1067, 1101, 1140, 1141, 1184
+        , 1197, 1198
+    );
+
 	/**
 	 * Creates new Database instance
 	 */
@@ -197,9 +201,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		$this->add_bulk( $account->id, $industries, $new_product_skus );
 
         // Check testing sites
-        $testing_sites = array( 477, 571, 829, 476, 458, 357, 337, 743, 1140, 1141 );
 
-        if ( in_array( $account->id, $testing_sites ) ) {
+        if ( in_array( $account->id, $this->testing_sites ) ) {
             $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
             $this->add_product_groups( $account->id, array_keys( $group_items ) );
         }
