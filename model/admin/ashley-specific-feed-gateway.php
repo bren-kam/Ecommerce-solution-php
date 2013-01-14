@@ -209,6 +209,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
 		// Deactivate old products
         $account_product = new AccountProduct();
+
         $account_product->remove_bulk( $account->id, $remove_products );
 		
 		// Reorganize Categories
