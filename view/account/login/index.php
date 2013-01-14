@@ -24,14 +24,17 @@ $margin_bottom = ( 'greysuitretail' == DOMAIN ) ? '' : '20px';
 <?php $template->get_head(); ?>
 </head>
 <body>
-<?php $template->get_top(); ?>
+<?php
+$template->get_top();
 
+if ( $errs ) {
+?>
+<div class="notification sticky hidden error">
+    <p><?php echo $errs; ?></p>
+</div>
+<?php } ?>
 <div id="login-logo"<?php if ( !empty( $margin_bottom ) ) echo ' style="margin-bottom: ' . $margin_bottom . ' "'; ?>><img src="/images/logos/login/<?php echo DOMAIN; ?>.png" alt="<?php echo TITLE; ?>" /></div>
 <div id="login">
-    <?php
-    if ( $errs )
-        echo '<p class="red">' . $errs . '</p><br />';
-    ?>
     <form action="" name="fLogin" method="post">
         <input type="text" class="tb" name="email" tmpval="<?php echo _('Email'); ?>" value="<?php echo $template->v('email'); ?>" maxlength="200" />
         <input type="password" class="tb" name="password" tmpval="<?php echo _('Password'); ?>" maxlength="30" />

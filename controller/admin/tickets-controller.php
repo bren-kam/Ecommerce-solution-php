@@ -556,7 +556,7 @@ class TicketsController extends BaseController {
         jQuery('#upload-' . $ticket_upload->id)->remove();
 
         // Delete upload
-        $ticket_upload->delete();
+        $ticket_upload->delete_upload();
 
         // Add response
         $response->add_response( 'jquery', jQuery::getResponse() );

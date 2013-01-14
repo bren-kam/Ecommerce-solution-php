@@ -141,7 +141,7 @@ class TicketUploadTest extends BaseDatabaseTest {
      *
      * @depends testCreate
      */
-    public function testDelete() {
+    public function testDeleteUpload() {
         // Create ticket upload
         $this->ticket_upload->key = 'url/path/file.jpg';
         $this->ticket_upload->create();
@@ -149,7 +149,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $ticket_upload_id = (int) $this->ticket_upload->id;
 
         // Delete ticket upload
-        $this->ticket_upload->delete();
+        $this->ticket_upload->delete_upload();
 
         // Check
         $fetched_ticket_upload_id = $this->db->get_var( "SELECT `ticket_upload_id` FROM `ticket_uploads` WHERE `ticket_upload_id` = $ticket_upload_id" );

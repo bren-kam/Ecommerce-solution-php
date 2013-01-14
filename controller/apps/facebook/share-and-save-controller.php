@@ -22,7 +22,7 @@ class ShareAndSaveController extends BaseController {
     protected function index() {
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
         $form = new stdClass();
-        $success = $website = false;
+        $success = $website = $page_id = false;
 
         // Make sure they are validly editing the app
         if ( isset( $_REQUEST['app_data'] ) ) {
@@ -41,7 +41,7 @@ class ShareAndSaveController extends BaseController {
                 $website_title = 'N/A';
             }
 
-            $form = new FormTable( 'fShareAndSave' );
+            $form = new FormTable( 'fConnect' );
             $form->submit( 'Connect' );
 
             $website_row = $form->add_field( 'row', _('Website'), $website_title );
@@ -67,7 +67,7 @@ class ShareAndSaveController extends BaseController {
         $response = $this->get_template_response( 'facebook/share-and-save/index', 'Connect' );
         $response
             ->set_sub_includes('facebook')
-            ->set( array( 'form' => $form, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
+            ->set( array( 'form' => $form, 'page_id' => $page_id, 'app_id' => self::APP_ID, 'success' => $success, 'website' => $website ) );
 
         return $response;
     }
@@ -109,6 +109,8 @@ class ShareAndSaveController extends BaseController {
             $success = true;
         }
 
+        $admin = '';
+
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {
             $admin = '<p><strong>Admin:</strong> <a href="#" onclick="top.location.href=' . "'";
@@ -118,8 +120,6 @@ class ShareAndSaveController extends BaseController {
                 , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
-
-            $tab->content = $admin . $tab->content;
         }
 
 		// Get page information
@@ -135,6 +135,7 @@ class ShareAndSaveController extends BaseController {
                 , 'signed_request' => $signed_request
                 , 'app_id' => self::APP_ID
                 , 'url' => url::add_query_arg( 'sk', 'app_' . self::APP_ID, $page['link'] )
+                , 'admin' => $admin
         ) );
 
         return $response;

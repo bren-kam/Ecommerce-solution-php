@@ -103,7 +103,7 @@ class TicketUpload extends ActiveRecordBase {
     /**
      * Delete
      */
-    public function delete() {
+    public function delete_upload() {
         parent::delete( array( 'ticket_upload_id' => $this->id ), 'i' );
     }
 }

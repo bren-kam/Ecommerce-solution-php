@@ -191,18 +191,18 @@ class Website_Categories extends Base_Class {
 	  * @return array
 	  */
 	 public function get_all_child_categories( $category_id ) {
-		 // Instantiate Class
- 		 $c = new Categories;
-			
+		// Instantiate Class
+ 		$c = new Categories( false );
+		
 		// Define variables
 		$child_categories = array();
 		 
 		// Get IDs
 		$website_category_ids = $this->get_ids();
-		 
-		 // Get children
+		
+		// Get children
 		$all_child_categories = $c->get_child_categories( $category_id );
-		 
+		
 		if ( is_array( $all_child_categories ) )
 		foreach ( $all_child_categories as $cc ) {
 			if ( !in_array( $cc['category_id'], $website_category_ids ) )
