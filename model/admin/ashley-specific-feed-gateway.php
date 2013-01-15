@@ -32,9 +32,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Get Feed Accounts
         $accounts = $this->get_feed_accounts();
 
-		// Get the file if htere is one
+		// Get the file if there is one
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 		
+        // SSH Connection
+        $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+
+        // Delete all files
+        ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
+
         if ( is_array( $accounts ) )
         foreach( $accounts as $account ) {
             // Need to make this not timeout and remove half the products first
