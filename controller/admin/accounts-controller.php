@@ -1030,10 +1030,10 @@ class AccountsController extends BaseController {
         $ashley_specific_feed->run( $account );
 
         // Give them a notification
-        $this->notify( _('The ashley feed has been successfully run!') );
+        $this->notify( _('The Ashley Feed has been successfully run!') );
 
         // Redirect them to accounts page
-        return new RedirectResponse('/accounts/');
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
     }
 
     /**
