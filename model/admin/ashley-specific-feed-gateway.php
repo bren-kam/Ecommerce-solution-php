@@ -9,8 +9,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
     const USER_ID = 353; // Ashley
 
-    protected $testing_sites = array( 186, 335, 477, 571, 476, 458, 357, 337, 674, 743, 829, 1067, 1101, 1140, 1141
-        , 1148, 1184, 1197, 1198, 1199
+    protected $testing_sites = array( 123, 186, 335, 477, 571, 476, 458, 357, 337, 665, 674, 743, 829, 1067, 1101, 1140
+        , 1141, 1148, 1184, 1197, 1198, 1199
     );
 
 	/**
@@ -130,7 +130,15 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Check #1 - Stop mass deletion
         if ( 0 == count( $this->xml->items->item ) ) {
             // We want to skip this account
-            mail( 'kerry@greysuitretail.com, jeff@greysuitretail.com, jack@greysuitretail.com', 'Ashley Feed w/ No Products - ' . $account->title, 'Title says it all' );
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
+            $ticket->website_id = $account->id;
+            $ticket->priority = 1;
+            $ticket->status = 1;
+            $ticket->summary = 'Ashley Feed w/ No Products';
+            $ticket->message = 'This account needs to be investigated';
+            $ticket->create();
             return;
         }
 
@@ -216,7 +224,15 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         if ( $remove_product_count > 100 ) {
             // We want to skip this account
-            mail( 'kerry@greysuitretail.com, jeff@greysuitretail.com, jack@greysuitretail.com', 'Ashley Feed Removing Too Many Products - ' . $account->title, 'Trying to remove ' . $remove_product_count . ' products' );
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
+            $ticket->website_id = $account->id;
+            $ticket->priority = 1;
+            $ticket->status = 1;
+            $ticket->summary = 'Ashley Feed Removing Too Many Products';
+            $ticket->message = 'Trying to remove ' . $remove_product_count . ' products';
+            $ticket->create();
             return;
         }
 
