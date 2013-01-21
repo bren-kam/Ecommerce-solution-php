@@ -9,8 +9,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
     const USER_ID = 353; // Ashley
 
-    protected $testing_sites = array( 186, 335, 477, 571, 476, 458, 357, 337, 674, 743, 829, 1067, 1101, 1140, 1141, 1184
-        , 1197, 1198
+    protected $testing_sites = array( 186, 335, 477, 571, 476, 458, 357, 337, 665, 674, 743, 829, 1014, 1067, 1101
+        , 1140, 1141, 1148, 1184, 1197, 1198, 1199
     );
 
 	/**
@@ -32,9 +32,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Get Feed Accounts
         $accounts = $this->get_feed_accounts();
 
-		// Get the file if htere is one
+		// Get the file if there is one
 		$file = ( isset( $_GET['f'] ) ) ? $_GET['f'] : NULL;
 		
+        // SSH Connection
+        $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+
+        // Delete all files
+        ssh2_exec( $ssh_connection, "rm -Rf /gsr/systems/backend/admin/media/downloads/ashley/*" );
+
         if ( is_array( $accounts ) )
         foreach( $accounts as $account ) {
             // Need to make this not timeout and remove half the products first
@@ -120,6 +127,22 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         $packages = $this->get_ashley_packages();
         $skus = $remove_products = $new_product_skus = $all_skus = array();
 
+        // Check #1 - Stop mass deletion
+        if ( 0 == count( $this->xml->items->item ) ) {
+            // We want to skip this account
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
+            $ticket->website_id = $account->id;
+            $ticket->priority = 1;
+            $ticket->status = 1;
+            $ticket->summary = 'Ashley Feed w/ No Products';
+            $ticket->message = 'This account needs to be investigated';
+            $ticket->create();
+            return;
+        }
+
+
         /**
          * @var SimpleXMLElement $item
          */
@@ -195,6 +218,23 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			if ( !in_array( $sku, $all_skus ) )
 				$remove_products[] = (int) $product_id;
 		}
+
+        // Check #2 - Stop mass deletion
+        $remove_product_count = count( $remove_products );
+
+        if ( $remove_product_count > 100 ) {
+            // We want to skip this account
+            $ticket = new Ticket();
+            $ticket->user_id = self::USER_ID; // Ashley
+            $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
+            $ticket->website_id = $account->id;
+            $ticket->priority = 1;
+            $ticket->status = 1;
+            $ticket->summary = 'Ashley Feed Removing Too Many Products';
+            $ticket->message = 'Trying to remove ' . $remove_product_count . ' products';
+            $ticket->create();
+            return;
+        }
 
 		// Add new products
         $industries = $account->get_industries();

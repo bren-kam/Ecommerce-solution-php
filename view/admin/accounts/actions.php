@@ -51,6 +51,7 @@
 
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/run-ashley-feed/' ); ?>" title="<?php echo _('Run Ashley Feed'); ?>"><?php echo _('Run Ashley Feed'); ?></a></p>
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reorganize-categories/' ); ?>" title="<?php echo _('Reorganize Categories'); ?>"><?php echo _('Reorganize Categories'); ?></a></p>
+<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/add-email-template/' ); ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add Email Template'); ?></a></p>
 
 
 <?php echo $template->end(); ?>

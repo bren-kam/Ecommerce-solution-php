@@ -11,6 +11,8 @@ class AuthUserWebsite extends ActiveRecordBase {
         , 'GGesualdo@Ashleyfurniture.com'
         , 'RLachenmaier@Ashleyfurniture.com'
         , 'AMatthews@Ashleyfurniture.com'
+        , 'gkammer@ashleyfurniture.com'
+        , 'csianko@ashleyfurniture.com'
     );
 
     /**

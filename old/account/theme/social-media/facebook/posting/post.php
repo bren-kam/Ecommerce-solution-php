@@ -81,9 +81,9 @@ if ( 0 != $posting['fb_page_id'] ) {
 	
 	if ( !isset( $pages[$posting['fb_page_id']] ) ) {
 		// @add Notify in reprogramming
-		//$sm->reset_posting( $posting['fb_page_id'] );
-		//url::redirect('/social-media/facebook/posting/post/');
-        echo "Contact Support!";
+		$sm->reset_posting( $posting['fb_page_id'] );
+		url::redirect('/social-media/facebook/posting/post/');
+        //echo "Contact Support!";
 	}
 } elseif ( !$posting ) {
 	$posting = array(

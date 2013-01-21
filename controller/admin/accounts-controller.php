@@ -869,6 +869,97 @@ class AccountsController extends BaseController {
         return $template_response;
     }
 
+    /**
+     * Add Email Template
+     *
+     * @return TemplateResponse
+     */
+    protected function add_email_template() {
+        // Make sure they can be here
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Initialize classes
+        $account = new Account;
+        $account->get( $_GET['aid'] );
+
+        $form = new FormTable( 'fAddEmailTemplate' );
+        $form->submit( _('Add Template') );
+
+        $form->add_field( 'text', _('View Product Button'), 'tViewProductButton' )
+            ->attribute( 'maxlength', 200 )
+            ->add_validation( 'req', _('The "View Product Button" field is required') )
+            ->add_validation( 'url', _('The "View Product Button" field must contain a valid URL') );
+
+        $form->add_field( 'text', _('Product Color'), 'tProductColor' )
+            ->attribute( 'maxlength', 6 )
+            ->add_validation( 'req', _('The "Product Color" field is required') )
+            ->add_validation( 'custom=[0-9a-fA-F]{3,6}', _('The "Product Color" must contain a valid hex number') );
+
+        $form->add_field( 'text', _('Price Color'), 'tPriceColor' )
+            ->attribute( 'maxlength', 6 )
+            ->add_validation( 'req', _('The "Price Color" field is required') )
+            ->add_validation( 'custom=[0-9a-fA-F]{3,6}', _('The "Price Color" must contain a valid hex number') );
+
+        $form->add_field( 'textarea', _('Default Template'), 'taDefaultTemplate' )
+            ->add_validation( 'req', _('The "Default Template" field is required') );
+
+        $form->add_field( 'textarea', _('Product Template'), 'taProductTemplate' )
+            ->add_validation( 'req', _('The "Product Template" field is required') );
+
+        $form->add_field( 'text', _('Template Image'), 'tTemplateImage' )
+            ->attribute( 'maxlength', 200 )
+            ->add_validation( 'req', _('The "Template Image" field is required') )
+            ->add_validation( 'url', _('The "Template Image" field must contain a valid URL') );
+
+        $form->add_field( 'text', _('Template Image Thumbnail'), 'tTemplateImageThumbnail' )
+            ->attribute( 'maxlength', 200 )
+            ->add_validation( 'req', _('The "Template Image Thumbnail" field is required') )
+            ->add_validation( 'url', _('The "Template Image Thumbnail" field must contain a valid URL') );
+
+        if ( $form->posted() ) {
+            // Do stuff
+            $email_marketing = new EmailMarketing();
+            $email_marketing->set_settings( $account->id, array(
+                'view-product-button' => $_POST['tViewProductButton']
+                , 'product-color' => $_POST['tProductColor']
+                , 'product-price-color' => $_POST['tPriceColor']
+            ) );
+
+            // Update default template
+            $email_template = new EmailTemplate();
+            $email_template->get_default( $account->id );
+
+            $email_template->template = $_POST['taDefaultTemplate'];
+            $email_template->image = $_POST['tTemplateImage'];
+            $email_template->thumbnail = $_POST['tTemplateImageThumbnail'];
+            $email_template->save();
+
+            // Create product template
+            $product_template = new EmailTemplate();
+            $product_template->name = 'Product Offer';
+            $product_template->template = $_POST['taProductTemplate'];
+            $product_template->image = $_POST['tTemplateImage'];
+            $product_template->thumbnail = $_POST['tTemplateImageThumbnail'];
+            $product_template->type = 'product';
+            $product_template->create();
+
+            // Add association
+            $product_template->add_association( $account->id, 'website' );
+
+            // Once done
+            $this->notify( _('Email template has been successfully added!') );
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+        }
+
+        $template_response = $this->get_template_response('add-email-template')
+            ->add_title( _('Add Email Template') )
+            ->set( array( 'form' => $form->generate_form() ) )
+            ->select('accounts');
+
+        return $template_response;
+    }
+
     /***** REDIRECTS *****/
 
     /**
@@ -1030,10 +1121,10 @@ class AccountsController extends BaseController {
         $ashley_specific_feed->run( $account );
 
         // Give them a notification
-        $this->notify( _('The ashley feed has been successfully run!') );
+        $this->notify( _('The Ashley Feed has been successfully run!') );
 
         // Redirect them to accounts page
-        return new RedirectResponse('/accounts/');
+        return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
     }
 
     /**
