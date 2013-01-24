@@ -1868,9 +1868,32 @@ class Email_Marketing extends Base_Class {
 	 */
 	public function get_settings() {
 		global $user;
-		
+
+        // Get the settings
+        $settings = func_get_args();
+
+        // If they did pass in an array
+        if ( is_array( $settings[0] ) ) {
+            $settings = $settings[0];
+        } elseif ( !is_array( $settings ) ) {
+            return array();
+        }
+
+        // Typecast
+        $website_id = (int) $user['website']['website_id'];
+
+        // Put the settings in a SQL format
+        $sql_settings = '';
+
+        foreach ( $settings as $s ) {
+            if ( !empty( $sql_settings ) )
+                $sql_settings .= ',';
+
+            $sql_settings .= "'" . $this->db->escape( $s ) . "'";
+        }
+
 		// Get settings
-		$settings = $this->db->get_results( 'SELECT `key`, `value` FROM `email_settings` WHERE `website_id` = ' . $user['website']['website_id'], ARRAY_A );
+		$settings = $this->db->get_results( "SELECT `key`, `value` FROM `email_settings` WHERE `website_id` = $website_id AND `key` IN ($sql_settings) ORDER BY `key`", ARRAY_A );
 		
 		// Handle any error
 		if ( $this->db->errno() ) {
