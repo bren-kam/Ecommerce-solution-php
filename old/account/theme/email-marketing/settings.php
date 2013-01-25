@@ -57,7 +57,7 @@ if ( isset( $_POST['_nonce'] ) && nonce::verify( $_POST['_nonce'], 'edit-setting
 }
 
 // Get the settings
-$settings = array_merge( $empty_settings, $e->get_settings() );
+$settings = array_merge( $empty_settings, $e->get_settings( array_keys( $empty_settings ) ) );
 
 $selected = "email_marketing";
 $title = _('Settings | Email Marketing') . ' | ' . TITLE;
