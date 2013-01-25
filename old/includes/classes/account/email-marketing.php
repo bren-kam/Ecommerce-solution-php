@@ -1869,17 +1869,14 @@ class Email_Marketing extends Base_Class {
 	public function get_settings() {
 		global $user;
 
-        // Typecast
-        $website_id = (int) $user['website']['website_id'];
-
         // Get the settings
         $settings = func_get_args();
 
         // If they did pass in an array
         if ( is_array( $settings[0] ) ) {
             $settings = $settings[0];
-        } else {
-            // Get settings
+        } elseif ( !is_array( $settings ) ) {
+                        // Get settings
             $settings = $this->db->get_results( "SELECT `key`, `value` FROM `email_settings` WHERE `website_id` = $website_id ORDER BY `key`", ARRAY_A );
 
             // Handle any error
@@ -1890,6 +1887,9 @@ class Email_Marketing extends Base_Class {
 
             return ( $settings ) ? ar::assign_key( $settings, 'key', true ) : array();
         }
+
+        // Typecast
+        $website_id = (int) $user['website']['website_id'];
 
         // Put the settings in a SQL format
         $sql_settings = '';
