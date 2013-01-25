@@ -614,7 +614,7 @@ class Email_Marketing extends Base_Class {
 	public function test_message( $email, $email_message_id ) {
 		// Get mailchimp
 		$mc = $this->mailchimp_instance();
-
+		
 		// Get the email message
 		$em = $this->get_email_message( $email_message_id );
 
@@ -1037,7 +1037,7 @@ class Email_Marketing extends Base_Class {
 		}
 
 		$email_message_id = $this->db->insert_id;
-
+		
 		// Add other data
 		$this->add_message_email_lists( $email_message_id, $email_list_ids );
 		$this->add_message_meta( $email_message_id, $message_meta );
@@ -1066,7 +1066,7 @@ class Email_Marketing extends Base_Class {
 		// Add other date
 		$this->add_message_email_lists( $email_message_id, $email_list_ids );
 		$this->add_message_meta( $email_message_id, $message_meta );
-
+		
 		$this->db->update( 'email_messages', array( 'email_template_id' => $email_template_id, 'subject' => $subject, 'message' => $message, 'type' => $type, 'date_sent' => $date_sent ), array( 'website_id' => $user['website']['website_id'], 'email_message_id' => $email_message_id ), 'issss', 'ii' );
 
 		// Handle any error
@@ -1077,7 +1077,7 @@ class Email_Marketing extends Base_Class {
 
 		// Update the campaign
 		$email_message = $this->get_email_message( $email_message_id );
-
+		
 		// If they don't have a campaign created -- don't do anything
 		if ( 0 == $email_message['mc_campaign_id'] )
 			return true;
@@ -1869,14 +1869,17 @@ class Email_Marketing extends Base_Class {
 	public function get_settings() {
 		global $user;
 
+        // Typecast
+        $website_id = (int) $user['website']['website_id'];
+
         // Get the settings
         $settings = func_get_args();
-
+		
         // If they did pass in an array
         if ( is_array( $settings[0] ) ) {
             $settings = $settings[0];
-        } elseif ( !is_array( $settings ) ) {
-                        // Get settings
+        } elseif ( !is_array( $settings ) || empty( $settings ) ) {
+			// Get settings
             $settings = $this->db->get_results( "SELECT `key`, `value` FROM `email_settings` WHERE `website_id` = $website_id ORDER BY `key`", ARRAY_A );
 
             // Handle any error
@@ -1887,9 +1890,6 @@ class Email_Marketing extends Base_Class {
 
             return ( $settings ) ? ar::assign_key( $settings, 'key', true ) : array();
         }
-
-        // Typecast
-        $website_id = (int) $user['website']['website_id'];
 
         // Put the settings in a SQL format
         $sql_settings = '';
