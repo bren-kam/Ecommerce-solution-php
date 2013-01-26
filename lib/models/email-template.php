@@ -20,10 +20,12 @@ class EmailTemplate extends ActiveRecordBase {
      */
     public function get_default( $account_id ) {
         $this->prepare(
-            "SELECT * FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`type` = 'default' AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
+            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`type` = 'default' AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
             , 'i'
             , array( ':object_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
+		
+		$this->id = $this->email_template_id;
     }
 
     /**
