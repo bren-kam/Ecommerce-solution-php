@@ -519,7 +519,8 @@ class Email_Marketing extends Base_Class {
 		
 		// Add the associations for each list
 		foreach ( $email_lists as $el_id ) {
-			$this->db->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) SELECT a.`email_id`, ' . (int) $el_id . ' FROM `emails` AS a INNER JOIN `email_import_emails` AS b ON ( a.`email` = b.`email` ) WHERE a.`website_id` = $website_id ON DUPLICATE KEY UPDATE `email_id` = VALUES( `email_id` )" );
+			$el_id = (int) $el_id;
+			$this->db->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) SELECT a.`email_id`, $el_id FROM `emails` AS a INNER JOIN `email_import_emails` AS b ON ( a.`email` = b.`email` ) WHERE a.`website_id` = $website_id ON DUPLICATE KEY UPDATE `email_id` = VALUES( `email_id` )" );
 			
 			// Handle any error
 			if ( $this->db->errno() ) {
@@ -831,7 +832,7 @@ class Email_Marketing extends Base_Class {
 		// Get the variables
 		list( $where, $order_by, $limit ) = $variables;
 
-		$email_lists = $this->db->get_results( "SELECT a.`email_list_id`, a.`name`, a.`description`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, COUNT( DISTINCT b.`email_id`) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id`) WHERE ( c.`status` = 1 OR c.`status` IS NULL ) $where GROUP BY a.`email_list_id` $order_by LIMIT $limit", ARRAY_A );
+		$email_lists = $this->db->get_results( "SELECT a.`email_list_id`, a.`name`, a.`description`, UNIX_TIMESTAMP( a.`date_created` ) AS date_created, IF( 1 = c.`status`, COUNT( DISTINCT b.`email_id` ), 0 ) AS count FROM `email_lists` AS a LEFT JOIN `email_associations` AS b ON ( a.`email_list_id` = b.`email_list_id` ) LEFT JOIN `emails` AS c ON ( b.`email_id` = c.`email_id` AND c.`status` = 1 ) WHERE 1 $where GROUP BY a.`email_list_id` $order_by LIMIT $limit", ARRAY_A );
 
 		// Handle any error
 		if ( $this->db->errno() ) {
