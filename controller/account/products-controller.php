@@ -148,7 +148,7 @@ class ProductsController extends BaseController {
                     if ( $quantity < 0 ) {
                         // Make it show up right
                         $quantity *= -1;
-                        
+
                         $this->notify( _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog."), false );
                     } else {
                         // Add bulk
@@ -158,7 +158,7 @@ class ProductsController extends BaseController {
                         $account_category = new AccountCategory();
                         $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
-                        $this->notify( $quantity . _(' brand products added successfully!') );
+                        $this->notify( $quantity . ' ' . _('brand products added successfully!') );
                     }
                 }
             }
@@ -171,6 +171,29 @@ class ProductsController extends BaseController {
             ->add_title( _('Catalog Dump') )
             ->select( 'sub-products', 'catalog-dump' )
             ->set( compact( 'js_validation', 'errs' ) );
+
+        return $response;
+    }
+
+    /**
+     * Add Bulk
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function add_bulk() {
+        $form = new FormTable( 'fAddBulk' );
+        $form->submit( _('Add Bulk') );
+        $form->add_field( 'textarea', '', 'taSKUs' )
+            ->add_validation( 'req', _('You must enter SKUs before you can add products') );
+
+        if ( $form->posted() ) {
+            $account_product = new AccountProduct();
+        }
+
+        $response = $this->get_template_response( 'add-bulk' )
+            ->add_title( _('Add Bulk') )
+            ->select( 'sub-products', 'add-bulk' )
+            ->set( array( 'form' => $form->generate_form() ) );
 
         return $response;
     }

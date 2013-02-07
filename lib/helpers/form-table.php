@@ -394,16 +394,22 @@ class FormTable_Textarea extends FormTable_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        $html = '<tr><td class="top">';
-        $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
+        if ( empty( $this->nice_name ) ) {
+            $html = '<tr><td colspan="2">';
+            $html .= $this->generate();
+            $html .= '</td></tr>';
+        } else {
+            $html = '<tr><td class="top">';
+            $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
 
-        if ( $this->required )
-            $html .= ' <span class="red">*</span>';
+            if ( $this->required )
+                $html .= ' <span class="red">*</span>';
 
-        $html .= '</label>';
-        $html .= '</td><td class="top">';
-        $html .= $this->generate();
-        $html .= '</td></tr>';
+            $html .= '</label>';
+            $html .= '</td><td class="top">';
+            $html .= $this->generate();
+            $html .= '</td></tr>';
+        }
 
         return $html;
     }
