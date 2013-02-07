@@ -182,7 +182,7 @@ class ProductsController extends BaseController {
      */
     protected function add_bulk() {
         $form = new FormTable( 'fAddBulk' );
-        $form->submit( _('Add Bulk') );
+        $form->submit( _('Add Bulk'), '', 1 );
         $form->add_field( 'textarea', '', 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
@@ -226,10 +226,44 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function block_products() {
-        $response = $this->get_template_response( 'add-bulk' )
+        $form = new FormTable( 'fBlockProducts' );
+        $form->submit( _('Block Products'), '', 1 );
+        $form->add_field( 'textarea', '', 'taSKUs' )
+            ->add_validation( 'req', _('You must enter SKUs before you can add products') );
+
+        $account_product = new AccountProduct();
+
+        if ( $form->posted() && !empty( $_POST['taSKUs'] ) ) {
+            $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
+
+            $account_product->block( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+            $this->notify( _('Blocked Products have been successfully updated!') );
+        }
+
+        $blocked_products = $account_product->get_blocked( $this->user->account->id );
+
+        $response = $this->get_template_response( 'block-products' )
             ->add_title( _('Block Products') )
-            ->select( 'sub-products', 'add-bulk' )
-            ->set( array( 'form' => $form->generate_form() ) );
+            ->select( 'sub-products', 'block-products' )
+            ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
+
+        return $response;
+    }
+
+    /**
+     * Unblock products
+     *
+     * @return RedirectResponse
+     */
+    protected function unblock_products() {
+        if ( $this->verified() ) {
+            $account_product = new AccountProduct();
+            $account_product->unblock( $this->user->account->id, $_POST['unblock-products'] );
+            $this->notify( _('Blocked Products have been successfully updated!') );
+        }
+
+        return new RedirectResponse('/products/block-products/');
     }
 
     /***** AJAX *****/

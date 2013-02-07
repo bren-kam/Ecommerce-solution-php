@@ -254,6 +254,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Turn it into a string
         $product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
+
         // Count how many would be entered
         // Insert website products
         return $this->prepare(
@@ -359,6 +360,82 @@ class AccountProduct extends ActiveRecordBase {
             )->query();
 		}
 	}
+
+    /**
+     * Block Products
+     *
+     * @param int $account_id
+     * @param array $industry_ids
+     * @param array $skus
+     */
+    public function block( $account_id, array $industry_ids, array $skus ) {
+        // Make sure they entered in SKUs
+        if ( empty( $skus ) )
+            return;
+
+         // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Get the count
+        $sku_count = count( $skus );
+
+        // Turn it into a string
+        $skus_sql = '?' . str_repeat( ',?', $sku_count - 1 );
+
+        // Insert blocked products or update them if they already exist
+        $this->prepare(
+            "INSERT INTO `website_products` ( `website_id`, `product_id`, `blocked`, `active` ) SELECT DISTINCT $account_id, p.`product_id`, 1, 0 FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`industry_id` IN( $industry_ids_sql ) AND ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $skus_sql ) ON DUPLICATE KEY UPDATE `blocked` = 1"
+            , str_repeat( 's', $sku_count )
+            , $skus
+        )->query();
+    }
+
+    /**
+     * Block Products
+     *
+     * @param int $account_id
+     * @param array $product_ids
+     */
+    public function unblock( $account_id, array $product_ids ) {
+        // Make sure they entered in SKUs
+        if ( empty( $product_ids ) )
+            return;
+
+         // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Escape all the SKUs
+        foreach ( $product_ids as &$pid ) {
+            $pid = (int) $pid;
+        }
+
+        // Turn it into a string
+        $product_ids = implode( ",", $product_ids );
+
+        // Unblock products
+        $this->query( "UPDATE `website_products` SET `blocked` = 0 WHERE `website_id` = $account_id AND `product_id` IN ( $product_ids )" );
+    }
+
+    /**
+     * Get Blocked Products
+     *
+     * @param int $account_id
+     * @return Product[]
+     */
+    public function get_blocked( $account_id ) {
+        return $this->prepare(
+            'SELECT p.`product_id`, p.`name`, p.`sku` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 1'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
 
     /**
 	 * Removes all sale items from a website
