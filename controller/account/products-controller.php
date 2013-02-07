@@ -178,7 +178,7 @@ class ProductsController extends BaseController {
     /**
      * Add Bulk
      *
-     * @return TemplateResponse|RedirectResponse
+     * @return TemplateResponse
      */
     protected function add_bulk() {
         $form = new FormTable( 'fAddBulk' );
@@ -186,8 +186,30 @@ class ProductsController extends BaseController {
         $form->add_field( 'textarea', '', 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
-        if ( $form->posted() ) {
+        if ( $form->posted() && !empty( $_POST['taSKUs'] ) ) {
             $account_product = new AccountProduct();
+            $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
+
+            // How many free slots do we have
+            $free_slots = $this->user->account->products - $account_product->count( $this->user->account->id );
+            $quantity = $free_slots - $account_product->add_bulk_count( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+            if ( $quantity < 0 ) {
+                // Make it show up right
+                $quantity *= -1;
+
+                $this->notify( _("There is not enough free space to add these products. Delete at least $quantity products, or expand the size of the product catalog."), false );
+            } else {
+                // Add bulk
+                $quantity = $account_product->add_bulk( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+                // Reorganize categories
+                $account_category = new AccountCategory();
+                $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+                $this->notify( $quantity . ' ' . _('products added successfully!') );
+            }
+
         }
 
         $response = $this->get_template_response( 'add-bulk' )
@@ -196,6 +218,18 @@ class ProductsController extends BaseController {
             ->set( array( 'form' => $form->generate_form() ) );
 
         return $response;
+    }
+
+    /**
+     * Block Products
+     *
+     * @return TemplateResponse
+     */
+    protected function block_products() {
+        $response = $this->get_template_response( 'add-bulk' )
+            ->add_title( _('Block Products') )
+            ->select( 'sub-products', 'add-bulk' )
+            ->set( array( 'form' => $form->generate_form() ) );
     }
 
     /***** AJAX *****/
