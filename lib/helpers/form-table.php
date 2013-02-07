@@ -17,6 +17,7 @@ class FormTable {
     protected $submit;
     protected $submit_classes = 'button';
     protected $attributes = array();
+    protected $submit_column = 2;
 
     /**
      * Hold Validator
@@ -79,13 +80,16 @@ class FormTable {
      *
      * @param string $text
      * @param string $classes [optional] Space separate values
+     * @param int $column [optional]
      * @return FormTable
      */
-    public function submit( $text, $classes = '' ) {
+    public function submit( $text, $classes = '', $column = 2 ) {
         $this->submit = $text;
 
         if ( !empty( $classes ) )
             $this->submit_classes .= " $classes";
+
+        $this->submit_column = $column;
 
         return $this;
     }
@@ -142,7 +146,12 @@ class FormTable {
         }
 
         $html .= '<tr><td colspan="2">&nbsp;</td></tr>';
-        $html .= '<tr><td>&nbsp;</td><td><input type="submit" class="' . $this->submit_classes . '" value="' . $this->submit . '" /></td></tr>';
+        if ( 2 == $this->submit_column ) {
+            $html .= '<tr><td>&nbsp;</td><td><input type="submit" class="' . $this->submit_classes . '" value="' . $this->submit . '" /></td></tr>';
+        } else {
+            $html .= '<tr><td><input type="submit" class="' . $this->submit_classes . '" value="' . $this->submit . '" /></td></tr>';
+        }
+
         $html .= '</table>';
         $html .= nonce::field( 'form-' . $this->name, '_nonce', false );
         $html .= $hidden;

@@ -98,6 +98,7 @@ input.button {
 .small { font-size: 0.66em }
 .big { font-size: 1.5em }
 .bold { font-weight: bold }
+.text-left { text-align: left }
 .text-right { text-align:right; }
 .text-center { text-align:center; }
 .success, .success p { color: #090 }
@@ -109,6 +110,7 @@ input.button {
 .relative { position: relative; }
 .clr { clear: both; }
 .tmpval { color: #929292 }
+.width-auto { width: auto }
 
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
