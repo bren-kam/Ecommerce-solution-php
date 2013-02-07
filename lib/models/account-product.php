@@ -267,7 +267,9 @@ class AccountProduct extends ActiveRecordBase {
         }
 
         // Magical Query - Insert website products
-        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN(" . implode( ',', $industries ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) ON DUPLICATE KEY UPDATE wp.`active` = 1" );
+        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN(" . implode( ',', $industries ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
+
+        return $this->get_row_count();
     }
 
     /**

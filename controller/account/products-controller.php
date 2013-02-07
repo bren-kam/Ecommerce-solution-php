@@ -146,14 +146,19 @@ class ProductsController extends BaseController {
                     $quantity = $free_slots - $account_product->add_bulk_by_brand_count( $this->user->account->id, $_POST['hBrandID'], $industries );
 
                     if ( $quantity < 0 ) {
+                        // Make it show up right
+                        $quantity *= -1;
+                        
                         $this->notify( _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog."), false );
                     } else {
                         // Add bulk
-                        $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
+                        $quantity = $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
 
-                        // Reorganize categogires
+                        // Reorganize categories
                         $account_category = new AccountCategory();
                         $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+                        $this->notify( $quantity . _(' brand products added successfully!') );
                     }
                 }
             }
