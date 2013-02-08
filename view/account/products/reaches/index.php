@@ -9,7 +9,7 @@
  * @var User $user
  */
 
-echo $template->start( _('Website Pages'), '../sidebar' );
+echo $template->start( _('Reaches'), '../sidebar' );
 ?>
 
 <table ajax="/products/reaches/list-reaches/" perPage="100,250,500">
