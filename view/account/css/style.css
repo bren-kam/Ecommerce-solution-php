@@ -111,7 +111,9 @@ input.button {
 .clr { clear: both; }
 .tmpval { color: #929292 }
 .width-auto { width: auto }
-
+.height-100 { height: 100px }
+.height-200 { height: 200px }
+.height-300 { height: 300px }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 

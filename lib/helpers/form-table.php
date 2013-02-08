@@ -506,7 +506,7 @@ class FormTable_Select extends FormTable_Field {
      * @return string
      */
     public function generate() {
-        $html = '<select name="' . $this->name . '" id="' . $this->id() . '"' . $this->format_attributes() . '>';
+        $html = '<select name="' . $this->name . '" id="' . preg_replace( '/[\[\]]/', '', $this->id() ) . '"' . $this->format_attributes() . '>';
 
         foreach ( $this->options as $option_value => $option_name ) {
             if ( is_array( $this->value ) ) {
@@ -527,17 +527,23 @@ class FormTable_Select extends FormTable_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        $html = '<tr><td class="top">';
-        $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
+        if ( empty( $this->nice_name ) ) {
+            $html = '<tr><td colspan="2">';
+            $html .= $this->generate();
+            $html .= '</td></tr>';
+        } else {
+            $html = '<tr><td class="top">';
+            $html .= '<label for="' . $this->id() . '">' . $this->nice_name . ':';
 
-        if ( $this->required )
-            $html .= ' <span class="red">*</span>';
+            if ( $this->required )
+                $html .= ' <span class="red">*</span>';
 
-        $html .= '</label>';
-        $html .= '</td><td>';
-        $html .= $this->generate();
+            $html .= '</label>';
+            $html .= '</td><td>';
+            $html .= $this->generate();
 
-        $html .= '</td></tr>';
+            $html .= '</td></tr>';
+        }
 
         return $html;
     }
