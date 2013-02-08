@@ -312,6 +312,26 @@ class ProductsController extends BaseController {
     }
 
     /**
+     * Product Prices
+     *
+     * @return TemplateResponse
+     */
+    protected function product_prices() {
+        $brand = new Brand();
+
+        $brands = $brand->get_by_account( $this->user->account->id );
+
+        $this->resources->javascript( 'jquery.datatables', 'products/product-prices' );
+
+        $response = $this->get_template_response( 'product-prices' )
+            ->add_title( _('Product Prices') )
+            ->select( 'sub-products', 'product-prices' )
+            ->set( compact( 'brands' ) );
+
+        return $response;
+    }
+
+    /**
      * Unblock products
      *
      * @return RedirectResponse
@@ -725,7 +745,7 @@ class ProductsController extends BaseController {
         $account_product_option = new AccountProductOption();
 
         // Get variables
-        $account_product->get( $account_product['hProductID'], $this->user->account->id );
+        $account_product->get( $_POST['hProductID'], $this->user->account->id );
 
         /***** UPDATE PRODUCT *****/
         $account_product->alternate_price = $_POST['tAlternatePrice'];
@@ -1040,6 +1060,70 @@ class ProductsController extends BaseController {
 
         // Close Dialog
         jQuery('#aClose')->click();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * List Product Prices
+     *
+     * @return DataTableResponse
+     */
+    protected function list_product_prices() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+        $account_product = new AccountProduct();
+
+        // Set Order by
+        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+        $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
+        $dt->add_where( ' AND p.`brand_id` = ' . (int) $_GET['b'] );
+
+        // Get account pages
+        $products = $account_product->list_product_prices( $dt->get_variables() );
+        $dt->set_row_count( $account_product->count_product_prices( $dt->get_count_variables() ) );
+
+        // Nonce
+        $data = array();
+
+        // Create output
+        if ( is_array( $products ) )
+        foreach ( $products as $product ) {
+            $data[] = array(
+                $product->sku
+                , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
+                , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
+                , '<input type="text" class="alternate_price_name" id="tAlternatePriceName' . $product->id . '" value="' . $product->alternate_price_name . '" />'
+                , '<input type="text" class="alternate_price" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
+                , '<input type="text" class="sale_price" id="tSalePrice' . $product->id . '" value="' . $product->sale_price . '" />'
+            );
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
+    /**
+     * Set Product Prices
+     *
+     * @return AjaxResponse
+     */
+    protected function set_product_prices() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $account_product = new AccountProduct();
+        $account_product->set_product_prices( $this->user->account->id, $_POST['v'] );
+
+        jQuery('span.success')->show()->delay(5000)->hide();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 

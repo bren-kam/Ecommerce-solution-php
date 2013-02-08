@@ -579,4 +579,72 @@ class AccountProduct extends ActiveRecordBase {
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );
     }
+
+    /**
+     * Get all information of the products
+     *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+     * @return Product[]
+     */
+    public function list_product_prices( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT wp.`product_id`, wp.`alternate_price`, wp.`price`, wp.`sale_price`, wp.`alternate_price_name`, wp.`price_note`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY wp.`product_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count all the products
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_product_prices( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( wp.`product_id` ) FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+    }
+
+    /**
+     * Set Product Prices
+     *
+     * @param int $account_id
+     * @param array $values
+     */
+    public function set_product_prices( $account_id, array $values ) {
+         // Prepare statement
+        $statement = $this->prepare_raw( "UPDATE `website_products` SET `alternate_price` = :alternate_price, `price` = :price, `sale_price` = :sale_price, `alternate_price_name` = :alternate_price_name, `price_note` = :price_note WHERE `website_id` = :account_id AND `blocked` = 0 AND `active` = 1 AND `product_id` = :product_id" );
+        $statement
+            ->bind_param( ':alternate_price', $alternate_price, PDO::PARAM_INT )
+            ->bind_param( ':price', $price, PDO::PARAM_INT )
+            ->bind_param( ':sale_price', $sale_price, PDO::PARAM_INT )
+            ->bind_param( ':alternate_price_name', $alternate_price_name, PDO::PARAM_STR )
+            ->bind_param( ':price_note', $price_note, PDO::PARAM_STR )
+            ->bind_value( ':account_id', $account_id, PDO::PARAM_INT )
+            ->bind_param( ':product_id', $product_id, PDO::PARAM_INT );
+
+        foreach ( $values as $product_id => $array ) {
+            // Make sure all values have a value
+            $alternate_price = 0;
+            $price = 0;
+            $sale_price = 0;
+            $alternate_price_name = '';
+            $price_note = '';
+
+            // Get the values
+            extract( $array );
+
+            $statement->query();
+        }
+    }
 }
