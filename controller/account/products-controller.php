@@ -186,7 +186,7 @@ class ProductsController extends BaseController {
         $form->add_field( 'textarea', '', 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
-        if ( $form->posted() && !empty( $_POST['taSKUs'] ) ) {
+        if ( $form->posted() ) {
             $account_product = new AccountProduct();
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
 
@@ -233,7 +233,7 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
 
-        if ( $form->posted() && !empty( $_POST['taSKUs'] ) ) {
+        if ( $form->posted() ) {
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
 
             $account_product->block( $this->user->account->id, $this->user->account->get_industries(), $skus );
@@ -252,6 +252,66 @@ class ProductsController extends BaseController {
     }
 
     /**
+     * Hide Categories
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function hide_categories() {
+        // Setup objects
+        $category = new Category();
+        $account_category = new AccountCategory();
+
+        // Sort categories
+        $categories_array = $category->sort_by_hierarchy();
+        $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
+        $categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( !in_array( $category->id, $website_category_ids ) )
+                continue;
+
+            $categories[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
+        }
+
+        $form = new FormTable( 'fCategories' );
+        $form->submit( _('Hide Categories'), '', 1 );
+        $form->add_field( 'select', '', 'sCategoryIDs[]' )
+            ->attribute( 'multiple', 'multiple' )
+            ->attribute( 'class', 'height-200' )
+            ->options( $categories );
+
+        if ( $form->posted() ) {
+            // Hide them
+            $account_category->hide( $this->user->account->id, $_POST['sCategoryIDs'] );
+
+            // Remove any of them
+            $account_category->remove_categories( $this->user->account->id, $_POST['sCategoryIDs'] );
+            $account_category->reorganize_categories( $this->user->account->id, $category );
+
+            $this->notify( _('Hidden categories have been successfully updated!') );
+
+            return new RedirectResponse( '/products/hide-categories/' );
+        }
+
+        $hidden_category_ids = $account_category->get_all_hidden_ids( $this->user->account->id );
+        $hidden_categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( !in_array( $category->id, $hidden_category_ids ) )
+                continue;
+
+            $hidden_categories[] = $category;
+        }
+
+        $response = $this->get_template_response( 'hide-categories' )
+            ->add_title( _('Hide Categories') )
+            ->select( 'sub-products', 'hide-categories' )
+            ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $hidden_categories ) );
+
+        return $response;
+    }
+
+    /**
      * Unblock products
      *
      * @return RedirectResponse
@@ -264,6 +324,23 @@ class ProductsController extends BaseController {
         }
 
         return new RedirectResponse('/products/block-products/');
+    }
+
+    /**
+     * Unhide categories
+     *
+     * @return RedirectResponse
+     */
+    protected function unhide_categories() {
+        if ( $this->verified() ) {
+            $account_category = new AccountCategory();
+            $account_category->unhide( $this->user->account->id, $_POST['unhide-categories'] );
+            $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            $this->notify( _('Hidden categories have been successfully updated!') );
+        }
+
+        return new RedirectResponse('/products/hide-categories/');
     }
 
     /***** AJAX *****/
