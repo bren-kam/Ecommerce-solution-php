@@ -4,6 +4,9 @@ class WebsiteReach extends ActiveRecordBase {
     public $id, $website_reach_id, $website_id, $website_user_id, $assigned_to_user_id, $message, $waiting, $status
         , $assigned_to_date, $date_created, $priority;
 
+    // Artificial columns
+    public $meta, $info, $product, $sku, $name, $email;
+
     /**
      * Setup the account initial data
      */
@@ -13,6 +16,83 @@ class WebsiteReach extends ActiveRecordBase {
         // We want to make sure they match
         if ( isset( $this->website_reach_id ) )
             $this->id = $this->website_reach_id;
+    }
+
+    /**
+     * Get
+     *
+     * @param int $website_reach_id
+     */
+    public function get( $website_reach_id ) {
+        $this->prepare(
+            "SELECT wr.`website_reach_id`, wr.`website_user_id`, wr.`assigned_to_user_id`, wr.`message`, wr.`priority`, wr.`status`, wr.`assigned_to_date`, wr.`date_created`, CONCAT( wu.`billing_first_name`, ' ', IF( wu.`billing_last_name`,  wu.`billing_last_name`, '' ) ) AS name, wu.`email`, w.`website_id`, w.`title` AS website, w.`domain`, COALESCE( u.`role`, 7 ) AS role FROM `website_reaches` AS wr LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wr.`website_user_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wr.`website_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = wr.`assigned_to_user_id` ) WHERE wr.`website_reach_id` = :website_reach_id"
+            , 'i'
+            , array( ':website_reach_id' => $website_reach_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_reach_id;
+    }
+
+    /**
+     * Get Meta
+     */
+    public function get_meta() {
+        // This will be expanded in the future as the meta is further developed
+        $this->meta = ar::assign_key( $this->prepare(
+            'SELECT `key`, `value` FROM `website_reach_meta` WHERE `website_reach_id` = :website_reach_id'
+            , 'i'
+            , array( ':website_reach_id' => $this->id )
+        )->get_results( PDO::FETCH_ASSOC ), 'key', true );
+    }
+
+    /**
+     * Get Info
+     */
+    public function get_info() {
+        if ( !isset( $this->meta ) )
+            $this->get_meta();
+        
+        switch ( $this->meta['type'] ) {
+            case 'quote':
+                $link = $this->meta['product-link'];
+                $this->info['Product'] = '<a href="' . $link . '" title="' . $this->meta['product-name'] . '">' . $this->meta['product-name'] . '</a>';
+                $this->info['SKU'] = '<a href="' . $link . '" title="' . $this->meta['product-sku'] . '">' . $this->meta['product-sku'] . '</a>';
+            break;
+
+            default:break;
+        }
+    }
+
+    /**
+     * Returns a reach type meta in a human readable format
+     *
+     * @return string
+     */
+    public function get_friendly_type() {
+        $type = _('Reach');
+
+        switch( $this->meta['type'] ) {
+            case 'quote':
+                $type = _('Quote');
+            break;
+
+            default:break;
+        }
+
+        return $type;
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        parent::update(
+            array(
+                'waiting' => $this->waiting
+            ), array( 'website_reach_id' => $this->id )
+            , 'i'
+            , 'i'
+        );
     }
 
     /**

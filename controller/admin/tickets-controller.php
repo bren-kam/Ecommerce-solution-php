@@ -98,7 +98,7 @@ class TicketsController extends BaseController {
 
         $this->resources
             ->css( 'tickets/ticket' )
-            ->javascript( 'fileuploader', 'tickets/ticket', 'jquery.autoresize' );
+            ->javascript( 'fileuploader', 'jquery.autoresize', 'tickets/ticket' );
 
         return $template_response;
     }
