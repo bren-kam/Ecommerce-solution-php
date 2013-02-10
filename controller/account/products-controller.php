@@ -303,12 +303,10 @@ class ProductsController extends BaseController {
             $hidden_categories[] = $category;
         }
 
-        $response = $this->get_template_response( 'hide-categories' )
+        return $this->get_template_response( 'hide-categories' )
             ->add_title( _('Hide Categories') )
             ->select( 'sub-products', 'hide-categories' )
             ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $hidden_categories ) );
-
-        return $response;
     }
 
     /**
@@ -323,12 +321,10 @@ class ProductsController extends BaseController {
 
         $this->resources->javascript( 'jquery.datatables', 'products/product-prices' );
 
-        $response = $this->get_template_response( 'product-prices' )
+        return $this->get_template_response( 'product-prices' )
             ->add_title( _('Product Prices') )
             ->select( 'sub-products', 'product-prices' )
             ->set( compact( 'brands' ) );
-
-        return $response;
     }
 
     /**
@@ -361,6 +357,59 @@ class ProductsController extends BaseController {
         }
 
         return new RedirectResponse('/products/hide-categories/');
+    }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function settings() {
+        // Instantiate classes
+        $form = new FormTable( 'fSettings' );
+
+        // Get settings
+        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
+        $settings = $this->user->account->get_settings( $settings_array );
+        $checkboxes = array(
+        	'category-show-price-note' 	=> _('Categories - Show Price Note?')
+        	, 'add-product-popup' 		=> _('Add Product - Popup')
+        	, 'hide-skus' 				=> _('Hide Manufacturer SKUs')
+        	, 'hide-request-quote' 		=> _('Hide "Request a Quote" Button')
+        	, 'hide-customer-ratings' 	=> _('Hide Customer Ratings')
+        	, 'hide-product-brands' 	=> _('Hide Product Brands')
+        	, 'hide-browse-by-brand' 	=> _('Hide Browse By Brand')
+            , 'replace-price-note'      => _('Replace Price Note with Product Option')
+        );
+
+        // Create form
+        $form->add_field( 'text', _('Request-a-Quote Email'), 'request-a-quote-email', $settings['request-a-quote-email'] )
+            ->attribute( 'maxlength', '150' )
+            ->add_validation( 'req', 'email', _('The "Request-a-Quote Email" field must contain a valid email') );
+
+        foreach( $checkboxes as $setting => $nice_name ) {
+            $form->add_field( 'checkbox', $nice_name, $setting, $settings[$setting] );
+        }
+
+        if ( $form->posted() ) {
+            $new_settings = array();
+
+            foreach ( $settings_array as $k ) {
+                $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            $this->user->account->set_settings( $new_settings );
+
+            $this->notify( _('Your settings have been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/products/settings/');
+        }
+
+        return $this->get_template_response( 'settings' )
+            ->add_title( _('Settings') )
+            ->select( 'products', 'settings' )
+            ->set( array( 'form' => $form->generate_form() ) );
     }
 
     /***** AJAX *****/
