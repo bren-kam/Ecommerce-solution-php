@@ -129,7 +129,7 @@ class FormTable {
             $html .= '<p class="red">' . $this->errs . '</p><br />';
 
         $html .= '<form name="' . $this->name . '" id="' . $this->name . '" action="' . $this->action . '" method="' . $this->method . '"' . $attributes . '>';
-        $html .= '<table>';
+        $html .= '<table class="width-auto">';
 
         // Count
         $i = 0;
