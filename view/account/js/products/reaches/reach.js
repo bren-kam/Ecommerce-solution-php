@@ -2,13 +2,13 @@
 jQuery(function($) {
     // Make it possible to priority the status on the fly
 	$('#sPriority').change( function() {
-		$.post( '/products/reaches/update-priority/', { _nonce : $('#_update_priority').val(), tid : $('#hTicketId').val(), priority : $(this).val() }, ajaxResponse, 'json' );
+		$.post( '/products/reaches/update-priority/', { _nonce : $('#_update_priority').val(), wrid : $('#hReachId').val(), priority : $(this).val() }, ajaxResponse, 'json' );
 	});
 
     // Make it possible to update the status on the fly
 	$('#sStatus').change( function() {
         // Update the status when they change it
-        $.post( '/products/reaches/update-status/', { _nonce : $('#_update_status').val(), tid : $('#hTicketId').val(), status : $(this).val() }, ajaxResponse, 'json' );
+        $.post( '/products/reaches/update-status/', { _nonce : $('#_update_status').val(), wrid : $('#hReachId').val(), status : $(this).val() }, ajaxResponse, 'json' );
 	});
 
 	// Make it possible to update the "assigned to" on the fly
@@ -51,5 +51,5 @@ jQuery(function($) {
 // Update assigned to
 function updateAssignedTo( userId ) {
     // Update the status when they change it
-    $.post( '/products/reaches/update-assigned-to/', { _nonce : $('#_update_assigned_to').val(), wrid : $('#hWebsiteReachID').val(), auid : userId }, ajaxResponse, 'json' );
+    $.post( '/products/reaches/update-assigned-to/', { _nonce : $('#_update_assigned_to').val(), wrid : $('#hReachId').val(), auid : userId }, ajaxResponse, 'json' );
 }

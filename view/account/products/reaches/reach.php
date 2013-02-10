@@ -16,12 +16,11 @@ $date = new DateTime( $reach->date_created );
 echo $template->start( _('Quote') . ' #' . $reach->id, '../sidebar' );
 ?>
 
-<input type="hidden" id="hReachID" value="<?php echo $reach->id; ?>" />
 <input type="hidden" id="hWebsiteID" value="<?php echo $reach->website_id; ?>" />
 <input type="hidden" id="hUserID" value="<?php echo $user->id; ?>" />
 <?php
 nonce::field( 'update_status', '_update_status');
-nonce::field( 'update_assigned-to', '_update_assigned_to' );
+nonce::field( 'update_assigned_to', '_update_assigned_to' );
 nonce::field( 'update_priority', '_update_priority' );
 $delete_comment_nonce = nonce::create( 'delete_comment' );
 ?>
@@ -129,7 +128,7 @@ $delete_comment_nonce = nonce::create( 'delete_comment' );
             <input type="checkbox" name="private" id="private" value="1" /> <label for="private"><?php echo _('Private'); ?></label>
         </div>
 
-        <input type="hidden" name="hReachId" value="<?php echo $reach->id; ?>" />
+        <input type="hidden" name="hReachId" id="hReachId" value="<?php echo $reach->id; ?>" />
         <?php nonce::field( 'add_comment' ); ?>
     </form>
     <br clear="all" />

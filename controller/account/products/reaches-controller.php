@@ -251,7 +251,7 @@ class ReachesController extends BaseController {
     }
 
     /**
-     * Update who the ticket is assigned to
+     * Update who the reach is assigned to
      *
      * @return AjaxResponse
      */
@@ -260,21 +260,21 @@ class ReachesController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_POST['tid'] ) && isset( $_POST['auid'] ), _('Failed to update assigned user') );
+        $response->check( isset( $_POST['wrid'] ) && isset( $_POST['auid'] ), _('Failed to update assigned user') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
 
-        // Get ticket
-        $ticket = new Ticket();
-        $ticket->get( $_POST['tid'] );
+        // Get reach
+        $reach = new WebsiteReach();
+        $reach->get( $_POST['wrid'] );
 
         // Change priority
-        $ticket->assigned_to_user_id = $_POST['auid'];
+        $reach->assigned_to_user_id = $_POST['auid'];
 
         // Update ticket
-        $ticket->save();
+        $reach->save();
 
         // Send out email
         $priorities = array(
@@ -288,12 +288,12 @@ class ReachesController extends BaseController {
 
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
-        $message .= 'You have been assigned Ticket #' . $ticket->id . ". To view it, follow the link below:\n\n";
-        $message .= 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/tickets/ticket/?tid=' . $ticket->id . "\n\n";
-        $message .= 'Priority: ' . $priorities[$ticket->priority] . "\n\n";
+        $message .= 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ". To view it, follow the link below:\n\n";
+        $message .= url::add_query_arg( 'wrid', $reach->id, 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/productes/reaches/reach/' ) . "\n\n";
+        $message .= 'Priority: ' . $priorities[$reach->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
-        fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
+        fn::mail( $assigned_user->email, 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ' (' . $priorities[$reach->priority] . ')', $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
 
         // Change who it's assigned to
         jQuery('#sAssignedTo')->val( $assigned_user->id );
@@ -314,21 +314,21 @@ class ReachesController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_POST['tid'] ) && isset( $_POST['priority'] ), _('Failed to update priority') );
+        $response->check( isset( $_POST['wrid'] ) && isset( $_POST['priority'] ), _('Failed to update priority') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
 
-        // Get ticket
-        $ticket = new Ticket();
-        $ticket->get( $_POST['tid'] );
+        // Get reach
+        $reach = new WebsiteReach();
+        $reach->get( $_POST['wrid'] );
 
         // Change priority
-        $ticket->priority = $_POST['priority'];
+        $reach->priority = $_POST['priority'];
 
-        // Update ticket
-        $ticket->save();
+        // Update
+        $reach->save();
 
         return $response;
     }
@@ -343,39 +343,21 @@ class ReachesController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have the proper parameters
-        $response->check( isset( $_POST['tid'] ) && isset( $_POST['status'] ), _('Failed to update status') );
+        $response->check( isset( $_POST['wrid'] ) && isset( $_POST['status'] ), _('Failed to update status') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
 
-        // Get ticket
-        $ticket = new Ticket();
-        $ticket->get( $_POST['tid'] );
+         // Get reach
+        $reach = new WebsiteReach();
+        $reach->get( $_POST['wrid'] );
 
         // Change status
-        $ticket->status = $_POST['status'];
+        $reach->status = $_POST['status'];
 
-        // Update ticket
-        $ticket->save();
-
-        // Mark statistic for updated tickets if it's a GSR user
-        if ( 1 == $ticket->status && in_array( $this->user->id, array( 493, 1, 814, 305, 85, 19 ) ) ) {
-            // Load library
-            library('statistics-api');
-            $stat = new Stat_API( Config::key('rs-key') );
-
-            // Get the dates
-            $date = new DateTime();
-            $ticket_date = new DateTime( $ticket->date_created );
-
-            // Add the value of a completed ticket
-            $stat->add_graph_value( 23452, 1, $date->format('Y-m-d') );
-
-            // Add the average ticket time
-            $hours = ( $date->getTimestamp() - $ticket_date->getTimestamp() ) / 3600;
-            $stat->add_graph_value( 23453, round( $hours, 1 ), $date->format('Y-m-d')  );
-        }
+        // Update
+        $reach->save();
 
         return $response;
     }
