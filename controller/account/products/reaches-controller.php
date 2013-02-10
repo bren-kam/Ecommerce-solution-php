@@ -33,7 +33,7 @@ class ReachesController extends BaseController {
 
         // Get reach
         $reach = new WebsiteReach();
-        $reach->get( $_GET['wrid'] );
+        $reach->get( $_GET['wrid'], $this->user->account->id );
         $reach->get_meta();
         $reach->get_info();
 
@@ -148,7 +148,7 @@ class ReachesController extends BaseController {
         $assigned_user = new User();
 
         // Get ticket
-        $reach->get( $_POST['hReachId'] );
+        $reach->get( $_POST['hReachId'], $this->user->account->id );
 
         // Set variables
         $status = ( 0 == $reach->status ) ? ' (Open)' : ' (Closed)';
@@ -268,7 +268,7 @@ class ReachesController extends BaseController {
 
         // Get reach
         $reach = new WebsiteReach();
-        $reach->get( $_POST['wrid'] );
+        $reach->get( $_POST['wrid'], $this->user->account->id );
 
         // Change priority
         $reach->assigned_to_user_id = $_POST['auid'];
@@ -322,7 +322,7 @@ class ReachesController extends BaseController {
 
         // Get reach
         $reach = new WebsiteReach();
-        $reach->get( $_POST['wrid'] );
+        $reach->get( $_POST['wrid'], $this->user->account->id );
 
         // Change priority
         $reach->priority = $_POST['priority'];
@@ -351,7 +351,7 @@ class ReachesController extends BaseController {
 
          // Get reach
         $reach = new WebsiteReach();
-        $reach->get( $_POST['wrid'] );
+        $reach->get( $_POST['wrid'], $this->user->account->id );
 
         // Change status
         $reach->status = $_POST['status'];

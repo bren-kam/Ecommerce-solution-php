@@ -244,6 +244,41 @@ class Product extends ActiveRecordBase {
 	}
 
     /**
+     * Get all information of the products
+     *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+     * @return Product[]
+     */
+    public function list_custom_products( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT p.`product_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, p.`publish_date`, c.`name` AS category FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count all the products
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_custom_products( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+    }
+
+    /**
 	 * Gets the data for an autocomplete request
 	 *
 	 * @param string $query
