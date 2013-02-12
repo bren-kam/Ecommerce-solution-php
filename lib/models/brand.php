@@ -31,10 +31,24 @@ class Brand extends ActiveRecordBase {
     /**
      * Get All
      *
-     * @return array
+     * @return Brand[]
      */
     public function get_all() {
         return $this->get_results( 'SELECT * FROM `brands` ORDER BY `name`', PDO::FETCH_CLASS, 'Brand' );
+    }
+
+    /**
+     * Get By Account
+     *
+     * @param int $account_id
+     * @return Brand[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            'SELECT b.* FROM `brands` AS b LEFT JOIN `products` AS p ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 GROUP BY b.`brand_id` ORDER BY b.`name` ASC'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'Brand' );
     }
 
     /**

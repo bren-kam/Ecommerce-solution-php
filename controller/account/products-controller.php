@@ -146,14 +146,19 @@ class ProductsController extends BaseController {
                     $quantity = $free_slots - $account_product->add_bulk_by_brand_count( $this->user->account->id, $_POST['hBrandID'], $industries );
 
                     if ( $quantity < 0 ) {
+                        // Make it show up right
+                        $quantity *= -1;
+
                         $this->notify( _("There is not enough free space to add this brand. Delete at least $quantity products, or expand the size of the product catalog."), false );
                     } else {
                         // Add bulk
-                        $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
+                        $quantity = $account_product->add_bulk_by_brand( $this->user->account->id, $_POST['hBrandID'], $industries );
 
-                        // Reorganize categogires
+                        // Reorganize categories
                         $account_category = new AccountCategory();
                         $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+                        $this->notify( $quantity . ' ' . _('brand products added successfully!') );
                     }
                 }
             }
@@ -168,6 +173,243 @@ class ProductsController extends BaseController {
             ->set( compact( 'js_validation', 'errs' ) );
 
         return $response;
+    }
+
+    /**
+     * Add Bulk
+     *
+     * @return TemplateResponse
+     */
+    protected function add_bulk() {
+        $form = new FormTable( 'fAddBulk' );
+        $form->submit( _('Add Bulk'), '', 1 );
+        $form->add_field( 'textarea', '', 'taSKUs' )
+            ->add_validation( 'req', _('You must enter SKUs before you can add products') );
+
+        if ( $form->posted() ) {
+            $account_product = new AccountProduct();
+            $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
+
+            // How many free slots do we have
+            $free_slots = $this->user->account->products - $account_product->count( $this->user->account->id );
+            $quantity = $free_slots - $account_product->add_bulk_count( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+            if ( $quantity < 0 ) {
+                // Make it show up right
+                $quantity *= -1;
+
+                $this->notify( _("There is not enough free space to add these products. Delete at least $quantity products, or expand the size of the product catalog."), false );
+            } else {
+                // Add bulk
+                $quantity = $account_product->add_bulk( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+                // Reorganize categories
+                $account_category = new AccountCategory();
+                $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+                $this->notify( $quantity . ' ' . _('products added successfully!') );
+            }
+
+        }
+
+        $response = $this->get_template_response( 'add-bulk' )
+            ->add_title( _('Add Bulk') )
+            ->select( 'sub-products', 'add-bulk' )
+            ->set( array( 'form' => $form->generate_form() ) );
+
+        return $response;
+    }
+
+    /**
+     * Block Products
+     *
+     * @return TemplateResponse
+     */
+    protected function block_products() {
+        $form = new FormTable( 'fBlockProducts' );
+        $form->submit( _('Block Products'), '', 1 );
+        $form->add_field( 'textarea', '', 'taSKUs' )
+            ->add_validation( 'req', _('You must enter SKUs before you can add products') );
+
+        $account_product = new AccountProduct();
+
+        if ( $form->posted() ) {
+            $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
+
+            $account_product->block( $this->user->account->id, $this->user->account->get_industries(), $skus );
+
+            $this->notify( _('Blocked Products have been successfully updated!') );
+        }
+
+        $blocked_products = $account_product->get_blocked( $this->user->account->id );
+
+        $response = $this->get_template_response( 'block-products' )
+            ->add_title( _('Block Products') )
+            ->select( 'sub-products', 'block-products' )
+            ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
+
+        return $response;
+    }
+
+    /**
+     * Hide Categories
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function hide_categories() {
+        // Setup objects
+        $category = new Category();
+        $account_category = new AccountCategory();
+
+        // Sort categories
+        $categories_array = $category->sort_by_hierarchy();
+        $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
+        $categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( !in_array( $category->id, $website_category_ids ) )
+                continue;
+
+            $categories[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
+        }
+
+        $form = new FormTable( 'fCategories' );
+        $form->submit( _('Hide Categories'), '', 1 );
+        $form->add_field( 'select', '', 'sCategoryIDs[]' )
+            ->attribute( 'multiple', 'multiple' )
+            ->attribute( 'class', 'height-200' )
+            ->options( $categories );
+
+        if ( $form->posted() ) {
+            // Hide them
+            $account_category->hide( $this->user->account->id, $_POST['sCategoryIDs'] );
+
+            // Remove any of them
+            $account_category->remove_categories( $this->user->account->id, $_POST['sCategoryIDs'] );
+            $account_category->reorganize_categories( $this->user->account->id, $category );
+
+            $this->notify( _('Hidden categories have been successfully updated!') );
+
+            return new RedirectResponse( '/products/hide-categories/' );
+        }
+
+        $hidden_category_ids = $account_category->get_all_hidden_ids( $this->user->account->id );
+        $hidden_categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( !in_array( $category->id, $hidden_category_ids ) )
+                continue;
+
+            $hidden_categories[] = $category;
+        }
+
+        return $this->get_template_response( 'hide-categories' )
+            ->add_title( _('Hide Categories') )
+            ->select( 'sub-products', 'hide-categories' )
+            ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $hidden_categories ) );
+    }
+
+    /**
+     * Product Prices
+     *
+     * @return TemplateResponse
+     */
+    protected function product_prices() {
+        $brand = new Brand();
+
+        $brands = $brand->get_by_account( $this->user->account->id );
+
+        $this->resources->javascript( 'jquery.datatables', 'products/product-prices' );
+
+        return $this->get_template_response( 'product-prices' )
+            ->add_title( _('Product Prices') )
+            ->select( 'sub-products', 'product-prices' )
+            ->set( compact( 'brands' ) );
+    }
+
+    /**
+     * Unblock products
+     *
+     * @return RedirectResponse
+     */
+    protected function unblock_products() {
+        if ( $this->verified() ) {
+            $account_product = new AccountProduct();
+            $account_product->unblock( $this->user->account->id, $_POST['unblock-products'] );
+            $this->notify( _('Blocked Products have been successfully updated!') );
+        }
+
+        return new RedirectResponse('/products/block-products/');
+    }
+
+    /**
+     * Unhide categories
+     *
+     * @return RedirectResponse
+     */
+    protected function unhide_categories() {
+        if ( $this->verified() ) {
+            $account_category = new AccountCategory();
+            $account_category->unhide( $this->user->account->id, $_POST['unhide-categories'] );
+            $account_category->reorganize_categories( $this->user->account->id, new Category() );
+
+            $this->notify( _('Hidden categories have been successfully updated!') );
+        }
+
+        return new RedirectResponse('/products/hide-categories/');
+    }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function settings() {
+        // Instantiate classes
+        $form = new FormTable( 'fSettings' );
+
+        // Get settings
+        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
+        $settings = $this->user->account->get_settings( $settings_array );
+        $checkboxes = array(
+        	'category-show-price-note' 	=> _('Categories - Show Price Note?')
+        	, 'add-product-popup' 		=> _('Add Product - Popup')
+        	, 'hide-skus' 				=> _('Hide Manufacturer SKUs')
+        	, 'hide-request-quote' 		=> _('Hide "Request a Quote" Button')
+        	, 'hide-customer-ratings' 	=> _('Hide Customer Ratings')
+        	, 'hide-product-brands' 	=> _('Hide Product Brands')
+        	, 'hide-browse-by-brand' 	=> _('Hide Browse By Brand')
+            , 'replace-price-note'      => _('Replace Price Note with Product Option')
+        );
+
+        // Create form
+        $form->add_field( 'text', _('Request-a-Quote Email'), 'request-a-quote-email', $settings['request-a-quote-email'] )
+            ->attribute( 'maxlength', '150' )
+            ->add_validation( 'req', 'email', _('The "Request-a-Quote Email" field must contain a valid email') );
+
+        foreach( $checkboxes as $setting => $nice_name ) {
+            $form->add_field( 'checkbox', $nice_name, $setting, $settings[$setting] );
+        }
+
+        if ( $form->posted() ) {
+            $new_settings = array();
+
+            foreach ( $settings_array as $k ) {
+                $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            $this->user->account->set_settings( $new_settings );
+
+            $this->notify( _('Your settings have been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/products/settings/');
+        }
+
+        return $this->get_template_response( 'settings' )
+            ->add_title( _('Settings') )
+            ->select( 'products', 'settings' )
+            ->set( array( 'form' => $form->generate_form() ) );
     }
 
     /***** AJAX *****/
@@ -552,7 +794,7 @@ class ProductsController extends BaseController {
         $account_product_option = new AccountProductOption();
 
         // Get variables
-        $account_product->get( $account_product['hProductID'], $this->user->account->id );
+        $account_product->get( $_POST['hProductID'], $this->user->account->id );
 
         /***** UPDATE PRODUCT *****/
         $account_product->alternate_price = $_POST['tAlternatePrice'];
@@ -867,6 +1109,70 @@ class ProductsController extends BaseController {
 
         // Close Dialog
         jQuery('#aClose')->click();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * List Product Prices
+     *
+     * @return DataTableResponse
+     */
+    protected function list_product_prices() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+        $account_product = new AccountProduct();
+
+        // Set Order by
+        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+        $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
+        $dt->add_where( ' AND p.`brand_id` = ' . (int) $_GET['b'] );
+
+        // Get account pages
+        $products = $account_product->list_product_prices( $dt->get_variables() );
+        $dt->set_row_count( $account_product->count_product_prices( $dt->get_count_variables() ) );
+
+        // Nonce
+        $data = array();
+
+        // Create output
+        if ( is_array( $products ) )
+        foreach ( $products as $product ) {
+            $data[] = array(
+                $product->sku
+                , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
+                , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
+                , '<input type="text" class="alternate_price_name" id="tAlternatePriceName' . $product->id . '" value="' . $product->alternate_price_name . '" />'
+                , '<input type="text" class="alternate_price" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
+                , '<input type="text" class="sale_price" id="tSalePrice' . $product->id . '" value="' . $product->sale_price . '" />'
+            );
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
+    /**
+     * Set Product Prices
+     *
+     * @return AjaxResponse
+     */
+    protected function set_product_prices() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $account_product = new AccountProduct();
+        $account_product->set_product_prices( $this->user->account->id, $_POST['v'] );
+
+        jQuery('span.success')->show()->delay(5000)->hide();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 

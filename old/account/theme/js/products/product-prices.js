@@ -34,31 +34,31 @@ jQuery(function($) {
 	});
 
     $('#tProductPrices').addClass('dt').dataTable({
-			aaSorting: [[0,'asc']],
-			bAutoWidth: false,
-			bProcessing : 1,
-			bServerSide : 1,
-			iDisplayLength : 20,
-			sAjaxSource : '/ajax/products/product-prices/list-products/',
-			sDom : '<"top"lr>t<"bottom"pi>',
-			oLanguage: {
-					sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>',
-					sInfo: "_START_ - _END_ of _TOTAL_"
-			},
-			fnDrawCallback : function() {
-				// Run Sparrow on new content and add the class last to the last row
-				sparrow( $(this).find('tr:last').addClass('last').end() );
-			},
-			fnServerData: function ( sSource, aoData, fnCallback ) {
-				aoData.push({ name : 'b', value : $('#sBrand').val() });
+        aaSorting: [[0,'asc']],
+        bAutoWidth: false,
+        bProcessing : 1,
+        bServerSide : 1,
+        iDisplayLength : 20,
+        sAjaxSource : '/ajax/products/product-prices/list-products/',
+        sDom : '<"top"lr>t<"bottom"pi>',
+        oLanguage: {
+                sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>',
+                sInfo: "_START_ - _END_ of _TOTAL_"
+        },
+        fnDrawCallback : function() {
+            // Run Sparrow on new content and add the class last to the last row
+            sparrow( $(this).find('tr:last').addClass('last').end() );
+        },
+        fnServerData: function ( sSource, aoData, fnCallback ) {
+            aoData.push({ name : 'b', value : $('#sBrand').val() });
 
-				// Get the data
-				$.ajax({
-					url: sSource,
-					dataType: 'json',
-					data: aoData,
-					success: fnCallback
-				});
-			},
-		});
+            // Get the data
+            $.ajax({
+                url: sSource,
+                dataType: 'json',
+                data: aoData,
+                success: fnCallback
+            });
+        },
+    });
 });

@@ -18,9 +18,10 @@ class TestController extends BaseController {
      */
     protected function index() {
          //Update Craigslist Stats
-        $craigslist = new Craigslist;
-        $craigslist->update_stats();
-
+        //$craigslist = new Craigslist;
+        //$craigslist->update_stats();
+        $ashley = new AshleyMasterProductFeedGateway();
+        $ashley->run();
         /**
         $ashley_package_feed = new AshleyPackageProductFeedGateway();
         $ashley_package_feed->run();

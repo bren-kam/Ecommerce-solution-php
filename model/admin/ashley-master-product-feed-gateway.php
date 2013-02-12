@@ -144,19 +144,25 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 						$xml_reader->next();
 						continue;
 					}
+					
+					$image = trim( $xml_reader->getAttribute('image') );
+					
+					if ( empty( $image ) )
+						continue;
 
 					// Increment the item
 					$j++;
 
 					// Set the dimensions
 					$dimensions = 0;
+					
 
 					// Create base for items
 					$this->items[$j] = array(
 						'status' => ( 'Discontinued' == trim( $xml_reader->getAttribute('itemStatus') ) ) ? 'discontinued' : 'in-stock'
 						, 'nodeType' => trim( $xml_reader->nodeType )
 						, 'group' => trim( $xml_reader->getAttribute('itemGroupCode') )
-						, 'image' => trim( $xml_reader->getAttribute('image') )
+						, 'image' => $image
 						, 'brand_id' => $this->get_brand( trim( $xml_reader->getAttribute('retailSalesCategory') ) )
 						, 'specs' => ''
 						, 'weight' => 0
@@ -283,6 +289,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
                 // Set publish date
                 $product->publish_date = dt::now();
+
+                // Increment product count
+                $this->new_product( format::convert_characters( $this->groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
             }
 
             /***** PREPARE PRODUCT DATA *****/
@@ -337,7 +346,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Let's hope it's big!
 			$image = $item['image'];
             $image_url = 'https://www.ashleydirect.com/graphics/' . $image;
-
+            
             // Setup images array
             $images = explode( '|', $product->images );
 
@@ -369,9 +378,6 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             /***** UPDATE PRODUCT *****/
 
 			$product->save();
-
-            // Increment product count
-	        $this->new_product( $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
