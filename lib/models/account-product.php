@@ -186,11 +186,12 @@ class AccountProduct extends ActiveRecordBase {
 	 * @param int $account_id
      * @param array $industry_ids
 	 * @param array $product_skus
+     * @return int
 	 */
-	public  function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
+	public function add_bulk( $account_id, array $industry_ids, array $product_skus ) {
         // Make sure they entered in SKUs
-        if ( 0 == count( $product_skus ) || 0 == $industry_ids )
-            return;
+        if ( empty( $product_skus ) || empty( $industry_ids ) )
+            return 0;
 
         // Make account id safe
         $account_id = (int) $account_id;
@@ -205,6 +206,9 @@ class AccountProduct extends ActiveRecordBase {
         // Split into chunks so we can do queries one at a time
 		$product_sku_chunks = array_chunk( $product_skus, 500 );
 
+        // Count the products added
+        $count = 0;
+
 		foreach ( $product_sku_chunks as $product_skus ) {
             // Get the count
             $product_sku_count = count( $product_skus );
@@ -215,12 +219,50 @@ class AccountProduct extends ActiveRecordBase {
 			// Magical Query
 			// Insert website products
 			$this->prepare(
-                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, `product_id` FROM `products` WHERE ( `website_id` = 0 OR `website_id` = $account_id ) AND `industry_id` IN( $industry_ids_sql ) AND `publish_visibility` = 'public' AND `status` <> 'discontinued' AND `sku` IN ( $product_skus_sql ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
+                "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN( $industry_ids_sql ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $product_skus_sql ) AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) GROUP BY `sku` ON DUPLICATE KEY UPDATE `active` = 1"
                 , str_repeat( 's', $product_sku_count )
                 , $product_skus
             )->query();
+
+            $count += $this->get_row_count();
 		}
+
+        return $count;
 	}
+
+    /**
+     * Add Bulk Count
+     *
+     * @param int $account_id
+     * @param array $industry_ids
+     * @param array $product_skus
+     * @return int
+     */
+    public function add_bulk_count( $account_id, array $industry_ids, array $product_skus ) {
+        // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Get the count
+        $product_sku_count = count( $product_skus );
+
+        // Turn it into a string
+        $product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
+
+        // Count how many would be entered
+        // Insert website products
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT p.`sku` ) FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN( $industry_ids_sql ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $product_skus_sql ) AND ( wp.`product_id` IS NULL OR wp.`active` = 0 )"
+            , str_repeat( 's', $product_sku_count )
+            , $product_skus
+        )->get_var();
+    }
 
     /**
 	 * Add Bulk By Product IDs
@@ -267,7 +309,9 @@ class AccountProduct extends ActiveRecordBase {
         }
 
         // Magical Query - Insert website products
-        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN(" . implode( ',', $industries ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) ON DUPLICATE KEY UPDATE wp.`active` = 1" );
+        $this->query( "INSERT INTO `website_products` ( `website_id`, `product_id` ) SELECT DISTINCT $account_id, p.`product_id` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`industry_id` IN(" . implode( ',', $industries ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`brand_id` = $brand_id AND ( wp.`product_id` IS NULL OR wp.`active` = 0 ) ON DUPLICATE KEY UPDATE `active` = 1" );
+
+        return $this->get_row_count();
     }
 
     /**
@@ -316,6 +360,82 @@ class AccountProduct extends ActiveRecordBase {
             )->query();
 		}
 	}
+
+    /**
+     * Block Products
+     *
+     * @param int $account_id
+     * @param array $industry_ids
+     * @param array $skus
+     */
+    public function block( $account_id, array $industry_ids, array $skus ) {
+        // Make sure they entered in SKUs
+        if ( empty( $skus ) )
+            return;
+
+         // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Get the count
+        $sku_count = count( $skus );
+
+        // Turn it into a string
+        $skus_sql = '?' . str_repeat( ',?', $sku_count - 1 );
+
+        // Insert blocked products or update them if they already exist
+        $this->prepare(
+            "INSERT INTO `website_products` ( `website_id`, `product_id`, `blocked`, `active` ) SELECT DISTINCT $account_id, p.`product_id`, 1, 0 FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`industry_id` IN( $industry_ids_sql ) AND ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $skus_sql ) ON DUPLICATE KEY UPDATE `blocked` = 1"
+            , str_repeat( 's', $sku_count )
+            , $skus
+        )->query();
+    }
+
+    /**
+     * Block Products
+     *
+     * @param int $account_id
+     * @param array $product_ids
+     */
+    public function unblock( $account_id, array $product_ids ) {
+        // Make sure they entered in SKUs
+        if ( empty( $product_ids ) )
+            return;
+
+         // Make account id safe
+        $account_id = (int) $account_id;
+
+        // Escape all the SKUs
+        foreach ( $product_ids as &$pid ) {
+            $pid = (int) $pid;
+        }
+
+        // Turn it into a string
+        $product_ids = implode( ",", $product_ids );
+
+        // Unblock products
+        $this->query( "UPDATE `website_products` SET `blocked` = 0 WHERE `website_id` = $account_id AND `product_id` IN ( $product_ids )" );
+    }
+
+    /**
+     * Get Blocked Products
+     *
+     * @param int $account_id
+     * @return Product[]
+     */
+    public function get_blocked( $account_id ) {
+        return $this->prepare(
+            'SELECT p.`product_id`, p.`name`, p.`sku` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 1'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
 
     /**
 	 * Removes all sale items from a website
@@ -458,5 +578,73 @@ class AccountProduct extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get all information of the products
+     *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+     * @return Product[]
+     */
+    public function list_product_prices( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT wp.`product_id`, wp.`alternate_price`, wp.`price`, wp.`sale_price`, wp.`alternate_price_name`, wp.`price_note`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY wp.`product_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count all the products
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_product_prices( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( wp.`product_id` ) FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+    }
+
+    /**
+     * Set Product Prices
+     *
+     * @param int $account_id
+     * @param array $values
+     */
+    public function set_product_prices( $account_id, array $values ) {
+         // Prepare statement
+        $statement = $this->prepare_raw( "UPDATE `website_products` SET `alternate_price` = :alternate_price, `price` = :price, `sale_price` = :sale_price, `alternate_price_name` = :alternate_price_name, `price_note` = :price_note WHERE `website_id` = :account_id AND `blocked` = 0 AND `active` = 1 AND `product_id` = :product_id" );
+        $statement
+            ->bind_param( ':alternate_price', $alternate_price, PDO::PARAM_INT )
+            ->bind_param( ':price', $price, PDO::PARAM_INT )
+            ->bind_param( ':sale_price', $sale_price, PDO::PARAM_INT )
+            ->bind_param( ':alternate_price_name', $alternate_price_name, PDO::PARAM_STR )
+            ->bind_param( ':price_note', $price_note, PDO::PARAM_STR )
+            ->bind_value( ':account_id', $account_id, PDO::PARAM_INT )
+            ->bind_param( ':product_id', $product_id, PDO::PARAM_INT );
+
+        foreach ( $values as $product_id => $array ) {
+            // Make sure all values have a value
+            $alternate_price = 0;
+            $price = 0;
+            $sale_price = 0;
+            $alternate_price_name = '';
+            $price_note = '';
+
+            // Get the values
+            extract( $array );
+
+            $statement->query();
+        }
     }
 }

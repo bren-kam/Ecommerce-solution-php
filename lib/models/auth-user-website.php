@@ -27,6 +27,21 @@ class AuthUserWebsite extends ActiveRecordBase {
     }
 
     /**
+     * Get By Account
+     *
+     * @param int $account_id
+     * @param string $where [optional]
+     * @return User[]
+     */
+    public function get_by_account( $account_id, $where = '' ) {
+        return $this->prepare(
+            "SELECT u.`user_id`, u.`contact_name`, u.`email`, u.`role` FROM `users` AS u LEFT JOIN `auth_user_websites` AS auw ON ( auw.`user_id` = u.`user_id` ) WHERE u.`status` = 1 AND auw.`website_id` = :account_id AND u.`contact_name` <> '' $where ORDER BY u.`contact_name`"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'User' );
+    }
+
+    /**
      * Add an authorized user
      *
      * @param string $contact_name
@@ -123,7 +138,7 @@ class AuthUserWebsite extends ActiveRecordBase {
     }
 
     /**
-     * Get
+     * Is Authorized
      *
      * @param int $user_id
      * @param int $account_id

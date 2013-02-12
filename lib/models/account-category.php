@@ -42,6 +42,20 @@ class AccountCategory extends ActiveRecordBase {
     }
 
     /**
+     * Get All Hidden
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_all_hidden_ids( $account_id ) {
+        return $this->prepare(
+            'SELECT `category_id` FROM `website_blocked_category` WHERE `website_id` = :account_id'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_col();
+    }
+
+    /**
      * Save
      */
     public function save() {
@@ -56,6 +70,47 @@ class AccountCategory extends ActiveRecordBase {
             'website_id' => $this->website_id
         , 'category_id' => $this->category_id
         ), 'sssssi', 'ii' );
+    }
+
+    /**
+     * Hide
+     *
+     * @param int $account_id
+     * @param array $category_ids
+     */
+    public function hide( $account_id, array $category_ids ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+        foreach ( $category_ids as &$cid ) {
+            $cid = (int) $cid;
+        }
+
+        $values = "( $account_id, " . implode( " ), ( $account_id, ", $category_ids ) . ' )';
+
+        // Insert into blocked list
+        $this->query( "INSERT INTO `website_blocked_category` ( `website_id`, `category_id` ) VALUES $values" );
+    }
+
+    /**
+     * Unhide
+     *
+     * @param int $account_id
+     * @param array $category_ids
+     */
+    public function unhide( $account_id, array $category_ids ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+        foreach ( $category_ids as &$cid ) {
+            $cid = (int) $cid;
+        }
+
+        // Turn into usable format
+        $category_ids = implode( ',', $category_ids );
+
+        // Unhide categories
+        $this->query( "DELETE FROM `website_blocked_category` WHERE `website_id` = $account_id AND `category_id` IN ( $category_ids )" );
     }
 
     /**
@@ -215,7 +270,7 @@ class AccountCategory extends ActiveRecordBase {
      * @param int $account_id
 	 * @param array $category_ids
 	 */
-	protected function remove_categories( $account_id, array $category_ids ) {
+	public function remove_categories( $account_id, array $category_ids ) {
 		// Make sure they're MySQL safe
 		foreach ( $category_ids as &$cid ) {
 			$cid = (int) $cid;
