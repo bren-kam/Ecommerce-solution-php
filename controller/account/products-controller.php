@@ -422,10 +422,12 @@ class ProductsController extends BaseController {
                     ->css( 'products/brands' )
                     ->css_url( Config::resource('jquery-ui') );
 
+        $website_top_brand = new WebsiteTopBrand();
+
         return $this->get_template_response( 'brands' )
             ->add_title( _('Brands') )
             ->select( 'products', 'brands' )
-            ->set( array( 'brands' => $this->user->account->get_top_brands() ) );
+            ->set( array( 'brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
     }
 
     /***** AJAX *****/
@@ -1201,7 +1203,6 @@ class ProductsController extends BaseController {
     /**
      * Update Brand Sequence
      *
-     * @param int $account_id
      * @return AjaxResponse
      */
     protected function update_brand_sequence() {
@@ -1217,7 +1218,103 @@ class ProductsController extends BaseController {
         $sequence = explode( '&dBrand[]=', $_POST['s'] );
         $sequence[0] = substr( $sequence[0], 9 );
 
-        $this->user->account->update_brand_sequence( $sequence );
+        $website_top_brand = new WebsiteTopBrand();
+        $website_top_brand->update_sequence( $this->user->account->id, $sequence );
+
+        return $response;
+    }
+
+    /**
+     * Remove
+     *
+     * @return AjaxResponse
+     */
+    protected function remove_brand() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['bid'] ), _('Unable to remove brand. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Remove brand
+        $website_top_brand = new WebsiteTopBrand();
+        $website_top_brand->remove( $this->user->account->id, $_GET['bid'] );
+
+        jQuery( '#dBrand_' . $_GET['bid'] )
+        	->remove()
+        	->updateBrandsSequence();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Set Brand Link
+     *
+     * @return AjaxResponse
+     */
+    protected function set_brand_link() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Set link brands
+        $this->user->account->link_brands = $_POST['checked'];
+        $this->user->account->save();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Add Brand
+     *
+     * @return AjaxResponse
+     */
+    protected function add_brand() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['bid'], $_POST['s'] ), _('Unable to add brand. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Get the brand, then add it
+        $website_top_brand = new WebsiteTopBrand();
+        $brand = new Brand();
+        $brand->get( $_POST['bid'] );
+
+        $website_top_brand->website_id = $this->user->account->id;
+        $website_top_brand->brand_id = $_POST['bid'];
+        $website_top_brand->sequence = $_POST['s'];
+        $website_top_brand->create();
+
+        // Now add it to the page
+        $dBrand = '<div id="dBrand_' . $brand->id . '" class="brand">';
+       	$dBrand .= '<img src="' . $brand->image . '" title="' . $brand->name . '" />';
+       	$dBrand .= '<h4>' . $brand->name . '</h4>';
+       	$dBrand .= '<p class="brand-url"><a href="' . $brand->link . '" title="' . $brand->name . '" target="_blank">' . $brand->link . '</a></p>';
+       	$dBrand .= '<a href="' . url::add_query_arg( array( '_nonce' => nonce::create('remove_brand'), 'bid' => $brand->id ), '/products/remove-brand/' ) . '" title="' . _('Remove') . '" ajax="1" confirm="' . _('Are you sure you want to remove this brand?') . '">' . _('Remove') . '</a>';
+       	$dBrand .= '</div>';
+
+       	jQuery('#brands')
+       		->append( $dBrand )
+       		->sparrow();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

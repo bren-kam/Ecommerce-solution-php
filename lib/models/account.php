@@ -116,6 +116,7 @@ class Account extends ActiveRecordBase {
             , 'products' => $this->products
             , 'pages' => $this->pages
             , 'product_catalog' => $this->product_catalog
+            , 'link_brands' => $this->link_brands
             , 'blog' => $this->blog
             , 'email_marketing' => $this->email_marketing
             , 'mobile_marketing' => $this->mobile_marketing
@@ -135,7 +136,7 @@ class Account extends ActiveRecordBase {
             , 'live' => $this->live
             , 'status' => $this->status
         ), array( 'website_id' => $this->id )
-        , 'iiisssssssiiiiiiiiiiisisssssii', 'i' );
+        , 'iiisssssssiiiiiiiiiiiisisssssii', 'i' );
     }
 
     /**
@@ -382,19 +383,6 @@ class Account extends ActiveRecordBase {
     }
 
     /**
-     * Get Top Brands
-     *
-     * @return Brand[]
-     */
-    public function get_top_brands() {
-        return $this->prepare(
-            "SELECT b.* FROM `brands` AS b LEFT JOIN `website_top_brands` AS wtb ON ( wtb.`brand_id` = b.`brand_id` ) WHERE wtb.`website_id` = :account_id ORDER BY wtb.`sequence` ASC"
-            , 'i'
-            , array( ':account_id' => $this->id )
-        )->get_results( PDO::FETCH_CLASS, 'Brand' );
-    }
-
-    /**
      * Copy top brands
      *
      * @param int $template_account_id
@@ -407,29 +395,6 @@ class Account extends ActiveRecordBase {
                 , 'sequence' => NULL
             ), array( 'website_id' => $template_account_id )
         );
-    }
-
-    /**
-     * Update the sequence of many brands
-     *
-     * @param array $brands
-     */
-    public function update_brand_sequence( array $brands ) {
-        // Starting with 0 for a sequence
-        $sequence = 0;
-
-        // Prepare statement
-        $statement = $this->prepare_raw( 'UPDATE `website_top_brands` SET `sequence` = :sequence WHERE `brand_id` = :brand_id AND `website_id` = :account_id' );
-        $statement->bind_param( ':sequence', $sequence, 'i' )
-            ->bind_param( ':brand_id', $brand_id, 'i' )
-            ->bind_value( ':account_id', $this->id, 'i' );
-
-        // Loop through the statement and update anything as it needs to be updated
-        foreach ( $brands as $brand_id ) {
-            $statement->query();
-
-            $sequence++;
-        }
     }
 
     /**

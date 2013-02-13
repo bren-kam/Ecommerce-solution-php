@@ -19,7 +19,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			}
 			
 			// It was not cached, get data
-			$.post( '/products/brands/autocomplete/', { '_nonce' : $('#_autocomplete').val(), 'term' : request['term'] }, function( autocompleteResponse ) {
+			$.post( '/products/autocomplete/', { _nonce : $('#_autocomplete').val(), term : request['term'], type : 'brand' }, function( autocompleteResponse ) {
 				// Assign global cache the response data
 				brands[request['term']] = autocompleteResponse['suggestions'];
 				
