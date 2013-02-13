@@ -412,6 +412,22 @@ class ProductsController extends BaseController {
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
+    /**
+     * Brands
+     *
+     * @return TemplateResponse
+     */
+    protected function brands() {
+        $this->resources->javascript( 'products/brands' )
+                    ->css( 'products/brands' )
+                    ->css_url( Config::resource('jquery-ui') );
+
+        return $this->get_template_response( 'brands' )
+            ->add_title( _('Brands') )
+            ->select( 'products', 'brands' )
+            ->set( array( 'brands' => $this->user->account->get_top_brands() ) );
+    }
+
     /***** AJAX *****/
 
     /**
@@ -1166,6 +1182,8 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
+        $response->check( isset( $_POST['v'] ), _('Unable to set Product Prices. Please contact your online specialist.') );
+
         // Return if there is an error
         if ( $response->has_error() )
             return $response;
@@ -1176,6 +1194,30 @@ class ProductsController extends BaseController {
         jQuery('span.success')->show()->delay(5000)->hide();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Brand Sequence
+     *
+     * @param int $account_id
+     * @return AjaxResponse
+     */
+    protected function update_brand_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&dBrand[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 9 );
+
+        $this->user->account->update_brand_sequence( $sequence );
 
         return $response;
     }
