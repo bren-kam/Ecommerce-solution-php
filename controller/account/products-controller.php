@@ -435,7 +435,7 @@ class ProductsController extends BaseController {
         switch ( $_POST['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
             break;
 
             case 'product':
@@ -647,7 +647,8 @@ class ProductsController extends BaseController {
 
         // Remove discontinued and reorganize categories
         $account_product->get( $_GET['pid'], $this->user->account->id );
-        $account_product->remove();
+        $account_product->active = 0;
+        $account_product->save();
 
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
