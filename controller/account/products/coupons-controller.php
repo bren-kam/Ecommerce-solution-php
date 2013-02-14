@@ -78,6 +78,10 @@ class CouponsController extends BaseController {
         $shipping_methods = $shipping_method->get_by_account( $this->user->account->id );
         $free_shipping_methods = $coupon->get_free_shipping_methods();
 
+        $this->resources
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'products/coupons/add-edit' );
+
         return $this->get_template_response( 'add-edit' )
             ->select( 'coupons', 'add' )
             ->set( compact( 'coupon', 'shipping_methods','free_shipping_methods', 'js_validation', 'errs' ) );
