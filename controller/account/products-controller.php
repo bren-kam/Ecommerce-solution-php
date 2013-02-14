@@ -427,7 +427,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'brands' )
             ->add_title( _('Brands') )
             ->select( 'products', 'brands' )
-            ->set( array( 'brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
+            ->set( array( 'top_brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
     }
 
     /***** AJAX *****/
@@ -890,7 +890,7 @@ class ProductsController extends BaseController {
         }
 
         if ( !empty( $product_options ) ) {
-        	$product_option_values = $product_option_list_item_values = $product_option_ids = $product_option_list_item_ids = '';
+        	$product_option_values = $product_option_list_item_values = $product_option_ids = array();
 
 			foreach ( $product_options as $po_id => $po ) {
 				$dropdown = is_array( $po );
@@ -903,14 +903,12 @@ class ProductsController extends BaseController {
 					$required = 0;
 				}
 
-				if ( !empty( $product_option_values ) )
-					$product_option_values .= ', ';
-
-				if ( !empty( $product_option_ids ) )
-					$product_option_ids .= ', ';
-
 				// Add the values
-				$product_option_values .= sprintf( "( $website_id, $product_id, %d, %f, %d )", $po_id, $price, $required );
+				$product_option_values[] = array(
+                    'product_option_id' => $po_id
+                    , 'price' => $price
+                    , 'required' => $required
+                );
 
 				// For error handling
 				$product_option_ids .= $po_id;
@@ -918,23 +916,20 @@ class ProductsController extends BaseController {
 				// If it's a drop down, set the values
 				if ( $dropdown )
 				foreach ( $po['list_items'] as $li_id => $price ) {
-					if ( !empty( $product_option_list_item_values ) )
-						$product_option_list_item_values .= ',';
-
-					if ( !empty( $product_option_list_item_ids ) )
-						$product_option_list_item_ids .= ',';
-
-					$product_option_list_item_values .= sprintf( "( $website_id, $product_id, %d, %d, %f )", $po_id, $li_id, $price );
+					$product_option_list_item_values[] = array(
+                        'product_option_id' => $po_id
+                        , 'product_option_list_item_id' => $li_id
+                        , 'price' => $price
+                    );
 				}
 			}
 
 			// Insert new product options
-			$this->db->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $product_option_values" );
+            $account_product_option->add_bulk( $this->user->account->id, $account_product->product_id, $product_option_values );
 
-			if ( $product_option_list_item_values != '' ) {
-				// Insert new product option list items
-				$this->db->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price` ) VALUES $product_option_list_item_values" );
-			}
+            // Insert new product option list items
+            if ( !empty( $product_option_list_item_values ) )
+                $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
 
         jQuery('.close:visible:first')->click();

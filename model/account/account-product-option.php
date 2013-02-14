@@ -73,16 +73,89 @@ class AccountProductOption extends ActiveRecordBase {
     }
 
     /**
+     * Add Bulk
+     *
+     * @param int $account_id
+     * @param int $product_id
+     * @param array $product_options
+     */
+    public function add_bulk( $account_id, $product_id, array $product_options ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        $product_id = (int) $product_id;
+
+        // Setup variables
+        $values = '';
+
+        foreach ( $product_options as $product_option ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values = "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', ' . (float) $product_option['price'] . ', ' . (int) $product_option['required'] . ' )';
+        }
+
+        $this->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $values" );
+    }
+
+    /**
+     * Add Bulk List Items
+     *
+     * @param int $account_id
+     * @param int $product_id
+     * @param array $product_option_list_items
+     */
+    public function add_bulk_list_items( $account_id, $product_id, array $product_option_list_items ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        $product_id = (int) $product_id;
+
+        // Setup variables
+        $values = '';
+
+        foreach ( $product_option_list_items as $product_option_list_item ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values = "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', ' . (float) $product_option_list_item['price'] . ' )';
+        }
+
+        $this->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price` ) VALUES $values" );
+    }
+
+    /**
      * Delete By Product
      *
      * @param int $account_id
      * @param int $product_id
      */
     public function delete_by_product( $account_id, $product_id ) {
-        // Delete product options list items
-		$this->prepare( 'DELETE wpoli.*, wpo.* FROM `website_product_option_list_items` AS wpoli LEFT JOIN `website_product_options` AS wpo ON ( wpo.`product_id` = wpoli.`product_id` AND wpo.`website_id` = wpoli.`website_id` ) WHERE wpoli.`website_id` = :account_id AND `product_id` = :product_id'
-            , 'ii'
-            , array( ':account_id' => $account_id, ':product_id' => $product_id )
-        );
+        $this->delete_website_product_option_list_items( $account_id, $product_id );
+        $this->delete_website_product_options( $account_id, $product_id );
+    }
+
+    /**
+     * Delete Website Product Option List Items
+     *
+     * @param int $account_id
+     * @param int $product_id
+     */
+    protected function delete_website_product_option_list_items( $account_id, $product_id ) {
+        $this->prepare( 'DELETE FROM `website_product_option_list_items` WHERE `website_id` = :account_id AND `product_id` = :product_id'
+              , 'ii'
+              , array( ':account_id' => $account_id, ':product_id' => $product_id )
+          )->query();
+    }
+
+    /**
+     * Delete Website Product Options
+     *
+     * @param int $account_id
+     * @param int $product_id
+     */
+    protected function delete_website_product_options( $account_id, $product_id ) {
+        $this->prepare( 'DELETE FROM `website_product_options` WHERE `website_id` = :account_id AND `product_id` = :product_id'
+              , 'ii'
+              , array( ':account_id' => $account_id, ':product_id' => $product_id )
+          )->query();
     }
 }

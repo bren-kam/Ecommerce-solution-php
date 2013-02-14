@@ -143,7 +143,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 				product_row.remove();
 				
 				dProductOptionsList.append( product_row_div ).append( '<input type="hidden" name="product_options[' + i + ']" id="hProductOption' + i + '" value="' + i + '" />' );
-				product_row.slideDown();
+                product_row_div.show();
 				
 				// Check the required checkbox if its required
 				$( '#cbRequired' + i ).attr( 'checked', 1 == p['product_options'][i]['required'] );

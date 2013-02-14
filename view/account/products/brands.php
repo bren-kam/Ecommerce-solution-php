@@ -7,7 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var Brand[] $brands
+ * @var Brand[] $top_brands
  */
 
 echo $template->start( _('Brands') );
@@ -31,11 +31,11 @@ nonce::field( 'update_brand_sequence', '_update_brand_sequence' );
 <hr />
 <div id="brands">
 <?php
-if ( is_array( $brands ) ) {
+if ( is_array( $top_brands ) ) {
     $remove_brand_nonce = nonce::create('remove_brand');
     $confirm = _('Are you sure you want to remove this brand?');
 
-    foreach ( $brands as $brand ) {
+    foreach ( $top_brands as $brand ) {
     ?>
         <div id="dBrand_<?php echo $brand->id; ?>" class="brand">
             <img src="<?php echo $brand->image; ?>" title="<?php echo $brand->name; ?>" />
