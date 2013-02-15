@@ -8,7 +8,8 @@ class FacebookController extends BaseController {
         parent::__construct();
 
         $this->view_base = 'social-media/facebook/';
-        $this->title = 'Facebook';
+        $this->section = 'social-media';
+        $this->title = _('Facebook') . ' | ' . _('Social Media');
     }
 
     /**
@@ -18,7 +19,7 @@ class FacebookController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
-            ->select( 'facebook' );
+            ->select( 'facebook-pages', 'view' );
     }
 
     /***** AJAX *****/
