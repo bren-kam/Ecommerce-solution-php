@@ -581,6 +581,41 @@ class AccountProduct extends ActiveRecordBase {
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
      * @return Product[]
      */
+    public function list_products( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT p.`product_id`, p.`name`, p.`sku`, p.`status`, b.`name` AS brand FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count all the products
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_products( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where GROUP BY p.`product_id`"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+    }
+
+    /**
+     * Get all information of the products
+     *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+     * @return Product[]
+     */
     public function list_product_prices( $variables ) {
         // Get the variables
         list( $where, $values, $order_by, $limit ) = $variables;
