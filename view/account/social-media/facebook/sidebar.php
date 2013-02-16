@@ -8,7 +8,7 @@
     <a href="/social-media/facebook/" title="<?php echo _('Pages'); ?>" class="top first<?php $template->select('facebook-pages'); ?>"><?php echo _('Pages'); ?></a>
     <?php if ( $template->v('facebook-pages') ) { ?>
         <a href="/social-media/facebook/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-        <a href="/social-media/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
+        <a href="/social-media/facebook/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
     <?php
     }
 

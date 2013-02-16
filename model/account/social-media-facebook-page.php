@@ -11,6 +11,49 @@ class SocialMediaFacebookPage extends ActiveRecordBase {
     }
 
     /**
+     * Get Facebook Page
+     *
+     * @param int $id
+     * @param int $account_id
+     * @return array
+     */
+    public function get( $id, $account_id ) {
+        $this->prepare(
+            'SELECT `id`, `name`, `status` FROM `sm_facebook_page` WHERE `id` = :id AND `website_id` = :account_id'
+            , 'ii'
+            , array( ':id' => $id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'website_id' => $this->website_id
+            , 'name' => $this->name
+            , 'status' => $this->status
+            , 'date_created' => $this->date_created
+        ), 'isis' );
+
+        $this->id = $this->get_insert_id();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->update( array(
+            'name' => $this->name
+            , 'status' => $this->status
+        ), array(
+            'id' => $this->id
+        ), 'si', 'i' );
+    }
+
+    /**
      * List
      *
      * @param $variables array( $where, $order_by, $limit )
