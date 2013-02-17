@@ -57,5 +57,5 @@
     }
     ?>
 
-	<a href="/social-media/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
+	<a href="/social-media/facebook/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
 </div>

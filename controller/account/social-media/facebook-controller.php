@@ -100,6 +100,104 @@ class FacebookController extends BaseController {
             ->set( compact( 'settings' ) );
     }
 
+    /**
+     * About Us
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function about_us() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $about_us = new SocialMediaAboutUs();
+        $about_us->get( $page->id );
+
+        // Make sure it's created
+        if ( !$about_us->key ) {
+            $about_us->sm_facebook_page_id = $page->id ;
+
+            if ( $this->user->account->pages ) {
+                $account_page = new AccountPage();
+                $account_page->get_by_slug( $this->user->account->id, 'about-us' );
+
+                $about_us->website_page_id = (int) $account_page->id;
+            } else {
+                $about_us->website_page_id = 0;
+            }
+
+            $about_us->key = md5( $this->user->id . microtime() . $page->id );
+            $about_us->create();
+        }
+
+        if ( $this->user->account->pages ) {
+            $files = array();
+        } else {
+            $account_file = new AccountFile();
+            $files = $account_file->get_by_account( $this->user->account->id );
+
+            if ( $this->verified() ) {
+                $about_us->content = $_POST['taContent'];
+                $about_us->save();
+
+                $this->notify( _('Your About Us page has been successfully updated!') );
+            }
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'about-us' )
+            ->add_title( _('About Us') )
+            ->select( 'about-us' )
+            ->set( compact( 'about_us', 'page', 'files' ) );
+    }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse
+     */
+    protected function settings() {
+        // Instantiate classes
+        $form = new FormTable( 'fSettings' );
+
+        // Get settings
+        $settings_array = array( 'timezone' );
+        $settings = $this->user->account->get_settings( $settings_array );
+
+        $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+            ->options( data::timezones( false, false, true ) );
+
+        if ( $form->posted() ) {
+            $new_settings = array();
+
+            foreach ( $settings_array as $k ) {
+                $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            $this->user->account->set_settings( $new_settings );
+
+            $this->notify( _('Your settings have been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/social-media/facebook/settings/');
+        }
+
+        return $this->get_template_response( 'settings' )
+            ->add_title( _('Settings') )
+            ->select( 'settings' )
+            ->set( array( 'form' => $form->generate_form() ) );
+    }
+
     /***** AJAX *****/
 
     /**

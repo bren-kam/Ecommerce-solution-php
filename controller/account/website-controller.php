@@ -570,12 +570,10 @@ class WebsiteController extends BaseController {
             return new RedirectResponse('/website/settings/');
         }
 
-        $response = $this->get_template_response( 'settings' )
+        return $this->get_template_response( 'settings' )
             ->add_title( _('Settings') )
             ->select( 'settings' )
             ->set( array( 'form' => $form->generate_form() ) );
-
-        return $response;
     }
 
     /***** AJAX *****/
