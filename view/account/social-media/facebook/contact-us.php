@@ -8,17 +8,17 @@
  * @var Template $template
  * @var User $user
  * @var SocialMediaFacebookPage $page
- * @var SocialMediaAboutUs $about_us
+ * @var SocialMediaContactUs $contact_us
  */
 
-echo $template->start( _('About Us') . ' - ' . $page->name, 'sidebar' );
+echo $template->start( _('Contact Us') . ' - ' . $page->name, 'sidebar' );
 
-if ( !$about_us->fb_page_id ) {
+if ( !$contact_us->fb_page_id ) {
     // Define instructions
     $instructions = array(
         1 => array(
-            'title' => _('Go to the About Us application')
-            , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-about-us/" title="' . _('Online Platform - About Us') . '" target="_blank">' . _('About Us') . '</a> ' . _('application page') . '.'
+            'title' => _('Go to the Contact Us application')
+            , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-contact-us/" title="' . _('Online Platform - Contact Us') . '" target="_blank">' . _('Contact Us') . '</a> ' . _('application page') . '.'
             , 'image' => false
         )
         , 2 => array(
@@ -30,18 +30,18 @@ if ( !$about_us->fb_page_id ) {
             , 'text' => _('(Note - You must first be an admin of the page to install the App)')
         )
         , 4 => array(
-            'title' => _('Click Add Online Platform - About Us')
+            'title' => _('Click Add Online Platform - Contact Us')
         )
         , 5 => array(
-            'title' => _('Click on the About Us App')
+            'title' => _('Click on the Contact Us App')
             , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
         )
         , 6 => array(
             'title' => _('Click on the Update Settings')
         )
         , 7 => array(
-            'title' => _('Click Add Online Platform - About Us')
-            , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $about_us->key
+            'title' => _('Click Add Online Platform - Contact Us')
+            , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $contact_us['key']
         )
     );
 
@@ -52,26 +52,26 @@ if ( !$about_us->fb_page_id ) {
             echo '<p>', $data['text'], '</p>';
 
         if ( !isset( $data['image'] ) || $data['image'] != false )
-            echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/about-us/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/about-us/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
+            echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/contact-us/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/contact-us/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
 
         echo '<br /><br />';
     }
  } else {
     ?>
-    <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $about_us->fb_page_id; ?>?sk=app_233746136649331" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
+    <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $contact_us->fb_page_id; ?>?sk=app_245607595465926" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
     <?php
     if ( $user->account->pages ) {
         echo '<p>', _('Your app is currently active.'), '</p>';
     } else {
     ?>
-    <form name="fAboutUs" action="/social-media/facebook/about-us/" method="post">
-        <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $about_us->content; ?></textarea>
+    <form name="fContactUs" action="/social-media/facebook/contact-us/" method="post">
+        <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $contact_us->content; ?></textarea>
 
-        <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 520px Image Height: 700px Max'); ?>)</p>
+        <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
         <br /><br />
 
         <input type="submit" class="button" value="<?php echo _('Save'); ?>" />
-        <?php nonce::field('about_us'); ?>
+        <?php nonce::field('contact_us'); ?>
     </form>
     <?php } ?>
 

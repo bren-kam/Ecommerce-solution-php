@@ -162,6 +162,67 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Contact Us
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function contact_us() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $contact_us = new SocialMediaContactUs();
+        $contact_us->get( $page->id );
+
+        // Make sure it's created
+        if ( !$contact_us->key ) {
+            $contact_us->sm_facebook_page_id = $page->id ;
+
+            if ( $this->user->account->pages ) {
+                $account_page = new AccountPage();
+                $account_page->get_by_slug( $this->user->account->id, 'contact-us' );
+
+                $contact_us->website_page_id = (int) $account_page->id;
+            } else {
+                $contact_us->website_page_id = 0;
+            }
+
+            $contact_us->key = md5( $this->user->id . microtime() . $page->id );
+            $contact_us->create();
+        }
+
+        if ( $this->user->account->pages ) {
+            $files = array();
+        } else {
+            $account_file = new AccountFile();
+            $files = $account_file->get_by_account( $this->user->account->id );
+
+            if ( $this->verified() ) {
+                $contact_us->content = $_POST['taContent'];
+                $contact_us->save();
+
+                $this->notify( _('Your Contact Us page has been successfully updated!') );
+            }
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'contact-us' )
+            ->add_title( _('Contact Us') )
+            ->select( 'contact-us' )
+            ->set( compact( 'contact_us', 'page', 'files' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
