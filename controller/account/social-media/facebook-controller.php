@@ -291,6 +291,57 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Products
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function products() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $products = new SocialMediaProducts();
+        $products->get( $page->id );
+
+        // Make sure it's created
+        if ( !$products->key ) {
+            $products->sm_facebook_page_id = $page->id ;
+            $products->key = md5( $this->user->id . microtime() . $page->id );
+            $products->create();
+        }
+
+        if ( $this->user->account->product_catalog ) {
+            $files = array();
+        } else {
+            $account_file = new AccountFile();
+            $files = $account_file->get_by_account( $this->user->account->id );
+
+            if ( $this->verified() ) {
+                $products->content = $_POST['taContent'];
+                $products->save();
+
+                $this->notify( _('Your Products page has been successfully updated!') );
+            }
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'products' )
+            ->add_title( _('Products') )
+            ->select( 'products' )
+            ->set( compact( 'products', 'page', 'files' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse

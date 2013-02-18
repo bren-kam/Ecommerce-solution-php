@@ -1,13 +1,13 @@
 <?php
-class SocialMediaContactUs extends ActiveRecordBase {
+class SocialMediaProducts extends ActiveRecordBase {
     // The columns we will have access to
-    public $sm_facebook_page_id, $fb_page_id, $website_page_id, $key, $content, $date_created;
+    public $sm_facebook_page_id, $fb_page_id, $key, $content, $date_created;
 
     /**
      * Setup the account initial data
      */
     public function __construct() {
-        parent::__construct( 'sm_contact_us' );
+        parent::__construct( 'sm_products' );
     }
 
     /**
@@ -17,7 +17,7 @@ class SocialMediaContactUs extends ActiveRecordBase {
      */
     public function get( $sm_facebook_page_id ) {
         $this->prepare(
-            'SELECT `sm_facebook_page_id`, `fb_page_id`, `website_page_id`, `key`, `content` FROM `sm_contact_us` WHERE `sm_facebook_page_id` = :sm_facebook_page_id'
+            'SELECT `sm_facebook_page_id`, `fb_page_id`, `key`, `content` FROM `sm_products` WHERE `sm_facebook_page_id` = :sm_facebook_page_id'
             , 'i'
             , array( ':sm_facebook_page_id' => $sm_facebook_page_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -31,10 +31,9 @@ class SocialMediaContactUs extends ActiveRecordBase {
 
         $this->insert( array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
-            , 'website_page_id' => $this->website_page_id
             , 'key' => $this->key
             , 'date_created' => $this->date_created
-        ), 'iiss' );
+        ), 'iss' );
     }
 
     /**
