@@ -29,7 +29,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			}
 			
 			// It was not cached, get data
-			$.post( '/products/autocomplete-owned/', { _nonce : $('#_autocomplete_owned').val(), 'type' : cacheType, 'term' : request['term'] }, function( autocompleteResponse ) {
+			$.post( '/products/custom-products/autocomplete/', { _nonce : $('#_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( autocompleteResponse ) {
 				// Assign global cache the response data
 				cache[cacheType][request['term']] = autocompleteResponse['suggestions'];
 				

@@ -18,7 +18,7 @@ class ReachesController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
-                    ->select( 'reaches' );
+            ->select( 'reaches' );
     }
 
     /**
@@ -234,7 +234,7 @@ class ReachesController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        // Get ticket comment
+        // Get reach comment
         $reach_comment = new WebsiteReachComment();
         $reach_comment->get( $this->user->account->id, $_GET['wrcid'] );
 

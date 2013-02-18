@@ -100,7 +100,7 @@ class WebsiteReach extends ActiveRecordBase {
     }
 
     /**
-	 * List Users
+	 * List
 	 *
 	 * @param $variables array( $where, $order_by, $limit )
 	 * @return WebsiteReach[]

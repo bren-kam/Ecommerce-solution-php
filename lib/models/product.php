@@ -7,7 +7,7 @@ class Product extends ActiveRecordBase {
     public $images, $industry;
 
     // Columns from other tables
-    public $brand, $category_id;
+    public $brand, $category_id, $category;
 
     /**
      * Setup the account initial data
@@ -27,7 +27,7 @@ class Product extends ActiveRecordBase {
      */
     public function get( $product_id ) {
         $this->prepare(
-            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`product_id` = :product_id GROUP BY p.`product_id`'
+            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, b.`name` AS brand, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id`, c.`name` AS category FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) WHERE p.`product_id` = :product_id GROUP BY p.`product_id`'
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -48,6 +48,23 @@ class Product extends ActiveRecordBase {
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->product_id;
+    }
+
+    /**
+     * Get by ids
+     *
+     * @param array $product_ids
+     * @return Product[]
+     */
+    public function get_by_ids( array $product_ids ) {
+        if ( empty( $product_ids ) )
+            return array();
+
+        foreach ( $product_ids as & $product_id ) {
+            $product_id = (int) $product_id;
+        }
+
+        return $this->get_results( 'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`product_id` IN(' . implode( ',', $product_ids ) . ') GROUP BY p.`product_id`', PDO::FETCH_CLASS, 'Product' );
     }
 
     /**
@@ -189,7 +206,7 @@ class Product extends ActiveRecordBase {
 		if ( !$exists )
 			return;
 
-		// Clone product
+        // Clone product
 		$this->query( "INSERT INTO `products` ( `brand_id`, `industry_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, `user_id_created`, `date_created` ) SELECT `brand_id`, `industry_id`, CONCAT( `name`, ' (Clone)' ), CONCAT( `slug`, '-2' ), `description`, `status`, CONCAT( `sku`, '-2' ), `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, $user_id, NOW() FROM `products` WHERE `product_id` = $product_id" );
 
 		// Get the new product ID
