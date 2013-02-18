@@ -16,6 +16,22 @@ class WebsiteCoupon extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $account_id
+     * @param int $website_coupon_id
+     */
+    public function get( $account_id, $website_coupon_id ) {
+        $this->prepare(
+            'SELECT `website_coupon_id`, `website_id`, `name`, `code`, `type`, `amount`, `minimum_purchase_amount`, `store_wide`, `buy_one_get_one_free`, `item_limit`, DATE( `date_start` ) AS date_start, DATE( `date_end` ) AS date_end FROM `website_coupons` WHERE `website_id` = :account_id AND `website_coupon_id` = :website_coupon_id'
+            , 'ii'
+            , array( ':account_id' => $account_id, 'website_coupon_id' => $website_coupon_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_coupon_id;
+    }
+
+    /**
      * Get by product
      *
      * @param int $account_id
@@ -49,7 +65,62 @@ class WebsiteCoupon extends ActiveRecordBase {
         )->get_results( PDO::FETCH_CLASS, 'WebsiteCoupon' );
     }
 
+    /**
+     * Get Free Shipping Methods
+     *
+     * @return array
+     */
+    public function get_free_shipping_methods() {
+        return $this->prepare(
+            'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = :website_coupon_id ORDER BY `website_coupon_id` ASC'
+            , 'i'
+            , array( ':website_coupon_id' => $this->id )
+        )->get_col();
+    }
 
+    /**
+     * Create
+     */
+    public function create() {
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'website_id' => $this->website_id
+            , 'name' => $this->name
+            , 'code' => $this->code
+            , 'type' => $this->type
+            , 'amount' => $this->amount
+            , 'minimum_purchase_amount' => $this->minimum_purchase_amount
+            , 'store_wide' => $this->store_wide
+            , 'buy_one_get_one_free' => $this->buy_one_get_one_free
+            , 'item_limit' => $this->item_limit
+            , 'date_start' => $this->date_start
+            , 'date_end' => $this->date_end
+            , 'date_created' => $this->date_created
+        ), 'isssddiiisss' );
+
+        $this->id = $this->website_coupon_id = $this->get_insert_id();
+    }
+
+    /**
+     * Update
+     */
+    public function save() {
+        $this->update( array(
+            'name' => $this->name
+            , 'code' => $this->code
+            , 'type' => $this->type
+            , 'amount' => $this->amount
+            , 'minimum_purchase_amount' => $this->minimum_purchase_amount
+            , 'store_wide' => $this->store_wide
+            , 'buy_one_get_one_free' => $this->buy_one_get_one_free
+            , 'item_limit' => $this->item_limit
+            , 'date_start' => $this->date_start
+            , 'date_end' => $this->date_end
+        ), array(
+            'website_coupon_id' => $this->website_coupon_id )
+        , 'sssddiiiss', 'i' );
+    }
 
     /**
      * Add Relations
@@ -74,6 +145,37 @@ class WebsiteCoupon extends ActiveRecordBase {
     }
 
     /**
+     * Set Free Shipping Methods
+     *
+     * @param array $shipping_methods
+     * @return array
+     */
+    public function set_free_shipping_methods( array $shipping_methods ) {
+        // Create values
+        $values = '';
+
+        foreach ( $shipping_methods as $website_shipping_method_id ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= '( ' . (int) $this->id . ', ' . (int) $website_shipping_method_id . ' )';
+        }
+
+        // Create new free shipping methods
+        $this->query( "INSERT INTO `website_coupon_shipping_methods` ( `website_coupon_id`, `website_shipping_method_id` ) VALUES $values" );
+    }
+
+    /**
+     * Delete
+     */
+    public function remove() {
+        $this->delete( array(
+            'website_coupon_id' => $this->id
+            , 'website_id' => $this->website_id
+        ), 'ii' );
+    }
+
+    /**
      * Delete by product
      *
      * @param int $account_id
@@ -85,5 +187,55 @@ class WebsiteCoupon extends ActiveRecordBase {
             , 'ii'
             , array( ':product_id' => $product_id, ':account_id' => $account_id )
         )->query();
+    }
+
+    /**
+     * Delete Free Shipping Methods
+     *
+     * @fix remove active column
+     *
+     * @return array
+     */
+    public function delete_free_shipping_methods() {
+        $this->prepare(
+            'DELETE FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = :website_coupon_id'
+            , 'i'
+            , array( ':website_coupon_id' => $this->id )
+        )->query();
+    }
+
+    /**
+     * List
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return WebsiteCoupon[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT `website_coupon_id`, `name`, `type`, `amount`, `item_limit`, `date_created` FROM `website_coupons` WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteCoupon' );
+    }
+
+    /**
+     * Count all
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( `website_coupon_id` )FROM `website_coupons` WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 }

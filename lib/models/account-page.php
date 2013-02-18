@@ -23,7 +23,7 @@ class AccountPage extends ActiveRecordBase {
         $this->prepare(
             'SELECT `website_page_id`, `slug`, `title`, `content`, `meta_title`, `meta_description`, `meta_keywords`, `mobile` FROM `website_pages` WHERE `website_page_id` = :account_page_id AND `website_id` = :account_id'
             , 'ii'
-            , array( ':account_page_id' => $account_page_id, $account_id )
+            , array( ':account_page_id' => $account_page_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->website_page_id;

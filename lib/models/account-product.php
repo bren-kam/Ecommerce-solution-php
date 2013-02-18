@@ -88,10 +88,11 @@ class AccountProduct extends ActiveRecordBase {
             , 'protection_type' => $this->protection_type
             , 'ships_in' => $this->ships_in
             , 'store_sku' => $this->store_sku
+            , 'active' => $this->active
         ), array(
             'website_id' => $this->website_id
             , 'product_id' => $this->product_id
-        ), 'iiiissssiiisssiiiissss', 'ii' );
+        ), 'iiiissssiiisssiiiissssi', 'ii' );
     }
 
     /**
@@ -473,17 +474,6 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
-     * Remove product
-     */
-    public function remove() {
-        $this->prepare(
-            'UPDATE `website_products` SET `active` = 0 WHERE `product_id` = :product_id AND `website_id` = :account_id'
-            , 'ii'
-            , array( ':product_id' => $this->product_id, ':account_id' => $this->website_id )
-        )->query();
-    }
-
-    /**
      * Block Products
 	 *
      * @param int $account_id
@@ -520,9 +510,10 @@ class AccountProduct extends ActiveRecordBase {
 	 * @param string $query
      * @param string|array $field
      * @param int $account_id
+     * @param bool $custom_products [optional]
 	 * @return array
 	 */
-	public function autocomplete_all( $query, $field, $account_id ) {
+	public function autocomplete_all( $query, $field, $account_id, $custom_products = false ) {
         $where = '';
 
         // Support more than one field
@@ -539,6 +530,10 @@ class AccountProduct extends ActiveRecordBase {
 		} else {
 			$where = " AND `{$field}` LIKE " . $this->quote( '%' . $query . '%' );
 		}
+
+        if ( $custom_products )
+            $where .= ' AND p.`website_id` = ' . (int) $account_id;
+
 
         return $this->prepare(
             "SELECT DISTINCT p.`product_id` AS value, p.`$field` AS name FROM `products` AS p LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND ( p.`website_id` = 0 OR p.`website_id` = :account_id ) $where ORDER BY `$field` LIMIT 10"
@@ -578,6 +573,41 @@ class AccountProduct extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get all information of the products
+     *
+     * @param array $variables ( string $where, array $values, string $order_by, int $limit )
+     * @return Product[]
+     */
+    public function list_products( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT p.`product_id`, p.`name`, p.`sku`, p.`status`, b.`name` AS brand FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count all the products
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_products( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where GROUP BY p.`product_id`"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 
     /**

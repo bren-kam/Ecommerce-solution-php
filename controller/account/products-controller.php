@@ -412,6 +412,24 @@ class ProductsController extends BaseController {
             ->set( array( 'form' => $form->generate_form() ) );
     }
 
+    /**
+     * Brands
+     *
+     * @return TemplateResponse
+     */
+    protected function brands() {
+        $this->resources->javascript( 'products/brands' )
+                    ->css( 'products/brands' )
+                    ->css_url( Config::resource('jquery-ui') );
+
+        $website_top_brand = new WebsiteTopBrand();
+
+        return $this->get_template_response( 'brands' )
+            ->add_title( _('Brands') )
+            ->select( 'products', 'brands' )
+            ->set( array( 'top_brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
+    }
+
     /***** AJAX *****/
 
     /**
@@ -435,7 +453,7 @@ class ProductsController extends BaseController {
         switch ( $_POST['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
             break;
 
             case 'product':
@@ -647,7 +665,8 @@ class ProductsController extends BaseController {
 
         // Remove discontinued and reorganize categories
         $account_product->get( $_GET['pid'], $this->user->account->id );
-        $account_product->remove();
+        $account_product->active = 0;
+        $account_product->save();
 
         // Reorganize categories
         $account_category->reorganize_categories( $this->user->account->id, new Category() );
@@ -871,7 +890,7 @@ class ProductsController extends BaseController {
         }
 
         if ( !empty( $product_options ) ) {
-        	$product_option_values = $product_option_list_item_values = $product_option_ids = $product_option_list_item_ids = '';
+        	$product_option_values = $product_option_list_item_values = $product_option_ids = array();
 
 			foreach ( $product_options as $po_id => $po ) {
 				$dropdown = is_array( $po );
@@ -884,14 +903,12 @@ class ProductsController extends BaseController {
 					$required = 0;
 				}
 
-				if ( !empty( $product_option_values ) )
-					$product_option_values .= ', ';
-
-				if ( !empty( $product_option_ids ) )
-					$product_option_ids .= ', ';
-
 				// Add the values
-				$product_option_values .= sprintf( "( $website_id, $product_id, %d, %f, %d )", $po_id, $price, $required );
+				$product_option_values[] = array(
+                    'product_option_id' => $po_id
+                    , 'price' => $price
+                    , 'required' => $required
+                );
 
 				// For error handling
 				$product_option_ids .= $po_id;
@@ -899,23 +916,20 @@ class ProductsController extends BaseController {
 				// If it's a drop down, set the values
 				if ( $dropdown )
 				foreach ( $po['list_items'] as $li_id => $price ) {
-					if ( !empty( $product_option_list_item_values ) )
-						$product_option_list_item_values .= ',';
-
-					if ( !empty( $product_option_list_item_ids ) )
-						$product_option_list_item_ids .= ',';
-
-					$product_option_list_item_values .= sprintf( "( $website_id, $product_id, %d, %d, %f )", $po_id, $li_id, $price );
+					$product_option_list_item_values[] = array(
+                        'product_option_id' => $po_id
+                        , 'product_option_list_item_id' => $li_id
+                        , 'price' => $price
+                    );
 				}
 			}
 
 			// Insert new product options
-			$this->db->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $product_option_values" );
+            $account_product_option->add_bulk( $this->user->account->id, $account_product->product_id, $product_option_values );
 
-			if ( $product_option_list_item_values != '' ) {
-				// Insert new product option list items
-				$this->db->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price` ) VALUES $product_option_list_item_values" );
-			}
+            // Insert new product option list items
+            if ( !empty( $product_option_list_item_values ) )
+                $account_product_option->add_bulk_list_items( $this->user->account->id, $account_product->product_id, $product_option_list_item_values );
 		}
 
         jQuery('.close:visible:first')->click();
@@ -1165,6 +1179,8 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
+        $response->check( isset( $_POST['v'] ), _('Unable to set Product Prices. Please contact your online specialist.') );
+
         // Return if there is an error
         if ( $response->has_error() )
             return $response;
@@ -1174,6 +1190,125 @@ class ProductsController extends BaseController {
 
         jQuery('span.success')->show()->delay(5000)->hide();
 
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Brand Sequence
+     *
+     * @return AjaxResponse
+     */
+    protected function update_brand_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&dBrand[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 9 );
+
+        $website_top_brand = new WebsiteTopBrand();
+        $website_top_brand->update_sequence( $this->user->account->id, $sequence );
+
+        return $response;
+    }
+
+    /**
+     * Remove
+     *
+     * @return AjaxResponse
+     */
+    protected function remove_brand() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['bid'] ), _('Unable to remove brand. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Remove brand
+        $website_top_brand = new WebsiteTopBrand();
+        $website_top_brand->remove( $this->user->account->id, $_GET['bid'] );
+
+        jQuery( '#dBrand_' . $_GET['bid'] )
+        	->remove()
+        	->updateBrandsSequence();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Set Brand Link
+     *
+     * @return AjaxResponse
+     */
+    protected function set_brand_link() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Set link brands
+        $this->user->account->link_brands = $_POST['checked'];
+        $this->user->account->save();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Add Brand
+     *
+     * @return AjaxResponse
+     */
+    protected function add_brand() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['bid'], $_POST['s'] ), _('Unable to add brand. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Get the brand, then add it
+        $website_top_brand = new WebsiteTopBrand();
+        $brand = new Brand();
+        $brand->get( $_POST['bid'] );
+
+        $website_top_brand->website_id = $this->user->account->id;
+        $website_top_brand->brand_id = $_POST['bid'];
+        $website_top_brand->sequence = $_POST['s'];
+        $website_top_brand->create();
+
+        // Now add it to the page
+        $dBrand = '<div id="dBrand_' . $brand->id . '" class="brand">';
+       	$dBrand .= '<img src="' . $brand->image . '" title="' . $brand->name . '" />';
+       	$dBrand .= '<h4>' . $brand->name . '</h4>';
+       	$dBrand .= '<p class="brand-url"><a href="' . $brand->link . '" title="' . $brand->name . '" target="_blank">' . $brand->link . '</a></p>';
+       	$dBrand .= '<a href="' . url::add_query_arg( array( '_nonce' => nonce::create('remove_brand'), 'bid' => $brand->id ), '/products/remove-brand/' ) . '" title="' . _('Remove') . '" ajax="1" confirm="' . _('Are you sure you want to remove this brand?') . '">' . _('Remove') . '</a>';
+       	$dBrand .= '</div>';
+
+       	jQuery('#brands')
+       		->append( $dBrand )
+       		->sparrow();
+
+        // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;

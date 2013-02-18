@@ -30,6 +30,20 @@ class WebsiteShippingMethod extends ActiveRecordBase {
     }
 
     /**
+     * Get By Account
+     *
+     * @param int $account_id
+     * @return WebsiteShippingMethod[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            'SELECT `website_shipping_method_id`, `name`, `method`, `amount` FROM `website_shipping_methods` WHERE `website_id` = :account_id ORDER BY `date_created` ASC'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteShippingMethod' );
+    }
+
+    /**
      * Create
      */
     public function create() {

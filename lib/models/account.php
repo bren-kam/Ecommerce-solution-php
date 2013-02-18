@@ -2,7 +2,7 @@
 class Account extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
-        , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog
+        , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog, $link_brands
         , $room_planner, $blog, $craigslist, $email_marketing, $domain_registration, $mobile_marketing
         , $additional_email_Addresses, $social_media, $ftp_username, $ga_profile_id, $ga_tracking_key
         , $wordpress_username, $wordpress_password, $mc_list_id, $version, $live, $type, $status, $date_created;
@@ -116,6 +116,7 @@ class Account extends ActiveRecordBase {
             , 'products' => $this->products
             , 'pages' => $this->pages
             , 'product_catalog' => $this->product_catalog
+            , 'link_brands' => $this->link_brands
             , 'blog' => $this->blog
             , 'email_marketing' => $this->email_marketing
             , 'mobile_marketing' => $this->mobile_marketing
@@ -135,7 +136,7 @@ class Account extends ActiveRecordBase {
             , 'live' => $this->live
             , 'status' => $this->status
         ), array( 'website_id' => $this->id )
-        , 'iiisssssssiiiiiiiiiiisisssssii', 'i' );
+        , 'iiisssssssiiiiiiiiiiiisisssssii', 'i' );
     }
 
     /**
@@ -380,7 +381,6 @@ class Account extends ActiveRecordBase {
 
         $this->query( "INSERT INTO `website_industries` VALUES " . implode( ',', $values ) . ' ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )' );
     }
-
 
     /**
      * Copy top brands

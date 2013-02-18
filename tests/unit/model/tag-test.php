@@ -12,7 +12,6 @@ class TagTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
-        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->tag = new Tag();
     }
 
@@ -92,7 +91,6 @@ class TagTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
-        unset( $_SERVER['MODEL_PATH'] );
         $this->tag = null;
     }
 }
