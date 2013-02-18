@@ -223,6 +223,74 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Email Sign Up
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function email_sign_up() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $email_sign_up = new SocialMediaEmailSignUp();
+        $email_sign_up->get( $page->id );
+
+        $v = new Validator( 'fEmailSignUp' );
+
+        // Add validation
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        // Make sure it's created
+        if ( !$email_sign_up->key ) {
+            $email_sign_up->sm_facebook_page_id = $page->id ;
+            $email_sign_up->key = md5( $this->user->id . microtime() . $page->id );
+            $email_sign_up->create();
+        }
+
+        // Check for errs
+        $errs = '';
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $email_sign_up->email_list_id = $_POST['sEmailList'];
+                $email_sign_up->tab = $_POST['taTab'];
+                $email_sign_up->save();
+
+                $this->notify( _('Your Email Sign Up page has been successfully updated!') );
+            }
+        }
+
+        // Get files
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        // Setup validation
+        $js_validation = $v->js_validation();
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'email-sign-up' )
+            ->add_title( _('Email Sign Up') )
+            ->select( 'email-sign-up' )
+            ->set( compact( 'email_sign_up', 'page', 'js_validation', 'errs', 'files', 'email_lists' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
