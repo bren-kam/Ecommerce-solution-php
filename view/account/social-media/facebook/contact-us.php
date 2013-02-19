@@ -41,7 +41,7 @@ if ( !$contact_us->fb_page_id ) {
         )
         , 7 => array(
             'title' => _('Click Add Online Platform - Contact Us')
-            , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $contact_us['key']
+            , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $contact_us->key
         )
     );
 

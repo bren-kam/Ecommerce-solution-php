@@ -29,7 +29,7 @@ if ( !$sm_posting->fb_page_id  ) {
         )
         , 2 => array(
             'title' => _('Install The App')
-            , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $sm_posting['key']
+            , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $sm_posting->key
         )
     );
 

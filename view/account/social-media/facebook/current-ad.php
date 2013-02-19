@@ -1,28 +1,24 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Email Sign Up | Facebook | Social Media
+ * @page Current Ad | Facebook | Social Media
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
  * @var SocialMediaFacebookPage $page
- * @var SocialMediaEmailSignUp $email_sign_up
- * @var AccountFile[] $files
- * @var EmailList[] $email_lists
- * @var string $errs
- * @var string $js_validation
+ * @var SocialMediaCurrentAd $current_ad
  */
 
-echo $template->start( _('Email Sign Up') . ' - ' . $page->name, 'sidebar' );
+echo $template->start( _('Current Ad') . ' - ' . $page->name, 'sidebar' );
 
-if ( !$email_sign_up->fb_page_id ) {
+if ( !$current_ad->fb_page_id ) {
     // Define instructions
     $instructions = array(
         1 => array(
-            'title' => _('Go to the Email Sign Up application')
-            , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/op-email-sign-up/" title="' . _('Online Platform - Email Sign Up') . '" target="_blank">' . _('Email Sign Up') . '</a> ' . _('application page') . '.'
+            'title' => _('Go to the Current Ad application')
+            , 'text' => _('Go to the') . ' <a href="http://apps.facebook.com/current-ad/" title="' . _('Online Platform - Current Ad') . '" target="_blank">' . _('Current Ad') . '</a> ' . _('application page') . '.'
             , 'image' => false
         )
         , 2 => array(
@@ -34,18 +30,18 @@ if ( !$email_sign_up->fb_page_id ) {
             , 'text' => _('(Note - You must first be an admin of the page to install the App)')
         )
         , 4 => array(
-            'title' => _('Click Add Online Platform - Email Sign Up')
+            'title' => _('Click Add Online Platform - Current Ad')
         )
         , 5 => array(
-            'title' => _('Click on the Email Sign Up App')
+            'title' => _('Click on the Current Ad App')
             , 'text' => _("Scroll down below the banner, and you'll see your apps (you may need to click on the arrow on the right-hand side to find the app you're looking for) and click on the About Us")
         )
         , 6 => array(
             'title' => _('Click on the Update Settings')
         )
         , 7 => array(
-            'title' => _('Click Add Online Platform - Email Sign Up')
-            , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $email_sign_up->key
+            'title' => _('Click Add Online Platform - Current Ad')
+           , 'text' => _('Copy and paste the connection code into the Facebook Connection Key box shown below (when done it will say Connected): ') . $current_ad->key
         )
     );
 
@@ -56,42 +52,28 @@ if ( !$email_sign_up->fb_page_id ) {
             echo '<p>', $data['text'], '</p>';
 
         if ( !isset( $data['image'] ) || $data['image'] != false )
-            echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/email-sign-up/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
+            echo '<br /><p><a href="http://account.imagineretailer.com/images/social-media/facebook/current-ad/', $step, '.png"><img src="http://account.imagineretailer.com/images/social-media/facebook/current-ad/', $step, '.png" alt="', $data['title'], '" width="750" /></a></p>';
 
         echo '<br /><br />';
     }
  } else {
     ?>
-    <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $email_sign_up->fb_page_id; ?>?sk=app_165553963512320" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
+    <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $current_ad->fb_page_id; ?>?sk=app_186618394735117" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
     <?php
-    if ( !empty( $errs ) )
-        echo "<p class='error'>$errs</p>";
+    if ( $user->account->pages ) {
+        echo '<p>', _('Your app is currently active.'), '</p>';
+    } else {
     ?>
-    <form name="fEmailSignUp" action="/social-media/facebook/email-sign-up/" method="post">
-        <textarea name="taTab" id="taTab" cols="50" rows="3" rte="1"><?php echo $email_sign_up->tab; ?></textarea>
+    <form name="fCurrentAd" action="/social-media/facebook/current-ad/" method="post">
+        <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $current_ad->content; ?></textarea>
 
         <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
         <br /><br />
 
-        <p>
-            <select name="sEmailList" id="sEmailList">
-                <option value="0">-- <?php echo _('Select Email List'); ?> --</option>
-                <?php
-                foreach ( $email_lists as $el ) {
-                    $selected = ( $el->id == $email_sign_up->email_list_id ) ? ' selected="selected"' : '';
-                    ?>
-                <option value="<?php echo $el->id; ?>"<?php echo $selected; ?>><?php echo $el->name; ?></option>
-                <?php } ?>
-            </select>
-            <br />
-            <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
-        </p>
-
-        <br /><br />
         <input type="submit" class="button" value="<?php echo _('Save'); ?>" />
-        <?php nonce::field('email_sign_up'); ?>
+        <?php nonce::field('current_ad'); ?>
     </form>
-    <?php echo $js_validation; ?>
+    <?php } ?>
 
     <div id="dUploadFile" class="hidden">
         <ul id="ulUploadFile">

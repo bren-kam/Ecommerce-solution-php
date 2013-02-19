@@ -342,6 +342,67 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Current Ad
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function current_ad() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $current_ad = new SocialMediaCurrentAd();
+        $current_ad->get( $page->id );
+
+        // Make sure it's created
+        if ( !$current_ad->key ) {
+            $current_ad->sm_facebook_page_id = $page->id ;
+
+            if ( $this->user->account->pages ) {
+                $account_page = new AccountPage();
+                $account_page->get_by_slug( $this->user->account->id, 'sidebar' );
+
+                $current_ad->website_page_id = (int) $account_page->id;
+            } else {
+                $current_ad->website_page_id = 0;
+            }
+
+            $current_ad->key = md5( $this->user->id . microtime() . $page->id );
+            $current_ad->create();
+        }
+
+        if ( $this->user->account->pages ) {
+            $files = array();
+        } else {
+            $account_file = new AccountFile();
+            $files = $account_file->get_by_account( $this->user->account->id );
+
+            if ( $this->verified() ) {
+                $current_ad->content = $_POST['taContent'];
+                $current_ad->save();
+
+                $this->notify( _('Your Current Ad page has been successfully updated!') );
+            }
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'current-ad' )
+            ->add_title( _('Current Ad') )
+            ->select( 'current-ad' )
+            ->set( compact( 'current_ad', 'page', 'files' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
