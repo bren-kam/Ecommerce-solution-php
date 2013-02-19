@@ -8,7 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var SocialMediaFacebookPage $page
- * @var SocialMediaPosting $posting
+ * @var SocialMediaPosting $sm_posting
  * @var SocialMediaPostingPost $post
  * @var array $pages
  * @var DateTime $new_date_posted
@@ -17,9 +17,9 @@
  * @var string $js_validation
  */
 
-echo $template->start( _('Posting') . ' - ' . $page->name, 'sidebar' );
+echo $template->start( _('Posting') . ' - ' . $page->name, '../sidebar' );
 
-if ( !$posting->fb_page_id ) {
+if ( !$sm_posting->fb_page_id  ) {
     // Define instructions
     $instructions = array(
         1 => array(
@@ -29,7 +29,7 @@ if ( !$posting->fb_page_id ) {
         )
         , 2 => array(
             'title' => _('Install The App')
-            , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $posting['key']
+            , 'text' => _('Enter your Facebook Connection Key into the slot labeled Facebook Connection Key and click connect. Note, be sure the page you want to connect to is selected where it says Facebook Page: ') . $sm_posting['key']
         )
     );
 
@@ -46,7 +46,6 @@ if ( !$posting->fb_page_id ) {
     }
 } else {
     ?>
-    <h2 class="title"><?php echo _('Post To Your Pages'); ?></h2>
     <?php
     if ( !empty( $errs ) )
         echo "<p class='red'>$errs</p>";
@@ -57,7 +56,7 @@ if ( !$posting->fb_page_id ) {
             <table>
                 <tr>
                     <td><strong><?php echo _('Page'); ?>:</strong></td>
-                    <td><?php echo $pages[$posting->fb_page_id]['name']; ?></td>
+                    <td><?php echo $pages[$sm_posting->fb_page_id]['name']; ?></td>
                 </tr>
                 <tr>
                     <td class="top"><label for="taPost"><?php echo _('Post'); ?>:</label></td>
@@ -65,9 +64,11 @@ if ( !$posting->fb_page_id ) {
                 </tr>
                 <tr>
                     <td><label for="tDate"><?php echo _('Send Date'); ?>:</label></td>
-                    <td><input type="text" class="tb" name="tDate" id="tDate" value="<?php echo ( !empty( $_POST['tDate'] ) && !$post->id ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
+                    <td><input type="text" class="tb" name="tDate" id="tDate" style="width: 100px;" value="<?php echo ( !empty( $_POST['tDate'] ) && !$post->id ) ? $new_date_posted->format('m/d/Y') : $now->format('m/d/Y'); ?>" maxlength="10" /></td>
+                </tr>
+                <tr>
                     <td><label for="tTime"><?php echo _('Time'); ?></label>:</td>
-                    <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="<?php echo ( empty( $_POST['tTime'] ) && !$post->id ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" maxlength="8" /></td>
+                    <td><input type="text" class="tb" name="tTime" id="tTime" style="width: 100px;" value="<?php echo ( empty( $_POST['tTime'] ) && !$post->id ) ? $new_date_posted->format('h:i a') : $now->format('h:i a'); ?>" maxlength="8" /></td>
                 </tr>
                 <tr><td colspan="2">&nbsp;</td></tr>
                 <tr>
@@ -80,7 +81,7 @@ if ( !$posting->fb_page_id ) {
         <?php echo $js_validation; ?>
     <?php } elseif ( empty( $errs ) ) { ?>
         <p><?php echo _('In order to post to one of your Facebook pages you will need to connect them first.'); ?></p>
-        <p><strong><?php echo _('Connection key'), ': '; ?></strong> <?php echo $posting->key; ?></p>
+        <p><strong><?php echo _('Connection key'), ': '; ?></strong> <?php echo $sm_posting->key; ?></p>
         <p><a href="http://apps.facebook.com/op-posting/" title="<?php echo _('Online Platform - Posting'); ?>" target="_blank"><?php echo _('Connect your Facebook pages here.'); ?></a></p>
 <?php
     }

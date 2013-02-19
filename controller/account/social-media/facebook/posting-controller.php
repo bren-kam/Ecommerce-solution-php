@@ -52,8 +52,8 @@ class PostingController extends BaseController {
             return new RedirectResponse('/social-media/facebook/');
 
         // Get variables
-        $posting = new SocialMediaPosting();
-        $posting->get( $page->id );
+        $sm_posting = new SocialMediaPosting();
+        $sm_posting->get( $page->id );
 
         $fb = new Fb('posting');
 
@@ -77,11 +77,11 @@ class PostingController extends BaseController {
         $errs = '';
         $js_validation = $v->js_validation();
 
-        if ( 0 != $posting->fb_page_id ) {
-            $fb->setAccessToken( $posting->access_token );
+        if ( 0 != $sm_posting->fb_page_id ) {
+            $fb->setAccessToken( $sm_posting->access_token );
 
             try {
-                $accounts = $fb->api( '/' . $posting->fb_user_id . '/accounts' );
+                $accounts = $fb->api( '/' . $sm_posting->fb_user_id . '/accounts' );
             } catch( FacebookApiException $e ) {
                 switch ( $e->getCode() ) {
                     case 60:
@@ -93,7 +93,7 @@ class PostingController extends BaseController {
                         return new RedirectResponse( url::add_query_arg( array(
                             'client_id' => $fb->id
                             , 'redirect_uri' => url::add_query_arg( array(
-                                'fb_page_id' => $posting->fb_page_id
+                                'fb_page_id' => $sm_posting->fb_page_id
                                 , 'gsr_redirect' => 'http://account.' . DOMAIN . '/social-media/facebook/posting/post/'
                             ), 'http://apps.facebook.com/op-posting/' )
                         ), 'https://www.facebook.com/dialog/oauth' ) );
@@ -107,12 +107,12 @@ class PostingController extends BaseController {
 
             $pages = ar::assign_key( $accounts['data'], 'id' );
 
-            if ( !isset( $pages[$posting->fb_page_id] ) ) {
+            if ( !isset( $pages[$sm_posting->fb_page_id] ) ) {
                 // Reset app
-                $posting->fb_page_id = 0;
-                $posting->fb_user_id = 0;
-                $posting->access_token = '';
-                $posting->save();
+                $sm_posting->fb_page_id = 0;
+                $sm_posting->fb_user_id = 0;
+                $sm_posting->access_token = '';
+                $sm_posting->save();
 
                 // Let them know what happened
                 $this->notify( _('Your app lost permission with Facebook and has been reset automatically. Please reconnect with Facebook') );
@@ -120,10 +120,11 @@ class PostingController extends BaseController {
                 return new RedirectResponse('/social-media/facebook/posting/post/');
                 //echo "Contact Support!";
             }
-        } elseif ( !$posting->key ) {
-            $posting->sm_facebook_page_id = $page->id ;
-            $posting->key = md5( $this->user->id . microtime() . $page->id );
-            $posting->create();
+        } else
+        if ( !$sm_posting->key ) {
+            $sm_posting->sm_facebook_page_id = $page->id ;
+            $sm_posting->key = md5( $this->user->id . microtime() . $page->id );
+            $sm_posting->create();
         }
 
         if ( $this->verified() && isset( $pages ) ) {
@@ -162,7 +163,7 @@ class PostingController extends BaseController {
 
                 $post = new SocialMediaPostingPost();
                 $post->sm_facebook_page_id = $page->id;
-                $post->access_token = $pages[$posting->fb_page_id]['access_token'];
+                $post->access_token = $pages[$sm_posting->fb_page_id]['access_token'];
                 $post->post = $_POST['taPost'];
                 $post->link = $link;
                 $post->date_posted = $new_date_posted->format('Y-m-d H:i:s');
@@ -172,7 +173,7 @@ class PostingController extends BaseController {
 
                     // Information:
                     // http://developers.facebook.com/docs/reference/api/page/#posts
-                    $fb->api( $posting->fb_page_id . '/feed', 'POST', array( 'message' => $post->post, 'link' => $post->link ) );
+                    $fb->api( $sm_posting->fb_page_id . '/feed', 'POST', array( 'message' => $post->post, 'link' => $post->link ) );
                 } else {
                     $post->status = 0;
                 }
@@ -189,13 +190,14 @@ class PostingController extends BaseController {
         }
 
         $this->resources
-            ->css(  )
-            ->javascript(  );
+            ->css( 'jquery.timepicker' )
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'jquery.timepicker', 'social-media/facebook/posting/post' );
 
         return $this->get_template_response( 'post' )
             ->add_title( _('Post') )
             ->select( 'posting' )
-            ->set( compact( 'posting', 'errs', 'js_validation', 'page', 'pages', 'now', 'new_date_posted', 'post' ) );
+            ->set( compact( 'sm_posting', 'errs', 'js_validation', 'page', 'pages', 'now', 'new_date_posted', 'post' ) );
     }
 
     /***** AJAX *****/
