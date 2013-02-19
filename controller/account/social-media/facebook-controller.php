@@ -646,6 +646,124 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Fan Offer
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function fan_offer() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $fan_offer = new SocialMediaFanOffer();
+        $fan_offer->get( $page->id );
+
+        // Get variables
+        $timezone = $this->user->account->get_settings('timezone');
+        $server_timezone = Config::setting('server-timezone');
+
+        // Make sure they set timezone
+        if ( empty( $timezone ) ) {
+            $this->notify( _('Please set your timezone and return to the Fan Offer.'), false );
+            return new RedirectResponse( '/social-media/facebook/settings/' );
+        }
+
+        // Make sure it's created
+        if ( !$fan_offer->key ) {
+            $fan_offer->sm_facebook_page_id = $page->id ;
+            $fan_offer->key = md5( $this->user->id . microtime() . $page->id );
+            $fan_offer->create();
+
+            $start_date = 'now';
+           	$end_date = '+1 weeks';
+        } else {
+            $start_date = ( '0000-00-00 00:00:00' == $fan_offer->start_date ) ? 'now' : $fan_offer->start_date;
+            $end_date = ( '0000-00-00 00:00:00' == $fan_offer->end_date ) ? '+1 weeks' : $fan_offer->end_date;
+        }
+
+        $fan_offer->start_date = dt::adjust_timezone( $start_date, $server_timezone, $timezone );
+        $fan_offer->end_date = dt::adjust_timezone( $end_date, $server_timezone, $timezone );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Add validation
+        $v = new Validator( 'fFanOffer' );
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        $errs = '';
+        $js_validation = $v->js_validation();
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $start_date = dt::date('Y-m-d', strtotime( $_POST['tStartDate'] ) );
+                $end_date = dt::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
+
+                // Turn start time into machine-readable time
+                list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $start_time );
+
+                    $start_date .= ( 12 == $hour ) ? ' ' . $start_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $start_date .= ' ' . $start_time . ':00';
+                }
+
+                // Turn end time into machine-readable time
+                list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $end_time );
+
+                    $end_date .= ( 12 == $hour ) ? ' ' . $end_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $end_date .= ' ' . $end_time . ':00';
+                }
+
+                // Adjust for time zone
+                $start_date = dt::adjust_timezone( $start_date, $timezone, $server_timezone );
+                $end_date = dt::adjust_timezone( $end_date, $timezone, $server_timezone );
+
+                $fan_offer->email_list_id = $_POST['sEmailList'];
+                $fan_offer->before = $_POST['taBefore'];
+                $fan_offer->after = $_POST['taAfter'];
+                $fan_offer->start_date = $start_date;
+                $fan_offer->end_date = $end_date;
+                $fan_offer->share_title = $_POST['tShareTitle'];
+                $fan_offer->share_image_url = $_POST['tShareImageURL'];
+                $fan_offer->share_text = $_POST['taShareText'];
+                $fan_offer->save();
+
+                $this->notify( _('Your Fan Offer page has been successfully updated!') );
+            }
+        }
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->css( 'jquery.timepicker', 'website/pages/page' )
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'jquery.timepicker', 'fileuploader', 'website/pages/page', 'social-media/facebook/dates' );
+
+        return $this->get_template_response( 'fan-offer' )
+            ->add_title( _('Fan Offer') )
+            ->select( 'fan-offer' )
+            ->set( compact( 'fan_offer', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
