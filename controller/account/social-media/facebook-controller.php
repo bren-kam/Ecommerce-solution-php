@@ -403,6 +403,53 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Facebook Site
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function facebook_site() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $facebook_site = new SocialMediaFacebookSite();
+        $facebook_site->get( $page->id );
+
+        // Make sure it's created
+        if ( !$facebook_site->key ) {
+            $facebook_site->sm_facebook_page_id = $page->id ;
+            $facebook_site->key = md5( $this->user->id . microtime() . $page->id );
+            $facebook_site->create();
+        }
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        if ( $this->verified() ) {
+            $facebook_site->content = $_POST['taContent'];
+            $facebook_site->save();
+
+            $this->notify( _('Your Facebook Site page has been successfully updated!') );
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'facebook-site' )
+            ->add_title( _('Facebook Site') )
+            ->select( 'facebook-site' )
+            ->set( compact( 'facebook_site', 'page', 'files' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
