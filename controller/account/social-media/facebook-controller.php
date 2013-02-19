@@ -520,6 +520,132 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Sweepstakes
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function sweepstakes() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $sm_sweepstakes = new SocialMediaSweepstakes();
+        $sm_sweepstakes->get( $page->id );
+
+        // Get variables
+        $timezone = $this->user->account->get_settings('timezone');
+        $server_timezone = Config::setting('server-timezone');
+
+        // Make sure they set timezone
+        if ( empty( $timezone ) ) {
+            $this->notify( _('Please set your timezone and return to the Sweepstakes.'), false );
+            return new RedirectResponse( '/social-media/facebook/settings/' );
+        }
+
+        // Make sure it's created
+        if ( !$sm_sweepstakes->key ) {
+            $sm_sweepstakes->sm_facebook_page_id = $page->id ;
+            $sm_sweepstakes->key = md5( $this->user->id . microtime() . $page->id );
+            $sm_sweepstakes->create();
+
+            $start_date = 'now';
+           	$end_date = '+1 weeks';
+        } else {
+            $start_date = ( '0000-00-00 00:00:00' == $sm_sweepstakes->start_date ) ? 'now' : $sm_sweepstakes->start_date;
+            $end_date = ( '0000-00-00 00:00:00' == $sm_sweepstakes->end_date ) ? '+1 weeks' : $sm_sweepstakes->end_date;
+        }
+
+        $sm_sweepstakes->start_date = dt::adjust_timezone( $start_date, $server_timezone, $timezone );
+       	$sm_sweepstakes->end_date = dt::adjust_timezone( $end_date, $server_timezone, $timezone );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Add validation
+        $v = new Validator( 'fSweepstakes' );
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        $errs = '';
+        $js_validation = $v->js_validation();
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $start_date = dt::date('Y-m-d', strtotime( $_POST['tStartDate'] ) );
+                $end_date = dt::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
+
+                // Turn start time into machine-readable time
+                list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $start_time );
+
+                    $start_date .= ( 12 == $hour ) ? ' ' . $start_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $start_date .= ' ' . $start_time . ':00';
+                }
+
+                // Turn end time into machine-readable time
+                list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $end_time );
+
+                    $end_date .= ( 12 == $hour ) ? ' ' . $end_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $end_date .= ' ' . $end_time . ':00';
+                }
+
+                // Adjust for time zone
+                $start_date = dt::adjust_timezone( $start_date, $timezone, $server_timezone );
+                $end_date = dt::adjust_timezone( $end_date, $timezone, $server_timezone );
+
+                $sm_sweepstakes->email_list_id = $_POST['sEmailList'];
+                $sm_sweepstakes->before = $_POST['taBefore'];
+                $sm_sweepstakes->after = $_POST['taAfter'];
+                $sm_sweepstakes->start_date = $start_date;
+                $sm_sweepstakes->end_date = $end_date;
+                $sm_sweepstakes->contest_rules_url = $_POST['contest-rules'];
+                $sm_sweepstakes->share_title = $_POST['tShareTitle'];
+                $sm_sweepstakes->share_image_url = $_POST['tShareImageURL'];
+                $sm_sweepstakes->share_text = $_POST['taShareText'];
+                $sm_sweepstakes->save();
+
+                $this->notify( _('Your Sweepstakes page has been successfully updated!') );
+            }
+        }
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        if ( $this->user->account->pages ) {
+            $account_page = new AccountPage();
+            $pages = $account_page->get_all( $this->user->account->id );
+        } else {
+            $pages = array();
+        }
+
+        $this->resources
+            ->css( 'jquery.timepicker', 'website/pages/page' )
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'jquery.timepicker', 'fileuploader', 'website/pages/page', 'social-media/facebook/dates' );
+
+        return $this->get_template_response( 'sweepstakes' )
+            ->add_title( _('Sweepstakes') )
+            ->select( 'sweepstakes' )
+            ->set( compact( 'sm_sweepstakes', 'page', 'files', 'errs', 'js_validation', 'email_lists', 'pages' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse

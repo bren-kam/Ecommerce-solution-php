@@ -57,7 +57,6 @@ class PostingController extends BaseController {
 
         $fb = new Fb('posting');
 
-
         $timezone = $this->user->account->get_settings('timezone');
 
         // Make sure they set timezone

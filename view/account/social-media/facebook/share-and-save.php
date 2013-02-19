@@ -85,7 +85,7 @@ if ( !$share_and_save->fb_page_id ) {
         <h2 class="title"><label for="sEmailList"><?php echo _('Email List'); ?>:</label></h2>
         <p>
             <select name="sEmailList" id="sEmailList">
-                <option value="">-- <?php echo _('Select Email List'); ?> --</option>
+                <option value="0">-- <?php echo _('Select Email List'); ?> --</option>
                 <?php
                 foreach ( $email_lists as $el ) {
                     $selected = ( $el->id == $share_and_save->email_list_id ) ? ' selected="selected"' : '';
