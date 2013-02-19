@@ -450,6 +450,76 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Share and Save
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function share_and_save() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $share_and_save = new SocialMediaShareAndSave();
+        $share_and_save->get( $page->id );
+
+        // Make sure it's created
+        if ( !$share_and_save->key ) {
+            $share_and_save->sm_facebook_page_id = $page->id ;
+            $share_and_save->key = md5( $this->user->id . microtime() . $page->id );
+            $share_and_save->create();
+        }
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Add validation
+        $v = new Validator( 'fShareAndSave' );
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        $errs = '';
+        $js_validation = $v->js_validation();
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $share_and_save->email_list_id = $_POST['sEmailList'];
+                $share_and_save->maximum_email_list_id = $_POST['sMaximumEmailList'];
+                $share_and_save->before = $_POST['taBefore'];
+                $share_and_save->after = $_POST['taAfter'];
+                $share_and_save->minimum = $_POST['tMinimum'];
+                $share_and_save->maximum = $_POST['tMaximum'];
+                $share_and_save->share_title = $_POST['tShareTitle'];
+                $share_and_save->share_image_url = $_POST['tShareImageURL'];
+                $share_and_save->share_text = $_POST['taShareText'];
+                $share_and_save->save();
+
+                $this->notify( _('Your Share And Save page has been successfully updated!') );
+            }
+        }
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'share-and-save' )
+            ->add_title( _('Share And Save') )
+            ->select( 'share-and-save' )
+            ->set( compact( 'share_and_save', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
