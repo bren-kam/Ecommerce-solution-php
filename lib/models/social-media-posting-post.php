@@ -18,10 +18,45 @@ class SocialMediaPostingPost extends ActiveRecordBase {
             $this->id = $this->sm_posting_post_id;
     }
 
+    /**
+     * Get
+     *
+     * @param int $sm_posting_post_id
+     * @param int $sm_facebook_page_id
+     */
+    public function get( $sm_posting_post_id, $sm_facebook_page_id ) {
+        $this->prepare(
+            'SELECT `sm_posting_post_id`, `sm_facebook_page_id`, `status` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = :sm_posting_post_id AND `sm_facebook_page_id` = :sm_facebook_page_id'
+            , 'ii'
+            , array( ':sm_posting_post_id' => $sm_posting_post_id, ':sm_facebook_page_id' => $sm_facebook_page_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->sm_posting_post_id;
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'sm_facebook_page_id' => $this->sm_facebook_page_id
+            , 'access_token' => $this->access_token
+            , 'post' => $this->post
+            , 'link' => $this->link
+            , 'status' => $this->status
+            , 'date_posted' => $this->date_posted
+            , 'date_created' => $this->date_created
+        ), 'isssiss' );
+
+        $this->id = $this->sm_posting_post_id = $this->get_insert_id();
+    }
+
    /**
     * Get unposted posts
     *
-    * @return array
+    * @return SocialMediaPostingPost[]
     */
     public function get_unposted_posts() {
         // Get the posting posts
@@ -54,10 +89,55 @@ class SocialMediaPostingPost extends ActiveRecordBase {
      * Save
      */
     public function save() {
-        parent::update( array(
+        $this->update( array(
             'status' => $this->status
         ), array(
             'sm_posting_post_id' => $this->id
         ), 'i', 'i' );
+    }
+
+    /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'sm_posting_post_id' => $this->id
+            , 'sm_facebook_page_id' => $this->sm_facebook_page_id
+        ), 'ii' );
+    }
+
+    /**
+     * List
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return SocialMediaPostingPost[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT `sm_posting_post_id`, `post`, `error`, `status`, `date_posted` FROM `sm_posting_posts` WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'SocialMediaPostingPost' );
+    }
+
+    /**
+     * Count all
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( `sm_posting_post_id` )  FROM `sm_posting_posts` WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 }

@@ -398,7 +398,7 @@ class FacebookController extends BaseController {
 
         // Get autoresponder
         $facebook_pages = $facebook_page->list_all( $dt->get_variables() );
-        $dt->set_row_count( $facebook_page->count_all( $dt->get_where() ) );
+        $dt->set_row_count( $facebook_page->count_all( $dt->get_count_variables() ) );
 
         // Setup variables
         $confirm = _('Are you sure you want to delete this post? This will disable all related apps and it cannot be undone.');
