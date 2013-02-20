@@ -83,28 +83,28 @@ class CurrentAdController extends BaseController {
         $current_ad = new CurrentAd;
         $signed_request = $fb->getSignedRequest();
 
-        $v = new Validator('fSignUp');
-        $v->add_validation( 'tName', 'req', 'The "Name" field is required' );
-        $v->add_validation( 'tName', '!val=Name:', 'The "Name" field is required' );
-
-        $v->add_validation( 'tEmail', 'req', 'The "Email" field is required' );
-        $v->add_validation( 'tEmail', '!val=Email:', 'The "Email" field is required' );
-        $v->add_validation( 'tEmail', 'email', 'The "Email" field must contain a valid email' );
-
-        $success = false;
-
-        if ( nonce::verify( $_POST['_nonce'], 'sign-up' ) ) {
-            $errs = $v->validate();
-
-            // Insert email into the default category
-            if( empty( $errs ) ) {
-                $current_ad->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
-                $success = true;
-            }
-        }
+//        $v = new Validator('fSignUp');
+//        $v->add_validation( 'tName', 'req', 'The "Name" field is required' );
+//        $v->add_validation( 'tName', '!val=Name:', 'The "Name" field is required' );
+//
+//        $v->add_validation( 'tEmail', 'req', 'The "Email" field is required' );
+//        $v->add_validation( 'tEmail', '!val=Email:', 'The "Email" field is required' );
+//        $v->add_validation( 'tEmail', 'email', 'The "Email" field must contain a valid email' );
+//
+//        $success = false;
+//
+//        if ( nonce::verify( $_POST['_nonce'], 'sign-up' ) ) {
+//            $errs = $v->validate();
+//
+//            // Insert email into the default category
+//            if( empty( $errs ) ) {
+//                $current_ad->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
+//                $success = true;
+//            }
+//        }
 
         $tab = $current_ad->get_tab( $signed_request['page']['id'], $success );
-        $tab .= $v->js_validation();
+        //$tab .= $v->js_validation();
 
         // If it's secured, make the images secure
         if ( security::is_ssl() )
