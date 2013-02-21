@@ -24,12 +24,9 @@ jQuery(function($) {
         // Date Picker
         $('#tDateStart, #tDateEnd').datepicker({
             maxDate: -1
-            , dateFormat: 'yy-mm-dd'
+            , dateFormat: 'M d, yy'
             , altFormat: 'yy-mm-dd'
             , onSelect: function( dateText, dp ) {
-                var dsObject = $('#tDateStart').datepicker('getDate'), ds = dsObject.getFullYear() + '-' + ( dsObject.getMonth() * 1 + 1 )  + '-' + dsObject.getDate();
-                var deObject = $('#tDateEnd').datepicker('getDate'), de = deObject.getFullYear() + '-' + ( deObject.getMonth() * 1 + 1 ) + '-' + deObject.getDate();
-
                 var url = insertParam( 'ds', $('#tDateStart').val() );
                 document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
             }

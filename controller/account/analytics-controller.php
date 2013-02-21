@@ -56,8 +56,10 @@ class AnalyticsController extends BaseController {
         $content_overview_pages = $analytics->get_content_overview();
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -110,8 +112,10 @@ class AnalyticsController extends BaseController {
         $sparklines['exit_rate'] = $analytics->sparkline( 'exit_rate' );
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -167,8 +171,10 @@ class AnalyticsController extends BaseController {
         $sparklines['exit_rate'] = $analytics->sparkline( 'exit_rate' );
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -225,8 +231,10 @@ class AnalyticsController extends BaseController {
         $top_keywords = $analytics->get_keywords();
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -280,8 +288,10 @@ class AnalyticsController extends BaseController {
         $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -335,8 +345,10 @@ class AnalyticsController extends BaseController {
         $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -393,8 +405,10 @@ class AnalyticsController extends BaseController {
         $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
@@ -451,8 +465,10 @@ class AnalyticsController extends BaseController {
         $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
 
         // Get the dates
-        $date_start = $analytics->date_start;
-        $date_end = $analytics->date_end;
+        $date_start = new DateTime( $analytics->date_start );
+        $date_start = $date_start->format('M d, Y');
+        $date_end = new DateTime( $analytics->date_end );
+        $date_end = $date_end->format('M d, Y');
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
