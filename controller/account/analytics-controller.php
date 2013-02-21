@@ -407,6 +407,64 @@ class AnalyticsController extends BaseController {
             ->set( compact( 'sparklines', 'visits_plotting', 'total', 'date_start', 'date_end' ) );
     }
 
+    /**
+     * Get Source
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function source() {
+        if ( !$this->user->account->live )
+            return new RedirectResponse('/');
+
+        if ( !isset( $_GET['s'] ) )
+            return new RedirectResponse('/analytics/traffic-sources/');
+
+        // Get analytics
+        $date_start = ( isset( $_GET['ds'] ) ) ? $_GET['ds'] : '';
+        $date_end = ( isset( $_GET['de'] ) ) ? $_GET['de'] : '';
+
+        // Setup analytics
+        $analytics = new Analytics( $date_start, $date_end );
+        $analytics->setup( $this->user->account );
+        $analytics->set_ga_filter( 'source==' . $_GET['s'] );
+
+        // Get all the data
+        $records = $analytics->get_metric_by_date( 'visits' );
+        $total = array_merge( $analytics->get_traffic_sources_totals(), $analytics->get_totals() );
+
+        // Setup Javascript chart
+        $visits_plotting_array = array();
+
+        // Visits plotting
+        if ( is_array( $records ) )
+        foreach ( $records as $r_date => $r_value ) {
+            $visits_plotting_array[] = '[' . $r_date . ', ' . $r_value . ']';
+        }
+
+        $visits_plotting = implode( ',', $visits_plotting_array );
+
+        // Sparklines
+        $sparklines['visits'] = $analytics->create_sparkline( $records );
+        $sparklines['pages_by_visits'] = $analytics->sparkline( 'pages_by_visits' );
+        $sparklines['time_on_site'] = $analytics->sparkline( 'time_on_site' );
+        $sparklines['new_visits'] = $analytics->sparkline( 'new_visits' );
+        $sparklines['bounce_rate'] = $analytics->sparkline( 'bounce_rate' );
+
+        // Get the dates
+        $date_start = $analytics->date_start;
+        $date_end = $analytics->date_end;
+
+        $this->resources
+            ->css_url( Config::resource('jquery-ui') )
+            ->css( 'analytics/analytics' )
+            ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'analytics/analytics' );
+
+        return $this->get_template_response( 'source' )
+            ->add_title( _('Source') )
+            ->select( 'traffic-sources', 'sources' )
+            ->set( compact( 'sparklines', 'visits_plotting', 'total', 'date_start', 'date_end' ) );
+    }
+
     /***** AJAX *****/
 
     /**
