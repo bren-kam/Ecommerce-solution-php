@@ -53,6 +53,15 @@ class ResourcesController extends BaseController {
     }
 
     /**
+     * Need different things for an image
+     *
+     * @return bool
+     */
+    protected function media() {
+        return new MediaResponse( $_SERVER['REQUEST_URI'] );
+    }
+
+    /**
      * Override login function
      * @return bool
      */

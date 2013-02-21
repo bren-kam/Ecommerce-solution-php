@@ -32,6 +32,9 @@ class Config {
         , 's98-pm-key'              => '6c309c4529c7a979606f9a8b8d0fc668'
         // Real Statistics API Key
         , 'rs-key'                  => '941cb213d6bbf2dd73c1214fad6321e6'
+        // Google Analytics
+        , 'ga-username'             => 'web@imagineretailer.com'
+        , 'ga-password'             => 'imagine1010'
 	);
 
     /**
