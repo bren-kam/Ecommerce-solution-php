@@ -111,6 +111,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     }
     plotting_data = [<?php echo $visits_plotting; ?>];
     plotting_label = 'Visits';
+    show_piechart = true;
 </script>
 <?php
 nonce::field( 'get_graph', '_get_graph');

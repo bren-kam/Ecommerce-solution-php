@@ -16,7 +16,7 @@ jQuery(function($) {
 
     active_graph = 'Visits', percent = '', time = false;
 
-    if ( 'Visits' == plotting_label )
+    if ( 'undefined' != typeof show_piechart )
         swfobject.embedSWF('/media/flash/open-flash-chart.swf', 'dTrafficSources', '200', '200', '9.0.0', '', null, { wmode:'transparent' } );
 
     // Load the datepicker

@@ -192,6 +192,90 @@ class Analytics {
     }
 
     /**
+     * Gets the rows for all traffic sources
+     *
+     * @param int $limit [optional]
+     * @return array
+     */
+    public function get_traffic_sources( $limit = 5 ) {
+        // Make sure we can get any number we want
+        if ( 0 == $limit )
+            $limit = 10000;
+
+        // Declare variables
+        $traffic_sources = array();
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, array( 'source', 'medium' ), array( 'visits', 'pageviewsPerVisit', 'avgTimeOnSite', 'percentNewVisits', 'visitBounceRate' ), array( '-visits' ), $this->ga_filter, $this->date_start, $this->date_end, 1, $limit );
+
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+
+            $traffic_sources[] = array(
+                'source' => $dimensions['source']
+                , 'medium' => $dimensions['medium']
+                , 'visits' => $metrics['visits']
+                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
+                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
+                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
+                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+            );
+        }
+
+        return $traffic_sources;
+    }
+
+    /**
+     * Gets the rows for all keywords
+     *
+     * @param int $limit [optional]
+     * @return array
+     */
+    public function get_keywords( $limit = 5 ) {
+        // Make sure we can get any number we want
+        if ( 0 == $limit )
+            $limit = 10000;
+
+         // Declare variables
+        $keywords = array();
+
+        // Set the GA Filter
+        $ga_filter = 'keyword!=(not set)';
+
+        // Add on global filter
+        if ( !is_null( $this->ga_filter ) )
+            $ga_filter .= ',' . $this->ga_filter;
+
+        // Get data
+        $this->ga->requestReportData( $this->ga_profile_id, array( 'keyword' ), array( 'visits', 'pageviewsPerVisit', 'avgTimeOnSite', 'percentNewVisits', 'visitBounceRate' ), array( '-visits' ), $ga_filter, $this->date_start, $this->date_end, 1, $limit );
+
+        // See if there were any results
+        $results = $this->ga->getResults();
+
+        if ( is_array( $results ) )
+        foreach ( $this->ga->getResults() as $result ) {
+            $metrics = $result->getMetrics();
+            $dimensions = $result->getDimensions();
+
+            $keywords[] = array(
+                'keyword' => $dimensions['keyword']
+                , 'visits' => $metrics['visits']
+                , 'pages_by_visits' => number_format( $metrics['pageviewsPerVisit'], 2 )
+                , 'time_on_site' => dt::sec_to_time( $metrics['avgTimeOnSite'] )
+                , 'new_visits' => number_format( $metrics['percentNewVisits'], 2 )
+                , 'bounce_rate' => number_format( $metrics['visitBounceRate'], 2 )
+            );
+        }
+
+        return $keywords;
+    }
+
+    /**
      * Gets the totals for Content Overview for a date range
      *
      * @param int $limit
