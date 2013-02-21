@@ -52,9 +52,6 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 <br clear="both" /><br />
 
 <script type="text/javascript">
-    function open_flash_chart_data() {
-        return JSON.stringify(<?php echo $pie_chart; ?>);
-    }
     plotting_data = [<?php echo $page_views_plotting; ?>];
     plotting_label = 'Page Views';
 </script>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Keywords | Traffic Sources | Analytics
+ * @page Page | Content Overview | Analytics
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -22,7 +22,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     -
     <input type="text" id="tDateEnd" name="de" class="tb" value="<?php echo $date_end; ?>" />
 </div>
-<h1><?php echo _('Traffic Keywords'); ?></h1>
+<h1><?php echo _('Keyword'), ': ', $_GET['k']; ?></h1>
 <br clear="all" /><br />
 
 <div id="dLargeGraphWrapper"><div id="dLargeGraph"></div></div>
@@ -51,40 +51,6 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     </div>
 </div>
 <br clear="both" /><br />
-<div class="info-box col-1">
-    <p class="info-box-title"><?php echo _('Pages'); ?></p>
-    <div class="info-box-content">
-        <table class="dt" perPage="30,50,100">
-            <thead>
-                <tr>
-                    <th><?php echo _('Keyword'); ?></th>
-                    <th class="text-right" sort="1 desc" column="formatted-num"><?php echo _('Visits'); ?></th>
-                    <th class="text-right" column="formatted-num"><?php echo _('Pages/Visit'); ?></th>
-                    <th class="text-right"><?php echo _('Avg. Time on Site'); ?></th>
-                    <th class="text-right" column="formatted-num"><?php echo _('% New Visits'); ?></th>
-                    <th class="text-right" column="formatted-num"><?php echo _('Bounce Rate'); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-            if ( is_array( $keywords ) )
-            foreach ( $keywords as $k ) {
-            ?>
-            <tr>
-                <td><a href="/analytics/keyword/?k=<?php echo urlencode( $k['keyword'] ); ?>" title="<?php echo $k['keyword']; ?>"><?php echo $k['keyword']; ?></a></td>
-                <td class="text-right"><?php echo number_format( $k['visits'] ); ?></td>
-                <td class="text-right"><?php echo number_format( $k['pages_by_visits'], 2 ); ?></td>
-                <td class="text-right"><?php echo $k['time_on_site']; ?></td>
-                <td class="text-right"><?php echo $k['new_visits']; ?>%</td>
-                <td class="text-right last"><?php echo $k['bounce_rate']; ?>%</td>
-            </tr>
-            <?php } ?>
-            </tbody>
-        </table>
-        <br />
-    </div>
-</div>
-<br clear="left" />
 
 <script type="text/javascript">
     plotting_data = [<?php echo $visits_plotting; ?>];
