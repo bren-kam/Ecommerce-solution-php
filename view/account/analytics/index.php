@@ -8,7 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var array $sparklines
- * @var striung $date_start
+ * @var string $date_start
  * @var string $date_end
  */
 
@@ -109,7 +109,8 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     function open_flash_chart_data() {
         return JSON.stringify(<?php echo $pie_chart; ?>);
     }
-    visits_plotting = [<?php echo $visits_plotting; ?>];
+    plotting_data = [<?php echo $visits_plotting; ?>];
+    plotting_label = 'Visits';
 </script>
 <?php
 nonce::field( 'get_graph', '_get_graph');

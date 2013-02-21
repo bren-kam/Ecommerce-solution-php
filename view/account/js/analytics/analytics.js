@@ -3,7 +3,7 @@ jQuery(function($) {
 	decimal = false;
 
     $.plot($('#dLargeGraph'),[
-            { label: 'Visits', data: visits_plotting, color: '#FFA900' }
+            { label: plotting_label, data: plotting_data, color: '#FFA900' }
         ],{
             lines: { show: true, fill: true },
             points: { show: true },
@@ -16,7 +16,8 @@ jQuery(function($) {
 
     active_graph = 'Visits', percent = '', time = false;
 
-    swfobject.embedSWF('/media/flash/open-flash-chart.swf', 'dTrafficSources', '200', '200', '9.0.0', '', null, { wmode:'transparent' } );
+    if ( 'Visits' == plotting_label )
+        swfobject.embedSWF('/media/flash/open-flash-chart.swf', 'dTrafficSources', '200', '200', '9.0.0', '', null, { wmode:'transparent' } );
 
     // Load the datepicker
     head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {

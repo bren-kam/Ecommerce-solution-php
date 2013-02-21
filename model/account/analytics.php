@@ -34,7 +34,7 @@ class Analytics {
 
         if ( empty( $date_end ) ) {
             $date_end = new DateTime();
-            $date_end->sub( new DateInterval('P1D') ); // 1 day ago
+            $date_end->sub( new DateInterval('P2D') ); // 1 day ago
         } else {
             $date_end = new DateTime( $date_end );
         }
