@@ -1,6 +1,6 @@
 <?php
 class EmailMessage extends ActiveRecordBase {
-    public $id, $email_message_id, $email_template_id, $mc_campaign_id, $subject, $message, $type, $status, $date_sent, $date_created;
+    public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $subject, $message, $type, $status, $date_sent, $date_created;
 
     /**
      * Setup the account initial data
@@ -11,6 +11,23 @@ class EmailMessage extends ActiveRecordBase {
         // We want to make sure they match
         if ( isset( $this->email_message_id ) )
             $this->id = $this->email_message_id;
+    }
+
+
+    /**
+     * Get
+     *
+     * @param int $email_message_id
+     * @param int $account_id
+     */
+    public function get( $email_message_id, $account_id ) {
+        $this->prepare(
+            'SELECT * FROM `email_messages` WHERE `email_message_id` = :email_message_id AND `website_id` = :account_id'
+            , 'ii'
+            , array( ':email_message_id' => $email_message_id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->email_message_id;
     }
 
     /**
@@ -37,5 +54,40 @@ class EmailMessage extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
+    }
+
+    /**
+     * List Pages
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return EmailMessage[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT `email_message_id`, `mc_campaign_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
+    }
+
+    /**
+     * Count all the pages
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( `email_message_id` ) FROM `email_messages` WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 }
