@@ -24,7 +24,7 @@ class Analytics {
      * @param string $date_start
      * @param string $date_end
 	 */
-    public function __construct( $date_start, $date_end ) {
+    public function __construct( $date_start = '', $date_end = '') {
         if ( empty( $date_start ) ) {
             $date_start = new DateTime();
             $date_start->sub( new DateInterval('P1M') ); // 1 Month ago
@@ -404,6 +404,90 @@ class Analytics {
         );
 
         return json_encode( $pie_chart );
+    }
+
+    /**
+     * Bar Chart data
+     *
+     * @param AnalyticsEmail $email
+     * @return string (json encoded)
+     */
+    public static function bar_chart( $email ) {
+        $max = max( array(
+            (int) $email->emails_sent,
+            (int) $email->opens,
+            (int) $email->clicks,
+            (int) $email->forwards,
+            $email->soft_bounces + $email->hard_bounces,
+            (int) $email->unsubscribes
+        ) );
+
+        // Create the bar chart
+        $bar_chart = array(
+            'elements' => array(
+                array(
+                    'type' => 'bar_glass',
+                    'colour' => '#FFA900',
+                    'on-show' => array(
+                        'type' => 'grow-up',
+                        'cascade' => 1,
+                        'delay' => 0.5
+                    ),
+                    'values' => array(
+                        array(
+                            'top' => (int) $email->emails_sent,
+                            'tip' => '#val# Emails Sent'
+                        ),
+                        array(
+                              'top' => (int) $email->opens,
+                              'tip' => '#val# Opens'
+                        ),
+                        array(
+                              'top' => (int) $email->clicks,
+                              'tip' => '#val# Clicks'
+                        ),
+                        array(
+                              'top' => (int) $email->forwards,
+                              'tip' => '#val# Forwards'
+                        ),
+                        array(
+                              'top' => $email->soft_bounces + $email->hard_bounces,
+                              'tip' => '#val# Bounces'
+                        ),
+                        array(
+                              'top' => (int) $email->unsubscribes,
+                              'tip' => '#val# Unsubscribes'
+                        )
+                    ),
+                    'tip' => '#val#'
+                )
+            ),
+            'x_axis' => array(
+                'labels' => array(
+                    'labels' => array(
+                        'Emails Sent',
+                        'Opens',
+                        'Clicks',
+                        'Forwards',
+                        'Bounces',
+                        'Unsubscribes'
+                    ),
+                    'colour' => '#545454'
+                ),
+                'colour' => '#545454',
+                'grid-colour' => '#D9D9D9'
+            ),
+            'y_axis' => array(
+                'min' => 0,
+                'max' => $max,
+                'steps' => ceil( $max / 6 ),
+                'colour' => '#545454',
+                'grid-colour' => '#D9D9D9'
+            ),
+            'bg_colour' => '#FFFFFF'
+        );
+
+        return json_encode( $bar_chart );
     }
 
     /***** PROTECTED FUNCTIONS ****/
