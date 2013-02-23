@@ -2,6 +2,9 @@
 class EmailMessage extends ActiveRecordBase {
     public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $subject, $message, $type, $status, $date_sent, $date_created;
 
+    // Artifical columns
+    public $email_lists, $meta;
+
     /**
      * Setup the account initial data
      */
@@ -28,6 +31,124 @@ class EmailMessage extends ActiveRecordBase {
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->email_message_id;
+    }
+
+    /**
+     * Get Meta
+     */
+    public function get_smart_meta() {
+        if ( !$this->id )
+            return;
+
+        // Get the meta data
+        $meta_data = $this->get_meta();
+
+        if ( 'product' == $this->type ) {
+            // Start off the product ids
+            $product_ids = '';
+
+            if ( is_array( $meta_data ) )
+            foreach ( $meta_data as $md ) {
+                // Get variables
+                $product_array = unserialize( html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' ) );
+                $this->meta[$product_array['product_id']]['price'] = $product_array['price'];
+                $this->meta[$product_array['product_id']]['order'] = $product_array['order'];
+
+                if ( !empty( $product_ids ) )
+                    $product_ids .= ',';
+
+                // Create list of product ids
+                $product_ids .= $product_array['product_id'];
+            }
+
+            // Causes an error otherwise
+            if ( empty( $product_ids ) ) {
+                $message['meta'] = array();
+            } else {
+                $product = new Product;
+
+                // Get products
+                $products = $product->get_by_ids( $product_ids );
+
+                // Put the data in the meta
+                foreach ( $products as $product ) {
+                    $message['meta'][$product->id] = array_merge( $this->meta[$product->id], $product );
+                }
+            }
+        } else {
+            $this->meta = ar::assign_key( $meta_data, 'type', true );
+        }
+    }
+
+    /**
+     * Get meta
+     *
+     * @return array
+     */
+    public function get_meta() {
+        return $this->prepare(
+            'SELECT `type`, `value` FROM `email_message_meta` WHERE `email_message_id` = :email_message_id'
+            , 'i'
+            , array( ':email_message_id' => $this->id )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Remove All
+     */
+    public function remove_all() {
+        if ( !$this->id )
+            return;
+
+        // Delete from Mailchimp
+        if ( $this->mc_campaign_id ) {
+            library( 'MCAPI' );
+            $mc = new MCAPI( Config::key('mc-api') );
+
+            // Delete the campaign
+            $mc->campaignDelete( $this->mc_campaign_id );
+
+            // Simply note the error, don't stop
+            if ( $mc->errorCode )
+                throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+        }
+
+        // Assuming the above is successful, delete everything about this email
+        $this->remove_associations();
+        $this->remove_meta();
+        $this->remove();
+    }
+
+    /**
+     * Remove/Delete
+     */
+    protected function remove() {
+        $this->delete( array(
+            'email_message_id' => $this->id
+        ), 'i' );
+    }
+
+
+    /**
+     * Remove Associations
+     */
+    protected function remove_associations() {
+        $this->prepare(
+            'DELETE FROM `email_message_associations` WHERE `email_message_id` = :email_message_id'
+            , 'i'
+            , array( ':email_message_id' => $this->id )
+        )->query();
+    }
+
+    /**
+     * Remove Meta
+     */
+    protected function remove_meta() {
+        $this->prepare(
+            'DELETE FROM `email_message_meta` WHERE `email_message_id` = :email_message_id'
+            , 'i'
+            , array( ':email_message_id' => $this->id )
+        )->query();
     }
 
     /**

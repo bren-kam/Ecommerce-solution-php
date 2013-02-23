@@ -18,9 +18,68 @@ class EmailsController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
+        if ( !$this->user->account->email_marketing )
+            return new RedirectResponse('/email-marketing/subscribers/');
+
         return $this->get_template_response( 'index' )
             ->add_title( _('Emails') )
             ->select( 'emails', 'view' );
+    }
+
+    /**
+     * Send Email Message
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function send() {
+        if ( !$this->user->account->email_marketing )
+            return new RedirectResponse('/email-marketing/subscribers/');
+
+        // Initialize variable
+        $email_message_id = ( isset( $_GET['emid'] ) ) ? $_GET['emid'] : '';
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_count_by_account( $this->user->account->id );
+
+        // Get email message
+        $message = new EmailMessage();
+
+        if ( $email_message_id ) {
+            // Get Message
+            $message->get( $email_message_id, $this->user->account->id );
+
+            // Get email lists
+            $email_lists_array = $email_list->get_by_message( $message->id, $this->user->account->id );
+
+            foreach ( $email_lists_array as $el ) {
+                $message->email_lists[$el->id] = $el;
+            }
+
+            // Get meta
+            $message->get_smart_meta();
+        }
+
+        // Get settings
+        $settings = $this->user->account->get_settings( 'from_name', 'from_email', 'timezone' );
+        $timezone = $settings['timezone'];
+        $server_timezone = Config::setting('server-timezone');
+
+        // Make sure they don't have any blank settings
+        if ( array_search( '', $settings ) ) {
+            $this->notify( _('One or more of your email settings has not been set. Please update them and then try again.'), false );
+            //return new RedirectResponse('/email-marketing/settings/');
+        }
+
+        $this->resources
+            ->css( 'email-marketing/emails/send', 'jquery.timepicker' )
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'jquery.blockUI', 'jquery.timepicker', 'email-marketing/emails/send' );
+
+        return $this->get_template_response( 'send' )
+            ->add_title( _('Send') . ' | ' . _('Emails') )
+            ->select( 'emails' )
+            ->set( compact( 'email_lists', 'message', 'settings', 'timezone', 'server_timezone' ) );
     }
 
     /***** AJAX *****/
@@ -99,7 +158,7 @@ class EmailsController extends BaseController {
         // Remove
         $email_message = new EmailMessage();
         $email_message->get( $_GET['emid'], $this->user->account->id );
-        $email_message->remove();
+        $email_message->remove_all();
 
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();
