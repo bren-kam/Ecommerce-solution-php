@@ -25,6 +25,9 @@ class header extends Base_Class {
         , 'css' => 'text/css; charset=utf-8'
         , 'js' => 'text/javascript; charset=utf-8'
         , 'javascript' => 'text/javascript; charset=utf-8'
+        , 'flv' => 'flv-application/octet-stream'
+        , 'mp4' => 'video/mp4'
+        , 'swf' => 'application/x-shockwave-flash'
 	);
 	
 	/**

@@ -237,6 +237,35 @@ class Account extends ActiveRecordBase {
 
         return $settings;
     }
+    /**
+     * Get Settings
+     *
+     * @param string|array $key1, $key2
+     * @return mixed
+     */
+    public function get_email_settings() {
+        $arguments = func_get_args();
+
+        if ( 0 == count( $arguments ) )
+            return false;
+
+        // Determine the keys
+        if ( 1 == count( $arguments ) && !is_array( $arguments[0] ) ) {
+            // Getting one value -- return it
+            return $this->get_email_setting( $arguments[0] );
+        } else {
+            $keys = ( is_array( $arguments[0] ) ) ? $arguments[0] : $arguments;
+        }
+
+        $settings = ar::assign_key( $this->get_email_settings_array( $keys ), 'key', true );
+
+        foreach ( $keys as $key ) {
+            if ( !isset( $settings[$key] ) )
+                $settings[$key] = '';
+        }
+
+        return $settings;
+    }
 
     /**
      * Get setting
@@ -246,6 +275,22 @@ class Account extends ActiveRecordBase {
      */
     protected function get_setting( $key ) {
         return $this->prepare( 'SELECT `value` FROM `website_settings` WHERE `website_id` = :account_id AND `key` = :key'
+            , 'is'
+            , array(
+                ':account_id' => $this->id
+                , ':key' => $key
+            )
+        )->get_var();
+    }
+
+    /**
+     * Get setting
+     *
+     * @param string $key
+     * @return string
+     */
+    protected function get_email_setting( $key ) {
+        return $this->prepare( 'SELECT `value` FROM `email_settings` WHERE `website_id` = :account_id AND `key` = :key'
             , 'is'
             , array(
                 ':account_id' => $this->id
@@ -265,6 +310,22 @@ class Account extends ActiveRecordBase {
 
         // Getting multiple values, return them
         return $this->prepare( 'SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = ? AND `key` IN( ?' . str_repeat( ', ?', $count - 1 ) . ')'
+            , 'i' . str_repeat( 's', $count )
+            , array_merge( array( $this->id ), $keys )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get Settings as Array
+     *
+     * @param array $keys
+     * @return array
+     */
+    protected function get_email_settings_array( array $keys ) {
+        $count = count ( $keys );
+
+        // Getting multiple values, return them
+        return $this->prepare( 'SELECT `key`, `value` FROM `email_settings` WHERE `website_id` = ? AND `key` IN( ?' . str_repeat( ', ?', $count - 1 ) . ')'
             , 'i' . str_repeat( 's', $count )
             , array_merge( array( $this->id ), $keys )
         )->get_results( PDO::FETCH_ASSOC );

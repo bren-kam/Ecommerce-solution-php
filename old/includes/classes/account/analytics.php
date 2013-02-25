@@ -652,7 +652,7 @@ class Analytics extends Base_Class {
 		// Make sure that we have a google analytics profile to work with
 		if ( empty( $this->ga_profile_id ) )
 			return false;
-		
+
 		return $this->create_sparkline( $this->get_metric_by_date( $metric, $date_start, $date_end ) );
 	}
 

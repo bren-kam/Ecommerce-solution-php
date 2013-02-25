@@ -11,7 +11,7 @@ class SocialMediaAboutUs extends ActiveRecordBase {
     }
 
     /**
-     * Get About Us
+     * Get
      *
      * @param int $sm_facebook_page_id
      */

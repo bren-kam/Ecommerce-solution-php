@@ -18,10 +18,8 @@ class WebsiteController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
             ->select( 'mobile-pages', 'view' );
-
-        return $response;
     }
 
     /**

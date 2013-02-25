@@ -53,7 +53,7 @@ class AccountFile extends ActiveRecordBase {
      * Get By Account
      *
      * @param int $account_id
-     * @return array
+     * @return AccountFile[]
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(

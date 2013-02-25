@@ -1,0 +1,12 @@
+/* Info Boxes */
+.info-box { border: 1px solid #e3e3e3; position: relative; width:95%;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
+}
+.info-box-title { margin: 1px; background-color: #78787a; color: #fff; padding: 6px 0 0 10px; font-size: 17px; font-weight: bold; }
+.info-box-content { padding: 10px }
+.info-box-content td, .info-box-content th { padding-bottom: 7px }
