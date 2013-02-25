@@ -51,8 +51,8 @@ class EmailMessage extends ActiveRecordBase {
             foreach ( $meta_data as $md ) {
                 // Get variables
                 $product_array = unserialize( html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' ) );
-                $this->meta[$product_array['product_id']]['price'] = $product_array['price'];
-                $this->meta[$product_array['product_id']]['order'] = $product_array['order'];
+                $this->meta[$product_array['product_id']]->price = $product_array['price'];
+                $this->meta[$product_array['product_id']]->order = $product_array['order'];
 
                 if ( !empty( $product_ids ) )
                     $product_ids .= ',';
@@ -63,7 +63,7 @@ class EmailMessage extends ActiveRecordBase {
 
             // Causes an error otherwise
             if ( empty( $product_ids ) ) {
-                $message['meta'] = array();
+                $this->meta = array();
             } else {
                 $product = new Product;
 
@@ -72,7 +72,7 @@ class EmailMessage extends ActiveRecordBase {
 
                 // Put the data in the meta
                 foreach ( $products as $product ) {
-                    $message['meta'][$product->id] = array_merge( $this->meta[$product->id], $product );
+                    $this->meta[$product->id] = array_merge( $this->meta[$product->id], $product );
                 }
             }
         } else {
@@ -91,6 +91,153 @@ class EmailMessage extends ActiveRecordBase {
             , 'i'
             , array( ':email_message_id' => $this->id )
         )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Create
+     */
+    public function create() {
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'website_id' => $this->website_id
+            , 'email_template_id' => $this->email_template_id
+            , 'subject' => $this->subject
+            , 'message' => $this->message
+            , 'type' => $this->type
+            , 'date_sent' => $this->date_sent
+            , 'date_created' => $this->date_created
+        ), 'iisssss' );
+
+        $this->id = $this->email_template_id = $this->get_insert_id();
+    }
+
+    /**
+     * Add Associations
+     *
+     * @param array $email_list_ids
+     */
+    public function add_associations( array $email_list_ids ) {
+        $email_message_id = (int) $this->id;
+
+        $values = '';
+
+        if ( is_array( $email_list_ids ) )
+        foreach ( $email_list_ids as $el_id ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= "( $email_message_id," . (int) $el_id . ' )';
+        }
+
+        $this->query( "INSERT INTO `email_message_associations` ( `email_message_id`, `email_list_id` ) VALUES $values" );
+    }
+
+    /**
+     * Add Message Meta
+     *
+     * @param array $meta
+     */
+    public function add_meta( array $meta ) {
+        $email_message_id = (int) $this->id;
+
+        // Create values to insert
+        $values = '';
+
+        foreach ( $meta as $m ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= "( $email_message_id, '" . $this->quote( $m[0] ) . "', '" . $this->quote( $m[1] ) . "' )";
+        }
+
+        // Insert new meta
+        if ( !empty( $values ) )
+            $this->query( "INSERT INTO `email_message_meta` ( `email_message_id`, `type`, `value` ) VALUES $values" );
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->insert( array(
+            'email_template_id' => $this->email_template_id
+            , 'subject' => $this->subject
+            , 'message' => $this->message
+            , 'type' => $this->type
+            , 'date_sent' => $this->date_sent
+        ), array(
+            'email_template_id' => $this->email_template_id
+            , 'website_id' => $this->website_id
+        ), 'issss', 'ii' );
+    }
+
+    /**
+     * Update Mailchimp
+     *
+     * @throws ModelException
+     *
+     * @param Account $account
+     * @param array $email_lists
+     */
+    public function update_mailchimp( $account, $email_lists ) {
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+
+        $segmentation_options = array(
+            'match' => 'any',
+            'conditions' => array(
+                array(
+                      'field' => 'interests',
+                      'op' => 'one',
+                      'value' => implode( ',', $email_lists )
+                )
+            )
+        );
+
+        // Do segment test to make sure it would work
+        if ( !$mc->campaignSegmentTest( $account->mc_list_id, $segmentation_options ) )
+            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+
+        // Update campaign
+        $mc->campaignUpdate( $this->mc_campaign_id, 'segment_opts', $segmentation_options );
+
+        // Handle any error
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+
+        // Update Subject
+        $mc->campaignUpdate( $this->mc_campaign_id, 'subject', $this->subject );
+
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+
+        // Update Message
+        $this->get_smart_meta();
+        $email_template = new EmailTemplate();
+        $html_message = $email_template->get_complete( $this, $account );
+
+        $mc->campaignUpdate( $this->mc_campaign_id, 'content', array( 'html' => $html_message ) );
+
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+
+        // Update From Email
+        $settings = $account->get_email_settings( 'from_email', 'from_name' );
+        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $account->domain : $settings['from_email'];
+
+        $mc->campaignUpdate( $this->mc_campaign_id, 'from_email', $from_email );
+
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+
+        // Update From Name
+        $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
+
+        $mc->campaignUpdate( $this->mc_campaign_id, 'from_name', $from_name );
+
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
     }
 
     /**
@@ -132,7 +279,7 @@ class EmailMessage extends ActiveRecordBase {
     /**
      * Remove Associations
      */
-    protected function remove_associations() {
+    public function remove_associations() {
         $this->prepare(
             'DELETE FROM `email_message_associations` WHERE `email_message_id` = :email_message_id'
             , 'i'
@@ -143,7 +290,7 @@ class EmailMessage extends ActiveRecordBase {
     /**
      * Remove Meta
      */
-    protected function remove_meta() {
+    public function remove_meta() {
         $this->prepare(
             'DELETE FROM `email_message_meta` WHERE `email_message_id` = :email_message_id'
             , 'i'
@@ -210,5 +357,20 @@ class EmailMessage extends ActiveRecordBase {
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
+    }
+
+    /**
+     * Test
+     */
+    public function test() {
+        if ( !$this->mc_campaign_id )
+            $this->create_mc_campaign();
+    }
+
+    /**
+     * Create Mailchimp Campaign
+     */
+    public function create_mailchimp_campaign() {
+        
     }
 }

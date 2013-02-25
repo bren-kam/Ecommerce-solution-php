@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/js2/?f=jquery.form', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
 	// Date Picker
 	$('#tDate').datepicker({
 		minDate: 0,
@@ -23,52 +23,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	$('a.choose').click( function() {
 		var div = $('#d' + $(this).attr('id').replace( /^a/, '' ) ), type = $(this).attr('title').replace( ' Email', '' ).toLowerCase(), h2 = $('#dStep2 h2:first');
 		
-		// AJAX call to grab templates
-		$.post( '/ajax/email-marketing/emails/get-templates/', { _nonce: $('#_get_templates').val(), 'type': type }, function( data ) {
-			if ( data['success'] ) {
-				var slider = div.find('.slider:first'), ul = $('#ulSlider_' + type), templateImage = $('.template-image', div), lis = '';
-				templateImage.empty();
-				$('a', slider).remove();
-				ul.empty();
-				
-				var showCarousel = ( data['templates'].length > 3 ) ? true : false;
-				
-				for ( var i in data['templates'] ) {
-					var t = data['templates'][i], CSSClass = ( i > 0 ) ? ' class="hidden"' : ' class="selected"';
-					var thumbnail = ( 0 == t['thumbnail'].length ) ? '/images/emails/thumbnails/default.jpg' : t['thumbnail'];
-					var image = ( 0 == t['image'].length ) ? '/images/emails/default.jpg' : t['image'];
-					
-					lis += '<li><a href="javascript:;" title="' + t['name'] + '"><img src="' + thumbnail + '" class="slide" id="aSlide' + t['email_template_id'] + '" width="100" height="113" alt="' + t['name'] + '" /></a></li>';
-					templateImage.append( '<img src="' + image + '" id="iTemplateImage' + t['email_template_id'] + '"' + CSSClass + ' width="400" alt="' + t['name'] + '" />' );
-				}
-				
-				if ( showCarousel ) {
-					ul.wrap( '<div id="dSlider_' + type + '">' );
-					slider.prepend( '<a href="javascript:;" class="arrow-up disabled previous_slide" title="Previous">&nbsp;</a><br />' );
-				}
-				
-				ul.append( lis );
-
-				if ( showCarousel )
-					slider.append( '<a href="javascript:;" class="arrow-down enabled next_slide" title="Next">&nbsp;</a>' );
-
-				templateImage.append( '\<a href="javascript:;" class="button choose-template" title="Choose Template">Choose Template</a>' );
-				div.append( '<br clear="all" />' );
-				
-				if ( showCarousel )
-				setTimeout( function() {
-					$('#dSlider_' + type).jCarouselLite({
-						btnNext: '.next_slide',
-						btnPrev: '.previous_slide',
-						vertical: true,
-						scroll: 2
-					});
-				}, 200 );
-			} else {
-				alert( data['error'] );
-			}
-		}, 'json' );
-
 		$('#dChooseType').fadeOut();
 		h2.fadeOut();
 		
@@ -79,13 +33,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 		
 		$('#hEmailType').val( type );
 	});
-	
-	// Slide's trigger
-	$('#dStep2 .slide').live( 'mouseover', function() {
-		$(this).parents('.email-type:first').find('.template-image .selected:first').hide().removeClass('selected');
-		$('#iTemplateImage' + $(this).attr('id').replace( 'aSlide', '' ) ).addClass('selected').show();
-	});
-	
+
 	// Choose Template function
 	$('.choose-template').live( 'click', function() {
 		$('#hEmailTemplateID').val( $('#dStep2 .template-image .selected:first').attr('id').replace( 'iTemplateImage', '' ) );

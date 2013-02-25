@@ -12,6 +12,7 @@
  * @var array $settings
  * @var string $timezone
  * @var string $server_timezone
+ * @var EmailTemplate[] $templates
  */
 
 echo $template->start( _('Send Email'), '../sidebar' );
@@ -100,17 +101,37 @@ echo $template->start( _('Send Email'), '../sidebar' );
         <div id="dProduct" class="hidden email-type">
             <div class="slider">
                 <ul id="ulSlider_product" style="height:400px;width:100px">
+                    <?php
+                    foreach ( $templates as $email_template ) {
+                        if ( 'product' != $email_template->type )
+                            continue;
+                    ?>
+                    <li><a href="#" title="<?php echo $email_template->name; ?>"><img src="<?php echo ( empty( $email_template->thumbnail ) ) ? '/images/emails/thumbnails/default.jpg' : $email_template->thumbnail; ?>" class="slide" id="aSlide<?php echo $email_template->id; ?>" width="100" height="113" alt="<?php echo $email_template->name; ?>" /></a></li>
+                    <?php } ?>
                 </ul>
             </div>
-            <div class="template-image"></div>
+            <div class="template-image">
+                <img src="<?php echo ( empty( $email_template->image ) ) ? '/images/emails/default.jpg' : $email_template->image; ?>" id="iTemplateImage<?php echo $email_template->id; ?>" class="selected" width="400" alt="<?php echo $email_template->name; ?>" />
+            </div>
             <br clear="all" />
         </div>
         <div id="dCustom" class="hidden email-type">
             <div class="slider">
                 <ul id="ulSlider_custom" style="height:400px;width:100px">
+                    <?php
+                    reset( $templates );
+                    foreach ( $templates as $email_template ) {
+                        if ( 'default' != $email_template->type )
+                            continue;
+                    ?>
+                    <li><a href="#" title="<?php echo $email_template->name; ?>"><img src="<?php echo ( empty( $email_template->thumbnail ) ) ? '/images/emails/thumbnails/default.jpg' : $email_template->thumbnail; ?>" class="slide" id="aSlide<?php echo $email_template->id; ?>" width="100" height="113" alt="<?php echo $email_template->name; ?>" /></a></li>
+                    <?php } ?>
                 </ul>
             </div>
-            <div class="template-image"></div>
+            <div class="template-image">
+                <img src="<?php echo $email_template->image; ?>" id="iTemplateImage<?php echo $email_template->id; ?>" class="selected" width="400" alt="<?php echo $email_template->name; ?>" />
+                <a href="#" class="button choose-template" title="<?php echo _('Choose Template'); ?>"><?php echo _('Choose Template'); ?></a>
+            </div>
             <br clear="all" />
         </div>
         <input type="hidden" name="hEmailType" id="hEmailType" value="<?php if ( !empty( $message->type ) ) echo $message->type; ?>" />
@@ -134,7 +155,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
                 <div id="dNarrowSearch">
                     <h2><?php echo _('Narrow Your Search'); ?></h2>
                     <br />
-                    <table cellpadding="0" cellspacing="0" id="tNarrowSearch" width="100%">
+                    <table id="tNarrowSearch">
                         <tr>
                             <td width="264">
                                 <select id="sAutoComplete">
@@ -211,7 +232,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
         <a href="#" class="button" id="aSendEmail" title="<?php echo _('Send Email'); ?>" error="<?php echo _('Please save and test your email before you send it'); ?>"><?php echo _('Send Email'); ?></a>
     </div>
     <input type="hidden" name="hEmailMessageID" id="hEmailMessageID" value="<?php echo ( $message->email_message_id ) ? $message->email_message_id : '0'; ?>" />
-    <?php nonce::field( 'save-email' ); ?>
+    <?php nonce::field( 'save' ); ?>
     </form>
     <?php
     // Do not need to be submitted with the form, simply have to be on the page
