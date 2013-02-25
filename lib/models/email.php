@@ -37,6 +37,20 @@ class Email extends ActiveRecordBase {
     }
 
     /**
+     * Get Dashboard Subscribers By Account
+     *
+     * @param int $account_id
+     * @return Email[]
+     */
+    public function get_dashboard_subscribers_by_account( $account_id ) {
+        return $this->prepare(
+            'SELECT `email_id`, `email` FROM `emails` WHERE `website_id` = :account_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT 5'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'Email' );
+    }
+
+    /**
      * Get Unsynced Emails
      *
      * @return array

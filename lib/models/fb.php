@@ -17,6 +17,8 @@ class Fb {
         )
     );
 
+    public $id, $secret;
+
 	/**
 	 * Sets up everything necessary to run a facebook app
 	 *
@@ -37,6 +39,9 @@ class Fb {
 			'secret' => $this->apps[$app]['secret'],
 			'cookie' => true,
 		));
+
+        $this->id = $this->apps[$app]['id'];
+        $this->secret = $this->apps[$app]['secret'];
 	}
 
 	// Magic Method -- make it paralel the actual facebook class

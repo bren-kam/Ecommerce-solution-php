@@ -223,6 +223,547 @@ class FacebookController extends BaseController {
     }
 
     /**
+     * Email Sign Up
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function email_sign_up() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $email_sign_up = new SocialMediaEmailSignUp();
+        $email_sign_up->get( $page->id );
+
+        $v = new Validator( 'fEmailSignUp' );
+
+        // Add validation
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        // Make sure it's created
+        if ( !$email_sign_up->key ) {
+            $email_sign_up->sm_facebook_page_id = $page->id ;
+            $email_sign_up->key = md5( $this->user->id . microtime() . $page->id );
+            $email_sign_up->create();
+        }
+
+        // Check for errs
+        $errs = '';
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $email_sign_up->email_list_id = $_POST['sEmailList'];
+                $email_sign_up->tab = $_POST['taTab'];
+                $email_sign_up->save();
+
+                $this->notify( _('Your Email Sign Up page has been successfully updated!') );
+            }
+        }
+
+        // Get files
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        // Setup validation
+        $js_validation = $v->js_validation();
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'email-sign-up' )
+            ->add_title( _('Email Sign Up') )
+            ->select( 'email-sign-up' )
+            ->set( compact( 'email_sign_up', 'page', 'js_validation', 'errs', 'files', 'email_lists' ) );
+    }
+
+    /**
+     * Products
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function products() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $products = new SocialMediaProducts();
+        $products->get( $page->id );
+
+        // Make sure it's created
+        if ( !$products->key ) {
+            $products->sm_facebook_page_id = $page->id ;
+            $products->key = md5( $this->user->id . microtime() . $page->id );
+            $products->create();
+        }
+
+        if ( $this->user->account->product_catalog ) {
+            $files = array();
+        } else {
+            $account_file = new AccountFile();
+            $files = $account_file->get_by_account( $this->user->account->id );
+
+            if ( $this->verified() ) {
+                $products->content = $_POST['taContent'];
+                $products->save();
+
+                $this->notify( _('Your Products page has been successfully updated!') );
+            }
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'products' )
+            ->add_title( _('Products') )
+            ->select( 'products' )
+            ->set( compact( 'products', 'page', 'files' ) );
+    }
+
+    /**
+     * Current Ad
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function current_ad() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $current_ad = new SocialMediaCurrentAd();
+        $current_ad->get( $page->id );
+
+        // Make sure it's created
+        if ( !$current_ad->key ) {
+            $current_ad->sm_facebook_page_id = $page->id ;
+
+            if ( $this->user->account->pages ) {
+                $account_page = new AccountPage();
+                $account_page->get_by_slug( $this->user->account->id, 'sidebar' );
+
+                $current_ad->website_page_id = (int) $account_page->id;
+            } else {
+                $current_ad->website_page_id = 0;
+            }
+
+            $current_ad->key = md5( $this->user->id . microtime() . $page->id );
+            $current_ad->create();
+        }
+
+        if ( $this->user->account->pages ) {
+            $files = array();
+        } else {
+            $account_file = new AccountFile();
+            $files = $account_file->get_by_account( $this->user->account->id );
+
+            if ( $this->verified() ) {
+                $current_ad->content = $_POST['taContent'];
+                $current_ad->save();
+
+                $this->notify( _('Your Current Ad page has been successfully updated!') );
+            }
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'current-ad' )
+            ->add_title( _('Current Ad') )
+            ->select( 'current-ad' )
+            ->set( compact( 'current_ad', 'page', 'files' ) );
+    }
+
+    /**
+     * Facebook Site
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function facebook_site() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $facebook_site = new SocialMediaFacebookSite();
+        $facebook_site->get( $page->id );
+
+        // Make sure it's created
+        if ( !$facebook_site->key ) {
+            $facebook_site->sm_facebook_page_id = $page->id ;
+            $facebook_site->key = md5( $this->user->id . microtime() . $page->id );
+            $facebook_site->create();
+        }
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        if ( $this->verified() ) {
+            $facebook_site->content = $_POST['taContent'];
+            $facebook_site->save();
+
+            $this->notify( _('Your Facebook Site page has been successfully updated!') );
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'facebook-site' )
+            ->add_title( _('Facebook Site') )
+            ->select( 'facebook-site' )
+            ->set( compact( 'facebook_site', 'page', 'files' ) );
+    }
+
+    /**
+     * Share and Save
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function share_and_save() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $share_and_save = new SocialMediaShareAndSave();
+        $share_and_save->get( $page->id );
+
+        // Make sure it's created
+        if ( !$share_and_save->key ) {
+            $share_and_save->sm_facebook_page_id = $page->id ;
+            $share_and_save->key = md5( $this->user->id . microtime() . $page->id );
+            $share_and_save->create();
+        }
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Add validation
+        $v = new Validator( 'fShareAndSave' );
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        $errs = '';
+        $js_validation = $v->js_validation();
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $share_and_save->email_list_id = $_POST['sEmailList'];
+                $share_and_save->maximum_email_list_id = $_POST['sMaximumEmailList'];
+                $share_and_save->before = $_POST['taBefore'];
+                $share_and_save->after = $_POST['taAfter'];
+                $share_and_save->minimum = $_POST['tMinimum'];
+                $share_and_save->maximum = $_POST['tMaximum'];
+                $share_and_save->share_title = $_POST['tShareTitle'];
+                $share_and_save->share_image_url = $_POST['tShareImageURL'];
+                $share_and_save->share_text = $_POST['taShareText'];
+                $share_and_save->save();
+
+                $this->notify( _('Your Share And Save page has been successfully updated!') );
+            }
+        }
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'website/pages/page' );
+
+        return $this->get_template_response( 'share-and-save' )
+            ->add_title( _('Share And Save') )
+            ->select( 'share-and-save' )
+            ->set( compact( 'share_and_save', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
+    }
+
+    /**
+     * Sweepstakes
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function sweepstakes() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $sm_sweepstakes = new SocialMediaSweepstakes();
+        $sm_sweepstakes->get( $page->id );
+
+        // Get variables
+        $timezone = $this->user->account->get_settings('timezone');
+        $server_timezone = Config::setting('server-timezone');
+
+        // Make sure they set timezone
+        if ( empty( $timezone ) ) {
+            $this->notify( _('Please set your timezone and return to the Sweepstakes.'), false );
+            return new RedirectResponse( '/social-media/facebook/settings/' );
+        }
+
+        // Make sure it's created
+        if ( !$sm_sweepstakes->key ) {
+            $sm_sweepstakes->sm_facebook_page_id = $page->id ;
+            $sm_sweepstakes->key = md5( $this->user->id . microtime() . $page->id );
+            $sm_sweepstakes->create();
+
+            $start_date = 'now';
+           	$end_date = '+1 weeks';
+        } else {
+            $start_date = ( '0000-00-00 00:00:00' == $sm_sweepstakes->start_date ) ? 'now' : $sm_sweepstakes->start_date;
+            $end_date = ( '0000-00-00 00:00:00' == $sm_sweepstakes->end_date ) ? '+1 weeks' : $sm_sweepstakes->end_date;
+        }
+
+        $sm_sweepstakes->start_date = dt::adjust_timezone( $start_date, $server_timezone, $timezone );
+       	$sm_sweepstakes->end_date = dt::adjust_timezone( $end_date, $server_timezone, $timezone );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Add validation
+        $v = new Validator( 'fSweepstakes' );
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        $errs = '';
+        $js_validation = $v->js_validation();
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $start_date = dt::date('Y-m-d', strtotime( $_POST['tStartDate'] ) );
+                $end_date = dt::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
+
+                // Turn start time into machine-readable time
+                list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $start_time );
+
+                    $start_date .= ( 12 == $hour ) ? ' ' . $start_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $start_date .= ' ' . $start_time . ':00';
+                }
+
+                // Turn end time into machine-readable time
+                list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $end_time );
+
+                    $end_date .= ( 12 == $hour ) ? ' ' . $end_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $end_date .= ' ' . $end_time . ':00';
+                }
+
+                // Adjust for time zone
+                $start_date = dt::adjust_timezone( $start_date, $timezone, $server_timezone );
+                $end_date = dt::adjust_timezone( $end_date, $timezone, $server_timezone );
+
+                $sm_sweepstakes->email_list_id = $_POST['sEmailList'];
+                $sm_sweepstakes->before = $_POST['taBefore'];
+                $sm_sweepstakes->after = $_POST['taAfter'];
+                $sm_sweepstakes->start_date = $start_date;
+                $sm_sweepstakes->end_date = $end_date;
+                $sm_sweepstakes->contest_rules_url = $_POST['contest-rules'];
+                $sm_sweepstakes->share_title = $_POST['tShareTitle'];
+                $sm_sweepstakes->share_image_url = $_POST['tShareImageURL'];
+                $sm_sweepstakes->share_text = $_POST['taShareText'];
+                $sm_sweepstakes->save();
+
+                $this->notify( _('Your Sweepstakes page has been successfully updated!') );
+            }
+        }
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        if ( $this->user->account->pages ) {
+            $account_page = new AccountPage();
+            $pages = $account_page->get_all( $this->user->account->id );
+        } else {
+            $pages = array();
+        }
+
+        $this->resources
+            ->css( 'jquery.timepicker', 'website/pages/page' )
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'jquery.timepicker', 'fileuploader', 'website/pages/page', 'social-media/facebook/dates' );
+
+        return $this->get_template_response( 'sweepstakes' )
+            ->add_title( _('Sweepstakes') )
+            ->select( 'sweepstakes' )
+            ->set( compact( 'sm_sweepstakes', 'page', 'files', 'errs', 'js_validation', 'email_lists', 'pages' ) );
+    }
+
+    /**
+     * Fan Offer
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function fan_offer() {
+        // Make Sure they chose a facebook page
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $page = new SocialMediaFacebookPage();
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+
+        // Make Sure they chose a facebook page
+        if ( !$page->id )
+            return new RedirectResponse('/social-media/facebook/');
+
+        $fan_offer = new SocialMediaFanOffer();
+        $fan_offer->get( $page->id );
+
+        // Get variables
+        $timezone = $this->user->account->get_settings('timezone');
+        $server_timezone = Config::setting('server-timezone');
+
+        // Make sure they set timezone
+        if ( empty( $timezone ) ) {
+            $this->notify( _('Please set your timezone and return to the Fan Offer.'), false );
+            return new RedirectResponse( '/social-media/facebook/settings/' );
+        }
+
+        // Make sure it's created
+        if ( !$fan_offer->key ) {
+            $fan_offer->sm_facebook_page_id = $page->id ;
+            $fan_offer->key = md5( $this->user->id . microtime() . $page->id );
+            $fan_offer->create();
+
+            $start_date = 'now';
+           	$end_date = '+1 weeks';
+        } else {
+            $start_date = ( '0000-00-00 00:00:00' == $fan_offer->start_date ) ? 'now' : $fan_offer->start_date;
+            $end_date = ( '0000-00-00 00:00:00' == $fan_offer->end_date ) ? '+1 weeks' : $fan_offer->end_date;
+        }
+
+        $fan_offer->start_date = dt::adjust_timezone( $start_date, $server_timezone, $timezone );
+        $fan_offer->end_date = dt::adjust_timezone( $end_date, $server_timezone, $timezone );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        // Add validation
+        $v = new Validator( 'fFanOffer' );
+        $v->add_validation( 'sEmailList', '!val=0', _('You must select an email list.') );
+
+        $errs = '';
+        $js_validation = $v->js_validation();
+
+        if ( $this->verified() ) {
+            $errs = $v->validate();
+
+            if ( empty( $errs ) ) {
+                $start_date = dt::date('Y-m-d', strtotime( $_POST['tStartDate'] ) );
+                $end_date = dt::date('Y-m-d', strtotime( $_POST['tEndDate'] ) );
+
+                // Turn start time into machine-readable time
+                list( $start_time, $am_pm ) = explode( ' ', $_POST['tStartTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $start_time );
+
+                    $start_date .= ( 12 == $hour ) ? ' ' . $start_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $start_date .= ' ' . $start_time . ':00';
+                }
+
+                // Turn end time into machine-readable time
+                list( $end_time, $am_pm ) = explode( ' ', $_POST['tEndTime'] );
+
+                if ( 'pm' == $am_pm ) {
+                    list( $hour, $minute ) = explode( ':', $end_time );
+
+                    $end_date .= ( 12 == $hour ) ? ' ' . $end_time . ':00' : ' ' . ( $hour + 12 ) . ':' . $minute . ':00';
+                } else {
+                    $end_date .= ' ' . $end_time . ':00';
+                }
+
+                // Adjust for time zone
+                $start_date = dt::adjust_timezone( $start_date, $timezone, $server_timezone );
+                $end_date = dt::adjust_timezone( $end_date, $timezone, $server_timezone );
+
+                $fan_offer->email_list_id = $_POST['sEmailList'];
+                $fan_offer->before = $_POST['taBefore'];
+                $fan_offer->after = $_POST['taAfter'];
+                $fan_offer->start_date = $start_date;
+                $fan_offer->end_date = $end_date;
+                $fan_offer->share_title = $_POST['tShareTitle'];
+                $fan_offer->share_image_url = $_POST['tShareImageURL'];
+                $fan_offer->share_text = $_POST['taShareText'];
+                $fan_offer->save();
+
+                $this->notify( _('Your Fan Offer page has been successfully updated!') );
+            }
+        }
+
+        // Get email lists
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->css( 'jquery.timepicker', 'website/pages/page' )
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'jquery.timepicker', 'fileuploader', 'website/pages/page', 'social-media/facebook/dates' );
+
+        return $this->get_template_response( 'fan-offer' )
+            ->add_title( _('Fan Offer') )
+            ->select( 'fan-offer' )
+            ->set( compact( 'fan_offer', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
+    }
+
+    /**
      * Settings
      *
      * @return TemplateResponse
@@ -279,7 +820,7 @@ class FacebookController extends BaseController {
 
         // Get autoresponder
         $facebook_pages = $facebook_page->list_all( $dt->get_variables() );
-        $dt->set_row_count( $facebook_page->count_all( $dt->get_where() ) );
+        $dt->set_row_count( $facebook_page->count_all( $dt->get_count_variables() ) );
 
         // Setup variables
         $confirm = _('Are you sure you want to delete this post? This will disable all related apps and it cannot be undone.');

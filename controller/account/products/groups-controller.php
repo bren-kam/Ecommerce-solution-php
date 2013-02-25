@@ -229,7 +229,7 @@ class GroupsController extends BaseController {
 
         // Get Products
         $products = $account_product->list_products( $dt->get_variables() );
-        $dt->set_row_count( $account_product->count_products( $dt->get_where() ) );
+        $dt->set_row_count( $account_product->count_products( $dt->get_count_variables() ) );
 
         // Setup variables
         $get_product_nonce = nonce::create( 'get_product' );
