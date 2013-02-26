@@ -112,6 +112,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
             </div>
             <div class="template-image">
                 <img src="<?php echo ( empty( $email_template->image ) ) ? '/images/emails/default.jpg' : $email_template->image; ?>" id="iTemplateImage<?php echo $email_template->id; ?>" class="selected" width="400" alt="<?php echo $email_template->name; ?>" />
+                <a href="#" class="button choose-template" title="<?php echo _('Choose Template'); ?>"><?php echo _('Choose Template'); ?></a>
             </div>
             <br clear="all" />
         </div>
@@ -236,10 +237,10 @@ echo $template->start( _('Send Email'), '../sidebar' );
     </form>
     <?php
     // Do not need to be submitted with the form, simply have to be on the page
-    nonce::field( 'test-message', '_test_message' );
+    nonce::field( 'test', '_test' );
     nonce::field( 'products-autocomplete', '_autocomplete' );
     nonce::field( 'delete-product', '_delete_product' );
-    nonce::field( 'schedule-email', '_schedule_email' );
+    nonce::field( 'schedule', '_schedule' );
     nonce::field( 'get-templates', '_get_templates' );
     nonce::field( 'search', '_search' );
     ?>

@@ -347,7 +347,7 @@ abstract class ActiveRecordBase {
         // Throw an error if it doesn't work
         if ( 00000 != $this->_statement->errorCode() ) {
             $error_info = $this->_statement->errorInfo();
-            throw new ModelException( 'SQL Error: ' . $error_info[2], NULL, $this->_statement->errorCode() );
+            throw new ModelException( 'SQL Error: ' . $error_info[2], $this->_statement->errorCode() );
         }
     }
 
@@ -446,14 +446,14 @@ abstract class ActiveRecordBase {
                         try {
                             $this->_pdo = new PDO( "mysql:host=$db_host;dbname=$db_name", $db_username, $db_password );
                         } catch( PDOException $e ) {
-                            throw new ModelException( $exception->getMessage(), $e );
+                            throw new ModelException( $e->getMessage(), $e->getCode(), $e );
                         }
                     }
                 } else {
                     try {
                         $this->_pdo = new PDO( 'mysql:host=' . self::DB_HOST . ';dbname=' . self::DB_NAME, self::DB_USER, self::DB_PASSWORD );
                     } catch( PDOException $e ) {
-                        throw new ModelException( $e->getMessage(), $e );
+                        throw new ModelException( $e->getMessage(), $e->getCode(), $e );
                     }
                 }
 
@@ -529,7 +529,7 @@ abstract class ActiveRecordBase {
         try {
             $statement = $this->_pdo->prepare( $sql );
         } catch ( PDOException $e ) {
-            throw new ModelException( $e->getMessage(), $e );
+            throw new ModelException( $e->getMessage(), $e->getCode(), $e );
         }
 
         // Mark the last query
@@ -599,7 +599,7 @@ abstract class ActiveRecordBase {
             try {
                 $statement->bindValue( $key, $value, $format );
             } catch ( PDOException $e ) {
-                throw new ModelException( $e->getMessage(), $e );
+                throw new ModelException( $e->getMessage(), $e->getCode(), $e );
             }
 
             $i++;

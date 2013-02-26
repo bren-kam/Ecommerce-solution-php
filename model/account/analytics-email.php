@@ -43,14 +43,14 @@ class AnalyticsEmail extends ActiveRecordBase {
 
         // Handle errors
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Get click overlay
         $this->click_overlay = $mc->campaignClickStats( $mc_campaign_id );
 
         // Handle errors
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
     }
 
     /**

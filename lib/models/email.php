@@ -53,10 +53,28 @@ class Email extends ActiveRecordBase {
     /**
      * Get Unsynced Emails
      *
-     * @return array
+     * @return Email[]
      */
     public function get_unsynced() {
-        return $this->get_results( "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`mc_list_id`, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`", PDO::FETCH_CLASS, 'Email' );
+        return $this->get_results(
+            "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`mc_list_id`, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`"
+            , PDO::FETCH_CLASS
+            , 'Email'
+        );
+    }
+
+    /**
+     * Get Unsynced Emails by account
+     *
+     * @param int $account_id
+     * @return Email[]
+     */
+    public function get_unsynced_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`mc_list_id`, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`website_id` = :account_id AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'Email' );
     }
 
     /**
@@ -87,6 +105,62 @@ class Email extends ActiveRecordBase {
             , array( 'email_id' => $this->id )
             , 'i', 'i'
         );
+    }
+
+    /**
+     * Unsubscribe Bulk
+     *
+     * @param array $emails
+     * @param int $account_id
+     */
+    public function unsubscribe_bulk( array $emails, $account_id ) {
+        if ( empty( $emails ) )
+            return;
+
+        //Type Juggling
+        $account_id = (int) $account_id;
+        $email_count = count( $emails );
+
+        $this->prepare(
+            "UPDATE `emails` SET `status` = 0 WHERE `website_id` = $account_id AND `email` IN (" . substr( str_repeat( ',?', $email_count ), 1 ) . ')'
+            , str_repeat( 's', $email_count )
+            , $emails
+        )->query();
+    }
+
+    /**
+     * Clean Bulk
+     *
+     * @param array $emails
+     * @param int $account_id
+     */
+    public function clean_bulk( array $emails, $account_id ) {
+        if ( empty( $emails ) )
+            return;
+
+        //Type Juggling
+        $account_id = (int) $account_id;
+        $email_count = count( $emails );
+
+        $this->prepare(
+            "UPDATE `emails` SET `status` = 2 WHERE `website_id` = $account_id AND `email` IN (" . substr( str_repeat( ',?', $email_count ), 1 ) . ')'
+            , str_repeat( 's', $email_count )
+            , $emails
+        )->query();
+    }
+
+    /**
+     * Sync Bulk
+     *
+     * @param array $email_ids
+     */
+    public function sync_bulk( $email_ids ) {
+        foreach ( $email_ids as &$id ) {
+            $id = (int) $id;
+        }
+
+        // Update emails to make them synced
+        $this->query( 'UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN (' . implode( ',', $email_ids ) . ')' );
     }
 
     /***** ASSOCIATIONS *****/

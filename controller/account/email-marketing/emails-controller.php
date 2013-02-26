@@ -189,11 +189,8 @@ class EmailsController extends BaseController {
         // Create/Update message
         $email_message = new EmailMessage();
 
-        if ( 0 == $_POST['hEmailMessageID'] ) {
-            $email_message->website_id = $this->user->account->id;
-        } else {
+        if ( 0 != $_POST['hEmailMessageID'] )
             $email_message->get( $_POST['hEmailMessageID'], $this->user->account->id );
-        }
 
         $email_message->email_template_id = ( empty( $_POST['hEmailTemplateID'] ) ) ? 0 : $_POST['hEmailTemplateID'];
         $email_message->subject = $_POST['tSubject'];
@@ -223,6 +220,7 @@ class EmailsController extends BaseController {
             $email_message->remove_associations();
             $email_message->remove_meta();
         } else {
+            $email_message->website_id = $this->user->account->id;
             $email_message->create();
         }
 
@@ -265,15 +263,32 @@ class EmailsController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have everything right
-        $response->check( isset( $_POST['emid'], $_POST['message'] ), _('An error occurred while trying to test this message. Please refresh the page and try again.') );
+        $response->check( isset( $_POST['emid'], $_POST['email'] ), _('An error occurred while trying to test this message. Please refresh the page and try again.') );
 
         if ( $response->has_error() )
             return $response;
 
-        // Remove
+        // Test
+        $email_list = new EmailList();
         $email_message = new EmailMessage();
-        $email_message->get( $_GET['emid'], $this->user->account->id );
-        $email_message->test();
+
+        // Get message
+        $email_message->get( $_POST['emid'], $this->user->account->id );
+
+        // Get email lists
+        $email_list_objects = $email_list->get_by_message( $email_message->id, $this->user->account->id );
+        $email_lists = array();
+
+        foreach ( $email_list_objects as $el ) {
+            $email_lists[$el->id] = $el->name;
+        }
+
+        // Test message
+        try {
+            $email_message->test( $_POST['email'], $this->user->account, $email_lists );
+        } catch ( ModelException $e ) {
+            $response->check( false, $e->getMessage() );
+        }
 
         return $response;
     }
