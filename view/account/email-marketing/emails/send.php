@@ -149,7 +149,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
         <div id="dCustom_product" class="custom-template<?php if ( empty( $message->type ) || 'product' != $message->type ) echo ' hidden'; ?>">
             <br /><br />
 
-            <h2 style="float:right;width:50%"><?php echo _('Products'); ?></h2>
+            <h2><?php echo _('Products'); ?></h2>
             <br clear="all" /><br />
 
             <div id="dNarrowSearchContainer">
