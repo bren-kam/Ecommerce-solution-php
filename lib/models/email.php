@@ -6,7 +6,7 @@ class Email extends ActiveRecordBase {
     public $mc_list_id;
 
     // Artificial field
-    public $interests;
+    public $interests, $date;
 
     /**
      * Setup the account initial data
@@ -161,6 +161,41 @@ class Email extends ActiveRecordBase {
 
         // Update emails to make them synced
         $this->query( 'UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN (' . implode( ',', $email_ids ) . ')' );
+    }
+
+    /**
+     * List Subscribers
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return EmailMessage[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT DISTINCT `email_id`, `name`, `email`, `phone`, IF( 1 = `status`, `date_created`, `timestamp` ) AS date FROM `emails` WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
+    }
+
+    /**
+     * Count all the pages
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT `email_id` ) FROM `emails` WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 
     /***** ASSOCIATIONS *****/

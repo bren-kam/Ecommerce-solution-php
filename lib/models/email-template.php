@@ -156,7 +156,7 @@ class EmailTemplate extends ActiveRecordBase {
 
                 // Sort by key
                 ksort( $new_meta );
-                
+
                 // Get data
                 foreach ( $new_meta as $product ) {
                     $i++;

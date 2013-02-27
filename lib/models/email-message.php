@@ -328,7 +328,7 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
-     * List Pages
+     * List Messages
      *
      * @param $variables array( $where, $order_by, $limit )
      * @return EmailMessage[]
