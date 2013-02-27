@@ -305,6 +305,7 @@ class Email_Marketing extends Base_Class {
 	
 	/**
 	 * Unsubscribes a single email_id
+     *
 	 * @param int $email_id
 	 * @param string $email
 	 * @return bool

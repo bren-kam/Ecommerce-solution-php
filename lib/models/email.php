@@ -20,20 +20,38 @@ class Email extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $email_id
+     * @param int $account_id
+     * @return Email
+     */
+    public function get( $email_id, $account_id ) {
+		$this->prepare( 'SELECT * FROM `emails` WHERE `email_id` = :email_id AND `website_id` = :account_id'
+            , 'is'
+            , array(
+                ':account_id' => $account_id
+                , ':email_id' => $email_id
+            )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->email_id;
+    }
+
+    /**
      * Get Email by Email
      *
      * @param int $account_id
      * @param string $email
-     * @return Email
      */
     public function get_by_email( $account_id, $email ) {
-		return $this->prepare( 'SELECT `email_id` FROM `emails` WHERE `website_id` = :account_id AND `email` = :email'
+		$this->prepare( 'SELECT `email_id`, `status` FROM `emails` WHERE `website_id` = :account_id AND `email` = :email'
             , 'is'
             , array(
                 ':account_id' => $account_id
                 , ':email' => $email
             )
-        )->get_row( PDO::FETCH_CLASS, 'Email' );
+        )->get_row( PDO::FETCH_INTO, $this );
     }
 
     /**
@@ -101,9 +119,14 @@ class Email extends ActiveRecordBase {
      */
     public function save() {
         parent::update(
-            array( 'status' => $this->status )
+            array(
+                'name' => $this->name
+                , 'email' => $this->email
+                , 'phone' => $this->phone
+                , 'status' => $this->status
+            )
             , array( 'email_id' => $this->id )
-            , 'i', 'i'
+            , 'sssi', 'i'
         );
     }
 
@@ -164,6 +187,52 @@ class Email extends ActiveRecordBase {
     }
 
     /**
+     * Remove All
+     *
+     * @param string $mc_list_id
+     */
+    public function remove_all( $mc_list_id ) {
+        if ( !$this->id )
+            return;
+
+        // Unsubscribe from Mailchimp
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+
+        // Delete the campaign
+        $mc->listUnsubscribe( $mc_list_id, $this->email );
+
+        // Simply note the error, don't stop
+        if ( $mc->errorCode ) {
+            switch ( $mc->errorCode ) {
+                case 232: // Says it doesn't exist in the first place
+                break;
+
+                default:
+                    throw new ModelException( $mc->errorMessage, $mc->errorCode );
+                break;
+            }
+        }
+
+        // Assuming the above is successful, delete everything about this email
+        $this->remove_associations();
+
+        $this->status = 0;
+        $this->save();
+    }
+
+    /**
+     * Remove Associations
+     */
+    public function remove_associations() {
+        $this->prepare(
+            'DELETE FROM `email_associations` WHERE `email_id` = :email_id'
+            , 'i'
+            , array( ':email_id' => $this->id )
+        )->query();
+    }
+
+    /**
      * List Subscribers
      *
      * @param $variables array( $where, $order_by, $limit )
@@ -177,7 +246,7 @@ class Email extends ActiveRecordBase {
             "SELECT DISTINCT `email_id`, `name`, `email`, `phone`, IF( 1 = `status`, `date_created`, `timestamp` ) AS date FROM `emails` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
-        )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
+        )->get_results( PDO::FETCH_CLASS, 'Email' );
     }
 
     /**
@@ -199,6 +268,19 @@ class Email extends ActiveRecordBase {
     }
 
     /***** ASSOCIATIONS *****/
+
+    /**
+     * Get Associations
+     *
+     * @return array
+     */
+    public function get_associations( ) {
+        return $this->prepare(
+            'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = :email_id'
+            , 'i'
+            , array( ':email_id' => $this->id )
+        )->get_col();
+    }
 
     /**
      * Add Associations

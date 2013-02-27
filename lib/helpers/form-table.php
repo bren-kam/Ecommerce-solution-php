@@ -313,10 +313,11 @@ abstract class FormTable_Field {
     /**
      * Get the ID based off the name
      *
+     * @param int|string $count [optional]
      * @return string
      */
-    protected function id() {
-        return preg_replace( '/[^a-zA-Z0-9_-]/', '', $this->name );
+    protected function id( $count = '' ) {
+        return preg_replace( '/[^a-zA-Z0-9_-]/', '', $this->name . $count );
     }
 
     /***** ABSTRACT METHODS *****/
@@ -617,12 +618,12 @@ class FormTable_Checkbox extends FormTable_Field {
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>&nbsp;</td><td>';
 
-        $html .= '<input type="checkbox" class="cb" name="' . $this->name . '" id="' . $this->id() . '" value="1"';
+        $html .= '<input type="checkbox" class="cb" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="1"';
 
         if ( '1' == $this->value )
             $html .= ' checked="checked"';
 
-        $html .= $this->format_attributes() . ' /> <label for="' . $this->id() . '">' . $this->nice_name;
+        $html .= $this->format_attributes() . ' /> <label for="' . $this->id( $count ) . '">' . $this->nice_name;
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';

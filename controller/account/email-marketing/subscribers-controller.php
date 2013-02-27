@@ -13,7 +13,7 @@ class SubscribersController extends BaseController {
     }
 
     /**
-     * List Email Messages
+     * List Subscribers
      *
      * @return TemplateResponse|RedirectResponse
      */
@@ -27,7 +27,7 @@ class SubscribersController extends BaseController {
     }
 
     /**
-     * List Email Messages
+     * List Unsubscribed
      *
      * @return TemplateResponse|RedirectResponse
      */
@@ -35,6 +35,92 @@ class SubscribersController extends BaseController {
         return $this->get_template_response( 'unsubscribed' )
             ->add_title( _('Unsubscribers') )
             ->select( 'subscribers', 'unsubscribed' );
+    }
+
+    /**
+     * Add/Edit
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function add_edit() {
+        // Get Coupon
+        $email = new Email();
+        $email_list = new EmailList();
+
+        $email_id = ( isset( $_GET['eid'] ) ) ? $_GET['eid'] : false;
+
+        if ( $email_id )
+            $email->get( $email_id, $this->user->account->id );
+
+        $form = new FormTable( 'fAddEditSubscriber' );
+
+        if ( !$email->id )
+            $form->submit( _('Create') );
+
+        $form->add_field( 'title', _('Basic Information') );
+
+        $form->add_field( 'text', _('Name'), 'tName', $email->name )
+            ->attribute( 'maxlength', 80 );
+
+        $form->add_field( 'text', _('Email'), 'tEmail', $email->email )
+            ->attribute( 'maxlength', 200 )
+            ->add_validation( 'req', _('The "Email" field is required') )
+            ->add_validation( 'email', _('The "Email" field must contain a valid email') );
+
+        $form->add_field( 'text', _('Phone'), 'tPhone', $email->phone )
+            ->attribute( 'maxlength', 20 )
+            ->add_validation( 'phone', _('The "Phone" field must contain a valid phone number') );
+
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'title', _('Email List Subscriptions') );
+
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+        $lists = $email->get_associations();
+
+        foreach ( $email_lists as $el ) {
+            $value = ( in_array( $el->id, $lists ) ) ? '1' : false;
+            $form->add_field( 'checkbox', $el->name, 'email-lists[' . $el->id . ']', $value );
+        }
+
+        if ( $form->posted() ) {
+            $success = true;
+
+            $email->name = $_POST['tName'];
+            $email->email = $_POST['tEmail'];
+            $email->phone = $_POST['tPhone'];
+
+            if ( $email->id ) {
+                $email->save();
+            } else {
+                $test_email = new Email();
+                $test_email->get_by_email( $this->user->account->id, $email->email );
+
+                if ( $test_email->id && 2 == $test_email->status ) {
+                    $success = false;
+                    $this->notify( _('This email has been unsubscribed by the user.') );
+                } else {
+                    $email->website_id = $this->user->account->id;
+                    $email->status = 1;
+                    $email->create();
+                }
+            }
+
+            if ( $success ) {
+                if ( isset( $_POST['email-lists'] ) )
+                    $email->add_associations( array_keys( $_POST['email-lists'] ) );
+
+                $this->notify( _('Your email has been added/updated successfully!') );
+                return new RedirectResponse('/email-marketing/subscribers/');
+            }
+        }
+
+        $form = $form->generate_form();
+        $title = ( $email->id ) ? _('Edit') : _('Add');
+
+        return $this->get_template_response( 'add-edit' )
+            ->select( 'subscribers', 'add-edit' )
+            ->add_title( $title . ' ' . _('Subscriber') )
+            ->set( compact( 'email', 'form' ) );
     }
 
     /***** AJAX *****/
@@ -77,11 +163,11 @@ class SubscribersController extends BaseController {
          */
         if ( is_array( $subscribers ) )
         foreach ( $subscribers as $subscriber ) {
-            $actions = ( $status ) ? ' | <a href="' . url::add_query_arg( array( 'eid' => $subscriber->id, 'e' => $subscriber->email, '_nonce' => $unsubscribe_nonce ), '/email-marketing/subscribers/unsubscribe/' ) . '"  title="' . _('Unsubscribe') . '" ajax="1" confirm="' . $confirm . '">' . _('Unsubscribe') . '</a>' : '';
+            $actions = ( $status ) ? ' | <a href="' . url::add_query_arg( array( 'eid' => $subscriber->id, '_nonce' => $unsubscribe_nonce ), '/email-marketing/subscribers/unsubscribe/' ) . '"  title="' . _('Unsubscribe') . '" ajax="1" confirm="' . $confirm . '">' . _('Unsubscribe') . '</a>' : '';
             $date = new DateTime( $subscriber->date );
 
             $data[] = array(
-                $subscriber->email . '<br /><div class="actions"><a href="' . url::add_query_arg( 'eid', $subscriber->id, '/email-marketing/subscribers/add-edit/' ) . '" title="' . _('Edit Subscriber') . '">' . _('Edit Subscriber') . '</a>' . $actions . '</div>'
+                $subscriber->email . '<br /><div class="actions"><a href="' . url::add_query_arg( 'eid', $subscriber->id, '/email-marketing/subscribers/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions . '</div>'
                 , $subscriber->name
                 , $subscriber->phone
                 , $date->format( 'F jS, Y g:i a' )
@@ -99,20 +185,20 @@ class SubscribersController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    public function unsubscribe() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have everything right
-        $response->check( isset( $_GET['emid'] ), _('You cannot delete this email message') );
+        $response->check( isset( $_GET['eid'] ), _('You cannot unsubscribe this subscriber') );
 
         if ( $response->has_error() )
             return $response;
 
         // Remove
-        $email_message = new EmailMessage();
-        $email_message->get( $_GET['emid'], $this->user->account->id );
-        $email_message->remove_all();
+        $email = new Email();
+        $email->get( $_GET['eid'], $this->user->account->id );
+        $email->remove_all( $this->user->account->mc_list_id );
 
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();
