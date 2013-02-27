@@ -342,7 +342,7 @@ class SubscribersController extends BaseController {
             return $response;
 
         /**
-         * Loop thorugh emails
+         * Loop through emails
          *
          * @var int $index
          * @var string $name_column
@@ -399,5 +399,3 @@ class SubscribersController extends BaseController {
         return $response;
     }
 }
-
-

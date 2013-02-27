@@ -58,6 +58,53 @@ class EmailMarketingController extends BaseController {
             ->select( 'dashboard' )
             ->set( compact( 'messages', 'subscribers', 'email', 'bar_chart', 'email_count' ) );
     }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse
+     */
+    public function settings() {
+         // Instantiate classes
+        $form = new FormTable( 'fSettings' );
+
+        // Get settings
+        $settings_array = array( 'from-name', 'from-email', 'timezone', 'remove-header-footer' );
+        $settings = $this->user->account->get_email_settings( $settings_array );
+
+        // Create form
+        $form->add_field( 'text', _('From Name'), 'from-name', $settings['from-name'] )
+            ->attribute( 'maxlength', '50' );
+
+        $form->add_field( 'text', _('From Email'), 'from-email', $settings['from-email'] )
+            ->attribute( 'maxlength', '200' )
+            ->add_validation( 'email', _('The "From Email" field must contain a valid email' ) );
+
+        $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+            ->options( data::timezones( false, false, true ) );
+
+        $form->add_field( 'checkbox', _('Remove Header and Footer from Custom Emails'), 'remove-header-footer', $settings['remove-header-footer'] );
+
+        if ( $form->posted() ) {
+            $new_settings = array();
+
+            foreach ( $settings_array as $k ) {
+                $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
+            }
+
+            $this->user->account->set_email_settings( $new_settings );
+
+            $this->notify( _('Your email settings have been successfully saved!') );
+
+            // Refresh to get all the changes
+            return new RedirectResponse('/email-marketing/settings/');
+        }
+
+        return $this->get_template_response( 'settings' )
+            ->add_title( _('Settings') )
+            ->select( 'settings' )
+            ->set( array( 'form' => $form->generate_form() ) );
+    }
 }
 
 
