@@ -55,6 +55,10 @@ class Email extends ActiveRecordBase {
     }
 
     /**
+     * Get By Account
+     */
+
+    /**
      * Get Dashboard Subscribers By Account
      *
      * @param int $account_id
@@ -236,14 +240,14 @@ class Email extends ActiveRecordBase {
      * List Subscribers
      *
      * @param $variables array( $where, $order_by, $limit )
-     * @return EmailMessage[]
+     * @return Email[]
      */
     public function list_all( $variables ) {
         // Get the variables
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT DISTINCT `email_id`, `name`, `email`, `phone`, IF( 1 = `status`, `date_created`, `timestamp` ) AS date FROM `emails` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT DISTINCT e.`email_id`, e.`name`, e.`email`, e.`phone`, IF( 1 = e.`status`, e.`date_created`, e.`timestamp` ) AS date FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Email' );
@@ -261,7 +265,7 @@ class Email extends ActiveRecordBase {
 
         // Get the website count
         return $this->prepare(
-            "SELECT COUNT( DISTINCT `email_id` ) FROM `emails` WHERE 1 $where"
+            "SELECT COUNT( DISTINCT e.`email_id` ) FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

@@ -123,6 +123,38 @@ class SubscribersController extends BaseController {
             ->set( compact( 'email', 'form' ) );
     }
 
+    /**
+     * Export
+     *
+     * @return CsvResponse
+     */
+    public function export() {
+        // Get the email list ID
+        $email_list_id = ( isset( $_GET['elid'] ) ) ? $_GET['elid'] : 0;
+
+        $where = ' AND e.`status` = 1 AND e.`website_id` = ' . (int) $this->user->account->id;
+
+        if ( $email_list_id )
+            $where .= ' AND ea.`email_list_id` = ' . (int) $email_list_id;
+
+        // Get subscribers
+        $email = new Email();
+        $subscribers = $email->list_all( array(
+            $where
+            , array()
+            , 'ORDER BY e.`date_created` ASC'
+            , 100000
+        ) );
+
+        $output[]  = array( 'Email', 'Name', 'Phone' );
+
+        foreach ( $subscribers as $subscriber ) {
+            $output[] = array( $subscriber->email, $subscriber->name, $subscriber->phone );
+        }
+
+        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-email-subscribers.csv' );
+    }
+
     /***** AJAX *****/
 
     /**
@@ -139,10 +171,14 @@ class SubscribersController extends BaseController {
         $status = (int) $_GET['s'];
 
         // Set Order by
-        $dt->order_by( '`email`', '`name`', '`phone`', '`date_created`' );
-        $dt->add_where( " AND `status` = $status" );
-        $dt->add_where( ' AND `website_id` = ' . (int) $this->user->account->id );
-        $dt->search( array( '`email`' => false, '`name`' => false ) );
+        $dt->order_by( 'e.`email`', 'e.`name`', 'e.`phone`', 'e.`date_created`' );
+        $dt->add_where( " AND e.`status` = $status" );
+        $dt->add_where( ' AND e.`website_id` = ' . (int) $this->user->account->id );
+
+        if ( isset( $_GET['elid'] ) )
+        $dt->add_where( " AND ea.`email_list_id` = " . (int) $_GET['elid'] );
+
+        $dt->search( array( 'e.`email`' => false, 'e.`name`' => false ) );
 
         // Get items
         $subscribers = $email->list_all( $dt->get_variables() );
