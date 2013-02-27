@@ -238,7 +238,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
     <?php
     // Do not need to be submitted with the form, simply have to be on the page
     nonce::field( 'test', '_test' );
-    nonce::field( 'products-autocomplete', '_autocomplete' );
+    nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
     nonce::field( 'delete-product', '_delete_product' );
     nonce::field( 'schedule', '_schedule' );
     nonce::field( 'get-templates', '_get_templates' );

@@ -45,7 +45,7 @@ class EmailMessage extends ActiveRecordBase {
 
         if ( 'product' == $this->type ) {
             // Start off the product ids
-            $product_ids = '';
+            $product_ids = array();;
 
             if ( is_array( $meta_data ) )
             foreach ( $meta_data as $md ) {
@@ -54,11 +54,8 @@ class EmailMessage extends ActiveRecordBase {
                 $this->meta[$product_array['product_id']]->price = $product_array['price'];
                 $this->meta[$product_array['product_id']]->order = $product_array['order'];
 
-                if ( !empty( $product_ids ) )
-                    $product_ids .= ',';
-
                 // Create list of product ids
-                $product_ids .= $product_array['product_id'];
+                $product_ids[] = $product_array['product_id'];
             }
 
             // Causes an error otherwise
@@ -72,7 +69,12 @@ class EmailMessage extends ActiveRecordBase {
 
                 // Put the data in the meta
                 foreach ( $products as $product ) {
-                    $this->meta[$product->id] = array_merge( $this->meta[$product->id], $product );
+                    $order = $this->meta[$product->id]->order;
+                    $price = $this->meta[$product->id]->price;
+
+                    $this->meta[$product->id] = $product;
+                    $this->meta[$product->id]->order = $order;
+                    $this->meta[$product->id]->price = $price;
                 }
             }
         } else {
@@ -148,7 +150,7 @@ class EmailMessage extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values .= "( $email_message_id, '" . $this->quote( $m[0] ) . "', '" . $this->quote( $m[1] ) . "' )";
+            $values .= "( $email_message_id, " . $this->quote( $m[0] ) . ", " . $this->quote( $m[1] ) . " )";
         }
 
         // Insert new meta
@@ -216,7 +218,7 @@ class EmailMessage extends ActiveRecordBase {
         // Update Message
         $this->get_smart_meta();
         $email_template = new EmailTemplate();
-        $html_message = $email_template->get_complete( $this, $account );
+        $html_message = $email_template->get_complete( $account, $this );
 
         $mc->campaignUpdate( $this->mc_campaign_id, 'content', array( 'html' => $html_message ) );
 
@@ -375,6 +377,52 @@ class EmailMessage extends ActiveRecordBase {
         library( 'MCAPI' );
         $mc = new MCAPI( Config::key('mc-api') );
         $mc->campaignSendTest( $this->mc_campaign_id, array( $email ) );
+    }
+
+    /**
+     * Schedule
+     *
+     * @throws ModelException
+     *
+     * @param Account $account
+     * @param array $email_lists
+     */
+    public function schedule( Account $account, array $email_lists ) {
+        if ( $this->mc_campaign_id ) {
+            $email_list = new EmailList();
+            $email_list->synchronize( $account );
+        } else {
+            $this->create_mailchimp_campaign( $account, $email_lists );
+        }
+
+        $now = new DateTime();
+        $date_sent = new DateTime( $this->date_sent );
+
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+
+        if ( $date_sent > $now ) {
+            $date_sent->add( new DateInterval('P5H') );
+
+            $mc->campaignSchedule( $this->mc_campaign_id, $date_sent->format('Y-m-d H:i:s') );
+
+            // Handle errors
+            if ( $mc->errorCode )
+                throw new ModelException( $mc->errorMessage, $mc->errorCode );
+
+            $this->status = 1;
+            $this->save();
+        } else {
+            // Send campaign now
+            $mc->campaignSendNow( $this->mc_campaign_id );
+
+            // Handle errors
+            if ( $mc->errorCode )
+                throw new ModelException( $mc->errorMessage, $mc->errorCode );
+
+            $this->status = 2;
+            $this->save();
+        }
     }
 
     /**

@@ -32,6 +32,9 @@ class AnalyticsEmail extends ActiveRecordBase {
         // Get the statistics
         $s = $mc->campaignStats( $mc_campaign_id );
 
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
+
         // Update the analytics
         $this->update_analytics( $mc_campaign_id, $s );
 

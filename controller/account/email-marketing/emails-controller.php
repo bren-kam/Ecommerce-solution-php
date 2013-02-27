@@ -248,7 +248,16 @@ class EmailsController extends BaseController {
         if ( 0 == $email_message->mc_campaign_id )
             return $response;
 
-        $email_message->update_mailchimp( $this->user->account, $_POST['email_lists'] );
+        // Get email lists
+        $email_list = new EmailList();
+        $email_list_objects = $email_list->get_by_message( $email_message->id, $this->user->account->id );
+        $email_lists = array();
+
+        foreach ( $email_list_objects as $el ) {
+            $email_lists[$el->id] = $el->name;
+        }
+
+        $email_message->update_mailchimp( $this->user->account, $email_lists );
 
         return $response;
     }
@@ -289,6 +298,188 @@ class EmailsController extends BaseController {
         } catch ( ModelException $e ) {
             $response->check( false, $e->getMessage() );
         }
+
+        return $response;
+    }
+
+    /**
+     * Schedule
+     *
+     * @return AjaxResponse
+     */
+    public function schedule() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have everything right
+        $response->check( isset( $_POST['emid'] ), _('An error occurred while trying to schedule this message. Please refresh the page and try again.') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        // Schedule
+        $email_list = new EmailList();
+        $email_message = new EmailMessage();
+
+        // Get message
+        $email_message->get( $_POST['emid'], $this->user->account->id );
+
+        // Get email lists
+        $email_list_objects = $email_list->get_by_message( $email_message->id, $this->user->account->id );
+        $email_lists = array();
+
+        foreach ( $email_list_objects as $el ) {
+            $email_lists[$el->id] = $el->name;
+        }
+
+        // Test message
+        try {
+            $email_message->schedule( $this->user->account, $email_lists );
+        } catch ( ModelException $e ) {
+            $response->check( false, $e->getMessage() );
+        }
+
+        return $response;
+    }
+
+    /**
+     * List Products
+     *
+     * @return DataTableResponse
+     */
+    protected function list_products() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+
+        $account_product = new AccountProduct();
+
+        // Set Order by
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
+        $dt->add_where( ' AND ( p.`website_id` = 0 || p.`website_id` = ' . (int) $this->user->account->id . ' )' );
+        $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
+        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00'" );
+
+        $skip = true;
+
+        switch ( $_GET['sType'] ) {
+        	case 'sku':
+        		if ( _('Enter SKU...') != $_GET['s'] ) {
+        			$dt->add_where( " AND p.`sku` LIKE " . $account_product->quote( $_GET['s'] . '%' ) );
+                    $skip = false;
+                }
+        	break;
+
+        	case 'product':
+        		if ( _('Enter Product Name...') != $_GET['s'] ) {
+        			$dt->add_where( " AND p.`name` LIKE " . $account_product->quote( $_GET['s'] . '%' ) );
+                    $skip = false;
+                }
+        	break;
+
+        	case 'brand':
+        		if ( _('Enter Brand...') != $_GET['s'] ) {
+        			$dt->add_where( " AND b.`name` LIKE " . $account_product->quote( $_GET['s'] . '%' ) );
+                    $skip = false;
+                }
+        	break;
+        }
+
+        if ( $skip ) {
+            $dt->set_data( array() );
+            return $dt;
+        }
+
+        // Get items
+        $products = $account_product->list_products( $dt->get_variables() );
+        $dt->set_row_count( $account_product->count_products( $dt->get_count_variables() ) );
+
+        // Set initial data
+        $data = false;
+        $add_product_nonce = nonce::create( 'add_product' );
+
+        /**
+         * @var Product $product
+         */
+        if ( is_array( $products ) )
+        foreach ( $products as $product ) {
+            $dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/email-marketing/emails/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
+           	$actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/email-marketing/emails/add-product/' ) . '" title="' . _('Add Product') . '" ajax="1">' . _('Add Product') . '</a>';
+
+            $data[] = array(
+                $dialog . format::limit_chars( $product->name,  50, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
+                , $product->brand
+                , $product->sku
+                , $product->status
+            );
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
+    /**
+     * Get Product
+     *
+     * @return CustomResponse
+     */
+    protected function get_product() {
+        // Instantiate Object
+        $product = new Product();
+        $category = new Category();
+
+        // Get Product
+        $product->get( $_GET['pid'] );
+        $product->images = $product->get_images();
+
+        $category->get( $product->category_id );
+
+        $response = new CustomResponse( $this->resources, 'email-marketing/emails/get-product' );
+        $response->set( compact( 'product', 'category' ) );
+
+        return $response;
+    }
+
+    /**
+     * Add Product
+     *
+     * @return AjaxResponse
+     */
+    protected function add_product() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have everything right
+        $response->check( isset( $_GET['pid'] ), _('Unable to add product. Please try again.') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate Object
+        $account_product = new AccountProduct();
+        $product = new Product();
+        $category = new Category();
+
+        // Get Product
+        $account_product->get( $_GET['pid'], $this->user->account->id );
+        $product->get( $account_product->product_id );
+        $product->images = $product->get_images();
+
+        $category->get( $product->category_id );
+
+        // Form the response HTML
+        $product_box = '<div id="dProduct_' . $product->id . '" class="product">';
+        $product_box .= '<h4>' . format::limit_chars( $product->name, 37 ) . '</h4>';
+        $product_box .= '<p align="center"><img src="http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images ) . '" alt="' . $product->name . '" height="110" style="margin:10px" /></p>';
+        $product_box .= '<p>' . _('Brand') . ': ' . $product->brand . '<br /><label for="tProductPrice' . $product->id . '">' . _('Price') . ':</label> <input type="text" name="tProductPrice' . $product->id . '" class="tb product-box-price" id="tProductPrice' . $product->id . '" value="' . $account_product->price . '" maxlength="10" /></p>';
+        $product_box .= '<p class="product-actions" id="pProductAction' . $product->id . '"><a href="#" class="remove-product" title="' . _('Remove Product') . '">' . _('Remove') . '</a></p>';
+        $product_box .= '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' . $product->id . '" value="' . $product->id . '|' . $account_product->price . '" />';
+        $product_box .= '</div>';
+
+        jQuery('#dSelectedProducts')->append( $product_box );
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

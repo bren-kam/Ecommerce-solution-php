@@ -21,11 +21,11 @@ class EmailTemplate extends ActiveRecordBase {
      */
     public function get( $email_template_id, $account_id ) {
         $this->prepare(
-            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`email_template_id` = :email_template_id AND et.`type` = 'default' AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
+            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`email_template_id` = :email_template_id AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
             , 'ii'
             , array( ':email_template_id' => $email_template_id, ':object_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
-		
+
 		$this->id = $this->email_template_id;
     }
 
@@ -116,8 +116,8 @@ class EmailTemplate extends ActiveRecordBase {
      * @return string
      */
     public function get_complete( $account, $email_message ) {
-        if ( $this->email_template_id ) {
-            $this->get( $this->email_template_id, $email_message->website_id );
+        if ( $email_message->email_template_id ) {
+            $this->get( $email_message->email_template_id, $email_message->website_id );
         } else {
             $this->get_default( $email_message->website_id );
         }
@@ -129,7 +129,7 @@ class EmailTemplate extends ActiveRecordBase {
         $message = str_replace( array( '[website_title]' ), array( $account->title ), $message );
         $subject = str_replace( array( '[website_title]' ), array( $account->title ), $email_message->subject );
 
-        switch ( $this->type ) {
+        switch ( $email_message->type ) {
             case 'product':
                 // Instantiate class
                 $category = new Category;
@@ -147,13 +147,16 @@ class EmailTemplate extends ActiveRecordBase {
                 /**
                  * @var Product $product
                  */
+                if ( is_null( $email_message->meta ) )
+                    $email_message->get_smart_meta();
+
                 foreach ( $email_message->meta as $product ) {
                     $new_meta[$product->order] = $product;
                 }
 
                 // Sort by key
                 ksort( $new_meta );
-
+                
                 // Get data
                 foreach ( $new_meta as $product ) {
                     $i++;
