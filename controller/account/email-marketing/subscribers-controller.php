@@ -155,6 +155,33 @@ class SubscribersController extends BaseController {
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-email-subscribers.csv' );
     }
 
+    /**
+     * Import
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    public function import() {
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $this->user->account->id );
+
+        if ( $this->verified() ) {
+            $email = new Email();
+            $email->complete_import( $this->user->account->id, explode( '|', $_POST['hEmailLists'] ) );
+
+            $this->notify( _('Your emails have been imported successfully!') );
+            return new RedirectResponse( '/email-marketing/subscribers/' );
+        }
+
+        $this->resources
+            ->css( 'email-marketing/subscribers/import' )
+            ->javascript( 'fileuploader', 'email-marketing/subscribers/import' );
+
+        return $this->get_template_response( 'import' )
+            ->select( 'subscribers', 'import' )
+            ->add_title( _('Import') )
+            ->set( compact( 'email_lists' ) );
+    }
+
     /***** AJAX *****/
 
     /**
@@ -239,6 +266,134 @@ class SubscribersController extends BaseController {
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();
 
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload File
+     *
+     * @return AjaxResponse
+     */
+    public function import_subscribers() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Upload file
+        $uploader = new qqFileUploader( array( 'csv', 'xls' ), 26214400 );
+        $result = $uploader->handleUpload( 'gsrs_' );
+
+        // Setup variables
+        $file_extension = strtolower( f::extension( $_GET['qqfile'] ) );
+
+        switch ( $file_extension ) {
+        	case 'xls':
+        		// Load excel reader
+        		library('Excel_Reader/Excel_Reader');
+        		$er = new Excel_Reader();
+        		// Set the basics and then read in the rows
+        		$er->setOutputEncoding('ASCII');
+        		$er->read( $response['file_path'] );
+
+        		$rows = $er->sheets[0]['cells'];
+        		$index = 1;
+        	break;
+
+        	case 'csv':
+        		// Make sure it's opened properly
+        		$response->check( $handle = fopen( $response['file_path'], "r"), _('An error occurred while trying to read your file.') );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+
+        		// Loop through the rows
+        		while( $row = fgetcsv( $handle ) ) {
+        			$rows[] = $row;
+        		}
+
+        		// Close the file
+        		fclose( $handle );
+        		$index = 0;
+        	break;
+
+        	default:
+        		// Display an error
+        		$response->check( false, _('Only CSV and Excel file types are accepted. File type: ') . $file_extension );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+            break;
+        }
+
+        $response->check( is_array( $rows ), _('There were no emails to import') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        /**
+         * Loop thorugh emails
+         *
+         * @var int $index
+         * @var string $name_column
+         * @var array $rows
+         * @var array $emails
+         */
+        foreach ( $rows as $r ) {
+            // Determine the column being used for name or email
+            if ( !isset( $email_column ) || !isset( $name_column ) )
+            if ( stristr( $r[0 + $index], 'name' ) && stristr( $r[1 + $index], 'email' ) ) {
+                $email_column = 1 + $index;
+                $name_column =  0 + $index;
+                continue;
+            } else {
+                $email_column = 0 + $index;
+                $name_column = 1 + $index;
+
+                if ( stristr( $r[0 + $index], 'email' ) && stristr( $r[1 + $index], 'name' ) )
+                    continue;
+            }
+
+            // If there is an invalid email, skip it
+            if ( empty( $r[$email_column] ) || 0 == preg_match( "/^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)\$/", $r[$email_column] ) )
+                continue;
+
+            // Create emails
+            $emails[] = array( 'email' => $r[$email_column], 'name' => ( isset( $r[$name_column] ) ? $r[$name_column] : '' ) );
+        }
+
+        $email = new Email();
+        $email->import_all( $this->user->account->id, $emails );
+
+        // Set variables
+        $last_ten_emails = array_slice( $emails, 0, 10 );
+        $email_html = '';
+
+        // Create HTML
+        foreach ( $last_ten_emails as $e ) {
+        	$email_html .= '<tr><td>' . $e['email'] . '</td><td>' . $e['name'] . '</td></tr>';
+        }
+
+        // Assign it to the table
+        jQuery('#tUploadedSubcribers')->append( $email_html );
+
+        // Hide the main view
+        jQuery('#dDefault')->hide();
+
+        // Show the next table
+        jQuery('#dUploadedSubscribers')->show();
+
+        // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;

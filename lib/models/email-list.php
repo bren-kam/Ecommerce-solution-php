@@ -39,7 +39,7 @@ class EmailList extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            'SELECT `email_list_id`, `name` FROM `email_lists` WHERE `website_id` = :account_id'
+            'SELECT `email_list_id`, `category_id`, `name` FROM `email_lists` WHERE `website_id` = :account_id'
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailList' );

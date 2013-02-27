@@ -271,6 +271,139 @@ class Email extends ActiveRecordBase {
         )->get_var();
     }
 
+    /**
+     * Import
+     *
+     * @param int $account_id
+     * @param array $emails
+     */
+    public function import_all( $account_id, array $emails ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+        // Delete already imported emails
+        $this->delete_imported( $account_id );
+
+        // Select all the unsubscribed emails they already have
+        $unsubscribed_emails = $this->list_all( array(
+            ' AND e.`status` = 0 AND e.`website_id` = ' . (int) $account_id
+            , array()
+            , 'ORDER BY e.`date_created` ASC'
+            , 100000
+        ) );
+
+        $unsubscribed = $values = array();
+
+        foreach ( $unsubscribed_emails as $unsubscriber ) {
+            $unsubscribed[] = $unsubscriber->email;
+        }
+
+        // Create string to insert new emails
+        foreach ( $emails as $email ) {
+            // Make sure they haven't been unsubscribed
+            if ( in_array( $email['email'], $unsubscribed ) )
+                continue;
+
+            $values[$email['email']] = $email['name'];
+        }
+
+        $this->import( $account_id, $values );
+    }
+
+    /**
+     * Import
+     *
+     * @param int $account_id
+     * @param array $values
+     */
+    protected function import( $account_id, array $values ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+        // Get chunks
+        $chunks = array_chunk( $values, 500 );
+
+        foreach ( $chunks as $chunk ) {
+            $chunk_count = count( $chunk );
+            $value_string = substr( str_repeat( ",( $account_id, ?, ?, NOW() )", $chunk_count ), 1 );
+            $values = array();
+
+            foreach ( $chunk as $email => $name ) {
+                $values[] = $email;
+                $values[] = $name;
+            }
+
+            $this->prepare(
+                "INSERT INTO `email_import_emails` ( `website_id`, `email`, `name`, `date_created` ) VALUES $value_string"
+                , str_repeat( 'ss', $chunk_count )
+                , $values
+            )->query();
+        }
+    }
+
+
+    /**
+     * Complete import
+     *
+     * @param int $account_id
+     * @param array $email_list_ids
+     */
+    public function complete_import( $account_id, array $email_list_ids ) {
+        // Import the emails
+        $this->import_emails( $account_id );
+
+        // Add associations
+        $this->add_associations_to_imported_emails( $account_id, $email_list_ids );
+
+        // Delete the imported emails
+        $this->delete_imported( $account_id );
+    }
+
+    /**
+     * Complete Import
+     *
+     * @param int $account_id
+     */
+    protected function import_emails( $account_id ) {
+		// @Fix remove the subquery
+		// @Fix need a way to remove these subscribers
+		// Transfer new emails to emails table
+		$this->prepare(
+            'INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = $website_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = :account_id )'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->query();
+    }
+
+    /**
+     * Add associations to imported emails
+     *
+     * @param int $account_id
+     * @param array $email_list_ids
+     */
+    protected function add_associations_to_imported_emails( $account_id, array $email_list_ids ) {
+        // Add the associations for each list
+        foreach ( $email_list_ids as $email_list_id ) {
+            $this->prepare(
+                'INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) SELECT e.`email_id`, :email_list_id FROM `emails` AS e INNER JOIN `email_import_emails` AS eie ON ( eie.`email` = e.`email` ) WHERE e.`website_id` = :account_id ON DUPLICATE KEY UPDATE `email_id` = VALUES( `email_id` )'
+                , 'ii'
+                , array( ':email_list_id' => $email_list_id, ':account_id' => $account_id )
+            )->query();
+        }
+    }
+
+    /**
+     * Delete imported
+     *
+     * @param int $account_id
+     */
+    public function delete_imported( $account_id ) {
+        $this->prepare(
+            'DELETE FROM `email_import_emails` WHERE `website_id` = :account_id'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->query();
+    }
+
     /***** ASSOCIATIONS *****/
 
     /**
