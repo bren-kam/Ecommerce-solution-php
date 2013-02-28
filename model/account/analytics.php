@@ -583,4 +583,6 @@ class Analytics {
 
         $this->ga_profile_id = (int) $ga_profile_id;
     }
+
+    /***** EMAIL MARKETING *****/
 }

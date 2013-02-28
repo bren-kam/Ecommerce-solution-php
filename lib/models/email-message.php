@@ -345,7 +345,7 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
-     * Count all the pages
+     * Count all the messages
      *
      * @param array $variables
      * @return int

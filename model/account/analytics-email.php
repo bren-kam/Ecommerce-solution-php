@@ -9,7 +9,7 @@ class AnalyticsEmail extends ActiveRecordBase {
     public $advice, $click_overlay;
 
     // Fields from other tables
-    public $subject, $date_sent;
+    public $email_message_id, $subject, $date_sent;
 
     /**
      * Setup the account initial data
@@ -118,5 +118,84 @@ class AnalyticsEmail extends ActiveRecordBase {
         $this->users_who_clicked = $s['users_who_clicked'];
         $this->emails_sent = $s['emails_sent'];
         $this->create();
+    }
+
+    /**
+     * Update Email Analytics By Account
+     *
+     * @throws ModelException
+     *
+     * @param int $account_id
+     */
+    public function update_by_account( $account_id ) {
+        $mc_campaign_ids = $this->get_emails_without_statistics( $account_id );
+
+        // If there are any statistics to get
+        if ( count( $mc_campaign_ids ) > 0 ) {
+            library( 'MCAPI' );
+            $mc = new MCAPI( Config::key('mc-api') );
+
+            // Loop through each one
+            foreach ( $mc_campaign_ids as $mc_campaign_id ) {
+                // Get the statistics
+                $s = $mc->campaignStats( $mc_campaign_id );
+
+                if ( $mc->errorCode ) {
+                    continue;
+                    throw new ModelException( $mc->errorMessage, $mc->errorCode );
+                }
+
+                $this->update_analytics( $mc_campaign_id, $s );
+            }
+        }
+    }
+
+    /**
+     * Get emails without statistics
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_emails_without_statistics( $account_id ) {
+        return $this->prepare(
+            'SELECT `mc_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = 2 AND `mc_campaign_id` NOT IN ( SELECT ae.`mc_campaign_id` FROM `analytics_emails` AS ae LEFT JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`website_id` = :account_id2 AND `status` = 2 )'
+            , 'ii'
+            , array( ':account_id' => $account_id, ':account_id2' => $account_id )
+        )->get_col();
+    }
+
+    /**
+     * List All
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return EmailMessage[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT em.`email_message_id`, ae.`mc_campaign_id`, em.`subject`, ae.`opens`, ae.`clicks`, ae.`emails_sent`, em.`date_sent`, ae.`last_updated` FROM `analytics_emails` AS ae INNER JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`status` = 2 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'AnalyticsEmail' );
+    }
+
+    /**
+     * Count all
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( em.`email_message_id` ) FROM `analytics_emails` AS ae INNER JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`status` = 2 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 }
