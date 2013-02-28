@@ -254,7 +254,7 @@ class Email extends ActiveRecordBase {
     }
 
     /**
-     * Count all the pages
+     * Count all
      *
      * @param array $variables
      * @return int

@@ -7,7 +7,6 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var bool $logged_in
  */
 
 echo $template->start( _('Email Messages'), '../sidebar' );
