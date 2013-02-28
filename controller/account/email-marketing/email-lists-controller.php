@@ -42,7 +42,7 @@ class EmailListsController extends BaseController {
 
         $form = new FormTable( 'fAddEditEmailList' );
 
-        if ( !$email_list_id->id )
+        if ( !$email_list->id )
             $form->submit( _('Create') );
 
         $form->add_field( 'text', _('Name'), 'tName', $email_list->name )
@@ -156,7 +156,7 @@ class EmailListsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

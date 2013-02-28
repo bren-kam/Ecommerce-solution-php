@@ -575,12 +575,12 @@ class FormTable_Radio extends FormTable_Field {
      */
     public function generate_html( $count = 0 ) {
         $html = '<tr><td>&nbsp;</td><td>';
-        $html .= '<input type="radio" class="rb" name="' . $this->name . '" id="' . $this->id() . $count . '" value="1"';
+        $html .= '<input type="radio" class="rb" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="' . $this->value . '"';
 
-        if ( '1' == $this->value )
+        if ( $_POST[$this->name] == $this->value )
             $html .= ' checked="checked"';
 
-        $html .= $this->format_attributes() . ' /> <label for="' . $this->id() . $count . '">' . $this->nice_name;
+        $html .= $this->format_attributes() . ' /> <label for="' . $this->id( $count ) . '">' . $this->nice_name;
 
         if ( $this->required )
             $html .= ' <span class="red">*</span>';

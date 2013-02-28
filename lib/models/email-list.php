@@ -332,5 +332,4 @@ class EmailList extends ActiveRecordBase {
             , $values
         )->get_var();
     }
-
 }
