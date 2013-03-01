@@ -56,7 +56,7 @@ foreach ( $links as $key => $link ) {
 }
     if ( !empty( $settings['advertising-url'] ) ) {
     ?>
-        <a href="<?php echo $settings['advertising-url']; ?>" title="<?php echo _('Advertising Portal'); ?>" target="_blank" class="service"><img src="/images/trans.gif" width="149" height="160" alt="<?php echo _('Advertising Portal'); ?>" /></a>
+        <a href="<?php echo $settings['advertising-url']; ?>" title="<?php echo _('Advertising Portal'); ?>" target="_blank" class="service"><img src="/images/dashboard/ads.png" width="149" height="160" alt="<?php echo _('Advertising Portal'); ?>" /></a>
         <?php
     }
 
