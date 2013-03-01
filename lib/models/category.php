@@ -109,6 +109,21 @@ class Category extends ActiveRecordBase {
     }
 
     /**
+	 * Get Top Category
+	 *
+	 * @param int $category_id
+	 */
+	public function get_top( $category_id ) {
+		if ( 0 == $category_id )
+			return;
+
+        $this->get( $category_id );
+
+        if ( 0 != $this->parent_category_id )
+            $this->get_top( $this->parent_category_id );
+	}
+
+    /**
      * Get all parent ids
      *
      * @param int $category_id

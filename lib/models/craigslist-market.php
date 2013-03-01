@@ -5,6 +5,9 @@ class CraigslistMarket extends ActiveRecordBase {
     // For artificial field
     public $market;
 
+    // Fields from tother tables
+    public $market_id, $cl_category_id;
+
     /**
      * Setup the account initial data
      */
@@ -34,9 +37,42 @@ class CraigslistMarket extends ActiveRecordBase {
     /**
      * Get All
      *
-     * @return array
+     * @return CraigslistMarket[]
      */
     public function get_all() {
-        return $this->get_results( "SELECT `craigslist_market_id`, `cl_market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC", PDO::FETCH_CLASS, 'CraigslistMarket' );
+        return $this->get_results(
+            "SELECT `craigslist_market_id`, `cl_market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC"
+            , PDO::FETCH_CLASS
+            , 'CraigslistMarket'
+        );
+    }
+
+    /**
+     * Get By Ad
+     *
+     * @param int $craigslist_ad_id
+     * @param int $account_id
+     * @return CraigslistMarket[]
+     */
+    public function get_by_ad( $craigslist_ad_id, $account_id ) {
+        return $this->prepare(
+            "SELECT cm.`craigslist_market_id`, CONCAT( cm.`city`, ', ', IF( '' <> cm.`area`, CONCAT( cm.`state`, ' - ', cm.`area` ), cm.`state` ) ) AS market, cm.`cl_market_id`, cml.`market_id`, cml.`cl_category_id` FROM `craigslist_markets` AS cm LEFT JOIN `craigslist_ad_markets` AS cam ON ( cam.`craigslist_market_id` = cm.`craigslist_market_id` ) LEFT JOIN `craigslist_market_links` AS cml ON ( cml.`craigslist_market_id` = cam.`craigslist_market_id` ) WHERE cam.`craigslist_ad_id` = :craigslist_ad_id AND cml.`website_id` = :account_id"
+            , 'ii'
+            , array( ':craiglist_ad_id' => $craigslist_ad_id, ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'CraigslistMarket' );
+    }
+
+    /**
+     * Get By Account
+     *
+     * @param int $account_id
+     * @return CraigslistMarket[]
+     */
+    public function get_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT cm.`craigslist_market_id`, CONCAT( cm.`city`, ', ', IF( '' <> cm.`area`, CONCAT( cm.`state`, ' - ', cm.`area` ), cm.`state` ) ) AS market, cm.`cl_market_id`, cml.`market_id`, cml.`cl_category_id` FROM `craigslist_markets` AS cm LEFT JOIN `craigslist_market_links` AS cml ON ( cml.`craigslist_market_id` = cm.`craigslist_market_id` ) WHERE cml.`website_id` = :account_id"
+            , 'ii'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'CraigslistMarket' );
     }
 }
