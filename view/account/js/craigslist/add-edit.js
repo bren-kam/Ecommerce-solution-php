@@ -100,7 +100,7 @@ $.fn.openEditorAndPreview = openEditorAndPreview;
  * var callback
  */
 function loadProduct( productID ) {
-    $.post( '/craigslist/load-product/', { _nonce : $('#_load_product').val(), 'pid' : productID }, ajaxResponse, 'json' );
+    $.post( '/craigslist/load-product/', { _nonce : $('#_load_product').val(), pid : productID }, ajaxResponse, 'json' );
 
     // Call a call back if there is one
     if ( 'function' == typeof( arguments[1] ) )

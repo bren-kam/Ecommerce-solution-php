@@ -11,6 +11,7 @@
  * @var string $errs
  * @var string $js_validation
  * @var CraigslistMarket[] $markets
+ * @var Craigslist_API $craiglist_api
  */
 
 $title = ( $ad->id ) ? _('Edit') : _('Add');
@@ -37,9 +38,8 @@ if ( !empty( $errs ) )
 
     <div id="dNarrowSearch">
         <?php
-        nonce::field( 'products-autocomplete', '_ajax_autocomplete' );
-        nonce::field( 'load-product', '_ajax_load_product' );
-        nonce::field( 'random-headline', '_ajax_get_random_headline' );
+        nonce::field( 'autocomplete', '_autocomplete' );
+        nonce::field( 'load_product', '_load_product' );
         ?>
         <h2><?php echo _('Select Product');?></h2>
         <select id="sAutoComplete" tabindex="1">
@@ -52,11 +52,12 @@ if ( !empty( $errs ) )
 
     <div id="dProductPhotos" class="hidden"></div>
 
-    <div id="dCreateAd" <?php if ( !$craigslist_ad_id ) echo ' class="hidden"'; ?>>
+    <div id="dCreateAd"<?php if ( !$ad->id ) echo ' class="hidden"'; ?>>
         <h2><?php echo _('Create and Preview Ad'); ?></h2>
         <br />
+        <h3><?php echo _('Headlines'); ?>:</h3>
+        <br />
         <table>
-            <tr><th colspan="2"><label for="tHeadline0"><?php echo _('Headlines'); ?>:</label></th></tr>
             <?php
             for ( $i = 0; $i < 10; $i++ ) {
                $headline = ( isset( $ad->headlines[$i] ) ) ? $ad->headlines[$i] : '';

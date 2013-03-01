@@ -84,6 +84,7 @@ class CraigslistController extends BaseController {
                 $ad->set_markets( $_POST['sCraigslistMarkets'] );
 
                 if ( '1' == $_POST['hPostAd'] ) {
+                    $ad->post();
                     $this->notify( _('Your Craiglist Ad has been successfully sent to post!') );
                     return new RedirectResponse('/craigslist/');
                 }
@@ -106,7 +107,7 @@ class CraigslistController extends BaseController {
         return $this->get_template_response( 'add-edit' )
             ->select( 'add' )
             ->add_title( $title )
-            ->set( compact( 'ad', 'markets', 'js_validation', 'errs' ) );
+            ->set( compact( 'ad', 'markets', 'craigslist_api', 'js_validation', 'errs' ) );
     }
 
     /***** AJAX *****/
@@ -164,6 +165,142 @@ class CraigslistController extends BaseController {
         $dt->set_data( $data );
 
         return $dt;
+    }
+
+    /**
+     * Delete
+     */
+    public function delete() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['caid'] ), _('Cannot delete this Craigslist Ad') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $craigslist_ad = new CraigslistAd();
+        $craigslist_ad->get( $_GET['caid'], $this->user->account->id );
+
+        // Remove from Primus
+        library( 'craigslist-api' );
+
+        $craigslist_ad->delete_from_primus( new Craigslist_API( Config::key('craigslist-gsr-id'), Config::key('craigslist-gsr-key') ) );
+
+        // Set to inactive
+        $craigslist_ad->active = 0;
+        $craigslist_ad->save();
+
+        // Redraw the table
+        jQuery('.dt:first')->dataTable()->fnDraw();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Copy
+     */
+    public function copy() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['caid'] ), _('Cannot copy this Craigslist Ad') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $craigslist_ad = new CraigslistAd();
+        $craigslist_ad->get( $_GET['caid'], $this->user->account->id );
+
+        $response->check( $craigslist_ad->id, _('Cannot copy this Craigslist Ad') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create new one
+        $craigslist_ad->create();
+        $craigslist_ad->add_headlines( $craigslist_ad->headlines );
+
+        // Redraw the table
+        jQuery('.dt:first')->dataTable()->fnDraw();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Load Product
+     */
+    public function load_product() {
+        // Verify the nonce
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['pid'] ), _('Cannot get Craigslist product') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $product = new Product();
+        $product->get( $_POST['pid'] );
+
+        $account_product = new AccountProduct();
+        $account_product->get( $product->id, $this->user->account->id );
+
+        // Set price
+        $price = ( $account_product->product_id ) ? $account_product->price : 0;
+
+        $images = $product->get_images();
+        $image_html = '';
+
+        foreach ( $images as &$image ) {
+            $image = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/large/' . $image;
+            $image_html .= '<img class="hiddenImage" name="hiddenImage" src="' . $image . '" />';
+        }
+
+        $specifications = unserialize( html_entity_decode( $product->product_specifications, ENT_QUOTES, 'UTF-8' ) );
+        $product_specifications = '';
+
+        if ( is_array( $specifications ) && count( $specifications ) > 0 )
+        foreach ( $specifications as $ps ) {
+            if ( !empty( $product_specifications ) )
+                $product_specifications .= '<br />';
+
+            $name = html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' );
+            $value = html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' );
+
+            $product_specifications .= ( empty( $name ) ) ? $value : $name . ' - ' . $value;
+        }
+
+        if ( !empty( $product_specifications ) )
+            $product_specifications = "<p>$product_specifications</p>";
+
+        jQuery('#hProductDescription')->val( $product->description );
+        jQuery('#hProductName')->val( $product->name );
+        jQuery('#hProductCategoryID')->val( $product->category_id );
+        jQuery('#hProductID')->val( $product->product_id );
+        jQuery('#hProductCategoryName')->val( $product->category );
+        jQuery('#hProductSKU')->val( $product->sku );
+        jQuery('#hProductBrandName')->val( $product->brand );
+        jQuery('#hProductSpecifications')->val( $product_specifications );
+        jQuery('#tPrice[val=]')->val( $price );
+
+        jQuery('#dProductPhotos')
+        	->html( $image_html )
+        	->openEditorAndPreview(); // Needs to determine template
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
     }
 }
 

@@ -39,7 +39,7 @@ class CraigslistAd extends ActiveRecordBase {
      * @param int $account_id
      */
     public function get( $craigslist_ad_id, $account_id ) {
-        $sql = "SELECT ca.`craigslist_ad_id`, ca.`product_id`, ca.`text`, ca.`price`,  GROUP_CONCAT( cah.`headline` SEPARATOR '`' ) AS headlines, w.`title` AS store_name, p.`name` AS product_name,";
+        $sql = "SELECT ca.`craigslist_ad_id`, ca.`website_id`, ca.`product_id`, ca.`text`, ca.`price`, ca.`active`, GROUP_CONCAT( cah.`headline` SEPARATOR '`' ) AS headlines, w.`title` AS store_name, p.`name` AS product_name,";
         $sql .= " p.`sku`, ca.`date_created`, ca.`date_posted`";
         $sql .= " FROM `craigslist_ads` AS ca";
         $sql .= " LEFT JOIN `craigslist_ad_headlines` AS cah ON ( cah.`craigslist_ad_id` = ca.`craigslist_ad_id` )";
@@ -83,9 +83,10 @@ class CraigslistAd extends ActiveRecordBase {
             , 'text' => $this->text
             , 'price' => $this->price
             , 'date_posted' => $this->date_posted
+            , 'active' => $this->active
         ), array(
             'craigslist_ad_id' => $this->craigslist_ad_id )
-        , 'isis', 'i' );
+        , 'isisi', 'i' );
     }
 
     /**
@@ -171,7 +172,7 @@ class CraigslistAd extends ActiveRecordBase {
         return $this->prepare(
             'SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
             , 'i'
-            , array( ':craiglist_ad_id' => $this->id )
+            , array( ':craigslist_ad_id' => $this->id )
         )->get_col();
     }
 
@@ -396,7 +397,6 @@ class CraigslistAd extends ActiveRecordBase {
         $product_image_url = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/large/' . current( $images );
 
         $primus_product_ids = array();
-        $success = true;
 
         // Delete add from Primus
         $this->delete_from_primus( $craigslist );
@@ -412,8 +412,7 @@ class CraigslistAd extends ActiveRecordBase {
                 if ( 'SUCCESS' == $response->status ) {
                     $primus_product_ids[$market->id] = $response->product_id;
                 } elseif ( 'ERROR' == $response->status ) {
-                    $success = false;
-                    break 2;
+                    throw new ModelException( _('Failed to add craigslist product') );
                 }
 
                 $i++;
@@ -434,7 +433,7 @@ class CraigslistAd extends ActiveRecordBase {
      *
      * @param Craigslist_API $craigslist
      */
-    protected function delete_from_primus( $craigslist ) {
+    public function delete_from_primus( $craigslist ) {
         // Delete old ads and upate the status so that
         $old_primus_product_ids = $this->get_primus_product_ids();
 
