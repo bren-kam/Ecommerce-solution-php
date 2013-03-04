@@ -16,10 +16,10 @@ class HomeController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $response = $this->get_template_response( 'index' );
-        $response->select('dashboard');
+        $this->resources->css('dashboard/dashboard');
 
-        return $response;
+        return $this->get_template_response( 'index' )
+            ->select('dashboard');
     }
 
     /**

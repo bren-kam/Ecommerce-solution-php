@@ -45,7 +45,7 @@ class EmailMessage extends ActiveRecordBase {
 
         if ( 'product' == $this->type ) {
             // Start off the product ids
-            $product_ids = '';
+            $product_ids = array();;
 
             if ( is_array( $meta_data ) )
             foreach ( $meta_data as $md ) {
@@ -54,11 +54,8 @@ class EmailMessage extends ActiveRecordBase {
                 $this->meta[$product_array['product_id']]->price = $product_array['price'];
                 $this->meta[$product_array['product_id']]->order = $product_array['order'];
 
-                if ( !empty( $product_ids ) )
-                    $product_ids .= ',';
-
                 // Create list of product ids
-                $product_ids .= $product_array['product_id'];
+                $product_ids[] = $product_array['product_id'];
             }
 
             // Causes an error otherwise
@@ -72,7 +69,12 @@ class EmailMessage extends ActiveRecordBase {
 
                 // Put the data in the meta
                 foreach ( $products as $product ) {
-                    $this->meta[$product->id] = array_merge( $this->meta[$product->id], $product );
+                    $order = $this->meta[$product->id]->order;
+                    $price = $this->meta[$product->id]->price;
+
+                    $this->meta[$product->id] = $product;
+                    $this->meta[$product->id]->order = $order;
+                    $this->meta[$product->id]->price = $price;
                 }
             }
         } else {
@@ -109,7 +111,7 @@ class EmailMessage extends ActiveRecordBase {
             , 'date_created' => $this->date_created
         ), 'iisssss' );
 
-        $this->id = $this->email_template_id = $this->get_insert_id();
+        $this->id = $this->email_message_id = $this->get_insert_id();
     }
 
     /**
@@ -148,7 +150,7 @@ class EmailMessage extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values .= "( $email_message_id, '" . $this->quote( $m[0] ) . "', '" . $this->quote( $m[1] ) . "' )";
+            $values .= "( $email_message_id, " . $this->quote( $m[0] ) . ", " . $this->quote( $m[1] ) . " )";
         }
 
         // Insert new meta
@@ -160,8 +162,9 @@ class EmailMessage extends ActiveRecordBase {
      * Save
      */
     public function save() {
-        $this->insert( array(
+        $this->update( array(
             'email_template_id' => $this->email_template_id
+            , 'mc_campaign_id' => $this->mc_campaign_id
             , 'subject' => $this->subject
             , 'message' => $this->message
             , 'type' => $this->type
@@ -169,7 +172,7 @@ class EmailMessage extends ActiveRecordBase {
         ), array(
             'email_template_id' => $this->email_template_id
             , 'website_id' => $this->website_id
-        ), 'issss', 'ii' );
+        ), 'iissss', 'ii' );
     }
 
     /**
@@ -197,30 +200,30 @@ class EmailMessage extends ActiveRecordBase {
 
         // Do segment test to make sure it would work
         if ( !$mc->campaignSegmentTest( $account->mc_list_id, $segmentation_options ) )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Update campaign
         $mc->campaignUpdate( $this->mc_campaign_id, 'segment_opts', $segmentation_options );
 
         // Handle any error
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Update Subject
         $mc->campaignUpdate( $this->mc_campaign_id, 'subject', $this->subject );
 
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Update Message
         $this->get_smart_meta();
         $email_template = new EmailTemplate();
-        $html_message = $email_template->get_complete( $this, $account );
+        $html_message = $email_template->get_complete( $account, $this );
 
         $mc->campaignUpdate( $this->mc_campaign_id, 'content', array( 'html' => $html_message ) );
 
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Update From Email
         $settings = $account->get_email_settings( 'from_email', 'from_name' );
@@ -229,7 +232,7 @@ class EmailMessage extends ActiveRecordBase {
         $mc->campaignUpdate( $this->mc_campaign_id, 'from_email', $from_email );
 
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Update From Name
         $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
@@ -237,7 +240,7 @@ class EmailMessage extends ActiveRecordBase {
         $mc->campaignUpdate( $this->mc_campaign_id, 'from_name', $from_name );
 
         if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
     }
 
     /**
@@ -257,7 +260,7 @@ class EmailMessage extends ActiveRecordBase {
 
             // Simply note the error, don't stop
             if ( $mc->errorCode )
-                throw new ModelException( $mc->errorMessage, NULL, $mc->errorCode );
+                throw new ModelException( $mc->errorMessage, $mc->errorCode );
         }
 
         // Assuming the above is successful, delete everything about this email
@@ -325,7 +328,7 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
-     * List Pages
+     * List Messages
      *
      * @param $variables array( $where, $order_by, $limit )
      * @return EmailMessage[]
@@ -342,7 +345,7 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
-     * Count all the pages
+     * Count all the messages
      *
      * @param array $variables
      * @return int
@@ -361,16 +364,151 @@ class EmailMessage extends ActiveRecordBase {
 
     /**
      * Test
+     *
+     * @param string $email
+     * @param Account $account
+     * @param array $email_lists
      */
-    public function test() {
+    public function test( $email, Account $account, array $email_lists ) {
         if ( !$this->mc_campaign_id )
-            $this->create_mc_campaign();
+            $this->create_mailchimp_campaign( $account, $email_lists );
+
+        // Send a test
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+        $mc->campaignSendTest( $this->mc_campaign_id, array( $email ) );
+    }
+
+    /**
+     * Schedule
+     *
+     * @throws ModelException
+     *
+     * @param Account $account
+     * @param array $email_lists
+     */
+    public function schedule( Account $account, array $email_lists ) {
+        if ( $this->mc_campaign_id ) {
+            $email_list = new EmailList();
+            $email_list->synchronize( $account );
+        } else {
+            $this->create_mailchimp_campaign( $account, $email_lists );
+        }
+
+        $now = new DateTime();
+        $date_sent = new DateTime( $this->date_sent );
+
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+
+        if ( $date_sent > $now ) {
+            $date_sent->add( new DateInterval('P5H') );
+
+            $mc->campaignSchedule( $this->mc_campaign_id, $date_sent->format('Y-m-d H:i:s') );
+
+            // Handle errors
+            if ( $mc->errorCode )
+                throw new ModelException( $mc->errorMessage, $mc->errorCode );
+
+            $this->status = 1;
+            $this->save();
+        } else {
+            // Send campaign now
+            $mc->campaignSendNow( $this->mc_campaign_id );
+
+            // Handle errors
+            if ( $mc->errorCode )
+                throw new ModelException( $mc->errorMessage, $mc->errorCode );
+
+            $this->status = 2;
+            $this->save();
+        }
     }
 
     /**
      * Create Mailchimp Campaign
+     *
+     * @throws ModelException
+     *
+     * @param Account $account
+     * @param array $email_lists
      */
-    public function create_mailchimp_campaign() {
-        
+    public function create_mailchimp_campaign( Account $account, $email_lists ) {
+        $email_list = new EmailList();
+        $email_list->synchronize( $account );
+
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+
+        // Check to make sure all the interest groups exist
+        $interest_groups = $mc->listInterestGroups( $account->mc_list_id );
+
+        // Simply note the error, don't stop
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
+
+        foreach ( $email_lists as $el ) {
+            if ( in_array( $el, $interest_groups['groups'] ) )
+                continue;
+
+            $mc->listInterestGroupAdd( $account->mc_list_id, $el );
+
+            // Handle Errors
+            if ( $mc->errorCode )
+                throw new ModelException( $mc->errorMessage, $mc->errorCode );
+        }
+
+        $segmentation_options = array(
+            'match' => 'any',
+            'conditions' => array(
+                array(
+                      'field' => 'interests',
+                      'op' => 'one',
+                      'value' => implode( ',', $email_lists )
+                )
+            )
+        );
+
+        // Handle Errors
+        if ( !$mc->campaignSegmentTest( $account->mc_list_id, $segmentation_options ) ) {
+            $message = ( empty( $mc->errorMessage ) ) ? "MailChimp was unable to segment campaign" : $mc->errorMessage;
+            throw new ModelException( $message, $mc->errorCode );
+        }
+
+        $settings = $account->get_email_settings( 'from_email', 'from_name' );
+
+        // Determine from email
+        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $account->domain : $settings['from_email'];
+        $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
+
+        $options = array(
+            'list_id' => $account->mc_list_id,
+            'subject' => $this->subject,
+            'from_email' => $from_email,
+            'from_name' => $from_name,
+            'to_email' => $account->title . ' Subscribers',
+            'tracking' => array(
+                    'opens' => true,
+                    'html_clicks' => true,
+                    'text_clicks' => true
+                ),
+            'analytics' => array( 'google' => $account->ga_tracking_key ),
+            'generate_text' => true
+        );
+
+        // Put the message in the template
+        $template = new EmailTemplate();
+        $message = $template->get_complete( $account, $this );
+
+        $content = array(
+            'html' => $message
+        );
+
+        $this->mc_campaign_id = $mc->campaignCreate( 'regular', $options, $content, $segmentation_options );
+        $this->save();
+
+        // Handle Errors
+        if ( $mc->errorCode )
+            throw new ModelException( $mc->errorMessage, $mc->errorCode );
     }
 }

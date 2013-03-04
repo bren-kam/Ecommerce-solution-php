@@ -17,7 +17,7 @@
 
     if ( $user->account->email_marketing ) {
     ?>
-    <a href="/analytics/email-marketing/" title="<?php echo _('Email Marketing'); ?>" class="top"><?php echo _('Email Marketing'); ?></a>
+    <a href="/analytics/email-marketing/" title="<?php echo _('Email Marketing'); ?>" class="top<?php $template->select('email-marketing'); ?>"><?php echo _('Email Marketing'); ?></a>
     <?php
     }
 

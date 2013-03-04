@@ -14,7 +14,23 @@ class EmailAutoresponder extends ActiveRecordBase {
     }
 
     /**
-     * Create Email List
+     * Get
+     *
+     * @param int $email_autoresponder_id
+     * @param int $account_id
+     */
+    public function get( $email_autoresponder_id, $account_id ) {
+        $this->prepare(
+            'SELECT * FROM `email_autoresponders` WHERE `email_autoresponder_id` = :email_autoresponder_id AND `website_id` = :account_id'
+            , 'ii'
+            , array( ':email_autoresponder_id' => $email_autoresponder_id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->email_autoresponder_id;
+    }
+
+    /**
+     * Create Auto
      */
     public function create() {
         $this->date_created = dt::now();
@@ -31,5 +47,64 @@ class EmailAutoresponder extends ActiveRecordBase {
         ), 'iisssiis' );
 
         $this->id = $this->email_autoresponder_id = $this->get_insert_id();
+    }
+
+    /**
+     * Save
+     */
+    public function save() {
+        $this->update( array(
+            'email_list_id' => $this->email_list_id
+            , 'name' => $this->name
+            , 'subject' => $this->subject
+            , 'message' => $this->message
+            , 'current_offer' => $this->current_offer
+        ), array(
+            'email_autoresponder_id' => $this->email_autoresponder_id
+        ), 'isssi', 'i' );
+    }
+
+    /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'email_autoresponder_id' => $this->email_autoresponder_id
+        ), 'i' );
+    }
+
+    /**
+     * List All
+     *
+     * @param $variables array( $where, $order_by, $limit )
+     * @return EmailAutoresponder[]
+     */
+    public function list_all( $variables ) {
+        // Get the variables
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT `email_autoresponder_id`, `name`, `subject`, `default` FROM `email_autoresponders` WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'EmailAutoresponder' );
+    }
+
+    /**
+     * Count all
+     *
+     * @param array $variables
+     * @return int
+     */
+    public function count_all( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( `email_autoresponder_id` ) FROM `email_autoresponders` WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
     }
 }

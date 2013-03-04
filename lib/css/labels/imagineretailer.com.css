@@ -8,7 +8,7 @@ body { background-color: #A2AAB0 }
 #footer, #footer a { color: #DADFE3 }
 #footer a:hover { color:  #fff }
 #sidebar a.sub { color: #63B0E5 }
-#sidebar a.sub:hover, #sidebar a.sub.selected { background-color: #63B0E5 !important; border-top-color: #ACDB00; border-bottom-color: #0082AD; }
+#sidebar a.sub:hover, #sidebar a.sub.selected, .service img:hover { background-color: #63B0E5 !important; border-top-color: #ACDB00; border-bottom-color: #0082AD; }
 .boxy-wrapper .title-bar, .boxy-footer { background-color: #3C3D40 }
 
 .button { 

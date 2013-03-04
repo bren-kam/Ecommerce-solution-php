@@ -112,6 +112,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
             </div>
             <div class="template-image">
                 <img src="<?php echo ( empty( $email_template->image ) ) ? '/images/emails/default.jpg' : $email_template->image; ?>" id="iTemplateImage<?php echo $email_template->id; ?>" class="selected" width="400" alt="<?php echo $email_template->name; ?>" />
+                <a href="#" class="button choose-template" title="<?php echo _('Choose Template'); ?>"><?php echo _('Choose Template'); ?></a>
             </div>
             <br clear="all" />
         </div>
@@ -148,7 +149,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
         <div id="dCustom_product" class="custom-template<?php if ( empty( $message->type ) || 'product' != $message->type ) echo ' hidden'; ?>">
             <br /><br />
 
-            <h2 style="float:right;width:50%"><?php echo _('Products'); ?></h2>
+            <h2><?php echo _('Products'); ?></h2>
             <br clear="all" /><br />
 
             <div id="dNarrowSearchContainer">
@@ -236,10 +237,10 @@ echo $template->start( _('Send Email'), '../sidebar' );
     </form>
     <?php
     // Do not need to be submitted with the form, simply have to be on the page
-    nonce::field( 'test-message', '_test_message' );
-    nonce::field( 'products-autocomplete', '_autocomplete' );
+    nonce::field( 'test', '_test' );
+    nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
     nonce::field( 'delete-product', '_delete_product' );
-    nonce::field( 'schedule-email', '_schedule_email' );
+    nonce::field( 'schedule', '_schedule' );
     nonce::field( 'get-templates', '_get_templates' );
     nonce::field( 'search', '_search' );
     ?>

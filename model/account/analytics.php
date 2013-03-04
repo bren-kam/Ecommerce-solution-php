@@ -575,7 +575,7 @@ class Analytics {
             try {
                 $this->ga = new GAPI( $ga_username, $ga_password );
             } catch ( Exception $e ) {
-                throw new ModelException( $e->getMessage(), $e, $e->getCode() );
+                throw new ModelException( $e->getMessage(), $e->getCode(), $e );
             }
         } else {
             $this->ga = new GAPI( Config::key('ga-username'), Config::key('ga-password') );
@@ -583,4 +583,6 @@ class Analytics {
 
         $this->ga_profile_id = (int) $ga_profile_id;
     }
+
+    /***** EMAIL MARKETING *****/
 }

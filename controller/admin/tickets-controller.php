@@ -134,11 +134,6 @@ class TicketsController extends BaseController {
             , 54 => '@accounting' // Craig
         );
 
-        $variables = array(
-            $_POST['tTicketSummary']
-            , $_POST['taTicketMessage']
-        );
-
         // Special hash priorities
         $priorities = array(
             1 => '#high' // high priority
