@@ -15,9 +15,16 @@ class FacebookController extends BaseController {
     /**
      * Redirect to Facebook
      *
-     * @return TemplateResponse
+     * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
+        $timezone = $this->user->account->get_settings('timezone');
+        
+        if ( empty( $timezone ) ) {
+            $this->notify( _('Please set your timezone and return to Social Media - Pages.'), false );
+            return new RedirectResponse('/social-media/facebook/settings/');
+        }
+        
         return $this->get_template_response( 'index' )
             ->select( 'facebook-pages', 'view' );
     }
@@ -881,5 +888,3 @@ class FacebookController extends BaseController {
         return $response;
     }
 }
-
-
