@@ -97,7 +97,7 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
     <div id="current-site">
         <?php if ( isset( $user->account ) ) { ?>
         <div class="float-left">
-            <h3><?php echo _('Site'), ': ', $user->account->title; ?></h3>
+            <h3><?php echo _('Site'); ?>: <a href="http://<?php echo $user->account->domain; ?>/" title="<?php echo $user->account->title; ?>" target="_blank"><?php echo $user->account->title; ?></a></h3>
             <?php if ( count( $user->accounts ) > 1 ) { ?>
                 <p><a href="/home/select-account/" class="highlight" title="<?php echo _('Change Account'); ?>">(<?php echo _('Change'); ?>)</a></p>
             <?php } ?>
