@@ -87,7 +87,7 @@ class TicketsController extends BaseController {
         // Set ticket information
         $ticket->user_id = $this->user->id;
         $ticket->assigned_to_user_id = $assigned_to_user_id; // Technical user
-        $ticket->website_id = 0; // Admin side -- no website
+        $ticket->website_id = $this->user->account->id;
         $ticket->summary = $_POST['tTicketSummary'];
         $ticket->message = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['taTicketMessage'] ), array('&') ), true , true ) );
         $ticket->browser_name = $browser['name'];
