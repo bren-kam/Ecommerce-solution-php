@@ -1,6 +1,6 @@
 <?php
 class AccountCategory extends ActiveRecordBase {
-    public $website_id, $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $top, $date_updated;
+    public $website_id, $category_id, $title, $content, $meta_title, $meta_description, $meta_keywords, $image_url, $top, $date_updated;
 
     // Available from other tables
     public $parent_category_id;
@@ -21,7 +21,7 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function get( $account_id, $category_id ) {
         $this->prepare(
-            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id AND wc.`category_id` = :category_id AND wc.`status` = 1"
+            "SELECT wc.`website_id`, wc.`category_id`, IF ( '' = wc.`title`, c.`name`, wc.`title` ) AS title, wc.`content`, wc.`meta_title`, wc.`meta_description`, wc.`meta_keywords`, wc.`image_url`, wc.`top` FROM `website_categories` AS wc LEFT JOIN `categories` AS c ON ( c.`category_id` = wc.`category_id` ) WHERE wc.`website_id` = :account_id AND wc.`category_id` = :category_id AND wc.`status` = 1"
             , 'ii'
             , array( ':account_id' => $account_id, ':category_id' => $category_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -65,11 +65,12 @@ class AccountCategory extends ActiveRecordBase {
             , 'meta_title' => $this->meta_title
             , 'meta_description' => $this->meta_description
             , 'meta_keywords' => $this->meta_keywords
+            , 'image_url' => $this->image_url
             , 'top' => $this->top
         ), array(
             'website_id' => $this->website_id
         , 'category_id' => $this->category_id
-        ), 'sssssi', 'ii' );
+        ), 'ssssssi', 'ii' );
     }
 
     /**
@@ -375,7 +376,7 @@ class AccountCategory extends ActiveRecordBase {
 	 * Get all information of the checklists
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return AccountCategory[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables
@@ -404,36 +405,4 @@ class AccountCategory extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Set Image
-     *
-     * @param string $image
-     */
-    public function set_image( $image ) {
-        $image = $this->_small_image( $image );
-
-		$this->prepare(
-            'INSERT INTO `website_categories` ( `website_id`, `category_id`, `image_url` ) VALUES ( :account_id, :category_id, :image ) ON DUPLICATE KEY UPDATE `image_url` = :image2'
-            , 'iiss'
-            , array(
-                ':account_id' => $this->website_id
-                , ':category_id' => $this->category_id
-                , ':image' => $image
-                , ':image2' => $image
-            )
-        )->query();
-    }
-
-    /**
-     * Small Image
-     *
-     * Turns a product image to its small version (200x200)
-     *
-     * @param string $image
-     * @return string
-     */
-    private function _small_image( $image ) {
-        return preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", $image );
-    }
 }

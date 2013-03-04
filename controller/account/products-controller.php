@@ -741,7 +741,8 @@ class ProductsController extends BaseController {
 
         // Get variables
         $account_category->get( $this->user->account->id, $_GET['cid'] );
-        $account_category->set_image( $_GET['i'] );
+        $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
+        $account_category->save();
 
         $response->check( false, _('Your category image has been set!') );
 
