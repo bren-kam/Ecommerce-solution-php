@@ -849,7 +849,7 @@ class FacebookController extends BaseController {
 
             $data[] = array(
                 $fb_page->name . $actions
-                , dt::adjust_timezone( $fb_page->date_posted, $server_timezone, $timezone, 'F jS, Y g:i a' )
+                , dt::adjust_timezone( $fb_page->date_created, $server_timezone, $timezone, 'F jS, Y g:i a' )
             );
         }
 

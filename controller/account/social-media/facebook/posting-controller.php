@@ -277,7 +277,7 @@ class PostingController extends BaseController {
             $data[] = array(
                 $content . $actions,
                 $status,
-                dt::adjust_timezone( $post->date_created, $server_timezone, $timezone, 'F jS, Y g:i a' )
+                dt::adjust_timezone( $post->date_posted, $server_timezone, $timezone, 'F jS, Y g:i a' )
             );
         }
 
