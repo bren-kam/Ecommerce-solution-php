@@ -729,8 +729,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( !empty( $_GET['i'] ), _('Please choose an image to set') );
-        $response->check( !empty( $_GET['cid'] ), _('Please select a category first') );
+        $response->check( isset( $_GET['i'], $_GET['cid'] ), _('Please choose an image to set') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )

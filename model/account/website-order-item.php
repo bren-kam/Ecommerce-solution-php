@@ -44,7 +44,7 @@ class WebsiteOrderItem extends ActiveRecordBase {
          * @var WebsiteOrderItemOption $option
          */
         foreach ( $item_options_array as $option ) {
-            $item_options[$option->website_order_item_id] = $option;
+            $item_options[$option->website_order_item_id][] = $option;
         }
 
         /**
