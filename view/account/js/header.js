@@ -32,7 +32,7 @@ jQuery(function($) {
 			$('#fCreateTicket').addClass('ajax').ajaxForm({
 				dataType		: 'json',
 				beforeSubmit	: function() {
-					var tTicketSummary = $('#tTicketSummary'), summary = tTicketSummary.val(), taTicket = $('#taTicket'), message = taTicket.val();
+					var tTicketSummary = $('#tTicketSummary'), summary = tTicketSummary.val(), taTicket = $('#taTicketMessage'), message = taTicket.val();
 
 					if( !summary.length || summary == tTicketSummary.attr('tmpval') ) {
 						alert( tTicketSummary.attr('error') );

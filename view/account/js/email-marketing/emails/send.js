@@ -76,7 +76,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			}
 			
 			// It was not cached, get data
-			$.post( '/products/autocomplete/', { '_nonce' : $('#_autocomplete').val(), 'type' : cacheType, 'term' : request['term'], owned : 1 }, function( autocompleteResponse ) {
+			$.post( '/products/autocomplete-owned/', { '_nonce' : $('#_autocomplete_owned').val(), 'type' : cacheType, 'term' : request['term'], owned : 1 }, function( autocompleteResponse ) {
 				// Assign global cache the response data
 				cache[cacheType][request['term']] = autocompleteResponse['suggestions'];
 				
@@ -208,7 +208,7 @@ function resortProducts() {
 function testMessage() {
 	$.blockUI({ timeout: 0, message: '<h1><img src="/images/icons/ajax-loading.gif" alt="Sending Test Email..." width="28" height="28" /><br />Sending test email.<br />This may take 1-2 minutes...</h1>' }); 
 	
-	$.post( '/ajax/email-marketing/emails/test/', { _nonce : $('#_test_message').val(), 'email' : $('#tTestEmail').val(), emid : $('#hEmailMessageID').val() }, function( response ) {
+	$.post( '/email-marketing/emails/test/', { _nonce : $('#_test').val(), 'email' : $('#tTestEmail').val(), emid : $('#hEmailMessageID').val() }, function( response ) {
 		$.unblockUI();
 		ajaxResponse( response );
 	}, 'json' );
@@ -220,7 +220,7 @@ function testMessage() {
 function sendScheduleEmail() {
 	$.blockUI({ timeout: 0, message: '<h1><img src="/images/icons/ajax-loading.gif" alt="Sending Email..." width="28" height="28" /><br />Sending/scheduling your email.<br />This may take 1-2 minutes...</h1>' }); 
 	
-	$.post( '/ajax/email-marketing/emails/schedule/', { _nonce: $('#_schedule_email').val(), emid: $('#hEmailMessageID').val() }, function( response ) {
+	$.post( '/email-marketing/emails/schedule/', { _nonce: $('#_schedule').val(), emid: $('#hEmailMessageID').val() }, function( response ) {
 		// Unblock
 		$.unblockUI();
 		

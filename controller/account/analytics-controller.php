@@ -487,8 +487,65 @@ class AnalyticsController extends BaseController {
      * @return TemplateResponse
      */
     public function email_marketing() {
+        $analytics_email = new AnalyticsEmail();
+        $analytics_email->update_by_account( $this->user->account->id );
+
         return $this->get_template_response( 'email-marketing' )
+            ->add_title( _('Email Marketing') )
             ->select( 'email-marketing' );
+    }
+
+    /**
+     * Email Marketing > Email
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    public function email() {
+        if ( !$this->user->account->email_marketing )
+        	return new RedirectResponse('/analytics/');
+
+        if ( !isset( $_GET['mcid'] ) )
+            return new RedirectResponse('/analytics/email-marketing/');
+
+        $email = new AnalyticsEmail();
+        $email->get_complete( $_GET['mcid'], $this->user->account->id );
+
+        // Get the bar chart
+        $bar_chart = Analytics::bar_chart( $email );
+
+        $this->resources
+            ->css( 'analytics/analytics' )
+            ->javascript( 'swfobject', 'analytics/email' );
+
+        return $this->get_template_response( 'email' )
+            ->add_title( _('Email') . ' | ' . _('Email Marketing') . ' | ' . _('Email Marketing') )
+            ->select( 'email-marketing' )
+            ->set( compact( 'email', 'bar_chart' ) );
+    }
+
+    /**
+     * Email Marketing
+     *
+     * @return CustomResponse
+     */
+    public function email_click_overlay() {
+        if ( !$this->user->account->email_marketing )
+            return new RedirectResponse('/analytics/');
+
+        if ( !isset( $_GET['mcid'] ) )
+            return new RedirectResponse('/analytics/email-marketing/');
+
+        library( 'MCAPI' );
+        $mc = new MCAPI( Config::key('mc-api') );
+        $message = $mc->campaignContent( $_GET['mcid'] );
+
+        if ( $message ) {
+            $html = $message['html'];
+        } else {
+            $html = '<p>' . _('There is no Click Overlay available for this email') . '</p>';
+        }
+
+        return new HtmlResponse( $html );
     }
 
     /***** AJAX *****/
@@ -544,63 +601,34 @@ class AnalyticsController extends BaseController {
     protected function list_emails() {
         // Get response
         $dt = new DataTableResponse( $this->user );
-        $account_page = new AccountPage();
+
+        $analytics_email = new AnalyticsEmail();
 
         // Set Order by
-        $dt->order_by( '`title`', '`status`', '`date_updated`' );
-        $dt->search( array( '`title`' => false ) );
-        $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
+        $dt->order_by( 'em.`subject`', 'ae.`emails_sent`', 'ae.`open`', 'ae.`clicks`', 'em.`date_sent`' );
+        $dt->add_where( ' AND em.`website_id` = ' . (int) $this->user->account->id );
+        $dt->search( array( 'em`subject`' => false ) );
 
-        // Get account pages
-        $account_pages = $account_page->list_all( $dt->get_variables() );
-        $dt->set_row_count( $account_page->count_all( $dt->get_count_variables() ) );
+        // Get items
+        $emails = $analytics_email->list_all( $dt->get_variables() );
+        $dt->set_row_count( $analytics_email->count_all( $dt->get_count_variables() ) );
 
         // Set initial data
         $data = false;
 
-        $can_delete = $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST );
-
-        if ( $can_delete ) {
-            $confirm = _('Are you sure you want to delete this page? This cannot be undone.');
-            $delete_page_nonce = nonce::create( 'delete_page' );
-        }
-
-        $dont_show = array( 'sidebar', 'furniture', 'brands' );
-        $standard_pages = array( 'home', 'financing', 'current-offer', 'contact-us', 'about-us', 'products' );
-
         /**
-         * @var AccountPage $page
-         * @var string $confirm
-         * @var string $delete_page_nonce
+         * @var AnalyticsEmail $email
          */
-        if ( is_array( $account_pages ) )
-        foreach ( $account_pages as $page ) {
-            // We don't want to show all the pages
-            if ( in_array( $page->slug, $dont_show ) )
-                continue;
-
-            $actions = '';
-
-            if ( $can_delete && !in_array( $page->slug, $standard_pages ) ) {
-                $url = url::add_query_arg( array(
-                    '_nonce' => $delete_page_nonce
-                    , 'apid' => $page->id
-                ), '/website/delete-page/' );
-
-               $actions = ' | <a href="' .  $url . '" title="' . _('Delete Page') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
-            }
-
-            $title = ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title;
-
-            $date_update = new DateTime( $page->date_updated );
+        if ( is_array( $emails ) )
+        foreach ( $emails as $email ) {
+            $date = new DateTime( $email->date_sent );
 
             $data[] = array(
-                $title . '<div class="actions">' .
-                    '<a href="http://' . $this->user->account->domain . '/' . $page->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( 'apid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
-                    '</div>'
-                , ( $page->status ) ? _('Visible') : _('Not Visible')
-                , $date_update->format('F jS, Y')
+                '<a href="' . url::add_query_arg( 'mcid', $email->mc_campaign_id, '/analytics/email/' ) . '" title="' . $email->subject . '">' . $email->subject . '</a>'
+                , $email->emails_sent
+                , $email->opens
+                , $email->clicks
+                , $date->format( 'F jS, Y g:i a' )
             );
         }
 

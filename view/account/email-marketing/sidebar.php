@@ -28,7 +28,6 @@
 
    	<a href="/email-marketing/autoresponders/" title="<?php echo _('Autoresponders'); ?>" class="top<?php $template->select('autoresponders'); ?>"><?php echo _('Autoresponders'); ?></a>
    	<?php if ( $template->v('autoresponders') ) { ?>
-   		<a href="/email-marketing/autoresponders/" title="<?php echo _('View'); ?>" class="sub<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
    		<a href="/email-marketing/autoresponders/add-edit/" title="<?php echo _('Add'); ?>" class="sub<?php $template->select('add-edit'); ?>"><?php echo _('Add'); ?></a>
    	<?php } ?>
 

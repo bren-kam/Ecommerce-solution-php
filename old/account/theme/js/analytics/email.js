@@ -43,7 +43,6 @@ jQuery(function($) {
 	});
 });
 
-
 function removeMailChimpQueryString( url ) {
 	return url.replace( /utm_source=[^&]+&amp;utm_campaign=[^&]+&amp;utm_medium=[^&]+/, '' ).replace( /\?$/, '' );
 }
