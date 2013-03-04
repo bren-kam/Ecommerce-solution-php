@@ -1200,6 +1200,42 @@ class ProductsController extends BaseController {
      *
      * @return AjaxResponse
      */
+    protected function update_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&dProduct[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 11 );
+
+        // Adjust them if it's not the first page
+        if ( '1' != $_POST['p'] ) {
+        	$increment = ( (int) $_POST['p'] - 1 ) * $_POST['pp'];
+            $new_sequence = array();
+
+        	foreach ( $sequence as $index => $product_id ) {
+        		$new_sequence[$index + $increment] = $product_id;
+        	}
+
+        	$sequence = $new_sequence;
+        }
+
+        $account_product = new AccountProduct();
+        $account_product->update_sequence( $this->user->account->id, $sequence );
+
+        return $response;
+    }
+
+    /**
+     * Update Brand Sequence
+     *
+     * @return AjaxResponse
+     */
     protected function update_brand_sequence() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
