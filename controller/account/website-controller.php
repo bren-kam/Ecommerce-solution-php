@@ -257,7 +257,7 @@ class WebsiteController extends BaseController {
          * @var Category $category
          */
         foreach ( $categories_array as $category ) {
-            if ( !$category->has_parent() || !in_array( $category->id, $website_category_ids ) )
+            if ( !$category->has_children() || !in_array( $category->id, $website_category_ids ) )
                 continue;
 
             $categories[] = $category;
