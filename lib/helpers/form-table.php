@@ -457,7 +457,7 @@ class FormTable_Password extends FormTable_Field {
 
         $html .= '</label>';
         $html .= '</td><td>';
-        $html .= '<input type="password" class="tb" name="' . $this->name . '" id="' . $this->id() . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
+        $html .= '<input type="password" class="tb" name="' . current( explode( '|', $this->name ) ) . '" id="' . $this->id() . '" value="' . $this->value . '"' . $this->format_attributes() .' />';
         $html .= '</td></tr>';
 
         return $html;

@@ -799,7 +799,7 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['fn'], $_GET['apid'], $_GET['fn'] ), _('Not enough data to upload image') );
+        $response->check( isset( $_GET['fn'], $_GET['apid'] ), _('Not enough data to upload image') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
