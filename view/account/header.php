@@ -32,7 +32,8 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 
         <div id="log-out">
         <?php if ( $user && $user->id ) { ?>
-		    <?php echo _('Welcome'), ' ', $user->contact_name; ?> | <a href="/logout/" title="<?php echo _('Log Out'); ?>"><?php echo _('Log out'); ?></a>
+		    <p><?php echo _('Welcome'), ' ', $user->contact_name; ?> | <a href="/logout/" title="<?php echo _('Log Out'); ?>"><?php echo _('Log out'); ?></a></p>
+            <p><a href="/settings/" title="<?php echo _('Account Settings'); ?>" class="float-right"><?php echo _('Account Settings'); ?></a></p>
 		<?php } ?>
         </div>
 	</div>
