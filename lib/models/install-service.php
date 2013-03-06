@@ -314,9 +314,10 @@ class InstallService {
     /**
      * Install Trumpia Account
      *
+     * @throws ModelException
+     *
      * @param MobilePlan $mobile_plan
      * @param Account $account
-     * @return bool|string
      */
     public function install_trumpia_account( MobilePlan $mobile_plan, Account $account ) {
         // Create classes
@@ -332,6 +333,7 @@ class InstallService {
         $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
 		$username = format::slug( $account->title );
         $password = security::generate_password();
+
 
         if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )
             $timezone = -5;
@@ -390,7 +392,7 @@ class InstallService {
         $page = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_createCustomer.php', $post_fields );
 		
         if ( !preg_match( '/action="[^"]+"/', $page ) )
-            return _('Failed to create Trumpia customer');
+            throw new ModelException( _('Failed to create Trumpia customer') );
 
         // Get Member's User ID
         $list_page = $curl->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $email ) . '&x=28&y=15' );
@@ -444,7 +446,7 @@ class InstallService {
         $api_creation = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $api_fields );
 		
         if ( !preg_match( '/href="[^"]+"/', $api_creation ) )
-            return _('Failed to create API key');
+            throw new ModelException( _('Failed to create API key') );
 
         // Assign API to All IP Addresses
         $assign_ip_fields = array(
@@ -460,7 +462,7 @@ class InstallService {
         $update_api = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_apiCustomers.php', $assign_ip_fields );
 
         if ( !preg_match( '/action="[^"]+"/', $update_api ) )
-            return _('Failed to update API Key to the right IP address');
+            throw new ModelException( _('Failed to update API Key to the right IP address') );
 
         // Get API Key
         $api_page = $curl->get( 'http://greysuitmobile.com/admin/MemberManagement/apiCustomers.php' );
@@ -503,7 +505,5 @@ class InstallService {
             // Add the subdomain
             $cpanel->add_subdomain( url::domain( $account->domain, false ), 'm', 'public_html' );
         }
-
-        return true;
     }
 }
