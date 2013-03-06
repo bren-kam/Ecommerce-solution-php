@@ -1228,9 +1228,13 @@ class AccountsController extends BaseController {
 
             // Get install service
             $install_service = new InstallService();
-            $result = $install_service->install_trumpia_account( $mobile_plan, $account );
 
-            $response->check( true === $result, $result );
+            // Alert them that there was a problem
+            try {
+                $install_service->install_trumpia_account( $mobile_plan, $account );
+            } catch ( ModelException $e ) {
+                $response->check( false, $e->getMessage() );
+            }
 
             if ( $response->has_error() )
                 return $response;
