@@ -331,21 +331,12 @@ class WebsiteController extends BaseController {
         // Get variables
         $files = $account_file->get_by_account( $this->user->account->id );
         $page->get_by_slug( $this->user->account->id, 'sidebar' );
-        $attachments_array = $attachment->get_by_account_page_ids( array( $page->id ) );
+        $attachments = $attachment->get_by_account_page_ids( array( $page->id ) );
         $settings = $this->user->account->get_settings( 'sidebar-image-width', 'images-alt' );
 
         // Do stuff with variables
         $dimensions = ( empty( $settings['sidebar-image-width'] ) ) ? '' : _('Width') . ': ' . $settings['sidebar-image-width'];
         $images_alt = '1' == $settings['images-alt'];
-
-        $attachments = array();
-
-        /**
-         * @var AccountPageAttachment $a
-         */
-        foreach( $attachments_array as $a ) {
-            $attachments[$a->key] = $a;
-        }
 
         $this->resources
             ->css( 'website/website-sidebar' )
