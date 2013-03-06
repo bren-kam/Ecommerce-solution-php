@@ -135,13 +135,12 @@ class WebsiteController extends BaseController {
                     ->javascript('website/pages/contact-us');
 
                 $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' );
-
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
                     $$key = $value;
                 }
 
-                $resources = compact( 'contacts', 'multiple_location_map', 'hide_all_maps' );
+                $resources = compact( 'addresses', 'multiple_location_map', 'hide_all_maps' );
             break;
 
             case 'current-offer':
