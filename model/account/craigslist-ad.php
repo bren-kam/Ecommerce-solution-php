@@ -246,6 +246,80 @@ class CraigslistAd extends ActiveRecordBase {
     }
 
     /**
+     * Get Primus Product IDs
+     *
+     * @return array
+     */
+    protected function get_primus_product_ids() {
+        return $this->prepare(
+            'SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
+            , 'i'
+            , array( ':craigslist_ad_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
+     * Remove Primus Product IDs
+     */
+    protected function remove_primus_product_ids() {
+        $this->prepare(
+            'UPDATE `craigslist_ad_markets` SET `primus_product_id` = 0 WHERE `craigslist_ad_id` = :craigslist_ad_id'
+            , 'i'
+            , array( ':craigslist_ad_id' => $this->id )
+        )->query();
+    }
+
+    /**
+     * Delete primus
+     *
+     * @throws ModelException
+     *
+     * @param Craigslist_API $craigslist
+     */
+    public function delete_from_primus( Craigslist_API $craigslist ) {
+        // Delete old ads and upate the status so that
+        $old_primus_product_ids = $this->get_primus_product_ids();
+
+        if ( is_array( $old_primus_product_ids ) )
+        foreach ( $old_primus_product_ids as $key => $oppid ) {
+            if ( empty( $oppid ) || '0' == $oppid )
+                unset( $old_primus_product_ids[$key] );
+        }
+
+        // See if we have anything to do
+        if ( empty( $old_primus_product_ids ) )
+            return;
+
+        // Make sure we successfully remove the old IDs
+        if ( !$craigslist->delete_ad_product( $old_primus_product_ids ) )
+            throw new ModelException( _('Failed to delete Primus Ad') );
+
+        // Now update the database
+        $this->date_posted = '0000-00-00 00:00:00';
+        $this->save();
+
+        // Now remove the old primus product_ids
+        $this->remove_primus_product_ids();
+    }
+
+    /**
+     * Set Craigslist Ad Markets
+     *
+     * @param array $primus_product_ids
+     */
+    protected function set_craigslist_ad_markets( array $primus_product_ids ) {
+        // Update primus product links
+        $statement = $this->prepare_raw( "UPDATE `craigslist_ad_markets` SET `primus_product_id` = :primus_product_id WHERE `craigslist_ad_id` = :craigslist_ad_id AND `craigslist_market_id` = :craigslist_market_id" );
+        $statement->bind_param( ':primus_product_id', $primus_product_id, 'i' )
+            ->bind_value( ':craigslist_ad_id', $this->id, 'i' )
+            ->bind_param( ':craigslist_market_id', $craigslist_market_id, 'i' );
+
+        foreach ( $primus_product_ids as $craigslist_market_id => $primus_product_id ) {
+            $statement->query();
+        }
+    }
+
+    /**
      * Post Craigslist Ad
      *
      * @throws ModelException
@@ -420,80 +494,5 @@ class CraigslistAd extends ActiveRecordBase {
         $this->save();
 
         $this->set_craigslist_ad_markets( $primus_product_ids );
-    }
-
-
-    /**
-     * Get Primus Product IDs
-     *
-     * @return array
-     */
-    protected function get_primus_product_ids() {
-        return $this->prepare(
-            'SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
-            , 'i'
-            , array( ':craigslist_ad_id' => $this->id )
-        )->get_col();
-    }
-
-    /**
-     * Remove Primus Product IDs
-     */
-    protected function remove_primus_product_ids() {
-        $this->prepare(
-            'UPDATE `craigslist_ad_markets` SET `primus_product_id` = 0 WHERE `craigslist_ad_id` = :craigslist_ad_id'
-            , 'i'
-            , array( ':craigslist_ad_id' => $this->id )
-        )->query();
-    }
-
-    /**
-     * Delete primus
-     *
-     * @throws ModelException
-     *
-     * @param Craigslist_API $craigslist
-     */
-    public function delete_from_primus( Craigslist_API $craigslist ) {
-        // Delete old ads and upate the status so that
-        $old_primus_product_ids = $this->get_primus_product_ids();
-
-        if ( is_array( $old_primus_product_ids ) )
-        foreach ( $old_primus_product_ids as $key => $oppid ) {
-            if ( empty( $oppid ) || '0' == $oppid )
-                unset( $old_primus_product_ids[$key] );
-        }
-
-        // See if we have anything to do
-        if ( empty( $old_primus_product_ids ) )
-            return;
-
-        // Make sure we successfully remove the old IDs
-        if ( !$craigslist->delete_ad_product( $old_primus_product_ids ) )
-            throw new ModelException( _('Failed to delete Primus Ad') );
-
-        // Now update the database
-        $this->date_posted = '0000-00-00 00:00:00';
-        $this->save();
-
-        // Now remove the old primus product_ids
-        $this->remove_primus_product_ids();
-    }
-
-    /**
-     * Set Craigslist Ad Markets
-     *
-     * @param array $primus_product_ids
-     */
-    protected function set_craigslist_ad_markets( $primus_product_ids ) {
-        // Update primus product links
-        $statement = $this->prepare_raw( "UPDATE `craigslist_ad_markets` SET `primus_product_id` = :primus_product_id WHERE `craigslist_ad_id` = :craigslist_ad_id AND `craigslist_market_id` = :craigslist_market_id" );
-        $statement->bind_param( ':primus_product_id', $primus_product_id, 'i' )
-            ->bind_value( ':craigslist_ad_id', $this->id, 'i' )
-            ->bind_param( ':craigslist_market_id', $craigslist_market_id, 'i' );
-
-        foreach ( $primus_product_ids as $craigslist_market_id => $primus_product_id ) {
-            $statement->query();
-        }
     }
 }

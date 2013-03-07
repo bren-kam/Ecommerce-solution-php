@@ -442,6 +442,42 @@ class CraigslistAdTest extends BaseDatabaseTest {
     }
 
     /**
+     * Set Craigslist Ad Markets
+     */
+    public function testSetCraigslistAdMarkets() {
+        // Get protected method
+        $class = new ReflectionClass('CraigslistAd');
+        $method = $class->getMethod('set_craigslist_ad_markets');
+        $method->setAccessible(true);
+
+        // Declare variables
+        $craigslist_ad_id = -7;
+        $craigslist_market_ads = array(
+            -2 => -12
+            , -4 => -14
+            , -6 => -16
+        );
+
+        // Set the ID
+        $this->craigslist_ad->id = $craigslist_ad_id;
+
+        // Insert a few craigslist_market_ads
+        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -2 ), ( $craigslist_ad_id, -4 ), ( $craigslist_ad_id, -6 )" );
+
+        // Set primus ads
+        $method->invokeArgs( $this->craigslist_ad, array( $craigslist_market_ads ) );
+
+        // Get primus product_ids
+        $primus_product_ids = $this->db->get_col( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `primus_product_id` DESC" );
+
+        // Make sure they're equal
+        $this->assertEquals( array_values( $craigslist_market_ads ), $primus_product_ids );
+
+        // Clean Up
+        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {
