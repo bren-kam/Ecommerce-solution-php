@@ -136,7 +136,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test listing all products
+     * List All
      */
     public function testListAll() {
         $user = new User();
@@ -161,7 +161,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test counting the products
+     * Count All
      */
     public function testCountAll() {
         $user = new User();
