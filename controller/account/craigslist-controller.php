@@ -77,7 +77,7 @@ class CraigslistController extends BaseController {
                 }
 
                 // Reset headlines
-                $ad->remove_headlines();
+                $ad->delete_headlines();
                 $ad->add_headlines( $_POST['tHeadlines'] );
 
                 // Set markets

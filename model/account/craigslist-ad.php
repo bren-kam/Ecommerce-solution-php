@@ -22,17 +22,6 @@ class CraigslistAd extends ActiveRecordBase {
     }
 
     /**
-     * Get Complete
-     *
-     * @param int $craigslist_ad_id
-     * @param int $account_id
-     */
-    public function get_complete( $craigslist_ad_id, $account_id ) {
-        $this->get( $craigslist_ad_id, $account_id );
-        $this->craigslist_markets = $this->get_markets();
-    }
-
-    /**
      * Get
      *
      * @param int $craigslist_ad_id
@@ -55,6 +44,30 @@ class CraigslistAd extends ActiveRecordBase {
 
         $this->id = $this->craigslist_ad_id;
         $this->headlines = explode( '`', $this->headlines );
+    }
+
+    /**
+     * Get Market Ids
+     *
+     * @return array
+     */
+    protected function get_markets() {
+        return $this->prepare(
+            'SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
+            , 'i'
+            , array( ':craigslist_ad_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
+     * Get Complete
+     *
+     * @param int $craigslist_ad_id
+     * @param int $account_id
+     */
+    public function get_complete( $craigslist_ad_id, $account_id ) {
+        $this->get( $craigslist_ad_id, $account_id );
+        $this->craigslist_markets = $this->get_markets();
     }
 
     /**
@@ -90,17 +103,6 @@ class CraigslistAd extends ActiveRecordBase {
     }
 
     /**
-     * Remove Headlines
-     */
-    public function remove_headlines() {
-        $this->prepare(
-            'DELETE FROM `craigslist_ad_headlines` WHERE `craigslist_ad_id` = :craigslist_ad_id'
-            , 'i'
-            , array( ':craigslist_ad_id' => $this->id )
-        )->query();
-    }
-
-    /**
      * Add Headlines
      *
      * @param array $headlines
@@ -120,7 +122,7 @@ class CraigslistAd extends ActiveRecordBase {
         $value_count = count( $values );
 
         // Make sure we have something to do
-        if ( 0 <= $value_count )
+        if ( 0 == $value_count )
             return;
 
         $value_string = substr( str_repeat( ',( ' . (int) $this->id . ', ? )', $value_count ), 1 );
@@ -134,46 +136,14 @@ class CraigslistAd extends ActiveRecordBase {
     }
 
     /**
-     * Add Craigslist Markets
-     *
-     * @param array $craigslist_market_ids
+     * Delete Headlines
      */
-    public function set_markets( $craigslist_market_ids ) {
-        // Insert headlines
-        $add_craiglist_market_ids = array();
-
-        // Find out which ones we need to delete
-        foreach ( $craigslist_market_ids as $cmid ) {
-            // We only want to add the ones that we don't have
-            if ( in_array( $cmid, $this->craigslist_markets ) )
-                continue;
-
-            $add_craiglist_market_ids[] = $cmid;
-        }
-
-        // Delete the market ids
-        if ( !empty( $craigslist_market_ids ) )
-            $this->delete_markets( $craigslist_market_ids );
-
-        // If there are no values to add, we're done
-        if ( empty( $add_craiglist_market_ids ) )
-            return;
-
-        // Add Markets
-        $this->add_markets( $add_craiglist_market_ids );
-    }
-
-    /**
-     * Get Market Ids
-     *
-     * @return array
-     */
-    protected function get_markets() {
-        return $this->prepare(
-            'SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
+    public function delete_headlines() {
+        $this->prepare(
+            'DELETE FROM `craigslist_ad_headlines` WHERE `craigslist_ad_id` = :craigslist_ad_id'
             , 'i'
             , array( ':craigslist_ad_id' => $this->id )
-        )->get_col();
+        )->query();
     }
 
     /**
@@ -200,18 +170,44 @@ class CraigslistAd extends ActiveRecordBase {
     /**
      * Delete Market IDs
      *
-     * @param array $craigslist_market_ids
+     * @param array $craigslist_market_id_exceptions
      */
-    protected function delete_markets( $craigslist_market_ids ) {
-        foreach ( $craigslist_market_ids as &$cmid ) {
+    protected function delete_markets( array $craigslist_market_id_exceptions ) {
+        foreach ( $craigslist_market_id_exceptions as &$cmid ) {
             $cmid = (int) $cmid;
         }
 
         $this->prepare(
-            'DELETE FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id AND `craigslist_market_id` NOT IN (' . implode( ',', $craigslist_market_ids ) . ') '
+            'DELETE FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id AND `craigslist_market_id` NOT IN (' . implode( ',', $craigslist_market_id_exceptions ) . ') '
             , 'i'
-            , array( ':craiglist_ad_id' => $this->id )
+            , array( ':craigslist_ad_id' => $this->id )
         )->query();
+    }
+
+    /**
+     * Add Craigslist Markets
+     *
+     * @param array $craigslist_market_ids
+     */
+    public function set_markets( $craigslist_market_ids ) {
+        // Insert headlines
+        $add_craiglist_market_ids = array();
+
+        // Find out which ones we need to add
+        foreach ( $craigslist_market_ids as $cmid ) {
+            // We only want to add the ones that we don't have
+            if ( in_array( $cmid, $this->craigslist_markets ) )
+                continue;
+
+            $add_craiglist_market_ids[] = $cmid;
+        }
+
+        // Delete the market ids
+        $this->delete_markets( $craigslist_market_ids );
+
+        // If there are no values to add, we're done
+        if ( !empty( $add_craiglist_market_ids ) )
+            $this->add_markets( $add_craiglist_market_ids );
     }
 
     /**
@@ -426,6 +422,31 @@ class CraigslistAd extends ActiveRecordBase {
         $this->set_craigslist_ad_markets( $primus_product_ids );
     }
 
+
+    /**
+     * Get Primus Product IDs
+     *
+     * @return array
+     */
+    protected function get_primus_product_ids() {
+        return $this->prepare(
+            'SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
+            , 'i'
+            , array( ':craigslist_ad_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
+     * Remove Primus Product IDs
+     */
+    protected function remove_primus_product_ids() {
+        $this->prepare(
+            'UPDATE `craigslist_ad_markets` SET `primus_product_id` = 0 WHERE `craigslist_ad_id` = :craigslist_ad_id'
+            , 'i'
+            , array( ':craigslist_ad_id' => $this->id )
+        )->query();
+    }
+
     /**
      * Delete primus
      *
@@ -433,7 +454,7 @@ class CraigslistAd extends ActiveRecordBase {
      *
      * @param Craigslist_API $craigslist
      */
-    public function delete_from_primus( $craigslist ) {
+    public function delete_from_primus( Craigslist_API $craigslist ) {
         // Delete old ads and upate the status so that
         $old_primus_product_ids = $this->get_primus_product_ids();
 
@@ -457,30 +478,6 @@ class CraigslistAd extends ActiveRecordBase {
 
         // Now remove the old primus product_ids
         $this->remove_primus_product_ids();
-    }
-
-    /**
-     * Get Primus Product IDs
-     *
-     * @return array
-     */
-    protected function get_primus_product_ids() {
-        return $this->prepare(
-            'SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = :craigslist_ad_id'
-            , 'i'
-            , array( ':craigslist_ad_id' => $this->id )
-        )->get_col();
-    }
-
-    /**
-     * Remove Primus Product IDs
-     */
-    protected function remove_primus_product_ids() {
-        $this->prepare(
-            'UPDATE `craigslist_ad_markets` SET `primus_product_id` = 0 WHERE `craigslist_ad_id` :craigslist_ad_id'
-            , 'i'
-            , array( ':craiglist_ad_id' => $this->id )
-        )->query();
     }
 
     /**
