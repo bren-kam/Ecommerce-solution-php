@@ -17,9 +17,30 @@ class WebsiteOrderItemOptionTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test
+     * Get By Order
      */
-    public function testReplace() {
+    public function testGetByOrder() {
+        // Set variables
+        $website_order_id = -3;
+
+        // Insert website order item
+        $website_order_item_id = $this->db->insert( 'website_order_items', array(
+            'website_order_id' => $website_order_id
+        ), 'i' );
+
+        // Create option
+        $this->db->insert( 'website_order_item_options', array(
+            'website_order_item_id' => $website_order_item_id
+        ), 'i' );
+
+        // Get options
+        $options = $this->website_order_item_option->get_by_order( $website_order_id );
+
+        $this->assertTrue( current( $options ) instanceof WebsiteOrderItemOption );
+
+        // Clean up
+        $this->db->delete( 'website_order_items', array( 'website_order_id' => $website_order_id ), 'i' );
+        $this->db->delete( 'website_order_item_options', array( 'website_order_item_id' => $website_order_item_id ), 'i' );
     }
 
     /**
