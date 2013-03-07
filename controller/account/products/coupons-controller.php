@@ -40,7 +40,7 @@ class CouponsController extends BaseController {
         $js_validation = $v->js_validation();
 
         if ( isset( $_GET['wcid'] ) )
-            $coupon->get( $this->user->account->id, $_GET['wcid'] );
+            $coupon->get( $_GET['wcid'], $this->user->account->id );
 
         $errs = '';
 
@@ -69,7 +69,7 @@ class CouponsController extends BaseController {
                 $coupon->delete_free_shipping_methods();
 
                 if ( isset( $_POST['cbFreeShippingMethods'] ) )
-                    $coupon->set_free_shipping_methods( $_POST['cbFreeShippingMethods'] );
+                    $coupon->add_free_shipping_methods( $_POST['cbFreeShippingMethods'] );
 
                 $this->notify( _('Your coupon has been created/updated successfully!') );
             }
@@ -154,7 +154,7 @@ class CouponsController extends BaseController {
 
         // Get ticket comment
         $website_coupon = new WebsiteCoupon();
-        $website_coupon->get( $this->user->account->id, $_GET['wcid'] );
+        $website_coupon->get( $_GET['wcid'], $this->user->account->id );
 
         // Then delete
         $website_coupon->remove();

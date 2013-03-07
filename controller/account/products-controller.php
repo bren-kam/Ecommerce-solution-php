@@ -43,11 +43,9 @@ class ProductsController extends BaseController {
             ->css( 'products/index' )
             ->css_url( Config::resource('jquery-ui') );
 
-        $response = $this->get_template_response( 'index')
+        return $this->get_template_response( 'index')
             ->select( 'sub-products', 'view' )
             ->set( compact( 'categories', 'product_count', 'coupons' ) );
-
-        return $response;
     }
 
     /**
@@ -767,11 +765,11 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product_option = new AccountProductOption();
         $product_option = new ProductOption();
-        $website_coupons = new WebsiteCoupon();
+        $website_coupon = new WebsiteCoupon();
 
         // Get variables
         $account_product->get( $_POST['pid'], $this->user->account->id );
-        $account_product->coupons = $website_coupons->get_by_product( $this->user->account->id, $_POST['pid'] );
+        $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_POST['pid'] );
         $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_POST['pid'] );
         $product_options_array = $product_option->get_by_product( $_POST['pid'] );
 
@@ -851,7 +849,7 @@ class ProductsController extends BaseController {
         $account_product->save();
 
         /***** UPDATE COUPONS *****/
-        $website_coupon->delete_by_product( $this->user->account->id, $account_product->product_id );
+        $website_coupon->delete_relations_by_product( $this->user->account->id, $account_product->product_id );
 
         if ( $coupons ) {
             // Get website coupon IDs

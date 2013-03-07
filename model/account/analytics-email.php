@@ -158,7 +158,7 @@ class AnalyticsEmail extends ActiveRecordBase {
      */
     public function get_emails_without_statistics( $account_id ) {
         return $this->prepare(
-            'SELECT `mc_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = 2 AND `mc_campaign_id` NOT IN ( SELECT ae.`mc_campaign_id` FROM `analytics_emails` AS ae LEFT JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`website_id` = :account_id2 AND `status` = 2 )'
+            'SELECT `mc_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = 2 AND `mc_campaign_id` NOT IN ( SELECT ae.`mc_campaign_id` FROM `analytics_emails` AS ae LEFT JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`website_id` = :account_id2 AND em.`status` = 2 )'
             , 'ii'
             , array( ':account_id' => $account_id, ':account_id2' => $account_id )
         )->get_col();
@@ -168,7 +168,7 @@ class AnalyticsEmail extends ActiveRecordBase {
      * List All
      *
      * @param $variables array( $where, $order_by, $limit )
-     * @return EmailMessage[]
+     * @return AnalyticsEmail[]
      */
     public function list_all( $variables ) {
         // Get the variables
