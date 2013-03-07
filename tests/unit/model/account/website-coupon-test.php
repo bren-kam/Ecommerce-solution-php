@@ -129,6 +129,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
      * Save
      *
      * @depends testCreate
+     * @depends testGet
      */
     public function testSave() {
         // Declare variables

@@ -17,6 +17,90 @@ class CraigslistAdTest extends BaseDatabaseTest {
     }
 
     /**
+     * Get
+     */
+    public function testGet() {
+        // Declare variables
+        $text = 'bla bla bla';
+        $website_id = -3;
+
+        // Create
+        $craigslist_ad_id = $this->db->insert( 'craigslist_ads', array(
+            'website_id' => $website_id
+            , 'text' => $text
+        ), 'is' );
+
+        // Get ad
+        $this->craigslist_ad->get( $craigslist_ad_id, $website_id );
+
+        // Compare
+        $this->assertEquals( $text, $this->craigslist_ad->text );
+
+        $this->db->delete( 'craigslist_ads', compact( 'craigslist_ad_id' ), 'i' );
+    }
+
+    /**
+     * Create
+     */
+    public function testCreate() {
+        // Declare variables
+        $original_text = 'bla bla bla';
+        $website_id = -3;
+
+        // Create test
+        $this->craigslist_ad->website_id = $website_id;
+        $this->craigslist_ad->text = $original_text;
+        $this->craigslist_ad->create();
+
+        $this->assertTrue( !is_null( $this->craigslist_ad->id ) );
+
+        // Get the message
+        $text = $this->db->get_var( 'SELECT `text` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ' . (int) $this->craigslist_ad->id );
+
+        $this->assertEquals( $original_text, $text );
+
+        // Delete the note
+        $this->db->delete( 'craigslist_ads', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Save
+     *
+     * @depends testCreate
+     * @depends testGet
+     */
+    public function testSave() {
+        // Declare variables
+        $website_id = -5;
+        $original_text = 'bla bla bla';
+        $new_text = 'alb alb alb';
+
+        // Create test
+        $this->craigslist_ad->website_id = $website_id;
+        $this->craigslist_ad->text = $original_text;
+        $this->craigslist_ad->create();
+
+        // Update test
+        $this->craigslist_ad->text = $new_text;
+        $this->craigslist_ad->save();
+
+        // Now check it!
+        $this->craigslist_ad->get( $this->craigslist_ad->id, $website_id );
+
+        $this->assertEquals( $new_text, $this->craigslist_ad->text );
+
+        // Delete the attribute item
+        $this->db->delete( 'craigslist_ads', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Get Markets
+     */
+    public function testGetMarkets() {
+        
+    }
+
+    /**
      * List All
      */
     public function testListAll() {
