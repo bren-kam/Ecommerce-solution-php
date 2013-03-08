@@ -131,11 +131,11 @@ class SettingsController extends BaseController {
 
         // Normal and large
         $logo = $file->upload_image( $result['file_path'], $logo_name, 700, 200, 'websites', $logo_dir );
-        $file->upload_image( $result['file_path'], $logo_name, 700, 700, 'websites', $logo_dir . 'large/' );
+        $file_url = str_replace( 's3.amazonaws.com', 'websites.retailcatalog.us', $file->upload_image( $result['file_path'], $logo_name, 700, 700, 'websites', $logo_dir . 'large/' ) );
 
         // Create account file
         $account_file->website_id = $this->user->account->id;
-        $account_file->file_path = 'http://websites.retailcatalog.us/' . $logo_dir . $logo;
+        $account_file->file_path = $file_url;
         $account_file->create();
 
         // Update account logo

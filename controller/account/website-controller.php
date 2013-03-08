@@ -754,11 +754,11 @@ class WebsiteController extends BaseController {
             return $response;
 
         // Create the different versions we need
-        $file_url = $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
+        $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
 
         // Create the account file
         $account_file->website_id = $this->user->account->id;
-        $account_file->file_path = $file_url;
+        $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
         $account_file->create();
 
         // If they don't have any files, remove the message that is sitting there
@@ -1014,7 +1014,7 @@ class WebsiteController extends BaseController {
 
         // Create the different versions we need
         $video_dir = $this->user->account->id . "/sidebar/";
-        $video_url = $file->upload_file( $result['file_path'], $video_name, $video_dir );
+        $video_url = str_replace( 's3.amazonaws.com', 'websites.retailcatalog.us', $file->upload_file( $result['file_path'], $video_name, $video_dir ) );
 
         // Create account file
         $account_file->website_id = $this->user->account->id;
