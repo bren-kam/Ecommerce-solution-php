@@ -415,7 +415,6 @@ class AccountsController extends BaseController {
             , 'ashley-alternate-folder'
             , 'facebook-url'
             , 'advertising-url'
-            , 'trumpia-api-key'
             , 'trumpia-username'
             , 'trumpia-password'
             , 'facebook-pages'
@@ -437,7 +436,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
-        $ft->add_field( 'text', _('Trumpia API Key'), 'tTrumpiaAPIKey', $settings['trumpia-api-key'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
@@ -462,7 +460,6 @@ class AccountsController extends BaseController {
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
-                , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
                 , 'trumpia-username' => $_POST['tTrumpiaUsername']
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
@@ -502,7 +499,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get trumpia api key
-        $settings = $account->get_settings( 'trumpia-api-key', 'craigslist-customer-id' );
+        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )

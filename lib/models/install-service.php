@@ -472,11 +472,10 @@ class InstallService {
 
         // Update the setting with the API Key. YAY!
         $account->set_settings( array( 
-			'trumpia-api-key' => $api_key
-			, 'trumpia-user-id' => $user_id
+			'trumpia-user-id' => $user_id
 			, 'mobile-plan-id' => $mobile_plan->id 
 			, 'trumpia-username' => $username
-			, 'trupmia-password' => $password
+			, 'trumpia-password' => $password
 		) );
 
         // Now we want to create the home page for mobile
