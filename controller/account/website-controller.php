@@ -739,7 +739,7 @@ class WebsiteController extends BaseController {
         // Instantiate classes
         $file = new File( 'websites' . Config::key('aws-bucket-domain') );
         $account_file = new AccountFile();
-        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v;*mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
+        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
 
         // Change the name
         $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . f::extension( $_GET['qqfile'] );
@@ -969,6 +969,65 @@ class WebsiteController extends BaseController {
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload Sidebar Image
+     *
+     * @return AjaxResponse
+     */
+    public function upload_sidebar_video() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['apid'] ), _('Not enough data to upload video') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+        $account_file = new AccountFile();
+        $uploader = new qqFileUploader( array( 'swf', 'flv', 'mp4', 'f4v' ), 26214400 );
+
+        // Set video
+        $video_name =  'video.' . f::extension( $_GET['qqfile'] );
+        $page->get( $_GET['apid'], $this->user->account->id );
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload video') );
+        $response->check( $page->id, _('Failed to upload video') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $video_dir = $this->user->account->id . "/sidebar/";
+        $video_url = $file->upload_file( $result['file_path'], $video_name, $video_dir );
+
+        // Create account file
+        $account_file->website_id = $this->user->account->id;
+        $account_file->file_path = $video_url;
+        $account_file->create();
+
+        // Create the account attachment
+        $attachment = $attachment->get_by_key( $page->id, 'video' );
+        $attachment->value = $video_url;
+        $attachment->save();
+
+        // Add the response
+        $response->add_response( 'refresh', 1 );
 
         return $response;
     }
