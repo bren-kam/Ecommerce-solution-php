@@ -359,7 +359,7 @@ class ChecklistsController extends BaseController {
 
         $not = ( isset( $_SESSION['checklists']['completed'] ) && '1' == $_SESSION['checklists']['completed'] ) ? 'NOT ' : '';
 
-        $dt->add_where( " AND c.`checklist_id` {$not}IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )" );
+        $dt->add_where( " AND c.`checklist_id` {$not}IN ( SELECT cwi.`checklist_id` FROM `checklist_website_items` AS cwi LEFT JOIN `checklist_items` AS ci ON ( ci.`checklist_item_id` = cwi.`checklist_item_id` ) WHERE cwi.`checked` = 0 AND ci.`status` = 1 )" );
 
         // If they are below 8, that means they are a partner
 		if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
