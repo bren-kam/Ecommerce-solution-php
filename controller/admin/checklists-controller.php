@@ -77,7 +77,7 @@ class ChecklistsController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function manage() {
+    protected function manage() {
         // Instantiate classes
         $checklist_section = new ChecklistSection();
         $checklist_item = new ChecklistItem();
@@ -236,7 +236,7 @@ class ChecklistsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_note() {
+    protected function add_note() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -281,7 +281,7 @@ class ChecklistsController extends BaseController {
     /**
      * Delete Note
      */
-    public function delete_note() {
+    protected function delete_note() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -445,7 +445,7 @@ class ChecklistsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_section() {
+    protected function add_section() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -492,7 +492,7 @@ class ChecklistsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_item() {
+    protected function add_item() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

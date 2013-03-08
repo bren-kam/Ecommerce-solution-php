@@ -292,7 +292,7 @@ class PostingController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_post() {
+    protected function delete_post() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

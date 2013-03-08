@@ -133,7 +133,7 @@ class GroupsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

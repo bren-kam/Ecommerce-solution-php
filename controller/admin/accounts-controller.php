@@ -674,7 +674,7 @@ class AccountsController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function dns() {
+    protected function dns() {
         // Make sure they can be here
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
@@ -1447,7 +1447,7 @@ class AccountsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function autocomplete() {
+    protected function autocomplete() {
         $ajax_response = new AjaxResponse( $this->verified() );
 
         // Get the right suggestions for the right type

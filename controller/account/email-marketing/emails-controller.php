@@ -148,7 +148,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -176,7 +176,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function save() {
+    protected function save() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -267,7 +267,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function test() {
+    protected function test() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -307,7 +307,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function schedule() {
+    protected function schedule() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

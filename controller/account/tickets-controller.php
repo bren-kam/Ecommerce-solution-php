@@ -140,7 +140,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_to_ticket() {
+    protected function upload_to_ticket() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -211,7 +211,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_upload() {
+    protected function delete_upload() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

@@ -99,7 +99,7 @@ class PostingController extends BaseController {
      *
      * @return RedirectResponse
      */
-    public function settings() {
+    protected function settings() {
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, false, array( 'scope' => 'manage_pages,publish_stream' ) );
 
         // Redirect to correct location

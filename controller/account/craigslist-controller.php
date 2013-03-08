@@ -170,7 +170,7 @@ class CraigslistController extends BaseController {
     /**
      * Delete
      */
-    public function delete() {
+    protected function delete() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -204,7 +204,7 @@ class CraigslistController extends BaseController {
     /**
      * Copy
      */
-    public function copy() {
+    protected function copy() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -239,7 +239,7 @@ class CraigslistController extends BaseController {
     /**
      * Load Product
      */
-    public function load_product() {
+    protected function load_product() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

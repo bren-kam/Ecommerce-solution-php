@@ -64,7 +64,7 @@ class EmailMarketingController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function settings() {
+    protected function settings() {
          // Instantiate classes
         $form = new FormTable( 'fSettings' );
 

@@ -82,7 +82,7 @@ class FacebookController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function choose() {
+    protected function choose() {
         // Make Sure they can only get here when they select a page
         if ( !isset( $_GET['smfbpid'] ) )
             return new RedirectResponse('/social-media/facebook/');
@@ -864,7 +864,7 @@ class FacebookController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

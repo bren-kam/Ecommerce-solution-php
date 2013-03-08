@@ -140,7 +140,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

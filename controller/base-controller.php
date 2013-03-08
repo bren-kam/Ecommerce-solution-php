@@ -98,7 +98,7 @@ abstract class BaseController {
      * @param string $message
      * @param bool $success
      */
-    public function notify( $message, $success = true ) {
+    protected function notify( $message, $success = true ) {
         $notification = new Notification();
         $notification->user_id = $this->user->user_id;
         $notification->message = $message;

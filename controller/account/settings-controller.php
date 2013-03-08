@@ -98,7 +98,7 @@ class SettingsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_logo() {
+    protected function upload_logo() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

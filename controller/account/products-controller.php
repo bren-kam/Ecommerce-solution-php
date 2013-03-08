@@ -428,6 +428,38 @@ class ProductsController extends BaseController {
             ->set( array( 'top_brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
     }
 
+    /**
+     * Export
+     *
+     * @return CsvResponse
+     */
+    protected function export() {
+        // Get the email list ID
+        $email_list_id = ( isset( $_GET['elid'] ) ) ? $_GET['elid'] : 0;
+
+        $where = ' AND e.`status` = 1 AND e.`website_id` = ' . (int) $this->user->account->id;
+
+        if ( $email_list_id )
+            $where .= ' AND ea.`email_list_id` = ' . (int) $email_list_id;
+
+        // Get subscribers
+        $email = new Email();
+        $subscribers = $email->list_all( array(
+            $where
+            , array()
+            , 'ORDER BY e.`date_created` ASC'
+            , 100000
+        ) );
+
+        $output[]  = array( 'Email', 'Name', 'Phone' );
+
+        foreach ( $subscribers as $subscriber ) {
+            $output[] = array( $subscriber->email, $subscriber->name, $subscriber->phone );
+        }
+
+        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-email-subscribers.csv' );
+    }
+
     /***** AJAX *****/
 
     /**

@@ -88,7 +88,7 @@ class CronsController extends BaseController {
      *
      * @return HtmlResponse
      */
-    public function daily() {
+    protected function daily() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
@@ -113,7 +113,7 @@ class CronsController extends BaseController {
      *
      * @return HtmlResponse
      */
-    public function weekly() {
+    protected function weekly() {
         // Set it as a background job
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
