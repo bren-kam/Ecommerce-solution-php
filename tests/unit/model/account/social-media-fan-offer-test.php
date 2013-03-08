@@ -67,21 +67,19 @@ class SocialMediaFanOfferTest extends BaseDatabaseTest {
         // Declare variables
         $sm_facebook_page_id = -5;
         $before = 'Poke';
-        $new_before = 'ekoP';
 
         // Create
         $this->sm_fan_offer->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_fan_offer->before = $before;
         $this->sm_fan_offer->create();
 
         // Update test
-        $this->sm_fan_offer->before = $new_before;
+        $this->sm_fan_offer->before = $before;
         $this->sm_fan_offer->save();
 
         // Now check it!
         $retrieved_before = $this->db->get_var( "SELECT `before` FROM `sm_fan_offer` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
-        $this->assertEquals( $retrieved_before, $new_before );
+        $this->assertEquals( $retrieved_before, $before );
 
         // Clean up
         $this->db->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );

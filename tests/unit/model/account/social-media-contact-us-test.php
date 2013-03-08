@@ -67,21 +67,19 @@ class SocialMediaContactUsTest extends BaseDatabaseTest {
         // Declare variables
         $sm_facebook_page_id = -5;
         $content = 'Poke';
-        $new_content = 'ekoP';
 
         // Create
         $this->sm_contact_us->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_contact_us->content = $content;
         $this->sm_contact_us->create();
 
         // Update test
-        $this->sm_contact_us->content = $new_content;
+        $this->sm_contact_us->content = $content;
         $this->sm_contact_us->save();
 
         // Now check it!
         $retrieved_content = $this->db->get_var( "SELECT `content` FROM `sm_contact_us` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
-        $this->assertEquals( $retrieved_content, $new_content );
+        $this->assertEquals( $retrieved_content, $content );
 
         // Clean up
         $this->db->delete( 'sm_contact_us', compact( 'sm_facebook_page_id' ), 'i' );

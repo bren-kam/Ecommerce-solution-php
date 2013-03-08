@@ -67,21 +67,19 @@ class SocialMediaCurrentAdTest extends BaseDatabaseTest {
         // Declare variables
         $sm_facebook_page_id = -5;
         $content = 'Poke';
-        $new_content = 'ekoP';
 
         // Create
         $this->sm_current_ad->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_current_ad->content = $content;
         $this->sm_current_ad->create();
 
         // Update test
-        $this->sm_current_ad->content = $new_content;
+        $this->sm_current_ad->content = $content;
         $this->sm_current_ad->save();
 
         // Now check it!
         $retrieved_content = $this->db->get_var( "SELECT `content` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
-        $this->assertEquals( $retrieved_content, $new_content );
+        $this->assertEquals( $retrieved_content, $content );
 
         // Clean up
         $this->db->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
