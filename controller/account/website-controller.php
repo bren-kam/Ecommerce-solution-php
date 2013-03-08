@@ -3,7 +3,7 @@ class WebsiteController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
-    public function __construct() {
+    protected function __construct() {
         // Pass in the base for all the views
         parent::__construct();
 
@@ -201,7 +201,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function add() {
+    protected function add() {
         $form = new FormTable( 'fAddPage' );
         $form->submit( _('Add') );
 
@@ -276,7 +276,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function edit_category() {
+    protected function edit_category() {
         // Make sure they can be here
         if ( !isset( $_GET['cid'] ) )
             return new RedirectResponse('/website/categories/');
@@ -321,7 +321,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function sidebar() {
+    protected function sidebar() {
         // Initialize classes
         $account_file = new AccountFile();
         $attachment = new AccountPageAttachment();
@@ -354,7 +354,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function banners() {
+    protected function banners() {
         // Initialize classes
         $attachment = new AccountPageAttachment();
         $page = new AccountPage();
@@ -401,7 +401,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function sale() {
+    protected function sale() {
         // Instantiate classes
         $form = new FormTable( 'fSale' );
 
@@ -438,7 +438,7 @@ class WebsiteController extends BaseController {
     /**
      * Room Planner
      */
-    public function room_planner() {
+    protected function room_planner() {
         // Instantiate classes
         $form = new FormTable( 'fRoomPlanner' );
 
@@ -477,7 +477,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function settings() {
+    protected function settings() {
         // Instantiate classes
         $form = new FormTable( 'fSettings' );
 
@@ -694,7 +694,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_page() {
+    protected function delete_page() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -723,7 +723,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_file() {
+    protected function upload_file() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -785,7 +785,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_image() {
+    protected function upload_image() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -878,7 +878,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_sidebar_image() {
+    protected function upload_sidebar_image() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -978,7 +978,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_sidebar_video() {
+    protected function upload_sidebar_video() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1037,7 +1037,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_banner() {
+    protected function upload_banner() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1137,7 +1137,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_file() {
+    protected function delete_file() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1182,7 +1182,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function set_pagemeta() {
+    protected function set_pagemeta() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1217,7 +1217,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function remove_sale_items() {
+    protected function remove_sale_items() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1238,7 +1238,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_attachment_extra() {
+    protected function update_attachment_extra() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1282,7 +1282,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_attachment_status() {
+    protected function update_attachment_status() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1332,7 +1332,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_sidebar_email() {
+    protected function update_sidebar_email() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1361,7 +1361,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function remove_attachment() {
+    protected function remove_attachment() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1421,7 +1421,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_attachment_sequence() {
+    protected function update_attachment_sequence() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

@@ -25,7 +25,7 @@ if ( !empty( $errs ) )
     </div>
     <?php if ( 'home' != $page->slug ) { ?>
     <div id="dPageSlug">
-        <span><strong><?php echo _('Link:'); ?></strong> http://<?php echo $user->account->domain; ?>/<input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb" value="<?php echo $page->slug; ?>" />/</span>
+        <span><strong><?php echo _('Link'); ?>:</strong> http://<?php echo $user->account->domain; ?>/<input type="text" name="tPageSlug" id="tPageSlug" maxlength="50" class="tb" value="<?php echo $page->slug; ?>" />/</span>
     </div>
     <?php } ?>
     <br />
