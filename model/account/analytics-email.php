@@ -24,10 +24,13 @@ class AnalyticsEmail extends ActiveRecordBase {
      * @throws ModelException
      * @param string $mc_campaign_id
      * @param int $account_id
+     * @param MCAPI $mc [optional]
      */
-    public function get_complete( $mc_campaign_id, $account_id ) {
-        library( 'MCAPI' );
-        $mc = new MCAPI( Config::key('mc-api') );
+    public function get_complete( $mc_campaign_id, $account_id, MCAPI $mc = null ) {
+        if ( is_null( $mc ) ) {
+            library( 'MCAPI' );
+            $mc = new MCAPI( Config::key('mc-api') );
+        }
 
         // Get the statistics
         $s = $mc->campaignStats( $mc_campaign_id );
@@ -126,14 +129,17 @@ class AnalyticsEmail extends ActiveRecordBase {
      * @throws ModelException
      *
      * @param int $account_id
+     * @param MCAPI $mc [optional]
      */
-    public function update_by_account( $account_id ) {
+    public function update_by_account( $account_id, MCAPI $mc = null ) {
         $mc_campaign_ids = $this->get_emails_without_statistics( $account_id );
 
         // If there are any statistics to get
         if ( count( $mc_campaign_ids ) > 0 ) {
-            library( 'MCAPI' );
-            $mc = new MCAPI( Config::key('mc-api') );
+            if ( is_null( $mc ) ) {
+                library( 'MCAPI' );
+                $mc = new MCAPI( Config::key('mc-api') );
+            }
 
             // Loop through each one
             foreach ( $mc_campaign_ids as $mc_campaign_id ) {
