@@ -17,9 +17,72 @@ class SocialMediaProductsTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test
+     * Get
      */
-    public function testReplace() {
+    public function testGet() {
+        // Declare variables
+        $sm_facebook_page_id = -5;
+        $fb_page_id = -7;
+
+        // Insert
+        $this->db->insert( 'sm_products', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+
+        // Get
+        $this->sm_products->get( $sm_facebook_page_id );
+
+        $this->assertEquals( $fb_page_id, $this->sm_products->fb_page_id );
+
+        // Clean up
+        $this->db->delete( 'sm_products', compact( 'sm_facebook_page_id' ), 'i' );
+    }
+
+    /**
+     * Test create
+     */
+    public function testCreate() {
+        // Declare variables
+        $sm_facebook_page_id = -5;
+        $key = 'Poke';
+
+        // Create
+        $this->sm_products->sm_facebook_page_id = $sm_facebook_page_id;
+        $this->sm_products->key = $key;
+        $this->sm_products->create();
+
+        // Get
+        $retrieved_key = $this->db->get_var( "SELECT `key` FROM `sm_products` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+
+        $this->assertEquals( $retrieved_key, $this->sm_products->key );
+
+        // Clean up
+        $this->db->delete( 'sm_products', compact( 'sm_facebook_page_id' ), 'i' );
+    }
+
+    /**
+     * Save
+     *
+     * @depends testCreate
+     */
+    public function testSave() {
+        // Declare variables
+        $sm_facebook_page_id = -5;
+        $content = 'Poke';
+
+        // Create
+        $this->sm_products->sm_facebook_page_id = $sm_facebook_page_id;
+        $this->sm_products->create();
+
+        // Update test
+        $this->sm_products->content = $content;
+        $this->sm_products->save();
+
+        // Now check it!
+        $retrieved_content = $this->db->get_var( "SELECT `content` FROM `sm_products` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+
+        $this->assertEquals( $retrieved_content, $content );
+
+        // Clean up
+        $this->db->delete( 'sm_products', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
