@@ -434,30 +434,17 @@ class ProductsController extends BaseController {
      * @return CsvResponse
      */
     protected function export() {
-        // Get the email list ID
-        $email_list_id = ( isset( $_GET['elid'] ) ) ? $_GET['elid'] : 0;
+        // Get the products
+        $account_product = new AccountProduct();
+        $products = $account_product->get_by_account( $this->user->account->id );
 
-        $where = ' AND e.`status` = 1 AND e.`website_id` = ' . (int) $this->user->account->id;
+        $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand' );
 
-        if ( $email_list_id )
-            $where .= ' AND ea.`email_list_id` = ' . (int) $email_list_id;
-
-        // Get subscribers
-        $email = new Email();
-        $subscribers = $email->list_all( array(
-            $where
-            , array()
-            , 'ORDER BY e.`date_created` ASC'
-            , 100000
-        ) );
-
-        $output[]  = array( 'Email', 'Name', 'Phone' );
-
-        foreach ( $subscribers as $subscriber ) {
-            $output[] = array( $subscriber->email, $subscriber->name, $subscriber->phone );
+        foreach ( $products as $product ) {
+            $output[] = array( $product->name, $product->sku, $product->category, $product->brand );
         }
 
-        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-email-subscribers.csv' );
+        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
     }
 
     /***** AJAX *****/
