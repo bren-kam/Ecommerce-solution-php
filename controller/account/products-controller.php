@@ -425,7 +425,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'brands' )
             ->add_title( _('Brands') )
             ->select( 'products', 'brands' )
-            ->set( array( 'top_brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
+            ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );
     }
 
     /**
