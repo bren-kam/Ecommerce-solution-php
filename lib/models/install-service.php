@@ -329,7 +329,15 @@ class InstallService {
         $account_user->get( $account->user_id );
         $account_industries = $account->get_industries();
         $industry->get( current( $account_industries ) );
-        $timezone_object = new DateTimeZone( $account->get_settings( 'timezone' ) );
+        $timezone = $account->get_settings( 'timezone' );
+
+        // If it's empty, set the timezone
+        if ( empty( $timezone ) ) {
+            $timezone = Config::setting('default-timezone');
+            $account->set_settings( array( 'timezone' => $timezone ) );
+        }
+
+        $timezone_object = new DateTimeZone( $timezone );
         $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
 		$username = format::slug( $account->title );
         $password = security::generate_password();
