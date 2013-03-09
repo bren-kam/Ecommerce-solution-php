@@ -50,7 +50,7 @@ class AccountPageAttachment extends ActiveRecordBase {
      * Get by account page ids
      *
      * @param array $account_page_ids
-     * @return array
+     * @return AccountPageAttachment[]
      */
     public function get_by_account_page_ids( array $account_page_ids ) {
         foreach ( $account_page_ids as &$apid ) {

@@ -224,17 +224,21 @@ class InstallService {
         if ( is_array( $template_account_attachments )  )
         foreach ( $template_account_attachments as $taa ) {
 			// Needs to be a value that we can copy
-			if ( 1 != $taa->status || !stristr( $taa->value, 'retailcatalog.us' ) )
+			if ( 1 != $taa->status )
 				continue;
-			
-            $value = $file->copy_file( $account->id, $taa->value, 'websites' );
 
-            if ( $value ) {
-                // Create the link in website files
-                $account_file = new AccountFile();
-                $account_file->website_id = $account->id;
-                $account_file->file_path = $value;
-                $account_file->create();
+            if ( !in_array( $taa->key, array( 'email', 'search' ) ) ) {
+                $value = $file->copy_file( $account->id, $taa->value, 'websites' );
+
+                if ( $value ) {
+                    // Create the link in website files
+                    $account_file = new AccountFile();
+                    $account_file->website_id = $account->id;
+                    $account_file->file_path = $value;
+                    $account_file->create();
+                }
+            } else {
+                $value = '';
             }
 
             $new_account_page_attachment = new AccountPageAttachment();
