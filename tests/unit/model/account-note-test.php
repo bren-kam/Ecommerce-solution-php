@@ -78,10 +78,13 @@ class AccountNoteTest extends BaseDatabaseTest {
      * Test get all notes for an account
      */
     public function testGetAll() {
-        // Get the notes
-        $notes = $this->account_note->get_all( 160 );
+        // Declare variables
+        $account_id = 160; // Connells
 
-        $this->assertTrue( $notes[0] instanceof AccountNote );
+        // Get the notes
+        $notes = $this->account_note->get_all( $account_id );
+
+        $this->assertTrue( current( $notes ) instanceof AccountNote );
     }
 
     /**

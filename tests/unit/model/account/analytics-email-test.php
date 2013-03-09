@@ -61,8 +61,8 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->assertEquals( $subject, $this->analytics_email->subject );
 
         // Clean up
-        $this->db->delete( 'email_messages', array( 'email_message_id' => $email_message_id ), 'i' );
-        $this->db->delete( 'analytics_emails', array( 'mc_campaign_id' => $mc_campaign_id ), 'i' );
+        $this->db->delete( 'email_messages', compact( 'email_message_id' ), 'i' );
+        $this->db->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
     }
 
     /**

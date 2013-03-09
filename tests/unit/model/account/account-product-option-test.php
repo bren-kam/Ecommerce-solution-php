@@ -17,9 +17,17 @@ class AccountProductOptionTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test
+     * Get With List Items
      */
-    public function testReplace() {
+    public function testGetWithListItems() {
+        // Declare variables
+        $website_id = -5;
+        $product_id = -3;
+
+        // Get the notes
+        $notes = $this->account_product_option->get_with_list_items( $website_id, $product_id );
+
+        $this->assertTrue( current( $notes ) instanceof AccountProductOption );
     }
 
     /**
