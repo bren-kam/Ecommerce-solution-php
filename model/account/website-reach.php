@@ -76,8 +76,6 @@ class WebsiteReach extends ActiveRecordBase {
             case 'quote':
                 $type = _('Quote');
             break;
-
-            default:break;
         }
 
         return $type;

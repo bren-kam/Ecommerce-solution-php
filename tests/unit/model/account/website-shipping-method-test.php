@@ -80,31 +80,31 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
     }
 
     /**
-     * Save
-     *
-     * @depends testCreate
-     */
-    public function testSave() {
-        // Declare variables
-        $website_id = -5;
-        $name = 'Grandma Shipping';
+         * Save
+         *
+         * @depends testCreate
+         */
+        public function testSave() {
+            // Declare variables
+            $website_id = -5;
+            $name = 'Grandma Shipping';
 
-        // Create
-        $this->website_shipping_method->website_id = $website_id;
-        $this->website_shipping_method->create();
+            // Create
+            $this->website_shipping_method->website_id = $website_id;
+            $this->website_shipping_method->create();
 
-        // Get
-        $this->website_shipping_method->name = $name;
-        $this->website_shipping_method->save();
+            // Get
+            $this->website_shipping_method->name = $name;
+            $this->website_shipping_method->save();
 
-        // Make sure it's in the database
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
+            // Make sure it's in the database
+            $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
 
-        $this->assertEquals( $name, $retrieved_name );
+            $this->assertEquals( $name, $retrieved_name );
 
-        // Clean up
-        $this->db->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
-    }
+            // Clean up
+            $this->db->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
+        }
 
     /**
      * Remove
