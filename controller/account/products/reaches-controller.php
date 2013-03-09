@@ -39,7 +39,7 @@ class ReachesController extends BaseController {
 
         // Get comments
         $reach_comment = new WebsiteReachComment();
-        $comments = $reach_comment->get_by_reach( $this->user->account->id, $reach->id );
+        $comments = $reach_comment->get_by_reach( $reach->id, $this->user->account->id );
 
         // Get assignable users
         $auth_user_website = new AuthUserWebsite();
