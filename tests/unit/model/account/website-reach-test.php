@@ -81,7 +81,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->website_reach->id = $website_reach_id;
 
         // Create the meta necessary
-        $this->db->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ), ( $website_reach_id, 'product-link', 'http://test.com/' ), ( $website_reach_id, 'product-name', 'goo goo' ), ( $website_reach_id, 'product-sku', '$product_sku' ), ( $website_reach_id, 'type', 'other' )" );
+        $this->db->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ), ( $website_reach_id, 'product-link', 'http://test.com/' ), ( $website_reach_id, 'product-name', 'goo goo' ), ( $website_reach_id, 'product-sku', '$product_sku' )" );
 
         // Get
         $this->website_reach->get_info();
