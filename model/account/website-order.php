@@ -29,21 +29,6 @@ class WebsiteOrder extends ActiveRecordBase {
 
     /**
      * Get
-     *
-     * @param int $website_order_id
-     * @param int $account_id
-     */
-    public function get_complete( $website_order_id, $account_id ) {
-        // Get the main order
-        $this->get( $website_order_id, $account_id );
-
-        // Get items
-        $website_order_item = new WebsiteOrderItem();
-        $this->items = $website_order_item->get_all( $this->id );
-    }
-
-    /**
-     * Get
      * @param int $website_order_id
      * @param int $account_id
      */
@@ -58,22 +43,48 @@ class WebsiteOrder extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $website_order_id
+     * @param int $account_id
+     * @param WebsiteOrderItem $website_order_item [optional for testing]
+     */
+    public function get_complete( $website_order_id, $account_id, WebsiteOrderItem $website_order_item = null ) {
+        // Get the main order
+        $this->get( $website_order_id, $account_id );
+
+        // Get items
+        if ( is_null( $website_order_item ) )
+            $website_order_item = new WebsiteOrderItem();
+
+        $this->items = $website_order_item->get_all( $this->id );
+    }
+
+    /**
      * Save
      */
     public function save() {
         parent::update( array(
-                'status' => $this->status
-            ), array(
-                'website_order_id' => $this->id
-            ), 'i', 'i'
-        );
+            'status' => $this->status
+        ), array(
+            'website_order_id' => $this->id
+        ), 'i', 'i' );
     }
 
     /**
-	 * List Users
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'website_order_id' => $this->id
+        ), 'i' );
+    }
+
+    /**
+	 * List Website Orders
 	 *
 	 * @param $variables array( $where, $order_by, $limit )
-	 * @return array
+	 * @return WebsiteOrder[]
 	 */
 	public function list_all( $variables ) {
         // Get the variables
@@ -102,13 +113,4 @@ class WebsiteOrder extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Remove
-     */
-    public function remove() {
-        $this->delete( array(
-            'website_user_id' => $this->id
-        ), 'i' );
-    }
 }
