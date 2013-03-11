@@ -50,7 +50,7 @@ class TicketsController extends BaseController {
      *
      * @return RedirectResponse|TemplateResponse
      */
-    public function ticket() {
+    protected function ticket() {
         if ( !isset( $_GET['tid'] ) )
             return new RedirectResponse('/tickets/');
 
@@ -231,7 +231,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_comment() {
+    protected function add_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -339,7 +339,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_to_ticket() {
+    protected function upload_to_ticket() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -410,7 +410,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_to_comment() {
+    protected function upload_to_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -473,7 +473,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_comment() {
+    protected function delete_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -527,7 +527,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_upload() {
+    protected function delete_upload() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -564,7 +564,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_assigned_to() {
+    protected function update_assigned_to() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -618,7 +618,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_priority() {
+    protected function update_priority() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -647,7 +647,7 @@ class TicketsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_status() {
+    protected function update_status() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

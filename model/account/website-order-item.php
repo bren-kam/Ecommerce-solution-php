@@ -25,18 +25,35 @@ class WebsiteOrderItem extends ActiveRecordBase {
     }
 
     /**
-     * Get all
+     * Get by order ID
      *
      * @param int $website_order_id
      * @return WebsiteOrderItem[]
      */
-    public function get_all( $website_order_id ) {
+    public function get_by_order( $website_order_id ) {
+        return $this->prepare(
+            'SELECT woi.*, i.`name` AS industry, pi.`image` FROM `website_order_items` AS woi INNER JOIN `products` AS p ON ( p.`product_id` = woi.`product_id` ) INNER JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE woi.`website_order_id` = :website_order_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL )'
+            , 'i'
+            , array( ':website_order_id' => $website_order_id )
+        )->get_results( PDO::FETCH_CLASS, 'WebsiteOrderItem' );
+    }
+
+    /**
+     * Get all
+     *
+     * @param int $website_order_id
+     * @param WebsiteOrderItemOption $website_order_item_option [optional for testing]
+     * @return WebsiteOrderItem[]
+     */
+    public function get_all( $website_order_id, WebsiteOrderItemOption $website_order_item_option = null ) {
         // Get the main order
         $items_array = $this->get_by_order( $website_order_id );
         $items = array();
 
         // Organize options
-        $website_order_item_option = new WebsiteOrderItemOption();
+        if ( is_null( $website_order_item_option ) )
+            $website_order_item_option = new WebsiteOrderItemOption();
+
         $item_options_array = $website_order_item_option->get_by_order( $website_order_id );
         $item_options = array();
 
@@ -44,7 +61,7 @@ class WebsiteOrderItem extends ActiveRecordBase {
          * @var WebsiteOrderItemOption $option
          */
         foreach ( $item_options_array as $option ) {
-            $item_options[$option->website_order_item_id] = $option;
+            $item_options[$option->website_order_item_id][] = $option;
         }
 
         /**
@@ -61,19 +78,5 @@ class WebsiteOrderItem extends ActiveRecordBase {
         }
 
         return $items;
-    }
-
-    /**
-     * Get by order ID
-     *
-     * @param int $website_order_id
-     * @return array
-     */
-    public function get_by_order( $website_order_id ) {
-        return $this->prepare(
-            'SELECT woi.*, i.`name` AS industry, pi.`image` FROM `website_order_items` AS woi INNER JOIN `products` AS p ON ( p.`product_id` = woi.`product_id` ) INNER JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE woi.`website_order_id` = :website_order_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL )'
-            , 'i'
-            , array( ':website_order_id' => $website_order_id )
-        )->get_results( PDO::FETCH_CLASS, 'WebsiteOrderItem' );
     }
 }

@@ -9,3 +9,4 @@
 
 #tFileName { width: 250px }
 #tCurrentLink { width: 350px }
+#ulUploadFile { max-height: 250px; overflow: auto; padding-right: 5px; }

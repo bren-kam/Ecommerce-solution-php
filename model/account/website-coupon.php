@@ -18,10 +18,10 @@ class WebsiteCoupon extends ActiveRecordBase {
     /**
      * Get
      *
-     * @param int $account_id
      * @param int $website_coupon_id
+     * @param int $account_id
      */
-    public function get( $account_id, $website_coupon_id ) {
+    public function get( $website_coupon_id, $account_id ) {
         $this->prepare(
             'SELECT `website_coupon_id`, `website_id`, `name`, `code`, `type`, `amount`, `minimum_purchase_amount`, `store_wide`, `buy_one_get_one_free`, `item_limit`, DATE( `date_start` ) AS date_start, DATE( `date_end` ) AS date_end FROM `website_coupons` WHERE `website_id` = :account_id AND `website_coupon_id` = :website_coupon_id'
             , 'ii'
@@ -145,12 +145,12 @@ class WebsiteCoupon extends ActiveRecordBase {
     }
 
     /**
-     * Set Free Shipping Methods
+     * Add Free Shipping Methods
      *
      * @param array $shipping_methods
      * @return array
      */
-    public function set_free_shipping_methods( array $shipping_methods ) {
+    public function add_free_shipping_methods( array $shipping_methods ) {
         // Create values
         $values = '';
 
@@ -176,12 +176,12 @@ class WebsiteCoupon extends ActiveRecordBase {
     }
 
     /**
-     * Delete by product
+     * Delete relations by product
      *
      * @param int $account_id
      * @param int $product_id
      */
-    public function delete_by_product( $account_id, $product_id ) {
+    public function delete_relations_by_product( $account_id, $product_id ) {
         $this->prepare(
             'DELETE wcr.* FROM `website_coupon_relations` AS wcr LEFT JOIN `website_coupons` AS wc ON ( wc.`website_coupon_id` = wcr.`website_coupon_id` ) WHERE wcr.`product_id` = :product_id AND wc.`website_id` = :account_id'
             , 'ii'

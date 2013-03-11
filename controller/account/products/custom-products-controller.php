@@ -197,7 +197,7 @@ class CustomProductsController extends BaseController {
      *
      * @return RedirectResponse
      */
-    public function clone_product() {
+    protected function clone_product() {
         $product_id = (int) $_GET['pid'];
 
         if ( empty( $product_id ) )
@@ -333,7 +333,7 @@ class CustomProductsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function create() {
+    protected function create() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -359,7 +359,7 @@ class CustomProductsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function get_attribute_items() {
+    protected function get_attribute_items() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() || !isset( $_POST['cid'] ) );
 
@@ -405,7 +405,7 @@ class CustomProductsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_image() {
+    protected function upload_image() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
         $response->check( isset( $_GET['pid'], $_GET['iid'] ), _('Image failed to upload') );
@@ -479,7 +479,7 @@ class CustomProductsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function autocomplete() {
+    protected function autocomplete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

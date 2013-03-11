@@ -19,7 +19,6 @@ class AccountFile extends ActiveRecordBase {
      * @param int $account_file_id
      * @param string $domain
      * @param int $account_id
-     * @return AccountFile
      */
     public function get( $account_file_id, $domain, $account_id ) {
         $this->prepare(
@@ -37,7 +36,6 @@ class AccountFile extends ActiveRecordBase {
 	 * @param string $file_path
      * @param string $domain
      * @param int $account_id
-	 * @return array
 	 */
 	public function get_by_file_path( $file_path, $domain, $account_id ) {
 	    $this->prepare(

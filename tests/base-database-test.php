@@ -9,6 +9,9 @@ define( 'LIB_PATH',  ABS_PATH . 'lib/' );
 // Need registry for Database
 require LIB_PATH . 'helpers/registry.php';
 
+// Need to load libraries for stubbing
+require LIB_PATH . 'misc/functions.php';
+
 // DB class for helping
 require LIB_PATH . 'test/db.php';
 

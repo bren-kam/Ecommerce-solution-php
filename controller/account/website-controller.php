@@ -135,13 +135,12 @@ class WebsiteController extends BaseController {
                     ->javascript('website/pages/contact-us');
 
                 $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' );
-
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
                     $$key = $value;
                 }
 
-                $resources = compact( 'contacts', 'multiple_location_map', 'hide_all_maps' );
+                $resources = compact( 'addresses', 'multiple_location_map', 'hide_all_maps' );
             break;
 
             case 'current-offer':
@@ -202,7 +201,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function add() {
+    protected function add() {
         $form = new FormTable( 'fAddPage' );
         $form->submit( _('Add') );
 
@@ -257,7 +256,7 @@ class WebsiteController extends BaseController {
          * @var Category $category
          */
         foreach ( $categories_array as $category ) {
-            if ( !$category->has_parent() || !in_array( $category->id, $website_category_ids ) )
+            if ( !$category->has_children() || !in_array( $category->id, $website_category_ids ) )
                 continue;
 
             $categories[] = $category;
@@ -277,7 +276,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function edit_category() {
+    protected function edit_category() {
         // Make sure they can be here
         if ( !isset( $_GET['cid'] ) )
             return new RedirectResponse('/website/categories/');
@@ -322,7 +321,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function sidebar() {
+    protected function sidebar() {
         // Initialize classes
         $account_file = new AccountFile();
         $attachment = new AccountPageAttachment();
@@ -331,21 +330,12 @@ class WebsiteController extends BaseController {
         // Get variables
         $files = $account_file->get_by_account( $this->user->account->id );
         $page->get_by_slug( $this->user->account->id, 'sidebar' );
-        $attachments_array = $attachment->get_by_account_page_ids( array( $page->id ) );
+        $attachments = $attachment->get_by_account_page_ids( array( $page->id ) );
         $settings = $this->user->account->get_settings( 'sidebar-image-width', 'images-alt' );
 
         // Do stuff with variables
         $dimensions = ( empty( $settings['sidebar-image-width'] ) ) ? '' : _('Width') . ': ' . $settings['sidebar-image-width'];
         $images_alt = '1' == $settings['images-alt'];
-
-        $attachments = array();
-
-        /**
-         * @var AccountPageAttachment $a
-         */
-        foreach( $attachments_array as $a ) {
-            $attachments[$a->key] = $a;
-        }
 
         $this->resources
             ->css( 'website/website-sidebar' )
@@ -364,7 +354,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function banners() {
+    protected function banners() {
         // Initialize classes
         $attachment = new AccountPageAttachment();
         $page = new AccountPage();
@@ -411,7 +401,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function sale() {
+    protected function sale() {
         // Instantiate classes
         $form = new FormTable( 'fSale' );
 
@@ -448,7 +438,7 @@ class WebsiteController extends BaseController {
     /**
      * Room Planner
      */
-    public function room_planner() {
+    protected function room_planner() {
         // Instantiate classes
         $form = new FormTable( 'fRoomPlanner' );
 
@@ -487,7 +477,7 @@ class WebsiteController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function settings() {
+    protected function settings() {
         // Instantiate classes
         $form = new FormTable( 'fSettings' );
 
@@ -704,7 +694,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_page() {
+    protected function delete_page() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -733,7 +723,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_file() {
+    protected function upload_file() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -749,7 +739,7 @@ class WebsiteController extends BaseController {
         // Instantiate classes
         $file = new File( 'websites' . Config::key('aws-bucket-domain') );
         $account_file = new AccountFile();
-        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v;*mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
+        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
 
         // Change the name
         $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . f::extension( $_GET['qqfile'] );
@@ -764,11 +754,11 @@ class WebsiteController extends BaseController {
             return $response;
 
         // Create the different versions we need
-        $file_url = $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
+        $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
 
         // Create the account file
         $account_file->website_id = $this->user->account->id;
-        $account_file->file_path = $file_url;
+        $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
         $account_file->create();
 
         // If they don't have any files, remove the message that is sitting there
@@ -795,11 +785,11 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_image() {
+    protected function upload_image() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['fn'], $_GET['apid'], $_GET['fn'] ), _('Not enough data to upload image') );
+        $response->check( isset( $_GET['fn'], $_GET['apid'] ), _('Not enough data to upload image') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -888,7 +878,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function upload_sidebar_image() {
+    protected function upload_sidebar_image() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -984,11 +974,70 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Upload Sidebar Image
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_sidebar_video() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['apid'] ), _('Not enough data to upload video') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+        $attachment = new AccountPageAttachment();
+        $page = new AccountPage();
+        $account_file = new AccountFile();
+        $uploader = new qqFileUploader( array( 'swf', 'flv', 'mp4', 'f4v' ), 26214400 );
+
+        // Set video
+        $video_name =  'video.' . f::extension( $_GET['qqfile'] );
+        $page->get( $_GET['apid'], $this->user->account->id );
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload video') );
+        $response->check( $page->id, _('Failed to upload video') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $video_dir = $this->user->account->id . "/sidebar/";
+        $video_url = str_replace( 's3.amazonaws.com', 'websites.retailcatalog.us', $file->upload_file( $result['file_path'], $video_name, $video_dir ) );
+
+        // Create account file
+        $account_file->website_id = $this->user->account->id;
+        $account_file->file_path = $video_url;
+        $account_file->create();
+
+        // Create the account attachment
+        $attachment = $attachment->get_by_key( $page->id, 'video' );
+        $attachment->value = $video_url;
+        $attachment->save();
+
+        // Add the response
+        $response->add_response( 'refresh', 1 );
+
+        return $response;
+    }
+
+    /**
      * Upload Banner
      *
      * @return AjaxResponse
      */
-    public function upload_banner() {
+    protected function upload_banner() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1088,7 +1137,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_file() {
+    protected function delete_file() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1133,7 +1182,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function set_pagemeta() {
+    protected function set_pagemeta() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1168,7 +1217,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function remove_sale_items() {
+    protected function remove_sale_items() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1189,7 +1238,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_attachment_extra() {
+    protected function update_attachment_extra() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1233,7 +1282,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_attachment_status() {
+    protected function update_attachment_status() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1283,7 +1332,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_sidebar_email() {
+    protected function update_sidebar_email() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1312,7 +1361,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function remove_attachment() {
+    protected function remove_attachment() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -1372,7 +1421,7 @@ class WebsiteController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_attachment_sequence() {
+    protected function update_attachment_sequence() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

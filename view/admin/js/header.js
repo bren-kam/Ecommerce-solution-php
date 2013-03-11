@@ -21,7 +21,6 @@ jQuery(function($) {
 		}
 
 		head.js( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', '/resources/js_single/?f=fileuploader', function() {
-            // , '/resources/js_single/?f=underscore', '/resources/js_single/?f=jquery.elastic', '/resources/js_single/?f=jquery.mentionsInput'
 			a.addClass('loaded');
 
 			// If exists, and they want to cache it use it
@@ -66,20 +65,6 @@ jQuery(function($) {
                     ajaxResponse( responseJSON );
                 }
             });
-
-            /*$('#tTicketSummary, #taTicketMessage').mentionsInput({
-                onDataRequest:function (mode, query, callback) {
-                    var data = [
-                        { id: 247, name: 'Sales' }
-                        , { id: 73, name: 'Products' }
-                        , { id: 54, name: 'Accounting' }
-                    ];
-
-                    data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
-
-                    callback.call(this, data);
-                }
-            });*/
 		});
 	});
 

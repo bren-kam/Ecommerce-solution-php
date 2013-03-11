@@ -20,7 +20,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
     <div id="narrow-your-search">
         <?php
         nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
-        nonce::field( 'update_website_product_sequence', '_update_website_product_sequence' );
+        nonce::field( 'update_sequence', '_update_sequence' );
         nonce::field( 'get_product_dialog_info', '_get_product_dialog_info' );
         ?>
         <h2 class="col-2 float-left"><?php echo _('Narrow Your Search'); ?></h2>

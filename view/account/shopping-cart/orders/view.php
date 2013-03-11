@@ -49,9 +49,9 @@ if ( !empty( $order->phone ) ) {
     <input type="hidden" id="hOrderID" value="<?php echo $order->id; ?>" />
     <?php nonce::field( 'update_status' ); ?>
 </p><br/><br/>
-<table id="tPricing" width="500">
+<table id="tPricing" style="width:200px;">
     <tr>
-        <td width="20%" style="font-weight:bold;" class="top">
+        <td style="font-weight:bold;" class="top">
             <?php echo _('Subtotal'); ?>:<br />
             <?php echo _('Tax'); ?>:<br />
             <?php echo _('Shipping'); ?>:<br />
@@ -63,7 +63,7 @@ if ( !empty( $order->phone ) ) {
             <br />
             <strong><?php echo _('Total'); ?>:</strong>
         </td>
-        <td width="10%" class="top">
+        <td class="top">
             $<?php echo number_format( $order->total_cost + $order->coupon_discount - $order->shipping_price - $order->tax_price, 2 ); ?><br />
             $<?php echo number_format( $order->tax_price, 2 ); ?><br />
             $<?php echo number_format( $order->shipping_price, 2 ); ?><br />

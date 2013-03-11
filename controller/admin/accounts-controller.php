@@ -415,7 +415,6 @@ class AccountsController extends BaseController {
             , 'ashley-alternate-folder'
             , 'facebook-url'
             , 'advertising-url'
-            , 'trumpia-api-key'
             , 'trumpia-username'
             , 'trumpia-password'
             , 'facebook-pages'
@@ -437,7 +436,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
-        $ft->add_field( 'text', _('Trumpia API Key'), 'tTrumpiaAPIKey', $settings['trumpia-api-key'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
@@ -462,7 +460,6 @@ class AccountsController extends BaseController {
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
-                , 'trumpia-api-key' => $_POST['tTrumpiaAPIKey']
                 , 'trumpia-username' => $_POST['tTrumpiaUsername']
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
@@ -502,7 +499,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get trumpia api key
-        $settings = $account->get_settings( 'trumpia-api-key', 'craigslist-customer-id' );
+        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -677,7 +674,7 @@ class AccountsController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function dns() {
+    protected function dns() {
         // Make sure they can be here
         if ( !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
@@ -1228,9 +1225,13 @@ class AccountsController extends BaseController {
 
             // Get install service
             $install_service = new InstallService();
-            $result = $install_service->install_trumpia_account( $mobile_plan, $account );
 
-            $response->check( true === $result, $result );
+            // Alert them that there was a problem
+            try {
+                $install_service->install_trumpia_account( $mobile_plan, $account );
+            } catch ( ModelException $e ) {
+                $response->check( false, $e->getMessage() );
+            }
 
             if ( $response->has_error() )
                 return $response;
@@ -1446,7 +1447,7 @@ class AccountsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function autocomplete() {
+    protected function autocomplete() {
         $ajax_response = new AjaxResponse( $this->verified() );
 
         // Get the right suggestions for the right type

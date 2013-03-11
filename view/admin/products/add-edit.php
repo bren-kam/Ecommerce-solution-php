@@ -9,10 +9,11 @@
  * @var User $user
  * @var bool|int $product_id
  * @var Product $product
+ * @var Account $account
  * @var array $brands
  * @var array $industries
  * @var DateTime $date
- * @var array $categories
+ * @var Category[] $categories
  * @var array $product_attribute_items
  * @var array $tags
  * @var array $product_images
@@ -20,6 +21,10 @@
  */
 
 $title = ( $product->id ) ? _('Edit') : _('Add');
+
+if ( $account->id )
+    $title .= ' ' . _('Custom');
+
 $title .= ' ' . _('Product');
 
 echo $template->start( $title );
@@ -27,7 +32,6 @@ nonce::field( 'create', '_create_product' );
 nonce::field( 'upload_image', '_upload_image' );
 nonce::field( 'get_attribute_items', '_get_attribute_items' );
 ?>
-
 <form name="fAddEditProduct" id="fAddEditProduct" action="<?php if ( $product->id ) echo '?pid=' . $product->id; ?>" method="post" err="<?php echo _('Products require at least one image to publish'); ?>">
     <div id="right">
         <div class="box">
@@ -218,8 +222,9 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                             <?php
                             foreach ( $categories as $category ) {
                                 $selected = ( $product_id && $category->id == $product->category_id ) ? ' selected="selected"' : '';
+                                $disabled = ( $category->has_children() ) ? ' disabled="disabled"' : '';
                                 ?>
-                                <option value="<?php echo $category->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
+                                <option value="<?php echo $category->id; ?>"<?php echo $selected, $disabled; ?>><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
                             <?php } ?>
                         </select>
                     </td>
@@ -237,6 +242,12 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                     <td><strong><?php echo _('Updated by:'); ?></strong></td>
                     <td><?php echo $product->updated_user; ?></td>
                 </tr>
+                <?php if ( $account->id ) { ?>
+                <tr>
+                    <td><strong><?php echo _('Website:'); ?></strong></td>
+                    <td><?php echo $account->title; ?></td>
+                </tr>
+                <?php } ?>
             </table>
             <br />
             <?php } ?>

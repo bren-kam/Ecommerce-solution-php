@@ -22,12 +22,12 @@ class WebsiteTopBrand extends ActiveRecordBase {
     }
 
     /**
-     * Get Top Brands
+     * Get By Account
      *
      * @param int $account_id
      * @return Brand[]
      */
-    public function get_all( $account_id ) {
+    public function get_by_account( $account_id ) {
         return $this->prepare(
             "SELECT b.* FROM `brands` AS b LEFT JOIN `website_top_brands` AS wtb ON ( wtb.`brand_id` = b.`brand_id` ) WHERE wtb.`website_id` = :account_id ORDER BY wtb.`sequence` ASC"
             , 'i'

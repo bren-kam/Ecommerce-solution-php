@@ -224,17 +224,21 @@ class InstallService {
         if ( is_array( $template_account_attachments )  )
         foreach ( $template_account_attachments as $taa ) {
 			// Needs to be a value that we can copy
-			if ( 1 != $taa->status || !stristr( $taa->value, 'retailcatalog.us' ) )
+			if ( 1 != $taa->status )
 				continue;
-			
-            $value = $file->copy_file( $account->id, $taa->value, 'websites' );
 
-            if ( $value ) {
-                // Create the link in website files
-                $account_file = new AccountFile();
-                $account_file->website_id = $account->id;
-                $account_file->file_path = $value;
-                $account_file->create();
+            if ( !in_array( $taa->key, array( 'email', 'search' ) ) ) {
+                $value = $file->copy_file( $account->id, $taa->value, 'websites' );
+
+                if ( $value ) {
+                    // Create the link in website files
+                    $account_file = new AccountFile();
+                    $account_file->website_id = $account->id;
+                    $account_file->file_path = $value;
+                    $account_file->create();
+                }
+            } else {
+                $value = '';
             }
 
             $new_account_page_attachment = new AccountPageAttachment();
@@ -314,9 +318,10 @@ class InstallService {
     /**
      * Install Trumpia Account
      *
+     * @throws ModelException
+     *
      * @param MobilePlan $mobile_plan
      * @param Account $account
-     * @return bool|string
      */
     public function install_trumpia_account( MobilePlan $mobile_plan, Account $account ) {
         // Create classes
@@ -328,10 +333,19 @@ class InstallService {
         $account_user->get( $account->user_id );
         $account_industries = $account->get_industries();
         $industry->get( current( $account_industries ) );
-        $timezone_object = new DateTimeZone( $account->get_settings( 'timezone' ) );
+        $timezone = $account->get_settings( 'timezone' );
+
+        // If it's empty, set the timezone
+        if ( empty( $timezone ) ) {
+            $timezone = Config::setting('default-timezone');
+            $account->set_settings( array( 'timezone' => $timezone ) );
+        }
+
+        $timezone_object = new DateTimeZone( $timezone );
         $timezone = $timezone_object->getOffset( new DateTime( 'now', $timezone_object ) ) / 3600;
 		$username = format::slug( $account->title );
         $password = security::generate_password();
+
 
         if ( empty( $timezone ) || 0 === $timezone || -12 === $timezone )
             $timezone = -5;
@@ -390,7 +404,7 @@ class InstallService {
         $page = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_createCustomer.php', $post_fields );
 		
         if ( !preg_match( '/action="[^"]+"/', $page ) )
-            return _('Failed to create Trumpia customer');
+            throw new ModelException( _('Failed to create Trumpia customer') );
 
         // Get Member's User ID
         $list_page = $curl->get( 'http://greysuitmobile.com/admin/MemberManagement/memberSearch.php?mode=&plan=&status=&radio_memberSearch=2&search=' . urlencode( $email ) . '&x=28&y=15' );
@@ -444,7 +458,7 @@ class InstallService {
         $api_creation = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_memberDetail.php', $api_fields );
 		
         if ( !preg_match( '/href="[^"]+"/', $api_creation ) )
-            return _('Failed to create API key');
+            throw new ModelException( _('Failed to create API key') );
 
         // Assign API to All IP Addresses
         $assign_ip_fields = array(
@@ -460,7 +474,7 @@ class InstallService {
         $update_api = $curl->post( 'http://greysuitmobile.com/admin/MemberManagement/action/action_apiCustomers.php', $assign_ip_fields );
 
         if ( !preg_match( '/action="[^"]+"/', $update_api ) )
-            return _('Failed to update API Key to the right IP address');
+            throw new ModelException( _('Failed to update API Key to the right IP address') );
 
         // Get API Key
         $api_page = $curl->get( 'http://greysuitmobile.com/admin/MemberManagement/apiCustomers.php' );
@@ -470,11 +484,10 @@ class InstallService {
 
         // Update the setting with the API Key. YAY!
         $account->set_settings( array( 
-			'trumpia-api-key' => $api_key
-			, 'trumpia-user-id' => $user_id
+			'trumpia-user-id' => $user_id
 			, 'mobile-plan-id' => $mobile_plan->id 
 			, 'trumpia-username' => $username
-			, 'trupmia-password' => $password
+			, 'trumpia-password' => $password
 		) );
 
         // Now we want to create the home page for mobile
@@ -503,7 +516,5 @@ class InstallService {
             // Add the subdomain
             $cpanel->add_subdomain( url::domain( $account->domain, false ), 'm', 'public_html' );
         }
-
-        return true;
     }
 }

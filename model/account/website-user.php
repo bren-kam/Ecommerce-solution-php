@@ -83,7 +83,20 @@ class WebsiteUser extends ActiveRecordBase {
      * @param string $password
      */
     public function set_password( $password ) {
-        parent::update( array( 'password' => md5( $password ) ), array( 'website_user_id' => $this->id ), 's', 'i' );
+        $this->update( array(
+            'password' => md5( $password )
+        ), array(
+            'website_user_id' => $this->id
+        ), 's', 'i' );
+    }
+
+    /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'website_user_id' => $this->id
+        ), 'i' );
     }
 
     /**
@@ -119,13 +132,4 @@ class WebsiteUser extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Remove
-     */
-    public function remove() {
-        $this->delete( array(
-            'website_user_id' => $this->id
-        ), 'i' );
-    }
 }

@@ -9,6 +9,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
     const USER_ID = 353; // Ashley
 
+    // Not used
     protected $testing_sites = array( 78, 123, 124, 134, 168, 186, 190, 243, 291, 292, 317, 318, 327, 335, 337, 354
         , 357, 377, 458, 476, 477, 479, 535, 559, 571, 587, 590, 593, 596, 600, 605, 612, 613, 638, 642, 645, 650, 659
         , 663, 664, 665, 674, 684, 689, 692, 743, 805, 806, 809, 829, 878, 882, 883, 895, 902, 904, 912, 915, 929, 936

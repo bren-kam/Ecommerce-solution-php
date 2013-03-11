@@ -12,7 +12,7 @@
  * @var array $brands
  * @var array $industries
  * @var DateTime $date
- * @var array $categories
+ * @var Category[] $categories
  * @var array $product_attribute_items
  * @var array $tags
  * @var array $product_images
@@ -219,8 +219,9 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                             <?php
                             foreach ( $categories as $category ) {
                                 $selected = ( $product_id && $category->id == $product->category_id ) ? ' selected="selected"' : '';
+                                $disabled = ( $category->has_children() ) ? ' disabled="disabled"' : '';
                                 ?>
-                                <option value="<?php echo $category->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
+                                <option value="<?php echo $category->id; ?>"<?php echo $selected, $disabled; ?>><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
                             <?php } ?>
                         </select>
                     </td>

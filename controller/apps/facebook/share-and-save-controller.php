@@ -77,7 +77,7 @@ class ShareAndSaveController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function tab() {
+    protected function tab() {
         // Setup variables
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, true );
         $share_and_save = new ShareAndSave;
@@ -141,13 +141,12 @@ class ShareAndSaveController extends BaseController {
         return $response;
     }
 
-
     /**
      * Settings
      *
      * @return RedirectResponse
      */
-    public function settings() {
+    protected function settings() {
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
 
         // Redirect to correct location

@@ -96,6 +96,30 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Update the sequence of many products
+     *
+     * @param int $account_id
+     * @param array $product_ids
+     */
+    public function update_sequence( $account_id, array $product_ids ) {
+        // Starting with 0 for a sequence
+        $sequence = 0;
+
+        // Prepare statement
+        $statement = $this->prepare_raw( 'UPDATE `website_products` SET `sequence` = :sequence WHERE `product_id` = :product_id AND `website_id` = :account_id' );
+        $statement->bind_param( ':sequence', $sequence, 'i' )
+            ->bind_param( ':product_id', $product_id, 'i' )
+            ->bind_value( ':account_id', $account_id, 'i' );
+
+        // Loop through the statement and update anything as it needs to be updated
+        foreach ( $product_ids as $product_id ) {
+            $statement->query();
+
+            $sequence++;
+        }
+    }
+
+    /**
 	 * Gets Website Products
 	 *
      * @param int $account_id
