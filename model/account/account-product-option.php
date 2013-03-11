@@ -91,7 +91,7 @@ class AccountProductOption extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values = "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', ' . (float) $product_option['price'] . ', ' . (int) $product_option['required'] . ' )';
+            $values .= "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', ' . (float) $product_option['price'] . ', ' . (int) $product_option['required'] . ' )';
         }
 
         $this->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $values" );
@@ -116,21 +116,23 @@ class AccountProductOption extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values = "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', ' . (float) $product_option_list_item['price'] . ' )';
+            $values .= "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', ' . (float) $product_option_list_item['price'] . ' )';
         }
 
         $this->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price` ) VALUES $values" );
     }
 
     /**
-     * Delete By Product
+     * Delete Website Product Options
      *
      * @param int $account_id
      * @param int $product_id
      */
-    public function delete_by_product( $account_id, $product_id ) {
-        $this->delete_website_product_option_list_items( $account_id, $product_id );
-        $this->delete_website_product_options( $account_id, $product_id );
+    protected function delete_website_product_options( $account_id, $product_id ) {
+        $this->prepare( 'DELETE FROM `website_product_options` WHERE `website_id` = :account_id AND `product_id` = :product_id'
+              , 'ii'
+              , array( ':account_id' => $account_id, ':product_id' => $product_id )
+          )->query();
     }
 
     /**
@@ -147,15 +149,13 @@ class AccountProductOption extends ActiveRecordBase {
     }
 
     /**
-     * Delete Website Product Options
+     * Delete By Product
      *
      * @param int $account_id
      * @param int $product_id
      */
-    protected function delete_website_product_options( $account_id, $product_id ) {
-        $this->prepare( 'DELETE FROM `website_product_options` WHERE `website_id` = :account_id AND `product_id` = :product_id'
-              , 'ii'
-              , array( ':account_id' => $account_id, ':product_id' => $product_id )
-          )->query();
+    public function delete_by_product( $account_id, $product_id ) {
+        $this->delete_website_product_option_list_items( $account_id, $product_id );
+        $this->delete_website_product_options( $account_id, $product_id );
     }
 }
