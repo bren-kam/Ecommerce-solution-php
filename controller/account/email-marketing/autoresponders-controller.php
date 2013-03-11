@@ -18,9 +18,6 @@ class AutorespondersController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        if ( !$this->user->account->email_marketing )
-            return new RedirectResponse('/email-marketing/subscribers/');
-
         return $this->get_template_response( 'index' )
             ->add_title( _('Autoresponders') )
             ->select( 'autoresponders' );

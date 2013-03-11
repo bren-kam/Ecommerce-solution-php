@@ -9,11 +9,14 @@
  * @var bool $success
  * @var int $app_id
  * @var string $url
+ * @var string $admin
  */
 ?>
 
 <div id="content">
 	<?php
+	echo $admin;
+	
     if ( $success )
         echo '<p>Your have been successfully added to our email list!</p>';
 

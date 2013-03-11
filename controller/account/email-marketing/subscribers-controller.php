@@ -128,7 +128,7 @@ class SubscribersController extends BaseController {
      *
      * @return CsvResponse
      */
-    public function export() {
+    protected function export() {
         // Get the email list ID
         $email_list_id = ( isset( $_GET['elid'] ) ) ? $_GET['elid'] : 0;
 
@@ -160,7 +160,7 @@ class SubscribersController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function import() {
+    protected function import() {
         $email_list = new EmailList();
         $email_lists = $email_list->get_by_account( $this->user->account->id );
 
@@ -248,7 +248,7 @@ class SubscribersController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function unsubscribe() {
+    protected function unsubscribe() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -276,7 +276,7 @@ class SubscribersController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function import_subscribers() {
+    protected function import_subscribers() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

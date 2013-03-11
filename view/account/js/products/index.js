@@ -51,7 +51,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	$("#dProductList").sortable( {
 		items		: '.product',
 		update: function () {
-			$.post('/products/update-website-product-sequence/', { _nonce : $('#_update_website_product_sequence').val(), s : $('#dProductList').sortable('serialize'), p : $('#hCurrentPage').val(), pp : $('#hPerPage').val() }, ajaxResponse, 'json' );
+			$.post('/products/update-sequence/', { _nonce : $('#_update_sequence').val(), s : $('#dProductList').sortable('serialize'), p : $('#hCurrentPage').val(), pp : $('#hPerPage').val() }, ajaxResponse, 'json' );
 		},
 		scroll: true,
 		placeholder: 'product-placeholder'

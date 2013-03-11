@@ -61,14 +61,14 @@ class EmailsController extends BaseController {
         }
 
         // Get settings
-        $settings = $this->user->account->get_settings( 'from_name', 'from_email', 'timezone' );
+        $settings = $this->user->account->get_email_settings( 'from_name', 'from_email', 'timezone' );
         $timezone = $settings['timezone'];
         $server_timezone = Config::setting('server-timezone');
 
         // Make sure they don't have any blank settings
         if ( array_search( '', $settings ) ) {
             $this->notify( _('One or more of your email settings has not been set. Please update them and then try again.'), false );
-            //return new RedirectResponse('/email-marketing/settings/');
+            return new RedirectResponse('/email-marketing/settings/');
         }
 
         $this->resources
@@ -148,7 +148,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -176,7 +176,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function save() {
+    protected function save() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -267,7 +267,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function test() {
+    protected function test() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -307,7 +307,7 @@ class EmailsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function schedule() {
+    protected function schedule() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

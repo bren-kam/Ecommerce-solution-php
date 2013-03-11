@@ -36,7 +36,7 @@ class CategoriesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function get() {
+    protected function get() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -139,7 +139,7 @@ class CategoriesController extends BaseController {
      *
      * @return CustomResponse|AjaxResponse
      */
-    public function add_edit() {
+    protected function add_edit() {
         // Get the company_id if there is one
         $category_id = ( isset( $_GET['cid'] ) ) ? (int) $_GET['cid'] : false;
 
@@ -223,7 +223,7 @@ class CategoriesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -255,7 +255,7 @@ class CategoriesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_sequence() {
+    protected function update_sequence() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

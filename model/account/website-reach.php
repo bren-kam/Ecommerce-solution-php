@@ -59,8 +59,6 @@ class WebsiteReach extends ActiveRecordBase {
                 $this->info['Product'] = '<a href="' . $link . '" title="' . $this->meta['product-name'] . '">' . $this->meta['product-name'] . '</a>';
                 $this->info['SKU'] = '<a href="' . $link . '" title="' . $this->meta['product-sku'] . '">' . $this->meta['product-sku'] . '</a>';
             break;
-
-            default:break;
         }
     }
 
@@ -76,8 +74,6 @@ class WebsiteReach extends ActiveRecordBase {
             case 'quote':
                 $type = _('Quote');
             break;
-
-            default:break;
         }
 
         return $type;

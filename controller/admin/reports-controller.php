@@ -100,7 +100,7 @@ class ReportsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function autocomplete() {
+    protected function autocomplete() {
         // Make sure it's verified
         $ajax_response = new AjaxResponse( $this->verified() );
 
@@ -160,7 +160,7 @@ class ReportsController extends BaseController {
      *
      * @return HtmlResponse
      */
-    public function search() {
+    protected function search() {
         if ( !$this->verified() )
             return new HtmlResponse('');
 

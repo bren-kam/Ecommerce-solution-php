@@ -39,11 +39,11 @@ class WebsiteReachComment extends ActiveRecordBase {
     /**
      * Get
      *
-     * @param int $account_id
      * @param int $website_reach_comment_id
+     * @param int $account_id
      * @return WebsiteReachComment
      */
-    public function get( $account_id, $website_reach_comment_id ) {
+    public function get( $website_reach_comment_id, $account_id ) {
         $this->prepare(
             "SELECT wrc.`website_reach_comment_id` FROM `website_reach_comments` AS wrc LEFT JOIN `website_reaches` AS wr ON ( wr.`website_reach_id` = wrc.`website_reach_id` ) WHERE wrc.`website_reach_comment_id` = :website_reach_comment_id AND wr.`website_id` = :account_id ORDER BY wrc.`date_created` DESC"
             , 'ii'
@@ -71,7 +71,9 @@ class WebsiteReachComment extends ActiveRecordBase {
     /**
      * Delete the comment
      */
-    public function delete() {
-        parent::delete( array( 'website_reach_comment_id' => $this->id ), 'i' );
+    public function remove() {
+        $this->delete( array(
+            'website_reach_comment_id' => $this->id
+        ), 'i' );
     }
 }

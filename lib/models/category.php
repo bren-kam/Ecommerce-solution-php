@@ -158,7 +158,7 @@ class Category extends ActiveRecordBase {
             $categories_by_parent = Category::$categories_by_parent;
         }
 
-        return ( $this->has_parent( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : array();
+        return ( $this->has_children( $parent_category_id ) ) ? $categories_by_parent[$parent_category_id] : array();
     }
 
     /**
@@ -203,7 +203,7 @@ class Category extends ActiveRecordBase {
      * @param int $category_id [optional]
      * @return bool
      */
-    public function has_parent( $category_id = NULL ) {
+    public function has_children( $category_id = NULL ) {
         // Get the categories
         $categories_by_parent = Category::$categories_by_parent;
 

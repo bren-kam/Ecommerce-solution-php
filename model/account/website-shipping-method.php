@@ -79,6 +79,15 @@ class WebsiteShippingMethod extends ActiveRecordBase {
     }
 
     /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'website_shipping_method_id' => $this->id
+        ), 'i' );
+    }
+
+    /**
 	 * List Shipping Methods
 	 *
 	 * @param $variables array( $where, $order_by, $limit )
@@ -111,13 +120,4 @@ class WebsiteShippingMethod extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Remove
-     */
-    public function remove() {
-        $this->delete( array(
-            'website_shipping_method_id' => $this->id
-        ), 'i' );
-    }
 }

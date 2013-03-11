@@ -77,7 +77,7 @@ class ChecklistsController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function manage() {
+    protected function manage() {
         // Instantiate classes
         $checklist_section = new ChecklistSection();
         $checklist_item = new ChecklistItem();
@@ -236,7 +236,7 @@ class ChecklistsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_note() {
+    protected function add_note() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -281,7 +281,7 @@ class ChecklistsController extends BaseController {
     /**
      * Delete Note
      */
-    public function delete_note() {
+    protected function delete_note() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -359,7 +359,7 @@ class ChecklistsController extends BaseController {
 
         $not = ( isset( $_SESSION['checklists']['completed'] ) && '1' == $_SESSION['checklists']['completed'] ) ? 'NOT ' : '';
 
-        $dt->add_where( " AND c.`checklist_id` {$not}IN ( SELECT `checklist_id` FROM `checklist_website_items` WHERE `checked` = 0 )" );
+        $dt->add_where( " AND c.`checklist_id` {$not}IN ( SELECT cwi.`checklist_id` FROM `checklist_website_items` AS cwi LEFT JOIN `checklist_items` AS ci ON ( ci.`checklist_item_id` = cwi.`checklist_item_id` ) WHERE cwi.`checked` = 0 AND ci.`status` = 1 )" );
 
         // If they are below 8, that means they are a partner
 		if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
@@ -445,7 +445,7 @@ class ChecklistsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_section() {
+    protected function add_section() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -492,7 +492,7 @@ class ChecklistsController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_item() {
+    protected function add_item() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

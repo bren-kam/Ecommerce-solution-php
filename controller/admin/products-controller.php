@@ -52,6 +52,7 @@ class ProductsController extends BaseController {
         $category = new Category();
         $attribute_item = new AttributeItem();
         $tag = new Tag();
+        $account = new Account();
 
         // Get variables
 
@@ -71,7 +72,6 @@ class ProductsController extends BaseController {
             if ( $this->verified() )
                 $industry->get( $product->industry_id );
 
-            $account = new Account();
             $accounts = $account->get_by_product( $product->id );
         } else {
             $product_attribute_items = $tags = $product_images = $accounts = array();
@@ -80,6 +80,9 @@ class ProductsController extends BaseController {
 
             $title = _('Add');
         }
+
+        if ( $product->website_id > 0 )
+            $account->get( $product->website_id );
 
         $industries_array = $industry->get_all();
         $brands = $brand->get_all();
@@ -188,7 +191,7 @@ class ProductsController extends BaseController {
         $template_response = $this->get_template_response( 'add-edit' )
             ->select( 'products', 'add' )
             ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
+            ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
 
         $this->resources
             ->javascript( 'fileuploader', 'products/add-edit' )

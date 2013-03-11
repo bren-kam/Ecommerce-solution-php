@@ -64,19 +64,19 @@ class EmailMarketingController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function settings() {
+    protected function settings() {
          // Instantiate classes
         $form = new FormTable( 'fSettings' );
 
         // Get settings
-        $settings_array = array( 'from-name', 'from-email', 'timezone', 'remove-header-footer' );
+        $settings_array = array( 'from_name', 'from_email', 'timezone', 'remove-header-footer' );
         $settings = $this->user->account->get_email_settings( $settings_array );
 
         // Create form
-        $form->add_field( 'text', _('From Name'), 'from-name', $settings['from-name'] )
+        $form->add_field( 'text', _('From Name'), 'from_name', $settings['from_name'] )
             ->attribute( 'maxlength', '50' );
 
-        $form->add_field( 'text', _('From Email'), 'from-email', $settings['from-email'] )
+        $form->add_field( 'text', _('From Email'), 'from_email', $settings['from_email'] )
             ->attribute( 'maxlength', '200' )
             ->add_validation( 'email', _('The "From Email" field must contain a valid email' ) );
 

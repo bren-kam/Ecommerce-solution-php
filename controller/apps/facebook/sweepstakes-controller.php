@@ -77,7 +77,7 @@ class SweepstakesController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function tab() {
+    protected function tab() {
         // Setup variables
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI, true );
         $sweepstakes = new Sweepstakes;
@@ -113,7 +113,9 @@ class SweepstakesController extends BaseController {
             $sweepstakes->add_email( $signed_request['page']['id'], $_POST['tName'], $_POST['tEmail'] );
             $success = true;
         }
-
+		
+		$admin = '';
+		
         // Add Admin URL
         if( $signed_request['page']['admin'] ) {
             $admin = '<p><strong>Admin:</strong> <a href="#" onclick="top.location.href=' . "'";
@@ -123,8 +125,6 @@ class SweepstakesController extends BaseController {
                 , 'http://apps.facebook.com/' . self::APP_URI . '/'
             );
             $admin .= "'" . ';">Update Settings</a></p>';
-
-            $tab->content = $admin . $tab->content;
         }
 		
 		// Get page information
@@ -135,6 +135,7 @@ class SweepstakesController extends BaseController {
             ->set_sub_includes( 'facebook/tabs' )
             ->set( array(
                 'sweepstakes' => $tab
+				, 'admin' => $admin
                 , 'success' => $success
                 , 'form' => $form->generate_form()
 				, 'signed_request' => $signed_request
@@ -145,13 +146,12 @@ class SweepstakesController extends BaseController {
         return $response;
     }
 
-
     /**
      * Settings
      *
      * @return RedirectResponse
      */
-    public function settings() {
+    protected function settings() {
         $fb = new Fb( self::APP_ID, self::APP_SECRET, self::APP_URI );
 
         // Redirect to correct location

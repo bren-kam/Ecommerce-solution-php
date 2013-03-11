@@ -34,11 +34,11 @@ class AccountPageAttachment extends ActiveRecordBase {
 	 *
 	 * @param int $account_page_id
 	 * @param string $key
-	 * @return array|AccountPageAttachment
+	 * @return AccountPageAttachment[]|AccountPageAttachment
 	 */
 	public function get_by_key( $account_page_id, $key ) {
 		$attachments = $this->prepare(
-            'SELECT `website_attachment_id`, `key`, `value`, `extra`, `meta`, `status` FROM `website_attachments` WHERE `key` = :key AND `website_page_id` = :account_page_id'
+            'SELECT `website_attachment_id`, `website_page_id`, `key`, `value`, `extra`, `meta`, `sequence`, `status` FROM `website_attachments` WHERE `key` = :key AND `website_page_id` = :account_page_id'
             , 'si'
             , array( ':key' => $key, ':account_page_id' => $account_page_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountPageAttachment' );
@@ -50,7 +50,7 @@ class AccountPageAttachment extends ActiveRecordBase {
      * Get by account page ids
      *
      * @param array $account_page_ids
-     * @return array
+     * @return AccountPageAttachment[]
      */
     public function get_by_account_page_ids( array $account_page_ids ) {
         foreach ( $account_page_ids as &$apid ) {

@@ -62,7 +62,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
 
                     foreach ( $email_lists as $el ) {
                         $disabled = ( 0 == $el->count ) ? ' disabled="disabled"' : '';
-                        $checked = ( isset( $email_list_ids ) && $email_list_ids && in_array( $el['email_list_id'], $email_list_ids ) ) ? ' checked="checked"' : '';
+                        $checked = ( isset( $email_list_ids ) && $email_list_ids && in_array( $el->id, $email_list_ids ) ) ? ' checked="checked"' : '';
 
                         if ( 0 == $el->category_id ) {
                             $options = '<p><input type="checkbox" class="cb mailing-list" id="cbMailingList' . $el->id . '" name="email_lists[]" value="' . $el->id . '"' . $checked . $disabled . ' /> <label for="cbMailingList' . $el->id . '">' . $el->name . ' (' . _('Subscribers') . ': ' . $el->count . ')</label></p>' . $options;

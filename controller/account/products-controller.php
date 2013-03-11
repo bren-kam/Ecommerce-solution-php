@@ -43,11 +43,9 @@ class ProductsController extends BaseController {
             ->css( 'products/index' )
             ->css_url( Config::resource('jquery-ui') );
 
-        $response = $this->get_template_response( 'index')
+        return $this->get_template_response( 'index')
             ->select( 'sub-products', 'view' )
             ->set( compact( 'categories', 'product_count', 'coupons' ) );
-
-        return $response;
     }
 
     /**
@@ -427,7 +425,26 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'brands' )
             ->add_title( _('Brands') )
             ->select( 'products', 'brands' )
-            ->set( array( 'top_brands' => $website_top_brand->get_all( $this->user->account->id ) ) );
+            ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );
+    }
+
+    /**
+     * Export
+     *
+     * @return CsvResponse
+     */
+    protected function export() {
+        // Get the products
+        $account_product = new AccountProduct();
+        $products = $account_product->get_by_account( $this->user->account->id );
+
+        $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand' );
+
+        foreach ( $products as $product ) {
+            $output[] = array( $product->name, $product->sku, $product->category, $product->brand );
+        }
+
+        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
     }
 
     /***** AJAX *****/
@@ -729,8 +746,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( !empty( $_GET['i'] ), _('Please choose an image to set') );
-        $response->check( !empty( $_GET['cid'] ), _('Please select a category first') );
+        $response->check( isset( $_GET['i'], $_GET['cid'] ), _('Please choose an image to set') );
 
         // If there is an error or now user id, return
         if ( $response->has_error() )
@@ -741,7 +757,8 @@ class ProductsController extends BaseController {
 
         // Get variables
         $account_category->get( $this->user->account->id, $_GET['cid'] );
-        $account_category->set_image( $_GET['i'] );
+        $account_category->image_url = preg_replace( '/(.+\/products\/[0-9]+\/)(?:small\/)?([a-zA-Z0-9-.]+)/', "$1small/$2", urldecode( $_GET['i'] ) );
+        $account_category->save();
 
         $response->check( false, _('Your category image has been set!') );
 
@@ -767,11 +784,11 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product_option = new AccountProductOption();
         $product_option = new ProductOption();
-        $website_coupons = new WebsiteCoupon();
+        $website_coupon = new WebsiteCoupon();
 
         // Get variables
         $account_product->get( $_POST['pid'], $this->user->account->id );
-        $account_product->coupons = $website_coupons->get_by_product( $this->user->account->id, $_POST['pid'] );
+        $account_product->coupons = $website_coupon->get_by_product( $this->user->account->id, $_POST['pid'] );
         $account_product->product_options = $account_product_option->get_all( $this->user->account->id, $_POST['pid'] );
         $product_options_array = $product_option->get_by_product( $_POST['pid'] );
 
@@ -851,7 +868,7 @@ class ProductsController extends BaseController {
         $account_product->save();
 
         /***** UPDATE COUPONS *****/
-        $website_coupon->delete_by_product( $this->user->account->id, $account_product->product_id );
+        $website_coupon->delete_relations_by_product( $this->user->account->id, $account_product->product_id );
 
         if ( $coupons ) {
             // Get website coupon IDs
@@ -1191,6 +1208,42 @@ class ProductsController extends BaseController {
         jQuery('span.success')->show()->delay(5000)->hide();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Brand Sequence
+     *
+     * @return AjaxResponse
+     */
+    protected function update_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&dProduct[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 11 );
+
+        // Adjust them if it's not the first page
+        if ( '1' != $_POST['p'] ) {
+        	$increment = ( (int) $_POST['p'] - 1 ) * $_POST['pp'];
+            $new_sequence = array();
+
+        	foreach ( $sequence as $index => $product_id ) {
+        		$new_sequence[$index + $increment] = $product_id;
+        	}
+
+        	$sequence = $new_sequence;
+        }
+
+        $account_product = new AccountProduct();
+        $account_product->update_sequence( $this->user->account->id, $sequence );
 
         return $response;
     }

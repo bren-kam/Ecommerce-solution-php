@@ -20,7 +20,7 @@ jQuery(function($) {
 			return;
 		}
 
-		head.js( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', function() {
+		head.js( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', '/resources/js_single/?f=fileuploader', function() {
 			a.addClass('loaded');
 
 			// If exists, and they want to cache it use it
@@ -48,6 +48,23 @@ jQuery(function($) {
 				},
 				success			: ajaxResponse
 			});
+
+            // Setup File Uploader
+            var ticketUploader = new qq.FileUploader({
+                action: '/tickets/upload-to-ticket/'
+                , allowedExtensions: ['pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'ai', 'tif', 'zip', '7z', 'rar', 'zipx', 'aiff', 'odt']
+                , element: $('#upload-ticket-attachment')[0]
+                , sizeLimit: 10485760 // 10 mb's
+                , onSubmit: function( id, fileName ) {
+                    ticketUploader.setParams({
+                        _nonce : $('#_upload_to_ticket').val()
+                        , tid : $('#hSupportTicketId').val()
+                    })
+                }
+                , onComplete: function( id, fileName, responseJSON ) {
+                    ajaxResponse( responseJSON );
+                }
+            });
 		});
 	});
 
@@ -55,4 +72,17 @@ jQuery(function($) {
     $('#bCreateTicket').click( function() {
         $('#fCreateTicket').submit();
     });
+
+    /**
+     * Make the uploader work
+     */
+    $('#aUploadTicketAttachment').click( function() {
+        $('#upload-ticket-attachment input:first').click();
+    });
+
+    $('body')
+        .on( 'click', '.boxy-footer .button[rel]', function() {
+            $('#' + $(this).attr('rel')).submit();
+        }
+    );
 });

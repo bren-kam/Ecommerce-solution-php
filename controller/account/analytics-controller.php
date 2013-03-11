@@ -486,7 +486,7 @@ class AnalyticsController extends BaseController {
      *
      * @return TemplateResponse
      */
-    public function email_marketing() {
+    protected function email_marketing() {
         $analytics_email = new AnalyticsEmail();
         $analytics_email->update_by_account( $this->user->account->id );
 
@@ -500,7 +500,7 @@ class AnalyticsController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function email() {
+    protected function email() {
         if ( !$this->user->account->email_marketing )
         	return new RedirectResponse('/analytics/');
 
@@ -528,7 +528,7 @@ class AnalyticsController extends BaseController {
      *
      * @return CustomResponse
      */
-    public function email_click_overlay() {
+    protected function email_click_overlay() {
         if ( !$this->user->account->email_marketing )
             return new RedirectResponse('/analytics/');
 

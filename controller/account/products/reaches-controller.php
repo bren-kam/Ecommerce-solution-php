@@ -39,7 +39,7 @@ class ReachesController extends BaseController {
 
         // Get comments
         $reach_comment = new WebsiteReachComment();
-        $comments = $reach_comment->get_by_reach( $this->user->account->id, $reach->id );
+        $comments = $reach_comment->get_by_reach( $reach->id, $this->user->account->id );
 
         // Get assignable users
         $auth_user_website = new AuthUserWebsite();
@@ -131,7 +131,7 @@ class ReachesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function add_comment() {
+    protected function add_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -223,7 +223,7 @@ class ReachesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_comment() {
+    protected function delete_comment() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -255,7 +255,7 @@ class ReachesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_assigned_to() {
+    protected function update_assigned_to() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -309,7 +309,7 @@ class ReachesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_priority() {
+    protected function update_priority() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 
@@ -338,7 +338,7 @@ class ReachesController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function update_status() {
+    protected function update_status() {
         // Verify the nonce
         $response = new AjaxResponse( $this->verified() );
 

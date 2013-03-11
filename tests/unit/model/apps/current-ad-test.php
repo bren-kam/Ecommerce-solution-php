@@ -115,6 +115,13 @@ class CurrentAdTest extends BaseDatabaseTest {
     }
 
     /**
+     * Add Email
+     */
+    public function testAddEmail() {
+
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

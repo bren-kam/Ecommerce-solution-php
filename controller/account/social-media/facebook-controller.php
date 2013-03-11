@@ -15,9 +15,16 @@ class FacebookController extends BaseController {
     /**
      * Redirect to Facebook
      *
-     * @return TemplateResponse
+     * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
+        $timezone = $this->user->account->get_settings('timezone');
+        
+        if ( empty( $timezone ) ) {
+            $this->notify( _('Please set your timezone and return to Social Media - Pages.'), false );
+            return new RedirectResponse('/social-media/facebook/settings/');
+        }
+        
         return $this->get_template_response( 'index' )
             ->select( 'facebook-pages', 'view' );
     }
@@ -75,7 +82,7 @@ class FacebookController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    public function choose() {
+    protected function choose() {
         // Make Sure they can only get here when they select a page
         if ( !isset( $_GET['smfbpid'] ) )
             return new RedirectResponse('/social-media/facebook/');
@@ -857,7 +864,7 @@ class FacebookController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete() {
+    protected function delete() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -881,5 +888,3 @@ class FacebookController extends BaseController {
         return $response;
     }
 }
-
-

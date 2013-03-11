@@ -117,10 +117,10 @@ class PostingTest extends BaseDatabaseTest {
         $access_token = 'Ring around the rosey';
 
         // Insert About Us
-        $this->db->insert( 'sm_posting', array( 'fb_page_id' => $fb_page_id, 'fb_user_id' => $fb_user_id ), 's' );
+        $this->db->insert( 'sm_posting', array( 'fb_page_id' => $fb_page_id, 'fb_user_id' => $fb_user_id ), 'ss' );
 
         // Get it
-        $this->posting->update_access_token( $fb_user_id, $access_token, $fb_page_id );
+        $this->posting->update_access_token( $access_token, $fb_page_id );
 
         // Get the key
         $fetched_access_token = $this->db->get_var( 'SELECT `access_token` FROM `sm_posting` WHERE `fb_page_id` = ' . (int) $fb_page_id );

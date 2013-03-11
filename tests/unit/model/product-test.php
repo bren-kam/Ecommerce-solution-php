@@ -250,7 +250,7 @@ class ProductTest extends BaseDatabaseTest {
         $count = $this->product->count_all( $dt->get_count_variables() );
 
         // Make sure they exist
-        $this->assertGreaterThan( 1, $count );
+        $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );

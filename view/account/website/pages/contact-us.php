@@ -1,6 +1,6 @@
 <?php
 /**
- * @var array $contacts
+ * @var array $addresses
  */
 
 ?>
@@ -10,9 +10,9 @@
 	<div id="dContactUsList">
 		<?php
 		nonce::field( 'set_pagemeta', '_set_pagemeta' );
-		if ( !empty( $contacts ) ) {
+		if ( !empty( $addresses ) ) {
 			$i = 0;
-			$addresses = unserialize( htmlspecialchars_decode( $contacts ) );
+			$addresses = unserialize( htmlspecialchars_decode( $addresses ) );
 
 			if ( is_array( $addresses ) )
 			foreach ( $addresses as $contact ) {

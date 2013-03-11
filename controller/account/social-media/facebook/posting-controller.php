@@ -277,7 +277,7 @@ class PostingController extends BaseController {
             $data[] = array(
                 $content . $actions,
                 $status,
-                dt::adjust_timezone( $post->date_created, $server_timezone, $timezone, 'F jS, Y g:i a' )
+                dt::adjust_timezone( $post->date_posted, $server_timezone, $timezone, 'F jS, Y g:i a' )
             );
         }
 
@@ -292,7 +292,7 @@ class PostingController extends BaseController {
      *
      * @return AjaxResponse
      */
-    public function delete_post() {
+    protected function delete_post() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 

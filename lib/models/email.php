@@ -52,6 +52,8 @@ class Email extends ActiveRecordBase {
                 , ':email' => $email
             )
         )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->email_id;
     }
 
     /**

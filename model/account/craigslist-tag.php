@@ -19,7 +19,7 @@ class CraigslistTag extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array(
-            'craiglist_tag_id' => $this->craigslist_tag_id
+            'craigslist_tag_id' => $this->craigslist_tag_id
             , 'object_id' => $this->object_id
             , 'type' => $this->type
         ), 'iis', true );

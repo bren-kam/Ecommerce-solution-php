@@ -24,10 +24,13 @@ class AnalyticsEmail extends ActiveRecordBase {
      * @throws ModelException
      * @param string $mc_campaign_id
      * @param int $account_id
+     * @param MCAPI $mc [optional]
      */
-    public function get_complete( $mc_campaign_id, $account_id ) {
-        library( 'MCAPI' );
-        $mc = new MCAPI( Config::key('mc-api') );
+    public function get_complete( $mc_campaign_id, $account_id, MCAPI $mc = null ) {
+        if ( is_null( $mc ) ) {
+            library( 'MCAPI' );
+            $mc = new MCAPI( Config::key('mc-api') );
+        }
 
         // Get the statistics
         $s = $mc->campaignStats( $mc_campaign_id );
@@ -126,14 +129,17 @@ class AnalyticsEmail extends ActiveRecordBase {
      * @throws ModelException
      *
      * @param int $account_id
+     * @param MCAPI $mc [optional]
      */
-    public function update_by_account( $account_id ) {
+    public function update_by_account( $account_id, MCAPI $mc = null ) {
         $mc_campaign_ids = $this->get_emails_without_statistics( $account_id );
 
         // If there are any statistics to get
         if ( count( $mc_campaign_ids ) > 0 ) {
-            library( 'MCAPI' );
-            $mc = new MCAPI( Config::key('mc-api') );
+            if ( is_null( $mc ) ) {
+                library( 'MCAPI' );
+                $mc = new MCAPI( Config::key('mc-api') );
+            }
 
             // Loop through each one
             foreach ( $mc_campaign_ids as $mc_campaign_id ) {
@@ -158,7 +164,7 @@ class AnalyticsEmail extends ActiveRecordBase {
      */
     public function get_emails_without_statistics( $account_id ) {
         return $this->prepare(
-            'SELECT `mc_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = 2 AND `mc_campaign_id` NOT IN ( SELECT ae.`mc_campaign_id` FROM `analytics_emails` AS ae LEFT JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`website_id` = :account_id2 AND `status` = 2 )'
+            'SELECT `mc_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = 2 AND `mc_campaign_id` NOT IN ( SELECT ae.`mc_campaign_id` FROM `analytics_emails` AS ae LEFT JOIN `email_messages` AS em ON ( em.`mc_campaign_id` = ae.`mc_campaign_id` ) WHERE em.`website_id` = :account_id2 AND em.`status` = 2 )'
             , 'ii'
             , array( ':account_id' => $account_id, ':account_id2' => $account_id )
         )->get_col();
@@ -168,7 +174,7 @@ class AnalyticsEmail extends ActiveRecordBase {
      * List All
      *
      * @param $variables array( $where, $order_by, $limit )
-     * @return EmailMessage[]
+     * @return AnalyticsEmail[]
      */
     public function list_all( $variables ) {
         // Get the variables

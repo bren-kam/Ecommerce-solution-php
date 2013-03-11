@@ -14,33 +14,6 @@ class AccountProductOption extends ActiveRecordBase {
     }
 
     /**
-     * Get All
-     *
-     * @param int $account_id
-     * @param int $product_id
-     * @return array
-     */
-    public function get_all( $account_id, $product_id ) {
-        $product_options_array =  array_merge(
-            $this->get_with_list_items( $account_id, $product_id )
-            , $this->get_without_list_items( $account_id, $product_id )
-        );
-
-        $product_options = array();
-
-        /**
-         * @var AccountProductOption $product_option
-         */
-        foreach ( $product_options_array as $product_option ) {
-            $product_options[$product_option->product_option_id]['price'] = $product_option->price;
-            $product_options[$product_option->product_option_id]['required'] = $product_option->required;
-            $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id] = $product_option->list_item_price;
-        }
-
-        return $product_options;
-    }
-
-    /**
      * Get with list items
      *
      * @param int $account_id
@@ -70,6 +43,33 @@ class AccountProductOption extends ActiveRecordBase {
             , 'ii'
             , array( ':account_id' => $account_id, ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProductOption' );
+    }
+
+    /**
+     * Get All
+     *
+     * @param int $account_id
+     * @param int $product_id
+     * @return array
+     */
+    public function get_all( $account_id, $product_id ) {
+        $product_options_array =  array_merge(
+            $this->get_with_list_items( $account_id, $product_id )
+            , $this->get_without_list_items( $account_id, $product_id )
+        );
+
+        $product_options = array();
+
+        /**
+         * @var AccountProductOption $product_option
+         */
+        foreach ( $product_options_array as $product_option ) {
+            $product_options[$product_option->product_option_id]['price'] = $product_option->price;
+            $product_options[$product_option->product_option_id]['required'] = $product_option->required;
+            $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id] = $product_option->list_item_price;
+        }
+
+        return $product_options;
     }
 
     /**

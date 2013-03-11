@@ -76,7 +76,7 @@ class AccountPagemeta extends ActiveRecordBase {
         $pagemeta_count = count( $pagemeta_array );
 
         // Format
-        if ( 1 == $pagemeta_count )
+        if ( 1 == $pagemeta_keys_count )
             return $pagemeta_array[0]->value;
 
         $pagemeta = array();
