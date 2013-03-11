@@ -69,10 +69,10 @@ class WebsiteProductGroup extends ActiveRecordBase {
      * Update
      */
     public function save() {
-        $this->insert( array(
+        $this->update( array(
             'name' => $this->name
         ), array(
-            'website_group_id' => $this->id
+            'website_product_group_id' => $this->id
         ), 's', 'i' );
     }
 
@@ -83,17 +83,37 @@ class WebsiteProductGroup extends ActiveRecordBase {
      */
     public function get_product_relation_ids() {
         return $this->prepare(
-            'SELECT wpgr.`product_id` FROM `website_product_group_relations` AS wpgr LEFT JOIN `website_product_groups` AS wpg ON ( wpg.`website_product_group_id` = wpgr.`website_product_group_id` ) WHERE wpg.`website_product_group_id` = :website_product_group_id'
+            'SELECT wpgr.`product_id` FROM `website_product_group_relations` AS wpgr LEFT JOIN `website_product_groups` AS wpg ON ( wpg.`website_product_group_id` = wpgr.`website_product_group_id` ) WHERE wpg.`website_product_group_id` = :website_product_group_id ORDER BY `product_id` DESC'
             , 'i'
             , array( ':website_product_group_id' => $this->id )
          )->get_col();
     }
 
     /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'website_product_group_id' => $this->id
+        ), 'i' );
+    }
+
+    /**
+     * Remove Relations
+     */
+    public function remove_relations() {
+        $this->prepare(
+            'DELETE FROM `website_product_group_relations` WHERE `website_product_group_id` = :website_product_group_id'
+            , 'i'
+            , array( ':website_product_group_id' => $this->id )
+        )->query();
+    }
+
+    /**
 	 * List Website Product Groups
 	 *
 	 * @param $variables array( $where, $order_by, $limit )
-	 * @return WebsiteShippingMethod[]
+	 * @return WebsiteProductGroup[]
 	 */
 	public function list_all( $variables ) {
         // Get the variables
@@ -122,24 +142,4 @@ class WebsiteProductGroup extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Remove
-     */
-    public function remove() {
-        $this->delete( array(
-            'website_product_group_id' => $this->id
-        ), 'i' );
-    }
-
-    /**
-     * Remove Relations
-     */
-    public function remove_relations() {
-        $this->prepare(
-            'DELETE FROM `website_product_group_relations` WHERE `website_product_group_id` = :website_product_group_id'
-            , 'i'
-            , array( ':website_product_group_id' => $this->id )
-        )->query();
-    }
 }
