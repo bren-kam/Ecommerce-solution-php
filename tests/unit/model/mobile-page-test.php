@@ -14,6 +14,27 @@ class MobilePageTest extends BaseDatabaseTest {
     public function setUp() {
         $this->mobile_page = new MobilePage();
     }
+    
+    /**
+     * Test Get
+     */
+    public function testGet() {
+        // Set variables
+        $website_id = -7;
+        $slug = 'something-unique';
+
+        // Create
+        $mobile_page_id = $this->db->insert( 'mobile_pages', compact( 'website_id', 'slug' ), 'is' );
+
+        // Get
+        $this->mobile_page->get( $mobile_page_id, $website_id );
+
+        // Make sure we grabbed the right one
+        $this->assertEquals( $slug, $this->mobile_page->slug );
+
+        // Clean up
+        $this->db->delete( 'mobile_pages', compact( 'website_id' ), 'i' );
+    }
 
     /**
      * Test create
