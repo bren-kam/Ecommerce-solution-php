@@ -78,6 +78,13 @@ class MobilePage extends ActiveRecordBase {
 	}
 
     /**
+     * Delete
+     */
+    public function remove() {
+        $this->delete( array( 'mobile_page_id' => $this->id ), 'i' );
+    }
+
+    /**
 	 * Count all the pages
 	 *
 	 * @param array $variables
@@ -93,11 +100,4 @@ class MobilePage extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Delete
-     */
-    public function remove() {
-        $this->delete( array( 'mobile_page_id' => $this->id ), 'i' );
-    }
 }
