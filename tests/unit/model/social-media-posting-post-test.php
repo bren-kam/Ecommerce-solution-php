@@ -128,7 +128,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $this->assertEquals( $retrieved_status, $new_status );
 
         // Delete
-        $this->db->delete( 'sm_posting_posts', array( 'sm_facebook_page_id' => $sm_facebook_page_id ), 'i' );
+        $this->db->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
