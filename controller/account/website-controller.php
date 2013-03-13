@@ -870,6 +870,9 @@ class WebsiteController extends BaseController {
             break;
         }
 
+        jQuery('#upload-image-loader')->hide();
+        jQuery('#aUploadImage')->show();
+
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
