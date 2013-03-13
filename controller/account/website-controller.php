@@ -774,6 +774,9 @@ class WebsiteController extends BaseController {
             ->val('')
             ->trigger('blur');
 
+        jQuery('#upload-file-loader')->hide();
+        jQuery('#aUploadFile')->show();
+
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
 
@@ -926,7 +929,7 @@ class WebsiteController extends BaseController {
         $attachment->value = $image_url;
         $attachment->create();
 
-        $element_box = '<div class="element_box" id="dAttachment_' . $attachment->id . '">';
+        $element_box = '<div class="element-box" id="dAttachment_' . $attachment->id . '">';
         $element_box .= '<h2>' . _('Sidebar Image') . '</h2>';
         
         // Add Sidebar Image
@@ -966,6 +969,9 @@ class WebsiteController extends BaseController {
             ->updateElementOrder()
             ->updateDividers()
             ->sparrow();
+
+        jQuery('#upload-sidebar-image-loader')->hide();
+        jQuery('#aUploadSidebarImage')->show();
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
@@ -1125,6 +1131,9 @@ class WebsiteController extends BaseController {
             ->updateElementOrder()
             ->updateDividers()
             ->sparrow();
+
+        jQuery('#upload-banner-loader')->hide();
+        jQuery('#aUploadBanner')->show();
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
@@ -1378,8 +1387,11 @@ class WebsiteController extends BaseController {
         if ( stristr( $attachment->value, 'http://' ) ) {
             $account_file->get_by_file_path( $attachment->value, $this->user->account->domain, $this->user->account->id );
 
+            if ( $account_file->id )
+                $account_file->remove();
+
             // Delete from Amazon S3 (Not checking because it may have been removed other ways )
-            $file->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $account_file->file_path ) );
+            $file->delete_file( str_replace( 'http://websites.retailcatalog.us/', '', $attachment->value ) );
         }
 
         if ( '1' == $_GET['si'] ) {

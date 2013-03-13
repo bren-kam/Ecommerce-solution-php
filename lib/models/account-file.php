@@ -39,7 +39,7 @@ class AccountFile extends ActiveRecordBase {
 	 */
 	public function get_by_file_path( $file_path, $domain, $account_id ) {
 	    $this->prepare(
-            "SELECT `website_file_id`, `website_id`, REPLACE( `file_path`, '[domain]', :domain ) AS file_path, `date_created` FROM `website_files` WHERE file_path = :file_path AND `website_id` = :account_id"
+            "SELECT `website_file_id`, `website_id`, REPLACE( `file_path`, '[domain]', :domain ) AS file_path, `date_created` FROM `website_files` WHERE `file_path` = :file_path AND `website_id` = :account_id"
             , 'ssi'
             , array( ':file_path' => $file_path, ':domain' => $domain, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
