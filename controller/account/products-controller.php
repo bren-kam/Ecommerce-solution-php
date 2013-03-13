@@ -470,7 +470,7 @@ class ProductsController extends BaseController {
         switch ( $_POST['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
             break;
 
             case 'product':
