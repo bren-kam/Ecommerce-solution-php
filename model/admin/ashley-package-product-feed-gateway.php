@@ -289,7 +289,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             // Reset errors
             $this->reset_error();
-            $add_category = false;
+            $new_product = false;
 
             /***** CHECK PRODUCT *****/
 
@@ -320,7 +320,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $product->publish_date = dt::now();
 
                 // Need to add the category
-                $add_category = true;
+                $new_product = true;
             }
 
             /***** PREPARE PRODUCT DATA *****/
@@ -465,7 +465,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $this->reset_identical();
 
             /** Add Category **/
-            if ( $add_category ) {
+            if ( $new_product ) {
                 $product->delete_categories();
                 $product->add_category( $category_id );
             }
@@ -529,7 +529,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 			$product->save();
 
             // Increment product count
-	        $this->new_product( $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
+            if ( $new_product )
+                $this->new_product( $name . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
@@ -559,7 +560,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
         // Send report to everyone else
         if( count( $this->new_products ) > 0 ) {
-			$message = "-----New Products-----" . PHP_EOL . $new_products;
+			$message = "-----New Feed Products-----" . PHP_EOL . $new_products;
 			//, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com
 			fn::mail( 'kerry@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
 		}
