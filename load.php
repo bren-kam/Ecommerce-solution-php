@@ -13,7 +13,7 @@ define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 define( 'DEFAULT_DOMAIN', 'imagineretailer.com' );
 
 /** Define LIVE if the website is live */
-define( 'LIVE', false );
+define( 'LIVE', true );
 
 // Show us the errors if we're not live
 if ( LIVE ) {
@@ -23,8 +23,8 @@ if ( LIVE ) {
 }
 
 /** Error Handler */
-if ( extension_loaded('newrelic') )
-    set_error_handler( 'newrelic_notice_error' );
+//if ( extension_loaded('newrelic') )
+    //set_error_handler( 'newrelic_notice_error' );
 
 /** Define ABS_PATH as the files directory */
 define( 'ABS_PATH', realpath( __DIR__ ) . '/' );
