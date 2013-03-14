@@ -17,7 +17,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Get
+     * Get
      */
     public function testGet() {
         // Set variables
