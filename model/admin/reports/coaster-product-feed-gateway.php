@@ -18,7 +18,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
      * Hold the category code translation
      */
     protected $categories = array(
-        'MATTRESS' => 0
+        'MATTRESS' => 165
         , 'BAR SET' => 347
         , 'BAR STOOL' => 142
         , 'TABLE' => 130
@@ -65,7 +65,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         , 'BUNK BED' => 617
         , 'FUTON FRAME' => 603
         , 'VANITIES' => 119
-        , 'ACCENT TABLE' => 0
+        , 'ACCENT TABLE' => 233
         , 'SERVING CART' => 746
         , 'STORAGE RACK' => 136
         , 'CANOPY' => 748
