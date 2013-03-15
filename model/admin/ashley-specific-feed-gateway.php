@@ -81,7 +81,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		if ( '-' != substr( $folder, -1 ) )
 			$folder .= '-';
 		
-        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Items' : 'Outbound';
+        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
 
 		if ( !is_array( $products ) )
 			$products = array();
