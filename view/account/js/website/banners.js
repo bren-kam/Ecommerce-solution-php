@@ -30,7 +30,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             uploader.setParams({
                 _nonce : $('#_upload_banner').val()
                 , apid : $('#hAccountPageId').val()
-            })
+            });
+
+            $('#aUploadBanner').hide();
+            $('#upload-banner-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
             ajaxResponse( responseJSON );

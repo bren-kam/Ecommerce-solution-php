@@ -50,7 +50,10 @@ jQuery(function($) {
             uploader.setParams({
                 _nonce : $('#_upload_file').val()
                 , fn : $('#tFileName').val()
-            })
+            });
+
+            $('#aUploadFile').hide();
+            $('#upload-file-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
             ajaxResponse( responseJSON );

@@ -373,7 +373,7 @@ class AccountCategory extends ActiveRecordBase {
     }
 
     /**
-	 * Get all information of the checklists
+	 * Get all
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
 	 * @return AccountCategory[]
@@ -390,7 +390,7 @@ class AccountCategory extends ActiveRecordBase {
 	}
 
 	/**
-	 * Count all the checklists
+	 * Count all
 	 *
 	 * @param array $variables
 	 * @return int

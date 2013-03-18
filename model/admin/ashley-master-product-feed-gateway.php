@@ -92,9 +92,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
      * Do the setup to get anything we need
      */
     protected function setup() {
-        ini_set( 'max_execution_time', 600 ); // 10 minutes
+        ini_set( 'max_execution_time', 1200 ); // 20 minutes
 		ini_set( 'memory_limit', '512M' );
-		set_time_limit( 600 );
+		set_time_limit( 1200 );
 
         // Time how long we've been on this page
         $this->ftp = new Ftp( '/CustEDI/3400-/Outbound/' );

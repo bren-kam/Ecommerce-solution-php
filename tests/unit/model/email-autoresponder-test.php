@@ -14,6 +14,27 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
     public function setUp() {
         $this->email_autoresponder = new EmailAutoresponder();
     }
+    
+    /**
+     * Get
+     */
+    public function testGet() {
+        // Set variables
+        $website_id = -7;
+        $name = 'Bedroom Responder';
+
+        // Create
+        $email_autoresponder_id = $this->db->insert( 'email_autoresponders', compact( 'website_id', 'name' ), 'is' );
+
+        // Get
+        $this->email_autoresponder->get( $email_autoresponder_id, $website_id );
+
+        // Make sure we grabbed the right one
+        $this->assertEquals( $name, $this->email_autoresponder->name );
+
+        // Clean up
+        $this->db->delete( 'email_autoresponders', compact( 'website_id' ), 'i' );
+    }
 
     /**
      * Test create
@@ -37,6 +58,107 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
 
         // Delete
         $this->db->delete( 'email_autoresponders', array( 'email_autoresponder_id' => $this->email_autoresponder->id ), 'i' );
+    }
+    
+    /**
+     * Save
+     *
+     * @depends testGet
+     */
+    public function testSave() {
+        // Set variables
+        $website_id = -7;
+        $name = 'Bedroom Responder';
+
+        // Create
+        $email_autoresponder_id = $this->db->insert( 'email_autoresponders', compact( 'website_id' ), 'i' );
+
+        // Get
+        $this->email_autoresponder->get( $email_autoresponder_id, $website_id );
+        $this->email_autoresponder->name = $name;
+        $this->email_autoresponder->save();
+
+        // Now check it!
+        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `email_autoresponders` WHERE `email_autoresponder_id` = $email_autoresponder_id" );
+
+        $this->assertEquals( $retrieved_name, $name );
+
+        // Clean up
+        $this->db->delete( 'email_autoresponders', compact( 'website_id' ), 'i' );
+    }
+    
+    /**
+     * Remove
+     *
+     * @depends testGet
+     */
+    public function testRemove() {
+        // Set variables
+        $website_id = -7;
+        $name = 'Bedroom Responder';
+
+        // Create
+        $email_autoresponder_id = $this->db->insert( 'email_autoresponders', compact( 'website_id', 'name' ), 'is' );
+
+        // Get
+        $this->email_autoresponder->get( $email_autoresponder_id, $website_id );
+
+        // Remove/Delete
+        $this->email_autoresponder->remove();
+
+        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `email_autoresponders` WHERE `email_autoresponder_id` = $email_autoresponder_id" );
+
+        $this->assertFalse( $retrieved_name );
+    }
+    
+    /**
+     * List All
+     */
+    public function testListAll() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( '`name`', '`subject`' );
+
+        $email_autoresponders = $this->email_autoresponder->list_all( $dt->get_variables() );
+
+        // Make sure we have an array
+        $this->assertTrue( current( $email_autoresponders ) instanceof EmailAutoresponder );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $emails );
+    }
+
+    /**
+     * Count All
+     */
+    public function testCountAll() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( '`name`', '`subject`' );
+
+        $count = $this->email_autoresponder->count_all( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
     }
 
     /**

@@ -10,7 +10,10 @@ jQuery(function(){
                 _nonce : $('#_upload_image').val()
                 , apid : $('#hAccountPageId').val()
                 , fn : 'coupon'
-            })
+            });
+
+            $('#aUploadImage').hide();
+            $('#upload-image-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
             ajaxResponse( responseJSON );

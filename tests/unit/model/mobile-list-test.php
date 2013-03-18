@@ -25,8 +25,6 @@ class MobileListTest extends BaseDatabaseTest {
         $this->mobile_list->description = 'For the Brave';
         $this->mobile_list->create();
 
-        $this->assertTrue( !is_null( $this->mobile_list->id ) );
-
         // Make sure it's in the database
         $name = $this->db->get_var( 'SELECT `name` FROM `mobile_lists` WHERE `mobile_list_id` = ' . (int) $this->mobile_list->id );
 

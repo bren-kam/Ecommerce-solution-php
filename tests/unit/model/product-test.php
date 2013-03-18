@@ -19,9 +19,54 @@ class ProductTest extends BaseDatabaseTest {
      * Test Getting a ticket
      */
     public function testGet() {
-        $this->product->get(36385);
+        // Declare Variables
+        $product_id = 36385;
+        $name = 'ZZZZZZZZZ Test';
 
-        $this->assertEquals( $this->product->name, 'ZZZZZZZZZ Test' );
+        // Get
+        $this->product->get( $product_id );
+
+        $this->assertEquals( $this->product->name, $name );
+    }
+
+    /**
+     * Get By Sku
+     */
+    public function testGetBySku() {
+        // Declare Variables
+        $sku = 'mess-with-me';
+
+        // Create
+        $product_id = $this->db->insert( 'products', compact( 'sku' ), 's' );
+
+        // Get
+        $this->product->get_by_sku( $sku );
+
+        $this->assertEquals( $this->product->sku, $sku );
+
+        // Clean Up
+        $this->db->delete( 'products', compact( 'product_id' ), 'i' );
+    }
+
+    /**
+     * Get By Ids
+     */
+    public function testGetByIds() {
+        // Declare Variables
+        $website_id = -1;
+
+        // Create
+        $product_id = $this->db->insert( 'products', compact( 'website_id' ), 'i' );
+        $product_id2 = $this->db->insert( 'products', compact( 'website_id' ), 'i' );
+        $product_ids = array( $product_id, $product_id2 );
+
+        // Get
+        $products = $this->product->get_by_ids( $product_ids );
+
+        $this->assertTrue( current( $products ) instanceof Product );
+
+        // Clean Up
+        $this->db->delete( 'products', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -49,16 +94,20 @@ class ProductTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testCreate() {
-        $this->product->website_id = 0;
-        $this->product->user_id_created = 1;
-        $this->product->create();
+        // Declare variables
+        $website_id = 0;
+        $user_id_created = 1;
+        $publish_visibility = 'deleted';
 
-        $this->assertTrue( !is_null( $this->product->id ) );
+        // Create
+        $this->product->website_id = $website_id;
+        $this->product->user_id_created = $user_id_created;
+        $this->product->create();
 
         // Make sure it's in the database
         $this->product->get( $this->product->id );
 
-        $this->assertEquals( 'deleted', $this->product->publish_visibility );
+        $this->assertEquals( $publish_visibility, $this->product->publish_visibility );
 
         // Delete the company
         $this->db->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
@@ -248,6 +297,56 @@ class ProductTest extends BaseDatabaseTest {
         $dt->order_by( 'a.`name`', 'e.`contact_name`', 'f.`contact_name`', 'd.`name`', 'a.`sku`', 'a.`status`' );
 
         $count = $this->product->count_all( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * List Custom Products
+     */
+    public function testListCustomProducts() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'c.`name`', 'p.`status`', 'p.`publish_date`' );
+
+        $products = $this->product->list_custom_products( $dt->get_variables() );
+
+        // Make sure we have an array
+        $this->assertTrue( $products[0] instanceof Product );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $products );
+    }
+
+    /**
+     * Count Custom Products
+     */
+    public function testCountCustomProducts() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'c.`name`', 'p.`status`', 'p.`publish_date`' );
+
+        $count = $this->product->count_custom_products( $dt->get_count_variables() );
 
         // Make sure they exist
         $this->assertGreaterThan( 0, $count );

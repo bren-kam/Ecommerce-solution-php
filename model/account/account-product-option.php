@@ -4,7 +4,7 @@ class AccountProductOption extends ActiveRecordBase {
     public $id, $website_id, $product_id, $product_option_id, $price, $required;
 
     // Columns from other tables
-    public $product_option_list_item_id, $list_item_price;
+    public $product_option_list_item_id, $list_item_price, $alt_price, $alt_price2;
 
     /**
      * Setup the account initial data
@@ -24,7 +24,7 @@ class AccountProductOption extends ActiveRecordBase {
         $account_id = (int) $account_id;
 
         return $this->prepare(
-            "SELECT po.`product_option_id`, poli.`product_option_list_item_id`, poli.`value`, wpo.`price`, wpo.`required`, wpoli.`price` AS list_item_price FROM `product_options` AS po LEFT JOIN `product_option_list_items` AS poli ON ( poli.`product_option_id` = po.`product_option_id` ) INNER JOIN `website_product_options` AS wpo ON ( wpo.`product_option_id` = po.`product_option_id` ) INNER JOIN `website_product_option_list_items` AS wpoli ON ( wpoli.`product_option_id` = wpo.`product_option_id` AND wpoli.`product_option_list_item_id` = poli.`product_option_list_item_id` AND wpoli.`product_id` = wpo.`product_id` AND wpoli.`website_id` = $account_id ) WHERE wpo.`website_id` = $account_id AND wpo.`product_id` = :product_id AND ( po.`option_type` = 'checkbox' OR po.`option_type` = 'select' AND wpoli.`price` IS NOT NULL ) GROUP BY wpoli.`product_option_list_item_id` ORDER BY poli.`sequence` DESC"
+            "SELECT po.`product_option_id`, poli.`product_option_list_item_id`, poli.`value`, wpo.`price`, wpo.`required`, wpoli.`price` AS list_item_price, wpoli.`alt_price`, wpoli.`alt_price2` FROM `product_options` AS po LEFT JOIN `product_option_list_items` AS poli ON ( poli.`product_option_id` = po.`product_option_id` ) INNER JOIN `website_product_options` AS wpo ON ( wpo.`product_option_id` = po.`product_option_id` ) INNER JOIN `website_product_option_list_items` AS wpoli ON ( wpoli.`product_option_id` = wpo.`product_option_id` AND wpoli.`product_option_list_item_id` = poli.`product_option_list_item_id` AND wpoli.`product_id` = wpo.`product_id` AND wpoli.`website_id` = $account_id ) WHERE wpo.`website_id` = $account_id AND wpo.`product_id` = :product_id AND ( po.`option_type` = 'checkbox' OR po.`option_type` = 'select' AND wpoli.`price` IS NOT NULL ) GROUP BY wpoli.`product_option_list_item_id` ORDER BY poli.`sequence` DESC"
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProductOption' );
@@ -66,7 +66,14 @@ class AccountProductOption extends ActiveRecordBase {
         foreach ( $product_options_array as $product_option ) {
             $product_options[$product_option->product_option_id]['price'] = $product_option->price;
             $product_options[$product_option->product_option_id]['required'] = $product_option->required;
-            $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id] = $product_option->list_item_price;
+
+            if ( empty( $product_option->alt_price ) ) {
+                $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id] = $product_option->list_item_price;
+            } else {
+                $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id]['price'] = $product_option->list_item_price;
+                $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id]['alt_price'] = $product_option->alt_price;
+                $product_options[$product_option->product_option_id]['list_items'][$product_option->product_option_list_item_id]['alt_price2'] = $product_option->alt_price2;
+            }
         }
 
         return $product_options;
@@ -86,12 +93,11 @@ class AccountProductOption extends ActiveRecordBase {
 
         // Setup variables
         $values = '';
-
         foreach ( $product_options as $product_option ) {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values = "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', ' . (float) $product_option['price'] . ', ' . (int) $product_option['required'] . ' )';
+            $values .= "( $account_id, $product_id, " . (int) $product_option['product_option_id'] . ', ' . (float) $product_option['price'] . ', ' . (int) $product_option['required'] . ' )';
         }
 
         $this->query( "INSERT INTO `website_product_options` ( `website_id`, `product_id`, `product_option_id`, `price`, `required` ) VALUES $values" );
@@ -116,21 +122,23 @@ class AccountProductOption extends ActiveRecordBase {
             if ( !empty( $values ) )
                 $values .= ',';
 
-            $values = "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', ' . (float) $product_option_list_item['price'] . ' )';
+            $values .= "( $account_id, $product_id, " . (int) $product_option_list_item['product_option_id'] . ', ' . (int) $product_option_list_item['product_option_list_item_id'] . ', ' . (float) $product_option_list_item['price'] . ', ' . (float) $product_option_list_item['alt_price'] . ', ' . $product_option_list_item['alt_price2'] . ' )';
         }
 
-        $this->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price` ) VALUES $values" );
+        $this->query( "INSERT INTO `website_product_option_list_items` ( `website_id`, `product_id`, `product_option_id`, `product_option_list_item_id`, `price`, `alt_price`, `alt_price2` ) VALUES $values" );
     }
 
     /**
-     * Delete By Product
+     * Delete Website Product Options
      *
      * @param int $account_id
      * @param int $product_id
      */
-    public function delete_by_product( $account_id, $product_id ) {
-        $this->delete_website_product_option_list_items( $account_id, $product_id );
-        $this->delete_website_product_options( $account_id, $product_id );
+    protected function delete_website_product_options( $account_id, $product_id ) {
+        $this->prepare( 'DELETE FROM `website_product_options` WHERE `website_id` = :account_id AND `product_id` = :product_id'
+              , 'ii'
+              , array( ':account_id' => $account_id, ':product_id' => $product_id )
+          )->query();
     }
 
     /**
@@ -147,15 +155,13 @@ class AccountProductOption extends ActiveRecordBase {
     }
 
     /**
-     * Delete Website Product Options
+     * Delete By Product
      *
      * @param int $account_id
      * @param int $product_id
      */
-    protected function delete_website_product_options( $account_id, $product_id ) {
-        $this->prepare( 'DELETE FROM `website_product_options` WHERE `website_id` = :account_id AND `product_id` = :product_id'
-              , 'ii'
-              , array( ':account_id' => $account_id, ':product_id' => $product_id )
-          )->query();
+    public function delete_by_product( $account_id, $product_id ) {
+        $this->delete_website_product_option_list_items( $account_id, $product_id );
+        $this->delete_website_product_options( $account_id, $product_id );
     }
 }

@@ -19,12 +19,13 @@ define( 'LIVE', false );
 if ( LIVE ) {
     error_reporting(0);
 } else {
-    error_reporting( E_ALL ^ E_NOTICE );
+    error_reporting(0);
+    //error_reporting( E_ALL ^ E_NOTICE );
 }
 
 /** Error Handler */
-if ( extension_loaded('newrelic') )
-    set_error_handler( 'newrelic_notice_error' );
+//if ( extension_loaded('newrelic') )
+    //set_error_handler( 'newrelic_notice_error' );
 
 /** Define ABS_PATH as the files directory */
 define( 'ABS_PATH', realpath( __DIR__ ) . '/' );
