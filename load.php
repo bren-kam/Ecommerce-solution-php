@@ -13,13 +13,14 @@ define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 define( 'DEFAULT_DOMAIN', 'imagineretailer.com' );
 
 /** Define LIVE if the website is live */
-define( 'LIVE', true );
+define( 'LIVE', false );
 
 // Show us the errors if we're not live
 if ( LIVE ) {
     error_reporting(0);
 } else {
-    error_reporting( E_ALL ^ E_NOTICE );
+    error_reporting(0);
+    //error_reporting( E_ALL ^ E_NOTICE );
 }
 
 /** Error Handler */

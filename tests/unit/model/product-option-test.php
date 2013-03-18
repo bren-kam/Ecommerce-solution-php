@@ -18,7 +18,11 @@ class ProductOptionTest extends BaseDatabaseTest {
      * Test Getting an attribute
      */
     public function testGet() {
-        $this->product_option->get(66);
+        // Declare Variables
+        $product_option_id = 66;
+
+        // Get
+        $this->product_option->get( $product_option_id );
 
         $this->assertEquals( $this->product_option->title, 'Annual Sales' );
     }
@@ -30,6 +34,30 @@ class ProductOptionTest extends BaseDatabaseTest {
         $product_options = $this->product_option->get_all();
 
         $this->assertTrue( current( $product_options ) instanceof ProductOption );
+    }
+
+    /**
+     * Get By Product
+     */
+    public function testGetByProduct() {
+        // Declare Variables
+        $option_type = 'text';
+        $brand_id = -3;
+
+        // Create
+        $product_option_id = $this->db->insert( 'product_options', compact( 'option_type' ), 's' );
+        $this->db->insert( 'product_option_relations', compact( 'product_option_id', 'brand_id' ), 'ii' );
+        $product_id = $this->db->insert( 'products', compact( 'brand_id' ), 'i' );
+
+        // Get product Options
+        $product_options = $this->product_option->get_by_product( $product_id );
+
+        $this->assertTrue( current( $product_options ) instanceof ProductOption );
+
+        // Clean Up
+        $this->db->delete( 'product_options', compact( 'product_option_id' ), 'i' );
+        $this->db->delete( 'product_option_relations', compact( 'product_option_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'brand_id' ), 'i' );
     }
 
     /**

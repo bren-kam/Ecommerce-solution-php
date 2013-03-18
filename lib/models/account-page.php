@@ -116,6 +116,13 @@ class AccountPage extends ActiveRecordBase {
     }
 
     /**
+     * Delete
+     */
+    public function remove() {
+        $this->delete( array( 'website_page_id' => $this->id ), 'i' );
+    }
+
+    /**
 	 * Get all information of the checklists
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
@@ -148,11 +155,4 @@ class AccountPage extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
-
-    /**
-     * Delete
-     */
-    public function remove() {
-        $this->delete( array( 'website_page_id' => $this->id ), 'i' );
-    }
 }

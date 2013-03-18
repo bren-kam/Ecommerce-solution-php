@@ -14,6 +14,49 @@ class AccountPageTest extends BaseDatabaseTest {
     public function setUp() {
         $this->account_page = new AccountPage();
     }
+    
+    /**
+     * Get
+     */
+    public function testGet() {
+        // Set variables
+        $website_id = -7;
+        $slug = 'currents-offers';
+
+        // Create
+        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id', 'slug' ), 'is' );
+
+        // Get
+        $this->account_page->get( $website_page_id, $website_id );
+
+        // Make sure we grabbed the right one
+        $this->assertEquals( $slug, $this->account_page->slug );
+
+        // Clean up
+        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Get By Slug
+     */
+    public function testGetBySlug() {
+        // Set variables
+        $website_id = -7;
+        $slug = 'currents-offers';
+        $title = 'The great and powerful Oz';
+
+        // Create
+        $this->db->insert( 'website_pages', compact( 'website_id', 'slug', 'title' ), 'is' );
+
+        // Get
+        $this->account_page->get_by_slug( $website_id, $slug );
+
+        // Make sure we grabbed the right one
+        $this->assertEquals( $title, $this->account_page->title );
+
+        // Clean up
+        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+    }
 
     /**
      * Test Getting all attributes
@@ -48,6 +91,33 @@ class AccountPageTest extends BaseDatabaseTest {
         // Delete the attribute
         $this->db->delete( 'website_pages', array( 'website_page_id' => $this->account_page->id ), 'i' );
     }
+    
+    /**
+     * Save
+     *
+     * @depends testGet
+     */
+    public function testSave() {
+        // Set variables
+        $website_id = -7;
+        $slug = 'wizard-of-oz';
+
+        // Create
+        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id' ), 'i' );
+
+        // Get
+        $this->account_page->get( $website_page_id, $website_id );
+        $this->account_page->slug = $slug;
+        $this->account_page->save();
+
+        // Now check it!
+        $retrieved_slug = $this->db->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
+
+        $this->assertEquals( $retrieved_slug, $slug );
+
+        // Clean up
+        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+    }
 
     /**
      * Test Copy by Account
@@ -70,6 +140,80 @@ class AccountPageTest extends BaseDatabaseTest {
 
         // Delete
         $this->db->delete( 'website_pages', array( 'website_id' => $account_id ) , 'i' );
+    }
+
+    /**
+     * Remove
+     *
+     * @depends testGet
+     */
+    public function testRemove() {
+        // Set variables
+        $website_id = -7;
+        $slug = 'currents-offers';
+
+        // Create
+        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id', 'slug' ), 'is' );
+
+        // Get
+        $this->account_page->get( $website_page_id, $website_id );
+
+        // Remove/Delete
+        $this->account_page->remove();
+
+        $retrieved_slug = $this->db->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
+
+        $this->assertFalse( $retrieved_slug );
+    }
+    
+    /**
+     * List All
+     */
+    public function testListAll() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( '`title`', '`status`', '`date_updated`' );
+
+        $account_pages = $this->account_page->list_all( $dt->get_variables() );
+
+        // Make sure we have an array
+        $this->assertTrue( current( $account_pages ) instanceof AccountPage );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $emails );
+    }
+
+    /**
+     * Count All
+     */
+    public function testCountAll() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( '`title`', '`status`', '`date_updated`' );
+
+        $count = $this->account_page->count_all( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
     }
 
     /**

@@ -28,7 +28,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             uploader.setParams({
                 _nonce : $('#_upload_sidebar_image').val()
                 , apid : $('#hAccountPageId').val()
-            })
+            });
+
+            $('#aUploadSidebarImage').hide();
+            $('#upload-sidebar-image-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
             ajaxResponse( responseJSON );
@@ -52,7 +55,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             videoUploader.setParams({
                 _nonce : $('#_upload_sidebar_video').val()
                 , apid : $('#hAccountPageId').val()
-            })
+            });
+
+            $('#aUploadSidebarVideo').hide();
+            $('#upload-sidebar-video-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
             ajaxResponse( responseJSON );

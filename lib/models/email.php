@@ -193,17 +193,31 @@ class Email extends ActiveRecordBase {
     }
 
     /**
+     * Remove Associations
+     */
+    public function remove_associations() {
+        $this->prepare(
+            'DELETE FROM `email_associations` WHERE `email_id` = :email_id'
+            , 'i'
+            , array( ':email_id' => $this->id )
+        )->query();
+    }
+
+    /**
      * Remove All
      *
      * @param string $mc_list_id
+     * @param MCAPI $mc [optional - for testing]
      */
-    public function remove_all( $mc_list_id ) {
+    public function remove_all( $mc_list_id, MCAPI $mc = null ) {
         if ( !$this->id )
             return;
 
         // Unsubscribe from Mailchimp
-        library( 'MCAPI' );
-        $mc = new MCAPI( Config::key('mc-api') );
+        if ( is_null( $mc ) ) {
+            library( 'MCAPI' );
+            $mc = new MCAPI( Config::key('mc-api') );
+        }
 
         // Delete the campaign
         $mc->listUnsubscribe( $mc_list_id, $this->email );
@@ -225,17 +239,6 @@ class Email extends ActiveRecordBase {
 
         $this->status = 0;
         $this->save();
-    }
-
-    /**
-     * Remove Associations
-     */
-    public function remove_associations() {
-        $this->prepare(
-            'DELETE FROM `email_associations` WHERE `email_id` = :email_id'
-            , 'i'
-            , array( ':email_id' => $this->id )
-        )->query();
     }
 
     /**

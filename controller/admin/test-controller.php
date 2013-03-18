@@ -20,8 +20,8 @@ class TestController extends BaseController {
          //Update Craigslist Stats
         //$craigslist = new Craigslist;
         //$craigslist->update_stats();
-        $ashley = new AshleyMasterProductFeedGateway();
-        $ashley->run();
+        //$ashley = new AshleyMasterProductFeedGateway();
+        //$ashley->run();
         /**
         $ashley_package_feed = new AshleyPackageProductFeedGateway();
         $ashley_package_feed->run();
@@ -39,6 +39,17 @@ class TestController extends BaseController {
             $product->save();
         }*/
 
-        return new HtmlResponse('eh');
+        //return new HtmlResponse('eh');
+        // Get categories
+        $category = new Category;
+        $categories = $category->sort_by_hierarchy();
+
+        $output[]  = array( 'Category', 'Category ID' );
+
+        foreach ( $categories as $category ) {
+            $output[] = array( str_repeat( ' ', $category->depth * 5 ) . $category->name, $category->id );
+        }
+
+        return new CsvResponse( $output, 'categories.csv' );
     }
 }

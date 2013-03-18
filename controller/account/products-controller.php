@@ -470,7 +470,7 @@ class ProductsController extends BaseController {
         switch ( $_POST['type'] ) {
             case 'brand':
                 $brand = new Brand;
-                $ac_suggestions = $brand->autocomplete_by_account( $_POST['term'], $this->user->account->id );
+                $ac_suggestions = $brand->autocomplete_all( $_POST['term'], $this->user->account->id );
             break;
 
             case 'product':
@@ -933,10 +933,20 @@ class ProductsController extends BaseController {
 				// If it's a drop down, set the values
 				if ( $dropdown )
 				foreach ( $po['list_items'] as $li_id => $price ) {
+                    if ( is_array( $price ) ) {
+                        $alt_price = $price['reg'];
+                        $alt_price2 = $price['50'];
+                        $price = $price['sale'];
+                    } else {
+                        $alt_price = $alt_price2 = 0;
+                    }
+
 					$product_option_list_item_values[] = array(
                         'product_option_id' => $po_id
                         , 'product_option_list_item_id' => $li_id
                         , 'price' => $price
+                        , 'alt_price' => $alt_price
+                        , 'alt_price2' => $alt_price2
                     );
 				}
 			}

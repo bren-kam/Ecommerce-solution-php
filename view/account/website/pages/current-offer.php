@@ -14,6 +14,7 @@
 		<td>
 			<div id="dCouponContent"><?php if ( !empty( $coupon ) ) { ?><img src="<?php echo ( stristr( $coupon->value, 'http' ) ) ? $coupon->value : 'http://' . $user->account->domain . $coupon->value; ?>" alt="<?php echo _('Coupon'); ?>" style="padding-bottom: 10px;" /><br /><?php } ?></div>
             <a href="#" id="aUploadImage" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
+            <a href="#" class="button loader hidden" id="upload-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
             <div class="hidden" id="upload-image"></div>
             <?php nonce::field( 'upload_image', '_upload_image' ); ?>
 			<br /><br />

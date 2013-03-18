@@ -86,6 +86,8 @@ input.button {
 }
 
 .button object { background: transparent; display: inline; position:absolute; }
+.button.loader { cursor: default }
+.button img { position: relative; top: 3px }
 
 .hidden, .dialog { display: none }
 

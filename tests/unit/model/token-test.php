@@ -16,9 +16,23 @@ class TokenTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test
+     * Test create
      */
-    public function testReplace() {
+    public function testCreate() {
+        // Declare variables
+        $type = 'user-creation';
+        
+        // Create
+        $this->token->type = $type;
+        $this->token->create();
+
+        // Make sure it's in the database
+        $retrieved_type = $this->db->get_var( 'SELECT `token_type` FROM `tokens` WHERE `token_id` = ' . (int) $this->token->id );
+
+        $this->assertEquals( $type, $retrieved_type );
+
+        // Delete
+        $this->db->delete( 'tokens', array( 'token_id' => $this->token->id ), 'i' );
     }
 
     /**
