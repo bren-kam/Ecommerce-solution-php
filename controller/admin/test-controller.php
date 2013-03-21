@@ -41,15 +41,10 @@ class TestController extends BaseController {
 
         //return new HtmlResponse('eh');
         // Get categories
-        $category = new Category;
-        $categories = $category->sort_by_hierarchy();
 
-        $output[]  = array( 'Category', 'Category ID' );
+        $coaster = new CoasterProductFeedGateway();
+        $coaster->run();
 
-        foreach ( $categories as $category ) {
-            $output[] = array( str_repeat( ' ', $category->depth * 5 ) . $category->name, $category->id );
-        }
-
-        return new CsvResponse( $output, 'categories.csv' );
+        return new HtmlResponse( 'heh' );
     }
 }
