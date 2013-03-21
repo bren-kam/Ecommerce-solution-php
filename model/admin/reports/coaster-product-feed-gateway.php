@@ -7,12 +7,18 @@
  */
 class CoasterProductFeedGateway extends ProductFeedGateway {
     const USER_ID = 1915; // Coaster
+    const BRAND_ID = 36;
 
     /**
-     * Hold the file to XML data from
+     * Hold the item data
      * @var string|null
      */
-    protected $file = null;
+    protected $items = null;
+
+    /**
+     * Hold CSV handler
+     */
+    protected $handle;
 
     /**
      * Hold the category code translation
@@ -140,6 +146,15 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         , 'GLASS TOP' => 130
     );
 
+    // Roomname conversion
+    protected $roomnames = array(
+        'B (BEDROOM)'           => 'bedroom'
+        , 'D (DINING)'          => 'dining'
+        , 'A (ACCESSORIES)'     => 'accents'
+        , 'L (LIVING ROOM)'     => 'living-room'
+        , 'H (HOME OFFICE)'     => 'home-office'
+    );
+
     /**
      * Construct
      */
@@ -151,150 +166,19 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
      * Do the setup to get anything we need
      */
     protected function setup() {
-        ini_set( 'max_execution_time', 600 ); // 10 minutes
+        ini_set( 'max_execution_time', 1200 ); // 20 minutes
 		ini_set( 'memory_limit', '512M' );
-		set_time_limit( 600 );
-
-        // Time how long we've been on this page
-        $this->ftp = new Ftp( '/CustEDI/3400-/Outbound/' );
-
-        // Set login information
-		$this->ftp->host     = self::FTP_URL;
-		$this->ftp->username = self::USERNAME;
-		$this->ftp->password = self::PASSWORD;
-		$this->ftp->port     = 21;
-
-		// Connect
-		$this->ftp->connect();
+		set_time_limit( 1200 );
+		
+        // Load excel reader
+        $this->handle = fopen( '/gsr/systems/backend-testing/temp/product-master-2013.csv', "r" );
     }
 
     /**
      * Get Data from Ashley
      */
     protected function get_data() {
-        // Get al ist of the files
-        $files = $this->ftp->dir_list();
-
-        $count = count( $files );
-		
-        while ( !isset( $file ) && 0 != $count ) {
-            $last_file = array_pop( $files );
-
-            if ( 'xml' == f::extension( $last_file ) )
-                $file = $last_file;
-			
-            $count = count( $files );
-        }
-
-        $xml_reader = new XMLReader();
-
-		// Grab the latest file
-		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file ) )
-			$this->ftp->get( $file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
-		
-		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file );
-		$j = -1;
-
-		while( $xml_reader->read() ) {
-			switch ( $xml_reader->localName ) {
-				case 'item':
-					// Make sure we're not dealing with an end element
-					if( $xml_reader->nodeType == XMLReader::END_ELEMENT ) {
-						$xml_reader->next();
-						continue;
-					}
-					
-					$image = trim( $xml_reader->getAttribute('image') );
-					
-					if ( empty( $image ) )
-						continue;
-
-					// Increment the item
-					$j++;
-
-					// Set the dimensions
-					$dimensions = 0;
-					
-
-					// Create base for items
-					$this->items[$j] = array(
-						'status' => ( 'Discontinued' == trim( $xml_reader->getAttribute('itemStatus') ) ) ? 'discontinued' : 'in-stock'
-						, 'nodeType' => trim( $xml_reader->nodeType )
-						, 'group' => trim( $xml_reader->getAttribute('itemGroupCode') )
-						, 'image' => $image
-						, 'brand_id' => $this->get_brand( trim( $xml_reader->getAttribute('retailSalesCategory') ) )
-						, 'specs' => ''
-						, 'weight' => 0
-						, 'volume' => 0
-					);
-
-				break;
-
-				// SKU
-				case 'itemIdentifier':
-					if ( !isset( $this->items[$j]['sku'] ) )
-						$this->items[$j]['sku'] = trim( $xml_reader->getAttribute('itemNumber') );
-				break;
-
-				// Description
-				case 'itemDescription':
-					$this->items[$j]['description'] = trim( $xml_reader->getAttribute('itemFriendlyDescription') );
-				break;
-
-				// We're in the item dimensions section
-				case 'itemDimensions':
-					$dimensions = 1;
-				break;
-
-                // Turn off so it doesn't get overridden by package characteristics
-                case 'packageDimensions':
-                    $dimensions = 0;
-                break;
-
-				// Specifications
-				case 'depth':
-					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] = 'Depth`' . trim( $xml_reader->getAttribute('value') );
-				break;
-
-				// Specifications
-				case 'height':
-					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] .= ' Inches`0|Height`' . trim( $xml_reader->getAttribute('value') );
-				break;
-
-				// Specifications
-				case 'length':
-					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] .= ' Inches`1|Length`' . trim( $xml_reader->getAttribute('value') ) . ' Inches`2';
-
-					$dimensions = 0;
-				break;
-
-				// Weight
-				case 'weight':
-					if ( !isset( $this->items[$j]['weight'] ) )
-						$this->items[$j]['weight'] = trim( $xml_reader->getAttribute('value') );
-				break;
-
-				/*// Volume
-				case 'volume':
-					if ( !isset( $this->items[$j]['volume'] ) )
-						$this->items[$j]['volume'] = trim( $xml_reader->getAttribute('value') );
-				break;*/
-
-				// Groups
-				case 'groupInformation':
-					$this->groups[$xml_reader->getAttribute('groupID')] = array(
-						'name' => trim( $xml_reader->getAttribute('groupName') )
-						, 'description' => trim( $xml_reader->getAttribute('groupDescription') )
-						, 'features' => trim( $xml_reader->getAttribute('groupFeatures') )
-					);
-				break;
-			}
-		}
-
-		$xml_reader->close();
+        // Nothing special needs to be done here
     }
 
     /**
@@ -302,8 +186,12 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
      */
     protected function process() {
         // Generate array of our items
-		foreach( $this->items as $item ) {
-			/***** SETUP OF PRODUCT *****/
+        while( $item = fgetcsv( $this->handle ) ) {
+            //fn::info( $item );exit;
+            if ( 'Itemnumber' == $item[0] )
+                continue;
+
+            /***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
             echo str_repeat( ' ', 50 );
@@ -313,27 +201,14 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             // Reset errors
             $this->reset_error();
 
-            /***** CHECK PRODUCT *****/
+            /***** GET PRODUCT *****/
 
             // Setup the variables to see if we should continue
-			$sku = $item['sku'];
+			$sku = $item[0];
 
-            // We can't have a SKU like B457B532 -- it means it is international and comes in a container
-			$this->check( !preg_match( '/[a-zA-Z]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) );
-
-            if ( !isset( $this->groups[$item['group'] ] ) ) {
-                $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
-
-                if ( !$this->check( isset( $this->groups[$item['group'] ] ) ) )
-                    $this->non_existent_groups[] = $item['group'];
-            }
-
-            // If it has an error, don't continue
-            if ( $this->has_error() )
-                continue;
-
-
-            /***** GET PRODUCT *****/
+            $name = $item[1] . ' ';
+            $name .= ( empty( $item[18] ) ) ? $item[22] : $item[18];
+            $name = format::convert_characters( trim( $name ) );
 
             // Get Product
 			$product = $this->get_existing_product( $sku );
@@ -350,30 +225,32 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
                 $product->publish_date = dt::now();
 
                 // Increment product count
-                $this->new_product( format::convert_characters( $this->groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
-            }
+                $this->new_product( $name . format::convert_characters( "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" ) );
+
+                // Add category
+                $product->add_category( $this->categories[$item[7]] );
+            } else {
+				continue;
+			}
 
             /***** PREPARE PRODUCT DATA *****/
-
-            $group = $this->groups[$item['group']];
-            $group_name = $group['name'] . ' - ';
-
-            $group_description = '<p>' . $group['description'] . '</p>';
-            $group_features = '<p>' . $group['features'] . '</p>';
-
-			$name = format::convert_characters( $group_name . $item['description'] );
 
             // Now get old specs
             $product_specifications = unserialize( $product->product_specifications );
             $new_product_specifications = '';
 
-            if( is_array( $product_specifications ) )
+            if ( is_array( $product_specifications ) )
             foreach( $product_specifications as $ps ) {
                 if( !empty( $product_specifications ) )
                     $new_product_specifications .= '|';
 
                 $new_product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
             }
+
+
+            $item_specifications = 'Depth`' . $item[23] . '`0|';
+            $item_specifications .= 'Width`' . $item[24] . '`1|';
+            $item_specifications .= 'Height`' . $item[25] . '`2';
 
             /***** ADD PRODUCT DATA *****/
 
@@ -384,13 +261,13 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             $product->name = $this->identical( $name, $product->name, 'name' );
             $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
-            $product->status = $this->identical( $item['status'], $product->status, 'status' );
-            $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
-            $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
-            $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
+            $product->status = $this->identical( 'in-stock', $product->status, 'status' );
+            $product->weight = $this->identical( $item[16], $product->weight, 'weight' );
+            $product->brand_id = $this->identical( self::BRAND_ID, $product->brand_id, 'brand' );
+            $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . trim( $item[15] ) . "</p>" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
 
             /** Product Specs are special */
-            $product_specifications = explode( '|', $this->identical( $item['specs'], $new_product_specifications, 'product-specifications' ) );
+            $product_specifications = explode( '|', $this->identical( $item_specifications, $new_product_specifications, 'product-specifications' ) );
 
             $product_specifications_array = array();
 
@@ -403,20 +280,46 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             /***** ADD PRODUCT IMAGES *****/
 
             // Let's hope it's big!
-			$image = $item['image'];
-            $image_url = 'https://www.ashleydirect.com/graphics/' . $image;
-            
+			$image = preg_replace( '/[^0-9]/', '', $sku );
+            $image_urls = array();
+            $image_url = '';
+
+            $image_urls[] = 'http://www.greysuitretail.com/coaster-images/' . $this->roomnames[$item[5]] . '/' . $image . '.jpg';
+            $image_urls[] = 'http://www.greysuitretail.com/coaster-images/' . $this->roomnames[$item[5]] . '/' . $image . '-A.jpg';
+            $image_urls[] = 'http://www.greysuitretail.com/coaster-images/' . $this->roomnames[$item[5]] . '/' . $image . '-B.jpg';
+
+            if ( 'bedroom' == $this->roomnames[$item[5]] ) {
+                $image_urls[] = 'http://www.greysuitretail.com/coaster-images/beds-and-other/' . $image . '.jpg';
+                $image_urls[] = 'http://www.greysuitretail.com/coaster-images/beds-and-other/' . $image . '-A.jpg';
+                $image_urls[] = 'http://www.greysuitretail.com/coaster-images/beds-and-other/' . $image . '-B.jpg';
+            }
+
             // Setup images array
             $images = explode( '|', $product->images );
 
-            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) ) {
+                foreach( $image_urls as $url ) {
+                    if ( curl::check_file( $url ) ) {
+                        $image_url = $url;
+                        break;
+                    }
+                }
 
-                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                    $this->not_identical[] = 'images';
-                    $images[] = $image_name;
+                if ( !empty( $image_url ) ) {
+					$skip = false;
+					try {
+						$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+					} catch ( HelperException $e ) {
+						$skip = true;
+					}
+					
+					
+                    if ( !$skip && ( !is_array( $images ) || !in_array( $image_name, $images ) ) ) {
+                        $this->not_identical[] = 'images';
+                        $images[] = $image_name;
 
-                    $product->add_images( $images );
+                        $product->add_images( $images );
+                    }
                 }
             }
 
@@ -451,7 +354,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         $user = new User();
         $user->get(1); // Kerry Jones
 
-        $subject = 'Ashley Feed - ' . dt::now();
+        $subject = 'Coaster Feed - ' . dt::now();
 
         $new_products = @implode( PHP_EOL, $this->new_products );
 
@@ -459,8 +362,6 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         $message .= 'Skipped/Unadjusted Products: ' . count( $this->skipped ) . PHP_EOL;
         $message .= str_repeat( PHP_EOL, 2 );
         $message .= "List Of New Products:" . PHP_EOL . $new_products;
-        $message .= str_repeat( PHP_EOL, 2 );
-        $message .= "Groups We Don't Have:" . PHP_EOL . @implode( PHP_EOL, $this->non_existent_groups );
 
         fn::mail( $user->email, $subject, $message );
 
@@ -468,17 +369,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         if( count( $this->new_products ) > 0 ) {
 			$message = "-----New Products-----" . PHP_EOL . $new_products;
 
-			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
+			fn::mail( 'kerry@greysuitretail.com, chris@greysuitretail.com', 'Coaster Products - ' . dt::now(), $message );
 		}
     }
-
-    /**
-	 * Get Brand
-	 *
-	 * @param string $retail_sales_category_code
-	 * @return int
-	 */
-	protected function get_brand( $retail_sales_category_code ) {
-		return ( array_key_exists( $retail_sales_category_code, $this->codes ) ) ? $this->codes[$retail_sales_category_code] : '';
-	}
 }
