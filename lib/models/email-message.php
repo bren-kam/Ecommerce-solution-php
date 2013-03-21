@@ -170,7 +170,7 @@ class EmailMessage extends ActiveRecordBase {
             , 'type' => $this->type
             , 'date_sent' => $this->date_sent
         ), array(
-            'email_template_id' => $this->email_template_id
+            'email_message_id' => $this->email_message_id
             , 'website_id' => $this->website_id
         ), 'iissss', 'ii' );
     }

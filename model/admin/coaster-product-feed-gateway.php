@@ -169,9 +169,9 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         ini_set( 'max_execution_time', 1200 ); // 20 minutes
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 1200 );
-
+		
         // Load excel reader
-        $this->handle = fopen( '../temp/product-master-2013.csv', "r" );
+        $this->handle = fopen( '/gsr/systems/backend-testing/temp/product-master-2013.csv', "r" );
     }
 
     /**
@@ -229,7 +229,9 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
 
                 // Add category
                 $product->add_category( $this->categories[$item[7]] );
-            }
+            } else {
+				continue;
+			}
 
             /***** PREPARE PRODUCT DATA *****/
 
@@ -304,9 +306,15 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
                 }
 
                 if ( !empty( $image_url ) ) {
-                    $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-
-                    if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+					$skip = false;
+					try {
+						$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+					} catch ( HelperException $e ) {
+						$skip = true;
+					}
+					
+					
+                    if ( !$skip && ( !is_array( $images ) || !in_array( $image_name, $images ) ) ) {
                         $this->not_identical[] = 'images';
                         $images[] = $image_name;
 
