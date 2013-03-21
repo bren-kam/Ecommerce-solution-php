@@ -146,6 +146,15 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         , 'GLASS TOP' => 130
     );
 
+    // Roomname conversion
+    protected $roomnames = array(
+        'B (BEDROOM)'           => 'bedroom'
+        , 'D (DINING)'          => 'dining'
+        , 'A (ACCESSORIES)'     => 'accents'
+        , 'L (LIVING ROOM)'     => 'living-room'
+        , 'H (HOME OFFICE)'     => 'home-office'
+    );
+
     /**
      * Construct
      */
@@ -157,12 +166,12 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
      * Do the setup to get anything we need
      */
     protected function setup() {
-        ini_set( 'max_execution_time', 600 ); // 10 minutes
+        ini_set( 'max_execution_time', 1200 ); // 20 minutes
 		ini_set( 'memory_limit', '512M' );
-		set_time_limit( 600 );
+		set_time_limit( 1200 );
 
         // Load excel reader
-        $this->handle = fopen( $_GET['f'], "r" );
+        $this->handle = fopen( '../temp/product-master-2013.csv', "r" );
     }
 
     /**
@@ -269,20 +278,40 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             /***** ADD PRODUCT IMAGES *****/
 
             // Let's hope it's big!
-			$image = $item['image'];
-            $image_url = 'https://www.ashleydirect.com/graphics/' . $image;
-            
+			$image = preg_replace( '/[^0-9]/', '', $sku );
+            $image_urls = array();
+            $image_url = '';
+
+            $image_urls[] = 'http://www.greysuitretail.com/coaster-images/' . $this->roomnames[$item[5]] . '/' . $image . '.jpg';
+            $image_urls[] = 'http://www.greysuitretail.com/coaster-images/' . $this->roomnames[$item[5]] . '/' . $image . '-A.jpg';
+            $image_urls[] = 'http://www.greysuitretail.com/coaster-images/' . $this->roomnames[$item[5]] . '/' . $image . '-B.jpg';
+
+            if ( 'bedroom' == $this->roomnames[$item[5]] ) {
+                $image_urls[] = 'http://www.greysuitretail.com/coaster-images/beds-and-other/' . $image . '.jpg';
+                $image_urls[] = 'http://www.greysuitretail.com/coaster-images/beds-and-other/' . $image . '-A.jpg';
+                $image_urls[] = 'http://www.greysuitretail.com/coaster-images/beds-and-other/' . $image . '-B.jpg';
+            }
+
             // Setup images array
             $images = explode( '|', $product->images );
 
-            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) ) {
+                foreach( $image_urls as $url ) {
+                    if ( curl::check_file( $url ) ) {
+                        $image_url = $url;
+                        break;
+                    }
+                }
 
-                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                    $this->not_identical[] = 'images';
-                    $images[] = $image_name;
+                if ( !empty( $image_url ) ) {
+                    $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
 
-                    $product->add_images( $images );
+                    if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+                        $this->not_identical[] = 'images';
+                        $images[] = $image_name;
+
+                        $product->add_images( $images );
+                    }
                 }
             }
 
@@ -325,8 +354,6 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         $message .= 'Skipped/Unadjusted Products: ' . count( $this->skipped ) . PHP_EOL;
         $message .= str_repeat( PHP_EOL, 2 );
         $message .= "List Of New Products:" . PHP_EOL . $new_products;
-        $message .= str_repeat( PHP_EOL, 2 );
-        $message .= "Groups We Don't Have:" . PHP_EOL . @implode( PHP_EOL, $this->non_existent_groups );
 
         fn::mail( $user->email, $subject, $message );
 
