@@ -149,14 +149,20 @@ class AccountProductOptionTest extends BaseDatabaseTest {
                 'product_option_id' => -2
                 , 'product_option_list_item_id' => -10
                 , 'price' => -20
+                , 'alt_price' => -30
+                , 'alt_price2' => -40
             ), array(
                 'product_option_id' => -4
                 , 'product_option_list_item_id' => -12
                 , 'price' => -22
+                , 'alt_price' => -32
+                , 'alt_price2' => -42
             ), array(
                 'product_option_id' => -6
                 , 'product_option_list_item_id' => -14
                 , 'price' => -24
+                , 'alt_price' => -34
+                , 'alt_price2' => -44
             )
         );
 

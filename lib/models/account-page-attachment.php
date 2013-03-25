@@ -68,6 +68,8 @@ class AccountPageAttachment extends ActiveRecordBase {
      * Create
      */
     public function create() {
+        $this->status = 1;
+
         $this->insert( array(
             'website_page_id' => $this->website_page_id
             , 'key' => $this->key
@@ -75,7 +77,8 @@ class AccountPageAttachment extends ActiveRecordBase {
             , 'extra' => $this->extra
             , 'meta' => $this->meta
             , 'sequence' => $this->sequence
-        ), 'isssss' );
+            , 'status' => $this->status
+        ), 'issssii' );
 
         $this->id = $this->website_attachment_id = $this->get_insert_id();
     }

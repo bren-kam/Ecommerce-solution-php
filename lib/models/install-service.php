@@ -228,15 +228,17 @@ class InstallService {
 				continue;
 
             if ( !in_array( $taa->key, array( 'email', 'search' ) ) ) {
-                $value = $file->copy_file( $account->id, $taa->value, 'websites' );
-
-                if ( $value ) {
-                    // Create the link in website files
-                    $account_file = new AccountFile();
-                    $account_file->website_id = $account->id;
-                    $account_file->file_path = $value;
-                    $account_file->create();
+                try {
+                    $value = $file->copy_file( $account->id, $taa->value, 'websites' );
+                } catch ( HelperException $e ) {
+                    continue;
                 }
+
+                // Create the link in website files
+                $account_file = new AccountFile();
+                $account_file->website_id = $account->id;
+                $account_file->file_path = $value;
+                $account_file->create();
             } else {
                 $value = '';
             }
