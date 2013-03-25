@@ -935,7 +935,7 @@ class ProductsController extends BaseController {
 				foreach ( $po['list_items'] as $li_id => $price ) {
                     if ( is_array( $price ) ) {
                         $alt_price = $price['reg'];
-                        $alt_price2 = $price['50'];
+                        $alt_price2 = $price['our-price'];
                         $price = $price['sale'];
                     } else {
                         $alt_price = $alt_price2 = 0;
