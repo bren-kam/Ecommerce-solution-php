@@ -112,13 +112,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 				if( product_options[i]['option_type'] == 'select' ) {
                     if( 357 == i ) { // Special product option for G-Force
-                        divContent += '<div class="row"><div class="cell left">Sizes</div><div class="cell" style="width:93px;">Reg</div><div class="cell" style="width:93px;">50% Off</div><div class="cell" style="width:93px;">Sale</div></div>';
+                        divContent += '<div class="row"><div class="cell left">Sizes</div><div class="cell" style="width:93px;">Reg</div><div class="cell" style="width:93px;">Our Price</div><div class="cell" style="width:93px;">Sale</div></div>';
 
                         for( var j in product_options[i]['list_items'] ) {
                             divContent += '<div class="row">';
                             divContent += '<div class="cell left"><input type="checkbox" class="list-item-cb cb cb-option-' + i + '" id="cbOption_' + i + '_' + j + '" name="product_list_items[' + i + '][' + j + ']" value="true" /> ' + product_options[i]['list_items'][j] + '</div>';
                             divContent += '<div class="cell"><input type="text" class="tb highlight-price" id="tPrice_' + i + '_' + j + '" name="tPrices[' + i + '][' + j +'][reg]" maxlength="10" disabled="disabled" style="width:75px" /></div>';
-                            divContent += '<div class="cell"><input type="text" class="tb highlight-price" id="t50Price_' + i + '_' + j + '" name="tPrices[' + i + '][' + j +'][50]" maxlength="10" disabled="disabled" style="width:75px" /></div>';
+                            divContent += '<div class="cell"><input type="text" class="tb highlight-price" id="tOurPrice_' + i + '_' + j + '" name="tPrices[' + i + '][' + j +'][our-price]" maxlength="10" disabled="disabled" style="width:75px" /></div>';
                             divContent += '<div class="cell"><input type="text" class="tb highlight-price" id="tSalePrice_' + i + '_' + j + '" name="tPrices[' + i + '][' + j +'][sale]" maxlength="10" disabled="disabled" style="width:75px" /></div>';
                             divContent += '</div>';
                         }
@@ -177,7 +177,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
                     if( 357 == i ) {
                         if ( null != p['product_options'][i]['list_items'][j] ) {
                             $( '#tPrice_' + i + '_' + j ).val( p['product_options'][i]['list_items'][j]['alt_price'] ).parent().parent().find('input[type=text]').attr( 'disabled', false );
-                            $( '#t50Price_' + i + '_' + j ).val( p['product_options'][i]['list_items'][j]['alt_price2'] ).parent().parent().find('input[type=text]').attr( 'disabled', false );
+                            $( '#tOurPrice_' + i + '_' + j ).val( p['product_options'][i]['list_items'][j]['alt_price2'] ).parent().parent().find('input[type=text]').attr( 'disabled', false );
                             $( '#tSalePrice_' + i + '_' + j ).val( p['product_options'][i]['list_items'][j]['price'] ).parent().parent().find('input[type=text]').attr( 'disabled', false );
                         }
                     } else {
