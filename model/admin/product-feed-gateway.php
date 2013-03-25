@@ -80,7 +80,7 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
      * See if something exists and return product id if it does
      *
      * @param mixed $key
-     * @return mixed
+     * @return Product
      */
     protected function get_existing_product( $key ) {
         $key = (string) $key;

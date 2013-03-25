@@ -465,8 +465,13 @@ class ProductsController extends BaseController {
         $confirm_delete = _('Are you sure you want to delete this product? This cannot be undone.');
         $delete_product_nonce = nonce::create( 'delete' );
 
+        /**
+         * @var Product $p
+         */
         if ( is_array( $products ) )
         foreach ( $products as $p ) {
+            $created_by = ( 0 == $p->website_id ) ? $p->created_by : '<span class="highlight">' . $p->created_by . '</span>';
+
             $data[] = array(
                 $p->name .
                     '<div>' .
@@ -474,7 +479,7 @@ class ProductsController extends BaseController {
                         '<a href="' . url::add_query_arg( array( 'pid' => $p->id, '_nonce' => $delete_product_nonce ), '/products/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a> | ' .
                         '<a href="/products/clone-product/?pid=' . $p->id . '" title="' . _('Clone') . '" target="_blank">' . _('Clone') . '</a>' .
                     '</div>'
-                , $p->created_by
+                , $created_by
                 , $p->updated_by
                 , $p->brand
                 , $p->sku
