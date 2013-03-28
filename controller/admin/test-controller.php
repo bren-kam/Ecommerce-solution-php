@@ -42,8 +42,10 @@ class TestController extends BaseController {
         //return new HtmlResponse('eh');
         // Get categories
 
-        $coaster = new CoasterProductFeedGateway();
-        $coaster->run();
+        //$coaster = new CoasterProductFeedGateway();
+        //$coaster->run();
+		$ashley = new AshleyMasterProductFeedGateway();
+        $ashley->run();
 
         return new HtmlResponse( 'heh' );
     }
