@@ -19,8 +19,8 @@ define( 'LIVE', false );
 if ( LIVE ) {
     error_reporting(0);
 } else {
-    error_reporting(0);
-    //error_reporting( E_ALL ^ E_NOTICE );
+    //error_reporting(0);
+    error_reporting( E_ALL ^ E_NOTICE );
 }
 
 /** Error Handler */

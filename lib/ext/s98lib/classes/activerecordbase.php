@@ -678,7 +678,7 @@ class ActiveRecordStatement {
     /**
      * Get Column
      *
-     * @return object
+     * @return object|array
      */
     public function get_col() {
         return $this->_ar->get_col( $this->_statement );

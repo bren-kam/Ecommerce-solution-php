@@ -184,6 +184,8 @@ class ProductsController extends BaseController {
         $form->add_field( 'textarea', '', 'taSKUs' )
             ->add_validation( 'req', _('You must enter SKUs before you can add products') );
 
+        $success = false;
+
         if ( $form->posted() ) {
             $account_product = new AccountProduct();
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
@@ -199,23 +201,24 @@ class ProductsController extends BaseController {
                 $this->notify( _("There is not enough free space to add these products. Delete at least $quantity products, or expand the size of the product catalog."), false );
             } else {
                 // Add bulk
-                $quantity = $account_product->add_bulk( $this->user->account->id, $this->user->account->get_industries(), $skus );
+                list( $quantity, $already_existed, $not_added_skus ) = $account_product->add_bulk_all( $this->user->account->id, $this->user->account->get_industries(), $skus );
 
                 // Reorganize categories
                 $account_category = new AccountCategory();
                 $account_category->reorganize_categories( $this->user->account->id, new Category() );
 
                 $this->notify( $quantity . ' ' . _('products added successfully!') );
+                $success = true;
             }
 
         }
 
-        $response = $this->get_template_response( 'add-bulk' )
+        $form = $form->generate_form();
+
+        return $this->get_template_response( 'add-bulk' )
             ->add_title( _('Add Bulk') )
             ->select( 'sub-products', 'add-bulk' )
-            ->set( array( 'form' => $form->generate_form() ) );
-
-        return $response;
+            ->set( compact( 'form', 'already_existed', 'not_added_skus', 'success' ) );
     }
 
     /**
