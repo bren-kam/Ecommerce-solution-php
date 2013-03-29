@@ -60,6 +60,8 @@ textarea { font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px;
 li { padding-bottom: 7px }
 strong { font-weight: bold }
 em { font-style: italic }
+ol { margin-left: 25px }
+ol li { list-style: decimal; }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }

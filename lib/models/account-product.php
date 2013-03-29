@@ -206,6 +206,124 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Add Bulk All
+     *
+     * @param int $account_id
+     * @param array $industry_ids
+     * @param array $product_skus
+     * @return array
+     */
+    public function add_bulk_all( $account_id, array $industry_ids, array $product_skus ) {
+        // Setup variables
+        $pre_not_added_skus = $already_existed_skus = $not_added_skus = array();
+
+        // Get the count of the products that would be added (exclude ones that the website already has)
+        $adding_skus = $this->get_bulk_skus_to_be_added( $account_id, $industry_ids, $product_skus );
+
+        // Figure out if we have to check for existing skus
+        foreach ( $product_skus as $sku ) {
+            $sku = trim( $sku );
+
+            if ( !in_array( $sku, $adding_skus ) )
+                $pre_not_added_skus[] = $sku;
+        }
+
+        // If we do
+        if ( count( $pre_not_added_skus ) > 0 ) {
+            $already_existed_skus = $this->get_bulk_already_existed_skus( $account_id, $product_skus );
+
+            foreach ( $pre_not_added_skus as $sku ) {
+                if ( !in_array( $sku, $already_existed_skus ) )
+                    $not_added_skus[] = $sku;
+            }
+        }
+
+        // Add the skus
+        $quantity = $this->add_bulk( $account_id, $industry_ids, $product_skus );
+
+        // Return everything we need to
+        return array( $quantity, count( $already_existed_skus ), $not_added_skus );
+    }
+
+    /**
+     * Get the SKUs that will be added for bulk
+     *
+     * @param int $account_id
+     * @param array $industry_ids
+   	 * @param array $product_skus
+     * @return array
+     */
+    public function get_bulk_skus_to_be_added( $account_id, array $industry_ids, array $product_skus ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+        // Make industry IDs safe
+        foreach ( $industry_ids as &$iid ) {
+            $iid = (int) $iid;
+        }
+
+        $industry_ids_sql = implode( ',', $industry_ids );
+
+        // Split into chunks so we can do queries one at a time
+        $product_sku_chunks = array_chunk( $product_skus, 500 );
+
+        $adding_skus = array();
+
+        foreach ( $product_sku_chunks as $product_skus ) {
+            // Get the count
+            $product_sku_count = count( $product_skus );
+
+            // Turn it into a string
+            $product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
+
+            // Magical Query
+            // Insert website products
+            $adding_skus = array_merge( $this->prepare(
+                "SELECT p.`sku` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`industry_id` IN ( $industry_ids_sql ) AND ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`publish_visibility` = 'public' AND p.`sku` IN ( $product_skus_sql ) AND ( wp.`product_id` IS NULL OR wp.`active` = 0 )"
+                , str_repeat( 's', $product_sku_count )
+                , $product_skus
+            )->get_col( PDO::FETCH_ASSOC ), $adding_skus );
+        }
+
+        return $adding_skus;
+    }
+
+    /**
+     * Get the SKUs that will be added for bulk
+     *
+     * @param int $account_id
+   	 * @param array $product_skus
+     * @return array
+     */
+    public function get_bulk_already_existed_skus( $account_id, array $product_skus ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+        // Split into chunks so we can do queries one at a time
+        $product_sku_chunks = array_chunk( $product_skus, 500 );
+
+        $already_existed_skus = array();
+
+        foreach ( $product_sku_chunks as $product_skus ) {
+            // Get the count
+            $product_sku_count = count( $product_skus );
+
+            // Turn it into a string
+            $product_skus_sql = '?' . str_repeat( ',?', $product_sku_count - 1 );
+
+            // Magical Query
+            // Insert website products
+            $already_existed_skus = array_merge( $this->prepare(
+                "SELECT p.`sku` FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`sku` IN ( $product_skus_sql ) AND wp.`active` = 1"
+                , str_repeat( 's', $product_sku_count )
+                , $product_skus
+            )->get_col( PDO::FETCH_ASSOC ), $already_existed_skus );
+        }
+
+        return $already_existed_skus;
+    }
+
+    /**
 	 * Add Bulk
 	 *
 	 * @param int $account_id
