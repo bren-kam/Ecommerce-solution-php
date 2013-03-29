@@ -66,7 +66,7 @@ class File {
 		$base_name = basename( $image_file );
 
 		// Upload the image
-		if ( !$this->s3->putObjectFile( $image_file, $subdomain . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ ) )
+		if ( !$this->s3->putObjectFile( $image_file, $subdomain . $this->bucket, $directory . $base_name, S3::ACL_PUBLIC_READ, array(), S3::__getMimeType( $base_name ) ) )
 			throw new HelperException( "Failed to put image on Amazon S3" );
 
         // Delete the local image
@@ -87,7 +87,7 @@ class File {
      * @return string|bool
      */
     public function upload_file( $file_path, $key, $dir = '' ) {
-		if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ ) )
+		if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ, array(), S3::__getMimeType( $key ) ) )
             throw new HelperException( 'Amazon S3 failed to upload file' );
 
         unlink( $file_path );
