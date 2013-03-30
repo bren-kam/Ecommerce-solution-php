@@ -125,7 +125,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			mkdir( $local_folder, 0777 );
             chmod( $local_folder, 0777 );
         }
-		
+
 		// Grab the latest file
 		if( !file_exists( $local_folder . $file ) )
 			$ftp->get( $file, '', $local_folder );
@@ -147,7 +147,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
             $ticket->website_id = $account->id;
             $ticket->priority = 1;
-            $ticket->status = 1;
+            $ticket->status = 0;
             $ticket->summary = 'Ashley Feed w/ No Products';
             $ticket->message = 'This account needs to be investigated';
             $ticket->create();
@@ -215,7 +215,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 				$new_product_ids[] = $product_id;
 			}
 		}
-
+		
         // Only need one of each
 		//$remove_skus = array_unique( $remove_skus );
 
@@ -234,14 +234,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Check #2 - Stop mass deletion
         $remove_product_count = count( $remove_products );
 
-        if ( $remove_product_count > 100 ) {
+        if ( $remove_product_count > 500 ) {
             // We want to skip this account
             $ticket = new Ticket();
             $ticket->user_id = self::USER_ID; // Ashley
             $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
             $ticket->website_id = $account->id;
             $ticket->priority = 1;
-            $ticket->status = 1;
+            $ticket->status = 0;
             $ticket->summary = 'Ashley Feed Removing Too Many Products';
             $ticket->message = 'Trying to remove ' . $remove_product_count . ' products';
             $ticket->create();
