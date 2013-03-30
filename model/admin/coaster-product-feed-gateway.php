@@ -204,7 +204,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             /***** GET PRODUCT *****/
 
             // Setup the variables to see if we should continue
-			$sku = $item[0];
+			$sku = trim( $item[0] );
 
             $name = $item[1] . ' ';
             $name .= ( empty( $item[18] ) ) ? $item[22] : $item[18];
@@ -371,5 +371,23 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
 
 			fn::mail( 'kerry@greysuitretail.com, chris@greysuitretail.com', 'Coaster Products - ' . dt::now(), $message );
 		}
+    }
+
+    /**
+     * Set the existing products
+     */
+    protected function get_existing_products() {
+        $products = $this->prepare(
+            "SELECT `product_id`, `brand_id`, `industry_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `weight`, `volume`, `product_specifications`, `publish_visibility`, `publish_date` FROM `products` WHERE `user_id_created` = :user_id_created"
+            , 'i'
+            , array( ':user_id_created' => $this->user_id )
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+
+        /**
+         * @var Product $product
+         */
+        foreach ( $products as $product ) {
+            $this->existing_products[$product->sku] = $product;
+        }
     }
 }
