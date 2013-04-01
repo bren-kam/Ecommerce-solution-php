@@ -12,16 +12,16 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
     // Not used
     protected $testing_sites = array( 78, 123, 124, 134, 168, 186, 190, 228, 243, 291, 292, 293, 317, 318, 327, 335
         , 337, 354, 357, 377, 458, 476, 477, 479, 527, 535, 559, 571, 587, 590, 593, 596, 600, 605, 612, 613, 638, 642
-        , 645, 650, 659, 663, 664, 665, 674, 684, 689, 692, 720, 743, 805, 806, 809, 829, 878, 882, 883, 895, 902, 904
+        , 645, 650, 659, 663, 664, 665, 674, 684, 686, 689, 692, 720, 743, 805, 806, 809, 829, 878, 882, 883, 895, 902, 904
         , 912, 915, 929, 936, 939, 942, 975, 980, 991, 1014, 1017, 1058, 1067, 1068, 1078, 1099, 1100, 1101, 1113, 1116
-        , 1120, 1126, 1129, 1140, 1141, 1147, 1148, 1184, 1186, 1197, 1198, 1199, 1206, 1218, 1221, 1223
+        , 1120, 1126, 1129, 1133, 1140, 1141, 1147, 1148, 1184, 1186, 1197, 1198, 1199, 1206, 1218, 1221, 1223
     );
 
     protected $omit_sites = array( 70, 175, 158, 161, 218, 187, 412, 296, 343, 341, 365, 345, 371, 378
         , 403, 404, 456, 457, 461, 464, 468, 492, 494, 497, 501, 506, 557, 572, 573, 582, 588, 599, 601, 606
-        , 610, 611, 614, 641, 644, 647, 649, 660, 666, 667, 668, 680, 681, 682, 686, 700, 702, 704
+        , 610, 611, 614, 641, 644, 647, 649, 660, 666, 667, 668, 680, 681, 682, 700, 702, 704
         , 760, 807, 932, 928, 897, 911, 926, 972, 978, 1011, 1015, 1016, 1022, 1032, 1034, 1037, 1042
-        , 1049, 1066, 1071, 1077, 1088, 1091, 1093, 1105, 1112, 1117, 1118, 1119, 1133, 1134, 1137, 1138, 1152
+        , 1049, 1066, 1071, 1077, 1088, 1091, 1093, 1105, 1112, 1117, 1118, 1119, 1134, 1137, 1138, 1152
         , 1156, 1204, 1205
     );
 
@@ -125,7 +125,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 			mkdir( $local_folder, 0777 );
             chmod( $local_folder, 0777 );
         }
-		
+
 		// Grab the latest file
 		if( !file_exists( $local_folder . $file ) )
 			$ftp->get( $file, '', $local_folder );
@@ -147,7 +147,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
             $ticket->website_id = $account->id;
             $ticket->priority = 1;
-            $ticket->status = 1;
+            $ticket->status = 0;
             $ticket->summary = 'Ashley Feed w/ No Products';
             $ticket->message = 'This account needs to be investigated';
             $ticket->create();
@@ -215,7 +215,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 				$new_product_ids[] = $product_id;
 			}
 		}
-
+		
         // Only need one of each
 		//$remove_skus = array_unique( $remove_skus );
 
@@ -234,14 +234,14 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Check #2 - Stop mass deletion
         $remove_product_count = count( $remove_products );
 
-        if ( $remove_product_count > 100 ) {
+        if ( $remove_product_count > 500 ) {
             // We want to skip this account
             $ticket = new Ticket();
             $ticket->user_id = self::USER_ID; // Ashley
             $ticket->assigned_to_user_id = 1; // Kerry@studio98.com
             $ticket->website_id = $account->id;
             $ticket->priority = 1;
-            $ticket->status = 1;
+            $ticket->status = 0;
             $ticket->summary = 'Ashley Feed Removing Too Many Products';
             $ticket->message = 'Trying to remove ' . $remove_product_count . ' products';
             $ticket->create();

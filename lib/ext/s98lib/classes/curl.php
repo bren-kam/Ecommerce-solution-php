@@ -102,6 +102,7 @@ class curl {
 		}
 		
 		curl_setopt( $ch, CURLOPT_URL, $url );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		
 		// Don't download content
 		curl_setopt( $ch, CURLOPT_NOBODY, 1 );
@@ -131,6 +132,7 @@ class curl {
 			$ch = curl_init();
 		}
 		
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
 		curl_setopt( $ch, CURLOPT_URL, $url );
 		curl_setopt( $ch, CURLOPT_FILE, $fp );
 		curl_setopt( $ch, CURLOPT_HEADER, 0 );

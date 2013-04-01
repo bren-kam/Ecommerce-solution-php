@@ -349,15 +349,16 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             
             // Setup images array
             $images = explode( '|', $product->images );
-
-            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-
+			$last_character = substr( $images[0], -1 );
+			
+            if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
+				$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+				
                 if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
                     $this->not_identical[] = 'images';
                     $images[] = $image_name;
-
-                    $product->add_images( $images );
+				
+					$product->add_images( $images );
                 }
             }
 

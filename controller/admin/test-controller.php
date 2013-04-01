@@ -44,6 +44,8 @@ class TestController extends BaseController {
 
         $coaster = new CoasterProductFeedGateway();
         $coaster->run();
+		//$ashley = new AshleyMasterProductFeedGateway();
+        //$ashley->run();
 
         return new HtmlResponse( 'heh' );
     }
