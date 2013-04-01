@@ -8,7 +8,7 @@
     <a href="/products/" title="<?php echo _('Products'); ?>" class="top first<?php $template->select('sub-products'); ?>"><?php echo _('Products'); ?></a>
     <?php if ( $template->v('sub-products') ) { ?>
         <a href="/products/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-        <?php if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) || '1' == $user->account->get_settings('limited-products') ) { ?>
+        <?php if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) || '1' != $user->account->get_settings('limited-products') ) { ?>
             <a href="/products/add/" title="<?php echo _('Add Product'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
         <?php } ?>
 
