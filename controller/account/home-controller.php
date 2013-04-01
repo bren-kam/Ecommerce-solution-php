@@ -28,10 +28,8 @@ class HomeController extends BaseController {
      * @return TemplateResponse
      */
     protected function select_account() {
-        $response = $this->get_template_response( 'select-account' );
-        $response->add_title( _('Select Account') );
-
-        return $response;
+        return $this->get_template_response( 'select-account' )
+            ->add_title( _('Select Account') );
     }
 
     /**

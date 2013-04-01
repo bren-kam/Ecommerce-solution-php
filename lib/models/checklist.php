@@ -52,7 +52,7 @@ class Checklist extends ActiveRecordBase {
      * @return array
      */
     public function get_incomplete() {
-        $checklist_ids = $this->get_results( 'SELECT a.`checklist_id`, a.`website_id` FROM `checklists` AS a LEFT JOIN `checklist_website_items` AS b ON ( a.`checklist_id` = b.`checklist_id` ) WHERE b.`checked` = 0 GROUP BY `website_id`', PDO::FETCH_ASSOC );
+        $checklist_ids = $this->get_results( 'SELECT c.`checklist_id`, c.`website_id` FROM `checklists` AS c LEFT JOIN `checklist_website_items` AS cwi ON ( cwi.`checklist_id` = c.`checklist_id` ) LEFT JOIN `checklist_items` AS ci ON ( ci.`checklist_item_id` = cwi.`checklist_item_id` ) WHERE cwi.`checked` = 0 AND ci.`status` = 1 GROUP BY c.`website_id`', PDO::FETCH_ASSOC );
 
 		return ar::assign_key( $checklist_ids, 'website_id', true );
 	}

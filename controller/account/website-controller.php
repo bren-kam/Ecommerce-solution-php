@@ -427,12 +427,12 @@ class WebsiteController extends BaseController {
             return new RedirectResponse('/website/sale/');
         }
 
-        $response = $this->get_template_response( 'sale' )
+        $this->resources->javascript( 'website/sale' );
+
+        return $this->get_template_response( 'sale' )
             ->add_title( _('Sale') )
             ->select( 'sale' )
             ->set( array( 'form' => $form->generate_form() ) );
-
-        return $response;
     }
 
     /**
