@@ -402,18 +402,17 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         )->get_results( PDO::FETCH_CLASS, 'Product' );
 
         library('aws/sdk.class');
-        $s3 = new AmazonS3();
+        $s3 = new AmazonS3( array( 'key' => Config::key('aws-access-key'), 'secret' => Config::key('aws-secret-key') ) );
+        $s3->debug_mode = true;
         $bucket = 'furniture.retailcatalog.us';
 
-        fn::info( $products );
-        exit;
         /**
          * @var Product $product
          **/
         foreach ( $products as $product ) {
             if ( !$product->id )
                 continue;
-
+			
             $folder = str_replace( '/', '\/', 'products/' . $product->id );
             $response = $s3->delete_all_objects( $bucket, "/^$folder\//" );
 
