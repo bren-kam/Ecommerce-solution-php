@@ -40,7 +40,7 @@ class HomeController extends BaseController {
         if ( empty( $_GET['aid'] ) )
             return new RedirectResponse('/');
 
-        $url = '/logout/';
+        $url = '/';
 
         /**
          * @var Account $account
