@@ -76,7 +76,7 @@ class AuthUserWebsite extends ActiveRecordBase {
     public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = 1 ) {
         // Setup variables
         $user = new User();
-        $user->get_by_email( $email );
+        $user->get_by_email( $email, false );
 
         $account = new Account();
         $account->get( $account_id );
