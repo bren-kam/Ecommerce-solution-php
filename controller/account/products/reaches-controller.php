@@ -165,7 +165,7 @@ class ReachesController extends BaseController {
         $comment = strip_tags( $reach_comment->comment );
 
         // If it's not private, send an email to the website user
-        if ( 0 == $reach_comment->private && ( 1 == $reach->status ) ) {
+        if ( 0 == $reach_comment->private ) {
             // No longer waiting for us
             $reach->waiting = 0;
             $reach->save();
