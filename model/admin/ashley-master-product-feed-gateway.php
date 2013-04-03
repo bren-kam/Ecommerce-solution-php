@@ -326,6 +326,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Ticket 17005 said to no longer change these.
             // $product->name = $this->identical( $name, $product->name, 'name' );
             // $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
+            
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
