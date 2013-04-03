@@ -124,14 +124,15 @@ class SettingsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
-        $logo_name =  'logo.' . str_replace( 'jpeg', 'jpg', f::extension( $_GET['qqfile'] ) );
+        $logo_name = 'logo';
 
         // Create the different versions we need
         $logo_dir = $this->user->account->id . '/logo/';
-
+		
         // Normal and large
-        $logo = $file->upload_image( $result['file_path'], $logo_name, 700, 200, 'websites', $logo_dir );
-        $file_url = str_replace( 's3.amazonaws.com', 'websites.retailcatalog.us', $file->upload_image( $result['file_path'], $logo_name, 700, 700, 'websites', $logo_dir . 'large/' ) );
+        $file->upload_image( $result['file_path'], $logo_name, 700, 200, 'websites', $logo_dir );
+        $file_url = $file->upload_image( $result['file_path'], $logo_name, 700, 700, 'websites', $logo_dir . 'large/' );
+		$file_url = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/logo/' . $file_url;
 
         // Create account file
         $account_file->website_id = $this->user->account->id;
