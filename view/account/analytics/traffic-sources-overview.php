@@ -116,7 +116,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                 <?php } ?>
             </table>
             <br />
-            <p align="right"><a href="/analytics/traffic-sources/keywords/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
+            <p align="right"><a href="/analytics/keywords/" title="<?php echo _('View Report'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('Report'); ?></span></a></p>
         </div>
     </div>
 </div>
