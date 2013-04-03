@@ -497,10 +497,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $images = explode( '|', $product->images );
 
             if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image_url ) ) {
-                /**
-                 * @var string $industry
-                 */
-                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, $industry );
+                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
 
                 if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
                     $this->not_identical[] = 'images';
