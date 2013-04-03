@@ -1024,7 +1024,7 @@ class WebsiteController extends BaseController {
         // Create the different versions we need
         $video_dir = $this->user->account->id . "/sidebar/";
         $video_url = $file->upload_file( $result['file_path'], $video_name, $video_dir );
-        $video_url = str_replace( 's3.amazonaws.com', 'websites.retailcatalog.us', $video_url );
+        $video_url = str_replace( 's3.amazonaws.com/', '', $video_url );
 
         // Create account file
         $account_file->website_id = $this->user->account->id;
