@@ -1,0 +1,52 @@
+/*************************/
+/* Label - ChangeMed.com */
+/*************************/
+body { background-color: #717c84 }
+#log-out, #log-out a { color: #586065 }
+#nav { border-bottom-color: #77b253; }
+#nav-right a, .highlight { color: #77b253 !important }
+#footer, #footer a { color: #d1dbe2 }
+#footer a:hover { color:  #fff }
+#sidebar a.sub { color: #77b253 }
+#sidebar a.sub:hover, #sidebar a.sub.selected, .service img:hover { background-color: #69727a !important; border-top-color: #ACDB00; border-bottom-color: #88AD00; }
+.boxy-wrapper .title-bar, .boxy-footer { background-color: #69727a }
+
+.button { 
+	background-color: #77b253	;
+	border: 1px solid #609640	;
+
+    /* Setup Gradient */
+    background-image: linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -o-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -moz-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -webkit-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -ms-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(132,199,91)), color-stop(0.56, rgb(119,178,83)) );
+    text-shadow: 0px 1px 0px #000000;
+    filter: dropshadow(color=#000000, offx=0, offy=1);
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(216, 228, 239, 1);
+    box-shadow: inset 0px 1px 0px 0px rgba(216, 228, 239, 1);
+}
+
+.login-button {
+	background-color: #77b253;
+	border: 1px solid #609640;
+
+    /* Setup Gradient */
+    background-image: linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -o-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -moz-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -webkit-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -ms-linear-gradient(top, rgb(132,199,91) 11%, rgb(119,178,83) 56%)
+    / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(132,199,91)), color-stop(0.56, rgb(119,178,83)) );
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(216, 228, 239, 1);
+    box-shadow: inset 0px 1px 0px 0px rgba(216, 228, 239, 1);
+}
+
+#login-logo { margin-bottom: 0; margin-top: 90px }
+
+/**** OLD ****/
+a { color: #77b253; }
+a:hover { color: #68a841 }
+#nav, .box h2 { background-color: #eff5fa }
+#description { color: #3e65a5 }
