@@ -301,7 +301,7 @@ class SubscribersController extends BaseController {
         		$er = new Excel_Reader();
         		// Set the basics and then read in the rows
         		$er->setOutputEncoding('ASCII');
-        		$er->read( $response['file_path'] );
+        		$er->read( $result['file_path'] );
 
         		$rows = $er->sheets[0]['cells'];
         		$index = 1;
@@ -309,7 +309,7 @@ class SubscribersController extends BaseController {
 
         	case 'csv':
         		// Make sure it's opened properly
-        		$response->check( $handle = fopen( $response['file_path'], "r"), _('An error occurred while trying to read your file.') );
+        		$response->check( $handle = fopen( $result['file_path'], "r"), _('An error occurred while trying to read your file.') );
 
                 // If there is an error or now user id, return
                 if ( $response->has_error() )
