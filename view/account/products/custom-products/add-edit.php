@@ -246,7 +246,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
             <h2><?php echo _('Upload Images'); ?></h2>
             <p id="pUploadImagesMessage"><?php echo _('You can upload up to 10 images per product. Please ensure images are at least 500px wide or tall as a minimum.'); ?></p>
             <a href="#" id="aUpload" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
-            <div class="hidden" id="upload-image"></div>
+            <div class="transparent position-absolute" id="upload-image"></div>
             <br /><br />
             <div id="images-list">
                 <?php

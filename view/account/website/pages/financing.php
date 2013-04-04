@@ -17,7 +17,7 @@
 			</div>
 			<a href="#" id="aUploadImage" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
             <a href="#" class="button loader hidden" id="upload-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-            <div class="hidden" id="upload-image"></div>
+            <div class="transparent position-absolute" id="upload-image"></div>
             <?php nonce::field( 'upload_image', '_upload_image' ); ?>
 		</td>
 	</tr>
