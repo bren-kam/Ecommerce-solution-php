@@ -469,6 +469,9 @@ class CustomProductsController extends BaseController {
                 ->parent()
             ->appendTo('#images-list');
 
+        jQuery('#upload-loader')->hide();
+        jQuery('#aUpload')->show();
+
         $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
