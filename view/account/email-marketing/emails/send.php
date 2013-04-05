@@ -105,9 +105,11 @@ echo $template->start( _('Send Email'), '../sidebar' );
                     foreach ( $templates as $email_template ) {
                         if ( 'product' != $email_template->type )
                             continue;
-                    ?>
-                    <li><a href="#" title="<?php echo $email_template->name; ?>"><img src="<?php echo ( empty( $email_template->thumbnail ) ) ? '/images/emails/thumbnails/default.jpg' : $email_template->thumbnail; ?>" class="slide" id="aSlide<?php echo $email_template->id; ?>" width="100" height="113" alt="<?php echo $email_template->name; ?>" /></a></li>
-                    <?php } ?>
+                        ?>
+                        <li><a href="#" title="<?php echo $email_template->name; ?>"><img src="<?php echo ( empty( $email_template->thumbnail ) ) ? '/images/emails/thumbnails/default.jpg' : $email_template->thumbnail; ?>" class="slide" id="aSlide<?php echo $email_template->id; ?>" width="100" height="113" alt="<?php echo $email_template->name; ?>" /></a></li>
+                        <?php
+                        break;
+                    } ?>
                 </ul>
             </div>
             <div class="template-image">
@@ -124,9 +126,11 @@ echo $template->start( _('Send Email'), '../sidebar' );
                     foreach ( $templates as $email_template ) {
                         if ( 'default' != $email_template->type )
                             continue;
-                    ?>
-                    <li><a href="#" title="<?php echo $email_template->name; ?>"><img src="<?php echo ( empty( $email_template->thumbnail ) ) ? '/images/emails/thumbnails/default.jpg' : $email_template->thumbnail; ?>" class="slide" id="aSlide<?php echo $email_template->id; ?>" width="100" height="113" alt="<?php echo $email_template->name; ?>" /></a></li>
-                    <?php } ?>
+                        ?>
+                        <li><a href="#" title="<?php echo $email_template->name; ?>"><img src="<?php echo ( empty( $email_template->thumbnail ) ) ? '/images/emails/thumbnails/default.jpg' : $email_template->thumbnail; ?>" class="slide" id="aSlide<?php echo $email_template->id; ?>" width="100" height="113" alt="<?php echo $email_template->name; ?>" /></a></li>
+                        <?php
+                        break;
+                    } ?>
                 </ul>
             </div>
             <div class="template-image">
