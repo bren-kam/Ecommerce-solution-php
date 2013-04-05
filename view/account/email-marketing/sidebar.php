@@ -5,7 +5,7 @@
  */
 ?>
 <div id="sidebar">
-    <a href="/email-marketing/" title="<?php echo _('Dashboard'); ?>" class="top first<?php $template->select('dashboard'); ?>"><?php echo _('Dashboard'); ?></a>
+    <a href="/email-marketing/" title="<?php echo _('Dashboard'); ?>" class="top first<?php $template->select('email-dashboard'); ?>"><?php echo _('Dashboard'); ?></a>
 
     <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>" class="top<?php $template->select('emails'); ?>"><?php echo _('Send Email'); ?></a>
    	<?php if ( $template->v('emails') ) { ?>
