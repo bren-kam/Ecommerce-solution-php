@@ -194,25 +194,29 @@ echo $template->start( _('Send Email'), '../sidebar' );
                 <?php
                 if ( isset( $message->meta ) && 'product' == $message->type ) {
                     $meta = array();
+                    /**
+                     * @var Product $product
+                     */
                     foreach ( $message->meta as $product ) {
-                        $meta[$product['order']] = $product;
+                        $meta[$product->order] = $product;
                     }
 
                     ksort( $meta );
 
                     foreach ( $meta as $product ) {
-                        $product_image = 'http://' . $product['industry'] . '.retailcatalog.us/products/' . $product['product_id'] . '/' . $product['image'];
+                        $images = $product->get_images();
+                        $product_image = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/' . current( $images );
                         ?>
-                        <div id="dProduct_<?php echo $product['product_id']; ?>" class="product">
-                            <h4><?php echo $product['name']; ?></h4>
-                            <p align="center"><img src="<?php echo $product_image; ?>" alt="<?php echo $product['name']; ?>" height="110" style="margin:10px" /></p>
+                        <div id="dProduct_<?php echo $product->id; ?>" class="product">
+                            <h4><?php echo $product->name; ?></h4>
+                            <p align="center"><img src="<?php echo $product_image; ?>" alt="<?php echo $product->name; ?>" height="110" style="margin:10px" /></p>
                             <p>
-                                <?php echo _('Brand'), ': ', $product['brand']; ?><br />
-                                <label for="tProductPrice<?php echo $product['product_id']; ?>"><?php echo _('Price'); ?>:</label>
-                                <input type="text" class="tb product-price" name="tProductPrice<?php echo $product['product_id']; ?>" id="tProductPrice<?php echo $product['product_id']; ?>" value="<?php echo $product['price']; ?>" maxlength="10" />
+                                <?php echo _('Brand'), ': ', $product->brand; ?><br />
+                                <label for="tProductPrice<?php echo $product->id; ?>"><?php echo _('Price'); ?>:</label>
+                                <input type="text" class="tb product-price" name="tProductPrice<?php echo $product->id; ?>" id="tProductPrice<?php echo $product->id; ?>" value="<?php echo $product->price; ?>" maxlength="10" />
                             </p>
-                            <p class="product-actions" id="pProductAction<?php echo $product['product_id']; ?>"><a href="#" class="remove-product" title="<?php echo _('Remove Product'); ?>"><?php echo _('Remove'); ?></a></p>
-                            <input type="hidden" name="products[]" class="hidden-product" id="hProduct<?php echo $product['product_id']; ?>" value="<?php echo $product['product_id'], '|', $product['price']; ?>" />
+                            <p class="product-actions" id="pProductAction<?php echo $product->id; ?>"><a href="#" class="remove-product" title="<?php echo _('Remove'); ?>"><?php echo _('Remove'); ?></a></p>
+                            <input type="hidden" name="products[]" class="hidden-product" id="hProduct<?php echo $product->id; ?>" value="<?php echo $product->id, '|', $product->price; ?>" />
                         </div>
                     <?php
                     }
