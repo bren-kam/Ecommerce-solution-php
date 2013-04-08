@@ -76,12 +76,10 @@ class WebsiteController extends BaseController {
             ->css( 'mobile-marketing/website/add-edit' )
             ->javascript( 'mobile-marketing/website/add-edit' );
 
-        $response = $this->get_template_response( 'add-edit' )
+        return $this->get_template_response( 'add-edit' )
             ->select( 'mobile-pages', 'add' )
             ->set( compact( 'page', 'errs', 'js_validation' ) )
             ->add_title( ( ( $mobile_page_id ) ? _('Edit') : _('Add') ) );
-
-        return $response;
     }
 
     /***** AJAX *****/
