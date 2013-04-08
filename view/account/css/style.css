@@ -92,7 +92,7 @@ input.button {
 .button img { position: relative; top: 3px }
 
 .hidden, .dialog { display: none }
-.transparent { opacity: 0 }
+.transparent { opacity: 0; filter: alpha(opacity=0); }
 
 .col-1 { width: 100% }
 .col-1.info-box { width: 97.5% }

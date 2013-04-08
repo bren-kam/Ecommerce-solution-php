@@ -43,10 +43,6 @@ class WebsiteController extends BaseController {
         /***** VALIDATION *****/
         $v = new Validator( 'fEditPage' );
 
-        // Products can be blank
-        if ( 'products' != $page->slug )
-            $v->add_validation( 'taContent', 'req', _('Page Content is required.') );
-
         // Custom validation
         switch ( $page->slug ) {
             case 'financing':
