@@ -222,8 +222,22 @@ class AccountCategory extends ActiveRecordBase {
         if ( !is_array( $category_ids ) || 0 == count( $category_ids ) )
 			return;
 
+        $website_category_ids = array();
+
+        foreach ( $category_ids as $cid ) {
+            $child_categories = $category->get_all_children( $cid );
+
+            foreach ( $child_categories as $cat ) {
+                $website_category_ids[] = $cat->id;
+            }
+
+            $website_category_ids[] = $cid;
+        }
+
+        $website_category_ids = array_unique( $website_category_ids );
+
 		// If there are any categories that need to be added
-		$category_images = ar::assign_key( $this->get_website_category_images( $account_id, $category_ids ), 'category_id', true );
+		$category_images = ar::assign_key( $this->get_website_category_images( $account_id, $website_category_ids ), 'category_id', true );
 
 		// Create insert
 		$values = array();
