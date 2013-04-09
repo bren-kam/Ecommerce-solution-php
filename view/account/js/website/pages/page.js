@@ -22,36 +22,37 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     var tAddProducts = $('#tAddProducts:not(.dt)');
 
-    if ( tAddProducts.is('table') )
-    $('#tAddProducts:not(.dt)').addClass('dt').dataTable({
-        aaSorting: [[0,'asc']],
-        bAutoWidth: false,
-        bProcessing : 1,
-        bServerSide : 1,
-        iDisplayLength : 20,
-        sAjaxSource : '/email-marketing/emails/list-products/',
-        sDom : '<"top"lr>t<"bottom"pi>',
-        oLanguage: {
-                sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>',
-                sInfo: "_START_ - _END_ of _TOTAL_"
-        },
-        fnDrawCallback : function() {
-            // Run Sparrow on new content and add the class last to the last row
-            sparrow( $(this).find('tr:last').addClass('last').end() );
-        },
-        fnServerData: function ( sSource, aoData, fnCallback ) {
-            aoData.push({ name : 's', value : $('#tAutoComplete').val() });
-            aoData.push({ name : 'sType', value : $('#sAutoComplete').val() });
+    if ( tAddProducts.is('table') ) {
+        tAddProducts.addClass('dt').dataTable({
+            aaSorting: [[0,'asc']],
+            bAutoWidth: false,
+            bProcessing : 1,
+            bServerSide : 1,
+            iDisplayLength : 20,
+            sAjaxSource : '/email-marketing/emails/list-products/',
+            sDom : '<"top"lr>t<"bottom"pi>',
+            oLanguage: {
+                    sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>',
+                    sInfo: "_START_ - _END_ of _TOTAL_"
+            },
+            fnDrawCallback : function() {
+                // Run Sparrow on new content and add the class last to the last row
+                sparrow( $(this).find('tr:last').addClass('last').end() );
+            },
+            fnServerData: function ( sSource, aoData, fnCallback ) {
+                aoData.push({ name : 's', value : $('#tAutoComplete').val() });
+                aoData.push({ name : 'sType', value : $('#sAutoComplete').val() });
 
-            // Get the data
-            $.ajax({
-                url: sSource,
-                dataType: 'json',
-                data: aoData,
-                success: fnCallback
-            });
-        }
-    });
+                // Get the data
+                $.ajax({
+                    url: sSource,
+                    dataType: 'json',
+                    data: aoData,
+                    success: fnCallback
+                });
+            }
+        });
+    }
 
 	// Make the Add Products expandable
     $('#aAddProducts').click( function() {
