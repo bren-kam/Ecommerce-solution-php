@@ -192,7 +192,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 				// See if they have all the items necessary
 				foreach ( $package_pieces as $item ) {
                     // Check if it is a series such as "W123-45" or "W12345"
-					if ( in_array( $item, $skus[$series] ) ) {
+					if ( is_array( $skus[$series] ) && in_array( $item, $skus[$series] ) ) {
                         $group_items[$series] = true;
 						continue;
                     }
@@ -233,7 +233,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Check #2 - Stop mass deletion
         $remove_product_count = count( $remove_products );
 
-        if ( $remove_product_count > 500 ) {
+        if ( $remove_product_count > 500 && !isset( $_GET['override'] ) ) {
             // We want to skip this account
             $ticket = new Ticket();
             $ticket->user_id = self::USER_ID; // Ashley
