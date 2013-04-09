@@ -1,25 +1,28 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
     // Cache
     cache = { 'offer-box' : {}, 'sku' : {}, 'product' : {}, 'brand' : {} };
 
 	// Make the Meta Data expandable
 	$('#aMetaData').click( function() {
 		var text = $(this).html();
-		
+
 		if ( text.search( /\+/ ) > 0 ) {
 			$(this).html( text.replace( '+', '&ndash;' ) );
-			
+
 			// Show
 			$('#dMetaData').show();
 		} else {
 			$(this).text( text.replace( /\[[^\]]+\]/, '[ + ]' ) );
-			
+
 			// Hide
 			$('#dMetaData').hide();
 		}
 	});
 
+    var tAddProducts = $('#tAddProducts:not(.dt)');
+
+    if ( tAddProducts.is('table') )
     $('#tAddProducts:not(.dt)').addClass('dt').dataTable({
         aaSorting: [[0,'asc']],
         bAutoWidth: false,
@@ -128,19 +131,19 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
         scroll:true,
         placeholder:'product-placeholder'
     });
-	
+
 	// This makes it so that clicking on the link selects the whole thing
 	$('#tCurrentLink').click( function() {
 		$(this).select();
 	});
-	
+
 	// Show the current link
 	$('body').on( 'click', 'a.file', function(e) {
         e.preventDefault();
 
 		$(this).parents('ul:first').find('.file.bold').removeClass('bold');
 		$(this).addClass('bold');
-		
+
 		$('#tCurrentLink').val( $(this).attr('href') );
 		$('#dCurrentLink').show();
 	});
