@@ -35,6 +35,13 @@ class WebsiteController extends BaseController {
         $page = new AccountPage();
         $page->get( $_GET['apid'], $this->user->account->id );
 
+        $product_ids = $page->get_product_ids();
+
+        if ( !empty( $product_ids ) ) {
+            $product = new Product;
+            $page->products = $product->get_by_ids( $product_ids );
+        }
+
         $account_file = new AccountFile();
         $files = $account_file->get_by_account( $this->user->account->id );
 
@@ -42,10 +49,6 @@ class WebsiteController extends BaseController {
 
         /***** VALIDATION *****/
         $v = new Validator( 'fEditPage' );
-
-        // Products can be blank
-        if ( 'products' != $page->slug )
-            $v->add_validation( 'taContent', 'req', _('Page Content is required.') );
 
         // Custom validation
         switch ( $page->slug ) {
@@ -118,6 +121,11 @@ class WebsiteController extends BaseController {
                 if ( isset( $pagemeta ) )
                     $account_pagemeta->add_bulk_by_page( $page->id, $pagemeta );
 
+                $page->delete_products();
+
+                if ( isset( $_POST['products'] ) )
+                    $page->add_products( $_POST['products'] );
+
                 $this->notify( _('Your page has been successfully saved!') );
 
                 return new RedirectResponse('/website/');
@@ -186,7 +194,8 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css('website/pages/page')
-            ->javascript( 'fileuploader', 'website/pages/page' );
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'fileuploader', 'jquery.datatables', 'website/pages/page' );
 
         $response = $this->get_template_response( 'edit' )
             ->select( 'pages', 'edit' )

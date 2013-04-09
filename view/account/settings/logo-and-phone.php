@@ -27,7 +27,7 @@ echo $template->start( _('Logo and Phone') );
                     <?php } ?>
                 </div>
                 <a href="#" id="aUploadLogo" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
-                <div class="hidden" id="upload-logo"></div>
+                <div class="transparent position-absolute" id="upload-logo"></div>
                 <?php nonce::field( 'upload_logo', '_upload_logo' ); ?>
             </td>
         </tr>

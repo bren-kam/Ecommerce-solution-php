@@ -55,7 +55,7 @@ class EmailMarketingController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->add_title( _('Dashboard') )
-            ->select( 'dashboard' )
+            ->select( 'email-dashboard' )
             ->set( compact( 'messages', 'subscribers', 'email', 'bar_chart', 'email_count' ) );
     }
 

@@ -179,7 +179,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
             <br clear="left" /><br />
             <br /><br />
             <br />
-            <table cellpadding="0" cellspacing="0" id="tAddProducts" width="100%">
+            <table id="tAddProducts">
                 <thead>
                     <tr>
                         <th width="45%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>

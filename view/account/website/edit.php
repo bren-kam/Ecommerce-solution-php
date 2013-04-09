@@ -30,7 +30,11 @@ if ( !empty( $errs ) )
     <?php } ?>
     <br />
     <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $page->content; ?></textarea>
-    <p><a href="#" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p>
+    <p>
+        <a href="#" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> |
+        <a href="#" id="aAddProducts" title="<?php echo _('Add Products'); ?>"><?php echo _('Add Products'); ?> [ <?php echo ( empty( $page->products ) ) ? '+' : '&ndash;'; ?> ]</a> |
+        <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a>
+    </p>
     <br />
     <div id="dMetaData" class="hidden">
         <p>
@@ -45,6 +49,69 @@ if ( !empty( $errs ) )
             <label for="tMetaKeywords"><?php echo _('Meta Keywords'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
             <input type="text" class="tb" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $page->meta_keywords; ?>" />
         </p>
+        <br />
+    </div>
+    <div id="dAddProducts"<?php if ( empty( $page->products ) ) echo ' class="hidden"'; ?>>
+        <div id="dNarrowSearchContainer">
+            <div id="dNarrowSearch">
+                <h2><?php echo _('Narrow Your Search'); ?></h2>
+                <br />
+                <table id="tNarrowSearch">
+                    <tr>
+                        <td width="264">
+                            <select id="sAutoComplete">
+                                <option value="sku"><?php echo _('SKU'); ?></option>
+                                <option value="product"><?php echo _('Product Name'); ?></option>
+                                <option value="brand"><?php echo _('Brand'); ?></option>
+                            </select>
+                        </td>
+                        <td valign="top"><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter SKU...'); ?>" style="width: 100% !important;" /></td>
+                        <td class="text-right" width="125"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
+                    </tr>
+                </table>
+                <img id="iNYSArrow" src="/images/narrow-your-search.png" alt="" width="76" height="27" />
+            </div>
+        </div>
+        <br clear="left" /><br />
+        <br /><br />
+        <br />
+        <table id="tAddProducts">
+            <thead>
+                <tr>
+                    <th width="45%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="25%"><?php echo _('Brand'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="15%"><?php echo _('SKU'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="15%"><?php echo _('Status'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <br /><br />
+
+        <h2><?php echo _('Selected Products'); ?></h2>
+        <div id="dSelectedProducts">
+            <?php
+            if ( isset( $page->products ) ) {
+                /**
+                 * @var Product $product
+                 */
+                foreach ( $page->products as $product ) {
+                    $images = $product->get_images();
+                    $product_image = 'http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/' . current( $images );
+                    ?>
+                    <div id="dProduct_<?php echo $product->id; ?>" class="product">
+                        <h4><?php echo $product->name; ?></h4>
+                        <p align="center"><img src="<?php echo $product_image; ?>" alt="<?php echo $product->name; ?>" height="110" style="margin:10px" /></p>
+                        <p class="product-actions" id="pProductAction<?php echo $product->id; ?>"><a href="#" class="remove-product" title="<?php echo _('Remove'); ?>"><?php echo _('Remove'); ?></a></p>
+                        <input type="hidden" name="products[]" class="hidden" value="<?php echo $product->id; ?>" />
+                    </div>
+                <?php
+                }
+            }
+            ?>
+        </div>
+        <br clear="left" />
         <br />
     </div>
 
@@ -90,13 +157,16 @@ if ( !empty( $errs ) )
     <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-    <div class="hidden" id="upload-file"></div>
+    <div class="transparent position-absolute" id="upload-file"></div>
     <br /><br />
     <div id="dCurrentLink" class="hidden">
         <p><strong><?php echo _('Current Link'); ?>:</strong></p>
         <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
     </div>
 </div>
-<?php nonce::field( 'upload_file', '_upload_file' ); ?>
+<?php
+nonce::field( 'upload_file', '_upload_file' );
+nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
+?>
 <input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
 <?php echo $template->end(); ?>
