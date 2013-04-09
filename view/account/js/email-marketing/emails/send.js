@@ -36,7 +36,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 	// Choose Template function
 	$('.choose-template').live( 'click', function() {
-		$('#hEmailTemplateID').val( $('#dStep2 .template-image .selected:first').attr('id').replace( 'iTemplateImage', '' ) );
+		$('#hEmailTemplateID').val( $(this).prev().attr('id').replace( 'iTemplateImage', '' ) );
 		$('.custom-template').hide();
 		$('#dCustom_' + $('#hEmailType').val() ).show();
 		selectTab( 3 );

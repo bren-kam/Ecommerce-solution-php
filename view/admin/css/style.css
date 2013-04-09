@@ -85,8 +85,11 @@ input.button {
 }
 
 .button object { background: transparent; display: inline; position:absolute; }
+.button.loader { cursor: default }
+.button img { position: relative; top: 3px }
 
 .hidden, .dialog { display: none }
+.transparent { opacity: 0 }
 
 .col-1 { width: 100% }
 .col-1.info-box { width: 97.5% }
@@ -108,7 +111,7 @@ input.button {
 .relative { position: relative; }
 .clr { clear: both; }
 .tmpval { color: #929292 }
-
+.position-absolute { position: absolute }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 

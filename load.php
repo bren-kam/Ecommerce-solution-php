@@ -19,8 +19,7 @@ define( 'LIVE', false );
 if ( LIVE ) {
     error_reporting(0);
 } else {
-    error_reporting(0);
-    //error_reporting( E_ALL ^ E_NOTICE );
+    error_reporting( E_ALL ^ E_NOTICE );
 }
 
 /** Error Handler */
@@ -36,8 +35,14 @@ define( 'LIB_PATH', ABS_PATH . 'lib/' );
 /** Include Studio98 library */
 require LIB_PATH . 'ext/s98lib/init.php';
 
+
 /** Dynamic definitions */
-define( 'DOMAIN', ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : DEFAULT_DOMAIN );
+$domain = ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], false ) : url::domain( $_SERVER['SERVER_NAME'], false );
+
+if ( empty( $domain ) )
+	$domain = DEFAULT_DOMAIN;
+	
+define( 'DOMAIN', $domain );
 
 // Define the subdomain
 $subdomain = ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_X_FORWARDED_HOST'], true ) ) : str_replace( '.' . DOMAIN, '', url::domain( $_SERVER['HTTP_HOST'], true ) );

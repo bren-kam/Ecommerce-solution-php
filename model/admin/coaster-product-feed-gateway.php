@@ -390,4 +390,39 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             $this->existing_products[$product->sku] = $product;
         }
     }
+
+    /**
+     * Cleanup
+     */
+    public function cleanup() {
+        $products = $this->prepare(
+            "SELECT `product_id`, `brand_id`, `industry_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `weight`, `volume`, `product_specifications`, `publish_visibility`, `publish_date` FROM `products` WHERE `user_id_created` = :user_id_created LIMIT 10000"
+            , 'i'
+            , array( ':user_id_created' => $this->user_id )
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+
+        library('aws/sdk.class');
+        $s3 = new AmazonS3( array( 'key' => Config::key('aws-access-key'), 'secret' => Config::key('aws-secret-key') ) );
+        $s3->debug_mode = true;
+        $bucket = 'furniture.retailcatalog.us';
+
+        /**
+         * @var Product $product
+         **/
+        foreach ( $products as $product ) {
+            if ( !$product->id )
+                continue;
+			
+            $folder = str_replace( '/', '\/', 'products/' . $product->id );
+            $response = $s3->delete_all_objects( $bucket, "/^$folder\//" );
+
+            if ( !$response ) {
+                echo $product->id;
+                break;
+            }
+
+            $product->delete_images();
+            $this->query( "DELETE FROM `products` WHERE `product_id` = $product->id LIMIT 1" );
+        }
+    }
 }

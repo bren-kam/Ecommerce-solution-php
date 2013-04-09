@@ -203,7 +203,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
                 _nonce : $('#_upload_image').val()
                 , iid : $('#sIndustry').val()
                 , pid : $('#hProductId').val()
-            })
+            });
+
+            $('#aUpload').hide();
+            $('#upload-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
             ajaxResponse( responseJSON );

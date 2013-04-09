@@ -2,6 +2,9 @@
 class AccountPage extends ActiveRecordBase {
     public $id, $website_page_id, $website_id, $slug, $title, $content, $meta_title, $meta_description, $meta_keywords, $mobile, $status, $date_created, $date_updated;
 
+    // Artificial field
+    public $products;
+
     /**
      * Setup the account initial data
      */
@@ -60,6 +63,19 @@ class AccountPage extends ActiveRecordBase {
     }
 
     /**
+     * Get Product IDs
+     *
+     * @return array
+     */
+    public function get_product_ids() {
+        return $this->prepare(
+            'SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = :account_page_id ORDER BY `sequence`'
+            , 'i'
+            , array( ':account_page_id' => $this->id )
+        )->get_col();
+    }
+
+    /**
      * Create
      */
     public function create() {
@@ -76,6 +92,34 @@ class AccountPage extends ActiveRecordBase {
         ), 'isssis' );
 
         $this->id = $this->website_page_id = $this->get_insert_id();
+    }
+
+    /**
+     * Add Products
+     *
+     * @param array $product_ids
+     */
+    public function add_products( array $product_ids ) {
+        // Type Juggling
+        $website_page_id = $this->id;
+
+        // Initialize variables
+        $sql_values = '';
+        $sequence = 0;
+
+        foreach ( $product_ids as $product_id ) {
+            if ( !empty( $sql_values ) )
+                $sql_values .= ',';
+
+            // Type Juggling
+            $product_id = (int) $product_id;
+
+            $sql_values .= "( $website_page_id, $product_id, $sequence )";
+
+            $sequence++;
+        }
+
+        $this->query( "INSERT INTO `website_page_product` ( `website_page_id`, `product_id`, `sequence` ) VALUES $sql_values" );
     }
 
     /**
@@ -120,6 +164,17 @@ class AccountPage extends ActiveRecordBase {
      */
     public function remove() {
         $this->delete( array( 'website_page_id' => $this->id ), 'i' );
+    }
+
+    /**
+     * Delete Products
+     */
+    public function delete_products() {
+        $this->prepare(
+            'DELETE FROM `website_page_product` WHERE `website_page_id` = :account_page_id'
+            , 'i'
+            , array( ':account_page_id' => $this->id )
+        )->query();
     }
 
     /**

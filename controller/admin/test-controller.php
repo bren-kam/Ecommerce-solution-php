@@ -43,7 +43,8 @@ class TestController extends BaseController {
         // Get categories
 
         $coaster = new CoasterProductFeedGateway();
-        $coaster->run();
+        //$coaster->run();
+		$coaster->cleanup();
 		//$ashley = new AshleyMasterProductFeedGateway();
         //$ashley->run();
 

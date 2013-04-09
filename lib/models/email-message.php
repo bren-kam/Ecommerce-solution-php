@@ -168,11 +168,12 @@ class EmailMessage extends ActiveRecordBase {
             , 'subject' => $this->subject
             , 'message' => $this->message
             , 'type' => $this->type
+            , 'status' => $this->status
             , 'date_sent' => $this->date_sent
         ), array(
             'email_message_id' => $this->email_message_id
             , 'website_id' => $this->website_id
-        ), 'iissss', 'ii' );
+        ), 'iisssis', 'ii' );
     }
 
     /**

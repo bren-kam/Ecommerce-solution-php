@@ -76,7 +76,7 @@ class AuthUserWebsite extends ActiveRecordBase {
     public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = 1 ) {
         // Setup variables
         $user = new User();
-        $user->get_by_email( $email );
+        $user->get_by_email( $email, false );
 
         $account = new Account();
         $account->get( $account_id );
@@ -91,11 +91,19 @@ class AuthUserWebsite extends ActiveRecordBase {
             $message .= '<a href="http://account.' . DOMAIN . '/login/" title="Login">http://account.' . DOMAIN . '/login/</a>';
             $message .= '<br /><br />Please contact ' . DOMAIN . ' if you have any questions. Thank you for your time.<br /><br />';
             $message .= '<strong>Email:</strong> info@' . DOMAIN . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
+
+            if ( 1 != $user->status ) {
+                $user->contact_name = $contact_name;
+                $user->role = $role;
+                $user->status = 1;
+                $user->save();
+            }
         } else {
             // Create base user
             $user->contact_name = $contact_name;
             $user->email = $email;
             $user->role = $role;
+            $user->status = 1;
             $user->create();
 
             // Create token for them to authorize their account

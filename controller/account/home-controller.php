@@ -40,8 +40,6 @@ class HomeController extends BaseController {
         if ( empty( $_GET['aid'] ) )
             return new RedirectResponse('/');
 
-        $url = '/logout/';
-
         /**
          * @var Account $account
          */
@@ -49,13 +47,12 @@ class HomeController extends BaseController {
             // If it's amongst the user's accounts, redirect him
             if ( $account->id == $_GET['aid'] ) {
                 set_cookie( 'wid', $account->id, 172800 ); // 2 Days
-                $url = ( empty( $_GET['r'] ) ) ? '/' : $_GET['r'];
                 break;
             }
         }
 
         // Either redirect to home or logout if he's trying to control someone else's site
-        return new RedirectResponse( $url );
+        return new RedirectResponse( '/' );
     }
 }
 
