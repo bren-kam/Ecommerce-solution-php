@@ -75,10 +75,10 @@ if ( !empty( $errs ) )
         <br clear="left" /><br />
         <br /><br />
         <br />
-        <table id="tAddProducts">
+        <table id="tAddProducts" class="manual dt">
             <thead>
                 <tr>
-                    <th width="45%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="45%" sort="1"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                     <th width="25%"><?php echo _('Brand'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                     <th width="15%"><?php echo _('SKU'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                     <th width="15%"><?php echo _('Status'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
