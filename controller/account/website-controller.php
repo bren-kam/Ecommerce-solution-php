@@ -400,7 +400,7 @@ class WebsiteController extends BaseController {
         $response = $this->get_template_response( 'banners' )
             ->select( 'banners' )
             ->add_title( _('Banners') )
-            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page', 'settings' ) );
+            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page' ) );
 
         return $response;
     }
