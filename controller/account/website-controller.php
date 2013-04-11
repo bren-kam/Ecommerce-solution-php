@@ -858,6 +858,9 @@ class WebsiteController extends BaseController {
         // Create/update the account attachment
         $attachment = $attachment->get_by_key( $page->id, $key );
 
+        if ( !$attachment instanceof AccountPageAttachment )
+            $attachment = new AccountPageAttachment();
+
         // Set variables
         $attachment->website_page_id = $page->id;
         $attachment->key = $key;
