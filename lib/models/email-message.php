@@ -403,7 +403,7 @@ class EmailMessage extends ActiveRecordBase {
         $mc = new MCAPI( Config::key('mc-api') );
 
         if ( $date_sent > $now ) {
-            $date_sent->add( new DateInterval('P5H') );
+            $date_sent->add( new DateInterval('PT5H') );
 
             $mc->campaignSchedule( $this->mc_campaign_id, $date_sent->format('Y-m-d H:i:s') );
 
