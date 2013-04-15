@@ -410,6 +410,8 @@ class AccountsController extends BaseController {
         $settings = $account->get_settings(
             'ga-username'
             , 'ga-password'
+            , 'gm-api-key'
+            , 'gm-contact-page'
             , 'ashley-ftp-username'
             , 'ashley-ftp-password'
             , 'ashley-alternate-folder'
@@ -427,6 +429,8 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Google Analytics Password'), 'tGAPassword', security::decrypt( base64_decode( $settings['ga-password'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Google Analytics Profile ID'), 'tGAProfileID', $account->ga_profile_id );
         $ft->add_field( 'text', _('Google Analytics Tracking Key'), 'tGATrackingKey', $account->ga_tracking_key );
+        $ft->add_field( 'text', _('Google Maps API Key'), 'tGMAPIKey', $settings['gm-api-key'] );
+        $ft->add_field( 'checkbox', _('Google Maps Contact Page'), 'cbGoogleMapsContactPage', $settings['gm-contact-page'] );
         $ft->add_field( 'text', _('WordPress Username'), 'tWPUsername', security::decrypt( base64_decode( $account->wordpress_username ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('WordPress Password'), 'tWPPassword', security::decrypt( base64_decode( $account->wordpress_password ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Ashley FTP Username'), 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
@@ -454,6 +458,8 @@ class AccountsController extends BaseController {
             $account->set_settings( array(
                 'ga-username' => security::encrypt( $_POST['tGAUsername'], ENCRYPTION_KEY, true )
                 , 'ga-password' => security::encrypt( $_POST['tGAPassword'], ENCRYPTION_KEY, true )
+                , 'gm-api-key' => $_POST['tGMAPIKey']
+                , 'gm-contact-page' => (int) isset( $_POST['cbGoogleMapsContactPage'] ) && $_POST['cbGoogleMapsContactPage']
                 , 'ashley-ftp-username' => security::encrypt( $_POST['tAshleyFTPUsername'], ENCRYPTION_KEY, true )
                 , 'ashley-ftp-password' => security::encrypt( $_POST['tAshleyFTPPassword'], ENCRYPTION_KEY, true )
                 , 'ashley-alternate-folder' => (int) isset( $_POST['cbAshleyAlternateFolder'] ) && $_POST['cbAshleyAlternateFolder']

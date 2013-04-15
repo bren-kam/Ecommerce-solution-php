@@ -17,9 +17,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 		'update'		: updateElementOrder
 	});
 	
-	// Change the width of all the items
-	$(".element-box, .box-divider").css("width", $('#hBannerWidth').val() + "px");
-
     // Setup File Uploader
     var uploader = new qq.FileUploader({
         action: '/website/upload_banner/'

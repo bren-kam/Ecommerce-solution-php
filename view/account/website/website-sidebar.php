@@ -19,7 +19,7 @@ echo $template->start( _('Sidebar') );
 
 <a href="#" id="aUploadSidebarImage" class="button" title="<?php echo _('Add Image'); ?>"><?php echo _('Add Image'); ?></a>
 <a href="#" class="button loader hidden" id="upload-sidebar-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-<div class="transparent position-absolute" id="upload-sidebar-image"></div>
+<div class="hidden-fix position-absolute" id="upload-sidebar-image"></div>
 <a href="#dUploadFile" class="button" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a>
 <br /><br /><br />
 <p class="alert">(<?php echo _('Note: The changes you make to your sidebar are immediately live on your website'); ?>)</p>
@@ -232,7 +232,7 @@ foreach ( $attachments as $a ) {
 
             $value .= '<br /><a href="#" id="aUploadSidebarVideo" class="button" title="' . _('Upload Video') . '">' . _('Upload') . '</a>';
             $value .= '<a href="#" class="button loader hidden" id="upload-sidebar-video-loader" title="' . _('Loading') . '"><img src="/images/buttons/loader.gif" alt="' . _('Loading') . '" /></a>';
-            $value .= '<div class="transparent position-absolute" id="upload-sidebar-video"></div>';
+            $value .= '<div class="hidden-fix position-absolute" id="upload-sidebar-video"></div>';
         break;
 
         case 'current-ad-pdf':
@@ -309,7 +309,7 @@ foreach ( $attachments as $a ) {
     <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-    <div class="transparent position-absolute" id="upload-file"></div>
+    <div class="hidden-fix position-absolute" id="upload-file"></div>
     <br /><br />
     <div id="dCurrentLink" class="hidden">
         <p><strong><?php echo _('Current Link'); ?>:</strong></p>

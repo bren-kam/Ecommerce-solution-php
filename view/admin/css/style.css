@@ -89,7 +89,7 @@ input.button {
 .button img { position: relative; top: 3px }
 
 .hidden, .dialog { display: none }
-.transparent { opacity: 0 }
+.hidden-fix { position: absolute; left: -5000px }
 
 .col-1 { width: 100% }
 .col-1.info-box { width: 97.5% }

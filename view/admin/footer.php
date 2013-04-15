@@ -28,7 +28,7 @@
 		<textarea name="taTicketMessage" id="taTicketMessage" rows="5" cols="50" tmpval="<?php echo _('Enter message'); ?>..." error="<?php echo _('You must enter in a message'); ?>"></textarea>
 		<br /><br />
         <a href="#" id="aUploadTicketAttachment" title="<?php echo _('Add Attachment'); ?>"><?php echo _('Add Attachment'); ?></a>
-        <div class="transparent position-absolute" id="upload-ticket-attachment"></div>
+        <div class="hidden-fix position-absolute" id="upload-ticket-attachment"></div>
         <div id="ticket-attachments-list"></div>
 
         <input type="hidden" name="hSupportTicketId" id="hSupportTicketId" value="" />

@@ -8,7 +8,6 @@
  * @var Template $template
  * @var User $user
  * @var AccountPage $page
- * @var array $settings
  * @var string $dimensions
  * @var bool $images_alt
  */
@@ -18,12 +17,11 @@ echo $template->start( _('Banners') );
 
 <a href="#" id="aUploadBanner" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
 <a href="#" class="button loader hidden" id="upload-banner-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-<div class="transparent position-absolute" id="upload-banner"></div>
+<div class="hidden-fix position-absolute" id="upload-banner"></div>
 <br /><br />
 <p class="red"><?php echo _('(Note: The changes you make to your banners are immediately live on your website)'); ?></p>
 <br />
 <input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
-<input type="hidden" id="hBannerWidth" value="<?php echo $settings['banner-width']; ?>" />
 <?php
 nonce::field( 'upload_banner', '_upload_banner' );
 nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
@@ -64,7 +62,7 @@ nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
             <p><small><?php echo $dimensions; ?></small></p>
             <a href="<?php echo $enable_disable_url; ?>" id="aEnableDisable<?php echo $a->id; ?>" class="enable-disable<?php echo $disabled; ?>" title="<?php echo _('Enable/Disable'); ?>" ajax="1"<?php echo $confirm; ?>><img src="/images/trans.gif" width="26" height="28" alt="<?php echo _('Enable/Disable'); ?>" /></a>
 
-            <div id="dBanner<?php echo $a->id; ?>" class="text-center">
+            <div id="dBanner<?php echo $a->id; ?>" class="text-center banner">
                 <img src="<?php echo $banner_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" />
             </div>
             <br />

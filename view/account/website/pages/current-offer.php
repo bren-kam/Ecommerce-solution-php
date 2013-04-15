@@ -15,7 +15,7 @@
 			<div id="dCouponContent"><?php if ( !empty( $coupon ) ) { ?><img src="<?php echo ( stristr( $coupon->value, 'http' ) ) ? $coupon->value : 'http://' . $user->account->domain . $coupon->value; ?>" alt="<?php echo _('Coupon'); ?>" style="padding-bottom: 10px;" /><br /><?php } ?></div>
             <a href="#" id="aUploadImage" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
             <a href="#" class="button loader hidden" id="upload-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-            <div class="transparent position-absolute" id="upload-image"></div>
+            <div class="hidden-fix position-absolute" id="upload-image"></div>
             <?php nonce::field( 'upload_image', '_upload_image' ); ?>
 			<br /><br />
 			<p><input type="checkbox" class="cb" name="cbDisplayCoupon" id="cbDisplayCoupon" value="yes"<?php if ( 'yes' == $metadata['display-coupon'] ) echo ' checked="checked"'; ?> /> <label for="cbDisplayCoupon"><?php echo _('Display coupon on Current Offer page?'); ?></label></p>

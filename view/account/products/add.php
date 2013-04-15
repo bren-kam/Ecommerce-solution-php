@@ -68,8 +68,8 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                         <td>
                             <select id="sAutoComplete">
                                 <option value="sku"><?php echo _('SKU'); ?></option>
-                                <option value="products"><?php echo _('Product Name'); ?></option>
-                                <option value="brands"><?php echo _('Brands'); ?></option>
+                                <option value="product"><?php echo _('Product Name'); ?></option>
+                                <option value="brand"><?php echo _('Brands'); ?></option>
                             </select>
                         </td>
                         <td>

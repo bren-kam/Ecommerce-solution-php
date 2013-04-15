@@ -1,54 +1,58 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
     // Cache
     cache = { 'offer-box' : {}, 'sku' : {}, 'product' : {}, 'brand' : {} };
 
 	// Make the Meta Data expandable
 	$('#aMetaData').click( function() {
 		var text = $(this).html();
-		
+
 		if ( text.search( /\+/ ) > 0 ) {
 			$(this).html( text.replace( '+', '&ndash;' ) );
-			
+
 			// Show
 			$('#dMetaData').show();
 		} else {
 			$(this).text( text.replace( /\[[^\]]+\]/, '[ + ]' ) );
-			
+
 			// Hide
 			$('#dMetaData').hide();
 		}
 	});
 
-    $('#tAddProducts:not(.dt)').addClass('dt').dataTable({
-        aaSorting: [[0,'asc']],
-        bAutoWidth: false,
-        bProcessing : 1,
-        bServerSide : 1,
-        iDisplayLength : 20,
-        sAjaxSource : '/email-marketing/emails/list-products/',
-        sDom : '<"top"lr>t<"bottom"pi>',
-        oLanguage: {
-                sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>',
-                sInfo: "_START_ - _END_ of _TOTAL_"
-        },
-        fnDrawCallback : function() {
-            // Run Sparrow on new content and add the class last to the last row
-            sparrow( $(this).find('tr:last').addClass('last').end() );
-        },
-        fnServerData: function ( sSource, aoData, fnCallback ) {
-            aoData.push({ name : 's', value : $('#tAutoComplete').val() });
-            aoData.push({ name : 'sType', value : $('#sAutoComplete').val() });
+    var tAddProducts = $('#tAddProducts');
 
-            // Get the data
-            $.ajax({
-                url: sSource,
-                dataType: 'json',
-                data: aoData,
-                success: fnCallback
-            });
-        }
-    });
+    if ( tAddProducts.is('table') ) {
+        tAddProducts.dataTable({
+            aaSorting: [[0,'asc']],
+            bAutoWidth: false,
+            bProcessing : 1,
+            bServerSide : 1,
+            iDisplayLength : 20,
+            sAjaxSource : '/email-marketing/emails/list-products/',
+            sDom : '<"top"lr>t<"bottom"pi>',
+            oLanguage: {
+                    sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>',
+                    sInfo: "_START_ - _END_ of _TOTAL_"
+            },
+            fnDrawCallback : function() {
+                // Run Sparrow on new content and add the class last to the last row
+                sparrow( $(this).find('tr:last').addClass('last').end() );
+            },
+            fnServerData: function ( sSource, aoData, fnCallback ) {
+                aoData.push({ name : 's', value : $('#tAutoComplete').val() });
+                aoData.push({ name : 'sType', value : $('#sAutoComplete').val() });
+
+                // Get the data
+                $.ajax({
+                    url: sSource,
+                    dataType: 'json',
+                    data: aoData,
+                    success: fnCallback
+                });
+            }
+        });
+    }
 
 	// Make the Add Products expandable
     $('#aAddProducts').click( function() {
@@ -110,7 +114,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // Create the search functionality
     $('#aSearch').click( function() {
-        $('#tAddProducts').dataTable().fnDraw();
+        tAddProducts.dataTable().fnDraw();
     });
 
     // Remove product
@@ -128,19 +132,19 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
         scroll:true,
         placeholder:'product-placeholder'
     });
-	
+
 	// This makes it so that clicking on the link selects the whole thing
 	$('#tCurrentLink').click( function() {
 		$(this).select();
 	});
-	
+
 	// Show the current link
 	$('body').on( 'click', 'a.file', function(e) {
         e.preventDefault();
 
 		$(this).parents('ul:first').find('.file.bold').removeClass('bold');
 		$(this).addClass('bold');
-		
+
 		$('#tCurrentLink').val( $(this).attr('href') );
 		$('#dCurrentLink').show();
 	});
