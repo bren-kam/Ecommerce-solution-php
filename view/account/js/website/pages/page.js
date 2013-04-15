@@ -20,10 +20,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 		}
 	});
 
-    var tAddProducts = $('#tAddProducts:not(.dt)');
+    var tAddProducts = $('#tAddProducts');
 
     if ( tAddProducts.is('table') ) {
-        tAddProducts.addClass('dt').dataTable({
+        tAddProducts.dataTable({
             aaSorting: [[0,'asc']],
             bAutoWidth: false,
             bProcessing : 1,
@@ -114,7 +114,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // Create the search functionality
     $('#aSearch').click( function() {
-        $('#tAddProducts').dataTable().fnDraw();
+        tAddProducts.dataTable().fnDraw();
     });
 
     // Remove product

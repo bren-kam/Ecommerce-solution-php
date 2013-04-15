@@ -75,10 +75,10 @@ if ( !empty( $errs ) )
         <br clear="left" /><br />
         <br /><br />
         <br />
-        <table id="tAddProducts">
+        <table id="tAddProducts" class="manual dt">
             <thead>
                 <tr>
-                    <th width="45%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="45%" sort="1"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                     <th width="25%"><?php echo _('Brand'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                     <th width="15%"><?php echo _('SKU'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                     <th width="15%"><?php echo _('Status'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
@@ -157,7 +157,7 @@ if ( !empty( $errs ) )
     <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
-    <div class="transparent position-absolute" id="upload-file"></div>
+    <div class="hidden-fix position-absolute" id="upload-file"></div>
     <br /><br />
     <div id="dCurrentLink" class="hidden">
         <p><strong><?php echo _('Current Link'); ?>:</strong></p>

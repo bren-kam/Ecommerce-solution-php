@@ -400,7 +400,7 @@ class WebsiteController extends BaseController {
         $response = $this->get_template_response( 'banners' )
             ->select( 'banners' )
             ->add_title( _('Banners') )
-            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page', 'settings' ) );
+            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page' ) );
 
         return $response;
     }
@@ -857,6 +857,9 @@ class WebsiteController extends BaseController {
 
         // Create/update the account attachment
         $attachment = $attachment->get_by_key( $page->id, $key );
+
+        if ( !$attachment instanceof AccountPageAttachment )
+            $attachment = new AccountPageAttachment();
 
         // Set variables
         $attachment->website_page_id = $page->id;
@@ -1462,5 +1465,82 @@ class WebsiteController extends BaseController {
         $attachment->update_sequence( $this->user->account->id, $sequence );
 
         return $response;
+    }
+
+    /**
+     * List Products
+     *
+     * @return DataTableResponse
+     */
+    protected function list_products() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+
+        $account_product = new AccountProduct();
+
+        // Set Order by
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
+        $dt->add_where( ' AND ( p.`website_id` = 0 || p.`website_id` = ' . (int) $this->user->account->id . ' )' );
+        $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
+        $dt->add_where( " AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00'" );
+
+        $skip = true;
+
+        switch ( $_GET['sType'] ) {
+            case 'sku':
+                if ( _('Enter SKU...') != $_GET['s'] ) {
+                    $dt->add_where( " AND p.`sku` LIKE " . $account_product->quote( $_GET['s'] . '%' ) );
+                    $skip = false;
+                }
+            break;
+
+            case 'product':
+                if ( _('Enter Product Name...') != $_GET['s'] ) {
+                    $dt->add_where( " AND p.`name` LIKE " . $account_product->quote( $_GET['s'] . '%' ) );
+                    $skip = false;
+                }
+            break;
+
+            case 'brand':
+                if ( _('Enter Brand...') != $_GET['s'] ) {
+                    $dt->add_where( " AND b.`name` LIKE " . $account_product->quote( $_GET['s'] . '%' ) );
+                    $skip = false;
+                }
+            break;
+        }
+
+        if ( $skip ) {
+            $dt->set_data( array() );
+            return $dt;
+        }
+
+        // Get items
+        $products = $account_product->list_products( $dt->get_variables() );
+        $dt->set_row_count( $account_product->count_products( $dt->get_count_variables() ) );
+
+        // Set initial data
+        $data = false;
+        $add_product_nonce = nonce::create( 'add_product' );
+
+        /**
+         * @var Product $product
+         */
+        if ( is_array( $products ) )
+        foreach ( $products as $product ) {
+            $dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/email-marketing/emails/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
+            $actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/email-marketing/emails/add-product/' ) . '" title="' . _('Add Product') . '" ajax="1">' . _('Add Product') . '</a>';
+
+            $data[] = array(
+                $dialog . format::limit_chars( $product->name,  50, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
+                , $product->brand
+                , $product->sku
+                , $product->status
+            );
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
     }
 }

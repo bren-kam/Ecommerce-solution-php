@@ -154,7 +154,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
             <input type="checkbox" name="private" id="private" value="1" /> <label for="private"><?php echo _('Private'); ?></label>
         </div>
 
-        <div id="uploader" class="transparent position-absolute"></div>
+        <div id="uploader" class="hidden-fix position-absolute"></div>
         <a href="#" id="attach" class="button hidden" title="<?php echo _('Attach'); ?>"><?php echo _('Attach'); ?></a>
 
         <br clear="all" />

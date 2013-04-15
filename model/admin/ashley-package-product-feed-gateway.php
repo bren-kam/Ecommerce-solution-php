@@ -231,10 +231,18 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 		ini_set( 'memory_limit', '512M' );
 		set_time_limit( 600 );
 
-        // Get libraries
+		// Setup the Ashley VPN
+		$ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+
+        // Copy files
+        ssh2_exec( $ssh_connection, "sh /gsr/scripts/ashley_vpn.sh" );    
+        
+		// Get libraries
         library('ashley-api/ashley-api');
         $this->ashley = new Ashley_API();
-    }
+		echo 'made it!';exit;
+	}
 
     /**
      * Get Data from Ashley
