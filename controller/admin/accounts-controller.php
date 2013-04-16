@@ -356,7 +356,21 @@ class AccountsController extends BaseController {
             $account->company_package_id = $_POST['sPackage'];
             $account->domain = $_POST['tDomain'];
             $account->theme = $_POST['tTheme'];
-            $account->live = (int) isset( $_POST['cbLive'] ) && $_POST['cbLive'];
+
+            if ( !$account->live && isset( $_POST['cbLive'] ) && $_POST['cbLive'] ) {
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+                ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+
+                $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
+                $domain = url::domain( $account->domain, false );
+
+                ssh2_exec( $ssh_connection, "sed -i 's/\[domain\]/$domain/g' /home/$username/public_html/.htaccess" );
+                ssh2_exec( $ssh_connection, "sed -i 's/#Rewrite/Rewrite/g' /home/$username/public_html/.htaccess" );
+
+                $account->live = 1;
+            }
+
             $account->save();
 
             // Update the settings
