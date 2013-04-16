@@ -205,7 +205,9 @@ class EmailTemplate extends ActiveRecordBase {
 
             default:
                 // Just do a normal message
-                $html_message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), $this->template );
+                $remove_header_footer = $account->get_email_settings('remove-header-footer');
+
+				$html_message = ( $remove_header_footer ) ? $message : str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), $this->template );
             break;
         }
 
