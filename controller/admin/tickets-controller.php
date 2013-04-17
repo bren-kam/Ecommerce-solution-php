@@ -18,22 +18,8 @@ class TicketsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $users = $this->user->get_all();
-        $assigned_to_users = array();
-
-        /**
-         * @var User $user
-         */
-        foreach ( $users as $user ) {
-            if ( $user->has_permission( User::ROLE_MARKETING_SPECIALIST ) && !empty( $user->contact_name ) )
-                $assigned_to_users[$user->id] = $user->contact_name;
-        }
-
-        $template_response = $this->get_template_response( 'index' )
-            ->set( compact( 'assigned_to_users' ) );
-
-        $this->resources->css( 'tickets/list' );
-        $this->resources->javascript( 'tickets/list' );
+        // Get variables
+        $assigned_to_users = $this->user->get_admin_users();
 
         // Reset any defaults
         unset( $_SESSION['tickets'] );
@@ -42,7 +28,11 @@ class TicketsController extends BaseController {
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
             $_SESSION['tickets']['assigned-to'] = $this->user->id;
 
-        return $template_response;
+        $this->resources->css( 'tickets/list' )
+            ->javascript( 'tickets/list' );
+
+        return $this->get_template_response( 'index' )
+            ->set( compact( 'assigned_to_users' ) );
     }
 
     /**

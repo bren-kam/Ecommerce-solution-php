@@ -7,7 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var array $assigned_to_users
+ * @var User[] $assigned_to_users
  */
 
 echo $template->start( _('Tickets'), false );
@@ -22,10 +22,10 @@ echo $template->start( _('Tickets'), false );
 		<option value="0"><?php echo _('All'); ?></option>
 		<option value="-1"><?php echo _('Peers'); ?></option>
 		<?php
-		foreach ( $assigned_to_users as $user_id => $contact_name ) {
-			$selected = ( $user->has_permission( User::ROLE_ADMIN ) && $user_id == $user->id ) ? ' selected="selected"' : '';
+        foreach ( $assigned_to_users as $atu ) {
+			$selected = ( $user->has_permission( User::ROLE_ADMIN ) && $atu->id == $user->id ) ? ' selected="selected"' : '';
 			?>
-			<option value="<?php echo $user_id; ?>"<?php echo $selected; ?>><?php echo $contact_name; ?></option>
+			<option value="<?php echo $atu->id; ?>"<?php echo $selected; ?>><?php echo $atu->contact_name; ?></option>
 		<?php } ?>
 	</select>
     <table ajax="/tickets/list-all/" perPage="30,50,100">
