@@ -369,14 +369,13 @@ class Email extends ActiveRecordBase {
      * @param int $account_id
      */
     protected function import_emails( $account_id ) {
-		// @Fix remove the subquery
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+    	// @Fix remove the subquery
 		// @Fix need a way to remove these subscribers
 		// Transfer new emails to emails table
-		$this->prepare(
-            'INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = $website_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = :account_id )'
-            , 'i'
-            , array( ':account_id' => $account_id )
-        )->query();
+		$this->query("INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = $account_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = $account_id )" );
     }
 
     /**
