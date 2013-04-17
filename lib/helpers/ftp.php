@@ -434,7 +434,7 @@ class Ftp {
     private function _parse_raw_list( $raw_list ) {
         if ( empty( $raw_list ) )
             return array();
-        
+
         // Declare variables
         $parsed_list = array();
         
