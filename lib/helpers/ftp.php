@@ -439,7 +439,7 @@ class Ftp {
         $parsed_list = array();
         
         //if you want the dots (. & ..) set this variable to 0
-        $start = 2;
+        $start = 0;
         
         //specify the order of the contents here
         //currently set to first directories "d"
