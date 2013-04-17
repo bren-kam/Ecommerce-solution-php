@@ -351,6 +351,19 @@ class Ftp {
 	}
 
 	/**
+	 * Retrieve remote directory list
+	 *
+	 * @param string $remote_directory the directory to list contents of
+	 * @return array directory list on success
+	 */
+	public function raw_list( $remote_directory = '' ) {
+		if ( !$this->maintain_connection() )
+			return false;
+
+		return $this->_parse_raw_list( ftp_rawlist( $this->conn_id, $this->cwd . $remote_directory ) );
+	}
+
+	/**
 	 * Returns to the parent directory
 	 *
 	 * @return bool
@@ -409,4 +422,90 @@ class Ftp {
 		$file_path = explode ( '/' , $file_path );
 		return ( $file_path[count( $file_path ) - 1] );
 	}
+
+    /**
+     * Parse Raw List
+     * 
+     * @url http://www.php.net/manual/en/function.ftp-rawlist.php
+     * 
+     * @param $raw_list
+     * @return array
+     */
+    private function _parse_raw_list( $raw_list ) {
+        if ( empty( $raw_list ) )
+            return array();
+        
+        // Declare variables
+        $parsed_list = array();
+        
+        //if you want the dots (. & ..) set this variable to 0
+        $start = 2;
+        
+        //specify the order of the contents here
+        //currently set to first directories "d"
+        //second links "l"
+        //and last the files "-"
+        //change it to your convenience but don't touch the value names!
+        $order_list = array("d", "l", "-");
+        
+        //the name and the order of the columns
+        //change it to your convenience
+        //but don't increase/reduce the number of columns
+        $typeCol = "type";
+        //$cols = array( "permissions", "number", "owner", "group", "size", "month", "day", "time", "name" );
+        $cols = array( "date", "time", "size", "name" );
+
+        foreach ( $raw_list as $key => $value ) {
+            $parser = null;
+            
+            if ( $key < $start )
+                continue;
+
+            $parser = explode( " ", preg_replace ('!\s+!', ' ', $value ) );
+
+            if ( isset( $parser ) ) {
+                foreach( $parser as $key => $item ) {
+                    if ( 'size' == $cols[$key] )
+                        $item = $this->_bytesToSize1024( $item );
+
+                    $parser[$cols[$key]] = $item;
+
+
+                    unset( $parser[$key] );
+                }
+                
+                $parsed_list[] = $parser;
+            }
+        }
+        
+        foreach ( $order_list as $order ) {
+            foreach ( $parsed_list as $key => $parsed_item ) {
+                $type = substr( current( $parsed_item ), 0, 1 );
+                
+                if ( $type == $order ) {
+                    $parsed_item[$typeCol] = $type;
+                    unset( $parsed_list[$key] );
+                    $parsed_list[] = $parsed_item;
+                }
+            }
+        }
+        
+        return array_values( $parsed_list );
+    }
+
+    /**
+     * Make them human redable
+     * @param $bytes
+     * @param int $precision
+     * @return string
+     */
+    private function _bytesToSize1024( $bytes, $precision = 2 ) {
+        // human readable format -- powers of 1024
+        //
+        $unit = array('B','KB','MB','GB','TB','PB','EB');
+
+        return @round(
+            $bytes / pow(1024, ($i = floor(log($bytes, 1024)))), $precision
+        ) .' ' . $unit[$i];
+    }
 }

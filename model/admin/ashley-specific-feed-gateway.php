@@ -69,33 +69,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	 * @return bool
 	 */
 	public function run( Account $account, $file = '' ) {
-		// Initialize variables
-		$settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
-		$username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
-		$password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
 		$products = ar::assign_key( $this->get_website_product_skus( $account->id ), 'sku', true );
-		$folder = str_replace( 'CE_', '', $username );
-
-        // Modify variables as necessary
-		if ( '-' != substr( $folder, -1 ) )
-			$folder .= '-';
-		
-        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
 
 		if ( !is_array( $products ) )
 			$products = array();
 
-        // Setup FTP
-		$ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
-
-		// Set login information
-		$ftp->host     = self::FTP_URL;
-		$ftp->username = $username;
-		$ftp->password = $password;
-		$ftp->port     = 21;
-		
-		// Connect
-		$ftp->connect();
+        // Get FTP
+        $ftp = $this->get_ftp( $account );
 
         // Figure out what file we're getting
 		if( empty( $file ) ) {
@@ -434,5 +414,40 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->query();
+    }
+
+    /**
+     * Get FTP
+     *
+     * @param Account $account
+     * @return Ftp
+     */
+    public function get_ftp( Account $account ) {
+        // Initialize variables
+        $settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
+        $username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
+        $password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
+
+        $folder = str_replace( 'CE_', '', $username );
+
+          // Modify variables as necessary
+        if ( '-' != substr( $folder, -1 ) )
+            $folder .= '-';
+
+          $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
+
+        // Setup FTP
+        $ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
+
+        // Set login information
+        $ftp->host     = self::FTP_URL;
+        $ftp->username = $username;
+        $ftp->password = $password;
+        $ftp->port     = 21;
+
+        // Connect
+        $ftp->connect();
+
+        return $ftp;
     }
 }

@@ -437,6 +437,9 @@ class AccountsController extends BaseController {
             , 'responsive-web-design'
         );
 
+        $test_ashley_feed_url = url::add_query_arg( 'aid', $account->id, '/accounts/test-ashley-feed/' );
+        $test_ashley_feed = ' (<a href="' . $test_ashley_feed_url . '#dTestAshleyFeed" title="' . _('Test') . '" rel="dialog" ajax="1">' . _('Test') . '</a>)';
+
         // Start adding fields
         $ft->add_field( 'text', _('FTP Username'), 'tFTPUsername', security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Google Analytics Username'), 'tGAUsername', security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ) );
@@ -447,7 +450,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'checkbox', _('Google Maps Contact Page'), 'cbGoogleMapsContactPage', $settings['gm-contact-page'] );
         $ft->add_field( 'text', _('WordPress Username'), 'tWPUsername', security::decrypt( base64_decode( $account->wordpress_username ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('WordPress Password'), 'tWPPassword', security::decrypt( base64_decode( $account->wordpress_password ), ENCRYPTION_KEY ) );
-        $ft->add_field( 'text', _('Ashley FTP Username'), 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Ashley FTP Username') . $test_ashley_feed, 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
@@ -494,14 +497,12 @@ class AccountsController extends BaseController {
         // Create Form
         $form = $ft->generate_form();
 
-        $template_response = $this->get_template_response('other-settings')
+        $this->resources->css('accounts/edit');
+
+        return $this->get_template_response('other-settings')
             ->add_title( _('Other Settings') )
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
-
-        $this->resources->css('accounts/edit');
-
-        return $template_response;
     }
 
     /**
@@ -1145,6 +1146,33 @@ class AccountsController extends BaseController {
 
         // Redirect them to accounts page
         return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    /**
+     * Test Ashley Feed
+     *
+     * @return HtmlResponse
+     */
+    protected function test_ashley_feed() {
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Get the files
+        $ashley_specific_feed = new AshleySpecificFeedGateway();
+
+        $ftp = $ashley_specific_feed->get_ftp( $account );
+
+        // Yay
+        $files = $ftp->raw_list();
+        $file_count = count( $files );
+
+        // Create response
+        $response = new CustomResponse( $this->resources, 'accounts/ashley-files' );
+
+        $response->set( compact( 'files', 'file_count' ) );
+
+        return $response;
     }
 
     /**

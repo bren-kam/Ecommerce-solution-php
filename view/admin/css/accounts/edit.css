@@ -10,3 +10,6 @@ input.tb { width: 368px; }
 .on-off.selected { background-position: 0 0 }
 
 #sIndustries { height: 150px; }
+
+#tAshleyFiles th { font-size: 18px }
+#tAshleyFiles th, #tAshleyFiles td { padding-bottom: 7px; padding-right: 10px; }
