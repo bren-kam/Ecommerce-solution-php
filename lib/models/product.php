@@ -1,7 +1,7 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified;
+    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified, $date_created;
 
     // Artificial columns
     public $images, $industry, $order, $price, $created_by, $updated_by;
@@ -90,11 +90,13 @@ class Product extends ActiveRecordBase {
      * Create
      */
     public function create() {
+        $this->date_created = dt::now();
+
         $this->insert( array(
             'website_id' => $this->website_id
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
-            , 'date_created' => dt::date('Y-m-d H:i:s')
+            , 'date_created' => $this->date_created
         ), 'iiss' );
 
         $this->id = $this->product_id = $this->get_insert_id();
