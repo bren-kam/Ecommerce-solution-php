@@ -122,10 +122,10 @@ if ( !empty( $errs ) )
             (<?php echo _('Click "Refresh" above to preview your ad'); ?>)
         </div>
         <br />
-        <a href="javascript:;" class="button" id="aPostAd" title="<?php echo _('Post Ad'); ?>"><?php echo _('Post Ad'); ?></a>
+        <a href="#" class="button" id="aPostAd" title="<?php echo _('Post Ad'); ?>"><?php echo _('Post Ad'); ?></a>
     </div>
 
-    <?php nonce::field('add-edit'); ?>
+    <?php nonce::field('add_edit'); ?>
 </form>
 
 <?php echo $template->end(); ?>
