@@ -117,7 +117,7 @@ if ( !empty( $errs ) )
     </div>
 
     <div id="dPreviewAd"<?php if ( !$craigslist_ad_id ) echo ' class="hidden"'; ?>>
-        <h2><?php echo _('Preview'); ?> - &nbsp;<small><a href="javascript:;" id="aRefresh" title="<?php echo _('Refresh'); ?>"><?php echo _('Refresh'); ?></a></small></h2>
+        <h2><?php echo _('Preview'); ?> - &nbsp;<small><a href="#" id="aRefresh" title="<?php echo _('Refresh'); ?>"><?php echo _('Refresh'); ?></a></small></h2>
         <div id="dCraigslistCustomPreview">
             (<?php echo _('Click "Refresh" above to preview your ad'); ?>)
         </div>
@@ -125,7 +125,7 @@ if ( !empty( $errs ) )
         <a href="javascript:;" class="button" id="aPostAd" title="<?php echo _('Post Ad'); ?>"><?php echo _('Post Ad'); ?></a>
     </div>
 
-    <?php nonce::field('add-edit-craigslist'); ?>
+    <?php nonce::field('add-edit'); ?>
 </form>
 
 <?php echo $template->end(); ?>
