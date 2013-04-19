@@ -369,6 +369,8 @@ class AccountsController extends BaseController {
                 ssh2_exec( $ssh_connection, "sed -i 's/#Rewrite/Rewrite/g' /home/$username/public_html/.htaccess" );
 
                 $account->live = 1;
+            } else {
+                $account->live = 0;
             }
 
             $account->save();
@@ -383,7 +385,7 @@ class AccountsController extends BaseController {
             $this->notify( _('The Website Settings have been updated!') );
 
             // Redirect to main page
-            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/edit/' ) );
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/website-settings/' ) );
         }
 
         // Create Form
