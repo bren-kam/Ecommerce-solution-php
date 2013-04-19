@@ -325,7 +325,7 @@ class Email extends ActiveRecordBase {
         $account_id = (int) $account_id;
 
         // Get chunks
-        $chunks = array_chunk( $values, 500 );
+        $chunks = array_chunk( $values, 500, true );
 
         foreach ( $chunks as $chunk ) {
             $chunk_count = count( $chunk );

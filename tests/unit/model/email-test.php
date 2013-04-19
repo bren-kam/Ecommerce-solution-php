@@ -372,6 +372,145 @@ class EmailTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Import
+     */
+    public function testImport() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('Email');
+        $method = $class->getMethod( 'import' );
+        $method->setAccessible(true);
+
+        // Declare Variables
+        $website_id = -5;
+        $email = 'test@googoo.com';
+        $name = 'Lee';
+        $values = array(
+             $email => $name
+        );
+
+        // Insert
+        $method->invokeArgs( $this->email, array( $website_id, $values ) );
+
+        // Get emails
+        $fetched_email = $this->db->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
+
+        $this->assertEquals( $fetched_email, $email );
+
+        // Cleanup
+        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Import Emails
+     */
+    public function testImportEmails() {
+
+    }
+
+    /**
+     * Test Add Associations to imported emails
+     */
+    public function testAddAssociationsToImportedEmails() {
+
+    }
+
+    /**
+     * Test Delete Imported
+     */
+    public function testDeleteImported() {
+        // Declare variables
+        $website_id = -5;
+        $email = 'test@googoo.com';
+
+        // Insert
+        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+
+        // Delete imported
+        $this->email->delete_imported( $website_id );
+
+        // Make sure there are none left
+        $email = $this->db->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id" );
+
+        $this->assertFalse( $email );
+    }
+
+    /**
+     * Test Import All
+     *
+     * @depends testDeleteImported
+     * @depends testImport
+     */
+    public function testImportAll() {
+        // Declare Variables
+        $website_id = -5;
+        $email = 'test@googoo.com';
+        $name = 'Lee';
+        $unsubscribed_email = 'test@gaga.com';
+        $unsubscribed_name = 'Eel';
+        $emails = array(
+            array(
+                'email' => $email
+                , 'name' => $name
+            )
+            , array(
+                'email' => $unsubscribed_email
+                , 'name' => $unsubscribed_name
+            )
+        );
+
+        // Insert
+        $this->db->insert( 'emails', array( 'website_id' => $website_id, 'email' => $unsubscribed_email, 'name' => $unsubscribed_name, 'status' => 0 ), 'issi' );
+
+        // Import all
+        $this->email->import_all( $website_id, $emails );
+
+        // Get emails
+        $fetched_email = $this->db->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
+
+        $this->assertEquals( $fetched_email, $email );
+
+        // Cleanup
+        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Complete Import
+     *
+     * @depends testImportEmails
+     * @depends testAddAssociationsToImportedEmails
+     * @depends testDeleteImported
+     */
+    public function testCompleteImport() {
+
+    }
+
+    /**
+     * Test Get Associations
+     */
+    public function testGetAssociations() {
+        // Declare variables
+        $this->email->id = $email_id = -5;
+        $email_list_ids = array( '-2', '-3', '-4' );
+
+        // Delete any associations from before hand
+        $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
+
+        // Insert
+        $this->db->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) VALUES ( $email_id, " . implode( "), ( $email_id, ", $email_list_ids ) . ")" );
+
+        // Get associations
+        $fetched_email_list_ids = $this->email->get_associations();
+
+        // Don't care about the order, but it reverses it.
+        $email_list_ids = array_reverse( $email_list_ids );
+
+        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
+
+        // Delete any images from before hand
+        $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
+    }
+
+    /**
      * Test Adding Associations
      */
     public function testAddAssociations() {
@@ -379,10 +518,10 @@ class EmailTest extends BaseDatabaseTest {
         $this->email->id = -5;
         $email_list_ids = array( '-2', '-3', '-4' );
 
-        // Delete any images from before hand
+        // Delete any associations from before hand
         $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
 
-        // Add images
+        // Add
         $this->email->add_associations( $email_list_ids );
 
         // See if they are there
