@@ -404,14 +404,60 @@ class EmailTest extends BaseDatabaseTest {
      * Test Import Emails
      */
     public function testImportEmails() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('Email');
+        $method = $class->getMethod( 'import_emails' );
+        $method->setAccessible(true);
 
+        // Declare variables
+        $website_id = -15;
+        $email = 'test@flock.com';
+
+        // Insert
+        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+
+        // Test
+        $method->invokeArgs( $this->email, array( $website_id ) );
+
+        // Get
+        $fetched_email = $this->db->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id" );
+
+        $this->assertEquals( $email, $fetched_email );
+
+        // Cleanup
+        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
      * Test Add Associations to imported emails
      */
     public function testAddAssociationsToImportedEmails() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('Email');
+        $method = $class->getMethod( 'add_associations_to_imported_emails' );
+        $method->setAccessible(true);
 
+        // Declare variables
+        $website_id = -15;
+        $email = 'test@flocking.com';
+        $email_list_ids = array( -2, -4, -6 );
+
+        // Insert
+        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+        $email_id = $this->db->insert( 'emails', compact( 'website_id', 'email' ), 'is' );
+
+        // Add
+        $method->invokeArgs( $this->email, array( $website_id, $email_list_ids ) );
+
+        // Get
+        $fetched_email_list_ids = $this->db->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
+
+        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
+
+        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'email_associations', compact( 'email_id' ), 'i' );
     }
 
     /**
@@ -471,6 +517,7 @@ class EmailTest extends BaseDatabaseTest {
 
         // Cleanup
         $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -481,7 +528,31 @@ class EmailTest extends BaseDatabaseTest {
      * @depends testDeleteImported
      */
     public function testCompleteImport() {
+        // Declare variables
+        $website_id = -25;
+        $email = 'test@flock.com';
+        $email_list_ids = array( -2, -4, -6 );
 
+        // Insert
+        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+
+        // Complete the import
+        $this->email->complete_import( $website_id, $email_list_ids );
+
+        $email_id = $this->db->get_var( "SELECT `email_id` FROM `emails` WHERE `website_id` = $website_id AND `email` = " . $this->db->quote( $email ) );
+
+        // Make sure it's there
+        $this->assertGreaterThan( 0, $email_id );
+
+        // Make sure it has the emails it should
+        $fetched_email_list_ids = $this->db->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
+
+        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
+
+        // Clean Up
+        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'email_associations', compact( 'email_id' ), 'i' );
     }
 
     /**
