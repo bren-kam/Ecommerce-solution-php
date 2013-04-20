@@ -123,7 +123,7 @@ class EmailsController extends BaseController {
             $date = new DateTime( $message->date_sent );
             $message->date_sent = dt::adjust_timezone( $message->date_sent, $server_timezone, $timezone );
 
-            if ( $message->status < 2 ) {
+            if ( $message->status != EmailMessage::STATUS_SENT ) {
                 $actions = '<a href="' . url::add_query_arg( 'emid', $message->id, '/email-marketing/emails/send/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ';
                 $actions .= '<a href="' . url::add_query_arg( array( 'emid' => $message->id, '_nonce' => $delete_nonce ), '/email-marketing/emails/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
             } else {
