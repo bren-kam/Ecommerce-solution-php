@@ -364,6 +364,8 @@ class EmailMessageTest extends BaseDatabaseTest {
 
         $email_messages = $this->email_message->get_dashboard_messages_by_account( $website_id );
 
+        $this->assertTrue( current( $email_messages ) instanceof EmailMessage );
+
         // Clean up
         $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
     }
