@@ -356,7 +356,23 @@ class AccountsController extends BaseController {
             $account->company_package_id = $_POST['sPackage'];
             $account->domain = $_POST['tDomain'];
             $account->theme = $_POST['tTheme'];
-            $account->live = (int) isset( $_POST['cbLive'] ) && $_POST['cbLive'];
+
+            if ( !$account->live && isset( $_POST['cbLive'] ) && $_POST['cbLive'] ) {
+                // SSH Connection
+                $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+                ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+
+                $username = security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY );
+                $domain = url::domain( $account->domain, false );
+
+                ssh2_exec( $ssh_connection, "sed -i 's/\[domain\]/$domain/g' /home/$username/public_html/.htaccess" );
+                ssh2_exec( $ssh_connection, "sed -i 's/#Rewrite/Rewrite/g' /home/$username/public_html/.htaccess" );
+
+                $account->live = 1;
+            } else {
+                $account->live = 0;
+            }
+
             $account->save();
 
             // Update the settings
@@ -369,7 +385,7 @@ class AccountsController extends BaseController {
             $this->notify( _('The Website Settings have been updated!') );
 
             // Redirect to main page
-            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/edit/' ) );
+            return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/website-settings/' ) );
         }
 
         // Create Form
@@ -423,6 +439,9 @@ class AccountsController extends BaseController {
             , 'responsive-web-design'
         );
 
+        $test_ashley_feed_url = url::add_query_arg( 'aid', $account->id, '/accounts/test-ashley-feed/' );
+        $test_ashley_feed = ' (<a href="' . $test_ashley_feed_url . '#dTestAshleyFeed" title="' . _('Test') . '" rel="dialog" ajax="1">' . _('Test') . '</a>)';
+
         // Start adding fields
         $ft->add_field( 'text', _('FTP Username'), 'tFTPUsername', security::decrypt( base64_decode( $account->ftp_username ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Google Analytics Username'), 'tGAUsername', security::decrypt( base64_decode( $settings['ga-username'] ), ENCRYPTION_KEY ) );
@@ -433,7 +452,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'checkbox', _('Google Maps Contact Page'), 'cbGoogleMapsContactPage', $settings['gm-contact-page'] );
         $ft->add_field( 'text', _('WordPress Username'), 'tWPUsername', security::decrypt( base64_decode( $account->wordpress_username ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('WordPress Password'), 'tWPPassword', security::decrypt( base64_decode( $account->wordpress_password ), ENCRYPTION_KEY ) );
-        $ft->add_field( 'text', _('Ashley FTP Username'), 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
+        $ft->add_field( 'text', _('Ashley FTP Username') . $test_ashley_feed, 'tAshleyFTPUsername', security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY ) );
         $ft->add_field( 'text', _('Ashley FTP Password'), 'tAshleyFTPPassword', htmlspecialchars( security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY ) ) );
         $ft->add_field( 'checkbox', _('Ashley - Alternate Folder'), 'cbAshleyAlternateFolder', $settings['ashley-alternate-folder'] );
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
@@ -480,14 +499,12 @@ class AccountsController extends BaseController {
         // Create Form
         $form = $ft->generate_form();
 
-        $template_response = $this->get_template_response('other-settings')
+        $this->resources->css('accounts/edit');
+
+        return $this->get_template_response('other-settings')
             ->add_title( _('Other Settings') )
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
-
-        $this->resources->css('accounts/edit');
-
-        return $template_response;
     }
 
     /**
@@ -1131,6 +1148,33 @@ class AccountsController extends BaseController {
 
         // Redirect them to accounts page
         return new RedirectResponse( url::add_query_arg( 'aid', $account->id, '/accounts/actions/' ) );
+    }
+
+    /**
+     * Test Ashley Feed
+     *
+     * @return HtmlResponse
+     */
+    protected function test_ashley_feed() {
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Get the files
+        $ashley_specific_feed = new AshleySpecificFeedGateway();
+
+        $ftp = $ashley_specific_feed->get_ftp( $account );
+
+        // Yay
+        $files = $ftp->raw_list();
+        $file_count = count( $files );
+
+        // Create response
+        $response = new CustomResponse( $this->resources, 'accounts/ashley-files' );
+
+        $response->set( compact( 'files', 'file_count' ) );
+
+        return $response;
     }
 
     /**

@@ -1,5 +1,9 @@
 <?php
 class EmailMessage extends ActiveRecordBase {
+    const STATUS_DRAFT = 0;
+    const STATUS_SCHEDULED = 1;
+    const STATUS_SENT = 2;
+
     public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $subject, $message, $type, $status, $date_sent, $date_created;
 
     // Artifical columns
@@ -45,7 +49,7 @@ class EmailMessage extends ActiveRecordBase {
 
         if ( 'product' == $this->type ) {
             // Start off the product ids
-            $product_ids = array();;
+            $product_ids = array();
 
             if ( is_array( $meta_data ) )
             foreach ( $meta_data as $md ) {
@@ -311,7 +315,7 @@ class EmailMessage extends ActiveRecordBase {
 	 * @return bool
 	 */
 	public function update_scheduled_emails() {
-		$this->query( "UPDATE `email_messages` SET `status` = 2 WHERE `status` = 1 AND `date_sent` < NOW()" );
+		$this->query( "UPDATE `email_messages` SET `status` = " . self::STATUS_SENT . " WHERE `status` = " . self::STATUS_SCHEDULED . " AND `date_sent` < NOW()" );
     }
 
     /**
@@ -322,7 +326,7 @@ class EmailMessage extends ActiveRecordBase {
      */
     public function get_dashboard_messages_by_account( $account_id ) {
         return $this->prepare(
-            'SELECT `email_message_id`, `mc_campaign_id`, `subject` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = 2 ORDER BY `date_sent` DESC LIMIT 5'
+            'SELECT `email_message_id`, `mc_campaign_id`, `subject` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT 5'
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
@@ -411,7 +415,7 @@ class EmailMessage extends ActiveRecordBase {
             if ( $mc->errorCode )
                 throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
-            $this->status = 1;
+            $this->status = self::STATUS_SCHEDULED;
             $this->save();
         } else {
             // Send campaign now
@@ -421,7 +425,7 @@ class EmailMessage extends ActiveRecordBase {
             if ( $mc->errorCode )
                 throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
-            $this->status = 2;
+            $this->status = self::STATUS_SENT;
             $this->save();
         }
     }

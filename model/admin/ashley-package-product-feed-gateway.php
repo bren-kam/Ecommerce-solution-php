@@ -241,7 +241,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 		// Get libraries
         library('ashley-api/ashley-api');
         $this->ashley = new Ashley_API();
-		echo 'made it!';exit;
 	}
 
     /**
@@ -315,10 +314,16 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             // Get Product
 			$product = $this->get_existing_product( (string) $item->PackageName );
-
+		
             // Now we have the product
             if ( !$product instanceof Product ) {
-                $product = new Product();
+				/*echo '|' . (string) $item->PackageName . '|';
+				echo array_key_exists( (string) $item->PackageName, $this->existing_products );
+				echo '|' . isset( $this->existing_products[(string) $item->PackageName] ) . '|';
+				fn::info( $this->existing_products );
+				exit;
+				*/
+				$product = new Product();
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
                 $product->publish_visibility = 'public';
@@ -326,10 +331,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
                 // Set publish date
                 $product->publish_date = dt::now();
-
+				
                 // Need to add the category
                 $new_product = true;
-            }
+            } else {
+				continue;
+			}
 
             /***** PREPARE PRODUCT DATA *****/
 
@@ -473,7 +480,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $this->reset_identical();
 
             /** Add Category **/
-            if ( $new_product ) {
+            if ( $new_product && $category_id ) {
                 $product->delete_categories();
                 $product->add_category( $category_id );
             }
@@ -565,9 +572,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
         // Send report to everyone else
         if( count( $this->new_products ) > 0 ) {
-			$message = "-----New Feed Products-----" . PHP_EOL . $new_products;
+			$message = "-----New Package Feed Products-----" . PHP_EOL . $new_products;
 			//, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com
-			fn::mail( 'kerry@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
+			fn::mail( 'kerry@greysuitretail.com', 'Ashley Package Products - ' . dt::now(), $message );
 		}
     }
 

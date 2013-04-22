@@ -294,20 +294,20 @@ class ProductsController extends BaseController {
             return new RedirectResponse( '/products/hide-categories/' );
         }
 
-        $hidden_category_ids = $account_category->get_all_hidden_ids( $this->user->account->id );
-        $hidden_categories = array();
+        $blocked_website_category_ids = $account_category->get_blocked_website_category_ids( $this->user->account->id );
+        $blocked_categories = array();
 
         foreach ( $categories_array as $category ) {
-            if ( !in_array( $category->id, $hidden_category_ids ) )
+            if ( !in_array( $category->id, $blocked_website_category_ids ) )
                 continue;
 
-            $hidden_categories[] = $category;
+            $blocked_categories[] = $category;
         }
 
         return $this->get_template_response( 'hide-categories' )
             ->add_title( _('Hide Categories') )
             ->select( 'sub-products', 'hide-categories' )
-            ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $hidden_categories ) );
+            ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $blocked_categories ) );
     }
 
     /**

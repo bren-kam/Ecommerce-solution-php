@@ -64,9 +64,9 @@ class AccountCategoryTest extends BaseDatabaseTest {
     }
 
     /**
-     * Get All Hidden Ids
+     * Get Blocked Website Category Ids
      */
-    public function testGetAllHiddenIds() {
+    public function testGetBlockedWebsiteCategoryIds() {
         // Set variables
         $website_id = -7;
         $category_id = -5;
@@ -77,10 +77,10 @@ class AccountCategoryTest extends BaseDatabaseTest {
         $this->db->insert( 'website_blocked_category', compact( 'category_id', 'website_id' ), 'ii' );
 
         // Get
-        $hidden_category_ids = $this->account_category->get_all_hidden_ids( $website_id );
+        $blocked_website_category_ids = $this->account_category->get_blocked_website_category_ids( $website_id );
 
         // Make sure we grabbed the right one
-        $this->assertTrue( in_array( $category_id, $hidden_category_ids ) );
+        $this->assertTrue( in_array( $category_id, $blocked_website_category_ids ) );
 
         // Clean up
         $this->db->delete( 'website_blocked_category', compact( 'website_id' ), 'i' );

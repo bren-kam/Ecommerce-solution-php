@@ -11,7 +11,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
     // Not used
     protected $testing_sites = array( 78, 123, 124, 134, 158, 168, 175, 186, 190, 218, 228, 243, 291, 292, 293, 317, 318
-        , 327, 335, 337, 354, 357, 377, 378, 403, 457, 458, 476, 477, 479, 527, 535, 559, 571, 587, 590, 593, 596, 600
+        , 327, 335, 337, 354, 357, 377, 378, 403, 457, 458, 476, 477, 479, 527, 535, 559, 571, 573, 587, 590, 593, 596, 600
         , 601, 605, 610, 612, 613, 638, 642, 645, 650, 659, 663, 664, 665, 674, 681, 682, 684, 686, 689, 692, 700, 704, 720
         , 743, 805, 806, 807, 809, 829, 878, 882, 883, 895, 902, 904, 912, 915, 929, 932, 936, 939, 942, 975, 978, 980
         , 991, 1014, 1017, 1058, 1066, 1067, 1068, 1077, 1078, 1099, 1100, 1101, 1113, 1116, 1120, 1126, 1129, 1133
@@ -19,7 +19,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
     );
 
     protected $omit_sites = array( 70, 161, 187, 412, 296, 343, 341, 365, 345, 371, 404, 456, 461, 464, 468, 492, 494
-        , 497, 501, 506, 557, 572, 573, 582, 588, 599, 606, 611, 614, 641, 644, 647, 649, 660, 666, 667, 668, 680
+        , 497, 501, 506, 557, 572, 582, 588, 599, 606, 611, 614, 641, 644, 647, 649, 660, 666, 667, 668, 680
         , 702, 760, 928, 897, 911, 926, 972, 1011, 1015, 1016, 1022, 1032, 1034, 1037, 1042, 1049, 1071, 1088, 1091
         , 1093, 1105, 1112, 1117, 1118, 1119, 1138, 1152, 1156, 1204, 1205
     );
@@ -69,33 +69,13 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 	 * @return bool
 	 */
 	public function run( Account $account, $file = '' ) {
-		// Initialize variables
-		$settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
-		$username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
-		$password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
 		$products = ar::assign_key( $this->get_website_product_skus( $account->id ), 'sku', true );
-		$folder = str_replace( 'CE_', '', $username );
-
-        // Modify variables as necessary
-		if ( '-' != substr( $folder, -1 ) )
-			$folder .= '-';
-		
-        $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
 
 		if ( !is_array( $products ) )
 			$products = array();
 
-        // Setup FTP
-		$ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
-
-		// Set login information
-		$ftp->host     = self::FTP_URL;
-		$ftp->username = $username;
-		$ftp->password = $password;
-		$ftp->port     = 21;
-		
-		// Connect
-		$ftp->connect();
+        // Get FTP
+        $ftp = $this->get_ftp( $account );
 
         // Figure out what file we're getting
 		if( empty( $file ) ) {
@@ -434,5 +414,40 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->query();
+    }
+
+    /**
+     * Get FTP
+     *
+     * @param Account $account
+     * @return Ftp
+     */
+    public function get_ftp( Account $account ) {
+        // Initialize variables
+        $settings = $account->get_settings( 'ashley-ftp-username', 'ashley-ftp-password', 'ashley-alternate-folder' );
+        $username = security::decrypt( base64_decode( $settings['ashley-ftp-username'] ), ENCRYPTION_KEY );
+        $password = security::decrypt( base64_decode( $settings['ashley-ftp-password'] ), ENCRYPTION_KEY );
+
+        $folder = str_replace( 'CE_', '', $username );
+
+          // Modify variables as necessary
+        if ( '-' != substr( $folder, -1 ) )
+            $folder .= '-';
+
+          $subfolder = ( '1' == $settings['ashley-alternate-folder'] ) ? 'Outbound/Items' : 'Outbound';
+
+        // Setup FTP
+        $ftp = new Ftp( "/CustEDI/$folder/$subfolder/" );
+
+        // Set login information
+        $ftp->host     = self::FTP_URL;
+        $ftp->username = $username;
+        $ftp->password = $password;
+        $ftp->port     = 21;
+
+        // Connect
+        $ftp->connect();
+
+        return $ftp;
     }
 }

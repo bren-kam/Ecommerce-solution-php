@@ -198,7 +198,7 @@ class User extends ActiveRecordBase {
             $where .= ' AND ( `company_id` = ' . $this->company_id . ' OR `user_id` IN( ' . implode( ', ', $user_ids ) . ' ) ) ';
 
         return $this->get_results(
-            "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `role` > 5 AND '' <> `contact_name` $where ORDER BY `contact_name`"
+            "SELECT `user_id`, `contact_name`, `email`, `role` FROM `users` WHERE `status` = 1 AND `role` >= " . self::ROLE_ONLINE_SPECIALIST . " AND '' <> `contact_name` $where ORDER BY `contact_name`"
             , PDO::FETCH_CLASS
             , 'User'
         );

@@ -163,7 +163,7 @@ class AccountProduct extends ActiveRecordBase {
 	 * @return int
 	 */
 	 public function search_count( $account_id, $where = '' ) {
-		$sql = 'SELECT DISTINCT COUNT( p.`product_id` )';
+		$sql = 'SELECT COUNT( DISTINCT p.`product_id` )';
 		$sql .= 'FROM `products` AS p ';
 		$sql .= 'LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) ';
