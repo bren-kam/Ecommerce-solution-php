@@ -65,7 +65,7 @@ class security extends Base_Class {
 		
 		mcrypt_generic_init( $td, $key, $iv );
 		
-		$encrypted = mcrypt_generic( $td, str_replace( "&", '\046', $string ) );
+		$encrypted = @mcrypt_generic( $td, str_replace( "&", '\046', $string ) );
 		
 		mcrypt_generic_deinit( $td );
 		mcrypt_module_close( $td );

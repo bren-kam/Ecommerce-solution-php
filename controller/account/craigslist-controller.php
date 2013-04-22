@@ -87,7 +87,9 @@ class CraigslistController extends BaseController {
                     $ad->post();
                     $this->notify( _('Your Craiglist Ad has been successfully sent to post!') );
                     return new RedirectResponse('/craigslist/');
-                }
+                } else {
+                    $this->notify( _('Your Craiglist Ad has been successfully created/saved!') );
+				}
             }
         }
 

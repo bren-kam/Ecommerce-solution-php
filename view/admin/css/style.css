@@ -100,6 +100,7 @@ input.button {
 .small { font-size: 0.66em }
 .big { font-size: 1.5em }
 .bold { font-weight: bold }
+.text-left { text-align: left }
 .text-right { text-align:right; }
 .text-center { text-align:center; }
 .success, .success p { color: #090 }

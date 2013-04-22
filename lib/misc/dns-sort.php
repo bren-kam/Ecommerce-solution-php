@@ -13,7 +13,7 @@ class DNSSort {
      * @param array $array
      */
     public function __construct( array &$array ) {
-        usort( $array['ResourceRecordSets'], array( $this, 'dns_sort' ) );
+        usort( $array, array( $this, 'dns_sort' ) );
     }
 
     /**

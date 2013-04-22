@@ -372,6 +372,16 @@ class DB {
     }
 
     /**
+     * Quote a string
+     *
+     * @param string $string
+     * @return string
+     */
+    public function quote( $string ) {
+        return $this->_pdo->quote( $string );
+    }
+
+    /**
      * Connect to PDO
      *
      * @throws ModelException

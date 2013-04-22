@@ -22,10 +22,10 @@ class TestController extends BaseController {
         //$craigslist->update_stats();
         //$ashley = new AshleyMasterProductFeedGateway();
         //$ashley->run();
-        /**
+        
         $ashley_package_feed = new AshleyPackageProductFeedGateway();
         $ashley_package_feed->run();
-        */
+        
         /*$mobile_marketing = new MobileMarketing();
         $mobile_marketing->synchronize_contacts();
 
@@ -42,9 +42,9 @@ class TestController extends BaseController {
         //return new HtmlResponse('eh');
         // Get categories
 
-        $coaster = new CoasterProductFeedGateway();
+        //$coaster = new CoasterProductFeedGateway();
         //$coaster->run();
-		$coaster->cleanup();
+		//$coaster->cleanup();
 		//$ashley = new AshleyMasterProductFeedGateway();
         //$ashley->run();
 

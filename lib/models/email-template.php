@@ -123,7 +123,7 @@ class EmailTemplate extends ActiveRecordBase {
         }
 
         // Format
-        $message = format::autop( $email_message->message );
+        $message = trim( format::autop( $email_message->message ) );
 
         // Email Variables
         $message = str_replace( array( '[website_title]' ), array( $account->title ), $message );
@@ -205,7 +205,8 @@ class EmailTemplate extends ActiveRecordBase {
 
             default:
                 // Just do a normal message
-                $html_message = str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), $this->template );
+                $remove_header_footer = $account->get_email_settings('remove-header-footer');
+				$html_message = ( $remove_header_footer ) ? $message : str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), $this->template );
             break;
         }
 

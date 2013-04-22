@@ -42,20 +42,6 @@ class AccountCategory extends ActiveRecordBase {
     }
 
     /**
-     * Get All Hidden
-     *
-     * @param int $account_id
-     * @return array
-     */
-    public function get_all_hidden_ids( $account_id ) {
-        return $this->prepare(
-            'SELECT `category_id` FROM `website_blocked_category` WHERE `website_id` = :account_id'
-            , 'i'
-            , array( ':account_id' => $account_id )
-        )->get_col();
-    }
-
-    /**
      * Save
      */
     public function save() {
@@ -332,7 +318,7 @@ class AccountCategory extends ActiveRecordBase {
      * @param $account_id
      * @return array
      */
-    protected function get_blocked_website_category_ids( $account_id ) {
+    public function get_blocked_website_category_ids( $account_id ) {
         return $this->prepare(
             "SELECT DISTINCT `category_id` FROM `website_blocked_category` WHERE `website_id` = :account_id"
             , 'i'
