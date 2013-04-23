@@ -20,7 +20,14 @@ class CategoriesController extends BaseController {
     protected function index() {
         // Must be a super admin
         if ( !$this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
-            return new RedirectResponse( '/knowledge-base/articles' );
+            return new RedirectResponse( '/knowledge-base/articles/' );
+
+        if ( !isset( $_GET['s'] ) )
+            url::redirect( url::add_query_arg( 's', KnowledgeBaseCategory::SECTION_ADMIN, '/' . $this->view_base ) );
+
+        $section = ( KnowledgeBaseCategory::SECTION_ADMIN == $_GET['s'] ) ? KnowledgeBaseCategory::SECTION_ACCOUNT : KnowledgeBaseCategory::SECTION_ADMIN;
+        $uc_section = ucwords( $section );
+        $link = '<a href="' . url::add_query_arg( 's', $section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
         $this->resources
             ->javascript( 'knowledge-base/categories/index' )
@@ -28,7 +35,8 @@ class CategoriesController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->add_title( _('Categories') )
-            ->select( 'categories', 'view' );
+            ->select( 'categories', 'view' )
+            ->set( compact( 'link' ) );
     }
 
     /***** AJAX *****/
@@ -47,7 +55,7 @@ class CategoriesController extends BaseController {
             return $response;
 
         // Setup Category
-        $category = new KnowledgeBaseCategory();
+        $category = new KnowledgeBaseCategory( $_POST['s'] );
 
         // Get categories
         $categories = $category->get_by_parent( $_POST['kbcid'] );
@@ -70,8 +78,8 @@ class CategoriesController extends BaseController {
             $delete_confirmation = _('Are you sure you want to delete this category? This cannot be undone.');
 
             foreach ( $categories as $c ) {
-                $delete_url = url::add_query_arg( array( '_nonce' => $delete_nonce, 'cid' => $c->id ), '/knowledge-base/categories/delete/' );
-                $edit_url = url::add_query_arg( array( 'cid' => $c->id, 'pcid' => $c->parent_category_id ), '/knowledge-base/categories/add-edit/' ) . '#dAddEditCategory';
+                $delete_url = url::add_query_arg( array( '_nonce' => $delete_nonce, 'kbcid' => $c->id, 's' => $_POST['s'] ), '/knowledge-base/categories/delete/' );
+                $edit_url = url::add_query_arg( array( 'kbcid' => $c->id, 'kbpid' => $c->parent_category_id, 's' => $_POST['s'] ), '/knowledge-base/categories/add-edit/' ) . '#dAddEditCategory';
 
                 $html .= '<div id="cat_' . $c->id . '" class="category">';
                 $html .= '<h4>';
@@ -105,8 +113,8 @@ class CategoriesController extends BaseController {
             jQuery('#edit-delete-category')->hide();
         } else {
             $category_name = $category->name;
-            jQuery('#edit-category')->attr( 'href', url::add_query_arg( array( 'cid' => $category->id, 'pcid' => $category->id ), '/knowledge-base/categories/add-edit/' ) . '#dAddEditCategory' );
-            jQuery('#delete-category')->attr( 'href', url::add_query_arg( array( '_nonce' => $delete_nonce, 'cid' => $category->id ), '/knowledge-base/categories/delete/' ) );
+            jQuery('#edit-category')->attr( 'href', url::add_query_arg( array( 'kbcid' => $category->id, 'kbpid' => $category->id, 's' => $_POST['s'] ), '/knowledge-base/categories/add-edit/' ) . '#dAddEditCategory' );
+            jQuery('#delete-category')->attr( 'href', url::add_query_arg( array( '_nonce' => $delete_nonce, 'kbcid' => $category->id, 's' => $_POST['s'] ), '/knowledge-base/categories/delete/' ) );
             jQuery('#edit-delete-category')->show();
 
             $parent_categories = $category->get_all_parents( $_POST['kbcid'] );
@@ -123,9 +131,13 @@ class CategoriesController extends BaseController {
 
         jQuery('#current-category span:first')
             ->text( $category_name )
-            ->attr( 'rel', $_POST['cid'] );
+            ->attr( 'rel', $_POST['kbcid'] );
 
         jQuery('#breadcrumb')->html( $breadcrumb );
+
+        $add_category_url = url::add_query_arg( array( 's' => $_POST['s'], 'kbpid' => $category->id ), '/knowledge-base/categories/add-edit/' ) . '#dAddEditCategory';
+
+        jQuery('.add-url')->attr( 'href', $add_category_url );
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
@@ -143,7 +155,7 @@ class CategoriesController extends BaseController {
         $category_id = ( isset( $_GET['kbcid'] ) ) ? (int) $_GET['kbcid'] : false;
 
         // Setup Models
-        $category = new KnowledgeBaseCategory();
+        $category = new KnowledgeBaseCategory( $_GET['s'] );
 
         // Get Category data
         $categories = $category->sort_by_hierarchy();
@@ -158,21 +170,20 @@ class CategoriesController extends BaseController {
 
             if ( $category_id ) {
                 $category->save();
-                $parent_category_id = $_GET['kbpid'];
             } else {
                 $category->create();
-                $parent_category_id = $category->parent_category_id;
             }
 
             // Reset Categories list
-            Category::$categories = Category::$categories_by_parent = NULL;
+            KnowledgeBaseCategory::$categories = KnowledgeBaseCategory::$categories_by_parent = NULL;
 
             $notification_html = '<div class="notification sticky hidden">';
             $notification_html .= '<a class="close" href="#"><img src="/images/icons/close.png" alt="' . _('Close') . '" /></a>';
             $notification_html .= '<p>' . _('Your category has been successfully created/updated!') . '</p>';
             $notification_html .= '</div>';
 
-            $_POST['kbcid'] = $parent_category_id;
+            $_POST['kbcid'] = (int) $category->parent_id;
+            $_POST['s'] = $_GET['s'];
             $response = $this->get();
 
             jQuery('div.boxy-wrapper a.close:visible:first')->click();
@@ -190,7 +201,7 @@ class CategoriesController extends BaseController {
             $parent_id = $category->parent_id;
         } else {
             $name = ( isset( $_POST['tName'] ) ) ? $_POST['tName'] : '';
-            $parent_id = 0;
+            $parent_id = ( isset( $_GET['kbpid'] ) ) ? $_GET['kbpid'] : 0;
         }
 
         $response = new CustomResponse( $this->resources, 'knowledge-base/categories/add-edit' );
@@ -213,17 +224,18 @@ class CategoriesController extends BaseController {
             return $response;
 
         // Get the category
-        $category = new KnowledgeBaseCategory();
+        $category = new KnowledgeBaseCategory( $_GET['s'] );
         $category->get( $_GET['kbcid'] );
 
-        $parent_id = $category->parent_id;
+        $parent_id = (int) $category->parent_id;
 
         // Deactivate user
         if ( $category->id ) {
             $category->delete();
 
             // Load Parent Category
-            $_POST['kbcid'] = $parent_id;
+            $_POST['kbcid'] = (int) $parent_id;
+            $_POST['s'] = $_GET['s'];
 
             $response = $this->get();
         }

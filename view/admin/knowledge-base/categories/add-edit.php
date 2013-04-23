@@ -9,10 +9,11 @@
  * @var User $user
  * @var Category $category
  * @var array $categories
- * @var int $parent_category_id
+ * @var int $parent_id
  */
 
-$add_edit_url = '/knowledge-base/categories/add-edit/';
+
+$add_edit_url = url::add_query_arg( 's', $_GET['s'], '/knowledge-base/categories/add-edit/' );
 
 if ( $category->id )
     $add_edit_url = url::add_query_arg( array( 'cid' => $category->id, 'pcid' => $_GET['pcid'] ) );
@@ -20,17 +21,24 @@ if ( $category->id )
 <form name="fAddEditCategory" class="form-add-edit-category" id="fAddEditCategory" action="<?php echo $add_edit_url; ?>" method="post" ajax="1">
 <table>
     <tr>
+        <td><label><?php echo _('Section'); ?>:</label></td>
+        <td><?php echo ucwords( $_GET['s'] ); ?></td>
+    </tr>
+    <tr>
         <td><label for="tName"><?php echo _('Name'); ?>:</label></td>
         <td><input type="text" class="tb" name="tName" id="tName" value="<?php echo $template->v('name'); ?>" /></td>
     </tr>
     <tr>
-        <td><label for="sParentCategoryID"><?php echo _('Parent Category'); ?>:</label></td>
+        <td><label for="sParentID"><?php echo _('Parent Category'); ?>:</label></td>
         <td>
-            <select name="sParentCategoryID" id="sParentCategoryID">
+            <select name="sParentID" id="sParentID">
                 <option value="">-- <?php echo _('Select Category'); ?> --</option>
                 <?php
                 foreach ( $categories as $c ) {
-                    $selected = ( $parent_category_id == $c->id ) ? ' selected="selected"' : '';
+                    if ( $category->id == $c->id || $category->id == $c->parent_id )
+                        continue;
+
+                    $selected = ( $parent_id == $c->id ) ? ' selected="selected"' : '';
                 ?>
                     <option value="<?php echo $c->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $c->depth * 5 ), $c->name; ?></option>
                 <?php } ?>

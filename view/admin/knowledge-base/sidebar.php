@@ -21,7 +21,7 @@
 
         if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ) {
         ?>
-            <a href="/knowledge-base/categories/" title="<?php echo _('Categories'); ?>" class="top<?php $template->select('categories'); ?>"><?php echo _('Categories'); ?></a>
+            <a href="<?php echo url::add_query_arg( 's', KnowledgeBaseCategory::SECTION_ADMIN, '/knowledge-base/categories/' ); ?>" title="<?php echo _('Categories'); ?>" class="top<?php $template->select('categories'); ?>"><?php echo _('Categories'); ?></a>
         <?php } ?>
     </div>
 </div>

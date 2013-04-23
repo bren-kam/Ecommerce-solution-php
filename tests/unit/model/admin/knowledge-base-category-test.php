@@ -60,6 +60,29 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test getting all the parents
+     */
+    public function testGetAllParents() {
+        // Declare variables
+        $name = 'Test Parentt';
+        $child_name = 'Test Childd';
+        $section = KnowledgeBaseCategory::SECTION_ADMIN;
+
+        // Create Category
+        $parent_id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+
+        // Get all categories
+        $categories = $this->kb_category->get_all_parents( $id );
+
+        $this->assertEquals( $parent_id, $categories[0]->id );
+
+        // Delete
+        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->db->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+    }
+
+    /**
      * Test getting all the categories by a parent category ID
      */
     public function testGetByParent() {

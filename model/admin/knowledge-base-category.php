@@ -85,6 +85,32 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
 
         return $child_categories;
     }
+    
+    /**
+     * Get all parent categories
+     *
+     * @param int $id
+     * @param array $parent_categories [optional] Pseudo-optional -- shouldn't be filled in
+     * @return KnowledgeBaseCategory[]
+     */
+    public function get_all_parents( $id, array $parent_categories = array() ) {
+        if ( 0 == $id )
+            return $parent_categories;
+
+        $category = new KnowledgeBaseCategory( $this->section );
+        $category->get( $id );
+
+        if ( 0 != $category->parent_id ) {
+            $parent_category = new KnowledgeBaseCategory( $this->section );
+            $parent_category->get( $category->parent_id );
+
+            $parent_categories[] = $parent_category;
+
+            $parent_categories = $this->get_all_parents( $category->parent_id, $parent_categories );
+        }
+
+        return $parent_categories;
+    }
 
     /**
      * Get Categories By Parent
