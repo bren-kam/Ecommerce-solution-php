@@ -1,7 +1,10 @@
 <?php
 class KnowledgeBaseCategory extends ActiveRecordBase {
+    const SECTION_ADMIN = 'admin';
+    const SECTION_ACCOUNT = 'account';
+
     // The columns we will have access to
-    public $id, $parent_id, $name;
+    public $id, $parent_id, $section, $name;
 
     // Artificial field
     public $depth;
@@ -11,9 +14,14 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
 
     /**
      * Setup the account initial data
+     *
+     * @param string $section ('account','admin')
      */
-    public function __construct() {
+    public function __construct( $section = NULL ) {
         parent::__construct( 'kb_category' );
+
+        if ( !is_null( $section ) )
+            $this->section = $section;
     }
 
     /**
@@ -25,9 +33,9 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
     public function get( $id ) {
         if ( !isset( self::$categories[$id] ) ) {
             $this->prepare(
-                'SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `name` FROM `kb_category` WHERE `id` = :id'
-                , 'i'
-                , array( ':id' => $id )
+                'SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name` FROM `kb_category` WHERE `id` = :id AND `section` = :section'
+                , 'is'
+                , array( ':id' => $id, ':section' => $this->section )
             )->get_row( PDO::FETCH_INTO, $this );
         } else {
             $this->id = $id;
@@ -42,7 +50,11 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
      * @return array
      */
     public function get_all() {
-		$categories_array = $this->get_results( "SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `name` FROM `kb_category` ORDER BY `parent_id` ASC", PDO::FETCH_CLASS, 'KnowledgeBaseCategory' );
+		$categories_array = $this->prepare(
+            'SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name` FROM `kb_category` WHERE `section` = :section ORDER BY `parent_id` ASC'
+            , 's'
+            , array( ':section' => $this->section )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseCategory' );
         $categories = array();
 
         foreach ( $categories_array as $c ) {
@@ -122,7 +134,8 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
         $this->insert( array(
             'parent_id' => $this->parent_id
             , 'name' => $this->name
-        ), 'is' );
+            , 'section' => $this->section
+        ), 'iss' );
 
         $this->id = $this->get_insert_id();
     }
@@ -149,9 +162,9 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
             return;
 
         $this->prepare(
-            'DELETE FROM `kb_category` WHERE `id` = :id OR `parent_id` = :parent_id'
-            , 'ii'
-            , array( ':id' => $this->id, ':parent_id' => $this->id )
+            'DELETE FROM `kb_category` WHERE ( `id` = :id OR `parent_id` = :parent_id ) AND `section` = :section'
+            , 'iis'
+            , array( ':id' => $this->id, ':parent_id' => $this->id, ':section' => $this->section )
         )->query();
     }
 

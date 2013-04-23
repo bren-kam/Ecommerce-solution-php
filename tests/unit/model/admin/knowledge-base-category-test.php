@@ -13,7 +13,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
-        $this->kb_category = new KnowledgeBaseCategory();
+        $this->kb_category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ADMIN );
     }
 
     /**
@@ -22,9 +22,10 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
     public function testGet() {
         // Declare variables
         $name = 'Test Get';
+        $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $id = $this->db->insert( 'kb_category', compact( 'name' ), 's' );
+        $id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
 
         // Get category
         $this->kb_category->get( $id );
@@ -43,10 +44,11 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         // Declare variables
         $name = 'Test Parent';
         $child_name = 'Test Child';
+        $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $parent_id = $this->db->insert( 'kb_category', compact( 'name' ), 's' );
-        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'name' => $child_name ), 'is' );
+        $parent_id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
 
         $categories = $this->kb_category->get_all_children( $parent_id );
 
@@ -64,10 +66,11 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         // Declare variables
         $name = 'Test Parentt';
         $child_name = 'Test Childd';
+        $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $parent_id = $this->db->insert( 'kb_category', compact( 'name' ), 's' );
-        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'name' => $child_name ), 'is' );
+        $parent_id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
 
         // Get the categories
         $categories = $this->kb_category->get_by_parent( $parent_id );
@@ -85,9 +88,10 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
     public function testGetAll() {
         // Declare variable
         $name = 'Website';
+        $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create
-        $id = $this->db->insert( 'kb_category', compact( 'name' ), 's' );
+        $id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
 
         $categories = $this->kb_category->get_all();
 
@@ -176,10 +180,11 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
     public function testSortByHierarchy() {
         // Declare variables
         $name = 'Test Get';
+        $section = KnowledgeBaseCategory::SECTION_ADMIN;
         $greater_than = -1;
 
         // Create Category
-        $id = $this->db->insert( 'kb_category', compact( 'name' ), 's' );
+        $id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
 
         // Get them
         $this->kb_category->get_all();
