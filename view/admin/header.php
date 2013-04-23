@@ -12,7 +12,7 @@
 $resources->css_before( 'labels/' . DOMAIN, 'style' );
 $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 
-$template->set( 'section_' . $template->v('section'), ' class="selected"');
+$template->set( 'section_' . format::slug( $template->v('section') ), ' class="selected"');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
@@ -48,7 +48,13 @@ $template->set( 'section_' . $template->v('section'), ' class="selected"');
             <a href="/checklists/" title="<?php echo _('Checklists'); ?>"<?php echo $template->v('section_checklists'); ?>><?php echo _('Checklists'); ?></a>
             <a href="/tickets/" title="<?php echo _('Tickets'); ?>"<?php echo $template->v('section_tickets'); ?>><?php echo _('Tickets'); ?></a>
             <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
-            <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
+                <a href="/reports/" title="<?php echo _('Reports'); ?>"<?php echo $template->v('section_reports'); ?>><?php echo _('Reports'); ?></a>
+            <?php
+            }
+
+            if ( $user->has_permission( User::ROLE_ADMIN ) ) {
+            ?>
+                <a href="/knowledge-base/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_knowledge-base'); ?>><?php echo _('Knowledge Base'); ?></a>
             <?php } ?>
             <div id="nav-right">
                 <div id="support">

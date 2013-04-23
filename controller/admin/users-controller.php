@@ -13,15 +13,13 @@ class UsersController extends BaseController {
     }
 
     /**
-     * List Users
+     * List
      *
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' );
-        $template_response->select( 'users', 'view' );
-
-        return $template_response;
+        return $this->get_template_response( 'index' )
+            ->select( 'users', 'view' );
     }
 
     /**
