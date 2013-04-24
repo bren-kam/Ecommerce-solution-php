@@ -12,10 +12,10 @@
             <a href="/knowledge-base/articles/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
         <?php } ?>
 
-        <a href="/knowledge-base/pages/" title="<?php echo _('Pages'); ?>" class="top<?php $template->select('pages'); ?>"><?php echo _('Pages'); ?></a>
+        <a href="<?php echo url::add_query_arg( 's', KnowledgeBaseCategory::SECTION_ADMIN, '/knowledge-base/pages/' ); ?>" title="<?php echo _('Pages'); ?>" class="top<?php $template->select('pages'); ?>"><?php echo _('Pages'); ?></a>
         <?php if ( $template->v('pages') ) { ?>
-            <a href="/knowledge-base/pages/" title="<?php echo _('View'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-            <a href="/knowledge-base/pages/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
+            <a href="<?php echo url::add_query_arg( 's', KnowledgeBaseCategory::SECTION_ADMIN, '/knowledge-base/pages/' ); ?>" title="<?php echo _('View'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+            <a href="<?php echo url::add_query_arg( 's', KnowledgeBaseCategory::SECTION_ADMIN, '/knowledge-base/pages/add-edit/' ); ?>" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
         <?php }
 
 

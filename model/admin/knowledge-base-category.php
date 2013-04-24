@@ -28,14 +28,14 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
      * Get a category
      *
      * @param int $id
-     * @return Category
+     * @return KnowledgeBaseCategory
      */
     public function get( $id ) {
         if ( !isset( self::$categories[$id] ) ) {
             $this->prepare(
-                'SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name` FROM `kb_category` WHERE `id` = :id AND `section` = :section'
-                , 'is'
-                , array( ':id' => $id, ':section' => $this->section )
+                'SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name` FROM `kb_category` WHERE `id` = :id'
+                , 'i'
+                , array( ':id' => $id )
             )->get_row( PDO::FETCH_INTO, $this );
         } else {
             $this->id = $id;

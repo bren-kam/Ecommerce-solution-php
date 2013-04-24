@@ -7,16 +7,16 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var string $link
  */
 
-echo $template->start( '', '../sidebar' );
+echo $template->start( ucwords( $_GET['s'] ) . ' ' . _('Pages') . ' ' . $link, '../sidebar' );
 ?>
 
-<table ajax="/knowledge-base/pages/list-all/" perPage="30,50,100">
+<table ajax="<?php echo url::add_query_arg( 'section', KnowledgeBaseCategory::SECTION_ADMIN, '/knowledge-base/pages/list-all/' ); ?>" perPage="30,50,100">
     <thead>
         <tr>
-            <th width="10%"><?php echo _('ID'); ?></th>
-            <th width="35%" sort="1"><?php echo _('Page'); ?></th>
+            <th width="45%" sort="1"><?php echo _('Page'); ?></th>
             <th width="55%"><?php echo _('Category'); ?></th>
         </tr>
     </thead>
