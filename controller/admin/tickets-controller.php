@@ -269,7 +269,7 @@ class TicketsController extends BaseController {
             fn::mail( $ticket->email, 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>' );
 
         // Send the assigned user an email if they are not submitting the comment
-        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id && 1 == $ticket->status )
+        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != 1 && $ticket->assigned_to_user_id != $ticket->user_id )
             fn::mail( $assigned_user->email, 'New Comment on Ticket #' . $ticket->id . ' (Closed) - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id . "**Comment**\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>' );
 
         /***** Add comment *****/
