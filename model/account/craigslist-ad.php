@@ -189,7 +189,7 @@ class CraigslistAd extends ActiveRecordBase {
      *
      * @param array $craigslist_market_ids
      */
-    public function set_markets( $craigslist_market_ids ) {
+    public function set_markets( array $craigslist_market_ids ) {
         // Insert headlines
         $add_craiglist_market_ids = array();
 
