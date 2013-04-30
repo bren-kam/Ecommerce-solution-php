@@ -441,10 +441,10 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $products = $account_product->get_by_account( $this->user->account->id );
 
-        $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand' );
+        $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand', 'Created By' );
 
         foreach ( $products as $product ) {
-            $output[] = array( $product->name, $product->sku, $product->category, $product->brand );
+            $output[] = array( $product->name, $product->sku, $product->category, $product->brand, $product->created_by );
         }
 
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
