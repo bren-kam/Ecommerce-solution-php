@@ -323,6 +323,14 @@ class ProductsController extends BaseController {
 
         // Get variables
         $product->get( $_GET['pid'] );
+
+        // Make sure it's done right
+        $response->check( $product->id, _('Please add the "Product Name" before uploading images.') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
         $industry->get( $_GET['iid'] );
         $industry_name = str_replace( " ", "", $industry->name );
 
@@ -356,9 +364,6 @@ class ProductsController extends BaseController {
                 ->val($image_name)
                 ->parent()
             ->appendTo('#images-list');
-
-        jQuery('#upload-loader')->hide();
-        jQuery('#aUpload')->show();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 
