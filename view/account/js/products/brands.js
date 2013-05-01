@@ -49,8 +49,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 		update		: updateBrandsSequence
 	});
 
-	$('#cbLinkBrands').click( function() { 
-		$.post( '/products/set-brand-link/', { _nonce: $('#_set_brand_link').val(), 'checked' : ( 'checked' == $(this).is(':checked') ) ? 1 : 0 }, ajaxResponse, 'json' );
+	$('#cbLinkBrands').click( function() {
+		$.post( '/products/set-brand-link/', { _nonce: $('#_set_brand_link').val(), 'checked' : ( $(this).is(':checked') ) ? 1 : 0 }, ajaxResponse, 'json' );
 	});
 });
 
