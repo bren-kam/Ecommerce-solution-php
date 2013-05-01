@@ -150,7 +150,7 @@ class dt extends Base_Class {
      */
     public static function hours_to_date( $hours ) {
         $datetime = new DateTime();
-        $datetime->add( new DateInterval( 'P' . (int) $hours . 'H' ) );
+        $datetime->add( new DateInterval( 'PT' . (int) $hours . 'H' ) );
 
         return $datetime;
     }
