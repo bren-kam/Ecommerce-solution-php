@@ -43,7 +43,8 @@
 </div>
 
 <!-- End: Footer -->
-<script type="text/javascript">head.js( 'http://code.jquery.com/jquery-1.9.1.min.js', '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">head.js( '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
 <?php $template->get_footer(); ?>
 </body>
 </html>
