@@ -101,8 +101,10 @@ class TicketsController extends BaseController {
         $ticket->save();
 
         // Add links if there are any
-        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
-            $ticket->add_links( $_POST['uploads'] );
+        if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) ) {
+            $ticket_upload = new TicketUpload();
+            $ticket_upload->add_relations( $ticket->id, $_POST['uploads'] );
+        }
 
         // Add statistics
         library('statistics-api');
