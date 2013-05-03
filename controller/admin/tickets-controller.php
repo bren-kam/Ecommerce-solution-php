@@ -259,7 +259,7 @@ class TicketsController extends BaseController {
 
         // Handle attachments
         if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
-            $ticket_comment->add_upload_links( $_POST['uploads'] );
+            $ticket_upload->add_comment_relations( $ticket_comment->id, $_POST['uploads'] );
 
         // Send emails
         $comment = strip_tags( $ticket_comment->comment );
@@ -493,11 +493,8 @@ class TicketsController extends BaseController {
                 $file->delete_file( $upload->key, 'attachments/' );
 
                 // Delete the upload entry
-                $upload->delete();
+                $upload->delete_upload();
             }
-
-            // Delete links
-            $ticket_comment->delete_upload_links();
         }
 
         // Remove from page

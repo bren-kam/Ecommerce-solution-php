@@ -46,19 +46,20 @@ class TicketUploadTest extends BaseDatabaseTest {
     public function testGetByComments() {
         // Declare variables
         $ticket_id = -99;
-        $ticket_comment_id = -459;
-        $ticket_upload_id = -37;
         $key = 'hey-hey';
 
         // Create a comment
-        $this->db->insert( 'ticket_comments', compact( 'ticket_comment_id', 'ticket_id' ), 'ii' );
-        $this->db->insert( 'ticket_comment_upload_links', compact( 'ticket_comment_id', 'ticket_upload_id' ), 'ii' );
-        $this->db->insert( 'ticket_uploads', compact( 'ticket_upload_id', 'key' ), 'is' );
+        $ticket_comment_id = $this->db->insert( 'ticket_comments', compact( 'ticket_id' ), 'ii' );
+        $ticket_upload_id = $this->db->insert( 'ticket_uploads', compact( 'ticket_comment_id', 'key' ), 'iis' );
 
         // Get uploads
         $uploads = $this->ticket_upload->get_by_comments( $ticket_id );
 
         $this->assertTrue( current( $uploads ) instanceof TicketUpload );
+
+        // Clean Up
+        $this->db->delete( 'ticket_comments', compact( 'ticket_id' ), 'i' );
+        $this->db->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
     }
 
     /**
@@ -67,17 +68,18 @@ class TicketUploadTest extends BaseDatabaseTest {
     public function testGetByComment() {
         // Declare variables
         $ticket_comment_id = -459;
-        $ticket_upload_id = -37;
         $key = 'hey-hey';
 
         // Create a comment
-        $this->db->insert( 'ticket_comment_upload_links', compact( 'ticket_comment_id', 'ticket_upload_id' ), 'ii' );
-        $this->db->insert( 'ticket_uploads', compact( 'ticket_upload_id', 'key' ), 'is' );
+        $ticket_upload_id = $this->db->insert( 'ticket_uploads', compact( 'ticket_comment_id', 'key' ), 'iis' );
 
         // Get uploads
         $uploads = $this->ticket_upload->get_by_comment( $ticket_comment_id );
 
         $this->assertTrue( current( $uploads ) instanceof TicketUpload );
+
+        // Clean up
+        $this->db->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
     }
 
     /**
