@@ -54,7 +54,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_comments( $ticket_id ) {
         return $this->prepare(
-            'SELECT tu.`key`, tcul.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comment_upload_links` AS tcul ON ( tcul.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `ticket_comments` AS tc ON ( tc.`ticket_comment_id` = tcul.`ticket_comment_id` ) WHERE tc.`ticket_id` = :ticket_id'
+            'SELECT tu.`key`, tc.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comments` AS tc ON ( tc.`ticket_comment_id` = tu.`ticket_comment_id` ) WHERE tc.`ticket_id` = :ticket_id'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
@@ -68,7 +68,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_comment( $ticket_comment_id ) {
         return $this->prepare(
-            'SELECT tu.`key`, tcul.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comment_upload_links` AS tcul ON ( tcul.`ticket_upload_id` = tu.`ticket_upload_id` ) WHERE tcul.`ticket_comment_id` = :ticket_comment_id'
+            'SELECT `ticket_comment_id`, `key` FROM `ticket_uploads` WHERE `ticket_comment_id` = :ticket_comment_id'
             , 'i'
             , array( ':ticket_comment_id' => $ticket_comment_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
@@ -116,6 +116,23 @@ class TicketUpload extends ActiveRecordBase {
         }
 
         $this->query( "UPDATE `ticket_uploads` SET `ticket_id` = $ticket_id WHERE `ticket_id` = 0 AND `ticket_upload_id` IN ( " . implode( ',', $ticket_upload_ids ) . ')' );
+    }
+
+    /**
+     * Add Relations
+     *
+     * @param int $ticket_comment_id
+     * @param array $ticket_upload_ids
+     */
+    public function add_comment_relations( $ticket_comment_id, array $ticket_upload_ids ) {
+        // Type Juggling
+        $ticket_comment_id = (int) $ticket_comment_id;
+
+        foreach ( $ticket_upload_ids as &$tuid ) {
+            $tuid = (int) $tuid;
+        }
+
+        $this->query( "UPDATE `ticket_uploads` SET `ticket_comment_id` = $ticket_comment_id WHERE `ticket_comment_id` = 0 AND `ticket_upload_id` IN ( " . implode( ',', $ticket_upload_ids ) . ')' );
     }
 
     /**
