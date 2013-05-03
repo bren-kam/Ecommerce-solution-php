@@ -65,31 +65,6 @@ class TicketCommentTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Adding industries
-     *
-     * @depends testGet
-     */
-    public function testAddUploadLinks() {
-        // Declare variables
-        $ticket_comment_id = 1;
-        $upload_links = array( 1, 2, 3, 5 );
-
-        // Get ticket comment
-        $this->ticket_comment->get( $ticket_comment_id );
-
-        // Add the links
-        $this->ticket_comment->add_upload_links( $upload_links );
-
-        // Get count
-        $link_count = $this->db->get_var( 'SELECT COUNT(`ticket_upload_id`) FROM `ticket_comment_upload_links` WHERE `ticket_comment_id` = ' . (int) $ticket_comment_id );
-
-        $this->assertEquals( 4, $link_count );
-
-        // Delete links
-        $this->db->query( 'DELETE FROM `ticket_comment_upload_links` WHERE `ticket_comment_id` = ' . (int) $ticket_comment_id );
-    }
-
-    /**
      * Test Deleting
      *
      * @depends testCreate
@@ -111,32 +86,6 @@ class TicketCommentTest extends BaseDatabaseTest {
         $fetched_ticket_comment_id = $this->db->get_var( "SELECT `ticket_comment_id` FROM `ticket_comments` WHERE `ticket_comment_id` = $ticket_comment_id" );
 
         $this->assertFalse( $fetched_ticket_comment_id );
-    }
-
-    /**
-     * Test deleting upload links
-     *
-     * @depends testGet
-     * @depends testAddUploadLinks
-     */
-    public function testDeleteUploadLinks() {
-        // Declare variables
-        $ticket_comment_id = 1;
-        $upload_links = array( 1, 2, 3, 5 );
-
-        // Get ticket comment
-        $this->ticket_comment->get( $ticket_comment_id );
-
-        // Add the links
-        $this->ticket_comment->add_upload_links( $upload_links );
-
-        // let's delete them
-        $this->ticket_comment->delete_upload_links();
-
-        // Check count
-        $link_count = $this->db->get_var( 'SELECT COUNT(`ticket_upload_id`) FROM `ticket_comment_upload_links` WHERE `ticket_comment_id` = ' . (int) $ticket_comment_id );
-
-        $this->assertEquals( 0, $link_count );
     }
 
     /**
