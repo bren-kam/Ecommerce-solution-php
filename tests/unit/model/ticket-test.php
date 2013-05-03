@@ -46,35 +46,6 @@ class TicketTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Adding Ticket Links
-     *
-     * @depends testCreate
-     */
-    public function testAddLinks() {
-        // Declare variables
-        $ticket_links = array( '-10', '-5' );
-
-        // Delete any previous relations
-        $this->db->delete( 'ticket_links', array( 'ticket_id' => -3 ), 'i' );
-
-        // Create ticket
-        $this->status = 0;
-        $this->ticket->create();
-
-        // Add them
-        $this->ticket->add_links( $ticket_links );
-
-        // Now check it
-        $fetched_links = $this->db->get_col( "SELECT `ticket_upload_id` FROM `ticket_links` WHERE `ticket_id` = " . (int) $this->ticket->id );
-
-        $this->assertEquals( $ticket_links, $fetched_links );
-
-        // Delete links and ticket
-        $this->db->delete( 'ticket_links', array( 'ticket_id' => $this->ticket->id ), 'i' );
-        $this->db->delete( 'tickets', array( 'ticket_id' => $this->ticket->id ), 'i' );
-    }
-
-    /**
      * Test updating a ticket
      *
      * @depends testGet
@@ -154,7 +125,6 @@ class TicketTest extends BaseDatabaseTest {
      * Test deleting all uncreated tickets
      *
      * @depends testCreate
-     * @depends testAddLinks
      */
     public function testDeleteUncreatedTickets() {
         // An uncreated ticket has status of -1
@@ -165,17 +135,13 @@ class TicketTest extends BaseDatabaseTest {
         $this->db->update( 'tickets', array( 'date_created' => '2012-10-09 00:00:00' ), array( 'ticket_id' => $this->ticket->id ), 's', 'i' );
 
         // Create a fake ticket upload
-        $this->db->insert( 'ticket_uploads', array( 'key' => 'url/path/file.jpg', 'date_created' => dt::now() ), 'ss' );
-
-        // Add links
-        $ticket_upload_id = $this->db->get_insert_id();
-        $this->ticket->add_links( array( $ticket_upload_id ) );
+        $this->db->insert( 'ticket_uploads', array( 'ticket_id' => $this->ticket->id, 'key' => 'url/path/file.jpg', 'date_created' => dt::now() ), 'iss' );
 
         // Now -- delete it, it's uncreated, everything should be gone
         $this->ticket->deleted_uncreated_tickets();
 
         // Makes ure they are deleted
-        $tickets = $this->db->get_results( 'SELECT t.`ticket_id`, tl.`ticket_upload_id` AS ticket_link, tu.`ticket_upload_id` FROM `tickets` AS t JOIN `ticket_links` AS tl ON ( tl.`ticket_id` = t.`ticket_id` ) JOIN `ticket_uploads` AS tu ON ( tu.`ticket_upload_id` = tl.`ticket_upload_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+        $tickets = $this->db->get_results( 'SELECT t.`ticket_id`, tu.`ticket_upload_id` FROM `tickets` AS t JOIN `ticket_uploads` AS tu ON ( tu.`ticket_id` = t.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
 
         $this->assertTrue( empty( $tickets ) );
     }

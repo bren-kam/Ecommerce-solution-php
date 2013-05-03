@@ -110,30 +110,51 @@ class TicketUploadTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testGetKeysByUncreatedTickets() {
+        // Create ticket
+        $ticket_id = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
+
         // Create ticket uploads
+        $this->ticket_upload->ticket_id = $ticket_id;
         $this->ticket_upload->key = 'url/path/file.jpg';
         $this->ticket_upload->create();
-        $ticket_upload_id = $this->ticket_upload->id;
 
         $this->ticket_upload->key = 'url/path/file2.jpg';
         $this->ticket_upload->create();
-        $ticket_upload_id2 = $this->ticket_upload->id;
-
-        // Create ticket
-        $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
-        $ticket_id = $this->db->get_insert_id();
-
-        // Create a link
-        $this->db->insert( 'ticket_links', array( 'ticket_id' => $ticket_id, 'ticket_upload_id' => $ticket_upload_id ), 'ii' );
-        $this->db->insert( 'ticket_links', array( 'ticket_id' => $ticket_id, 'ticket_upload_id' => $ticket_upload_id2 ), 'ii' );
 
         // Now, let's get the keys
-        $keys = $this->ticket_upload->get_keys_by_uncreated_tickets();
+        $keys = array_reverse( $this->ticket_upload->get_keys_by_uncreated_tickets() );
 
-        $this->assertEquals( array( 'url/path/file.jpg', 'url/path/file2.jpg' ), $keys );
+        $this->assertTrue( in_array( $this->ticket_upload->key, $keys ) );
 
         // Now delete everything
-        $this->db->query( "DELETE tu.*, tl.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tl.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tl.`ticket_id` ) WHERE t.`ticket_id` = $ticket_id AND t.`status` = -1");
+        $this->db->query( "DELETE tu.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`ticket_id` = $ticket_id AND t.`status` = -1");
+    }
+
+    /**
+     * Test Adding Ticket Links
+     *
+     * @depends testCreate
+     */
+    public function testAddRelations() {
+        // Create ticket
+        $ticket_id = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
+
+        // Create ticket uploads
+        $this->ticket_upload->key = 'url/path/file.jpg';
+        $this->ticket_upload->create();
+
+        // Declare variables
+        $ticket_upload_ids = array( $this->ticket_upload->id );
+        $this->ticket_upload->add_relations( $ticket_id, $ticket_upload_ids );
+
+        // Now check it
+        $fetched_ticket_upload_ids = $this->db->get_col( "SELECT `ticket_upload_id` FROM `ticket_uploads` WHERE `ticket_id` = " . (int) $ticket_id );
+
+        $this->assertEquals( $ticket_upload_ids, $fetched_ticket_upload_ids );
+
+        // Delete links and ticket
+        $this->db->delete( 'tickets', compact( 'ticket_id' ), 'i' );
+        $this->db->delete( 'ticket_uploads', compact( 'ticket_id' ), 'i' );
     }
 
     /**
