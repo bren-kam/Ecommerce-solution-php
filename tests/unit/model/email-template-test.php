@@ -22,11 +22,10 @@ class EmailTemplateTest extends BaseDatabaseTest {
         // Set variables
         $name = 'Brand New Template';
         $website_id = -3;
-        $type = 'website';
 
         // Create
         $email_template_id = $this->db->insert( 'email_templates', compact( 'name' ), 's' );
-        $this->db->insert( 'email_template_associations', array( 'email_template_id' => $email_template_id, 'object_id' => $website_id, 'type' => $type ), 'iis' );
+        $this->db->insert( 'email_template_associations', compact( 'email_template_id', 'website_id' ), 'ii' );
 
         // Get
         $this->email_template->get( $email_template_id, $website_id );
@@ -36,7 +35,7 @@ class EmailTemplateTest extends BaseDatabaseTest {
 
         // Cleanup
         $this->db->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_template_associations', array( 'object_id' => $website_id ), 'i' );
+        $this->db->delete( 'email_template_associations', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -47,11 +46,10 @@ class EmailTemplateTest extends BaseDatabaseTest {
         $name = 'Brand New Template';
         $email_template_type = 'default';
         $website_id = -3;
-        $type = 'website';
 
         // Create
         $email_template_id = $this->db->insert( 'email_templates', array( 'name' => $name, 'type' => $email_template_type ), 'ss' );
-        $this->db->insert( 'email_template_associations', array( 'email_template_id' => $email_template_id, 'object_id' => $website_id, 'type' => $type ), 'iis' );
+        $this->db->insert( 'email_template_associations', compact( 'email_template_id', 'website_id' ), 'ii' );
 
         // Get
         $this->email_template->get_default( $website_id );
@@ -61,7 +59,7 @@ class EmailTemplateTest extends BaseDatabaseTest {
 
         // Cleanup
         $this->db->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_template_associations', array( 'object_id' => $website_id ), 'i' );
+        $this->db->delete( 'email_template_associations', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -72,11 +70,10 @@ class EmailTemplateTest extends BaseDatabaseTest {
         $name = 'Brand New Template';
         $email_template_type = 'default';
         $website_id = -3;
-        $type = 'website';
 
         // Create
         $email_template_id = $this->db->insert( 'email_templates', array( 'name' => $name, 'type' => $email_template_type ), 'ss' );
-        $this->db->insert( 'email_template_associations', array( 'email_template_id' => $email_template_id, 'object_id' => $website_id, 'type' => $type ), 'iis' );
+        $this->db->insert( 'email_template_associations', compact( 'email_template_id', 'website_id' ), 'ii' );
 
         // Get
         $email_templates = $this->email_template->get_by_account( $website_id );
@@ -86,7 +83,7 @@ class EmailTemplateTest extends BaseDatabaseTest {
 
         // Cleanup
         $this->db->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_template_associations', array( 'object_id' => $website_id ), 'i' );
+        $this->db->delete( 'email_template_associations', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -137,19 +134,18 @@ class EmailTemplateTest extends BaseDatabaseTest {
     public function testAddAssociation() {
         // Declare variables
         $this->email_template->id = -3;
-        $object_id = '-5';
-        $type = 'website';
+        $account_id = '-5';
 
         // Delete any associations before hand
         $this->db->delete( 'email_template_associations', array( 'email_template_id' => $this->email_template->id ) , 'i' );
 
         // Add association
-        $this->email_template->add_association( $object_id, $type );
+        $this->email_template->add_association( $account_id );
 
         // Make sure it's in the database
-        $fetched_object_id = $this->db->get_var( 'SELECT `object_id` FROM `email_template_associations` WHERE `email_template_id` = ' . (int) $this->email_template->id );
+        $fetched_website_id = $this->db->get_var( 'SELECT `website_id` FROM `email_template_associations` WHERE `email_template_id` = ' . (int) $this->email_template->id );
 
-        $this->assertEquals( $fetched_object_id, $object_id );
+        $this->assertEquals( $fetched_website_id, $account_id );
 
         // Delete any associations after
         $this->db->delete( 'email_template_associations', array( 'email_template_id' => $this->email_template->id ) , 'i' );

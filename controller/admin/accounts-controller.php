@@ -968,7 +968,7 @@ class AccountsController extends BaseController {
             $product_template->create();
 
             // Add association
-            $product_template->add_association( $account->id, 'website' );
+            $product_template->add_association( $account->id );
 
             // Once done
             $this->notify( _('Email template has been successfully added!') );
