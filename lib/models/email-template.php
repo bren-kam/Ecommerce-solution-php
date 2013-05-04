@@ -21,9 +21,9 @@ class EmailTemplate extends ActiveRecordBase {
      */
     public function get( $email_template_id, $account_id ) {
         $this->prepare(
-            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`email_template_id` = :email_template_id AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
+            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`email_template_id` = :email_template_id AND eta.`website_id` = :account_id"
             , 'ii'
-            , array( ':email_template_id' => $email_template_id, ':object_id' => $account_id )
+            , array( ':email_template_id' => $email_template_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
 		$this->id = $this->email_template_id;
@@ -36,9 +36,9 @@ class EmailTemplate extends ActiveRecordBase {
      */
     public function get_default( $account_id ) {
         $this->prepare(
-            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`type` = 'default' AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
+            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`type` = 'default' AND eta.`website_id` = :account_id"
             , 'i'
-            , array( ':object_id' => $account_id )
+            , array( ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
 		$this->id = $this->email_template_id;
@@ -52,9 +52,9 @@ class EmailTemplate extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`type` <> 'offer' AND eta.`object_id` = :object_id AND eta.`type` = 'website'"
+            "SELECT et.* FROM `email_templates` AS et LEFT JOIN `email_template_associations` AS eta ON ( eta.`email_template_id` = et.`email_template_id` ) WHERE et.`type` <> 'offer' AND eta.`website_id` = :account_id"
             , 'i'
-            , array( ':object_id' => $account_id )
+            , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailTemplate' );
     }
 
@@ -92,18 +92,16 @@ class EmailTemplate extends ActiveRecordBase {
     /**
      * Add Association
      *
-     * @param int $object_id
-     * @param string $type
+     * @param int $account_id
      */
-    public function add_association( $object_id, $type ) {
+    public function add_association( $account_id ) {
         $this->prepare(
-            'INSERT INTO `email_template_associations` ( `email_template_id`, `object_id`, `type` ) VALUES ( :email_template_id, :object_id, :type ) ON DUPLICATE KEY UPDATE `object_id` = :object_id2'
-            , 'iiis'
+            'INSERT INTO `email_template_associations` ( `email_template_id`, `website_id` ) VALUES ( :email_template_id, :account_id ) ON DUPLICATE KEY UPDATE `website_id` = :account_id2'
+            , 'iii'
             , array(
                 ':email_template_id' => $this->id
-                , ':object_id' => $object_id
-                , ':object_id2' => $object_id
-                , ':type' => $type
+                , ':account_id' => $account_id
+                , ':account_id2' => $account_id
             )
         )->query();
     }
