@@ -260,7 +260,7 @@ class SQL {
 			unset( $values[0], $values[1] );
 			
 			if ( !$this->statement ) {
-				$this->err( 'Failed to prepare statement', __LINE__, __METHOD__ );
+				throw new ModelException( 'Failed to prepare statement' );
 				$this->ready = false;
 			} else {
 				// Bind the parameters
@@ -270,7 +270,7 @@ class SQL {
 			return $this;
 		} else {
 			if ( !$this->statement ) {
-				$this->err( 'Failed to prepare statement', __LINE__, __METHOD__ );
+                throw new ModelException( 'Failed to prepare statement' );
 				$this->ready = false;
 			}
 			
@@ -908,41 +908,6 @@ class SQL {
 	 */
 	public function error() {
 		return $this->m->error;
-	}
-	
-	/**
-	 * Adds an error to the error table
-	 *
-	 * Grab as much information as possible
-	 *
-	 * @param string $message the error message
- 	 * @param int $line (optional) the line number of the file
-	 * @param string $method (optional) the class name
-	 */
-	private function err( $message, $line = 0, $method = '' ) { 
-		if ( !empty( $_SERVER['QUERY_STRING'] ) )
-			$query_string = '?' . $_SERVER['QUERY_STRING'];
-
-		$input_data = array( 
-			'message' => $message,
-			'sql' => $this->last_query,
-			'sql_error' => $this->error(),
-			'page' => 'http://' . DOMAIN . $_SERVER['REQUEST_URI'] . '?' . $query_string,
-			'referer' => ( isset( $_SERVER['HTTP_REFERER'] ) ) ? $_SERVER['HTTP_REFERER'] : '',
-			'line' => $line,
-			'file' => __FILE__,
-			'dir' => dirname(__FILE__),
-			'class' => __CLASS__,
-			'method' => $method,
-			'date_created' => dt::now()
-		);
-		
-		// If it fails to insert, send an email with the information
-		if ( !$this->insert( 'errors', $input_data, 'sssssisssss' ) )
-			fn::mail( DEBUG_EMAIL, 'IR: Error while inserting error', "Message:\n$message\n\n" . implode( "\n", $input_data ) );
-		
-		// Send the email off to the system admin
-		fn::mail( DEBUG_EMAIL, 'IR: An error has occurred', $message );
 	}
 }
 ?>
