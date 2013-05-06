@@ -56,11 +56,11 @@ class WebsiteReachComment extends ActiveRecordBase {
     /**
      * Get By Reach
      *
-     * @param int $account_id
      * @param int $website_reach_id
+     * @param int $account_id
      * @return WebsiteReachComment[]
      */
-    public function get_by_reach( $account_id, $website_reach_id ) {
+    public function get_by_reach( $website_reach_id, $account_id ) {
         return $this->prepare(
             "SELECT wrc.`website_reach_comment_id`, wrc.`website_user_id`, wrc.`user_id`, wrc.`comment`, wrc.`private`, wrc.`date_created`, u.`contact_name` FROM `website_reach_comments` AS wrc LEFT JOIN `users` AS u ON ( u.`user_id` = wrc.`user_id` ) LEFT JOIN `website_reaches` AS wr ON ( wr.`website_reach_id` = wrc.`website_reach_id` ) WHERE wrc.`website_reach_id` = :website_reach_id AND wr.`website_id` = :account_id ORDER BY wrc.`date_created` DESC"
             , 'ii'
