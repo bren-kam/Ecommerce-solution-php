@@ -59,7 +59,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 	// @Fix make PHP
 	// Edit the product
-	$('.edit-product').live( 'click' , function(){
+	$('#subcontent').on( 'click', '.edit-product', function(){
 		var productID = $(this).parent().attr( 'id' ).replace( 'pProductAction' , '' );
 
 		// Trigger a click to switch the screens
@@ -137,7 +137,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 					divContent += '<span class="price">Price:</span> <input type="text" class="tb highlight-price" id="tPrice' + i + '" name="tPrice' + i + '" maxlength="10" />';
 				}
 
-				newDivs += '<div class="row hidden" id="dProductOptionRow' + i + '"><div class="cell left product-option-name"><strong>' + product_options[i]['option_name'] + '</strong><a href="javascript:;" class="delete-product-option" id="aDeleteProductOption' + i + '" title="Delete Product Option"><img src="/images/icons/x.png" width="15" height="17" alt="Delete Product Option" /></a></div><div class="cell right">' + divContent + '</div></div>';
+				newDivs += '<div class="row hidden" id="dProductOptionRow' + i + '"><div class="cell left product-option-name"><strong>' + product_options[i]['option_name'] + '</strong><a href="#" class="delete-product-option" id="aDeleteProductOption' + i + '" title="Delete Product Option"><img src="/images/icons/x.png" width="15" height="17" alt="Delete Product Option" /></a></div><div class="cell right">' + divContent + '</div></div>';
 			}
 
             var sProductOptions = $('#sProductOptions'), dProductOptionsList = $('#dProductOptionsList');
@@ -263,7 +263,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			return;
 
 		// Append new div
-		$('#dCouponList').append( '<div id="dCoupon' + couponID + '" class="coupon"><span class="coupon-name">' + couponName + '</span><div style="display:inline;float:right"><a href="javascript:;" class="delete-coupon" title="Delete Coupon" id="aDeleteCoupon' + couponID + '"><img src="/images/icons/x.png" /></a></div></div>' );
+		$('#dCouponList').append( '<div id="dCoupon' + couponID + '" class="coupon"><span class="coupon-name">' + couponName + '</span><div style="display:inline;float:right"><a href="#" class="delete-coupon" title="Delete Coupon" id="aDeleteCoupon' + couponID + '"><img src="/images/icons/x.png" /></a></div></div>' );
 
 		// Reset to default values
 		$('#sCoupons').attr( 'selectedIndex', 0 );
@@ -274,7 +274,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 
 	// Delete Drop Down List Items
-	$('.delete-coupon').live( 'click', function() {
+	$('#dCouponList').on( 'click', '.delete-coupon', function() {
 		var couponID = $(this).attr('id').replace( 'aDeleteCoupon', '' );
 
 		if( confirm( 'Are you sure you want to delete this coupon?' ) ) {
@@ -283,7 +283,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			updateCoupons();
 		}
 	});
-
 	// The 'Add Coupon' link in the Edit Product dialog box
 	$('#aAddProductOption').click( function() {
 		var option = $('#sProductOptions option:selected'), po_id = option.val(), po_name = option.text();
@@ -308,7 +307,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 
 	// Delete Drop Down List Items
-	$('.delete-product-option').live( 'click', function() {
+	$('#dProductOptionsList').on( 'click', '.delete-product-option', function() {
 		var po_id = $(this).attr('id').replace( 'aDeleteProductOption', '' );
 
 		if( confirm( 'Are you sure you want to delete this product_option?' ) ) {
@@ -316,16 +315,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			$('#sProductOptions option[value=' + po_id + ']').attr( 'disabled', false );
 			$('#hProductOption' + po_id).remove();
 		}
-	});
+	}).on( 'click', '.highlight-price', 'keyup', function() {
+        $(this).css( 'color', ( ( -1 != $(this).val().search( /^-/ ) ) ? '#CC2222' : '' ) );
+    });;
 
 	// Make the checkboxes enabled/disable the text boxes
-	$('#dEditProduct .list-item-cb').live( 'click', function() {
+	$('#dEditProduct').on( 'click', '.list-item-cb', function() {
 		$( '#tPrice' + $(this).attr('id').replace( 'cbOption', '' ) ).parent().parent().find('input[type=text]').attr( 'disabled', !$(this).attr('checked') );
-	});
-
-	// Make the price change color when it has a negative sign
-	$('.highlight-price').live( 'keyup', function() {
-		$(this).css( 'color', ( ( -1 != $(this).val().search( /^-/ ) ) ? '#CC2222' : '' ) );
 	});
 
 	var dialog_height = $('#dDialogHeight').val();

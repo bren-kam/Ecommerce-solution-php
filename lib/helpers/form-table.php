@@ -63,7 +63,7 @@ class FormTable {
      * @param string $nice_name
      * @param string $name [optional]
      * @param string $value [optional] the preset value of the field (other than the post)
-     * @return FormTable_Field
+     * @return FormTable_Field|FormTable_Select
      */
     public function add_field( $type, $nice_name, $name = '', $value = '' ) {
         $class = 'FormTable_' . ucwords( $type );
@@ -493,7 +493,7 @@ class FormTable_Select extends FormTable_Field {
      * Sets the options if its a select
      *
      * @param array $options
-     * @return FormTable_Field
+     * @return FormTable_Select
      */
     public function options( array $options ) {
         $this->options = $options;

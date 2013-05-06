@@ -74,7 +74,7 @@ class EmailsController extends BaseController {
         $this->resources
             ->css( 'email-marketing/emails/send', 'jquery.timepicker' )
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.blockUI', 'jquery.timepicker', 'jquery.datatables', 'email-marketing/emails/send' );
+            ->javascript( 'jquery.blockUI', 'jquery.timepicker', 'email-marketing/emails/send' );
 
         $email_template = new EmailTemplate();
         $templates = $email_template->get_by_account( $this->user->account->id );

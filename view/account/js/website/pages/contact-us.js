@@ -21,7 +21,7 @@ jQuery(function(){
 	});
 	
 	// Edit Address funtionality
-	$('.edit-address').live( 'click', function() {
+    $('#dContactUsList').on( 'click', '.edit-address', function() {
 		var a = $(this), parent = a.parents('.contact:first');
 		$('#tEditLocation').val( parent.find('.location').text() );
 		$('#tEditPhone').val( parent.find('.phone').text() );
@@ -43,7 +43,7 @@ jQuery(function(){
 	});
 	
 	// Save Address functionality
-	$('#aSaveAddress').live( 'click', function() {
+	$('#aSaveAddress').click( function() {
 		if ( !validateAddress( $('#tEditPhone'), $('#tEditFax'), $('#tEditEmail'), $('#tEditWebsite'), $('#tEditZip') ) )
 				return false;
 		
@@ -71,7 +71,7 @@ jQuery(function(){
 	});
 	
 	// Delete Address functionality
-	$('.delete-address').live( 'click', function() {
+	$('#dContactUsList').on( 'click', '.delete-address', function() {
 		if ( confirm( 'Are you sure you want to delete this location?' ) ) {
 			// Remove self
 			$(this).parents('.contact:first').remove();

@@ -18,15 +18,13 @@ class CategoriesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' )
-            ->add_title( _('Categories') )
-            ->select( 'categories', 'view' );
-
         $this->resources
             ->javascript( 'products/categories/index' )
             ->css( 'products/categories/index' );
 
-        return $template_response;
+        return $this->get_template_response( 'index' )
+            ->add_title( _('Categories') )
+            ->select( 'categories', 'view' );
     }
 
     /***** AJAX *****/

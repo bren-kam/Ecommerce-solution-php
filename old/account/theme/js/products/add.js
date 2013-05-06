@@ -125,8 +125,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Delete Request Items from list
-	$( '.delete-request' ).live( 'click' , function(){
-		$(this).parent();
+	$('#dRequestList').on( 'click', '.delete-request', function(){
+		$(this).parent().remove();
 	});
 	
 	// Add products to the right hand side bar and create hidden elements

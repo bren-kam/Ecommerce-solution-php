@@ -7,6 +7,9 @@ class User extends ActiveRecordBase {
     const ROLE_ADMIN = 8;
     const ROLE_SUPER_ADMIN = 10;
 
+    const KERRY = 1;
+    const JEFF = 214;
+
     /**
      * Hold whether admin is active or not
      * @var int

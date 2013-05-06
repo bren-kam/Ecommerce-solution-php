@@ -24,7 +24,7 @@ class CustomProductsController extends BaseController {
         $this->resources
             ->css( 'products/custom-products/index' )
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.datatables', 'products/custom-products/index' );
+            ->javascript( 'products/custom-products/index' );
 
         return $this->get_template_response( 'index' )
             ->select( 'custom-products', 'view' );
@@ -429,6 +429,12 @@ class CustomProductsController extends BaseController {
         // Get variables
         $product->get( $_GET['pid'] );
 
+        $response->check( $product->id, _('Please add the "Product Name" before uploading images.') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
         $response->check( $product->website_id == $this->user->account->id, _('You do not have permission to modify this product') );
 
         // If there is an error or now user id, return
@@ -468,9 +474,6 @@ class CustomProductsController extends BaseController {
                 ->val($image_name)
                 ->parent()
             ->appendTo('#images-list');
-
-        jQuery('#upload-loader')->hide();
-        jQuery('#aUpload')->show();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
 
