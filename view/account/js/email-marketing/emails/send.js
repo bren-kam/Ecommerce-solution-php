@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', '/resources/js_single/?f=jquery.form', function() {
 	// Date Picker
 	$('#tDate').datepicker({
 		minDate: 0,
@@ -35,7 +35,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 
 	// Choose Template function
-	$('.choose-template').live( 'click', function() {
+	$('.choose-template').click( function() {
 		$('#hEmailTemplateID').val( $(this).prev().attr('id').replace( 'iTemplateImage', '' ) );
 		$('.custom-template').hide();
 		$('#dCustom_' + $('#hEmailType').val() ).show();
@@ -43,10 +43,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Make the prices update
-	$('.product-price, .product-box-price').live( 'keyup', function() {
+	$('#dSelectedProducts').on( 'keyup', '.product-price, .product-box-price', function() {
 		var hiddenProduct = $(this).parents('.product:first').find('input:last');
 		
 		hiddenProduct.val( hiddenProduct.val().replace( /\|[0-9]*/, '|' + parseFloat( $(this).val() ) ) );
+	}).on( 'click', '.remove-product', function() {
+		$(this).parents('.product').remove();
 	});
 	
 	// Change the text
@@ -94,16 +96,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	// Create the search functionality
 	$('#aSearch').click( function() {
 		$('#tAddProducts').dataTable().fnDraw();
-	});
-	
-	// Remove product
-	$('.remove-product').live( 'click', function() {
-		$(this).parents('.product').remove();
-	});
-	
-	// Remove box product
-	$('.remove-box-product').live( 'click', function() {
-		$(this).parents('.product-container').empty().prev().val('').blur();
 	});
 	
 	// Make the list sortable

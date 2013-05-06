@@ -24,7 +24,7 @@ class CustomProductsController extends BaseController {
         $this->resources
             ->css( 'products/custom-products/index' )
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.datatables', 'products/custom-products/index' );
+            ->javascript( 'products/custom-products/index' );
 
         return $this->get_template_response( 'index' )
             ->select( 'custom-products', 'view' );

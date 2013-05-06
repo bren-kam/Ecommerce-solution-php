@@ -73,7 +73,7 @@ class GroupsController extends BaseController {
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
             ->css( 'products/groups/add-edit')
-            ->javascript( 'jquery.datatables', 'products/groups/add-edit' );
+            ->javascript( 'products/groups/add-edit' );
 
         $title = ( $group->id ) ? _('Edit') : _('Add');
 

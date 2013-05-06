@@ -320,7 +320,7 @@ class ProductsController extends BaseController {
 
         $brands = $brand->get_by_account( $this->user->account->id );
 
-        $this->resources->javascript( 'jquery.datatables', 'products/product-prices' );
+        $this->resources->javascript( 'products/product-prices' );
 
         return $this->get_template_response( 'product-prices' )
             ->add_title( _('Product Prices') )
