@@ -61,7 +61,7 @@ class EmailsController extends BaseController {
         }
 
         // Get settings
-        $settings = $this->user->account->get_email_settings( 'from_name', 'from_email', 'timezone' );
+        $settings = $this->user->account->get_settings( 'from_name', 'from_email', 'timezone' );
         $timezone = $settings['timezone'];
         $server_timezone = Config::setting('server-timezone');
 
@@ -112,7 +112,7 @@ class EmailsController extends BaseController {
         $confirm = _('Are you sure you want to delete this email? This cannot be undone.');
         $delete_nonce = nonce::create( 'delete' );
         $statuses = array( 'Draft', 'Scheduled', 'Sent' );
-        $timezone = $this->user->account->get_email_settings( 'timezone' );
+        $timezone = $this->user->account->get_settings( 'timezone' );
         $server_timezone = Config::setting('server-timezone');
 
         /**
@@ -213,7 +213,7 @@ class EmailsController extends BaseController {
         }
 
         // Adjust for time zone
-        $email_message->date_sent = dt::adjust_timezone( $date_sent, $this->user->account->get_email_settings( 'timezone' ), Config::setting('server-timezone') );
+        $email_message->date_sent = dt::adjust_timezone( $date_sent, $this->user->account->get_settings( 'timezone' ), Config::setting('server-timezone') );
 
         if ( $email_message->id ) {
             $email_message->save();

@@ -250,31 +250,4 @@ class EmailMarketing extends ActiveRecordBase {
         // Mark these emails as synced
         $this->query( "UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN( $email_ids )" );
     }
-
-    /**
-     * Set Settings
-     *
-     * @param int $account_id
-     * @param array $settings
-     */
-    public function set_settings( $account_id, array $settings ) {
-        // How many settings are we dealing with?
-        $settings_count = count( $settings );
-
-        // Get the setting values
-        $setting_values = array();
-
-        foreach ( $settings as $k => $v ) {
-            $setting_values[] = $account_id;
-            $setting_values[] = $k;
-            $setting_values[] = $v;
-        }
-
-        // Insert it or update it
-        $this->prepare(
-            'INSERT INTO `email_settings` ( `website_id`, `key`, `value` ) VALUES ' . substr( str_repeat( ', ( ?, ?, ? )', $settings_count ), 2 ) . ' ON DUPLICATE KEY UPDATE `value` = VALUES( `value` )'
-            , str_repeat( 'iss', $settings_count )
-            , $setting_values
-        )->query();
-    }
 }

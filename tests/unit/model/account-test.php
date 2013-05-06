@@ -256,29 +256,6 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test setting an email setting
-     */
-    public function testSetEmailSettings() {
-        // Declare variable
-        $account_id = 160; // Connells
-
-        // Get the account
-        $this->account->get( $account_id );
-
-        // Set it wrong in the first place
-        $this->db->query( "INSERT INTO `email_settings` ( `website_id`, `key`, `value` ) VALUES ( $account_id, 'garbonzo-beans', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
-
-        // Set it with the method
-        $this->account->set_email_settings( array( 'garbonzo-beans' => 'negatory' ) );
-
-        // Get the value
-        $setting_value = $this->db->get_var( "SELECT `value` FROM `email_settings` WHERE `website_id` = $account_id AND `key` = 'garbonzo-beans'" );
-
-        // Make sure they equal each other
-        $this->assertEquals( 'negatory', $setting_value );
-    }
-
-    /**
      * Test getting multiple setting
      *
      * @depends testGet
