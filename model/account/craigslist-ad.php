@@ -196,7 +196,7 @@ class CraigslistAd extends ActiveRecordBase {
         // Find out which ones we need to add
         foreach ( $craigslist_market_ids as $cmid ) {
             // We only want to add the ones that we don't have
-            if ( in_array( $cmid, $this->craigslist_markets ) )
+            if ( is_array( $this->craigslist_markets ) && in_array( $cmid, $this->craigslist_markets ) )
                 continue;
 
             $add_craiglist_market_ids[] = $cmid;
@@ -481,8 +481,8 @@ class CraigslistAd extends ActiveRecordBase {
 
                 if ( 'SUCCESS' == $response->status ) {
                     $primus_product_ids[$market->id] = $response->product_id;
-                } elseif ( 'ERROR' == $response->status ) {
-                    throw new ModelException( _('Failed to add craigslist product') );
+                } elseif ( 'RETRY' != $response->status ) {
+                    throw new ModelException( _('Status: ' . $response->status . '. Failed to add craigslist product') );
                 }
 
                 $i++;
