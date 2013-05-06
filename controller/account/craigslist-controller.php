@@ -82,11 +82,20 @@ class CraigslistController extends BaseController {
 
                 // Set markets
                 $ad->set_markets( $_POST['sCraigslistMarkets'] );
+                $success = true;
 
                 if ( '1' == $_POST['hPostAd'] ) {
-                    $ad->post();
-                    $this->notify( _('Your Craiglist Ad has been successfully sent to post!') );
-                    return new RedirectResponse('/craigslist/');
+                    try {
+                        $ad->post();
+                    } catch ( ModelException $e ) {
+                        $success = false;
+                        $this->notify( _('There was a problem posting your Craiglist Ad. Please contact your online specialist!') );
+                    }
+
+                    if ( $success ) {
+                        $this->notify( _('Your Craiglist Ad has been successfully sent to post!') );
+                        return new RedirectResponse('/craigslist/');
+                    }
                 } else {
                     $this->notify( _('Your Craiglist Ad has been successfully created/saved!') );
 				}
