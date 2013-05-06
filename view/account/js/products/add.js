@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.datatables', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
 	// Cache
 	var cache = { sku : {}, product : {}, brand : {} };
 	
@@ -125,12 +125,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Delete Request Items from list
-	$( '.delete-request' ).live( 'click' , function(){
-		$(this).parent();
-	});
+    $('#dRequestList').on( 'click', '.delete-request', function(){
+        $(this).parent().remove();
+    });
 	
 	// Add products to the right hand side bar and create hidden elements
-	$('.add-product').live( 'click', function() {
+	$('#subcontent').on( 'click', '.add-product', function() {
 		// Add the product
 		addProductToList( $(this).attr('id').replace( 'aAddProduct', '' ), $(this).attr('name') );
 		
@@ -139,7 +139,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// The delete product functionality
-	$('.delete-product').live( 'click', function() {
+	$('#dProductsList').on( 'click', '.delete-product', function() {
 		removeProduct( $(this).attr('id').replace( 'aDel', '' ) );
 		
 		// Decrease number of count
@@ -166,7 +166,7 @@ function addProductToList( productID, productName ) {
 	}
 	
 	// Needs to be done in PHP
-	$('#dProductsList').append( '<div id="dProduct' + productID + '" class="added-product">' + productName + '<a href="javascript:;" class="delete-product" id="aDel' + productID + '" title="Delete Product"><img src="/images/icons/x.png" width="15" height="17" alt="Delete Product" /></a></div>' ).stripe('added-product');
+	$('#dProductsList').append( '<div id="dProduct' + productID + '" class="added-product">' + productName + '<a href="#" class="delete-product" id="aDel' + productID + '" title="Delete Product"><img src="/images/icons/x.png" width="15" height="17" alt="Delete Product" /></a></div>' ).stripe('added-product');
 	$('#fAddProducts').append( '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' + productID + '" value="' + productID + '" />' );
 	
 	//Increase number of count

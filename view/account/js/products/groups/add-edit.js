@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
+head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
 	// Cache
 	var cache = { sku : {}, product : {}, brand : {} };
 	
@@ -50,7 +50,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Remove product
-	$('.remove-product').live( 'click', function() {
+	$('#subcontent').on( 'click', '.remove-product', function() {
 		$(this).parents('.product').remove().next().remove();
 	});
 	

@@ -19,7 +19,7 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 <title><?php echo $template->v('title') . ' | ' . TITLE; ?></title>
 <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
 <?php echo $resources->get_css_urls(); ?>
-<script type="text/javascript" src="/resources/js/?f=<?php echo $resources->get_javascript_file( 'head' ); ?>"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js"></script>
 <link rel="icon" href="<?php echo '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
 <?php $template->get_head(); ?>
 </head>

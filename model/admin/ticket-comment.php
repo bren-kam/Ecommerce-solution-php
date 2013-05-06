@@ -65,41 +65,9 @@ class TicketComment extends ActiveRecordBase {
     }
 
     /**
-     * Add upload links
-     *
-     * @param array $links
-     */
-    public function add_upload_links( array $links ) {
-        // Declare variables
-        $value = '( ' . (int) $this->id . ', ? )';
-        $link_count = count( $links );
-
-		// Form the data to link
-		$values = $value . str_repeat( ',' . $value, $link_count - 1 );
-
-		// Link it
-		$this->prepare(
-            "INSERT INTO `ticket_comment_upload_links` ( `ticket_comment_id`, `ticket_upload_id` ) VALUES $values"
-            , str_repeat( 'i', $link_count )
-            , $links
-        )->query();
-    }
-
-    /**
      * Delete the ticket comment
      */
     public function delete() {
         parent::delete( array( 'ticket_comment_id' => $this->id ), 'i' );
-    }
-
-    /**
-     * Delete Links
-     */
-    public function delete_upload_links() {
-        $this->prepare(
-            'DELETE FROM `ticket_comment_upload_links` WHERE `ticket_comment_id` = :ticket_comment_id'
-            , 'i'
-            , array( ':ticket_comment_id' => $this->id )
-        )->query();
     }
 }

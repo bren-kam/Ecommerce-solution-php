@@ -58,7 +58,7 @@ class CraigslistMarket extends ActiveRecordBase {
         return $this->prepare(
             "SELECT cm.`craigslist_market_id`, CONCAT( cm.`city`, ', ', IF( '' <> cm.`area`, CONCAT( cm.`state`, ' - ', cm.`area` ), cm.`state` ) ) AS market, cm.`cl_market_id`, cml.`market_id`, cml.`cl_category_id` FROM `craigslist_markets` AS cm LEFT JOIN `craigslist_ad_markets` AS cam ON ( cam.`craigslist_market_id` = cm.`craigslist_market_id` ) LEFT JOIN `craigslist_market_links` AS cml ON ( cml.`craigslist_market_id` = cam.`craigslist_market_id` ) WHERE cam.`craigslist_ad_id` = :craigslist_ad_id AND cml.`website_id` = :account_id"
             , 'ii'
-            , array( ':craiglist_ad_id' => $craigslist_ad_id, ':account_id' => $account_id )
+            , array( ':craigslist_ad_id' => $craigslist_ad_id, ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'CraigslistMarket' );
     }
 

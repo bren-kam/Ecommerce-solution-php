@@ -52,8 +52,6 @@
 .coupon .coupon-name { margin-left: 5px; }
 .coupon img { margin-right: 5px; }
 
-.delete-product-option { color: #CC2222 !important; font-weight: bold; font-family:"Courier New", Courier, monospace; float:right; font-size: 1.2em; }
-
 .screen{ overflow-y: auto; }
 
 #dProductOptionsList .row { float:left; clear:left; width:100%; padding-bottom: 7px }

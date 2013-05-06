@@ -1,7 +1,7 @@
 <?php
 class TicketUpload extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $ticket_upload_id, $key, $date_created;
+    public $id, $ticket_id, $ticket_upload_id, $key, $date_created;
 
     // Other tables
     public $ticket_comment_id;
@@ -40,7 +40,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_ticket( $ticket_id ) {
 		return $this->prepare(
-            'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tu.`ticket_upload_id` = tl.`ticket_upload_id` ) WHERE tl.`ticket_id` = :ticket_id'
+            'SELECT `key` FROM `ticket_uploads` WHERE `ticket_id` = :ticket_id'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_col();
@@ -54,7 +54,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_comments( $ticket_id ) {
         return $this->prepare(
-            'SELECT tu.`key`, tcul.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comment_upload_links` AS tcul ON ( tcul.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `ticket_comments` AS tc ON ( tc.`ticket_comment_id` = tcul.`ticket_comment_id` ) WHERE tc.`ticket_id` = :ticket_id'
+            'SELECT tu.`key`, tc.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comments` AS tc ON ( tc.`ticket_comment_id` = tu.`ticket_comment_id` ) WHERE tc.`ticket_id` = :ticket_id'
             , 'i'
             , array( ':ticket_id' => $ticket_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
@@ -68,7 +68,7 @@ class TicketUpload extends ActiveRecordBase {
      */
     public function get_by_comment( $ticket_comment_id ) {
         return $this->prepare(
-            'SELECT tu.`key`, tcul.`ticket_comment_id` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_comment_upload_links` AS tcul ON ( tcul.`ticket_upload_id` = tu.`ticket_upload_id` ) WHERE tcul.`ticket_comment_id` = :ticket_comment_id'
+            'SELECT `ticket_comment_id`, `key` FROM `ticket_uploads` WHERE `ticket_comment_id` = :ticket_comment_id'
             , 'i'
             , array( ':ticket_comment_id' => $ticket_comment_id )
         )->get_results( PDO::FETCH_CLASS, 'TicketUpload' );
@@ -80,7 +80,7 @@ class TicketUpload extends ActiveRecordBase {
      * @return array
      */
     public function get_keys_by_uncreated_tickets() {
-        return $this->get_col( 'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tl.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tl.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+        return $this->get_col( 'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
     }
 
     /**
@@ -91,13 +91,48 @@ class TicketUpload extends ActiveRecordBase {
 
         $this->insert(
             array(
-                'key' => $this->key
+                'ticket_id' => $this->ticket_id
+                , 'key' => $this->key
                 , 'date_created' => $this->date_created
             )
-            , 'ss'
+            , 'iss'
         );
 
         $this->id = $this->ticket_upload_id = $this->get_insert_id();
+    }
+
+    /**
+     * Add Relations
+     *
+     * @param int $ticket_id
+     * @param array $ticket_upload_ids
+     */
+    public function add_relations( $ticket_id, array $ticket_upload_ids ) {
+        // Type Juggling
+        $ticket_id = (int) $ticket_id;
+
+        foreach ( $ticket_upload_ids as &$tuid ) {
+            $tuid = (int) $tuid;
+        }
+
+        $this->query( "UPDATE `ticket_uploads` SET `ticket_id` = $ticket_id WHERE `ticket_id` = 0 AND `ticket_upload_id` IN ( " . implode( ',', $ticket_upload_ids ) . ')' );
+    }
+
+    /**
+     * Add Relations
+     *
+     * @param int $ticket_comment_id
+     * @param array $ticket_upload_ids
+     */
+    public function add_comment_relations( $ticket_comment_id, array $ticket_upload_ids ) {
+        // Type Juggling
+        $ticket_comment_id = (int) $ticket_comment_id;
+
+        foreach ( $ticket_upload_ids as &$tuid ) {
+            $tuid = (int) $tuid;
+        }
+
+        $this->query( "UPDATE `ticket_uploads` SET `ticket_comment_id` = $ticket_comment_id WHERE `ticket_comment_id` = 0 AND `ticket_upload_id` IN ( " . implode( ',', $ticket_upload_ids ) . ')' );
     }
 
     /**

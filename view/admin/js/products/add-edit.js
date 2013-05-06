@@ -209,7 +209,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             $('#upload-loader').show();
         }
         , onComplete: function( id, fileName, responseJSON ) {
-            ajaxResponse( responseJSON );
+            $('#upload-loader').hide();
+            $('#aUpload').show();
         }
     });
 

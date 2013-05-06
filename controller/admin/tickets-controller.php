@@ -55,7 +55,7 @@ class TicketsController extends BaseController {
         $ticket->get( $ticket_id );
 
         // Don't want them to see this if they don't have the right role
-        if ( $this->user->role < $ticket->role && $this->user->user_id != $ticket->user_id )
+        if ( $this->user->role < $ticket->role && $this->user->user_id != $ticket->user_id && $this->user->user_id != User::JEFF )
             return new RedirectResponse('/tickets/');
 
         // Get the uploads
@@ -259,7 +259,7 @@ class TicketsController extends BaseController {
 
         // Handle attachments
         if ( isset( $_POST['uploads'] ) && is_array( $_POST['uploads'] ) )
-            $ticket_comment->add_upload_links( $_POST['uploads'] );
+            $ticket_upload->add_comment_relations( $ticket_comment->id, $_POST['uploads'] );
 
         // Send emails
         $comment = strip_tags( $ticket_comment->comment );
@@ -269,7 +269,7 @@ class TicketsController extends BaseController {
             fn::mail( $ticket->email, 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>' );
 
         // Send the assigned user an email if they are not submitting the comment
-        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != $ticket->user_id && 1 == $ticket->status )
+        if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != User::KERRY && $ticket->assigned_to_user_id != $ticket->user_id )
             fn::mail( $assigned_user->email, 'New Comment on Ticket #' . $ticket->id . ' (Closed) - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id . "**Comment**\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>' );
 
         /***** Add comment *****/
@@ -493,11 +493,8 @@ class TicketsController extends BaseController {
                 $file->delete_file( $upload->key, 'attachments/' );
 
                 // Delete the upload entry
-                $upload->delete();
+                $upload->delete_upload();
             }
-
-            // Delete links
-            $ticket_comment->delete_upload_links();
         }
 
         // Remove from page

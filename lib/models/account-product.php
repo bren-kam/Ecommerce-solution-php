@@ -8,7 +8,7 @@ class AccountProduct extends ActiveRecordBase {
         , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $date_updated;
 
     // Artificial columns
-    public $link, $industry, $coupons, $product_options;
+    public $link, $industry, $coupons, $product_options, $created_by;
 
     // Columns from other tables
     public $category_id, $category, $brand, $slug, $sku, $name, $image;
@@ -43,7 +43,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );

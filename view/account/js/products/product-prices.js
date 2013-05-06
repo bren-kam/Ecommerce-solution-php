@@ -1,7 +1,7 @@
 /**
  * @page Product Prices
  */
-jQuery(function($) {
+head.js( 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
     // Grab the products for each brand
     $('#sBrand').change( function() {
         $('#tProductPrices').dataTable().fnDraw();

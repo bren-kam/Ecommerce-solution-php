@@ -51,24 +51,6 @@ class Ticket extends ActiveRecordBase {
     }
 
     /**
-     * Add Links
-     *
-     * @param array $ticket_upload_ids
-     */
-    public function add_links( array $ticket_upload_ids ) {
-        $values = '';
-
-        foreach ( $ticket_upload_ids as &$tuid ) {
-            if ( !empty( $values ) )
-                $values .= ',';
-
-            $values .= '(' . $this->id . ',' . (int) $tuid . ')';
-        }
-
-        $this->query( "INSERT INTO `ticket_links` ( `ticket_id`, `ticket_upload_id` ) VALUES $values" );
-    }
-
-    /**
      * Update a ticket
      */
     public function save() {
@@ -130,6 +112,6 @@ class Ticket extends ActiveRecordBase {
      */
     public function deleted_uncreated_tickets() {
         // Delete ticket uploads, ticket links and tickets themselves (this is awesome!)
-		$this->query( 'DELETE tu.*, tl.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `ticket_links` AS tl ON ( tl.`ticket_upload_id` = tu.`ticket_upload_id` ) LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tl.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )');
+		$this->query( 'DELETE tu.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )');
     }
 }
