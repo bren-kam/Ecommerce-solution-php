@@ -942,8 +942,7 @@ class AccountsController extends BaseController {
 
         if ( $form->posted() ) {
             // Do stuff
-            $email_marketing = new EmailMarketing();
-            $email_marketing->set_settings( $account->id, array(
+            $account->set_settings( $account->id, array(
                 'view-product-button' => $_POST['tViewProductButton']
                 , 'product-color' => $_POST['tProductColor']
                 , 'product-price-color' => $_POST['tPriceColor']

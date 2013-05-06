@@ -152,7 +152,7 @@ class InstallService {
         $email_template->add_association( $account->id );
 
         // Create default settings
-        $account->set_email_settings( array( 'timezone' => Config::setting('default-timezone') ) );
+        $account->set_settings( array( 'timezone' => Config::setting('default-timezone') ) );
     }
 
     /**

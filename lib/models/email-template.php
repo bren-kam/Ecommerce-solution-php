@@ -133,7 +133,7 @@ class EmailTemplate extends ActiveRecordBase {
                 $category = new Category;
 
                 // Get settings
-                $settings = $account->get_email_settings( 'product-price-color', 'view-product-button', 'product-color' );
+                $settings = $account->get_settings( 'product-price-color', 'view-product-button', 'product-color' );
                 $view_product_image = $settings['view-product-button'];
 
                 // Set variables
@@ -203,7 +203,7 @@ class EmailTemplate extends ActiveRecordBase {
 
             default:
                 // Just do a normal message
-                $remove_header_footer = $account->get_email_settings('remove-header-footer');
+                $remove_header_footer = $account->get_settings('remove-header-footer');
 				$html_message = ( $remove_header_footer ) ? $message : str_replace( array( '[subject]', '[message]' ), array( $subject, $message ), $this->template );
             break;
         }

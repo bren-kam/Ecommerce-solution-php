@@ -231,7 +231,7 @@ class EmailMessage extends ActiveRecordBase {
             throw new ModelException( $mc->errorMessage, $mc->errorCode );
 
         // Update From Email
-        $settings = $account->get_email_settings( 'from_email', 'from_name' );
+        $settings = $account->get_settings( 'from_email', 'from_name' );
         $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $account->domain : $settings['from_email'];
 
         $mc->campaignUpdate( $this->mc_campaign_id, 'from_email', $from_email );
@@ -480,7 +480,7 @@ class EmailMessage extends ActiveRecordBase {
             throw new ModelException( $message, $mc->errorCode );
         }
 
-        $settings = $account->get_email_settings( 'from_email', 'from_name' );
+        $settings = $account->get_settings( 'from_email', 'from_name' );
 
         // Determine from email
         $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $account->domain : $settings['from_email'];

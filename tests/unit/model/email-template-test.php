@@ -166,7 +166,7 @@ class EmailTemplateTest extends BaseDatabaseTest {
 
         // Create Account Stub
         $stub_account = $this->getMock( 'Account' );
-        $stub_account->expects($this->once())->method('get_email_settings')->with( $settings )->will($this->returnValue(false));
+        $stub_account->expects($this->once())->method('get_settings')->with( $settings )->will($this->returnValue(false));
         $stub_account->title = $account_title; // Just to get more code coverage -- it should continue going
 
         // Email Message Stub
