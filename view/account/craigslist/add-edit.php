@@ -22,11 +22,11 @@ if ( !empty( $errs ) )
 ?>
 <form name="fAddCraigslistTemplate" id="fAddCraigslistTemplate" action="" method="post">
     <input id="hCraigslistAdID" name="hCraigslistAdID" type="hidden" value="<?php if ( $craigslist_ad_id ) echo $craigslist_ad_id; ?>" />
-    <input id="hProductID" name="hProductID" type="hidden" value="<?php echo ( !$success && isset( $_POST['hProductID'] ) ) ? $_POST['hProductID'] : $ad->product_id;?>" />
-    <input id="hProductName" name="hProductName" type="hidden" value="<?php echo ( !$success && isset( $_POST['hProductName'] ) ) ? $_POST['hProductName'] : $ad->product_name; ?>" />
+    <input id="hProductID" name="hProductID" type="hidden" value="<?php echo ( isset( $_POST['hProductID'] ) ) ? $_POST['hProductID'] : $ad->product_id;?>" />
+    <input id="hProductName" name="hProductName" type="hidden" value="<?php echo ( isset( $_POST['hProductName'] ) ) ? $_POST['hProductName'] : $ad->product_name; ?>" />
     <input id="hProductCategoryID" type="hidden" value="0" />
     <input id="hProductCategoryName" type="hidden" value="" />
-    <input id="hProductSKU" type="hidden" value="<?php echo ( !$success && isset( $_POST['hProductSKU'] ) ) ? $_POST['hProductSKU'] : $ad->sku; ?>" />
+    <input id="hProductSKU" type="hidden" value="<?php echo ( isset( $_POST['hProductSKU'] ) ) ? $_POST['hProductSKU'] : $ad->sku; ?>" />
     <input id="hProductBrandName" type="hidden" value="0" />
     <input id="hProductDescription" type="hidden" value="" />
     <textarea id="hProductSpecifications" class="hidden" rows="5" cols="50"></textarea>
@@ -46,7 +46,7 @@ if ( !empty( $errs ) )
             <option value="sku"><?php echo _('SKU'); ?></option>
             <option value="product"><?php echo _('Product Name'); ?></option>
         </select>
-        <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php echo ( !$success || isset( $_POST['tAutoComplete'] ) ) ? $_POST['tAutoComplete'] : $ad->sku; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
+        <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php echo ( isset( $_POST['tAutoComplete'] ) ) ? $_POST['tAutoComplete'] : $ad->sku; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
         <br /><br />
     </div>
 
@@ -64,13 +64,13 @@ if ( !empty( $errs ) )
                 ?>
                 <tr>
                     <td><?php echo $i + 1; ?>)</td>
-                    <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( !$success && isset( $_POST['tHeadlines'][$i] ) ) ? $_POST['tHeadlines'][$i] : $headline; ?>" maxlength="70" /></td>
+                    <td><input type="text" class="tb headline" name="tHeadlines[]" id="tHeadline<?php echo $i; ?>" tabindex="<?php echo $i + 3; ?>" value="<?php echo ( isset( $_POST['tHeadlines'][$i] ) ) ? $_POST['tHeadlines'][$i] : $headline; ?>" maxlength="70" /></td>
                 </tr>
            <?php } ?>
         </table>
 
         <br /><br />
-        <textarea name="taDescription" id="taDescription" rte="1" tabindex="13"><?php echo ( !$success && isset( $_POST['taDescription'] ) ) ? $_POST['taDescription'] : $ad->text; ?></textarea>
+        <textarea name="taDescription" id="taDescription" rte="1" tabindex="13"><?php echo ( isset( $_POST['taDescription'] ) ) ? $_POST['taDescription'] : $ad->text; ?></textarea>
         <p>
             <strong><?php echo _('Syntax Tags'); ?>:</strong>
             [<?php echo _('Product Name'); ?>]
@@ -84,7 +84,7 @@ if ( !empty( $errs ) )
             [<?php echo _('Product Specifications'); ?>]
         </p>
         <label for="tPrice"><strong><?php echo _('Price'); ?>:</strong></label>
-        <input type="text" class="tb" name="tPrice" id="tPrice" tabindex="14" value="<?php echo ( !$success && isset( $_POST['tPrice'] ) ) ? $_POST['tPrice'] : $ad->price; ?>" />
+        <input type="text" class="tb" name="tPrice" id="tPrice" tabindex="14" value="<?php echo ( isset( $_POST['tPrice'] ) ) ? $_POST['tPrice'] : $ad->price; ?>" />
         <br /><br />
 
         <label for="sCraigslistMarkets"><strong><?php echo _('Craigslist Markets'); ?>:</strong></label><br />
