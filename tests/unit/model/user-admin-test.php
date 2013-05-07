@@ -389,13 +389,16 @@ class UserAdminTest extends BaseDatabaseTest {
      * Test Autocomplete
      */
     public function testAutocompleteA() {
+        // Declare variables
+        $autocomplete_name = 'Kerry Lebensburger';
+
         // Assign Role
         $this->user->role = 8;
 
         // Get Users
         $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
 
-        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+        $this->assertEquals( $users[0]['contact_name'], $autocomplete_name );
     }
 
     /**

@@ -32,21 +32,23 @@ class CompanyPackageTest extends BaseDatabaseTest {
      */
     public function testGetAll() {
         // Declare Variables
-        $account_id = -7;
-        $user_id = -3;
-        $company_id = 1; // Imagine Retailer
+        $website_id = -7;
+        $email = md5(time()) . '@weet.com';
+        $company_id = -1; // Imagine Retailer
 
         // Create website/user
-        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'user_id' => $user_id ), 'i' );
-        $this->db->insert( 'users', compact( 'user_id', 'company_id' ), 'ii' );
+        $user_id = $this->db->insert( 'users', compact( 'company_id', 'email' ), 'is' );
+        $website_id = $this->db->insert( 'websites', compact( 'user_id' ), 'ii' );
+        $this->db->insert( 'company_packages', compact( 'company_id', 'website_id' ), 'ii' );
 
         // Get all packages
-        $packages = $this->company_package->get_all( $account_id );
+        $packages = $this->company_package->get_all( $website_id );
 
         $this->assertTrue( current( $packages ) instanceof CompanyPackage );
 
+        $this->db->delete( 'company_packages', compact( 'company_id' ), 'i' );
         $this->db->delete( 'websites', compact( 'user_id' ), 'i' );
-        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
+        $this->db->delete( 'users', compact( 'company_id' ), 'i' );
     }
 
     /**

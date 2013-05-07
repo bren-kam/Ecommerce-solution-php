@@ -136,7 +136,7 @@ class EmailList extends ActiveRecordBase {
      *
      * @param Account $account
      */
-    private function remove_bad_emails( Account $account ) {
+    protected function remove_bad_emails( Account $account ) {
         // Make sure they have a mailchimp list id to work off
         if ( !$account->mc_list_id )
             return;
@@ -189,7 +189,7 @@ class EmailList extends ActiveRecordBase {
      *
      * @param Account $account
      */
-    private function update_bulk( Account $account ) {
+    protected function update_bulk( Account $account ) {
         $email = new Email();
         $email_results = $email->get_unsynced_by_account( $account->id );
 

@@ -32,10 +32,10 @@ class CompanyPackage extends ActiveRecordBase {
      * Get all the accounts
      *
      * @param int $account_id
-     * @return array
+     * @return CompanyPackage[]
      */
     public function get_all( $account_id ) {
-        return $this->prepare( 'SELECT a.`company_package_id`, a.`name` FROM `company_packages` AS a LEFT JOIN `users` AS b ON ( a.`company_id` = b.`company_id` ) LEFT JOIN `websites` AS c ON ( b.`user_id` = c.`user_id` ) WHERE c.`website_id` = :account_id ORDER BY a.`name` ASC'
+        return $this->prepare( 'SELECT cp.`company_package_id`, cp.`name` FROM `company_packages` AS cp LEFT JOIN `users` AS u ON ( u.`company_id` = cp.`company_id` ) LEFT JOIN `websites` AS w ON ( w.`user_id` = u.`user_id` ) WHERE w.`website_id` = :account_id ORDER BY cp.`name` ASC'
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'CompanyPackage' );

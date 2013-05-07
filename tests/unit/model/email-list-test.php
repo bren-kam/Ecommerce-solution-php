@@ -79,7 +79,51 @@ class EmailListTest extends BaseDatabaseTest {
      * Test Get Count by account
      */
     public function testGetCountByAccount() {
-        
+        // Declare variables
+        $website_id = -5;
+        $status = 1;
+
+        // Insert
+        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
+        $email_id = $this->db->insert( 'emails', compact( 'website_id', 'status' ), 'ii' );
+        $this->db->insert( 'email_associations', compact( 'email_list_id', 'email_id' ), 'ii' );
+
+        // Get count
+        $email_lists = $this->email_list->get_count_by_account( $website_id );
+
+        $this->assertTrue( current( $email_lists ) instanceof EmailList );
+
+        // Delete
+        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
+    }
+
+    /**
+     * Test Get Count by message
+     */
+    public function testGetCountByMessage() {
+        // Declare variables
+        $website_id = -5;
+
+        // Insert
+        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
+        $email_message_id = $this->db->insert( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->db->insert( 'email_message_associations', compact( 'email_list_id', 'email_message_id' ), 'ii' );
+        $email_id = $this->db->insert( 'emails', compact( 'website_id'), 'i' );
+        $this->db->insert( 'email_associations', compact( 'email_list_id', 'email_id' ), 'ii' );
+
+        // Get count
+        $email_lists = $this->email_list->get_by_message( $email_message_id, $website_id );
+
+        $this->assertTrue( current( $email_lists ) instanceof EmailList );
+
+        // Delete
+        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'email_message_associations', compact( 'email_list_id' ), 'i' );
+        $this->db->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
     }
 
     /**
@@ -128,6 +172,30 @@ class EmailListTest extends BaseDatabaseTest {
 
         // Delete
         $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Remove
+     *
+     * @depends testGet
+     */
+    public function testRemove() {
+        // Set variables
+        $website_id = -7;
+
+        // Create
+        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
+
+        // Get
+        $this->email_list->get( $email_list_id, $website_id );
+
+        // Remove
+        $this->email_list->remove();
+
+        $email_list = $this->db->get_row( 'SELECT * FROM `email_lists` WHERE `email_list_id` = ' . (int) $email_list_id );
+
+        // Make sure we grabbed the right one
+        $this->assertFalse( $email_list );
     }
 
     /**

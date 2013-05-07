@@ -262,9 +262,6 @@ class EmailMessageTest extends BaseDatabaseTest {
 
         // Make sure we grabbed the right one
         $this->assertFalse( $email_message );
-
-        // Clean up
-        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
     }
 
     /**
