@@ -24,10 +24,9 @@ class EmailListTest extends BaseDatabaseTest {
         $name = 'Dig My Dipper';
 
         // Insert an email list
-        $this->db->insert( 'email_lists', compact( 'website_id', 'name' ), 'is' );
+        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id', 'name' ), 'is' );
 
-        $email_list_id = $this->db->get_insert_id();
-
+        // Get
         $this->email_list->get( $email_list_id, $website_id );
 
         $this->assertEquals( $name, $this->email_list->name );

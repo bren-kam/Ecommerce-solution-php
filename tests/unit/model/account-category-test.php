@@ -258,6 +258,8 @@ class AccountCategoryTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        Category::$categories = null;
+        Category::$categories_by_parent = null;
         $this->account_category = null;
     }
 }

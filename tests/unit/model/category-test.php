@@ -32,8 +32,24 @@ class CategoryTest extends BaseDatabaseTest {
         // Should be a category
         $this->assertEquals( $this->category->name, 'Test Parent' );
 
+        // Test getting from cache
+        $this->category->name = null;
+        $this->category->get( $category_id );
+
+        // Should be a category
+        $this->assertEquals( $this->category->name, 'Test Parent' );
+
         // Delete Category
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
+    }
+
+    /**
+     * Test getting all the categories
+     */
+    public function testGetAll() {
+        $categories = $this->category->get_all();
+
+        $this->assertTrue( current( $categories ) instanceof Category );
     }
 
     /**
@@ -64,6 +80,30 @@ class CategoryTest extends BaseDatabaseTest {
         $categories = $this->category->get_all_parents( $sub_category_id );
 
         $this->assertEquals( $category_id, $categories[0]->id );
+
+        // Delete
+        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+    }
+
+    /**
+     * Test getting top categories
+     *
+     * @depends testGet
+     */
+    public function testGetTop() {
+        // Setup Variables
+        $category_id = -59;
+        $sub_category_id = -80;
+
+        // Create Categories
+        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+
+        // Get all categories
+        $this->category->get_top( $sub_category_id );
+
+        $this->assertEquals( $category_id, $this->category->id );
 
         // Delete
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
@@ -106,12 +146,58 @@ class CategoryTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test getting all the categories
+     * Test getting url
+     *
+     * @depends testGetAll
+     * @depends testGetAllParents
      */
-    public function testGetAll() {
-        $categories = $this->category->get_all();
+    public function testGetUrl() {
+        // Setup Variables
+        $category_id = -59;
+        $slug = 'parent';
+        $sub_category_id = -80;
+        $sub_slug = 'sub-name';
+        $url = '/parent/sub-name/';
 
-        $this->assertTrue( current( $categories ) instanceof Category );
+        // Create Categories
+        $this->db->insert( 'categories', compact( 'category_id', 'slug' ), 'is' );
+        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id, 'slug' => $sub_slug ), 'iis' );
+
+        // Get the categories
+        $this->category->id = $sub_category_id;
+        $fetched_url = $this->category->get_url();
+
+        $this->assertEquals( $url, $fetched_url );
+
+        // Delete
+        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+    }
+
+    /**
+     * Test has children
+     *
+     * @depends testGetAll
+     * @depends testGetAllParents
+     */
+    public function testHasChildren() {
+        // Setup Variables
+        $category_id = -59;
+        $sub_category_id = -80;
+
+        // Create Categories
+        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+
+        // Get the categories
+        $this->category->id = $category_id;
+        $has_children = $this->category->has_children();
+
+        $this->assertTrue( $has_children );
+
+        // Delete
+        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
 
     /**
@@ -233,6 +319,8 @@ class CategoryTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
+        Category::$categories = null;
+        Category::$categories_by_parent = null;
         $this->category = null;
     }
 }
