@@ -125,18 +125,19 @@ class Resources {
             // Combine the CSS
             foreach ( $files as $file ) {
                 $css .= compress::css( file_get_contents( $file ) );
+                //$css .= file_get_contents( $file );
             }
 
             // Compress the CSS with initial settings
 
             // @Pedro -- this caused a fatal error without the manual include as it is can't find the class,
             // I can't figure out why it wouldn't be autoincluded. Remove this line to see the error
-            lib('helpers/compress-css');
+            //lib('helpers/compress-css');
 
-            $compress_css = new CompressCSS( $css, false, true );
+            //$compress_css = new CompressCSS( $css, false, true );
 
             // Get the compressed css
-            $css = $compress_css->css;
+            //$css = $compress_css->css;
 
             // Write to file
             if ( $fh = fopen( $cached_file_path, 'w' ) ) {
