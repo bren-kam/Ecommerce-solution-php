@@ -119,15 +119,15 @@ class TicketsController extends BaseController {
 
         // Special words
         $words = array(
-            247 => '@sales'  // Chad
-            , 73 => '@products' // Chris
-            , 54 => '@accounting' // Craig
+            User::CHAD => '@sales'  // Chad
+            , User::CHRIS => '@products' // Chris
+            , User::CRAIG => '@accounting' // Craig
         );
 
         // Special hash priorities
         $priorities = array(
-            1 => '#high' // high priority
-            , 2 => '#urgent' // urgent priority
+            Ticket::PRIORITY_HIGH => '#high' // high priority
+            , Ticket::PRIORITY_URGENT => '#urgent' // urgent priority
         );
 
         $variables = array(
@@ -136,14 +136,14 @@ class TicketsController extends BaseController {
         );
 
         // Figure out who we're assigned to
-        $assigned_to_user_id = 493; // Technical user (default)
-        $priority = 0; // Normal
+        $assigned_to_user_id = User::TECHNICAL;
+        $priority = Ticket::PRIORITY_NORMAL;
 
         // Find out if they are trying to direct it to a particular person
         foreach ( $variables as $string ) {
             $string = strtolower( $string );
 
-            if ( 493 == $assigned_to_user_id )
+            if ( User::TECHNICAL == $assigned_to_user_id )
             foreach ( $words as $user_id => $word ) {
                 if ( stristr( $string, $word ) ) {
                     // Found it -- we're done here
@@ -152,7 +152,7 @@ class TicketsController extends BaseController {
                 }
             }
 
-            if ( 0 == $priority )
+            if ( Ticket::PRIORITY_NORMAL == $priority )
             foreach ( $priorities as $priority_id => $hash ) {
                 if ( stristr( $string, $hash ) ) {
                     // Found it -- we're done here
@@ -175,7 +175,7 @@ class TicketsController extends BaseController {
         $ticket->browser_version = $browser['version'];
         $ticket->browser_platform = $browser['platform'];
         $ticket->browser_user_agent = $browser['user_agent'];
-        $ticket->status = 0;
+        $ticket->status = Ticket::STATUS_OPEN;
         $ticket->priority = $priority;
 
         // Update the ticket
@@ -247,7 +247,7 @@ class TicketsController extends BaseController {
         $assigned_user->get( $ticket->assigned_to_user_id );
 
         // Set variables
-        $status = ( 0 == $ticket->status ) ? ' (Open)' : ' (Closed)';
+        $status = ( Ticket::STATUS_OPEN == $ticket->status ) ? ' (Open)' : ' (Closed)';
 
         // Create ticket comment
         $ticket_comment->ticket_id = $ticket->id;
@@ -265,7 +265,7 @@ class TicketsController extends BaseController {
         $comment = strip_tags( $ticket_comment->comment );
 
         // If it's not private, send an email to the client
-        if ( 0 == $ticket_comment->private && ( 1 == $ticket->status || !$ticket_creator->has_permission( User::ROLE_ADMIN ) ) )
+        if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && ( Ticket::STATUS_OPEN == $ticket->status || !$ticket_creator->has_permission( User::ROLE_ADMIN ) ) )
             fn::mail( $ticket->email, 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>' );
 
         // Send the assigned user an email if they are not submitting the comment
@@ -283,7 +283,7 @@ class TicketsController extends BaseController {
         $comment = '<div class="comment" id="comment-' . $ticket_comment->id . '">';
         $comment .= '<p class="name">';
 
-        if ( '1' == $ticket_comment->private )
+        if ( TicketComment::VISIBILITY_PRIVATE == $ticket_comment->private )
             $comment .= '<img src="/images/icons/lock.gif" width="11" height="15" alt="' . _('Private') . '" class="private" />';
 
         $comment .= '<a href="#" class="assign-to" rel="' . $ticket->user_id . '">' . $this->user->contact_name . '</a>';
@@ -574,9 +574,9 @@ class TicketsController extends BaseController {
 
         // Send out email
         $priorities = array(
-            0 => 'Normal',
-            1 => 'High',
-            2 => 'Urgent'
+            Ticket::PRIORITY_NORMAL => 'Normal',
+            Ticket::PRIORITY_HIGH => 'High',
+            Ticket::PRIORITY_URGENT => 'Urgent'
         );
 
         $assigned_user = new User();
@@ -656,7 +656,7 @@ class TicketsController extends BaseController {
         $ticket->save();
 
         // Mark statistic for updated tickets if it's a GSR user
-        if ( 1 == $ticket->status && in_array( $this->user->id, array( 493, 1, 814, 305, 85, 19 ) ) ) {
+        if ( Ticket::STATUS_CLOSED == $ticket->status && in_array( $this->user->id, array( User::TECHNICAL, User::KERRY, User::RODRIGO, User::MANINDER, User::RAFFERTY ) ) ) {
             // Load library
             library('statistics-api');
             $stat = new Stat_API( Config::key('rs-key') );
@@ -727,15 +727,15 @@ class TicketsController extends BaseController {
         foreach ( $tickets as $ticket ) {
             switch ( $ticket->priority ) {
                 default:
-                case 0:
+                case Ticket::PRIORITY_NORMAL:
                     $priority = '<span class="normal">NORMAL</span>';
                 break;
 
-                case 1:
+                case Ticket::PRIORITY_HIGH:
                     $priority = '<span class="high">HIGH</span>';
                 break;
 
-                case 2:
+                case Ticket::PRIORITY_URGENT:
                     $priority = '<span class="urgent">URGENT</span>';
                 break;
             }
