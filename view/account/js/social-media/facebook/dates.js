@@ -10,6 +10,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	timePickers.timepicker({
 	  	step: 60
 		, show24Hours: false
+        , timeFormat: 'g:i a'
 	}).timepicker('show');
 
     // Fix for offset
