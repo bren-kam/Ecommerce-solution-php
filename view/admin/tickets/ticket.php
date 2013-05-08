@@ -90,8 +90,8 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
             <select id="sStatus">
             <?php
             $statuses = array(
-                0 => _('Open'),
-                1 => _('Closed')
+                Ticket::STATUS_OPEN => _('Open'),
+                Ticket::STATUS_CLOSED => _('Closed')
             );
 
             foreach ( $statuses as $sn => $s ) {
@@ -110,9 +110,9 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
             <select id="sPriority">
             <?php
             $priorities = array(
-                0 => _('Normal'),
-                1 => _('High'),
-                2 => _('Urgent')
+                Ticket::PRIORITY_NORMAL => _('Normal'),
+                Ticket::PRIORITY_HIGH => _('High'),
+                Ticket::PRIORITY_URGENT => _('Urgent')
             );
 
             foreach ( $priorities as $pn => $p ) {
