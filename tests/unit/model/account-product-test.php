@@ -16,6 +16,113 @@ class AccountProductTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get
+     */
+    public function testGet() {
+        // Declare variables
+        $website_id = -5;
+        $product_id = -7;
+        $price = 5;
+
+        // Insert
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'price' ), 'iid' );
+
+        // Get
+        $this->account_product->get( $product_id, $website_id );
+
+        $this->assertEquals( $price, $this->account_product->price );
+
+        // Delete
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Get By Account
+     */
+    public function testGetByAccount() {
+        // Declare variables
+        $website_id = -5;
+        $brand_id = -3;
+        $name = 'Backlog';
+        $user_id_created = 1;
+        $status = $active = 1;
+        $publish_visibility = 'public';
+
+        // Insert an email list
+        $product_id = $this->db->insert( 'products', compact( 'brand_id', 'user_id_created', 'publish_visibility' ), 'iis' );
+        $category_id = $this->db->insert( 'categories', compact( 'name' ), 'i' );
+        $this->db->insert( 'product_categories', compact( 'product_id', 'category_id' ), 'ii' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'status', 'active' ), 'iiii' );
+
+        // Get
+        $products = $this->account_product->get_by_account( $website_id );
+
+        $this->assertTrue( current( $products ) instanceof AccountProduct );
+
+        // Delete
+        $this->db->delete( 'products', compact( 'brand_id' ), 'i' );
+        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->db->delete( 'product_categories', compact( 'category_id' ), 'i' );
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Count
+     */
+    public function testCount() {
+        // Declare variables
+        $website_id = -5;
+        $brand_id = -3;
+        $user_id_created = 1;
+        $status = $active = 1;
+        $publish_visibility = 'public';
+        $publish_date = dt::now();
+
+        // Insert an email list
+        $product_id = $this->db->insert( 'products', compact( 'brand_id', 'user_id_created', 'publish_visibility', 'publish_date' ), 'iiss' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'status', 'active' ), 'iiii' );
+
+        // Get
+        $count = $this->account_product->count( $website_id );
+
+        $this->assertGreaterThan( 0, $count );
+
+        // Delete
+        $this->db->delete( 'products', compact( 'brand_id' ), 'i' );
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+    
+    /**
+     * Test save
+     *
+     * @depends testGet
+     */
+    public function testSave() {
+        // Declare variables
+        $website_id = -3;
+        $product_id = -7;
+        $price = 6;
+
+        // Insert
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id' ), 'ii' );
+
+        // Get
+        $this->account_product->get( $product_id, $website_id );
+
+        // Save
+        $this->account_product->price = $price;
+        $this->account_product->save();
+
+        // Make sure it's in the database
+        $fetched_price = $this->db->get_var( 'SELECT `price` FROM `website_products` WHERE `website_id` = ' . (int) $website_id . ' AND `product_id` = ' . (int) $product_id );
+
+        $this->assertEquals( $price, $fetched_price );
+
+        // Delete
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
      * Test Adding bulk products
      */
     public function testAddBulk() {
@@ -142,6 +249,106 @@ class AccountProductTest extends BaseDatabaseTest {
 
         // Delete them
         $this->db->delete( 'website_products', array( 'product_id' => $product_id ), 'i' );
+    }
+
+    /**
+     * List Products
+     */
+    public function testListProducts() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
+
+        $products = $this->account_product->list_products( $dt->get_variables() );
+
+        // Make sure we have an array
+        $this->assertTrue( current( $products ) instanceof Product );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $products );
+    }
+
+    /**
+     * Count Products
+     */
+    public function testCountProducts() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
+
+        $count = $this->account_product->count_products( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * List Product Prices
+     */
+    public function testListProductPrices() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+
+        $products = $this->account_product->list_product_prices( $dt->get_variables() );
+
+        // Make sure we have an array
+        $this->assertTrue( current( $products ) instanceof Product );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $products );
+    }
+
+    /**
+     * Count Product Prices
+     */
+    public function testCountProductPrices() {
+        $user = new User();
+        $user->get_by_email('test@greysuitretail.com');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $user );
+        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+
+        $count = $this->account_product->count_product_prices( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
     }
 
     /**

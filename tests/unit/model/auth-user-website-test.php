@@ -25,7 +25,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $email = md5(microtime()) . '@cash.com';
         $status = 1;
 
-        // Insert an email list
+        // Insert
         $user_id = $this->db->insert( 'users', compact( 'email', 'contact_name', 'status' ), 'ssi' );
         $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
 
@@ -47,16 +47,16 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $user_id = -7;
         $pages = -11;
 
-        // Insert an email list
+        // Insert
         $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id', 'pages' ), 'iii' );
 
-        //Get 
+        // Get
         $this->auth_user_website->get( $user_id, $website_id );
 
         $this->assertEquals( $pages, $this->auth_user_website->pages );
 
         // Delete
-        $this->db->delete( 'auth_user_websites',compact( 'website_id' ), 'i' );
+        $this->db->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -120,7 +120,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $website_id = -5;
         $user_id = -7;
 
-        // Insert an email list
+        // Insert
         $auth_user_website_id = $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
 
         // Get
@@ -143,7 +143,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $website_id = -5;
         $user_id = -7;
 
-        // Insert an email list
+        // Insert
         $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
 
         // Get
@@ -177,7 +177,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $this->assertTrue( current( $auth_users ) instanceof AuthUserWebsite );
 
         // Get rid of everything
-        unset( $user, $_GET, $dt, $auth_user_websites );
+        unset( $user, $_GET, $dt, $auth_users );
     }
 
     /**
