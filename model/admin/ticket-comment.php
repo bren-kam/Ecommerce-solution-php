@@ -1,5 +1,8 @@
 <?php
 class TicketComment extends ActiveRecordBase {
+    const VISIBILITY_PRIVATE = 1;
+    const VISIBILITY_PUBLIC = 0;
+
     // The columns we will have access to
     public $id, $ticket_comment_id, $ticket_id, $user_id, $comment, $private, $date_created;
 
