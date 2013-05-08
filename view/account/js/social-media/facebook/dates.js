@@ -6,8 +6,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 	
 	// Time Picker
-	$('#tStartTime, #tEndTime').timePicker({
-	  	step: 60,
-		show24Hours: false
-	});
+    var timePickers = $('#tStartTime, #tEndTime');
+	timePickers.timepicker({
+	  	step: 60
+		, show24Hours: false
+	}).timepicker('show');
+
+    // Fix for offset
+    timePickers.timepicker('hide');
 });

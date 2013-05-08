@@ -15,7 +15,7 @@ h2.tab.selected { background: #F79D04; }
 h2.tab a.step { font-size: 16px; font-weight: bold; font-family:Arial, Helvetica, sans-serif; color: #FFFFFF; display: block }
 h3 { padding-bottom: 7px }
 
-#dMainContent { 
+#dMainContent {
 	padding:15px;
 	border: 1px solid #858585;
 	-moz-border-radius-topright: 6px;

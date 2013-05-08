@@ -6,10 +6,14 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	});
 
 	// Time Picker
-	$('#tTime').timePicker({
-	  	step: 60,
-		show24Hours: false
-	});
+    var tTime = $('#tTime');
+    tTime.timepicker({
+        step: 60,
+        show24Hours: false
+    }).timepicker('show');
+
+    // Fix for offset
+    tTime.timepicker('hide');
 
     // Stop double postings
     $('#fFBPost').submit( function() {
