@@ -506,35 +506,30 @@ class AccountProduct extends ActiveRecordBase {
 
     /**
      * Block Products
-     *
+	 *
      * @param int $account_id
-     * @param array $industry_ids
-     * @param array $skus
-     */
-    public function block( $account_id, array $industry_ids, array $skus ) {
-        // Make sure they entered in SKUs
-        if ( empty( $skus ) )
+	 * @param array $industry_ids
+	 * @param array $skus
+	 */
+	public function block_by_sku( $account_id, array $industry_ids, array $skus ) {
+        if ( empty( $skus ) || empty( $industry_ids ) )
             return;
 
-         // Make account id safe
+        // Make the ints ints
         $account_id = (int) $account_id;
 
-        // Make industry IDs safe
-        foreach ( $industry_ids as &$iid ) {
-            $iid = (int) $iid;
+        foreach ( $industry_ids as &$industry_id ) {
+            $industry_id = (int) $industry_id;
         }
 
-        $industry_ids_sql = implode( ',', $industry_ids );
-
-        // Get the count
+        $industries = implode( ',', $industry_ids );
         $sku_count = count( $skus );
+        $sku_string = substr( str_repeat( ', ?', $sku_count ), 2 );
 
-        // Turn it into a string
-        $skus_sql = '?' . str_repeat( ',?', $sku_count - 1 );
-
-        // Insert blocked products or update them if they already exist
-        $this->prepare(
-            "INSERT INTO `website_products` ( `website_id`, `product_id`, `blocked`, `active` ) SELECT DISTINCT $account_id, p.`product_id`, 1, 0 FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`industry_id` IN( $industry_ids_sql ) AND ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $skus_sql ) ON DUPLICATE KEY UPDATE `blocked` = 1"
+		// Magical Query #2
+		// Insert website products
+		$this->prepare(
+            "INSERT INTO `website_products` ( `website_id`, `product_id`, `blocked`, `active` ) SELECT DISTINCT $account_id, p.`product_id`, 1, 0 FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`industry_id` IN($industries) AND ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $sku_string ) ON DUPLICATE KEY UPDATE `blocked` = 1, `active` = 0"
             , str_repeat( 's', $sku_count )
             , $skus
         )->query();
@@ -613,37 +608,6 @@ class AccountProduct extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->query();
-    }
-
-    /**
-     * Block Products
-	 *
-     * @param int $account_id
-	 * @param array $industry_ids
-	 * @param array $skus
-	 */
-	public function block_by_sku( $account_id, array $industry_ids, array $skus ) {
-        if ( empty( $skus ) || empty( $industry_ids ) )
-            return;
-
-        // Make the ints ints
-        $account_id = (int) $account_id;
-
-        foreach ( $industry_ids as &$industry_id ) {
-            $industry_id = (int) $industry_id;
-        }
-
-        $industries = implode( ',', $industry_ids );
-        $sku_count = count( $skus );
-        $sku_string = substr( str_repeat( ', ?', $sku_count ), 2 );
-
-		// Magical Query #2
-		// Insert website products
-		$this->prepare(
-            "INSERT INTO `website_products` ( `website_id`, `product_id`, `blocked`, `active` ) SELECT DISTINCT $account_id, p.`product_id`, 1, 0 FROM `products` AS p LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` AND wp.`website_id` = $account_id ) WHERE p.`industry_id` IN($industries) AND ( p.`website_id` = 0 OR p.`website_id` = $account_id ) AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND p.`sku` IN ( $sku_string ) ON DUPLICATE KEY UPDATE `blocked` = 1, `active` = 0"
-            , str_repeat( 's', $sku_count )
-            , $skus
-        );
     }
 
     /**
