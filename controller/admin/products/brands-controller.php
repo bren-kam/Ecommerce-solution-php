@@ -79,7 +79,7 @@ class BrandsController extends BaseController {
                     }
 
                     // Upload new image
-                    $image = $file->upload_image( $_FILES['fImage'], format::slug( $_POST['tName'] ), 120, 120, 'brands', '', true, true );
+                    $image = $file->upload_image( $_FILES['fImage'], format::slug( $_POST['tName'] ), 200, 200, 'brands', '', false, true );
 
                     // If it was successful, assign it the correct name
                     if ( $image )
