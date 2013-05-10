@@ -123,8 +123,6 @@ class AccountProductTest extends BaseDatabaseTest {
     }
 
     /**
-<<<<<<< Updated upstream
-=======
      * Test Update Sequence
      */
     public function testUpdateSequence() {
@@ -231,11 +229,17 @@ class AccountProductTest extends BaseDatabaseTest {
     public function testAddBulk() {
         // Declare variables
         $account_id = -2;
+        $industry_id = -2;
         $industry_ids = array( -2 );
 
-        $this->db->insert( 'products', array( 'industry_id' => -2, 'sku' => 'AA2010', 'publish_visibility' => 'public' ), 'iiss' );
-        $this->db->insert( 'products', array( 'industry_id' => -2, 'sku' => 'AA2470', 'publish_visibility' => 'public' ), 'iiss' );
-        $this->db->insert( 'products', array( 'industry_id' => -2, 'sku' => 'AA2470', 'publish_visibility' => 'public' ), 'iiss' );
+        // Clean up just in case
+        $this->db->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+
+        // Insert
+        $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => 'AA2010', 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => 'AA2470', 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => 'AA2470', 'publish_visibility' => 'public' ), 'iiss' );
         $skus = array( 'AA2010', 'AA2470' ); // 2470 has two products -- we should only get one
 
         $this->account_product->add_bulk( $account_id, $industry_ids, $skus );
@@ -248,7 +252,7 @@ class AccountProductTest extends BaseDatabaseTest {
 
         // Delete
         $this->db->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'products', array( 'industry_id' => -2 ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
     }
 
     /**
@@ -409,12 +413,17 @@ class AccountProductTest extends BaseDatabaseTest {
     public function testRemoveBulk() {
         // Declare variables
         $account_id = -2;
-        $industry_ids = array( 1 );
+        $industry_id = -3;
+        $industry_ids = array( $industry_id );
         $skus = array( '6010', '6470' ); // 2470 has two products -- we should only get one
 
-        $bulk_items_product_ids[] = $this->db->insert( 'products', array( 'industry_id' => 1, 'sku' => '6010', 'publish_visibility' => 'public' ), 'iiss' );
-        $bulk_items_product_ids[] = $this->db->insert( 'products', array( 'industry_id' => 1, 'sku' => '6470', 'publish_visibility' => 'public' ), 'iiss' );
-        $bulk_items_product_ids[] = $this->db->insert( 'products', array( 'industry_id' => 1, 'sku' => '6470', 'publish_visibility' => 'public' ), 'iiss' );
+        // Clean up just in case
+        $this->db->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+
+        $bulk_items_product_ids[] = $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => '6010', 'publish_visibility' => 'public' ), 'iiss' );
+        $bulk_items_product_ids[] = $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => '6470', 'publish_visibility' => 'public' ), 'iiss' );
+        $bulk_items_product_ids[] = $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => '6470', 'publish_visibility' => 'public' ), 'iiss' );
 
         // Add bulk
         $this->account_product->add_bulk( $account_id, $industry_ids, $skus );
@@ -427,6 +436,122 @@ class AccountProductTest extends BaseDatabaseTest {
 
         // Count products
         $this->assertEquals( 0, $product_id_count );
+    }
+
+    /**
+     * Test Adding bulk products by IDs
+     */
+    public function testAddBulkByIds() {
+        // Declare variables
+        $website_id = -3;
+        $industry_id = -4;
+
+        $product_ids[] = $this->db->insert( 'products', compact( 'industry_id' ), 'i' );
+        $product_ids[] = $this->db->insert( 'products', compact( 'industry_id' ), 'i' );
+        $product_ids[] = $this->db->insert( 'products', compact( 'industry_id' ), 'i' );
+
+        // Add Bulk
+        $this->account_product->add_bulk_by_ids( $website_id, $product_ids );
+
+        // Lets get the products
+        $count = $this->db->get_var( 'SELECT COUNT( `product_id` ) FROM `website_products` WHERE `active` = 1 AND `website_id` = ' . (int) $website_id );
+
+        // Count products
+        $this->assertEquals( 3, $count );
+
+        // Delete
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+    }
+
+    /**
+     * Test Adding bulk products by brand
+     */
+    public function testAddBulkByBrand() {
+        // Declare variables
+        $website_id = -5;
+        $industry_id = -12;
+        $brand_id = -3;
+        $publish_visibility = 'public';
+        $industry_ids = array( $industry_id );
+
+        // Clean up just in case
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+
+        // Insert
+        $this->db->insert( 'products', compact( 'industry_id', 'brand_id', 'publish_visibility' ), 'iis' );
+        $this->db->insert( 'products', compact( 'industry_id', 'brand_id', 'publish_visibility' ), 'iis' );
+        $this->db->insert( 'products', compact( 'industry_id', 'brand_id', 'publish_visibility' ), 'iis' );
+
+        $count = $this->account_product->add_bulk_by_brand( $website_id, $brand_id, $industry_ids );
+
+        // Count products
+        $this->assertEquals( 3, $count );
+
+        // Delete
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+    }
+
+    /**
+     * Test Adding bulk products by brand count
+     */
+    public function testAddBulkByBrandCount() {
+        // Declare variables
+        $website_id = -5;
+        $industry_id = -12;
+        $brand_id = -3;
+        $publish_visibility = 'public';
+        $industry_ids = array( $industry_id );
+
+        // Clean up just in case
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+
+        // Insert
+        $this->db->insert( 'products', compact( 'industry_id', 'brand_id', 'publish_visibility' ), 'iis' );
+        $this->db->insert( 'products', compact( 'industry_id', 'brand_id', 'publish_visibility' ), 'iis' );
+        $this->db->insert( 'products', compact( 'industry_id', 'brand_id', 'publish_visibility' ), 'iis' );
+
+        $count = $this->account_product->add_bulk_by_brand_count( $website_id, $brand_id, $industry_ids );
+
+        // Count products
+        $this->assertEquals( 3, $count );
+
+        // Delete
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+    }
+
+    /**
+     * Test Block By SKU
+     */
+    public function testBlockBySKU() {
+        // Declare Variables
+        $website_id = -19;
+        $industry_id = -5;
+        $industry_ids = array( $industry_id );
+        $sku_1 = '4010';
+        $sku_2 = '4470';
+        $sku_3 = '4570';
+        $skus = array( $sku_1, $sku_2, $sku_3 );
+
+        // Insert
+        $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => $sku_1, 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => $sku_2, 'publish_visibility' => 'public' ), 'iiss' );
+        $this->db->insert( 'products', array( 'industry_id' => $industry_id, 'sku' => $sku_3, 'publish_visibility' => 'public' ), 'iiss' );
+
+        // Block by SKU
+        $this->account_product->block_by_sku( $website_id, $industry_ids, $skus );
+
+        $count = $this->db->get_var( "SELECT COUNT(*) FROM `website_products` WHERE `website_id` = $website_id AND `blocked` = 1" );
+
+        // Count products
+        $this->assertEquals( 3, $count );
+
+        // Delete
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
     }
 
     /**

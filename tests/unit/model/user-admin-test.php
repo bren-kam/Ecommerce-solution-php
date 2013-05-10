@@ -292,7 +292,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
 
         // It should be more recent
-        $this->assertGreaterThan( $datetime->getTimestamp() - 300, $last_login->getTimestamp() );
+        $this->assertGreaterThan( $datetime->getTimestamp() - 600, $last_login->getTimestamp() );
     }
 
     /**
