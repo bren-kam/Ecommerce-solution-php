@@ -771,11 +771,8 @@ class AccountProduct extends ActiveRecordBase {
 
         foreach ( $values as $product_id => $array ) {
             // Make sure all values have a value
-            $alternate_price = 0;
-            $price = 0;
-            $sale_price = 0;
-            $alternate_price_name = '';
-            $price_note = '';
+            $alternate_price = $price = $sale_price = 0;
+            $alternate_price_name = $price_note = '';
 
             // Get the values
             extract( $array );

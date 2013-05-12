@@ -94,6 +94,29 @@ class AccountPagemetaTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Add Bulk
+     */
+    public function testAddBulkByPage() {
+        // Declare variables
+        $website_page_id = -3;
+        $pagemeta = array(
+            'beans '=> 'pinto'
+            , 'skittles' => 'bitter'
+        );
+
+        // Add them
+        $this->account_pagemeta->add_bulk_by_page( $website_page_id, $pagemeta );
+
+        // Get them
+        $fetched_pagemeta = ar::assign_key( $this->db->get_results( "SELECT * FROM `website_pagemeta` WHERE `website_page_id` = $website_page_id", PDO::FETCH_ASSOC ), 'key', true );
+
+        $this->assertEquals( $fetched_pagemeta['skittles']['value'], 'bitter' );
+
+        // Delete
+        $this->db->delete( 'website_pagemeta', compact( 'website_page_id' ), 'i' );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

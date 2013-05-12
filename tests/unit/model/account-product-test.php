@@ -555,6 +555,82 @@ class AccountProductTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Unblocking Products
+     */
+    public function testUnblock() {
+        // Declare Variables
+        $website_id = -9;
+        $product_id = -5;
+        $product_ids = array( $product_id );
+        $blocked = 1;
+        $unblocked = 0;
+
+        // Insert
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'blocked' ) , 'iii' );
+
+        // Unblocked
+        $this->account_product->unblock( $website_id, $product_ids );
+
+        // Get product
+        $fetched_blocked = $this->db->get_var( "SELECT `blocked` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+
+        $this->assertEquals( $unblocked, $fetched_blocked );
+
+        // Cleanup
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Get Blocked
+     */
+    public function testGetBlocked() {
+        // Declare Variables
+        $website_id = -9;
+        $industry_id = -3;
+        $blocked = 1;
+
+        // Insert
+        $product_id = $this->db->insert( 'products', compact( 'industry_id' ), 'i' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'blocked' ) , 'iii' );
+
+        // Get Products
+        $products = $this->account_product->get_blocked( $website_id );
+
+        // Get product
+        $product = current( $products );
+        $this->assertEquals( $product_id, $product->id );
+
+        // Cleanup
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+    }
+
+    /**
+     * Test Remove Sale Items
+     */
+    public function testRemoveSaleItems() {
+        // Declare Variables
+        $website_id = -9;
+        $product_id = -5;
+        $on_sale = 1;
+        $not_on_sale = 0;
+
+        // Insert
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'on_sale' ) , 'iii' );
+
+        // Unblocked
+        $this->account_product->remove_sale_items( $website_id );
+
+        // Get product
+        $fetched_on_sale = $this->db->get_var( "SELECT `on_sale` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+
+        $this->assertEquals( $not_on_sale, $fetched_on_sale );
+
+        // Cleanup
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
      * Test removing all products from accounts by an id
      */
     public function testDeleteByProduct() {
@@ -578,6 +654,88 @@ class AccountProductTest extends BaseDatabaseTest {
 
         // Delete them
         $this->db->delete( 'website_products', array( 'product_id' => $product_id ), 'i' );
+    }
+
+    /**
+     * Test Remove Discontinued
+     */
+    public function testRemoveDiscontinued() {
+        // Declare Variables
+        $website_id = -9;
+        $industry_id = -3;
+        $active = 1;
+        $inactive = 0;
+        $status = 'discontinued';
+
+        // Insert
+        $product_id = $this->db->insert( 'products', compact( 'industry_id', 'status' ), 'is' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ) , 'iii' );
+
+        // Unblocked
+        $this->account_product->remove_discontinued( $website_id );
+
+        // Get product
+        $fetched_active = $this->db->get_var( "SELECT `active` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+
+        $this->assertEquals( $inactive, $fetched_active );
+
+        // Cleanup
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test AutocompleteAll
+     */
+    public function testAutocompleteAll() {
+        // Declare Variables
+        $website_id = -9;
+        $industry_id = -3;
+        $sku = 'Long Winded';
+        $query = 'Long';
+
+        // Insert
+        $this->db->insert( 'products', compact( 'industry_id', 'sku' ), 'is' );
+        $this->db->insert( 'website_industries', compact( 'website_id', 'industry_id' ) , 'ii' );
+
+        // Unblocked
+        $values = $this->account_product->autocomplete_all( $query, 'sku', $website_id );
+
+        // Get product
+        $this->assertTrue( FALSE !== stristr( $values[0]['name'], $query ) );
+
+        // Cleanup
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+        $this->db->delete( 'website_industries', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Autocomplete By Account
+     */
+    public function testAutocompleteByAccount() {
+        // Declare Variables
+        $website_id = -9;
+        $industry_id = -3;
+        $sku = 'Short Winded';
+        $query = 'Short';
+        $publish_visibility = 'public';
+        $active = 1;
+
+        // Insert
+        $product_id = $this->db->insert( 'products', compact( 'industry_id', 'sku', 'publish_visibility' ), 'iss' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ), 'iii' );
+        $this->db->insert( 'website_industries', compact( 'website_id', 'industry_id' ) , 'ii' );
+
+        // Unblocked
+        $values = $this->account_product->autocomplete_by_account( $query, 'sku', $website_id );
+
+        // Get product
+        $this->assertTrue( FALSE !== stristr( $values[0]['name'], $query ) );
+
+        // Cleanup
+        $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+        $this->db->delete( 'website_industries', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -678,6 +836,40 @@ class AccountProductTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * Test Set Product Prices
+     */
+    public function testSetProductPrices() {
+        // Declare Variables
+        $website_id = -9;
+        $product_id = -3;
+        $active = 1;
+        $price = 2;
+        $prices = array (
+            $product_id => array(
+                'alternate_price' => 1
+                , 'price' => $price
+                , 'sale_price' => 3
+                , 'alternate_price_name' => 'Oboe'
+                , 'price_note' => 'Flute'
+            )
+        );
+
+        // Insert
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ), 'iii' );
+
+        // Unblocked
+        $this->account_product->set_product_prices( $website_id, $prices );
+
+        // Get price
+        $fetched_price = $this->db->get_var( "SELECT `price` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+
+        $this->assertEquals( $price, $fetched_price );
+
+        // Cleanup
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 
     /**
