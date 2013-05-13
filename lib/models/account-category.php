@@ -117,6 +117,7 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function reorganize_categories( $account_id, Category $category ) {
         // Get data
+        $category->get_all();
         $category_ids = $this->get_category_ids( $account_id );
 		$website_category_ids = $this->get_website_category_ids( $account_id );
         $blocked_categories = $this->get_blocked_website_category_ids( $account_id );

@@ -67,8 +67,28 @@ class AccountPageTest extends BaseDatabaseTest {
 
         $account_pages = $this->account_page->get_all( $account_id );
 
-        $this->assertTrue( is_array( $account_pages ) );
         $this->assertTrue( isset( $account_pages[0]['slug'] ) );
+    }
+
+    /**
+     * Test Getting Product IDs
+     */
+    public function testGetProductIds() {
+        // Declare Variables
+        $this->account_page->id = $website_page_id = -7;
+        $product_id = -5;
+        $product_ids = array( $product_id );
+
+        // Insert
+        $this->db->insert( 'website_page_product', compact( 'website_page_id', 'product_id' ), 'ii' );
+
+        // Get
+        $fetched_product_ids = $this->account_page->get_product_ids();
+
+        $this->assertEquals( $product_ids, $fetched_product_ids );
+
+        // Clean up
+        $this->db->delete( 'website_page_product', compact( 'website_page_id' ), 'i' );
     }
 
     /**
@@ -91,7 +111,27 @@ class AccountPageTest extends BaseDatabaseTest {
         // Delete the attribute
         $this->db->delete( 'website_pages', array( 'website_page_id' => $this->account_page->id ), 'i' );
     }
-    
+
+    /**
+     * Test Add Products
+     */
+    public function testAddProducts() {
+        // Declare Variables
+        $this->account_page->id = $website_page_id = -7;
+        $product_ids = array( -1, -2, -3 );
+
+        // Add products
+        $this->account_page->add_products( $product_ids );
+
+        // Get ids
+        $fetched_product_ids = $this->db->get_col( "SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = $website_page_id ORDER BY `product_id` DESC" );
+
+        $this->assertEquals( $product_ids, $fetched_product_ids );
+
+        // Cleanup
+        $this->db->delete( 'website_page_product', compact( 'website_page_id' ), 'i' );
+    }
+
     /**
      * Save
      *
@@ -164,6 +204,26 @@ class AccountPageTest extends BaseDatabaseTest {
         $retrieved_slug = $this->db->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
 
         $this->assertFalse( $retrieved_slug );
+    }
+
+    /**
+     * Test Delete Products
+     */
+    public function testDeleteProducts() {
+        // Declare Variables
+        $this->account_page->id = $website_page_id = -7;
+        $product_id = -5;
+
+        // Insert
+        $this->db->insert( 'website_page_product', compact( 'website_page_id', 'product_id' ), 'ii' );
+
+        // Delete
+        $this->account_page->delete_products();
+
+        // Get
+        $fetched_product_id = $this->db->get_var( "SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = $website_page_id" );
+
+        $this->assertFalse( $fetched_product_id );
     }
     
     /**

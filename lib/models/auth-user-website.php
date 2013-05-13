@@ -177,7 +177,7 @@ class AuthUserWebsite extends ActiveRecordBase {
         ), array(
             'user_id' => $this->user_id
             , 'website_id' => $this->website_id
-        ), 'iiiiii', '' );
+        ), 'iiiiii', 'ii' );
     }
 
     /**

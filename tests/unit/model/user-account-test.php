@@ -248,7 +248,7 @@ class UserAccountTest extends BaseDatabaseTest {
         $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
 
         // It should be more recent
-        $this->assertGreaterThan( $datetime->getTimestamp() - 300, $last_login->getTimestamp() );
+        $this->assertGreaterThan( $datetime->getTimestamp() - 600, $last_login->getTimestamp() );
     }
 
     /**
@@ -321,13 +321,16 @@ class UserAccountTest extends BaseDatabaseTest {
      * Test Autocomplete
      */
     public function testAutocompleteA() {
+        // Declare variables
+        $autocomplete_name = 'Kerry Lebensburger';
+
         // Assign Role
         $this->user->role = 8;
 
         // Get Users
         $users = $this->user->autocomplete( 'Kerry', 'contact_name' );
 
-        $this->assertEquals( $users[0]['contact_name'], 'Kerry Jones' );
+        $this->assertEquals( $users[0]['contact_name'], $autocomplete_name );
     }
 
     /**

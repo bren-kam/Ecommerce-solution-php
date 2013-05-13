@@ -100,7 +100,7 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->website_reach_comment->remove();
 
-        $retrieved_comment = $this->db->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_id` = ' . (int) $this->website_reach_comment->id );
+        $retrieved_comment = $this->db->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_comment_id` = ' . (int) $this->website_reach_comment->id );
 
         $this->assertFalse( $retrieved_comment );
     }

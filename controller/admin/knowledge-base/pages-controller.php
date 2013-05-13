@@ -51,7 +51,7 @@ class PagesController extends BaseController {
         }
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditPage', url::add_query_arg( array( 's' => $_GET['s'], 'kbpid' => $kb_page->id ), '/knowledge-base/pages/add-edit' ) );
+        $ft = new FormTable( 'fAddEditPage', url::add_query_arg( array( 's' => $_GET['s'], 'kbpid' => $kb_page->id ), '/knowledge-base/pages/add-edit/' ) );
 
         $ft->submit( ( $kb_page->id ) ? _('Save') : _('Add') );
 
