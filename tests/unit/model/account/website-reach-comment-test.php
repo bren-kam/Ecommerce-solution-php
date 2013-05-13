@@ -73,7 +73,7 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         $this->db->insert( 'website_reach_comments', compact( 'website_reach_id', 'user_id' ), 'ii' );
 
         // Get all
-        $website_reach_comments = $this->website_reach_comment->get_by_reach( $website_id, $website_reach_id );
+        $website_reach_comments = $this->website_reach_comment->get_by_reach( $website_reach_id, $website_id );
 
         $this->assertTrue( current( $website_reach_comments ) instanceof WebsiteReachComment );
 
@@ -100,7 +100,7 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->website_reach_comment->remove();
 
-        $retrieved_comment = $this->db->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_id` = ' . (int) $this->website_reach_comment->id );
+        $retrieved_comment = $this->db->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_comment_id` = ' . (int) $this->website_reach_comment->id );
 
         $this->assertFalse( $retrieved_comment );
     }

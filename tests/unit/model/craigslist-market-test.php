@@ -38,6 +38,47 @@ class CraigslistMarketTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get By Ad
+     */
+    public function testGetByAd() {
+        // Declare variables
+        $website_id = -5;
+        $craigslist_ad_id = -3;
+        $craigslist_market_id = 1;
+
+        // Insert
+        $this->db->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id' ), 'ii' );
+        $this->db->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
+
+        $craigslist_markets = $this->craigslist_market->get_by_ad( $craigslist_ad_id, $website_id );
+
+        $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
+
+        // Cleanup
+        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->db->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Test Get By Ad
+     */
+    public function testGetByAccount() {
+        // Declare variables
+        $website_id = -5;
+        $craigslist_market_id = 1;
+
+        // Insert
+        $this->db->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
+
+        $craigslist_markets = $this->craigslist_market->get_by_account( $website_id );
+
+        $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
+
+        // Cleanup
+        $this->db->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

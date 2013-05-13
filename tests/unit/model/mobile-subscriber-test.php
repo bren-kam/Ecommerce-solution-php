@@ -116,7 +116,7 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $this->mobile_subscriber->add_bulk_associations( $associations );
 
         // Get Associations
-        $fetched_associations = $this->db->get_results( "SELECT * FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 ) ORDER BY `mobile_subscriber_id` DESC", PDO::FETCH_ASSOC );
+        $fetched_associations = $this->db->get_results( "SELECT * FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 ) ORDER BY `mobile_subscriber_id` DESC, `mobile_list_id` DESC", PDO::FETCH_ASSOC );
 
         $this->assertEquals( $associations, $fetched_associations );
 

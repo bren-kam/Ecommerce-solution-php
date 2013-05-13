@@ -26,7 +26,50 @@ class AnalyticsController extends BaseController {
 
         // Setup analytics
         $analytics = new Analytics( $date_start, $date_end );
-        $analytics->setup( $this->user->account );
+
+        try {
+            $analytics->setup( $this->user->account );
+        } catch ( ModelException $e ) {
+            preg_match( '/"([^"]+)"/i', $e->getMessage(), $error_string_array );
+            $errors_array = explode( "\n", $error_string_array[1] );
+            $error = array();
+
+            foreach ( $errors_array as $e ) {
+                list( $key, $value ) = explode( '=', $e );
+
+                if ( empty( $key ) )
+                    continue;
+
+                $error[$key] = $value;
+            }
+
+            $ticket = new Ticket();
+            $ticket->user_id = $this->user->id;
+            $ticket->website_id = $this->user->account->id;
+            $ticket->assigned_to_user_id = $this->user->account->os_user_id;
+            $ticket->status = Ticket::STATUS_OPEN;
+            $ticket->priority = Ticket::PRIORITY_URGENT;
+
+            switch ( $error['Error'] ) {
+                case 'BadAuthentication':
+                    if ( 'WebLoginRequired' == $error['Info'] ) {
+                        $ticket->summary = 'Analytics - Failed Authentication';
+                        $ticket->message = 'Google requires a web login. Please go to the following link: <br /><a href="' . $error['Url'] . '" title="Google Analytics">' . $error['Url'] . '</a>';
+                    }
+                break;
+
+                default:
+                    $ticket->summary = 'Analytics - Unable to View';
+                    $ticket->message = "The follow error was received from Google Analytics when trying to view the analytics. Please contact Technical if unsure on what to do: \n" . $error_string_array[1];
+                break;
+            }
+
+            $ticket->create();
+
+            $this->notify( _('Please contact your online specialist in order to view analytics.'), false );
+
+            return new RedirectResponse('/');
+        }
 
         // Get all the data
         $records = $analytics->get_metric_by_date( 'visits' );

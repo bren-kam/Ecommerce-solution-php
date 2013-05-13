@@ -236,13 +236,13 @@ class ReachesController extends BaseController {
 
         // Get reach comment
         $reach_comment = new WebsiteReachComment();
-        $reach_comment->get( $this->user->account->id, $_GET['wrcid'] );
+        $reach_comment->get( $_GET['wrcid'], $this->user->account->id );
 
         // Remove from page
         jQuery('#comment-' . $reach_comment->id)->remove();
 
         // Then delete ticket
-        $reach_comment->delete();
+        $reach_comment->remove();
 
         // Add jquery
         $response->add_response( 'jquery', jQuery::getResponse() );

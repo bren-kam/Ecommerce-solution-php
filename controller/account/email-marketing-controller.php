@@ -70,7 +70,7 @@ class EmailMarketingController extends BaseController {
 
         // Get settings
         $settings_array = array( 'from_name', 'from_email', 'timezone', 'remove-header-footer' );
-        $settings = $this->user->account->get_email_settings( $settings_array );
+        $settings = $this->user->account->get_settings( $settings_array );
 
         // Create form
         $form->add_field( 'text', _('From Name'), 'from_name', $settings['from_name'] )
@@ -92,7 +92,7 @@ class EmailMarketingController extends BaseController {
                 $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
             }
 
-            $this->user->account->set_email_settings( $new_settings );
+            $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your email settings have been successfully saved!') );
 

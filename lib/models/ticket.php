@@ -1,5 +1,11 @@
 <?php
 class Ticket extends ActiveRecordBase {
+    const PRIORITY_NORMAL = 0;
+    const PRIORITY_HIGH = 1;
+    const PRIORITY_URGENT = 2;
+    const STATUS_OPEN = 0;
+    const STATUS_CLOSED = 1;
+
     // The columns we will have access to
     public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to
         , $status, $priority, $browser_name, $browser_version, $browser_platform, $browser_user_agent, $date_created;

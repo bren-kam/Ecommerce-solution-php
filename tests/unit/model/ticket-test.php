@@ -34,8 +34,6 @@ class TicketTest extends BaseDatabaseTest {
         $this->ticket->status = -5;
         $this->ticket->create();
 
-        $this->assertTrue( !is_null( $this->ticket->id ) );
-
         // Make sure it's in the database
         $status = $this->db->get_var( 'SELECT `status` FROM `tickets` WHERE `ticket_id` = ' . (int) $this->ticket->id );
 

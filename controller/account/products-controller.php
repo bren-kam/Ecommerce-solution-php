@@ -237,7 +237,7 @@ class ProductsController extends BaseController {
         if ( $form->posted() ) {
             $skus = explode( "\n", str_replace( "\r", '', $_POST['taSKUs'] ) );
 
-            $account_product->block( $this->user->account->id, $this->user->account->get_industries(), $skus );
+            $account_product->block_by_sku( $this->user->account->id, $this->user->account->get_industries(), $skus );
 
             $this->notify( _('Blocked Products have been successfully updated!') );
         }

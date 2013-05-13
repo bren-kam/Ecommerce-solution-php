@@ -3,17 +3,22 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	$('#tDate').datepicker({
 		minDate: 0,
 		dateFormat: 'yy-mm-dd'
-	})
+	});
 	
 	// @Fix - Shouldn't have to hide this
 	$('#ui-datepicker-div').hide();
 	
 	// Time Picker
-	$('#tTime').timePicker({
-	  	step: 60,
-		show24Hours: false
-	});
-	
+    var tTime = $('#tTime');
+	tTime.timepicker({
+	  	step: 60
+		, show24Hours: false
+        , timeFormat: 'g:i a'
+	}).timepicker('show');
+
+    // Fix for offset
+    tTime.timepicker('hide');
+
 	// The next button
 	$('.step, .next, .previous').click( function() {
 		selectTab( $(this).attr('id').replace( /[^0-9]/g, '' ) );

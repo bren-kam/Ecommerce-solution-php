@@ -20,11 +20,18 @@ class TicketUploadTest extends BaseDatabaseTest {
      */
     public function testGet() {
         // Declare variables
-        $ticket_upload_id = 5;
+        $key = '123/321/feeling.rig';
 
+        // Insert
+        $ticket_upload_id = $this->db->insert( 'ticket_uploads', compact( 'key' ), 's' );
+
+        // Get
         $this->ticket_upload->get( $ticket_upload_id );
 
-        $this->assertEquals( $this->ticket_upload->key, '1/122/test.xls' );
+        $this->assertEquals( $this->ticket_upload->key, $key );
+
+        // Clean up
+        $this->db->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
     }
 
     /**

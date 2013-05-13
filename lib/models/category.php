@@ -27,7 +27,7 @@ class Category extends ActiveRecordBase {
      * @return Category
      */
     public function get( $category_id ) {
-        if ( !isset( self::$categories[$category_id] ) ) {
+        if ( !isset( Category::$categories[$category_id] ) ) {
             $this->prepare(
                 'SELECT * FROM `categories` WHERE `category_id` = :category_id'
                 , 'i'
@@ -35,12 +35,17 @@ class Category extends ActiveRecordBase {
             )->get_row( PDO::FETCH_INTO, $this );
 
             $this->id = $this->category_id;
+            Category::$categories[$this->id]->id = Category::$categories[$this->id]->category_id = $this->category_id;
+            Category::$categories[$this->id]->parent_category_id = $this->parent_category_id;
+            Category::$categories[$this->id]->name = $this->name;
+            Category::$categories[$this->id]->slug = $this->slug;
+            Category::$categories[$this->id]->sequence = $this->sequence;
         } else {
             $this->id = $this->category_id = $category_id;
-            $this->parent_category_id = self::$categories[$category_id]->parent_category_id;
-            $this->name = self::$categories[$category_id]->name;
-            $this->slug = self::$categories[$category_id]->slug;
-            $this->sequence = self::$categories[$category_id]->sequence;
+            $this->parent_category_id = Category::$categories[$category_id]->parent_category_id;
+            $this->name = Category::$categories[$category_id]->name;
+            $this->slug = Category::$categories[$category_id]->slug;
+            $this->sequence = Category::$categories[$category_id]->sequence;
         }
     }
 
@@ -294,7 +299,7 @@ class Category extends ActiveRecordBase {
 
         // If they don't exist, get them
         if ( is_null( $categories ) )
-            self::$categories = $categories = $this->get_all();
+            Category::$categories = $categories = $this->get_all();
 
         // Sort by parent
         $categories_by_parent = array();

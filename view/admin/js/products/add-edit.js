@@ -211,6 +211,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
         , onComplete: function( id, fileName, responseJSON ) {
             $('#upload-loader').hide();
             $('#aUpload').show();
+            ajaxResponse( responseJSON );
         }
     });
 

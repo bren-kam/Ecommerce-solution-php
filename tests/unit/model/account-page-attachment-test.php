@@ -16,6 +16,49 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get
+     */
+    public function testGet() {
+        // Declare Variables
+        $website_id = -5;
+        $key = 'Hungry';
+
+        // Insert id
+        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id' ), 'i' );
+        $website_attachment_id = $this->db->insert( 'website_attachments', compact( 'website_page_id', 'key' ), 'is' );
+
+        // Get
+        $this->account_page_attachment->get( $website_attachment_id, $website_id );
+
+        $this->assertEquals( $key, $this->account_page_attachment->key );
+
+        // Cleanup
+        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+    }
+
+    /**
+     * Test Get By Key
+     */
+    public function testGetByKey() {
+        // Declare Variables
+        $website_page_id = -5;
+        $key = 'Hungry';
+        $value = 'Hippos';
+
+        // Insert id
+        $this->db->insert( 'website_attachments', compact( 'website_page_id', 'key', 'value' ), 'iss' );
+
+        // Get
+        $attachment = $this->account_page_attachment->get_by_key( $website_page_id, $key );
+
+        $this->assertEquals( $value, $attachment->value );
+
+        // Cleanup
+        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+    }
+
+    /**
      * Test Get by account page ids
      */
     public function testGetByAccountPageIds() {
@@ -35,7 +78,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test creating an attribute
+     * Test create
      */
     public function testCreate() {
         $this->account_page_attachment->website_page_id = -3;
@@ -46,8 +89,6 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->account_page_attachment->sequence = 0;
         $this->account_page_attachment->create();
 
-        $this->assertTrue( !is_null( $this->account_page_attachment->id ) );
-
         // Make sure it's in the database
         $value = $this->db->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
 
@@ -55,6 +96,81 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
 
         // Delete the attribute
         $this->db->delete( 'website_attachments', array( 'website_attachment_id' => $this->account_page_attachment->id ), 'i' );
+    }
+
+    /**
+     * Test Save
+     *
+     * @depends testCreate
+     */
+    public function testSave() {
+        // Declare Variables
+        $this->account_page_attachment->website_page_id = $website_page_id = -3;
+        $this->account_page_attachment->key = 'banner';
+
+        // Create
+        $this->account_page_attachment->create();
+
+        // Save
+        $this->account_page_attachment->value = 'advertising';
+        $this->account_page_attachment->save();
+
+        // Make sure it's in the database
+        $value = $this->db->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+
+        $this->assertEquals( $this->account_page_attachment->value, $value );
+
+        // Delete the attribute
+        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+    }
+
+   /**
+     * Test Update Sequence
+     */
+    public function testUpdateSequence() {
+        // Declare Variables
+        $website_id = -5;
+        $sequence = 5;
+
+        // Insert id
+        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id' ), 'i' );
+        $website_attachment_id = $this->db->insert( 'website_attachments', compact( 'website_page_id' ), 'is' );
+
+        $sequence_array = array( $sequence => $website_attachment_id );
+
+        // Remove
+        $this->account_page_attachment->update_sequence( $website_id, $sequence_array );
+
+        // Make sure it's in the database
+        $fetched_sequence = $this->db->get_var( 'SELECT `sequence` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $website_attachment_id );
+
+        $this->assertEquals( $sequence, $fetched_sequence );
+
+        // Cleanup
+        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+    }
+
+   /**
+     * Test Remove
+    *
+    * @depends testCreate
+     */
+    public function testRemove() {
+        // Declare Variables
+        $this->account_page_attachment->value = 'Hippos';
+        $this->account_page_attachment->website_page_id = $website_page_id = -3;
+
+        // Create
+        $this->account_page_attachment->create();
+
+        // Remove
+        $this->account_page_attachment->remove();
+
+        // Make sure it's in the database
+        $value = $this->db->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+
+        $this->assertFalse( $value );
     }
 
     /**

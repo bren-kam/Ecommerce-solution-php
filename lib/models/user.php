@@ -9,6 +9,13 @@ class User extends ActiveRecordBase {
 
     const KERRY = 1;
     const JEFF = 214;
+    const TECHNICAL = 493; // Jack
+    const CHAD = 247; // Sales
+    const CHRIS = 73; // Products
+    const CRAIG = 54; // Accounting
+    const RODRIGO = 305; // Design
+    const MANINDER = 85; // Head of Conversions
+    const RAFFERTY = 19;
 
     /**
      * Hold whether admin is active or not
