@@ -49,9 +49,8 @@ class AccountProductTest extends BaseDatabaseTest {
         $publish_visibility = 'public';
 
         // Insert
-        $product_id = $this->db->insert( 'products', compact( 'brand_id', 'user_id_created', 'publish_visibility' ), 'iis' );
         $category_id = $this->db->insert( 'categories', compact( 'name' ), 'i' );
-        $this->db->insert( 'product_categories', compact( 'product_id', 'category_id' ), 'ii' );
+        $product_id = $this->db->insert( 'products', compact( 'category_id', 'brand_id', 'user_id_created', 'publish_visibility' ), 'iiis' );
         $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'status', 'active' ), 'iiii' );
 
         // Get
@@ -62,7 +61,6 @@ class AccountProductTest extends BaseDatabaseTest {
         // Delete
         $this->db->delete( 'products', compact( 'brand_id' ), 'i' );
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'product_categories', compact( 'category_id' ), 'i' );
         $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 
@@ -163,9 +161,8 @@ class AccountProductTest extends BaseDatabaseTest {
         // Insert
         $industry_id = $this->db->insert( 'industries', array( 'name' => $industry_name ), 's' );
         $brand_id = $this->db->insert( 'brands', array( 'name' => $brand_name ) , 's' );
-        $product_id = $this->db->insert( 'products', compact( 'brand_id', 'industry_id', 'user_id_created', 'publish_visibility', 'date_created' ), 'iiiss' );
         $category_id = $this->db->insert( 'categories', compact( 'name' ), 'i' );
-        $this->db->insert( 'product_categories', compact( 'product_id', 'category_id' ), 'ii' );
+        $product_id = $this->db->insert( 'products', compact( 'category_id', 'brand_id', 'industry_id', 'user_id_created', 'publish_visibility', 'date_created' ), 'iiiiss' );
         $this->db->insert( 'product_images', compact( 'product_id', 'image' ), 'is' );
         $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'status', 'active' ), 'iiii' );
 
@@ -180,7 +177,6 @@ class AccountProductTest extends BaseDatabaseTest {
         $this->db->delete( 'industries', compact( 'industry_id' ), 'i' );
         $this->db->delete( 'product_images', compact( 'product_id' ), 'i' );
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'product_categories', compact( 'category_id' ), 'i' );
         $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 
@@ -202,9 +198,8 @@ class AccountProductTest extends BaseDatabaseTest {
         // Insert
         $industry_id = $this->db->insert( 'industries', array( 'name' => $industry_name ), 's' );
         $brand_id = $this->db->insert( 'brands', array( 'name' => $brand_name ) , 's' );
-        $product_id = $this->db->insert( 'products', compact( 'brand_id', 'industry_id', 'user_id_created', 'publish_visibility', 'date_created' ), 'iiiss' );
         $category_id = $this->db->insert( 'categories', compact( 'name' ), 'i' );
-        $this->db->insert( 'product_categories', compact( 'product_id', 'category_id' ), 'ii' );
+        $product_id = $this->db->insert( 'products', compact( 'category_id', 'brand_id', 'industry_id', 'user_id_created', 'publish_visibility', 'date_created' ), 'iiiiss' );
         $this->db->insert( 'product_images', compact( 'product_id', 'image' ), 'is' );
         $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'status', 'active' ), 'iiii' );
 
@@ -219,7 +214,6 @@ class AccountProductTest extends BaseDatabaseTest {
         $this->db->delete( 'industries', compact( 'industry_id' ), 'i' );
         $this->db->delete( 'product_images', compact( 'product_id' ), 'i' );
         $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'product_categories', compact( 'category_id' ), 'i' );
         $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 

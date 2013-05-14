@@ -117,6 +117,7 @@ class ProductsController extends BaseController {
                 }
             }
 
+            $product->category_id = $_POST['sCategory'];
             $product->brand_id = $_POST['sBrand'];
             $product->industry_id = $_POST['sIndustry'];
             $product->name = $_POST['tName'];
@@ -146,12 +147,9 @@ class ProductsController extends BaseController {
             $product->save();
 
             // Delete all the things
-            $product->delete_categories();
             $product->delete_images();
             $tag->delete_by_type( 'product', $product->id );
             $attribute_item->delete_relations( $product->id );
-
-            $product->add_category( $_POST['sCategory'] );
 
             if ( isset( $_POST['tags'] ) )
                 $tag->add_bulk( 'product', $product->id, $_POST['tags'] );

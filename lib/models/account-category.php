@@ -293,7 +293,7 @@ class AccountCategory extends ActiveRecordBase {
      */
     protected function get_category_ids( $account_id ) {
         return $this->prepare(
-            "SELECT DISTINCT pc.`category_id` FROM `website_products` AS wp LEFT JOIN `product_categories` AS pc ON ( wp.`product_id` = pc.`product_id` ) LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public'"
+            "SELECT DISTINCT p.`category_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public'"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_col();
@@ -341,7 +341,7 @@ class AccountCategory extends ActiveRecordBase {
         }
 
         return $this->prepare(
-            "SELECT a.`category_id`, CONCAT( 'http://', c.`name`, '.retailcatalog.us/products/', b.`product_id`, '/small/', d.`image` ) FROM `product_categories` AS a LEFT JOIN `products` AS b ON ( a.`product_id` = b.`product_id` ) LEFT JOIN `industries` AS c ON ( b.`industry_id` = c.`industry_id` ) LEFT JOIN `product_images` AS d ON ( b.`product_id` = d.`product_id` ) LEFT JOIN `website_products` AS e ON ( b.`product_id` = e.`product_id` ) WHERE a.`category_id` IN(" . implode( ',', $category_ids ) . ") AND b.`publish_visibility` = 'public' AND b.`status` <> 'discontinued' AND d.`sequence` = 0 AND e.`website_id` = :account_id AND e.`product_id` IS NOT NULL GROUP BY a.`category_id`"
+            "SELECT p.`category_id`, CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/small/', pi.`image` ) FROM `products` AS p LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE p.`category_id` IN(" . implode( ',', $category_ids ) . ") AND p.`publish_visibility` = 'public' AND p.`status` <> 'discontinued' AND pi.`sequence` = 0 AND wp.`website_id` = :account_id AND wp.`product_id` IS NOT NULL GROUP BY p.`category_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );

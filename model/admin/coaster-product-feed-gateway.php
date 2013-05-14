@@ -216,6 +216,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             // Now we have the product
             if ( !$product instanceof Product ) {
                 $product = new Product();
+                $product->category_id = $this->categories[$item[7]];
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
                 $product->publish_visibility = 'private';
@@ -226,9 +227,6 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
 
                 // Increment product count
                 $this->new_product( $name . format::convert_characters( "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" ) );
-
-                // Add category
-                $product->add_category( $this->categories[$item[7]] );
             } else {
 				continue;
 			}
