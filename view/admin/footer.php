@@ -12,10 +12,13 @@
     <p id="copyright">&copy; <?php echo _('Copyright'); ?> <?php echo date('Y'); ?>. <?php echo _('All Rights Reserved'); ?>.</p>
     <p>
         <a href="/accounts/" title="<?php echo _('Accounts'); ?>"><?php echo _('Accounts'); ?></a> |
-        <a href="/products/" title="<?php echo _('Products'); ?>"><?php echo _('Products'); ?></a> |
-        <a href="/users/" title="<?php echo _('Users'); ?>"><?php echo _('Users'); ?></a> |
-        <a href="/checklists/" title="<?php echo _('Checklists'); ?>"><?php echo _('Checklists'); ?></a> |
-        <?php if ( $user->has_permission( User::ROLE_ADMIN ) ) { ?>
+        <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
+            <a href="/products/" title="<?php echo _('Products'); ?>"><?php echo _('Products'); ?></a> |
+            <a href="/users/" title="<?php echo _('Users'); ?>"><?php echo _('Users'); ?></a> |
+            <a href="/checklists/" title="<?php echo _('Checklists'); ?>"><?php echo _('Checklists'); ?></a> |
+        <?php
+        }
+        if ( $user->has_permission( User::ROLE_ADMIN ) ) { ?>
             <a href="/reports/" title="<?php echo _('Reports'); ?>"><?php echo _('Reports'); ?></a> |
         <?php } ?>
         <a href="/help/" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>

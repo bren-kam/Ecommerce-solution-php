@@ -16,6 +16,7 @@ class User extends ActiveRecordBase {
     const RODRIGO = 305; // Design
     const MANINDER = 85; // Head of Conversions
     const RAFFERTY = 19;
+    const KEVIN_DORAN = 251;
 
     /**
      * Hold whether admin is active or not
