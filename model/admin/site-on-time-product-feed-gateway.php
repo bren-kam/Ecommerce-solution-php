@@ -314,10 +314,7 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
             $this->reset_identical();
 
             /** Add Category **/
-            if ( $category_id != $product->category_id ) {
-                $product->delete_categories();
-                $product->add_category( $category_id );
-            }
+            $product->category_id = $this->identical( $category_id, $product->category_id, 'category_id' );
 
             /**
              * @var int $industry_id

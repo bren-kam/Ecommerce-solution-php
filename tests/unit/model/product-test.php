@@ -114,33 +114,6 @@ class ProductTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test adding a category
-     *
-     * This will be removed when the DB structure is changed
-     *
-     * @depends testGet
-     */
-    public function testAddCategory() {
-        // Declare variables
-        $product_id = 1;
-        $category_id = '-5';
-
-        // Delete any categories that may already exist
-        $this->db->delete( 'product_categories', array( 'product_id' => $product_id ) , 'i' );
-
-        // Get product
-        $this->product->get( $product_id );
-
-        // Add Category
-        $this->product->add_category( $category_id );
-
-        // See if it's there
-        $fetched_category_id = $this->db->get_var( "SELECT `category_id` FROM `product_categories` WHERE `product_id` = $product_id" );
-
-        $this->assertEquals( $category_id, $fetched_category_id );
-    }
-
-    /**
      * Test Adding Images
      *
      * @depends testGet
@@ -188,32 +161,6 @@ class ProductTest extends BaseDatabaseTest {
         $publish_visibility = $this->db->get_var( "SELECT `publish_visibility` FROM `products` WHERE `product_id` = $product_id" );
 
         $this->assertEquals( $publish_visibility, 'public' );
-    }
-
-    /**
-     * Test Delete Categories
-     *
-     * @depends testGet
-     * @depends testAddCategory
-     */
-    public function testDeleteCategories() {
-        // Declare Variables
-        $product_id = 1;
-        $category_id = -6;
-
-        // Get product
-        $this->product->get( $product_id );
-
-        // Add category
-        $this->product->add_category( $category_id );
-
-        // Delete categories
-        $this->product->delete_categories();
-
-        // Make sure there are no categories
-        $category_ids = $this->db->get_col( "SELECT `category_id` FROM `product_categories` WHERE `product_id` = $product_id" );
-
-        $this->assertTrue( 0 == count( $category_ids ) );
     }
 
     /**
