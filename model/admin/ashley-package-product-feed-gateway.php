@@ -480,10 +480,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $this->reset_identical();
 
             /** Add Category **/
-            if ( $new_product && $category_id ) {
-                $product->delete_categories();
-                $product->add_category( $category_id );
-            }
+            if ( $new_product )
+                $product->category_id = $this->identical( $category_id, $product->category_id, 'category_id' );
 
             /** Set Product Data */
             $product->name = $this->identical( $name, $product->name, 'name' );
