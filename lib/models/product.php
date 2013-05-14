@@ -93,11 +93,12 @@ class Product extends ActiveRecordBase {
         $this->date_created = dt::now();
 
         $this->insert( array(
-            'website_id' => $this->website_id
+            'category_id' => $this->category_id
+            , 'website_id' => $this->website_id
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => $this->date_created
-        ), 'iiss' );
+        ), 'iiiss' );
 
         $this->id = $this->product_id = $this->get_insert_id();
     }
@@ -141,7 +142,8 @@ class Product extends ActiveRecordBase {
     public function save() {
         parent::update(
             array(
-                'brand_id' => $this->brand_id
+                'category_id' => $this->category_id
+                , 'brand_id' => $this->brand_id
                 , 'industry_id' => $this->industry_id
                 , 'website_id' => $this->website_id
                 , 'name' => $this->name
@@ -156,7 +158,7 @@ class Product extends ActiveRecordBase {
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iiisssssisssi'
+            , 'iiiisssssisssi'
             , 'i'
         );
     }
