@@ -381,7 +381,9 @@ class EmailMessage extends ActiveRecordBase {
         // Send a test
         library( 'MCAPI' );
         $mc = new MCAPI( Config::key('mc-api') );
-        $mc->campaignSendTest( $this->mc_campaign_id, array( $email ) );
+		
+        if ( !$mc->campaignSendTest( $this->mc_campaign_id, array( $email ) ) )
+			throw new ModelException( $mc->errorMessage, $mc->errorCode );
     }
 
     /**
