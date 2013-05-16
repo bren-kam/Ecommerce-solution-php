@@ -7,42 +7,54 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var string $form
- * @var Brand[] $brands
  */
 
-echo $template->start( _('Product Prices') );
+echo $template->start( _('Price Multiplier') );
 ?>
-<h2><?php echo _('1. Select a brand'); ?></h2>
-<select id="sBrand">
-    <option value="">-- <?php echo _('Select Brand'); ?> --</option>
-    <?php foreach ( $brands as $brand ) { ?>
-        <option value="<?php echo $brand->id; ?>"><?php echo $brand->name; ?></option>
-    <?php } ?>
-</select>
-<br /><br />
-<p class="float-right" id="pButton"><span class="hidden success" id="sSaveMessage"><?php echo _('Your products have been saved.'); ?></span> <input type="button" class="button" id="bSave" value="<?php echo _('Save'); ?>" /></p>
-<br />
-<h2><?php echo _('2. Enter the values and click Save'); ?></h2>
-<br clear="right" />
-<br /><br />
-<br />
-<?php nonce::field( 'set_product_prices', '_set_product_prices' ); ?>
-<table id="tProductPrices">
-    <thead>
-        <tr>
-            <th class="text-left"><?php echo _('SKU'); ?></th>
-            <th class="text-left"><?php echo _('Price'); ?></th>
-            <th class="text-left"><?php echo _('Price Notes'); ?></th>
-            <th class="text-left"><?php echo _('Alternate Price Name'); ?></th>
-            <th class="text-left"><?php echo _('Alternate Price'); ?></th>
-            <th><?php echo _('Sale Price'); ?></th>
-        </tr>
-    </thead>
+
+<p><?php echo _('On this page you can upload a list of prices indexed by SKU.'); ?></p>
+<p><?php echo _('Please make your spreadsheet layout match the example below.'); ?></p>
+<p><?php echo _('Example:'); ?></p>
+<table class="generic col-2">
+    <tr>
+        <th width="50%"><?php echo _('SKU'); ?></th>
+        <th><?php echo _('Price'); ?></th>
+    </tr>
+    <tr>
+        <td>A123</td>
+        <td>400</td>
+    </tr>
+    <tr>
+        <td>B456</td>
+        <td>359.99</td>
+    </tr>
+    <tr class="last">
+        <td>...</td>
+        <td>...</td>
+    </tr>
 </table>
-<br clear="right" /><br />
-<p class="float-right" id="pButton2"><span class="hidden success" id="sSaveMessage2"><?php echo _('Your products have been saved.'); ?></span> <input type="button" class="button" id="bSave2" value="<?php echo _('Save'); ?>" /></p>
-<br clear="right" />
-<?php
-echo $template->end();
-?>
+<br /><br />
+<br />
+<p><?php echo _('Please enter in the multipliers in the fields below before uploading. A "0" will be ignored.'); ?></p>
+<table class="col-4">
+    <tr>
+        <td><?php echo _('Price'); ?>:</td>
+        <td><input type="text" class="tb" style="width: 50px" id="price" value="1" /></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Sale Price'); ?>:</td>
+        <td><input type="text" class="tb" style="width: 50px" id="sale-price" value="0" /></td>
+    </tr>
+    <tr>
+        <td><?php echo _('Alternate Price'); ?>:</td>
+        <td><input type="text" class="tb" style="width: 50px" id="alternate-price" value="0" /></td>
+    </tr>
+</table>
+<br />
+<a href="#" id="aMultiplyPrices" class="button" title="<?php echo _('Multiply Prices'); ?>"><?php echo _('Multiply Prices'); ?></a>
+<div class="hidden" id="multiply-prices"></div>
+<?php nonce::field( 'multiply_prices', '_multiply_prices' ); ?>
+<br /><br />
+<br /><br />
+
+<?php echo $template->end(); ?>

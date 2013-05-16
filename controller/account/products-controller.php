@@ -331,6 +331,19 @@ class ProductsController extends BaseController {
     }
 
     /**
+     * Price Multiplier
+     *
+     * @return TemplateResponse
+     */
+    protected function price_multiplier() {
+        $this->resources->javascript( 'fileuploader', 'products/multiply-prices' );
+
+        return $this->get_template_response( 'price-multiplier' )
+            ->add_title( _('Price Multiplier') )
+            ->select( 'sub-products', 'price-multiplier' );
+    }
+
+    /**
      * Unblock products
      *
      * @return RedirectResponse
@@ -1378,6 +1391,132 @@ class ProductsController extends BaseController {
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Multiply Prices
+     *
+     * @return AjaxResponse
+     */
+    protected function multiply_prices() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Upload file
+        $uploader = new qqFileUploader( array( 'csv', 'xls' ), 26214400 );
+        $result = $uploader->handleUpload( 'gsrs_' );
+
+        // Setup variables
+        $file_extension = strtolower( f::extension( $_GET['qqfile'] ) );
+        $rows = $prices = false;
+
+        switch ( $file_extension ) {
+            case 'xls':
+                // Load excel reader
+                library('Excel_Reader/Excel_Reader');
+                $er = new Excel_Reader();
+                // Set the basics and then read in the rows
+                $er->setOutputEncoding('ASCII');
+                $er->read( $result['file_path'] );
+
+                $rows = $er->sheets[0]['cells'];
+                $index = 1;
+            break;
+
+            case 'csv':
+                // Make sure it's opened properly
+                $response->check( $handle = fopen( $result['file_path'], "r"), _('An error occurred while trying to read your file.') );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+
+                // Loop through the rows
+                while( $row = fgetcsv( $handle ) ) {
+                    $rows[] = $row;
+                }
+
+                // Close the file
+                fclose( $handle );
+                $index = 0;
+            break;
+
+            default:
+                // Display an error
+                $response->check( false, _('Only CSV and Excel file types are accepted. File type: ') . $file_extension );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+            break;
+        }
+
+        $response->check( is_array( $rows ), _('There were no prices to multiply') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $response->check( 0 != $_GET['price'] || 0 != $_GET['sale_price'] || 0 != $_GET['alternate_price'], _('There were no prices to multiply') );
+
+        // If there is an error, return
+        if ( $response->has_error() )
+            return $response;
+
+        /**
+         * Loop through prices
+         *
+         * @var int $index
+         * @var string $price_column
+         * @var array $rows
+         * @var array $emails
+         */
+        foreach ( $rows as $r ) {
+            // Determine the column being used for name or email
+            if ( !isset( $sku_column ) || !isset( $price_column ) )
+            if ( stristr( $r[0 + $index], 'price' ) && stristr( $r[1 + $index], 'sku' ) ) {
+                $sku_column = 1 + $index;
+                $price_column =  0 + $index;
+                continue;
+            } else {
+                $sku_column = 0 + $index;
+                $price_column = 1 + $index;
+
+                if ( stristr( $r[0 + $index], 'sku' ) && stristr( $r[1 + $index], 'price' ) )
+                    continue;
+            }
+
+            // Reset array
+            if( !isset( $r[$price_column] ) )
+                continue;
+
+            $prices[] = array( 'sku' => $r[$sku_column], 'price' => $r[$price_column] );
+        }
+
+        // Make sure we have something to update
+        $response->check( is_array( $prices ), _('No prices to adjust') );
+
+        // If there is an error, return
+        if ( $response->has_error() )
+            return $response;
+
+        $account_product = new AccountProduct();
+        $account_product->multiply_product_prices_by_sku( $this->user->account->id, $prices, $_GET['price'], $_GET['sale_price'], $_GET['alternate_price'] );
+
+        // Notify
+        $this->notify( _('Your prices have been successfully updated!') );
+
+        // Refresh
+        $response->add_response( 'refresh', 1 );
 
         return $response;
     }
