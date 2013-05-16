@@ -7,6 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var string $form
  * @var Brand[] $brands
  */
 
