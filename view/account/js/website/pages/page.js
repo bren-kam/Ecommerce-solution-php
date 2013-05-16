@@ -118,7 +118,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
     });
 
     // Remove product
-    $('#subcontent').on( 'click', '.remove-product', function() {
+    $('#subcontent').on( 'click', '.remove-product', function(e) {
+        e.preventDefault();
         $(this).parents('.product').remove();
     });
 
