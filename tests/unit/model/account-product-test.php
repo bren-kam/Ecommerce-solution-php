@@ -880,14 +880,16 @@ class AccountProductTest extends BaseDatabaseTest {
         $price_multiplier = 3;
         $sale_price_multiplier = 2;
         $alternate_price_multiplier = 0;
+        $price_note = 'All inclusive';
         $prices_array = array(
             'price' => $price * $price_multiplier
             , 'sale_price' => $price * $sale_price_multiplier
             , 'alternate_price' => $alternate_price
+            , 'price_note' => $price_note
         );
 
         $prices = array (
-            compact( 'sku', 'price' )
+            compact( 'sku', 'price', 'price_note' )
         );
 
         // Insert
@@ -898,7 +900,7 @@ class AccountProductTest extends BaseDatabaseTest {
         $this->account_product->multiply_product_prices_by_sku( $website_id, $prices, $price_multiplier, $sale_price_multiplier, $alternate_price_multiplier );
 
         // Get price
-        $fetched_prices = $this->db->get_row( "SELECT `price`, `sale_price`, `alternate_price` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id", PDO::FETCH_ASSOC );
+        $fetched_prices = $this->db->get_row( "SELECT `price`, `sale_price`, `alternate_price`, `price_note` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id", PDO::FETCH_ASSOC );
 
         $this->assertEquals( $prices_array, $fetched_prices );
 

@@ -19,18 +19,22 @@ echo $template->start( _('Price Multiplier') );
     <tr>
         <th width="50%"><?php echo _('SKU'); ?></th>
         <th><?php echo _('Price'); ?></th>
+        <th><?php echo _('Note'); ?></th>
     </tr>
     <tr>
         <td>A123</td>
         <td>400</td>
+        <td></td>
     </tr>
     <tr>
         <td>B456</td>
         <td>359.99</td>
+        <td>Includes Chair</td>
     </tr>
     <tr class="last">
         <td>...</td>
         <td>...</td>
+        <td></td>
     </tr>
 </table>
 <br /><br />

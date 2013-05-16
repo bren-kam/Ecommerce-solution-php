@@ -795,7 +795,7 @@ class AccountProduct extends ActiveRecordBase {
         $alternate_price_multiplier = (int) $alternate_price_multiplier;
 
         // Declare variables
-        $update_sql_array = array();
+        $update_sql_array[] = "wp.`price_note` = :price_note";
 
         if ( $price_multiplier > 0 )
             $update_sql_array[] = "wp.`price` = :price * :price_multiplier";
@@ -815,7 +815,8 @@ class AccountProduct extends ActiveRecordBase {
         $statement = $this->prepare_raw( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET $update_sql WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`sku` = :sku" );
         $statement
             ->bind_value( ':account_id', $account_id, PDO::PARAM_INT )
-            ->bind_param( ':sku', $sku, PDO::PARAM_STR );
+            ->bind_param( ':sku', $sku, PDO::PARAM_STR )
+            ->bind_param( ':price_note', $price_note, PDO::PARAM_STR );
 
         if ( $price_multiplier > 0 ) {
             $statement
@@ -838,7 +839,7 @@ class AccountProduct extends ActiveRecordBase {
         foreach ( $prices as $array ) {
             // Make sure all values have a value
             $price = 0;
-            $sku = '';
+            $sku = $price_note = '';
 
             // Get the values
             extract( $array );
