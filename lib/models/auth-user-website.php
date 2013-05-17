@@ -73,7 +73,7 @@ class AuthUserWebsite extends ActiveRecordBase {
      * @param bool $shopping_cart
      * @param int $role (optional|1)
      */
-    public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = 1 ) {
+    public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = User::ROLE_AUTHORIZED_USER ) {
         // Setup variables
         $user = new User();
         $user->get_by_email( $email, false );

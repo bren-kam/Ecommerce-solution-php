@@ -81,7 +81,7 @@ class ReachesController extends BaseController {
         $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
         $dt->add_where( " AND wr.`website_id` = " . $this->user->account->id );
 
-        if ( !$this->user->has_permission(5) )
+        if ( !$this->user->has_permission( User::ROLE_STORE_OWNER ) )
             $dt->add_where( ' AND wr.`status` = 0 AND wr.`waiting` = 1' );
 
         $dt->search( array( 'name' => false, 'wu.`email`' => false, 'wr.`assigned_to`' => false ) );
