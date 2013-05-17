@@ -134,7 +134,7 @@ class PagesController extends BaseController {
         // Set initial data
         $data = false;
         $confirm_delete = _('Are you sure you want to delete this page? This cannot be undone.');
-        $delete_user_nonce = nonce::create( 'delete' );
+        $delete_nonce = nonce::create( 'delete' );
 
         /**
          * @var KnowledgeBasePage $page
@@ -144,7 +144,7 @@ class PagesController extends BaseController {
             $data[] = array(
                 $page->name . '<div class="actions">' .
                     '<a href="' . url::add_query_arg( array( 's' => $_GET['section'], 'kbpid' => $page->id ), '/knowledge-base/pages/add-edit/' ) . '" title="' . $page->name . '">' . _('Edit') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( array( 'kbpid' => $page->id, '_nonce' => $delete_user_nonce ), '/knowledge-base/pages/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
+                    '<a href="' . url::add_query_arg( array( 'kbpid' => $page->id, '_nonce' => $delete_nonce ), '/knowledge-base/pages/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
                 , $page->category
             );
         }
@@ -206,7 +206,7 @@ class PagesController extends BaseController {
         if ( $response->has_error() || !isset( $_GET['kbpid'] ) )
             return $response;
 
-        // Get the user
+        // Get the page
         $kb_page = new KnowledgeBasePage();
         $kb_page->get( $_GET['kbpid'] );
         $kb_page->remove();

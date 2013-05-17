@@ -18,6 +18,6 @@ class KnowledgeBaseController extends BaseController {
      * @return RedirectResponse
      */
     protected function index() {
-        return new RedirectResponse('/knowledge-base/articles/');
+        return new RedirectResponse( url::add_query_arg( 's', 'admin', '/knowledge-base/articles/' ) );
     }
 }

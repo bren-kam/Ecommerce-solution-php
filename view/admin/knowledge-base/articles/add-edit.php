@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Add/Edit a Page
+ * @page Add/Edit an Article
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -10,8 +10,9 @@
  * @var string $form
  */
 
-echo $template->start( ( isset( $_GET['kbpid'] ) ? _('Edit Page') : _('Add Page') ), '../sidebar' );
+echo $template->start( ( isset( $_GET['kbaid'] ) ? _('Edit Article') : _('Add Article') ), '../sidebar' );
 echo $form;
 nonce::field( 'get_categories', '_get_categories' );
+nonce::field( 'get_pages', '_get_pages' );
 echo $template->end();
 ?>
