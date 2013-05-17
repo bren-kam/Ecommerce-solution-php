@@ -101,16 +101,13 @@ class UsersController extends BaseController {
 
         $ft->add_field( 'select', _('Role'), 'sRole', $user->role )
             ->options( array_slice( array(
-                1 => '1 - ' ._('Authorized User')
-                , 2 => '2'
-                , 3 => '3'
-                , 4 => '4'
-                , 5 => '5 - ' . _('Basic Account')
-                , 6 => '6 - ' . _('Marketing Specialist')
-                , 7 => '7 - ' . _('Online Specialist')
-                , 8 => '8 - ' . _('Admin')
-                , 9 => '9'
-                , 10 => '10 - ' . _('Super Admin')
+                User::ROLE_AUTHORIZED_USER => User::ROLE_AUTHORIZED_USER . ' - ' ._('Authorized User')
+                , User::ROLE_MARKETING_SPECIALIST => User::ROLE_MARKETING_SPECIALIST . ' - ' . _('Marketing Specialist')
+                , User::ROLE_STORE_OWNER => User::ROLE_STORE_OWNER . ' - ' . _('Basic Account')
+                , User::ROLE_COMPANY_ADMIN => User::ROLE_COMPANY_ADMIN . ' - ' . _('Company Admin')
+                , User::ROLE_ONLINE_SPECIALIST => User::ROLE_ONLINE_SPECIALIST . ' - ' . _('Online Specialist')
+                , User::ROLE_ADMIN => User::ROLE_ADMIN . ' - ' . _('Admin')
+                , User::ROLE_SUPER_ADMIN => User::ROLE_SUPER_ADMIN . ' - ' . _('Super Admin')
             ), 0, $this->user->role, true )
         );
 
@@ -287,37 +284,12 @@ class UsersController extends BaseController {
         $confirm_delete = _('Are you sure you want to delete this user? This cannot be undone.');
         $delete_user_nonce = nonce::create( 'delete' );
 
+        /**
+         * @var User $u
+         */
         if ( is_array( $users ) )
         foreach ( $users as $u ) {
-            switch ( $u->role ) {
-                case 1:
-                    $role = _('Authorized User');
-                break;
-
-                case 5:
-                    $role = _('Basic Account');
-                break;
-
-                case 6:
-                    $role = _('Marketing Specialist');
-                break;
-
-                case 7:
-                    $role = _('Online Specialist');
-                break;
-
-                case 8:
-                    $role = _('Admin');
-                break;
-
-                case 10:
-                    $role = _('Super Admin');
-                break;
-
-                default:
-                    $role = 'Unknown - ' . $u->role;
-                break;
-            }
+            $role = $u->get_role_name( $u->role );
 
             $data[] = array(
                 $u->contact_name . '<div class="actions">' .

@@ -447,6 +447,21 @@ class UserAdminTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get Role Name
+     */
+    public function testGetRoleName() {
+        // Declare variables
+        $role = User::ROLE_MARKETING_SPECIALIST;
+        $name = 'Marketing Specialist';
+
+        // Get
+        $fetched_name = $this->user->get_role_name( $role );
+
+        // Assert
+        $this->assertEquals( $name, $fetched_name );
+    }
+
+    /**
      * Will be executed after every test
      */
     public function tearDown() {

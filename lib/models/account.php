@@ -190,7 +190,7 @@ class Account extends ActiveRecordBase {
         $where = '';
 
 		// Construct WHERE
-		if ( !$user->has_permission(8) )
+		if ( !$user->has_permission( User::ROLE_ADMIN ) )
             $where .= ' AND b.`company_id` = ' . (int) $user->company_id;
 
         if ( is_null( $status ) ) {
