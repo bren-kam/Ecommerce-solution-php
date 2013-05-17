@@ -55,7 +55,7 @@ class TicketsController extends BaseController {
         );
 
         // Figure out who we're assigned to
-        $assigned_to_user_id = ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) ? 493 : $this->user->account->os_user_id; // Technical user (default)
+        $assigned_to_user_id = ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) ? User::TECHNICAL : $this->user->account->os_user_id; // Technical user (default)
         $priority = 0; // Normal
 
         // Find out if they are trying to direct it to a particular person

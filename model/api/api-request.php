@@ -237,7 +237,7 @@ class ApiRequest {
             $user->billing_address1 = $billing_address1;
             $user->billing_city = $billing_city;
             $user->billing_zip = $billing_zip;
-            $user->role = 5;
+            $user->role = User::ROLE_STORE_OWNER;
             $user->company_id = $this->company_id;
 
             // Create user
@@ -568,7 +568,7 @@ class ApiRequest {
             $user->save();
         } else {
             $user->company_id = $this->company_id;
-            $user->role = 5;
+            $user->role = User::ROLE_STORE_OWNER;
             $user->status = 1;
             $user->create();
         }
