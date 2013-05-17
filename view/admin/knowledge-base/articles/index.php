@@ -13,7 +13,7 @@
 echo $template->start( ucwords( $_GET['s'] ) . ' ' . _('Articles') . ' ' . $link, '../sidebar' );
 ?>
 
-<table ajax="<?php echo url::add_query_arg( 'section', KnowledgeBaseCategory::SECTION_ADMIN, '/knowledge-base/articles/list-all/' ); ?>" perPage="30,50,100">
+<table ajax="<?php echo url::add_query_arg( 'section', $section, '/knowledge-base/articles/list-all/' ); ?>" perPage="30,50,100">
     <thead>
         <tr>
             <th width="40%"><?php echo _('Title'); ?></th>
