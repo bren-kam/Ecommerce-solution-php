@@ -28,7 +28,7 @@ class ProductsController extends BaseController {
         $product_users = $this->user->get_product_users();
 
         $template_response = $this->get_template_response( 'index' )
-            ->select( 'products', 'view' )
+            ->select( 'sub-products', 'view' )
             ->set( compact( 'categories', 'product_users' ) );
 
         $this->resources->javascript('products/list');
@@ -186,17 +186,15 @@ class ProductsController extends BaseController {
             return new RedirectResponse('/products/');
         }
 
-        $template_response = $this->get_template_response( 'add-edit' )
-            ->select( 'products', 'add' )
-            ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
-
         $this->resources
             ->javascript( 'fileuploader', 'products/add-edit' )
             ->css('products/add-edit')
             ->css_url( Config::resource('jquery-ui') );
 
-        return $template_response;
+        return $this->get_template_response( 'add-edit' )
+            ->select( 'sub-products', 'add' )
+            ->add_title( $title )
+            ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
     }
 
     /***** REDIRECTS *****/
