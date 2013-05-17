@@ -14,7 +14,7 @@
 echo $template->start( ucwords( $_GET['s'] ) . ' ' . _('Pages') . ' ' . $link, '../sidebar' );
 ?>
 
-<table ajax="<?php echo url::add_query_arg( 'section', $kb_section, '/knowledge-base/pages/list-all/' ); ?>" perPage="30,50,100">
+<table ajax="<?php echo url::add_query_arg( 'section', $_GET['s'], '/knowledge-base/pages/list-all/' ); ?>" perPage="30,50,100">
     <thead>
         <tr>
             <th width="45%" sort="2"><?php echo _('Page'); ?></th>
