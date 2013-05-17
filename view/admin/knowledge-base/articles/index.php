@@ -8,12 +8,13 @@
  * @var Template $template
  * @var User $user
  * @var string $link
+ * @var string $kb_section
  */
 
 echo $template->start( ucwords( $_GET['s'] ) . ' ' . _('Articles') . ' ' . $link, '../sidebar' );
 ?>
 
-<table ajax="<?php echo url::add_query_arg( 'section', $section, '/knowledge-base/articles/list-all/' ); ?>" perPage="30,50,100">
+<table ajax="<?php echo url::add_query_arg( 'section', $kb_section, '/knowledge-base/articles/list-all/' ); ?>" perPage="30,50,100">
     <thead>
         <tr>
             <th width="40%"><?php echo _('Title'); ?></th>

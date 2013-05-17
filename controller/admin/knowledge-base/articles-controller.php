@@ -18,12 +18,12 @@ class ArticlesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $section = ( KnowledgeBaseCategory::SECTION_ADMIN == $_GET['s'] ) ? KnowledgeBaseCategory::SECTION_ACCOUNT : KnowledgeBaseCategory::SECTION_ADMIN;
-        $uc_section = ucwords( $section );
-        $link = '<a href="' . url::add_query_arg( 's', $section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
+        $kb_section = ( KnowledgeBaseCategory::SECTION_ADMIN == $_GET['s'] ) ? KnowledgeBaseCategory::SECTION_ACCOUNT : KnowledgeBaseCategory::SECTION_ADMIN;
+        $uc_section = ucwords( $kb_section );
+        $link = '<a href="' . url::add_query_arg( 's', $kb_section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
         return $this->get_template_response( 'index' )
-            ->set( compact( 'link' ) )
+            ->set( compact( 'link', 'kb_section' ) )
             ->select( 'articles', 'view' );
     }
 
