@@ -6,7 +6,7 @@
 ?>
 <div id="sidebar">
     <div id="actions">
-        <a href="/products/" title="<?php echo _('Products'); ?>" class="top first<?php $template->select('products'); ?>"><?php echo _('Products'); ?></a>
+        <a href="/products/" title="<?php echo _('Products'); ?>" class="top first<?php $template->select('sub-products'); ?>"><?php echo _('Products'); ?></a>
         <?php if ( isset( $products ) && true === $products ) { ?>
             <a href="/products/" title="<?php echo _('View Products'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
             <a href="/products/add-edit/" title="<?php echo _('Add Product'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>

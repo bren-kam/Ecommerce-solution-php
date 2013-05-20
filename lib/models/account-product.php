@@ -43,7 +43,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
@@ -142,8 +142,7 @@ class AccountProduct extends ActiveRecordBase {
 		$sql .= 'c.`name` AS category, pi.`image`, wp.`price`, wp.`alternate_price`, wp.`alternate_price_name`,';
 		$sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry ';
 		$sql .= 'FROM `products` AS p ';
-		$sql .= 'LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) ';
-		$sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) ';
+		$sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) ';
 		$sql .= 'LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) ';
 		$sql .= 'LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
@@ -165,8 +164,7 @@ class AccountProduct extends ActiveRecordBase {
 	 public function search_count( $account_id, $where = '' ) {
 		$sql = 'SELECT COUNT( DISTINCT p.`product_id` )';
 		$sql .= 'FROM `products` AS p ';
-		$sql .= 'LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) ';
-		$sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) ';
+		$sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) ';
 		$sql .= 'LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) ';
 		$sql .= 'LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
@@ -773,6 +771,75 @@ class AccountProduct extends ActiveRecordBase {
             // Make sure all values have a value
             $alternate_price = $price = $sale_price = 0;
             $alternate_price_name = $price_note = '';
+
+            // Get the values
+            extract( $array );
+
+            $statement->query();
+        }
+    }
+
+    /**
+     * Multiply Product Prices by Sku
+     *
+     * @param int $account_id
+     * @param array $prices
+     * @param int $price_multiplier
+     * @param int $sale_price_multiplier
+     * @param int $alternate_price_multiplier
+     */
+    public function multiply_product_prices_by_sku( $account_id, array $prices, $price_multiplier, $sale_price_multiplier, $alternate_price_multiplier ) {
+        // Type Juggling
+        $price_multiplier = (int) $price_multiplier;
+        $sale_price_multiplier = (int) $sale_price_multiplier;
+        $alternate_price_multiplier = (int) $alternate_price_multiplier;
+
+        // Declare variables
+        $update_sql_array[] = "wp.`price_note` = :price_note";
+
+        if ( $price_multiplier > 0 )
+            $update_sql_array[] = "wp.`price` = :price * :price_multiplier";
+
+        if ( $sale_price_multiplier > 0 )
+            $update_sql_array[] = "wp.`sale_price` = :price_2 * :sale_price_multiplier";
+
+        if ( $alternate_price_multiplier > 0 )
+            $update_sql_array[] = "wp.`alternate_price` = :price_3 * :alternate_price_multiplier";
+
+        $update_sql = implode( ',', $update_sql_array );
+
+        if ( empty( $update_sql ) )
+            return;
+
+         // Prepare statement
+        $statement = $this->prepare_raw( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET $update_sql WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`sku` = :sku" );
+        $statement
+            ->bind_value( ':account_id', $account_id, PDO::PARAM_INT )
+            ->bind_param( ':sku', $sku, PDO::PARAM_STR )
+            ->bind_param( ':price_note', $price_note, PDO::PARAM_STR );
+
+        if ( $price_multiplier > 0 ) {
+            $statement
+                ->bind_param( ':price', $price, PDO::PARAM_INT )
+                ->bind_value( ':price_multiplier', $price_multiplier, PDO::PARAM_INT );
+        }
+
+        if ( $sale_price_multiplier > 0 ) {
+            $statement
+                ->bind_param( ':price_2', $price, PDO::PARAM_INT )
+                ->bind_value( ':sale_price_multiplier', $sale_price_multiplier, PDO::PARAM_INT );
+        }
+
+        if ( $alternate_price_multiplier > 0 ) {
+            $statement
+                ->bind_param( ':price_3', $price, PDO::PARAM_INT )
+                ->bind_value( ':alternate_price_multiplier', $alternate_price_multiplier, PDO::PARAM_INT );
+        }
+
+        foreach ( $prices as $array ) {
+            // Make sure all values have a value
+            $price = 0;
+            $sku = $price_note = '';
 
             // Get the values
             extract( $array );

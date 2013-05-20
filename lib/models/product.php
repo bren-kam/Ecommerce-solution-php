@@ -1,13 +1,13 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified, $date_created;
+    public $id, $product_id, $category_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified, $date_created;
 
     // Artificial columns
     public $images, $industry, $order, $price, $created_by, $updated_by;
 
     // Columns from other tables
-    public $brand, $category_id, $category;
+    public $brand, $category;
 
     /**
      * Setup the account initial data
@@ -27,7 +27,7 @@ class Product extends ActiveRecordBase {
      */
     public function get( $product_id ) {
         $this->prepare(
-            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, b.`name` AS brand, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id`, c.`name` AS category FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) WHERE p.`product_id` = :product_id GROUP BY p.`product_id`'
+            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, b.`name` AS brand, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id`, c.`name` AS category FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) WHERE p.`product_id` = :product_id GROUP BY p.`product_id`'
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -42,7 +42,7 @@ class Product extends ActiveRecordBase {
      */
     public function get_by_sku( $sku ) {
         $this->prepare(
-            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`sku` = :sku GROUP BY p.`product_id`'
+            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`sku` = :sku GROUP BY p.`product_id`'
             , 's'
             , array( ':sku' => $sku )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -67,7 +67,7 @@ class Product extends ActiveRecordBase {
         $product_ids_ordered = implode( ',', $product_ids );
 
         return $this->get_results(
-            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, pc.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) WHERE p.`product_id` IN($product_ids_ordered) GROUP BY p.`product_id` ORDER BY FIELD( p.`product_id`,  $product_ids_ordered )"
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON (p.`industry_id` = i.`industry_id`) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`product_id` IN($product_ids_ordered) GROUP BY p.`product_id` ORDER BY FIELD( p.`product_id`,  $product_ids_ordered )"
             , PDO::FETCH_CLASS
             , 'Product'
         );
@@ -93,26 +93,14 @@ class Product extends ActiveRecordBase {
         $this->date_created = dt::now();
 
         $this->insert( array(
-            'website_id' => $this->website_id
+            'category_id' => $this->category_id
+            , 'website_id' => $this->website_id
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => $this->date_created
-        ), 'iiss' );
+        ), 'iiiss' );
 
         $this->id = $this->product_id = $this->get_insert_id();
-    }
-
-    /**
-     * Add Category
-     *
-     * @param int $category_id
-     */
-    public function add_category( $category_id ) {
-        $this->prepare(
-            'INSERT INTO `product_categories` ( `product_id`, `category_id` ) VALUES ( :product_id, :category_id )'
-            , 'ii'
-            , array( ':product_id' => $this->id, ':category_id' => $category_id )
-        )->query();
     }
 
     /**
@@ -154,7 +142,8 @@ class Product extends ActiveRecordBase {
     public function save() {
         parent::update(
             array(
-                'brand_id' => $this->brand_id
+                'category_id' => $this->category_id
+                , 'brand_id' => $this->brand_id
                 , 'industry_id' => $this->industry_id
                 , 'website_id' => $this->website_id
                 , 'name' => $this->name
@@ -169,20 +158,9 @@ class Product extends ActiveRecordBase {
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iiisssssisssi'
+            , 'iiiisssssisssi'
             , 'i'
         );
-    }
-
-    /**
-     * Delete Categories
-     */
-    public function delete_categories() {
-        $this->prepare(
-            'DELETE FROM `product_categories` WHERE `product_id` = :product_id'
-            , 'i'
-            , array( ':product_id' => $this->id )
-        )->query();
     }
 
     /**
@@ -215,13 +193,10 @@ class Product extends ActiveRecordBase {
 			return;
 
         // Clone product
-		$this->query( "INSERT INTO `products` ( `brand_id`, `industry_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, `user_id_created`, `date_created` ) SELECT `brand_id`, `industry_id`, CONCAT( `name`, ' (Clone)' ), CONCAT( `slug`, '-2' ), `description`, `status`, CONCAT( `sku`, '-2' ), `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, $user_id, NOW() FROM `products` WHERE `product_id` = $product_id" );
+		$this->query( "INSERT INTO `products` ( `category_id`, `brand_id`, `industry_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, `user_id_created`, `date_created` ) SELECT `category_id`, `brand_id`, `industry_id`, CONCAT( `name`, ' (Clone)' ), CONCAT( `slug`, '-2' ), `description`, `status`, CONCAT( `sku`, '-2' ), `price`, `list_price`, `product_specifications`, `publish_visibility`, `publish_date`, $user_id, NOW() FROM `products` WHERE `product_id` = $product_id" );
 
 		// Get the new product ID
 		$this->id = $this->product_id = $this->get_insert_id();
-
-		// Clone categories
-		$this->query( "INSERT INTO `product_categories` ( `product_id`, `category_id` ) SELECT $this->id, `category_id` FROM `product_categories` WHERE `product_id` = $product_id" );
 
 		// Clone product groups
 		$this->query( "INSERT INTO `product_group_relations` ( `product_group_id`, `product_id` ) SELECT `product_group_id`, $this->id FROM `product_group_relations` WHERE `product_id` = $product_id" );
@@ -244,7 +219,7 @@ class Product extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT p.`product_id`, p.`website_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, DATE( p.`publish_date` ) AS publish_date, c.`name` AS category, u.`contact_name` AS created_by, u2.`contact_name` AS updated_by FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = p.`user_id_modified` ) WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT p.`product_id`, p.`website_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, DATE( p.`publish_date` ) AS publish_date, c.`name` AS category, u.`contact_name` AS created_by, u2.`contact_name` AS updated_by FROM `products` AS p LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = p.`user_id_modified` ) WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -262,7 +237,7 @@ class Product extends ActiveRecordBase {
 
 		// Get the website count
         return $this->prepare(
-            "SELECT COUNT( p.`product_id` ) FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = p.`user_id_modified` ) WHERE 1 $where"
+            "SELECT COUNT( p.`product_id` ) FROM `products` AS p LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) LEFT JOIN `users` AS u2 ON ( u2.`user_id` = p.`user_id_modified` ) WHERE 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
@@ -279,7 +254,7 @@ class Product extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT p.`product_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, p.`publish_date`, c.`name` AS category FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            "SELECT p.`product_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, p.`publish_date`, c.`name` AS category FROM `products` AS p LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where GROUP BY p.`product_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -297,7 +272,7 @@ class Product extends ActiveRecordBase {
 
         // Get the website count
         return $this->prepare(
-            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( pc.`product_id` = p.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = pc.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where"
+            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
@@ -315,7 +290,7 @@ class Product extends ActiveRecordBase {
 	public function autocomplete( $query, $field, $as, $where ) {
 		// Get results
 		return $this->prepare(
-            "SELECT $field AS $as FROM `products` AS p LEFT JOIN `product_categories` AS pc ON ( p.`product_id` = pc.`product_id` ) LEFT JOIN `categories` AS c ON ( pc.`category_id` = c.`category_id` ) LEFT JOIN `brands` AS b ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `product_images` AS pi ON ( p.`product_id` = pi.`product_id` ) WHERE pi.`sequence` = 0 AND $field LIKE :query $where GROUP BY $field ORDER BY $field LIMIT 10"
+            "SELECT $field AS $as FROM `products` AS p LEFT JOIN `categories` AS c ON ( p.`category_id` = c.`category_id` ) LEFT JOIN `brands` AS b ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `product_images` AS pi ON ( p.`product_id` = pi.`product_id` ) WHERE pi.`sequence` = 0 AND $field LIKE :query $where GROUP BY $field ORDER BY $field LIMIT 10"
             , 's'
             , array( ':query' => $query . '%')
         )->get_results( PDO::FETCH_ASSOC );

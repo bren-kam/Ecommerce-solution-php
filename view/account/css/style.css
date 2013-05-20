@@ -97,6 +97,7 @@ input.button {
 .col-1 { width: 100% }
 .col-1.info-box { width: 97.5% }
 .col-2 { width: 50%; }
+.col-4 { width: 25% }
 .float-left { float:left; position:relative }
 .float-right { float:right; position:relative }
 .float-none { float: none }

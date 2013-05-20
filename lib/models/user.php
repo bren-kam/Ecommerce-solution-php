@@ -1,8 +1,9 @@
 <?php
 class User extends ActiveRecordBase {
     const ROLE_AUTHORIZED_USER = 1;
+    const ROLE_MARKETING_SPECIALIST = 3;
     const ROLE_STORE_OWNER = 5;
-    const ROLE_MARKETING_SPECIALIST = 6;
+    const ROLE_COMPANY_ADMIN = 6;
     const ROLE_ONLINE_SPECIALIST = 7;
     const ROLE_ADMIN = 8;
     const ROLE_SUPER_ADMIN = 10;
@@ -16,6 +17,7 @@ class User extends ActiveRecordBase {
     const RODRIGO = 305; // Design
     const MANINDER = 85; // Head of Conversions
     const RAFFERTY = 19;
+    const KEVIN_DORAN = 251;
 
     /**
      * Hold whether admin is active or not
@@ -28,6 +30,9 @@ class User extends ActiveRecordBase {
 
     // Columns available in getting a complete user
     public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
+
+    // Artificial column
+    public $phone;
 
     // These columns belong to another table but might be available from the user
     public $company, $domain, $accounts;
@@ -311,6 +316,26 @@ class User extends ActiveRecordBase {
 
 		return $count;
 	}
+
+    /**
+     * Get Role Name
+     *
+     * @param int $role
+     * @return string
+     */
+    public static function get_role_name( $role ) {
+        $translations = array(
+            self::ROLE_AUTHORIZED_USER => 'Authorized User'
+            , self::ROLE_MARKETING_SPECIALIST => 'Marketing Specialist'
+            , self::ROLE_STORE_OWNER => 'Store Owner'
+            , self::ROLE_COMPANY_ADMIN =>'Company Admin'
+            , self::ROLE_ONLINE_SPECIALIST => 'Online Specialist'
+            , self::ROLE_ADMIN => 'Admin'
+            , self::ROLE_SUPER_ADMIN => 'Super Admin'
+        );
+
+        return $translations[$role];
+    }
 
     /***** PROTECTED *****/
 
