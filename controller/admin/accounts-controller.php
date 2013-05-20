@@ -1348,7 +1348,7 @@ class AccountsController extends BaseController {
             $dt->search( array( 'a.`title`' => false, 'a.`domain`' => false, 'b.`contact_name`' => false, 'c.`contact_name`' => false ) );
         }
 
-        if ( 251 == $this->user->id ) {
+        if ( User::KEVIN_DORAN == $this->user->id ) {
             $dt->add_where( ' AND ( a.`social_media` = 1 OR b.`company_id` = ' . $this->user->company_id . ' )' );
         } else {
             // If they are below 8, that means they are a partner
@@ -1384,13 +1384,20 @@ class AccountsController extends BaseController {
             $contact_title = ( empty( $a->phone ) ) ? _('No Phone') : $a->phone;
 
             $title = '<a href="http://' . $a->domain . '/" target="_blank"><strong title="' . $a->domain . ' - ' . $a->online_specialist . '">' . $a->title . $store_name . '</strong></a><br />';
-            $title .= '<span class="web-actions" style="display: block"><a href="/accounts/edit/?aid=' . $a->id . '" title="' . _('Edit') . ' ' . $a->title . '">' . _('Edit') . '</a> | ';
-            $title .= '<a href="/accounts/control/?aid=' . $a->id . '" title="' . _('Control') . ' ' . $a->title . '" target="_blank">' . _('Control Account') . '</a> | ';
-            $title .= '<a href="/users/control/?uid=' . $a->user_id . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
-            $title .= '<a href="/accounts/notes/?aid=' . $a->id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
+            $title .= '<span class="web-actions" style="display: block">';
 
-            if ( isset( $incomplete_checklists[$a->id] ) )
-                $title .= ' | <a href="/checklists/checklist/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
+            if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
+                $title .= '<a href="/accounts/edit/?aid=' . $a->id . '" title="' . _('Edit') . ' ' . $a->title . '">' . _('Edit') . '</a> | ';
+
+            $title .= '<a href="/accounts/control/?aid=' . $a->id . '" title="' . _('Control') . ' ' . $a->title . '" target="_blank">' . _('Control Account') . '</a>';
+
+            if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) {
+                $title .= ' | <a href="/users/control/?uid=' . $a->user_id . '" title="' . _('Control User') . '" target="_blank">' . _('Control User') . '</a> | ';
+                $title .= '<a href="/accounts/notes/?aid=' . $a->id . '" title="' . _('Notes') . '" target="_blank">' . _('Notes') . '</a>';
+
+                if ( isset( $incomplete_checklists[$a->id] ) )
+                    $title .= ' | <a href="/checklists/checklist/?cid=' . $incomplete_checklists[$a->id] . '" title="' . _('Checklists') . '" target="_blank">' . _('Checklist') . '</a>';
+            }
 
             $title .= '</span>';
 

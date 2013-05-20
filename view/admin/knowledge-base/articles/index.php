@@ -7,19 +7,19 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var string $link
+ * @var string $kb_section
  */
 
-echo $template->start( '', '../sidebar' );
+echo $template->start( ucwords( $_GET['s'] ) . ' ' . _('Articles') . ' ' . $link, '../sidebar' );
 ?>
 
-<table ajax="/knowledge-base/articles/list-all/" perPage="30,50,100">
+<table ajax="<?php echo url::add_query_arg( 'section', $_GET['s'], '/knowledge-base/articles/list-all/' ); ?>" perPage="30,50,100">
     <thead>
         <tr>
-            <th width="23%" sort="1"><?php echo _('Title'); ?></th>
-            <th width="25%"><?php echo _('Section'); ?></th>
-            <th width="14%"><?php echo _('Phone'); ?></th>
-            <th width="28%"><?php echo _('Website'); ?></th>
-            <th width="10%"><?php echo _('Permission'); ?></th>
+            <th width="40%"><?php echo _('Title'); ?></th>
+            <th width="30%" sort="1"><?php echo _('Category'); ?></th>
+            <th width="30%"><?php echo _('Page'); ?></th>
         </tr>
     </thead>
     <tbody>

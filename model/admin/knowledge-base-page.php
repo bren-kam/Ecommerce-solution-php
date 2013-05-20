@@ -17,7 +17,6 @@ class KnowledgeBasePage extends ActiveRecordBase {
      * Get
      *
      * @param int $id
-     * @return KnowledgeBasePage
      */
     public function get( $id ) {
         $this->prepare(
@@ -25,6 +24,20 @@ class KnowledgeBasePage extends ActiveRecordBase {
             , 'i'
             , array( ':id' => $id )
         )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get by category
+     *
+     * @param int $kb_category_id
+     * @return KnowledgeBasePage[]
+     */
+    public function get_by_category( $kb_category_id ) {
+        return $this->prepare(
+            'SELECT `id`, `kb_category_id`, `name` FROM `kb_page` WHERE `kb_category_id` = :kb_category_id'
+            , 'i'
+            , array( ':kb_category_id' => $kb_category_id )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBasePage' );
     }
 
     /**

@@ -18,13 +18,13 @@ class PagesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $section = ( KnowledgeBaseCategory::SECTION_ADMIN == $_GET['s'] ) ? KnowledgeBaseCategory::SECTION_ACCOUNT : KnowledgeBaseCategory::SECTION_ADMIN;
-        $uc_section = ucwords( $section );
-        $link = '<a href="' . url::add_query_arg( 's', $section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
+        $kb_section = ( KnowledgeBaseCategory::SECTION_ADMIN == $_GET['s'] ) ? KnowledgeBaseCategory::SECTION_ACCOUNT : KnowledgeBaseCategory::SECTION_ADMIN;
+        $uc_section = ucwords( $kb_section );
+        $link = '<a href="' . url::add_query_arg( 's', $kb_section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
         return $this->get_template_response( 'index' )
             ->add_title( _('Pages') )
-            ->set( compact( 'link' ) )
+            ->set( compact( 'link', 'kb_section' ) )
             ->select( 'pages', 'view' );
     }
 
@@ -64,7 +64,7 @@ class PagesController extends BaseController {
             , KnowledgeBaseCategory::SECTION_ACCOUNT => ucwords( KnowledgeBaseCategory::SECTION_ACCOUNT )
         );
 
-        $ft->add_field( 'select', _('Section'), 'sSection', ucwords( $section ) )
+        $ft->add_field( 'select', _('Section'), 'sSection', $section )
             ->options( $sections );
 
         $categories = $kb_category->sort_by_hierarchy();
@@ -134,7 +134,7 @@ class PagesController extends BaseController {
         // Set initial data
         $data = false;
         $confirm_delete = _('Are you sure you want to delete this page? This cannot be undone.');
-        $delete_user_nonce = nonce::create( 'delete' );
+        $delete_nonce = nonce::create( 'delete' );
 
         /**
          * @var KnowledgeBasePage $page
@@ -144,7 +144,7 @@ class PagesController extends BaseController {
             $data[] = array(
                 $page->name . '<div class="actions">' .
                     '<a href="' . url::add_query_arg( array( 's' => $_GET['section'], 'kbpid' => $page->id ), '/knowledge-base/pages/add-edit/' ) . '" title="' . $page->name . '">' . _('Edit') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( array( 'kbpid' => $page->id, '_nonce' => $delete_user_nonce ), '/knowledge-base/pages/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
+                    '<a href="' . url::add_query_arg( array( 'kbpid' => $page->id, '_nonce' => $delete_nonce ), '/knowledge-base/pages/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
                 , $page->category
             );
         }
@@ -206,7 +206,7 @@ class PagesController extends BaseController {
         if ( $response->has_error() || !isset( $_GET['kbpid'] ) )
             return $response;
 
-        // Get the user
+        // Get the page
         $kb_page = new KnowledgeBasePage();
         $kb_page->get( $_GET['kbpid'] );
         $kb_page->remove();

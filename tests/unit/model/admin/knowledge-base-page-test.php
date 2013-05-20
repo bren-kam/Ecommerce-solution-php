@@ -35,6 +35,25 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test Get by Category
+     */
+    public function testGetByCategory() {
+        // Declare variables
+        $kb_category_id = -3;
+        $name = 'Import Subscribers';
+
+        // Create
+        $this->db->insert( 'kb_page', compact( 'kb_category_id', 'name' ), 'is' );
+
+        $pages = $this->kb_page->get_by_category( $kb_category_id );
+
+        $this->assertTrue( current( $pages ) instanceof KnowledgeBasePage );
+
+        // Clean up
+        $this->db->delete( 'kb_page', compact( 'kb_category_id' ), 'i' );
+    }
+
+    /**
      * Test Create
      *
      * @depends testGet
@@ -108,7 +127,7 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Listing all the attributes
+     * Test List All
      */
     public function testListAll() {
         $user = new User();
@@ -137,7 +156,7 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test counting all the attributes
+     * Test Count All
      */
     public function testCountAll() {
         $user = new User();
