@@ -250,12 +250,27 @@ class EmailList extends ActiveRecordBase {
             // Handle errors if there were any
             if ( $vals['error_count'] > 0 ) {
                 $errors = '';
+                $unsubscribe_emails = array();
 
                 foreach ( $vals['errors'] as $val ) {
-                    $errors .= "Email: " . $val['row']['EMAIL'] . "\nCode: " . $val['code'] . "\nError Message: " . $val['message'] . "\n\n";
+                    switch( $val['code'] ) {
+						case 212: // Unsubscribed email
+                        case 213: // Bounced email
+						case 220: // Banned
+                            $unsubscribe_emails[] = $val['row']['EMAIL'];
+                        break;
+
+                        default:
+                            $errors .= "Email: " . $val['row']['EMAIL'] . "\nCode: " . $val['code'] . "\nError Message: " . $val['message'] . "\n\n";
+                        break;
+                    }
                 }
 
-                throw new ModelException( $errors );
+                if ( !empty( $unsubscribe_emails ) )
+                    $email->unsubscribe_bulk( $unsubscribe_emails, $account->id );
+
+                if ( !empty( $errors ) )
+                    throw new ModelException( $errors );
             }
 
             $synced_email_ids = array_keys( $emails );
