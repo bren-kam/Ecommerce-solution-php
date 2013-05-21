@@ -385,11 +385,10 @@ class ProductsController extends BaseController {
         $form = new FormTable( 'fSettings' );
 
         // Get settings
-        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
+        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
         $settings = $this->user->account->get_settings( $settings_array );
         $checkboxes = array(
-        	'category-show-price-note' 	=> _('Categories - Show Price Note?')
-        	, 'add-product-popup' 		=> _('Add Product - Popup')
+        	'category-show-price-note' 	=> _('Show Price Note on Category Page')
         	, 'hide-skus' 				=> _('Hide Manufacturer SKUs')
         	, 'hide-request-quote' 		=> _('Hide "Request a Quote" Button')
         	, 'hide-customer-ratings' 	=> _('Hide Customer Ratings')
