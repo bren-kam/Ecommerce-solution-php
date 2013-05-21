@@ -83,9 +83,11 @@ class CustomProductsController extends BaseController {
 
         // Add on an associative aspect
         $industries = array();
+        $account_industry_ids = $this->user->account->get_industries();
 
         foreach ( $industries_array as $industry ) {
-            $industries[$industry->id] = $industry;
+            if ( in_array( $industry->id, $account_industry_ids ) )
+                $industries[$industry->id] = $industry;
         }
 
         if ( $this->verified() && $product->id ) {

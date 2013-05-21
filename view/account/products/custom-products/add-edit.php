@@ -79,6 +79,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                             <small><?php echo _('(example: 22 in.)'); ?></small>
                         </td>
                     </tr>
+                    </tr>
                 </table>
                 <p><a href="#" class="button" id="add-product-spec" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
                 <div id="product-specs-list">
@@ -204,7 +205,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                             <?php
                                 if ( is_array( $industries ) )
                                 foreach ( $industries as $industry ) {
-                                    $selected = ( $product_id && $product->industry_id == $industry->id ) ? ' selected="selected"' : '';
+                                    $selected = ( $product_id && $product->industry_id == $industry->id || !$product_id && 1 == count( $industries ) ) ? ' selected="selected"' : '';
                             ?>
                             <option value="<?php echo $industry->id; ?>"<?php echo $selected; ?>><?php echo ucwords( $industry->name ); ?></option>
                             <?php } ?>
