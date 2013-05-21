@@ -21,7 +21,7 @@ echo $template->start( _('Checklists') );
         <thead>
             <tr>
                 <th width="10%" sort="1"><?php echo _('Days Left'); ?></th>
-                <th width="30%"><?php echo _('Website'); ?></th>
+                <th width="30%"><?php echo _('Account'); ?></th>
                 <th width="20%"><?php echo _('Online Specialist'); ?></th>
                 <th width="20%"><?php echo _('Type'); ?></th>
                 <th width="20%"><?php echo _('Date Created'); ?></th>
