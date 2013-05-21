@@ -633,15 +633,11 @@ class WebsiteController extends BaseController {
 
             $title = ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title;
 
-            $date_update = new DateTime( $page->date_updated );
-
             $data[] = array(
                 $title . '<div class="actions">' .
                     '<a href="http://' . $this->user->account->domain . '/' . $page->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'apid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
                     '</div>'
-                , ( $page->status ) ? _('Visible') : _('Not Visible')
-                , $date_update->format('F jS, Y')
             );
         }
 
