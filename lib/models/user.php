@@ -293,7 +293,7 @@ class User extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        $users = $this->prepare( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`, '') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where GROUP BY a.`user_id` $order_by LIMIT $limit"
+        $users = $this->prepare( "SELECT `user_id`, `email`, `contact_name`, `role` FROM `users` WHERE `status` <> 0 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'User' );
@@ -312,7 +312,7 @@ class User extends ActiveRecordBase {
 		list( $where, $values ) = $variables;
 
 		// Get the website count
-        $count = $this->prepare( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where"
+        $count = $this->prepare( "SELECT COUNT( `user_id` ) FROM `users` WHERE `status` <> 0 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

@@ -268,12 +268,12 @@ class UsersController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set Order by
-        $dt->order_by( 'a.`contact_name`', 'a.`email`', 'phone', 'b.`domain`', 'a.`role`' );
-        $dt->search( array( 'a.`contact_name`' => true, 'a.`email`' => true, 'b.`domain`' => true ) );
+        $dt->order_by( '`contact_name`', '`email`', '`role`' );
+        $dt->search( array( '`contact_name`' => true, '`email`' => true ) );
 
         // If they are below 8, that means they are a partner
 		if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
-			$dt->add_where( ' AND a.`company_id` = ' . (int) $this->user->company_id );
+			$dt->add_where( ' AND `company_id` = ' . (int) $this->user->company_id );
 
         // Get accounts
         $users = $this->user->list_all( $dt->get_variables() );
@@ -296,8 +296,6 @@ class UsersController extends BaseController {
                     '<a href="/users/add-edit/?uid=' . $u->id . '" title="' . $u->contact_name . '">' . _('Edit') . '</a> | ' .
                     '<a href="' . url::add_query_arg( array( 'uid' => $u->id, '_nonce' => $delete_user_nonce ), '/users/delete/' ) . '" title="' . _('Delete User') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
                 , '<a href="mailto:' . $u->email . '" title="' . _('Email User') . '">' . $u->email . '</a>'
-                , $u->phone
-                , '<a href="http://' . $u->domain . '/" target="_blank">' . $u->domain . "</a>"
                 , $role
             );
         }
