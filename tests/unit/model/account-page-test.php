@@ -236,7 +236,7 @@ class AccountPageTest extends BaseDatabaseTest {
         // Determine length
         $_GET['iDisplayLength'] = 30;
         $_GET['iSortingCols'] = 1;
-        $_GET['iSortCol_0'] = 1;
+        $_GET['iSortCol_0'] = 0;
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
