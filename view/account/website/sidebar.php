@@ -15,5 +15,7 @@
     <a href="/website/banners/" title="<?php echo _('Banners'); ?>" class="top<?php $template->select('banners'); ?>"><?php echo _('Banners'); ?></a>
     <a href="/website/sale/" title="<?php echo _('Sale'); ?>" class="top<?php $template->select('sale'); ?>"><?php echo _('Sale'); ?></a>
     <a href="/website/room-planner/" title="<?php echo _('Room Planner'); ?>" class="top<?php $template->select('room-planner'); ?>"><?php echo _('Room Planner'); ?></a>
-    <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
+    <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
+        <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
+    <?php } ?>
 </div>
