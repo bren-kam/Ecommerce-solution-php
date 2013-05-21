@@ -588,7 +588,7 @@ class WebsiteController extends BaseController {
         $account_page = new AccountPage();
 
         // Set Order by
-        $dt->order_by( '`title`', '`status`', '`date_updated`' );
+        $dt->order_by( '`title`');
         $dt->search( array( '`title`' => false ) );
         $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
 
