@@ -1017,7 +1017,7 @@ class WebsiteController extends BaseController {
         $attachment = new AccountPageAttachment();
         $page = new AccountPage();
         $account_file = new AccountFile();
-        $uploader = new qqFileUploader( array( 'swf', 'flv', 'mp4', 'f4v' ), 26214400 );
+        $uploader = new qqFileUploader( array( 'mp4' ), 26214400 );
 
         // Set video
         $video_name =  'video.' . f::extension( $_GET['qqfile'] );

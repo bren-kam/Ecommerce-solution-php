@@ -11,7 +11,7 @@ php_value post_max_size 25M
 php_value upload_max_filesize 25M
 
 # 1 YEAR
-<FilesMatch '\.(ico|pdf|flv)$'>
+<FilesMatch '\.(ico|pdf|mp4)$'>
 Header set Cache-Control 'max-age=29030400, public'
 </FilesMatch>
 # 30 DAYS
