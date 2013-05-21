@@ -209,23 +209,8 @@ class PagesController extends BaseController {
         // Get the page
         $kb_page = new KnowledgeBasePage();
         $kb_page->get( $_GET['kbpid'] );
-		
-		try {
-	        $kb_page->remove();
-		} catch ( ModelException $e ) {
-			switch( $e->getCode() ) {
-                case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
-					$response->check( false, _('This page is being used in an article. Please make sure the page is unused before deleting.' ) );
-				break;
-				
-				default:
-					$response->check( false, $e->getMessage() );
-				break;
-			}
-			
-			return $response;
-		}
-		
+        $kb_page->remove();
+
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();
 
