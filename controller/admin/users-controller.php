@@ -90,9 +90,6 @@ class UsersController extends BaseController {
         $ft->add_field( 'text', _('Store Name'), 'tStoreName', $user->store_name )
             ->attribute( 'maxlength', 80 );
 
-        $ft->add_field( 'text', _('Products'), 'tProducts', $user->products )
-            ->attribute( 'maxlength', 10 );
-
         $ft->add_field( 'select', _('Status'), 'sStatus', $user->status )
             ->options( array(
                 0 => _('Inactive')
