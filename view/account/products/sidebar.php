@@ -27,10 +27,10 @@
     <?php } ?>
 
     <a href="/products/reaches/" title="<?php echo _('Reaches'); ?>" class="top<?php $template->select('reaches'); ?>"><?php echo _('Reaches'); ?></a>
-	<a href="/products/custom-products/" title="<?php echo _('Custom Products'); ?>" class="top<?php $template->select('custom-products'); ?>"><?php echo _('Custom Products'); ?></a>
-	<?php if ( $template->v('custom-products') ) { ?>
-		<a href="/products/custom-products/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-		<a href="/products/custom-products/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
+	<a href="/products/product-builder/" title="<?php echo _('Product Builder'); ?>" class="top<?php $template->select('product-builder'); ?>"><?php echo _('Product Builder'); ?></a>
+	<?php if ( $template->v('product-builder') ) { ?>
+		<a href="/products/product-builder/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+		<a href="/products/product-builder/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 
 	<a href="/products/brands/" title="<?php echo _('Top Brands'); ?>" class="top<?php $template->select('brands'); ?>"><?php echo _('Top Brands'); ?></a>

@@ -29,7 +29,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			}
 			
 			// It was not cached, get data
-			$.post( '/products/custom-products/autocomplete/', { _nonce : $('#_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( autocompleteResponse ) {
+			$.post( '/products/product-builder/autocomplete/', { _nonce : $('#_autocomplete').val(), 'type' : cacheType, 'term' : request['term'] }, function( autocompleteResponse ) {
 				// Assign global cache the response data
 				cache[cacheType][request['term']] = autocompleteResponse['suggestions'];
 				
@@ -56,7 +56,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
                 bProcessing : 1,
                 bServerSide : 1,
                 iDisplayLength : 20,
-                sAjaxSource : '/products/custom-products/list-products/',
+                sAjaxSource : '/products/product-builder/list-products/',
                 sDom : '<"top"lr>t<"bottom"pi>',
                 oLanguage: {
                     sLengthMenu: 'Rows: <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select>'

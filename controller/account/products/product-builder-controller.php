@@ -1,5 +1,5 @@
 <?php
-class CustomProductsController extends BaseController {
+class ProductBuilderController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
@@ -7,8 +7,8 @@ class CustomProductsController extends BaseController {
         parent::__construct( );
 
         // Tell what is the base for all login
-        $this->view_base = 'products/custom-products/';
-        $this->section = _('Custom Products');
+        $this->view_base = 'products/product-builder/';
+        $this->section = _('Product Builder');
     }
 
     /**
@@ -22,12 +22,12 @@ class CustomProductsController extends BaseController {
             return new RedirectResponse('/products/');
 
         $this->resources
-            ->css( 'products/custom-products/index' )
+            ->css( 'products/product-builder/index' )
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'products/custom-products/index' );
+            ->javascript( 'products/product-builder/index' );
 
         return $this->get_template_response( 'index' )
-            ->select( 'custom-products', 'view' );
+            ->select( 'product-builder', 'view' );
     }
 
     /**
@@ -53,7 +53,7 @@ class CustomProductsController extends BaseController {
             $product->get( $product_id );
 
             if ( $product->website_id != $this->user->account->id )
-                return new RedirectResponse('/products/custom-products/');
+                return new RedirectResponse('/products/product-builder/');
 
             $product_images = $product->get_images();
             $product_attribute_items = $attribute_item->get_by_product( $product_id );
@@ -178,16 +178,16 @@ class CustomProductsController extends BaseController {
             $this->notify( _('Your product was successfully created or updated!') );
 
             // Return to products list
-            return new RedirectResponse('/products/custom-products/');
+            return new RedirectResponse('/products/product-builder/');
         }
 
         $this->resources
-            ->javascript( 'fileuploader', 'products/custom-products/add-edit' )
-            ->css('products/custom-products/add-edit')
+            ->javascript( 'fileuploader', 'products/product-builder/add-edit' )
+            ->css('products/product-builder/add-edit')
             ->css_url( Config::resource('jquery-ui') );
 
         return $this->get_template_response( 'add-edit' )
-            ->select( 'custom-products', 'add' )
+            ->select( 'product-builder', 'add' )
             ->add_title( $title )
             ->set( compact( 'product_id', 'product', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
     }
@@ -201,7 +201,7 @@ class CustomProductsController extends BaseController {
         $product_id = (int) $_GET['pid'];
 
         if ( empty( $product_id ) )
-            return new RedirectResponse('/products/custom-products/');
+            return new RedirectResponse('/products/product-builder/');
 
         $product = new Product;
         $product->clone_product( $product_id, $this->user->id );
@@ -210,7 +210,7 @@ class CustomProductsController extends BaseController {
         $product->save();
 
         // Redirect to the new cloned product
-        return new RedirectResponse( url::add_query_arg( 'pid', $product->id, '/products/custom-products/add-edit/' ) );
+        return new RedirectResponse( url::add_query_arg( 'pid', $product->id, '/products/product-builder/add-edit/' ) );
     }
 
     /***** AJAX *****/
@@ -260,18 +260,15 @@ class CustomProductsController extends BaseController {
         // Create output
         if ( is_array( $products ) )
         foreach ( $products as $product ) {
-            $date = new DateTime( $product->publish_date );
-            $actions = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/custom-products/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
-            $actions .= ' | <a href="' . url::add_query_arg( 'pid', $product->id, '/products/custom-products/clone-product/' ) . '" title="' ._('Clone') . '">' . _('Clone') . '</a>';
-            $actions .= ' | <a href="' . url::add_query_arg( array( 'pid' => $product->id, '_nonce' => $delete_nonce ), '/products/custom-products/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
+            $actions = '<a href="' . url::add_query_arg( 'pid', $product->id, '/products/product-builder/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
+            $actions .= ' | <a href="' . url::add_query_arg( 'pid', $product->id, '/products/product-builder/clone-product/' ) . '" title="' ._('Clone') . '">' . _('Clone') . '</a>';
+            $actions .= ' | <a href="' . url::add_query_arg( array( 'pid' => $product->id, '_nonce' => $delete_nonce ), '/products/product-builder/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 
             $data[] = array(
                 $product->name . '<div class="actions">' . $actions . '</div>'
                 , $product->brand
                 , $product->sku
                 , $product->category
-                , ucwords( $product->status )
-                , $date->format( 'F jS, Y')
             );
         }
 
