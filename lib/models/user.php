@@ -19,6 +19,9 @@ class User extends ActiveRecordBase {
     const RAFFERTY = 19;
     const KEVIN_DORAN = 251;
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     /**
      * Hold whether admin is active or not
      * @var int

@@ -95,8 +95,8 @@ class UsersController extends BaseController {
 
         $ft->add_field( 'select', _('Status'), 'sStatus', $user->status )
             ->options( array(
-                0 => _('Inactive')
-                , 1 => _('Active')
+                User::STATUS_ACTIVE => _('Active')
+                , User::STATUS_INACTIVE => _('Inactive')
             ));
 
         $ft->add_field( 'select', _('Role'), 'sRole', $user->role )
