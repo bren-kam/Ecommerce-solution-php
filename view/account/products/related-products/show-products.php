@@ -1,6 +1,6 @@
 <?php
 /**
- * @page Show Products | Product Groups | Products
+ * @page Show Products | Related Products | Products
  * @type Dialog
  * @package Grey Suit Retail
  *

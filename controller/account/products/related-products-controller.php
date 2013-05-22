@@ -1,5 +1,5 @@
 <?php
-class GroupsController extends BaseController {
+class RelatedProductsController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
@@ -7,8 +7,8 @@ class GroupsController extends BaseController {
         parent::__construct( );
 
         // Tell what is the base for all login
-        $this->view_base = 'products/groups/';
-        $this->section = 'Groups';
+        $this->view_base = 'products/related-products/';
+        $this->section = 'Related Products';
     }
 
     /**
@@ -18,7 +18,7 @@ class GroupsController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
-            ->select( 'product-groups', 'view' );
+            ->select( 'related-products', 'view' );
     }
 
     /**
@@ -66,19 +66,19 @@ class GroupsController extends BaseController {
                     $group->add_relations( $_POST['products'] );
 
                 $this->notify( _('Your product group has been added/updated successfully!' ) );
-                return new RedirectResponse('/products/groups/');
+                return new RedirectResponse('/products/related-products/');
             }
         }
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
-            ->css( 'products/groups/add-edit')
-            ->javascript( 'products/groups/add-edit' );
+            ->css( 'products/related-products/add-edit')
+            ->javascript( 'products/related-products/add-edit' );
 
         $title = ( $group->id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
-            ->select( 'product-groups', 'add' )
+            ->select( 'related-products', 'add' )
             ->add_title( $title . ' ' . _('Product Group') )
             ->set( compact( 'errs', 'js_validation', 'group', 'products' ) );
     }
@@ -106,16 +106,16 @@ class GroupsController extends BaseController {
         $dt->set_row_count( $website_product_group->count_all( $dt->get_count_variables() ) );
 
         // Setup variables
-        $confirm = _('Are you sure you want to delete this product group? This cannot be undone.');
+        $confirm = _('Are you sure you want to delete this related product group? This cannot be undone.');
         $delete_nonce = nonce::create( 'delete' );
         $data = array();
 
         // Create output
         if ( is_array( $groups ) )
         foreach ( $groups as $group ) {
-            $actions = '<a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/groups/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
-           	$actions .= ' | <a href="' . url::add_query_arg( array( 'wpgid' => $group->id, '_nonce' => $delete_nonce ), '/products/groups/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
-           	$actions .= ' | <a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/groups/show-products/#dShowGroups' . $group->id ) . '" title="' . _("Product Group's Products") . '" rel="dialog">' . _('Show Products') . '</a>';
+            $actions = '<a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/related-products/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
+           	$actions .= ' | <a href="' . url::add_query_arg( array( 'wpgid' => $group->id, '_nonce' => $delete_nonce ), '/products/related-products/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
+           	$actions .= ' | <a href="' . url::add_query_arg( 'wpgid', $group->id, '/products/related-products/show-products/#dShowGroups' . $group->id ) . '" title="' . _("Related Products") . '" rel="dialog">' . _('Show Products') . '</a>';
 
             $data[] = array(
                 $group->name . '<div class="actions">' . $actions . '</div>'
@@ -175,7 +175,7 @@ class GroupsController extends BaseController {
         $website_product_group->get( $_GET['wpgid'], $this->user->account->id );
         $products = $product->get_by_ids( $website_product_group->get_product_relation_ids() );
 
-        $response = new CustomResponse( $this->resources, 'products/groups/show-products' );
+        $response = new CustomResponse( $this->resources, 'products/related-products/show-products' );
         $response->set( compact( 'products' ) );
 
         return $response;
@@ -239,8 +239,8 @@ class GroupsController extends BaseController {
         // Create output
         if ( is_array( $products ) )
         foreach ( $products as $product ) {
-            $dialog = '<a href="' . url::add_query_arg( array( '_nonce' => $get_product_nonce, 'pid' => $product->id ), '/products/groups/get-product/#dProductDialog' . $product->id ) . '" title="' . _('View') . '" rel="dialog">';
-           	$actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/products/groups/add-product/' ) . '" title="' . _('Add') . '" ajax="1">' . _('Add Product') . '</a>';
+            $dialog = '<a href="' . url::add_query_arg( array( '_nonce' => $get_product_nonce, 'pid' => $product->id ), '/products/related-products/get-product/#dProductDialog' . $product->id ) . '" title="' . _('View') . '" rel="dialog">';
+           	$actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/products/related-products/add-product/' ) . '" title="' . _('Add') . '" ajax="1">' . _('Add Product') . '</a>';
 
             $data[] = array(
                 $dialog . format::limit_chars( $product->name,  50, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>',
@@ -318,7 +318,7 @@ class GroupsController extends BaseController {
         $product->get( $account_product->product_id );
         $image = current( $product->get_images() );
 
-        $response = new CustomResponse( $this->resources, 'products/groups/get-product' );
+        $response = new CustomResponse( $this->resources, 'products/related-products/get-product' );
         $response->set( compact( 'product', 'image' ) );
 
         return $response;

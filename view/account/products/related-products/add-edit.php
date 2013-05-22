@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Add/Edit | Product Groups | Products
+ * @page Add/Edit | Related Products | Products
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -24,7 +24,7 @@ require VIEW_PATH . $this->variables['view_base'] . '../sidebar.php';
         <div id="narrow-your-search-wrapper">
         <div id="narrow-your-search">
             <?php nonce::field( 'autocomplete_owned', '_autocomplete_owned' ); ?>
-            <input type="text" class="tb" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) ) ? $_POST['tName'] : $group->name; ?>" tmpval="<?php echo _('Product Group Name...'); ?>" />
+            <input type="text" class="tb" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) ) ? $_POST['tName'] : $group->name; ?>" tmpval="<?php echo _('Related Product Group Name...'); ?>" />
             <br /><br />
             <h2><?php echo _('Narrow Your Search'); ?></h2>
             <br />

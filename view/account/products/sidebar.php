@@ -35,10 +35,10 @@
 
 	<a href="/products/brands/" title="<?php echo _('Top Brands'); ?>" class="top<?php $template->select('brands'); ?>"><?php echo _('Top Brands'); ?></a>
 
-	<a href="/products/groups/" title="<?php echo _('Product Groups'); ?>" class="top<?php $template->select('product-groups'); ?>"><?php echo _('Products Groups'); ?></a>
-	<?php if ( $template->v('product-groups') ) { ?>
-		<a href="/products/groups/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-		<a href="/products/groups/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a></li>
+	<a href="/products/related-products/" title="<?php echo _('Related Products'); ?>" class="top<?php $template->select('related-products'); ?>"><?php echo _('Related Products'); ?></a>
+	<?php if ( $template->v('related-products') ) { ?>
+		<a href="/products/related-products/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+		<a href="/products/related-products/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 
 	<a href="/products/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
