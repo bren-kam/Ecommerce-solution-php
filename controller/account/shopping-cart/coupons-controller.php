@@ -7,7 +7,7 @@ class CouponsController extends BaseController {
         parent::__construct( );
 
         // Tell what is the base for all login
-        $this->view_base = 'products/coupons/';
+        $this->view_base = 'shopping-cart/coupons/';
         $this->section = 'Coupons';
     }
 
@@ -80,7 +80,7 @@ class CouponsController extends BaseController {
 
         $this->resources
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'products/coupons/add-edit' );
+            ->javascript( 'shopping-cart/coupons/add-edit' );
 
         return $this->get_template_response( 'add-edit' )
             ->select( 'coupons', 'add' )
@@ -118,8 +118,8 @@ class CouponsController extends BaseController {
         foreach ( $coupons as $coupon ) {
             $date = new DateTime( $coupon->date_created );
 
-            $actions = '<a href="' . url::add_query_arg( 'wcid', $coupon->id, '/products/coupons/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
-           	$actions .= ' | <a href="' . url::add_query_arg( array( '_nonce' => $delete_nonce, 'wcid' => $coupon->id ), '/products/coupons/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
+            $actions = '<a href="' . url::add_query_arg( 'wcid', $coupon->id, '/shopping-cart/coupons/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>';
+           	$actions .= ' | <a href="' . url::add_query_arg( array( '_nonce' => $delete_nonce, 'wcid' => $coupon->id ), '/shopping-cart/coupons/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
 
             $data[] = array(
                 $coupon->name . '<div class="actions">' . $actions . '</div>'

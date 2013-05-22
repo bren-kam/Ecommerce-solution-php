@@ -35,16 +35,6 @@
 
 	<a href="/products/brands/" title="<?php echo _('Top Brands'); ?>" class="top<?php $template->select('brands'); ?>"><?php echo _('Top Brands'); ?></a>
 
-	<?php if ( $user->account->shopping_cart ) { ?>
-		<a href="/products/coupons/" title="<?php echo _('Coupons'); ?>" class="top<?php $template->select('coupons'); ?>"><?php echo _('Coupons'); ?></a>
-		<?php if ( true === $template->v('coupons') ) { ?>
-			<a href="/products/coupons/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-			<a href="/products/coupons/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
-		<?php
-		}
-	}
-	?>
-
 	<a href="/products/groups/" title="<?php echo _('Product Groups'); ?>" class="top<?php $template->select('product-groups'); ?>"><?php echo _('Products Groups'); ?></a>
 	<?php if ( $template->v('product-groups') ) { ?>
 		<a href="/products/groups/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>

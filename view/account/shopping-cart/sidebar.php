@@ -15,6 +15,12 @@
 		<a href="/shopping-cart/shipping/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('shipping-settings'); ?>"><?php echo _('Settings'); ?></a>
 	<?php } ?>
 
+    <a href="/shopping-cart/coupons/" title="<?php echo _('Coupons'); ?>" class="top<?php $template->select('coupons'); ?>"><?php echo _('Coupons'); ?></a>
+    <?php if ( $template->v('coupons') ) { ?>
+        <a href="/shopping-cart/coupons/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+        <a href="/shopping-cart/coupons/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
+    <?php } ?>
+
     <a href="/shopping-cart/settings/" title="<?php echo _('Settings'); ?>" class="top<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
 	<?php if ( $template->v('settings') ) { ?>
     	<a href="/shopping-cart/settings/" title="<?php echo _('General Settings'); ?>" class="sub<?php $template->select('general'); ?>"><?php echo _('General'); ?></a>
