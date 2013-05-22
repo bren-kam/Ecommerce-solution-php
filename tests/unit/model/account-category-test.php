@@ -22,11 +22,10 @@ class AccountCategoryTest extends BaseDatabaseTest {
         // Set variables
         $website_id = -7;
         $name = 'elbow pads';
-        $status = 1;
 
         // Create
         $category_id = $this->db->insert( 'categories', compact( 'name' ), 's' );
-        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id', 'status' ), 'iii' );
+        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id' ), 'ii' );
 
         // Get
         $this->account_category->get( $website_id, $category_id );
@@ -46,12 +45,11 @@ class AccountCategoryTest extends BaseDatabaseTest {
         // Set variables
         $website_id = -7;
         $category_id = -5;
-        $status = 1;
 
         // Create
-        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id', 'status' ), 'iii' );
+        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id' ), 'ii' );
         $category_id = -5;
-        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id', 'status' ), 'iii' );
+        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id' ), 'ii' );
 
         // Get
         $category_ids = $this->account_category->get_all_ids( $website_id );
