@@ -120,16 +120,6 @@ class UsersController extends BaseController {
 
         $form->add_field( 'blank', '' );
 
-        // Account Information
-        $form->add_field( 'title', _('Account Information') );
-
-        $form->add_field( 'select', _('Status'), 'sStatus', $user->status )
-            ->options( array(
-                0 => _('Inactive')
-                , 1 => _('Active')
-            )
-        );
-
         /***** END FORM *****/
 
         $response = $this->get_template_response( 'edit' )
@@ -175,7 +165,6 @@ class UsersController extends BaseController {
             $user->shipping_city = $_POST['tShippingCity'];
             $user->shipping_state = $_POST['sShippingState'];
             $user->shipping_zip = $_POST['tShippingZip'];
-            $user->status = $_POST['sStatus'];
 
             $user->save();
 
