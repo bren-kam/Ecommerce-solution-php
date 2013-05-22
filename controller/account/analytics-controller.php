@@ -671,7 +671,7 @@ class AnalyticsController extends BaseController {
                 , $email->emails_sent
                 , $email->opens
                 , $email->clicks
-                , $date->format( 'F jS, Y g:i a' )
+                , $date->format( 'F jS, Y g:ia' )
             );
         }
 

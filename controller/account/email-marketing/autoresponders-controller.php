@@ -43,7 +43,7 @@ class AutorespondersController extends BaseController {
         $form = new FormTable( 'fAddEditAutoresponder' );
 
         if ( !$email_autoresponder->id )
-            $form->submit( _('Create') );
+            $form->submit( _('Add') );
 
         $form->add_field( 'title', _('Base Information') );
 

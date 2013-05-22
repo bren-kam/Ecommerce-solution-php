@@ -55,7 +55,7 @@ class SubscribersController extends BaseController {
         $form = new FormTable( 'fAddEditSubscriber' );
 
         if ( !$email->id )
-            $form->submit( _('Create') );
+            $form->submit( _('Add') );
 
         $form->add_field( 'title', _('Basic Information') );
 
@@ -232,7 +232,7 @@ class SubscribersController extends BaseController {
             $data[] = array(
                 $subscriber->email . '<br /><div class="actions"><a href="' . url::add_query_arg( 'eid', $subscriber->id, '/email-marketing/subscribers/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions . '</div>'
                 , $subscriber->name
-                , $date->format( 'F jS, Y g:i a' )
+                , $date->format( 'F jS, Y g:ia' )
             );
         }
 
