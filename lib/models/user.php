@@ -26,7 +26,7 @@ class User extends ActiveRecordBase {
     private  $_admin;
 
     // The columns we will have access to
-    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role, $date_created;
+    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $role, $date_created;
 
     // Columns available in getting a complete user
     public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
@@ -70,7 +70,6 @@ class User extends ActiveRecordBase {
             , 'work_phone' => $this->work_phone
             , 'cell_phone' => $this->cell_phone
             , 'store_name' => $this->store_name
-            , 'products' => $this->products
             , 'status' => $this->status
             , 'role' => $this->role
             , 'billing_first_name' => $this->billing_first_name
@@ -79,7 +78,7 @@ class User extends ActiveRecordBase {
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
             , 'date_created' => $this->date_created
-        ), 'isssssiiissssss' );
+        ), 'isssssiissssss' );
 
         $this->user_id = $this->id = $this->get_insert_id();
     }
@@ -95,7 +94,6 @@ class User extends ActiveRecordBase {
             , 'work_phone' => $this->work_phone
             , 'cell_phone' => $this->cell_phone
             , 'store_name' => $this->store_name
-            , 'products' => $this->products
             , 'status' => $this->status
             , 'role' => $this->role
             , 'billing_first_name' => $this->billing_first_name
@@ -105,7 +103,7 @@ class User extends ActiveRecordBase {
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
         ), array( 'user_id' => $this->id )
-            , 'isssssiiissssss', 'i'
+            , 'isssssiissssss', 'i'
         );
     }
 
