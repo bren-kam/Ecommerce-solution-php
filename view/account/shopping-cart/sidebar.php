@@ -5,8 +5,8 @@
  */
 ?>
 <div id="sidebar">
-    <a href="/shopping-cart/users/" title="<?php echo _('Users'); ?>" class="top first<?php $template->select('users'); ?>"><?php echo _('Users'); ?></a>
     <a href="/shopping-cart/orders/" title="<?php echo _('Orders'); ?>" class="top<?php $template->select('orders'); ?>"><?php echo _('Orders'); ?></a>
+    <a href="/shopping-cart/users/" title="<?php echo _('Users'); ?>" class="top first<?php $template->select('users'); ?>"><?php echo _('Users'); ?></a>
 	<a href="/shopping-cart/shipping/" title="<?php echo _('Shipping Settings'); ?>" class="top<?php $template->select('shipping'); ?>"><?php echo _('Shipping'); ?></a>
 	<?php if ( $template->v('shipping') ) { ?>
 		<a href="/shopping-cart/shipping/add-edit-custom/" title="<?php echo _('Add Custom'); ?>" class="sub<?php $template->select('add-edit-custom'); ?>"><?php echo _('Add Custom'); ?></a>

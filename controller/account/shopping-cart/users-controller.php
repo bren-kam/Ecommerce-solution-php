@@ -230,7 +230,6 @@ class UsersController extends BaseController {
                     '<a href="' . url::add_query_arg( array( 'wuid' => $user->id, '_nonce' => $delete_nonce ), '/shopping-cart/users/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' .
                     '</div>'
                 , $user->billing_first_name
-                , ( $user->status ) ? _('Active') : _('Inactive')
                 , $date->format('F jS, Y')
             );
         }
