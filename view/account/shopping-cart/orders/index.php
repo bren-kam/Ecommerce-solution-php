@@ -16,8 +16,9 @@ echo $template->start( _('Orders'), '../sidebar' );
     <thead>
         <tr>
             <th width="15%" sort="1 desc"><?php echo _('Order Number'); ?></th>
-            <th width="30%"><?php echo _('Price'); ?></th>
-            <th width="30%"><?php echo _('Status'); ?></th>
+            <th width="20%"><?php echo _('Name'); ?></th>
+            <th width="20%"><?php echo _('Price'); ?></th>
+            <th width="20%"><?php echo _('Status'); ?></th>
             <th width="25%"><?php echo _('Date'); ?></th>
         </tr>
     </thead>

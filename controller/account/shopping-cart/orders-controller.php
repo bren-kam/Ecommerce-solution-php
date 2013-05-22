@@ -105,6 +105,7 @@ class OrdersController extends BaseController {
 
             $data[] = array(
                 '<a href="' . url::add_query_arg( 'woid', $order->id, '/shopping-cart/orders/view/' ) . '" title="' . _('View') . '">' . $order->id . '</a>'
+                , $order->name
                 , '$' . number_format( $order->total_cost, 2 )
                 , $status
                 , $date->format('F jS, Y')

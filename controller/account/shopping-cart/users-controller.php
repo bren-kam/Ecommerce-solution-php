@@ -193,7 +193,7 @@ class UsersController extends BaseController {
         $website_user = new WebsiteUser();
 
         // Set Order by
-        $dt->order_by( '`email`', '`billing_first_name`', '`status`', '`date_registered`' );
+        $dt->order_by( '`email`', '`billing_first_name`', '`date_registered`' );
         $dt->add_where( ' AND `website_id` = ' . (int) $this->user->account->id );
         $dt->search( array( '`email`' => false, '`billing_first_name`' => false ) );
 
