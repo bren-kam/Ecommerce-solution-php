@@ -119,7 +119,7 @@ class AccountPage extends ActiveRecordBase {
             $sequence++;
         }
 
-        $this->query( "INSERT INTO `website_page_product` ( `website_page_id`, `product_id`, `sequence` ) VALUES $sql_values" );
+        $this->query( "INSERT INTO `website_page_product` ( `website_page_id`, `product_id`, `sequence` ) VALUES $sql_values ON DUPLICATE KEY UPDATE `website_page_id` = VALUES( `website_page_id` )" );
     }
 
     /**
