@@ -1086,10 +1086,9 @@ class ProductsController extends BaseController {
         	$actions = '<a href="#" class="add-product" id="aAddProduct' . $product->id . '" name="' . $product->name . '" title="' . _('Add') . '">' . _('Add Product') . '</a>';
 
         	$data[] = array(
-        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>',
-        		$product->brand,
-        		$product->sku,
-        		ucwords( $product->status )
+        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
+        		, $product->brand
+        		, $product->sku
         	);
         }
 
