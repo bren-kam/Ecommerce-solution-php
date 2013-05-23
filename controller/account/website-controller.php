@@ -1472,6 +1472,11 @@ class WebsiteController extends BaseController {
         // Get response
         $dt = new DataTableResponse( $this->user );
 
+        if ( empty( $_GET['s'] ) ) {
+            $dt->set_data( array() );
+            return $dt;
+        }
+
         $account_product = new AccountProduct();
 
         // Set Order by
