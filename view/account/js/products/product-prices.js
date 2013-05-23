@@ -3,7 +3,7 @@
  */
 head.js( 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
     // Grab the products for each brand
-    $('#sBrand').change( function() {
+    $('#sBrand, #sCategory').change( function() {
         $('#tProductPrices').dataTable().fnDraw();
     });
 
@@ -55,6 +55,7 @@ head.js( 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTabl
         },
         fnServerData: function ( sSource, aoData, fnCallback ) {
             aoData.push({ name : 'b', value : $('#sBrand').val() });
+            aoData.push({ name : 'cid', value : $('#sCategory').val() });
 
             // Get the data
             $.ajax({

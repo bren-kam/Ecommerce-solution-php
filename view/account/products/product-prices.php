@@ -8,15 +8,24 @@
  * @var Template $template
  * @var User $user
  * @var Brand[] $brands
+ * @var Category[] $categories
  */
 
 echo $template->start( _('Product Prices') );
 ?>
-<h2><?php echo _('1. Select a brand'); ?></h2>
+<h2><?php echo _('1. Select a brand and/or category'); ?></h2>
+<br />
 <select id="sBrand">
     <option value="">-- <?php echo _('Select Brand'); ?> --</option>
     <?php foreach ( $brands as $brand ) { ?>
         <option value="<?php echo $brand->id; ?>"><?php echo $brand->name; ?></option>
+    <?php } ?>
+</select>
+<br /><br />
+<select id="sCategory">
+    <option value="">-- <?php echo _('Select Category'); ?> --</option>
+    <?php foreach ( $categories as $category ) { ?>
+        <option value="<?php echo $category->id; ?>"><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
     <?php } ?>
 </select>
 <br /><br />
