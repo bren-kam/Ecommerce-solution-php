@@ -62,6 +62,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
  */
 function endStoreSession( response ) {
     alert( response['success'] + '|' + response.success );
+    alert( response );
     if ( response['success'] )
         $('.dt:first').dataTable().fnDraw();
 }
