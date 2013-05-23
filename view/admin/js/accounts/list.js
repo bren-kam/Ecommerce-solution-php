@@ -47,6 +47,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	// Search functionality - Trigger (Click)
 	$('#aSearch').click( function() {
         $.post( '/accounts/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'accounts', 'search' ], value : $('#tAutoComplete').val() }, endStoreSession );
+        alert( 'after' );
     } );
 
 	// State Change - Trigger (Change)
@@ -61,6 +62,8 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
  * @param response
  */
 function endStoreSession( response ) {
-    if ( response.success )
+    alert( 'here' );
+    alert( response );
+    if ( response['success'] )
         $('.dt:first').dataTable().fnDraw();
 }
