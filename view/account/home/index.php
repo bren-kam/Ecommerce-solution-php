@@ -7,11 +7,10 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var string $advertising_url
  */
 
 echo $template->start( '', false );
-
-$settings = $user->account->get_settings('advertising-url');
 
 $links = array(
     'pages'				    => array( 'website', _('Website') )
@@ -54,9 +53,9 @@ foreach ( $links as $key => $link ) {
         break;
     }
 }
-    if ( !empty( $settings['advertising-url'] ) ) {
+    if ( !empty( $advertising_url ) ) {
     ?>
-        <a href="<?php echo $settings['advertising-url']; ?>" title="<?php echo _('Advertising Portal'); ?>" target="_blank" class="service"><img src="/images/dashboard/ads.png" width="149" height="160" alt="<?php echo _('Advertising Portal'); ?>" /></a>
+        <a href="<?php echo $advertising_url; ?>" title="<?php echo _('Advertising Portal'); ?>" target="_blank" class="service"><img src="/images/dashboard/ads.png" width="149" height="160" alt="<?php echo _('Advertising Portal'); ?>" /></a>
         <?php
     }
 

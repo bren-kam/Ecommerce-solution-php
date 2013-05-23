@@ -17,9 +17,11 @@ class HomeController extends BaseController {
      */
     protected function index() {
         $this->resources->css('dashboard/dashboard');
+        $advertising_url = $this->user->account->get_settings('advertising-url');
 
         return $this->get_template_response( 'index' )
-            ->select('dashboard');
+            ->select('dashboard')
+            ->set( compact( 'advertising_url' ) );
     }
 
     /**
