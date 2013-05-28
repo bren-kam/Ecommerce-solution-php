@@ -254,7 +254,7 @@ class Product extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT p.`product_id`, p.`name`, b.`name` AS brand, p.`sku`, p.`status`, p.`publish_date`, c.`name` AS category FROM `products` AS p LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            "SELECT p.`product_id`, p.`name`, b.`name` AS brand, p.`sku`, c.`name` AS category FROM `products` AS p LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE p.`publish_visibility` <> 'deleted' $where GROUP BY p.`product_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );

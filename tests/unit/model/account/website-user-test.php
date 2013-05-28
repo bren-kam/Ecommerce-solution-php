@@ -150,7 +150,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( '`email`', '`billing_first_name`', '`status`', '`date_registered`' );
+        $dt->order_by( '`email`', '`billing_first_name`', '`date_registered`' );
 
         $website_users = $this->website_user->list_all( $dt->get_variables() );
 
@@ -175,7 +175,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( '`email`', '`billing_first_name`', '`status`', '`date_registered`' );
+        $dt->order_by( '`email`', '`billing_first_name`', '`date_registered`' );
 
         $count = $this->website_user->count_all( $dt->get_count_variables() );
 

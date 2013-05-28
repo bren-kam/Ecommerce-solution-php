@@ -395,7 +395,7 @@ class ChecklistsController extends BaseController {
 
             $data[] = array(
                 '<span class="' . $color . '">' . $c->days_left . '</span>'
-                ,  '<a href="/checklists/checklist/?cid=' . $c->id . '" title="' . _('View Checklist') . '">' . $c->title
+                ,  '<a href="/checklists/checklist/?cid=' . $c->id . '" title="' . _('View Checklist') . '">' . $c->title . '</a>'
                 , $c->online_specialist
                 , $c->type
                 , $date->format('F j, Y')

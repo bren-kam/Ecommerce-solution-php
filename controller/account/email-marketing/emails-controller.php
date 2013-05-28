@@ -133,7 +133,7 @@ class EmailsController extends BaseController {
             $data[] = array(
                 format::limit_chars( $message->subject, 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
                 $statuses[$message->status],
-                $date->format( 'F jS, Y g:i a' )
+                $date->format( 'F jS, Y g:ia' )
             );
         }
 

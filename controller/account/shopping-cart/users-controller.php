@@ -120,16 +120,6 @@ class UsersController extends BaseController {
 
         $form->add_field( 'blank', '' );
 
-        // Account Information
-        $form->add_field( 'title', _('Account Information') );
-
-        $form->add_field( 'select', _('Status'), 'sStatus', $user->status )
-            ->options( array(
-                0 => _('Inactive')
-                , 1 => _('Active')
-            )
-        );
-
         /***** END FORM *****/
 
         $response = $this->get_template_response( 'edit' )
@@ -175,7 +165,6 @@ class UsersController extends BaseController {
             $user->shipping_city = $_POST['tShippingCity'];
             $user->shipping_state = $_POST['sShippingState'];
             $user->shipping_zip = $_POST['tShippingZip'];
-            $user->status = $_POST['sStatus'];
 
             $user->save();
 
@@ -204,7 +193,7 @@ class UsersController extends BaseController {
         $website_user = new WebsiteUser();
 
         // Set Order by
-        $dt->order_by( '`email`', '`billing_first_name`', '`status`', '`date_registered`' );
+        $dt->order_by( '`email`', '`billing_first_name`', '`date_registered`' );
         $dt->add_where( ' AND `website_id` = ' . (int) $this->user->account->id );
         $dt->search( array( '`email`' => false, '`billing_first_name`' => false ) );
 
@@ -230,7 +219,6 @@ class UsersController extends BaseController {
                     '<a href="' . url::add_query_arg( array( 'wuid' => $user->id, '_nonce' => $delete_nonce ), '/shopping-cart/users/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' .
                     '</div>'
                 , $user->billing_first_name
-                , ( $user->status ) ? _('Active') : _('Inactive')
                 , $date->format('F jS, Y')
             );
         }

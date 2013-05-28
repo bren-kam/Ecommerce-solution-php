@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Coupons | Products
+ * @page Coupons | Shopping Cart
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -12,7 +12,7 @@
 echo $template->start( _('Coupons'), '../sidebar' );
 ?>
 
-<table ajax="/products/coupons/list-coupons/" perPage="30,50,100">
+<table ajax="/shopping-cart/coupons/list-coupons/" perPage="30,50,100">
     <thead>
         <tr>
             <th width="40%"><?php echo _('Name'); ?></th>

@@ -48,7 +48,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
     // Setup File Uploader
     var videoUploader = new qq.FileUploader({
         action: '/website/upload_sidebar_video/'
-        , allowedExtensions: ['swf', 'flv', 'mp4', 'f4v']
+        , allowedExtensions: ['mp4']
         , element: $('#upload-sidebar-video')[0]
         , sizeLimit: 26214400 // (25mb) In bytes? Really?
         , onSubmit: function( id, fileName ) {

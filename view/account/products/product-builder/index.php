@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Custom Products | Products
+ * @page Product Builder | Products
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -43,12 +43,10 @@ require VIEW_PATH . $this->variables['view_base'] . '../sidebar.php';
         <table perPage="100,250,500" id="tViewProducts">
             <thead>
                 <tr>
-                    <th width="40%" sort="1"><?php echo _('Name'); ?></th>
-                    <th width="15%"><?php echo _('Brand'); ?></th>
+                    <th width="45%" sort="1"><?php echo _('Name'); ?></th>
+                    <th width="20%"><?php echo _('Brand'); ?></th>
                     <th width="10%"><?php echo _('SKU'); ?></th>
-                    <th width="15%"><?php echo _('Category'); ?></th>
-                    <th width="8%"><?php echo _('Status'); ?></th>
-                    <th width="12%"><?php echo _('Published'); ?></th>
+                    <th width="25%"><?php echo _('Category'); ?></th>
                 </tr>
             </thead>
             <tbody>
