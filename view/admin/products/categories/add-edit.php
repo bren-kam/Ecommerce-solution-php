@@ -43,10 +43,9 @@ if ( $category->id )
         <td><input type="text" class="tb" name="tSlug" id="tSlug" value="<?php echo $template->v('slug'); ?>" /></td>
     </tr>
     <tr>
-        <td><label for="sAttributes"><?php echo _('Attributes'); ?>:</label></td>
+        <td class="top"><label for="sAttributes"><?php echo _('Attributes'); ?>:</label></td>
         <td>
-            <select name="sAttributes" id="sAttributes">
-                <option value="">-- <?php echo _('Select Attribute'); ?> --</option>
+            <select name="sAttributes" id="sAttributes" multiple="multiple">
                 <?php
                 foreach ( $attributes as $a ) {
                     $disabled = ( in_array( $a->id, $category_attribute_ids ) ) ? ' disabled="disabled"' : '';

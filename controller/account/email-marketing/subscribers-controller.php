@@ -55,7 +55,7 @@ class SubscribersController extends BaseController {
         $form = new FormTable( 'fAddEditSubscriber' );
 
         if ( !$email->id )
-            $form->submit( _('Create') );
+            $form->submit( _('Add') );
 
         $form->add_field( 'title', _('Basic Information') );
 
@@ -198,12 +198,12 @@ class SubscribersController extends BaseController {
         $status = (int) $_GET['s'];
 
         // Set Order by
-        $dt->order_by( 'e.`email`', 'e.`name`', 'e.`phone`', 'e.`date_created`' );
+        $dt->order_by( 'e.`email`', 'e.`name`', 'e.`date_created`' );
         $dt->add_where( " AND e.`status` = $status" );
         $dt->add_where( ' AND e.`website_id` = ' . (int) $this->user->account->id );
 
         if ( isset( $_GET['elid'] ) )
-        $dt->add_where( " AND ea.`email_list_id` = " . (int) $_GET['elid'] );
+            $dt->add_where( " AND ea.`email_list_id` = " . (int) $_GET['elid'] );
 
         $dt->search( array( 'e.`email`' => false, 'e.`name`' => false ) );
 
@@ -232,8 +232,7 @@ class SubscribersController extends BaseController {
             $data[] = array(
                 $subscriber->email . '<br /><div class="actions"><a href="' . url::add_query_arg( 'eid', $subscriber->id, '/email-marketing/subscribers/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions . '</div>'
                 , $subscriber->name
-                , $subscriber->phone
-                , $date->format( 'F jS, Y g:i a' )
+                , $date->format( 'F jS, Y g:ia' )
             );
         }
 

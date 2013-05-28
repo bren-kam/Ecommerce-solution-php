@@ -43,7 +43,7 @@ class EmailListsController extends BaseController {
         $form = new FormTable( 'fAddEditEmailList' );
 
         if ( !$email_list->id )
-            $form->submit( _('Create') );
+            $form->submit( _('Add') );
 
         $form->add_field( 'text', _('Name'), 'tName', $email_list->name )
             ->attribute( 'maxlength', 80 )
@@ -141,7 +141,7 @@ class EmailListsController extends BaseController {
                 $el->name . ' (' . $el->count . ')<br /><div class="actions"><a href="' . url::add_query_arg( 'elid', $el->id, '/email-marketing/subscribers/' ) . '" title="' . _('View Subscribers') . '">' . _('View Subscribers') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'elid', $el->id, '/email-marketing/email-lists/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $delete
                 , format::limit_chars( $el->description, 32, '...' )
-                , $date->format( 'F jS, Y g:i a' )
+                , $date->format( 'F jS, Y g:ia' )
             );
         }
 

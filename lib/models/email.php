@@ -252,7 +252,7 @@ class Email extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT DISTINCT e.`email_id`, e.`name`, e.`email`, e.`phone`, IF( 1 = e.`status`, e.`date_created`, e.`timestamp` ) AS date FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT DISTINCT e.`email_id`, e.`name`, e.`email`, IF( 1 = e.`status`, e.`date_created`, e.`timestamp` ) AS date FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Email' );

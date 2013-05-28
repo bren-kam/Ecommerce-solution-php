@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Add/Edit | Coupons | Products
+ * @page Add/Edit | Coupons | Shopping Cart
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources

@@ -8,6 +8,9 @@ class WebsiteOrder extends ActiveRecordBase {
         , $shipping_last_name, $shipping_address1, $shipping_address2, $shipping_city, $shipping_state
         , $shipping_zip, $status, $date_created;
 
+    // Artificial field
+    public $name;
+
     // Belonging to another table
     public $shipping_method;
 
@@ -91,7 +94,7 @@ class WebsiteOrder extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `website_order_id`, `total_cost`, `status`, `date_created` FROM `website_orders` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `website_order_id`, CONCAT( `billing_first_name`, ' ', `billing_last_name` ) AS name, `total_cost`, `status`, `date_created` FROM `website_orders` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'WebsiteOrder' );

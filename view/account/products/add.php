@@ -92,9 +92,8 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
             <thead>
                 <tr>
                     <th width="50%"><?php echo _('Name'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
-                    <th width="20%"><?php echo _('Brand'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
-                    <th width="15%"><?php echo _('SKU'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
-                    <th width="15%"><?php echo _('Status'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="30%"><?php echo _('Brand'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
+                    <th width="20%"><?php echo _('SKU'); ?><img src="/images/trans.gif" width="10" height="8" /></th>
                 </tr>
             </thead>
             <tbody>

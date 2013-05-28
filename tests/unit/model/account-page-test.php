@@ -236,11 +236,11 @@ class AccountPageTest extends BaseDatabaseTest {
         // Determine length
         $_GET['iDisplayLength'] = 30;
         $_GET['iSortingCols'] = 1;
-        $_GET['iSortCol_0'] = 1;
+        $_GET['iSortCol_0'] = 0;
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( '`title`', '`status`', '`date_updated`' );
+        $dt->order_by( '`title`');
 
         $account_pages = $this->account_page->list_all( $dt->get_variables() );
 

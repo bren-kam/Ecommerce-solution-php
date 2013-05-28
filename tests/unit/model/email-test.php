@@ -335,7 +335,7 @@ class EmailTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $user );
-        $dt->order_by( '`subject`', '`status`', 'date_sent' );
+        $dt->order_by( 'e.`email`', 'e.`name`', 'e.`date_created`' );
 
         $emails = $this->email->list_all( $dt->get_variables() );
 

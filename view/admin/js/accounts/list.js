@@ -46,13 +46,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 	// Search functionality - Trigger (Click)
 	$('#aSearch').click( function() {
-        $.post( '/accounts/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'accounts', 'search' ], value : $('#tAutoComplete').val() }, endStoreSession );
+        $.post( '/accounts/store-session/', { _nonce : $('#_store_session').val(), keys : [ 'accounts', 'search' ], value : $('#tAutoComplete').val() }, endStoreSession, 'JSON' );
     } );
 
 	// State Change - Trigger (Change)
 	$('#state').change( function() {
         // Change state ajax request
-        $.post( '/accounts/store-session/', { '_nonce' : $('#_store_session').val(), keys : [ 'accounts', 'state' ], value : $(this).val() }, endStoreSession );
+        $.post( '/accounts/store-session/', { '_nonce' : $('#_store_session').val(), keys : [ 'accounts', 'state' ], value : $(this).val() }, endStoreSession, 'JSON' );
     } );
 });
 

@@ -18,7 +18,7 @@ class SettingsController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message' );
+        $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup' );
 
         $form = new FormTable( 'fSettings' );
 
@@ -30,10 +30,13 @@ class SettingsController extends BaseController {
         $form->add_field( 'textarea', _('Receipt Message'), 'taReceiptMessage', $settings['receipt-message'] )
             ->attribute( 'rte', '1' );
 
+        $form->add_field( 'checkbox', _('Show Related Products on Checkout Page'), 'add-product-popup', $settings['add-product-popup'] );
+
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'email-receipt' => $_POST['tReceipt']
                 , 'receipt-message' => $_POST['taReceiptMessage']
+                , 'add-product-popup' => $_POST['add-product-popup']
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );

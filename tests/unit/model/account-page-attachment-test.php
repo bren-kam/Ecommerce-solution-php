@@ -183,7 +183,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $account_page_ids = array( -1 );
 
         // Insert a few
-        $this->db->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value` ) VALUES (-1, 'video', 'google.flv'), (-1, 'search', ''), (-1, 'email', '')" );
+        $this->db->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value` ) VALUES (-1, 'video', 'google.mp4'), (-1, 'search', ''), (-1, 'email', '')" );
 
         // Yarr! Delete them!
         $this->account_page_attachment->delete_unique_attachments( $account_page_ids );

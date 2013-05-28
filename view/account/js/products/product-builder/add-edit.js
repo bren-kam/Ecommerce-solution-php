@@ -22,7 +22,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
         // Create the product ID
         if ( '' == $('#fAddEditProduct').attr('action') )
-            $.post( '/products/custom-products/create/', { _nonce : $('#_create_product').val() }, ajaxResponse , 'json');
+            $.post( '/products/product-builder/create/', { _nonce : $('#_create_product').val() }, ajaxResponse , 'json');
 	});
 
     /**
@@ -194,7 +194,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // Setup File Uploader
     var uploader = new qq.FileUploader({
-        action: '/products/custom-products/upload-image/'
+        action: '/products/product-builder/upload-image/'
         , allowedExtensions: ['gif', 'jpg', 'jpeg', 'png']
         , element: $('#upload-image')[0]
         , sizeLimit: 10485760 // 10 mb's
@@ -246,7 +246,7 @@ function updateAttributes() {
         return;
 
     // Load attribute items
-	$.post( '/products/custom-products/get-attribute-items/', { _nonce: $('#_get_attribute_items').val(), cid : categoryId }, ajaxResponse, 'json' );
+	$.post( '/products/product-builder/get-attribute-items/', { _nonce: $('#_get_attribute_items').val(), cid : categoryId }, ajaxResponse, 'json' );
 }
 
 // Disable attributes

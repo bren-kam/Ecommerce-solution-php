@@ -317,6 +317,20 @@ class ProductsController extends BaseController {
      */
     protected function product_prices() {
         $brand = new Brand();
+        $category = new Category();
+        $account_category = new AccountCategory();
+
+        // Sort categories
+        $categories_array = $category->sort_by_hierarchy();
+        $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
+        $categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( !in_array( $category->id, $website_category_ids ) )
+                continue;
+
+            $categories[] = $category;
+        }
 
         $brands = $brand->get_by_account( $this->user->account->id );
 
@@ -327,7 +341,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'product-prices' )
             ->add_title( _('Product Prices') )
             ->select( 'sub-products', 'product-prices' )
-            ->set( compact( 'brands' ) );
+            ->set( compact( 'brands', 'categories' ) );
     }
 
     /**
@@ -385,11 +399,10 @@ class ProductsController extends BaseController {
         $form = new FormTable( 'fSettings' );
 
         // Get settings
-        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'add-product-popup', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
+        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
         $settings = $this->user->account->get_settings( $settings_array );
         $checkboxes = array(
-        	'category-show-price-note' 	=> _('Categories - Show Price Note?')
-        	, 'add-product-popup' 		=> _('Add Product - Popup')
+        	'category-show-price-note' 	=> _('Show Price Note on Category Page')
         	, 'hide-skus' 				=> _('Hide Manufacturer SKUs')
         	, 'hide-request-quote' 		=> _('Hide "Request a Quote" Button')
         	, 'hide-customer-ratings' 	=> _('Hide Customer Ratings')
@@ -1087,10 +1100,9 @@ class ProductsController extends BaseController {
         	$actions = '<a href="#" class="add-product" id="aAddProduct' . $product->id . '" name="' . $product->name . '" title="' . _('Add') . '">' . _('Add Product') . '</a>';
 
         	$data[] = array(
-        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>',
-        		$product->brand,
-        		$product->sku,
-        		ucwords( $product->status )
+        		$dialog . format::limit_chars( $product->name,  37, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
+        		, $product->brand
+        		, $product->sku
         	);
         }
 
@@ -1187,7 +1199,27 @@ class ProductsController extends BaseController {
         // Set Order by
         $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
         $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
-        $dt->add_where( ' AND p.`brand_id` = ' . (int) $_GET['b'] );
+
+        if ( !empty( $_GET['b'] ) )
+            $dt->add_where( ' AND p.`brand_id` = ' . (int) $_GET['b'] );
+
+        if ( !empty( $_GET['cid'] ) ) {
+            $category = new Category();
+            $account_category = new AccountCategory();
+            $categories = $category->get_all_children( $_GET['cid'] );
+            $account_categories = $account_category->get_all_ids( $this->user->account->id );
+            $category_ids[] = (int) $_GET['cid'];
+
+            foreach ( $categories as $c ) {
+                if ( !in_array( $c->id, $account_categories ) )
+                    continue;
+
+                $category_ids[] = (int) $c->id;
+            }
+
+
+            $dt->add_where( ' AND p.`category_id` IN ( ' . implode( ',', $category_ids ) . ' )' );
+        }
 
         // Get account pages
         $products = $account_product->list_product_prices( $dt->get_variables() );

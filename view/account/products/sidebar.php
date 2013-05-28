@@ -27,28 +27,18 @@
     <?php } ?>
 
     <a href="/products/reaches/" title="<?php echo _('Reaches'); ?>" class="top<?php $template->select('reaches'); ?>"><?php echo _('Reaches'); ?></a>
-	<a href="/products/custom-products/" title="<?php echo _('Custom Products'); ?>" class="top<?php $template->select('custom-products'); ?>"><?php echo _('Custom Products'); ?></a>
-	<?php if ( $template->v('custom-products') ) { ?>
-		<a href="/products/custom-products/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-		<a href="/products/custom-products/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
+	<a href="/products/product-builder/" title="<?php echo _('Product Builder'); ?>" class="top<?php $template->select('product-builder'); ?>"><?php echo _('Product Builder'); ?></a>
+	<?php if ( $template->v('product-builder') ) { ?>
+		<a href="/products/product-builder/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+		<a href="/products/product-builder/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 
 	<a href="/products/brands/" title="<?php echo _('Top Brands'); ?>" class="top<?php $template->select('brands'); ?>"><?php echo _('Top Brands'); ?></a>
 
-	<?php if ( $user->account->shopping_cart ) { ?>
-		<a href="/products/coupons/" title="<?php echo _('Coupons'); ?>" class="top<?php $template->select('coupons'); ?>"><?php echo _('Coupons'); ?></a>
-		<?php if ( true === $template->v('coupons') ) { ?>
-			<a href="/products/coupons/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-			<a href="/products/coupons/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
-		<?php
-		}
-	}
-	?>
-
-	<a href="/products/groups/" title="<?php echo _('Product Groups'); ?>" class="top<?php $template->select('product-groups'); ?>"><?php echo _('Products Groups'); ?></a>
-	<?php if ( $template->v('product-groups') ) { ?>
-		<a href="/products/groups/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-		<a href="/products/groups/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a></li>
+	<a href="/products/related-products/" title="<?php echo _('Related Products'); ?>" class="top<?php $template->select('related-products'); ?>"><?php echo _('Related Products'); ?></a>
+	<?php if ( $template->v('related-products') ) { ?>
+		<a href="/products/related-products/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+		<a href="/products/related-products/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
 	<?php } ?>
 
 	<a href="/products/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>

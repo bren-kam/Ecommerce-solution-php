@@ -61,8 +61,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 			sAjaxSource : '/products/list-add-products/',
 			sDom : '<"top"lr>t<"bottom"pi>',
 			oLanguage: {
-					sLengthMenu: 'Rows: <select><option value="100">100</option><option value="300">300</option><option value="500">500</option></select>',
-					sInfo: "_START_ - _END_ of _TOTAL_"
+                sLengthMenu: 'Rows: <select><option value="100">100</option><option value="300">300</option><option value="500">500</option></select>'
+                , sInfo: "_START_ - _END_ of _TOTAL_"
+                , oPaginate: {
+                    sNext : ''
+                    , sPrevious : ''
+                }
 			},
 			fnDrawCallback : function() {
 				// Run Sparrow on new content and add the class last to the last row

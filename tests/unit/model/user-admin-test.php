@@ -306,8 +306,8 @@ class UserAdminTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $this->user );
-        $dt->order_by( 'a.`contact_name`', 'a.`email`', 'phone', 'b.`domain`', 'a.`role`' );
-        $dt->search( array( 'a.`contact_name`' => true, 'a.`email`' => true, 'b.`domain`' => true ) );
+        $dt->order_by( '`contact_name`', '`email`', '`role`' );
+        $dt->search( array( '`contact_name`' => true, '`email`' => true ) );
 
         $users = $this->user->list_all( $dt->get_variables() );
 
@@ -335,8 +335,8 @@ class UserAdminTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
 
         $dt = new DataTableResponse( $this->user );
-        $dt->order_by( 'a.`contact_name`', 'a.`email`', 'phone', 'b.`domain`', 'a.`role`' );
-        $dt->search( array( 'a.`contact_name`' => true, 'a.`email`' => true, 'b.`domain`' => true ) );
+        $dt->order_by( '`contact_name`', '`email`', '`role`' );
+        $dt->search( array( '`contact_name`' => true, '`email`' => true ) );
 
         $count = $this->user->count_all( $dt->get_count_variables() );
 

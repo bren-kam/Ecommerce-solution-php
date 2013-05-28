@@ -42,8 +42,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 		// Disable that option in the drop down
 		attribute.attr('disabled', true);
 
-		$(this).val('');
-
 		// Update attributes
 		updateAttributes();
     }).on( 'click', '#attributes-list a.delete-attribute', function() {

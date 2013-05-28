@@ -19,6 +19,9 @@ class User extends ActiveRecordBase {
     const RAFFERTY = 19;
     const KEVIN_DORAN = 251;
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     /**
      * Hold whether admin is active or not
      * @var int
@@ -26,7 +29,7 @@ class User extends ActiveRecordBase {
     private  $_admin;
 
     // The columns we will have access to
-    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $products, $role, $date_created;
+    public $id, $user_id, $company_id, $email, $contact_name, $store_name, $role, $date_created;
 
     // Columns available in getting a complete user
     public $work_phone, $cell_phone, $status, $billing_first_name, $billing_last_name, $billing_address1, $billing_city, $billing_state, $billing_zip;
@@ -70,7 +73,6 @@ class User extends ActiveRecordBase {
             , 'work_phone' => $this->work_phone
             , 'cell_phone' => $this->cell_phone
             , 'store_name' => $this->store_name
-            , 'products' => $this->products
             , 'status' => $this->status
             , 'role' => $this->role
             , 'billing_first_name' => $this->billing_first_name
@@ -79,7 +81,7 @@ class User extends ActiveRecordBase {
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
             , 'date_created' => $this->date_created
-        ), 'isssssiiissssss' );
+        ), 'isssssiissssss' );
 
         $this->user_id = $this->id = $this->get_insert_id();
     }
@@ -95,7 +97,6 @@ class User extends ActiveRecordBase {
             , 'work_phone' => $this->work_phone
             , 'cell_phone' => $this->cell_phone
             , 'store_name' => $this->store_name
-            , 'products' => $this->products
             , 'status' => $this->status
             , 'role' => $this->role
             , 'billing_first_name' => $this->billing_first_name
@@ -105,7 +106,7 @@ class User extends ActiveRecordBase {
             , 'billing_state' => $this->billing_state
             , 'billing_zip' => $this->billing_zip
         ), array( 'user_id' => $this->id )
-            , 'isssssiiissssss', 'i'
+            , 'isssssiissssss', 'i'
         );
     }
 
@@ -150,7 +151,7 @@ class User extends ActiveRecordBase {
 	 */
 	public function get( $user_id ) {
         // Prepare the statement
-        $this->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`work_phone`, a.`cell_phone`, a.`billing_first_name`, a.`billing_last_name`, a.`billing_address1`, a.`billing_city`, a.`billing_state`, a.`billing_zip`, a.`products`, a.`role`, a.`status`, a.`date_created`, b.`name` AS company, b.`domain` FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = :user_id'
+        $this->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`work_phone`, a.`cell_phone`, a.`billing_first_name`, a.`billing_last_name`, a.`billing_address1`, a.`billing_city`, a.`billing_state`, a.`billing_zip`, a.`role`, a.`status`, a.`date_created`, b.`name` AS company, b.`domain` FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = :user_id'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -290,7 +291,7 @@ class User extends ActiveRecordBase {
 		// Get the variables
 		list( $where, $values, $order_by, $limit ) = $variables;
 
-        $users = $this->prepare( "SELECT a.`user_id`, a.`email`, a.`contact_name`, COALESCE( a.`work_phone`, a.`cell_phone`, b.`phone`, '') AS phone, a.`role`, COALESCE( b.`domain`, '' ) AS domain FROM `users` AS a LEFT JOIN `websites` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where GROUP BY a.`user_id` $order_by LIMIT $limit"
+        $users = $this->prepare( "SELECT `user_id`, `email`, `contact_name`, `role` FROM `users` WHERE `status` <> 0 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'User' );
@@ -309,7 +310,7 @@ class User extends ActiveRecordBase {
 		list( $where, $values ) = $variables;
 
 		// Get the website count
-        $count = $this->prepare( "SELECT COUNT( a.`user_id` ) FROM `users` AS a LEFT JOIN ( SELECT `domain`, `user_id` FROM `websites` ) AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` <> 0 $where"
+        $count = $this->prepare( "SELECT COUNT( `user_id` ) FROM `users` WHERE `status` <> 0 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

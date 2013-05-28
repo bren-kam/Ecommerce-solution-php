@@ -231,7 +231,21 @@ class CategoriesController extends BaseController {
 
         // Deactivate user
         if ( $category->id ) {
-            $category->delete();
+            try {
+                $category->delete();
+            } catch ( ModelException $e ) {
+                switch( $e->getCode() ) {
+                      case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                        $response->check( false, _('This category is being used by an article or page. Please make sure it is unused before deleting.' ) );
+                    break;
+
+                    default:
+                        $response->check( false, $e->getMessage() );
+                    break;
+                }
+
+                return $response;
+            }
 
             // Load Parent Category
             $_POST['kbcid'] = (int) $parent_id;

@@ -1,5 +1,7 @@
 <?php
 class Industry extends ActiveRecordBase {
+    const FURNITURE = 1;
+
     // The columns we will have access to
     public $id, $industry_id, $name;
 

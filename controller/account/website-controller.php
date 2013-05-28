@@ -588,7 +588,7 @@ class WebsiteController extends BaseController {
         $account_page = new AccountPage();
 
         // Set Order by
-        $dt->order_by( '`title`', '`status`', '`date_updated`' );
+        $dt->order_by( '`title`');
         $dt->search( array( '`title`' => false ) );
         $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
 
@@ -633,15 +633,11 @@ class WebsiteController extends BaseController {
 
             $title = ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title;
 
-            $date_update = new DateTime( $page->date_updated );
-
             $data[] = array(
                 $title . '<div class="actions">' .
                     '<a href="http://' . $this->user->account->domain . '/' . $page->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'apid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
                     '</div>'
-                , ( $page->status ) ? _('Visible') : _('Not Visible')
-                , $date_update->format('F jS, Y')
             );
         }
 
@@ -1017,7 +1013,7 @@ class WebsiteController extends BaseController {
         $attachment = new AccountPageAttachment();
         $page = new AccountPage();
         $account_file = new AccountFile();
-        $uploader = new qqFileUploader( array( 'swf', 'flv', 'mp4', 'f4v' ), 26214400 );
+        $uploader = new qqFileUploader( array( 'mp4' ), 26214400 );
 
         // Set video
         $video_name =  'video.' . f::extension( $_GET['qqfile'] );
@@ -1475,6 +1471,11 @@ class WebsiteController extends BaseController {
     protected function list_products() {
         // Get response
         $dt = new DataTableResponse( $this->user );
+
+        if ( empty( $_GET['s'] ) ) {
+            $dt->set_data( array() );
+            return $dt;
+        }
 
         $account_product = new AccountProduct();
 
