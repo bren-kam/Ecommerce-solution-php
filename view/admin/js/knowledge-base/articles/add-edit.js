@@ -29,6 +29,10 @@ jQuery(function($) {
     $('#tSlug').change( function() {
         $(this).val( $(this).val().slug() );
     });
+
+    $('#taContent').redactor({
+        buttons : ['bold', 'italic', 'deleted', 'formatting', '|', 'alignleft', 'aligncenter', 'alignright', 'justify', '|', 'orderedlist', 'unorderedlist', '|', 'image', 'video', 'table', 'link', '|', 'horizontalrule', '|', 'html', '|' ]
+    });
 });
 
 // Turns text into a slug

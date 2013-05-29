@@ -63,8 +63,7 @@ class ArticlesController extends BaseController {
             ->attribute( 'maxlength', 100 )
             ->add_validation( 'req', _('The "Slug" field is required') );
 
-        $ft->add_field( 'textarea', _('Content'), 'taContent', $kb_article->content )
-            ->attribute( 'rte', 1 );
+        $ft->add_field( 'textarea', _('Content'), 'taContent', $kb_article->content );
 
         $sections = array(
             KnowledgeBaseCategory::SECTION_ADMIN => ucwords( KnowledgeBaseCategory::SECTION_ADMIN )
@@ -120,7 +119,9 @@ class ArticlesController extends BaseController {
 
         $form = $ft->generate_form();
 
-        $this->resources->javascript( 'knowledge-base/articles/add-edit' );
+        $this->resources
+            ->css( 'redactor' )
+            ->javascript( 'redactor', 'knowledge-base/articles/add-edit' );
 
         // Get Page
         return $this->get_template_response( 'add-edit' )
