@@ -612,3 +612,9 @@ td.cke_bottom { padding: 0 5px 5px 5px; border-top: 1px solid #b2b2b2; backgroun
 .qq-upload-failed-text {display:none;}
 .qq-upload-fail .qq-upload-failed-text {display:inline;}
 .upload-file { color: #808B8F !important }
+
+
+#dUploadFile { width: 635px }
+#dUploadFile #tFileName { width: 511px }
+#dUploadFile a.file img { max-width: 124px; max-height: 124px; margin: 0 auto; border: 1px sol }
+#dUploadFile .delete-file { position: absolute}

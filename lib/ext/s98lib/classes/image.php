@@ -10,6 +10,8 @@
  */
 
 class image extends Base_Class {
+    public static $extensions = array( 'jpeg', 'jpg', 'png', 'gif' );
+
 	/**
 	 * Figures out the right proportion for an image
 	 * 
