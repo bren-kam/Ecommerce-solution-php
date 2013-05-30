@@ -615,6 +615,15 @@ td.cke_bottom { padding: 0 5px 5px 5px; border-top: 1px solid #b2b2b2; backgroun
 
 
 #dUploadFile { width: 635px }
+#file-list { max-height: 415px; width: 100%; overflow-y: scroll }
 #dUploadFile #tFileName { width: 511px }
-#dUploadFile a.file img { max-width: 124px; max-height: 124px; margin: 0 auto; border: 1px sol }
-#dUploadFile .delete-file { position: absolute}
+#dUploadFile div.file { float: left; width: 126px; height: 126px; margin: 0 15px 15px 0; position: relative }
+#dUploadFile div.file a.file {  width: 124px; height: 124px;border: 1px solid #c5c5c5; text-align: center; display: block;}
+#dUploadFile a.file img { max-width: 124px; max-height: 124px; margin: 0 auto; }
+#dUploadFile div.file:hover a.file, #dUploadFile a.file.selected {
+    border: 1px solid #377ca4;
+    -webkit-box-shadow: 0 0 8px 1px #377ca4;
+    box-shadow: 0 0 8px 1px #377ca4;
+}
+#dUploadFile .delete-file { position: absolute; top: 6px; right: 6px; display: none }
+#dUploadFile div.file:hover .delete-file { display:block }

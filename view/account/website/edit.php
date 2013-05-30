@@ -139,6 +139,7 @@ if ( !empty( $errs ) )
     <div class="hidden-fix position-absolute" id="upload-file"></div>
     <br /><br />
 
+    <div id="file-list">
     <?php
     if ( empty( $files ) ) {
         echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>';
@@ -164,6 +165,7 @@ if ( !empty( $errs ) )
         }
     }
     ?>
+    </div>
 
     <br /><br />
     <div id="dCurrentLink" class="hidden">
