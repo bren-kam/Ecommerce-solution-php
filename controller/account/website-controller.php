@@ -195,7 +195,7 @@ class WebsiteController extends BaseController {
         $this->resources
             ->css('website/pages/page')
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'fileuploader', 'media-manager', 'website/pages/page' );
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         $response = $this->get_template_response( 'edit' )
             ->select( 'pages', 'edit' )
@@ -315,7 +315,7 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/pages/page' )
-            ->javascript( 'fileuploader', 'website/pages/page' );
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         $response = $this->get_template_response('edit-category')
             ->select( 'pages', 'edit-category' )
@@ -348,7 +348,7 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/website-sidebar' )
-            ->javascript( 'fileuploader', 'website/pages/page', 'website/website-sidebar' );
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/website-sidebar' );
 
         $response = $this->get_template_response( 'website-sidebar' )
             ->select( 'sidebar' )
@@ -747,7 +747,9 @@ class WebsiteController extends BaseController {
         $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
 
         // Change the name
-        $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . f::extension( $_GET['qqfile'] );
+        $extension = f::extension( $_GET['qqfile'] );
+        $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . $extension;
+
 
         // Upload file
         $result = $uploader->handleUpload( 'gsr_' );
@@ -767,11 +769,21 @@ class WebsiteController extends BaseController {
         $account_file->create();
 
         // If they don't have any files, remove the message that is sitting there
-        jQuery('#ulUploadFile li.no-files')->remove();
+        jQuery('#file-list p.no-files')->remove();
+
+        $delete_file_nonce = nonce::create('delete_file');
+        $date = new DateTime( $account_file->date_created );
+        $confirm = _('Are you sure you want to delete this file?');
 
         // Add the new link and apply sparrow to it
-        jQuery('#ulUploadFile')
-            ->append( '<li id="li' . $account_file->id . '"><a href="' . $account_file->file_path . '" id="aFile' . $account_file->id . '" title="' . $file_name . '" class="file">' . $file_name . '</a><a href="' . url::add_query_arg( array( '_nonce' => nonce::create('delete_file'), 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="float-right" title="' . _('Delete File') . '" ajax="1" confirm="' . _('Are you sure you want to delete this file?') . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a>' )
+        if ( in_array( $extension, image::$extensions ) ) {
+            $html = '<div id="file-' . $account_file->id . '" class="file"><a href="#' . $account_file->file_path . '" id="aFile' . $account_file->id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $account_file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+        } else {
+            $html = '<div id="file-' . $account_file->id . '" class="file"><a href="#' . $account_file->file_path . '" id="aFile' . $account_file->id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $account_file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+        }
+
+        jQuery('#file-list')
+            ->append( $html )
             ->sparrow();
 
         // Adjust back to original name
@@ -1182,15 +1194,15 @@ class WebsiteController extends BaseController {
         // Delete from Amazon
         $file->delete_file( $key );
 
-        // Remove that li
-        jQuery('#li' . $account_file->id )->remove();
+        // Remove that file
+        jQuery('#file-' . $account_file->id )->remove();
 
         // Delete record
         $account_file->remove();
 
         // Get the files, see how many there are
         if ( 0 == count( $account_file->get_by_account( $this->user->account->id ) ) )
-            jQuery('#ulUploadFile')->append( '<li class="no-files">' . _('You have not uploaded any files.') . '</li>'); // Add a message
+            jQuery('#file-list')->append( '<p class="no-files">' . _('You have not uploaded any files.') . '</p>'); // Add a message
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
