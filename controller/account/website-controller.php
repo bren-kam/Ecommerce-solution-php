@@ -195,7 +195,7 @@ class WebsiteController extends BaseController {
         $this->resources
             ->css('website/pages/page')
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'fileuploader', 'website/pages/page' );
+            ->javascript( 'fileuploader', 'media-manager', 'website/pages/page' );
 
         $response = $this->get_template_response( 'edit' )
             ->select( 'pages', 'edit' )

@@ -154,13 +154,14 @@ if ( !empty( $errs ) )
         foreach ( $files as $file ) {
             $file_name = f::name( $file->file_path );
             $extension = f::extension( $file->file_path );
+            $date = new DateTime( $file->date_created );
 
             if ( in_array( $extension, image::$extensions ) ) {
                 // It's an image!
-                echo '<div id="file-' . $file->id . '" class="file"><a href="', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '"><img src="' . $file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+                echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file img" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
             } else {
                 // It's not an image!
-                echo '<div id="file-' . $file->id . '" class="file"><a href="', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+                echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
             }
         }
     }
@@ -170,7 +171,20 @@ if ( !empty( $errs ) )
     <br /><br />
     <div id="dCurrentLink" class="hidden">
         <p><strong><?php echo _('Current Link'); ?>:</strong></p>
-        <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" style="width:100%;" /></p>
+        <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" /></p>
+        <br />
+        <table class="col-1">
+            <tr>
+                <td class="col-3"><strong><?php echo _('Date'); ?>:</strong></td>
+                <td class="col-3"><strong><?php echo _('Size'); ?>:</strong></td>
+                <td class="col-3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td id="tdDate"></td>
+                <td id="tdSize"></td>
+                <td class="text-right"><a href="#" id="insert-into-post" class="button close"><?php echo _('Insert Into Post'); ?></a></td>
+            </tr>
+        </table>
     </div>
 </div>
 <?php
