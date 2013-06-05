@@ -63,12 +63,12 @@ class image extends Base_Class {
 	 */
 	public static function resize( $image_to_resize, $save_folder, $name = '', $width_constraint = 100, $height_constraint = 100, $quality = 90, $keep_proportions = true, $fill_constraints = true ) {
 		if ( !file_exists( $image_to_resize ) )
-			return false;
+			throw new InvalidParametersException( 'No file exists to resize' );
 
 		$info = getimagesize( $image_to_resize );
 		
 		if ( empty( $info ) )
-			return false;
+			throw new InvalidParametersException( 'No image information exists in file' );
 					
 		$width = $info[0];
 		$height = $info[1];

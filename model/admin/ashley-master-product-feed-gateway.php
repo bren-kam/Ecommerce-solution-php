@@ -135,7 +135,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 		
 		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file );
 		$j = -1;
-
+		
 		while( $xml_reader->read() ) {
 			switch ( $xml_reader->localName ) {
 				case 'item':
@@ -281,6 +281,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             // Now we have the product
             if ( !$product instanceof Product ) {
+				$new_product = true;
                 $product = new Product();
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
@@ -292,7 +293,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
                 // Increment product count
                 $this->new_product( format::convert_characters( $this->groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
-            }
+            } else {
+				$product->user_id_modified = self::USER_ID;
+			}
 
             /***** PREPARE PRODUCT DATA *****/
 
@@ -324,6 +327,10 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             $product->industry_id = 1;
 
             // Ticket 17005 said to no longer change these.
+			if ( $new_product || empty( $product->slug ) ) {
+				$product->name = $name;
+				$product->slug = str_replace( '---', '-', format::slug( $name ) );
+			}
             // $product->name = $this->identical( $name, $product->name, 'name' );
             // $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
 
@@ -355,7 +362,13 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 			$last_character = substr( $images[0], -1 );
 			
             if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-				$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+				try {
+					$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+				} catch( InvalidParametersException $e ) {
+					fn::info( $product );
+					echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
+					exit;
+				}
 				
                 if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
                     $this->not_identical[] = 'images';

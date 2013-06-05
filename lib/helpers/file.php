@@ -56,9 +56,9 @@ class File {
         
 		if ( empty( $image_path ) || empty( $subdomain ) )
 			throw new InvalidParametersException( 'The image path could not be determined.' );
-
+		
 		list( $result, $image_file ) = image::resize( $image_path, TMP_PATH . 'media/uploads/images/', $new_image_name, $width, $height, 90, $keep_proportions, $fill_constraints );
-
+		
 		if ( !$result || !$image_file || !is_file( $image_file ) )
             throw new HelperException( "Failed to resize image" );
 

@@ -784,15 +784,15 @@ class AccountProduct extends ActiveRecordBase {
      *
      * @param int $account_id
      * @param array $prices
-     * @param int $price_multiplier
-     * @param int $sale_price_multiplier
-     * @param int $alternate_price_multiplier
+     * @param float $price_multiplier
+     * @param float $sale_price_multiplier
+     * @param float $alternate_price_multiplier
      */
     public function multiply_product_prices_by_sku( $account_id, array $prices, $price_multiplier, $sale_price_multiplier, $alternate_price_multiplier ) {
         // Type Juggling
-        $price_multiplier = (int) $price_multiplier;
-        $sale_price_multiplier = (int) $sale_price_multiplier;
-        $alternate_price_multiplier = (int) $alternate_price_multiplier;
+        $price_multiplier = (float) $price_multiplier;
+        $sale_price_multiplier = (float) $sale_price_multiplier;
+        $alternate_price_multiplier = (float) $alternate_price_multiplier;
 
         // Declare variables
         $update_sql_array[] = "wp.`price_note` = :price_note";
