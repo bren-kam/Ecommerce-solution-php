@@ -101,6 +101,7 @@ input.button {
 .small { font-size: 0.66em }
 .big { font-size: 1.5em }
 .bold { font-weight: bold }
+.no-bold { font-weight: normal !important }
 .text-left { text-align: left }
 .text-right { text-align:right; }
 .text-center { text-align:center; }

@@ -141,4 +141,14 @@ class File {
 		// Delete the object
 		return $this->s3->deleteObject( $this->bucket, $dir . $key );
     }
+
+    /**
+     * List Files
+     *
+     * @return array
+     */
+    public function list_files() {
+		// Delete the object
+		return $this->s3->getBucket( $this->bucket );
+    }
 }

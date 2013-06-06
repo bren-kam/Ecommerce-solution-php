@@ -50,6 +50,13 @@ class ArticlesController extends BaseController {
             $section = $_GET['s'];
         }
 
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'kb' . Config::key('aws-bucket-domain') );
+        $files = $file->list_files();
+
         // Create new form table
         $ft = new FormTable( 'fAddEditArticle', url::add_query_arg( array( 's' => $_GET['s'], 'kbaid' => $kb_article->id ), '/knowledge-base/articles/add-edit/' ) );
 
@@ -63,7 +70,12 @@ class ArticlesController extends BaseController {
             ->attribute( 'maxlength', 100 )
             ->add_validation( 'req', _('The "Slug" field is required') );
 
-        $ft->add_field( 'textarea', _('Content'), 'taContent', $kb_article->content );
+        $ft->add_field( 'textarea', _('Content'), 'taContent', $kb_article->content )
+            ->attribute( 'rte', 1 );
+
+        $media_manager_link = '<a href="#dUploadFile" title="' . _('Media Manager') . '" rel="dialog">' . _('Upload File') . '</a>';
+
+        $ft->add_field( 'row', '', $media_manager_link );
 
         $sections = array(
             KnowledgeBaseCategory::SECTION_ADMIN => ucwords( KnowledgeBaseCategory::SECTION_ADMIN )
@@ -120,14 +132,13 @@ class ArticlesController extends BaseController {
         $form = $ft->generate_form();
 
         $this->resources
-            ->css( 'redactor' )
-            ->javascript( 'redactor', 'knowledge-base/articles/add-edit' );
+            ->javascript( 'fileuploader', 'knowledge-base/articles/add-edit' );
 
         // Get Page
         return $this->get_template_response( 'add-edit' )
             ->select( 'articles', 'add' )
             ->add_title( ( ( $kb_article->id ) ? _('Edit') : _('Add') ) . ' ' . _('Article') )
-            ->set( compact( 'form' ) );
+            ->set( compact( 'form', 'files' ) );
     }
 
     /***** AJAX *****/
@@ -276,6 +287,116 @@ class ArticlesController extends BaseController {
             ->generate();
 
         jQuery('#sPage')->replaceWith( $html );
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Upload File
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['fn'] ), _('File failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'kb' . Config::key('aws-bucket-domain') );
+        $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
+
+        // Change the name
+        $extension = f::extension( $_GET['qqfile'] );
+        $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . $extension;
+
+
+        // Upload file
+        $result = $uploader->handleUpload( 'gsr_' );
+
+        $response->check( $result['success'], _('Failed to upload image') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Create the different versions we need
+        $file->upload_file( $result['file_path'], $file_name );
+        $file_path = 'http://kb.retailcatalog.us/' . $file_name;
+
+        // If they don't have any files, remove the message that is sitting there
+        jQuery('#file-list p.no-files')->remove();
+
+        $delete_file_nonce = nonce::create('delete_file');
+        $date = new DateTime();
+        $confirm = _('Are you sure you want to delete this file?');
+        $file_id = format::slug( $file_name );
+
+        // Add the new link and apply sparrow to it
+        if ( in_array( $extension, image::$extensions ) ) {
+            $html = '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+        } else {
+            $html = '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+        }
+
+        jQuery('#file-list')
+            ->append( $html )
+            ->sparrow();
+
+        // Adjust back to original name
+        jQuery('#tFileName')
+            ->val('')
+            ->trigger('blur');
+
+        jQuery('#upload-file-loader')->hide();
+        jQuery('#aUploadFile')->show();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Delete File
+     *
+     * @return AjaxResponse
+     */
+    protected function delete_file() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['key'] ), _('Image failed to upload') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate classes
+        $bucket = 'kb' . Config::key('aws-bucket-domain');
+        $file = new File( $bucket );
+
+        // Delete from Amazon
+        $file->delete_file( $_GET['key'] );
+
+        // Remove that file
+        jQuery('#file-' . format::slug( $_GET['key'] ) )->remove();
+
+        $files = $file->list_files();
+
+        // Get the files, see how many there are
+        if ( 0 == count( $files ) )
+            jQuery('#file-list')->append( '<p class="no-files">' . _('You have not uploaded any files.') . '</p>'); // Add a message
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
