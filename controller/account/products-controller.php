@@ -1531,7 +1531,7 @@ class ProductsController extends BaseController {
             if( !isset( $r[$price_column] ) )
                 continue;
 
-            $prices[] = array( 'sku' => $r[$sku_column], 'price' => $r[$price_column], 'price_note' => $r[2] );
+            $prices[] = array( 'sku' => $r[$sku_column], 'price' => $r[$price_column], 'price_note' => $r[$index + 2] );
         }
 
         // Make sure we have something to update
