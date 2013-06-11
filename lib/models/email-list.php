@@ -225,8 +225,17 @@ class EmailList extends ActiveRecordBase {
         $groups_result = $mc->listInterestGroups( $account->mc_list_id );
 
         // Error Handling
-        if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, $mc->errorCode );
+        if ( $mc->errorCode ) {
+			switch ( $mc->errorCode ) {
+				case 211: // "This list does not have interest groups enabled" (they have no email groups"
+					// Don't care
+				break;
+				
+				default:
+					throw new ModelException( $mc->errorMessage, $mc->errorCode );
+				break;
+			}
+		}
 
         if ( !isset( $groups_result['groups'] ) )
             $groups_result['groups'] = array();
