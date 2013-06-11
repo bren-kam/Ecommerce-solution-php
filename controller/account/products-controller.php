@@ -472,7 +472,8 @@ class ProductsController extends BaseController {
         $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand', 'Created By' );
 
         foreach ( $products as $product ) {
-            $output[] = array( $product->name, $product->sku, $product->category, $product->brand, $product->created_by );
+            $category = ( empty( $product->parent_category ) ) ? $product->category : $product->parent_category . ' > ' . $product->category;
+            $output[] = array( $product->name, $product->sku, $category, $product->brand, $product->created_by );
         }
 
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
