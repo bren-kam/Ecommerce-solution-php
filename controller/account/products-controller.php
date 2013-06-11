@@ -1197,7 +1197,7 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
 
         // Set Order by
-        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+        $dt->order_by( 'p.`sku`','p.`name`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
         $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
 
         if ( !empty( $_GET['b'] ) )
@@ -1233,6 +1233,7 @@ class ProductsController extends BaseController {
         foreach ( $products as $product ) {
             $data[] = array(
                 $product->sku
+                , $product->name
                 , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
                 , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
                 , '<input type="text" class="alternate_price_name" id="tAlternatePriceName' . $product->id . '" value="' . $product->alternate_price_name . '" />'

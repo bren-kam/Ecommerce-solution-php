@@ -725,7 +725,7 @@ class AccountProduct extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT wp.`product_id`, wp.`alternate_price`, wp.`price`, wp.`sale_price`, wp.`alternate_price_name`, wp.`price_note`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY wp.`product_id` $order_by LIMIT $limit"
+            "SELECT wp.`product_id`, wp.`alternate_price`, wp.`price`, wp.`sale_price`, wp.`alternate_price_name`, wp.`price_note`, p.`sku`, p.`name` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY wp.`product_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );

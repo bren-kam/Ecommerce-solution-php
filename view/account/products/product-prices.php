@@ -40,6 +40,7 @@ echo $template->start( _('Product Prices') );
     <thead>
         <tr>
             <th class="text-left"><?php echo _('SKU'); ?></th>
+            <th class="text-left"><?php echo _('Name'); ?></th>
             <th class="text-left"><?php echo _('Price'); ?></th>
             <th class="text-left"><?php echo _('Price Notes'); ?></th>
             <th class="text-left"><?php echo _('Alternate Price Name'); ?></th>
