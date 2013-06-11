@@ -29,6 +29,11 @@ class AnalyticsController extends BaseController {
 
         try {
             $analytics->setup( $this->user->account );
+
+            // Get all the data
+            $records = $analytics->get_metric_by_date( 'visits' );
+            $total = $analytics->get_totals();
+            $traffic_sources = $analytics->get_traffic_sources_totals();
         } catch ( ModelException $e ) {
             preg_match( '/"([^"]+)"/i', $e->getMessage(), $error_string_array );
             $errors_array = explode( "\n", $error_string_array[1] );
@@ -71,10 +76,7 @@ class AnalyticsController extends BaseController {
             return new RedirectResponse('/');
         }
 
-        // Get all the data
-        $records = $analytics->get_metric_by_date( 'visits' );
-        $total = $analytics->get_totals();
-        $traffic_sources = $analytics->get_traffic_sources_totals();
+
 
         // Setup Javascript chart
         $visits_plotting_array = array();
