@@ -884,7 +884,7 @@ class AccountProductTest extends BaseDatabaseTest {
         $prices_array = array(
             'price' => $price * $price_multiplier
             , 'sale_price' => $price * $sale_price_multiplier
-            , 'alternate_price' => $alternate_price
+            , 'alternate_price' => $alternate_price * $alternate_price_multiplier
             , 'price_note' => $price_note
         );
 
@@ -907,6 +907,64 @@ class AccountProductTest extends BaseDatabaseTest {
         // Cleanup
         $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
         $this->db->delete( 'products', compact( 'industry_id' ), 'i' );
+    }
+
+    /**
+     * Get discontinued website ids
+     */
+    public function testGetDiscontinuedWebsiteIds() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('AccountProduct');
+        $method = $class->getMethod( 'get_discontinued_website_ids' );
+        $method->setAccessible(true);
+
+        // Declare variables
+        $website_id = -5;
+        $timestamp = '2012-01-01'; // needs to be 60 days prior
+        $status = 'discontinued';
+
+        // Create a product
+        $product_id = $this->db->insert( 'products', compact( 'website_id', 'status', 'timestamp' ), 'iss' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id' ), 'ii' );
+
+        $website_ids = $method->invoke( $this->account_product );
+
+        // Assert
+        $this->assertTrue( in_array( $website_id, $website_ids ) );
+
+        // Cleanup
+        $this->db->delete( 'products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+    }
+
+    /**
+     * Get discontinued website ids
+     */
+    public function testRemoveAllDiscontinuedProducts() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('AccountProduct');
+        $method = $class->getMethod( 'remove_all_discontinued_products' );
+        $method->setAccessible(true);
+
+        // Declare variables
+        $website_id = -5;
+        $timestamp = '2012-01-01'; // needs to be 60 days prior
+        $status = 'discontinued';
+
+        // Create a product
+        $product_id = $this->db->insert( 'products', compact( 'website_id', 'status', 'timestamp' ), 'iss' );
+        $this->db->insert( 'website_products', compact( 'website_id', 'product_id' ), 'ii' );
+
+        $method->invoke( $this->account_product );
+
+        // Assert
+        $website_ids = $this->db->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
+
+        $this->assertTrue( empty( $website_ids ) );
+
+        // Cleanup
+        $this->db->delete( 'products', compact( 'website_id' ), 'i' );
+        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 
     /**

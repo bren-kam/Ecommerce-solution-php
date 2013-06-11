@@ -818,4 +818,41 @@ class AccountProduct extends ActiveRecordBase {
             $statement->query();
         }
     }
+
+    /**
+     * Remove Discontinued Products
+     */
+    public function remove_all_discontinued() {
+        // The websites that will need to reorganize their categories
+        $website_ids = $this->get_discontinued_website_ids();
+
+        // Remove the products
+        $this->remove_all_discontinued_products();
+
+        // Reorganize categories
+        if ( !empty( $website_ids ) ) {
+            $account_category = new AccountCategory();
+            $category = new Category();
+
+            foreach ( $website_ids as $website_id ) {
+                $account_category->reorganize_categories( $website_id, $category );
+            }
+        }
+    }
+
+    /**
+     * Get Discontinued Products Website IDs
+     *
+     * @return array
+     */
+    protected function get_discontinued_website_ids() {
+        return $this->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
+    }
+
+    /**
+     * Get Discontinued Products Website IDs
+     */
+    protected function remove_all_discontinued_products() {
+        $this->query( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`active` = 0 WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
+    }
 }
