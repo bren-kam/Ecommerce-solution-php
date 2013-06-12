@@ -58,6 +58,7 @@ class ReportsController extends BaseController {
             , 'AccountsAndServices' => _('Accounts and Services')
             , 'AshleyFeedSites' => _('Ashley Feed Sites')
             , 'AshleyHandbuiltProducts' => _('Ashley Handbuilt Products')
+            , 'WebsiteCancellations' => _('Website Cancellations')
         );
 
         $form_reports->add_field( 'select', _('Report'), 'sReport' )

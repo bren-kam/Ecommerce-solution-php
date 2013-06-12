@@ -170,7 +170,7 @@ class EmailTemplate extends ActiveRecordBase {
                     $product_color = ( empty( $settings['product-color'] ) ) ? '78174c' : $settings['product-color'];
 
                     // Get product link
-                    $product_link = $category->get_url( $product->category_id ) . $product->slug . '/';
+                    $product_link = 'http://' . $account->domain . $category->get_url( $product->category_id ) . $product->slug . '/';
 
                     // Form image
                     $images = $product->get_images();

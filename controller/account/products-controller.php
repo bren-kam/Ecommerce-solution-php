@@ -472,7 +472,8 @@ class ProductsController extends BaseController {
         $output[]  = array( 'Product Name', 'SKU', 'Category', 'Brand', 'Created By' );
 
         foreach ( $products as $product ) {
-            $output[] = array( $product->name, $product->sku, $product->category, $product->brand, $product->created_by );
+            $category = ( empty( $product->parent_category ) ) ? $product->category : $product->parent_category . ' > ' . $product->category;
+            $output[] = array( $product->name, $product->sku, $category, $product->brand, $product->created_by );
         }
 
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
@@ -1197,7 +1198,7 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
 
         // Set Order by
-        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+        $dt->order_by( 'p.`sku`','p.`name`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
         $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
 
         if ( !empty( $_GET['b'] ) )
@@ -1233,6 +1234,7 @@ class ProductsController extends BaseController {
         foreach ( $products as $product ) {
             $data[] = array(
                 $product->sku
+                , $product->name
                 , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
                 , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
                 , '<input type="text" class="alternate_price_name" id="tAlternatePriceName' . $product->id . '" value="' . $product->alternate_price_name . '" />'
@@ -1531,7 +1533,7 @@ class ProductsController extends BaseController {
             if( !isset( $r[$price_column] ) )
                 continue;
 
-            $prices[] = array( 'sku' => $r[$sku_column], 'price' => $r[$price_column], 'price_note' => $r[2] );
+            $prices[] = array( 'sku' => $r[$sku_column], 'price' => $r[$price_column], 'price_note' => $r[$index + 2] );
         }
 
         // Make sure we have something to update
