@@ -11,7 +11,7 @@ class AccountProduct extends ActiveRecordBase {
     public $link, $industry, $coupons, $product_options, $created_by;
 
     // Columns from other tables
-    public $category_id, $category, $brand, $slug, $sku, $name, $image;
+    public $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image;
 
     /**
      * Setup the account initial data
@@ -43,7 +43,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT p.`sku`, p.`name`, c.`name` AS category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            "SELECT p.`sku`, p.`name`, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
@@ -725,7 +725,7 @@ class AccountProduct extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT wp.`product_id`, wp.`alternate_price`, wp.`price`, wp.`sale_price`, wp.`alternate_price_name`, wp.`price_note`, p.`sku` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY wp.`product_id` $order_by LIMIT $limit"
+            "SELECT wp.`product_id`, wp.`alternate_price`, wp.`price`, wp.`sale_price`, wp.`alternate_price_name`, wp.`price_note`, p.`sku`, p.`name` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND p.`publish_date` <> '0000-00-00 00:00:00' $where GROUP BY wp.`product_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );
@@ -784,15 +784,15 @@ class AccountProduct extends ActiveRecordBase {
      *
      * @param int $account_id
      * @param array $prices
-     * @param int $price_multiplier
-     * @param int $sale_price_multiplier
-     * @param int $alternate_price_multiplier
+     * @param float $price_multiplier
+     * @param float $sale_price_multiplier
+     * @param float $alternate_price_multiplier
      */
     public function multiply_product_prices_by_sku( $account_id, array $prices, $price_multiplier, $sale_price_multiplier, $alternate_price_multiplier ) {
         // Type Juggling
-        $price_multiplier = (int) $price_multiplier;
-        $sale_price_multiplier = (int) $sale_price_multiplier;
-        $alternate_price_multiplier = (int) $alternate_price_multiplier;
+        $price_multiplier = (float) $price_multiplier;
+        $sale_price_multiplier = (float) $sale_price_multiplier;
+        $alternate_price_multiplier = (float) $alternate_price_multiplier;
 
          // Prepare statement
         $statement = $this->prepare_raw( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`price` = :price * :price_multiplier, wp.`sale_price` = :price_2 * :sale_price_multiplier, wp.`alternate_price` = :price_3 * :alternate_price_multiplier, wp.`price_note` = :price_note WHERE wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`sku` = :sku" );
@@ -817,5 +817,42 @@ class AccountProduct extends ActiveRecordBase {
 
             $statement->query();
         }
+    }
+
+    /**
+     * Remove Discontinued Products
+     */
+    public function remove_all_discontinued() {
+        // The websites that will need to reorganize their categories
+        $website_ids = $this->get_discontinued_website_ids();
+
+        // Remove the products
+        $this->remove_all_discontinued_products();
+
+        // Reorganize categories
+        if ( !empty( $website_ids ) ) {
+            $account_category = new AccountCategory();
+            $category = new Category();
+
+            foreach ( $website_ids as $website_id ) {
+                $account_category->reorganize_categories( $website_id, $category );
+            }
+        }
+    }
+
+    /**
+     * Get Discontinued Products Website IDs
+     *
+     * @return array
+     */
+    protected function get_discontinued_website_ids() {
+        return $this->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
+    }
+
+    /**
+     * Get Discontinued Products Website IDs
+     */
+    protected function remove_all_discontinued_products() {
+        $this->query( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`active` = 0 WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
     }
 }

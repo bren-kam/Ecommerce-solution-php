@@ -58,10 +58,11 @@ h2 { font-size:22px; color: #404040; }
 h3 { font-size: 18px; color: #404040; }
 textarea { font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; }
 li { padding-bottom: 7px }
-strong { font-weight: bold }
-em { font-style: italic }
+strong, .redactor_editor b { font-weight: bold }
+em, .redactor_editor i { font-style: italic }
 ol { margin-left: 25px }
 ol li { list-style: decimal; }
+.redactor_editor ul li { list-style: disc }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }
@@ -97,6 +98,7 @@ input.button {
 .col-1 { width: 100% }
 .col-1.info-box { width: 97.5% }
 .col-2 { width: 50%; }
+.col-3 { width: 33.33%; }
 .col-4 { width: 25% }
 .float-left { float:left; position:relative }
 .float-right { float:right; position:relative }
@@ -571,25 +573,6 @@ table.format tr.last td { border-bottom: 0 }
 
 .show img{ margin-top:10px; }
 
-/***** CK Editor - RTE *****/
-
-span.cke_skin_kama, .cke_skin_kama .cke_wrapper {
-    -webkit-border-radius: 0 !important;
-    -moz-border-radius: 0 !important;
-    border-radius: 0 !important;
-}
-span.cke_skin_kama { padding: 0 !important; border-color: #b2b2b2 !important }
-.cke_skin_kama .cke_wrapper { padding: 0 !important }
-td.cke_top { padding: 5px 5px 0 5px; border-bottom: 1px solid #b2b2b2;
-    background-image: linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
-    / -o-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
-    / -moz-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
-    / -webkit-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
-    / -ms-linear-gradient(top, rgb(247,248,250) 11%, rgb(235,237,239) 56%)
-    / -webkit-gradient( linear, left top, left bottom, color-stop(0.11, rgb(247,248,250)), color-stop(0.56, rgb(235,237,239)) );
-}
-td.cke_bottom { padding: 0 5px 5px 5px; border-top: 1px solid #b2b2b2; background-color:  #F4F6F8 }
-
 /***** File Uploader *****/
 .qq-uploader { position:relative; width: 100%; display:inline}
 
@@ -612,3 +595,21 @@ td.cke_bottom { padding: 0 5px 5px 5px; border-top: 1px solid #b2b2b2; backgroun
 .qq-upload-failed-text {display:none;}
 .qq-upload-fail .qq-upload-failed-text {display:inline;}
 .upload-file { color: #808B8F !important }
+
+
+/** Media Manager */
+#dUploadFile { width: 635px }
+#file-list { max-height: 274px; width: 627px; overflow-y: scroll; padding: 8px 0 0 8px; }
+#dUploadFile #tFileName { width: 511px }
+#dUploadFile div.file { float: left; width: 126px; height: 126px; margin: 0 15px 15px 0; position: relative }
+#dUploadFile div.file a.file {  width: 124px; height: 124px;border: 1px solid #c5c5c5; text-align: center; display: block;}
+#dUploadFile a.file img { max-width: 124px; max-height: 124px; margin: 0 auto; }
+#dUploadFile div.file:hover a.file, #dUploadFile a.file.selected {
+    border: 1px solid #377ca4 !important;
+    -webkit-box-shadow: 0 0 8px 1px #377ca4;
+    box-shadow: 0 0 8px 1px #377ca4;
+}
+#dUploadFile .delete-file { position: absolute; top: 6px; right: 6px; display: none }
+#dUploadFile div.file:hover .delete-file { display:block }
+#dUploadFile #tCurrentLink {  width: 617px }
+#dUploadFile a.file span { width: 114px; overflow: hidden; padding: 7px 5px 6px; font-size: 13px; display: block; background-color: #dcdcdc }

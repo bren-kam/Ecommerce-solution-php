@@ -942,7 +942,7 @@ class AccountsController extends BaseController {
 
         if ( $form->posted() ) {
             // Do stuff
-            $account->set_settings( $account->id, array(
+            $account->set_settings( array(
                 'view-product-button' => $_POST['tViewProductButton']
                 , 'product-color' => $_POST['tProductColor']
                 , 'product-price-color' => $_POST['tPriceColor']

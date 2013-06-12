@@ -9,7 +9,7 @@
  * @var User $user
  */
 
-$resources->css_before( 'labels/' . DOMAIN, 'style' );
+$resources->css_before( 'labels/' . DOMAIN, 'redactor', 'style' );
 $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 ?>
 <!DOCTYPE html>

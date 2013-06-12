@@ -15,12 +15,6 @@ define( 'DEFAULT_DOMAIN', 'imagineretailer.com' );
 /** Define LIVE if the website is live */
 define( 'LIVE', false );
 
-// Show us the errors if we're not live
-if ( LIVE ) {
-    error_reporting(0);
-} else {
-    error_reporting( E_ALL ^ E_NOTICE );
-}
 
 /** Error Handler */
 //if ( extension_loaded('newrelic') )
@@ -31,6 +25,22 @@ define( 'ABS_PATH', realpath( __DIR__ ) . '/' );
 
 // Hold the library path
 define( 'LIB_PATH', ABS_PATH . 'lib/' );
+
+function gsr_fatal_handler() {
+    $error = error_get_last();
+
+    if ( !is_null( $error ) )
+        require ABS_PATH . 'view/error/fatal-error.php';
+}
+
+// Show us the errors if we're not live
+if ( LIVE ) {
+    error_reporting(0);
+
+    register_shutdown_function( 'gsr_error_handler' );
+} else {
+    error_reporting( E_ALL ^ E_NOTICE );
+}
 
 /** Include Studio98 library */
 require LIB_PATH . 'ext/s98lib/init.php';

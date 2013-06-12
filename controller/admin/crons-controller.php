@@ -105,6 +105,10 @@ class CronsController extends BaseController {
         $email_marketing = new EmailMarketing();
         $email_marketing->synchronize_email_lists();
 
+        // Remove Discontinued products
+        $account_product = new AccountProduct();
+        $account_product->remove_all_discontinued();
+
         return new HtmlResponse( 'Daily Jobs Completed' );
     }
 

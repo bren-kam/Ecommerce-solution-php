@@ -90,7 +90,11 @@ class Analytics {
             $ga_filter = ( empty( $ga_filter ) ) ? $this->ga_filter : $ga_filter . ',' . $this->ga_filter;
 
         // API Call
-        $this->ga->requestReportData( $this->ga_profile_id, $ga_dimensions, $ga_metrics, array('date'), $ga_filter, $this->date_start, $this->date_end, 1, 10000 );
+        try {
+            $this->ga->requestReportData( $this->ga_profile_id, $ga_dimensions, $ga_metrics, array('date'), $ga_filter, $this->date_start, $this->date_end, 1, 10000 );
+        } catch ( Exception $e ) {
+            throw new ModelException( $e->getMessage(), $e->getCode(), $e );
+        }
 
         // Process results
         $results = $this->ga->getResults();

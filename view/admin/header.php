@@ -9,7 +9,7 @@
  * @var User $user
  */
 
-$resources->css_before( 'labels/' . DOMAIN, 'style' );
+$resources->css_before( 'labels/' . DOMAIN, 'redactor', 'style');
 $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 
 $template->set( 'section_' . format::slug( $template->v('section') ), ' class="selected"');
