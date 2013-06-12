@@ -72,19 +72,19 @@ class SettingsController extends BaseController {
             )
         );
 
-        $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', $settings['aim-login'] )
+        $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) )
             ->attribute( 'maxlength', 30 )
             ->add_validation( 'req', _('The "AIM Login" field is required') );
 
-        $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', $settings['aim-transaction-key'] )
+        $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) )
             ->attribute( 'maxlength', 30 )
             ->add_validation( 'req', _('The "AIM Transaction Key" field is required') );
 
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'payment-gateway-status' => $_POST['sStatus']
-                , 'aim-login' => $_POST['tAIMLogin']
-                , 'aim-transaction-key' => $_POST['tAIMTransactionKey']
+                , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
+                , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
