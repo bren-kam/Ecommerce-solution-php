@@ -96,17 +96,25 @@ class UsersController extends BaseController {
                 , User::STATUS_INACTIVE => _('Inactive')
             ));
 
-        $ft->add_field( 'select', _('Role'), 'sRole', $user->role )
-            ->options( array_slice( array(
-                User::ROLE_AUTHORIZED_USER => User::ROLE_AUTHORIZED_USER . ' - ' ._('Authorized User')
-                , User::ROLE_MARKETING_SPECIALIST => User::ROLE_MARKETING_SPECIALIST . ' - ' . _('Marketing Specialist')
-                , User::ROLE_STORE_OWNER => User::ROLE_STORE_OWNER . ' - ' . _('Basic Account')
-                , User::ROLE_COMPANY_ADMIN => User::ROLE_COMPANY_ADMIN . ' - ' . _('Company Admin')
-                , User::ROLE_ONLINE_SPECIALIST => User::ROLE_ONLINE_SPECIALIST . ' - ' . _('Online Specialist')
-                , User::ROLE_ADMIN => User::ROLE_ADMIN . ' - ' . _('Admin')
-                , User::ROLE_SUPER_ADMIN => User::ROLE_SUPER_ADMIN . ' - ' . _('Super Admin')
-            ), 0, $this->user->role, true )
+        $roles = array(
+            User::ROLE_AUTHORIZED_USER => User::ROLE_AUTHORIZED_USER . ' - ' ._('Authorized User')
+            , User::ROLE_MARKETING_SPECIALIST => User::ROLE_MARKETING_SPECIALIST . ' - ' . _('Marketing Specialist')
+            , User::ROLE_STORE_OWNER => User::ROLE_STORE_OWNER . ' - ' . _('Basic Account')
+            , User::ROLE_COMPANY_ADMIN => User::ROLE_COMPANY_ADMIN . ' - ' . _('Company Admin')
+            , User::ROLE_ONLINE_SPECIALIST => User::ROLE_ONLINE_SPECIALIST . ' - ' . _('Online Specialist')
+            , User::ROLE_ADMIN => User::ROLE_ADMIN . ' - ' . _('Admin')
+            , User::ROLE_SUPER_ADMIN => User::ROLE_SUPER_ADMIN . ' - ' . _('Super Admin')
         );
+
+        $options = array();
+
+        foreach ( $roles as $role => $name ) {
+            if ( $this->user->has_permission( $role ) )
+                $options[$role] = $name;
+        }
+
+        $ft->add_field( 'select', _('Role'), 'sRole', $user->role )
+            ->options( $options );
 
         $ft->add_field( 'blank', '' );
         $ft->add_field( 'title', _('Billing Information') );
