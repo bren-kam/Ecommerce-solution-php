@@ -9,11 +9,7 @@ head.js( 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTabl
 
 	// Save the data
 	$('#bSave, #bSave2').click( function() {
-		var brandID = $('#sBrand').val(), values = {}, extra = $(this).attr('id').replace( 'bSave', '' );
-
-        // We don't want to do anything if they haven't selected a brand yet
-        if ( '' == brandID || 0 == brandID )
-            return;
+		var values = {}, extra = $(this).attr('id').replace( 'bSave', '' );
 
 		// Create the values
 		$('#tProductPrices input').each( function() {
