@@ -9,8 +9,8 @@ head.js( 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTabl
 
 	// Save the data
 	$('#bSave, #bSave2').click( function() {
-		var values = {}, extra = $(this).attr('id').replace( 'bSave', '' );
-
+		var values = {};
+        
 		// Create the values
 		$('#tProductPrices input').each( function() {
 			var value = $(this).val(), inputID = $(this).attr('id').replace( /[^0-9]+/, '' );
