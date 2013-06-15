@@ -5,6 +5,7 @@
 #main h3 { margin-top: 10px; margin-bottom: 4px; }
 #main h2 { font-weight: bold; font-size: 23px; margin-top: 16px; margin-bottom: 8px; }
 #main p { margin-bottom: 9px }
+.redactor_toolbar { max-height: 30px }
 
 #right .box select, #right .box input.tb, #basic-product-info input, #basic-product-info select { width: 100% }
 #right .container, #basic-product-info .container { margin-right: 18px }
