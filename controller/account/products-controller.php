@@ -1198,7 +1198,6 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
 
         // Set Order by
-        $dt->order_by( 'p.`sku`','p.`name`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
         $dt->add_where( ' AND wp.`website_id` = ' . (int) $this->user->account->id );
 
         if ( !empty( $_GET['b'] ) )
@@ -1208,6 +1207,7 @@ class ProductsController extends BaseController {
             $category = new Category();
             $account_category = new AccountCategory();
             $categories = $category->get_all_children( $_GET['cid'] );
+
             $account_categories = $account_category->get_all_ids( $this->user->account->id );
             $category_ids[] = (int) $_GET['cid'];
 
@@ -1220,6 +1220,14 @@ class ProductsController extends BaseController {
 
 
             $dt->add_where( ' AND p.`category_id` IN ( ' . implode( ',', $category_ids ) . ' )' );
+
+            // Set the order by
+            $_GET['iSortingCols'] = 1;
+            $_GET['iSortCol_0'] = 0;
+            $_GET['sSortDir_0'] = 'ASC';
+            $dt->order_by( 'wp.`sequence`' );
+        } else {
+            $dt->order_by( 'p.`sku`', 'p.`name`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
         }
 
         // Get account pages

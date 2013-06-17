@@ -73,7 +73,7 @@ p.cb { padding-bottom: 3px; }
 
 /** Bottom 5 **/
 .product .product-actions {
-	bottom: 5px;
+	bottom: 0;
 }
 
 /* Offer Boxes */
