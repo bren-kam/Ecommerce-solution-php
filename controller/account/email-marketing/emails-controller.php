@@ -472,7 +472,7 @@ class EmailsController extends BaseController {
         $product_box = '<div id="dProduct_' . $product->id . '" class="product">';
         $product_box .= '<h4>' . format::limit_chars( $product->name, 37 ) . '</h4>';
         $product_box .= '<p align="center"><img src="http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images ) . '" alt="' . $product->name . '" height="110" style="margin:10px" /></p>';
-        $product_box .= '<p>' . _('Brand') . ': ' . $product->brand . '<br /><label for="tProductPrice' . $product->id . '">' . _('Price') . ':</label> <input type="text" name="tProductPrice' . $product->id . '" class="tb product-box-price" id="tProductPrice' . $product->id . '" value="' . $account_product->price . '" maxlength="10" /></p>';
+        $product_box .= '<p>' . _('Brand') . ': ' . $product->brand . '<br /><label for="tProductPrice' . $product->id . '">' . _('Price') . ':</label> <input type="text" name="tProductPrice' . $product->id . '" class="tb product-price" id="tProductPrice' . $product->id . '" value="' . $account_product->price . '" maxlength="10" /></p>';
         $product_box .= '<p class="product-actions" id="pProductAction' . $product->id . '"><a href="#" class="remove-product" title="' . _('Remove Product') . '">' . _('Remove') . '</a></p>';
         $product_box .= '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' . $product->id . '" value="' . $product->id . '|' . $account_product->price . '" />';
         $product_box .= '</div>';
