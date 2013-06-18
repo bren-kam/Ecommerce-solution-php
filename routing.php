@@ -22,17 +22,16 @@ if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_U
             $method = 'image';
             $controller = 'resources';
 
-            // @Pedro should I do this instead?
-            //readfile( VIEW_PATH . substr( $_SERVER['REQUEST_URI'], 1 ) );
-
         } elseif ( '/media/' == substr( $_SERVER['REQUEST_URI'], 0, 7 ) ) {
             // It's an image!
             $method = 'media';
             $controller = 'resources';
 
-            // @Pedro should I do this instead?
-            //readfile( VIEW_PATH . substr( $_SERVER['REQUEST_URI'], 1 ) );
+        }  elseif ( '/ckeditor/' == substr( $_SERVER['REQUEST_URI'], 0, 10 ) ) {
+            // It's an image!
 
+            $method = 'external';
+            $controller = 'resources';
         } else {
             // Query string position
             $qs_pos = strpos( $_SERVER['REQUEST_URI'], '?' );
