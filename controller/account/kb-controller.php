@@ -19,9 +19,12 @@ class KbController extends BaseController {
      */
     protected function index() {
         $this->resources->css('kb/kb');
+
+        $article = new KnowledgeBaseArticle();
+        $articles = $article->get_by_views( KnowledgeBaseCategory::SECTION_ACCOUNT );
         
         return $this->get_template_response( 'home' )
-            ->set( compact( 'article', 'categories', 'page', 'articles' ) );
+            ->set( compact( 'articles' ) );
     }
 
     /**
@@ -105,7 +108,7 @@ class KbController extends BaseController {
         $category->get( $_GET['cid'] );
         $parent_categories = $category->get_all_parents( $category->id );
         $child_categories = $category->get_all_children( $category->id );
-        $sibling_categories = $category->get_all_children( $category->parent_id );
+        $sibling_categories = $category->get_by_parent( $category->parent_id );
 
         $page = new KnowledgeBasePage();
         $article = new KnowledgeBaseArticle();

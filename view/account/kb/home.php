@@ -7,11 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var KnowledgeBaseArticle $article
  * @var KnowledgeBaseArticle[] $articles
- * @var KnowledgeBaseCategory[] $categories
- * @var KnowledgeBaseCategory $category
- * @var KnowledgeBasePage $page
  */
 
 $rate_nonce = nonce::create('rate');
@@ -23,25 +19,34 @@ $rate_nonce = nonce::create('rate');
             <span class="last"><?php echo _('Home'); ?></span>
         </div>
         <div id="subcontent">
-            <?php
+            <div class="col-2 float-left divider">
+                <?php
                 $links = array(
-                    'pages'				    => array( 'website', _('Website') )
-                    , 4	    => array( 'products', _('Products') )
-                    , 'live' 			    => array( 'analytics', _('Analytics') )
-                    , 'blog'			    => array( 'blog', 'Blog' )
-                    , 'email_marketing'	    => array( 'email-marketing', _('Email Marketing') )
-                    , 'shopping_cart'	    => array( 'shopping-cart', _('Shopping Cart') )
-                    , 'craigslist'		    => array( 'craigslist', _('Craigslist Ads') )
-                    , 'social_media'	    => array( 'social-media', _('Social Media') )
-                    , 'mobile_marketing'    => array( 'mobile-marketing', _('Mobile Marketing') )
+                    14      => array( 'website', _('Website') )
+                    , 15    => array( 'products', _('Products') )
+                    , 16    => array( 'analytics', _('Analytics') )
+                    , 18    => array( 'blog', 'Blog' )
+                    , 20    => array( 'email-marketing', _('Email Marketing') )
+                    , 123   => array( 'shopping-cart', _('Shopping Cart') )
+                    , 22    => array( 'social-media', _('Social Media') )
+                    , 98    => array( 'mobile-marketing', _('Mobile Marketing') )
                 );
 
-    $keys = array_keys( $links );
+                $keys = array_keys( $links );
 
-    foreach ( $links as $key => $link ) {
-        ?>
-        <a href="/<?php echo $link[0]; ?>/" title="<?php echo $link[1]; ?>" class="service"><img src="/images/dashboard/<?php echo str_replace( '_', '-', $selection ); ?>.png" width="149" height="160" alt="<?php echo $links[$k][1]; ?>" /></a>
-    <?php } ?>
+                foreach ( $links as $kb_category_id => $link ) {
+                    ?>
+                    <a href="<?php echo url::add_query_arg( 'cid', $kb_category_id, '/kb/category/' ); ?>" title="<?php echo $link[1]; ?>" class="service"><img src="/images/dashboard/<?php echo str_replace( '_', '-', $link[0] ); ?>.png" width="149" height="160" alt="<?php echo $link[1]; ?>" /></a>
+                <?php } ?>
+            </div>
+            <div class="col-2 float-left" id="frequently">
+                <p><strong><?php echo _('Most Frequently Viewed Articles'); ?></strong></p>
+                <ol>
+                <?php foreach( $articles as $article ) { ?>
+                    <li><a href="<?php echo url::add_query_arg( 'aid', $article->id, '/kb/article/' ); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a> </li>
+                <?php } ?>
+                </ol>
+            </div>
             <br class="clr" />
         </div>
     </div>

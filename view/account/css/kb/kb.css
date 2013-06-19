@@ -59,3 +59,10 @@ section { margin-right: 210px; }
 
 h2 { padding-bottom: 7px; }
 ul li { margin-left: 25px; list-style: disc }
+
+.service { margin-right: 41px; }
+.service img { background-color: #c6cace; margin-bottom: 43px; }
+
+.divider { background: url(/images/kb/home-divider.png) 100% 0 repeat-y }
+#frequently > * { padding-left: 15px; }
+#frequently ol { padding-left: 15px; }
