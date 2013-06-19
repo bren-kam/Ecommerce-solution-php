@@ -44,6 +44,20 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
     }
 
     /**
+     * Get by category
+     *
+     * @param int $kb_category_id
+     * @return KnowledgeBaseArticle[]
+     */
+    public function get_by_category( $kb_category_id ) {
+        return $this->prepare(
+            'SELECT kba.`id`, kba.`kb_category_id`, kba.`kb_page_id`, kba.`user_id`, kba.`title`, kba.`slug`, kba.`content`, kba.`status` FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) WHERE kbc.`id` = :kb_category_id AND kba.`status` <> :status'
+            , 'ii'
+            , array( ':kb_category_id' => $kb_category_id, ':status' => self::STATUS_DELETED )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
+    }
+
+    /**
      * Create
      */
     public function create() {

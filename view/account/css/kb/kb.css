@@ -30,8 +30,9 @@
 #breadcrumb a, #breadcrumb { color: #828387; font-weight: bold; }
 #breadcrumb .last { color: #000 }
 aside { width: 198px; position: absolute; right: 0; top: 0; min-height: 100%; border-left: 1px solid #313131; border-right: 1px solid #313131; background-color: #333436; }
-aside header { color: #c6cdd5; padding: 10px 5px; font-weight: bold; border-top: 1px solid #212121; border-bottom: 1px solid #212121; }
+aside header { color: #c6cdd5; padding: 10px 8px; font-weight: bold; border-top: 1px solid #212121; border-bottom: 1px solid #212121; }
 section { margin-right: 210px; }
+#right-sidebar a { padding-left: 8px }
 
 #helpful {
     position: relative; color: #fff; right: 31px; width: 170px; padding: 11px 15px 3px; font-size: 16px; border-right: 1px solid #b6bbbf; height: 40px;
@@ -55,3 +56,6 @@ section { margin-right: 210px; }
 #helpful a { color: #fff; font-weight: bold }
 #helpful a:hover { color: #292929; }
 #thanks { line-height: 17px !important; position: relative; bottom: 2px; }
+
+h2 { padding-bottom: 7px; }
+ul li { margin-left: 25px; list-style: disc }

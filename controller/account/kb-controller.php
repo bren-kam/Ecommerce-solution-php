@@ -18,45 +18,10 @@ class KbController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        if ( !$this->user->account->email_marketing )
-            return new RedirectResponse('/email-marketing/subscribers/');
-
-        $email_message = new EmailMessage();
-        $messages = $email_message->get_dashboard_messages_by_account( $this->user->account->id );
-
-        $email = new Email();
-        $subscribers = $email->get_dashboard_subscribers_by_account( $this->user->account->id );
-
-        // Setup variables
-        $email = new AnalyticsEmail();
-        $email_count = count( $messages );
-        $i = 0;
-
-        if ( is_array( $messages ) ) {
-        	// Get the analytics data
-        	while ( $i < $email_count && !$email->mc_campaign_id ) {
-                $message = $messages[$i];
-
-                try {
-                    $email->get_complete( $message->mc_campaign_id, $this->user->account->id );
-                } catch( ModelException $e ) {
-                    $this->notify( _('An error occurred while trying to get your email') . ', "' . $message->subject . '". ' . _('Please contact an online specialist for assistance.'), false );
-                }
-
-        		$i++;
-        	}
-        }
-
-        $bar_chart = Analytics::bar_chart( $email );
-
-        $this->resources
-            ->css( 'email-marketing/dashboard' )
-            ->javascript( 'swfobject', 'email-marketing/dashboard');
-
-        return $this->get_template_response( 'index' )
-            ->add_title( _('Dashboard') )
-            ->select( 'email-dashboard' )
-            ->set( compact( 'messages', 'subscribers', 'email', 'bar_chart', 'email_count' ) );
+        $this->resources->css('kb/kb');
+        
+        return $this->get_template_response( 'home' )
+            ->set( compact( 'article', 'categories', 'page', 'articles' ) );
     }
 
     /**
@@ -71,7 +36,7 @@ class KbController extends BaseController {
         $article = new KnowledgeBaseArticle();
         $article->get( $_GET['aid'] );
 
-        $category = new KnowledgeBaseCategory();
+        $category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ACCOUNT );
         $category->get( $article->kb_category_id );
         $categories = $category->get_all_parents( $article->kb_category_id );
         $categories[] = $category;
@@ -85,11 +50,77 @@ class KbController extends BaseController {
         $view->user_id = $this->user->id;
         $view->create();
 
-        $this->resources->css('kb/article');
+        // Get articles
+        $articles = $article->get_by_page( $article->kb_page_id );
+
+        $this->resources->css('kb/kb');
 
         return $this->get_template_response( 'article' )
             ->add_title( $article->title . ' | ' . _('Article') )
-            ->set( compact( 'article', 'categories', 'page' ) );
+            ->set( compact( 'article', 'categories', 'page', 'articles' ) );
+    }
+
+    /**
+     * Show a page
+     *
+     * @return RedirectResponse|TemplateResponse
+     */
+    public function page() {
+        if ( !isset( $_GET['pid'] ) )
+            return new RedirectResponse( '/kb/' );
+
+        $page = new KnowledgeBasePage();
+        $page->get( $_GET['pid'] );
+
+        $article = new KnowledgeBaseArticle();
+
+        $category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ACCOUNT );
+        $category->get( $page->kb_category_id );
+        $categories = $category->get_all_parents( $page->kb_category_id );
+        $categories[] = $category;
+
+        // Get articles
+        $articles = $article->get_by_page( $page->id );
+
+        // Get Pages
+        $pages = $page->get_by_category( $page->kb_category_id );
+
+        $this->resources->css('kb/kb');
+
+        return $this->get_template_response( 'page' )
+            ->add_title( $page->name . ' | ' . _('Page') )
+            ->set( compact( 'page', 'categories', 'articles', 'pages' ) );
+    }
+
+    /**
+     * Show a category
+     *
+     * @return RedirectResponse|TemplateResponse
+     */
+    public function category() {
+        if ( !isset( $_GET['cid'] ) )
+            return new RedirectResponse( '/kb/' );
+
+        $category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ACCOUNT );
+        $category->get( $_GET['cid'] );
+        $parent_categories = $category->get_all_parents( $category->id );
+        $child_categories = $category->get_all_children( $category->id );
+        $sibling_categories = $category->get_all_children( $category->parent_id );
+
+        $page = new KnowledgeBasePage();
+        $article = new KnowledgeBaseArticle();
+
+        // Get articles
+        $articles = $article->get_by_category( $category->id );
+
+        // Get Pages
+        $pages = $page->get_by_category( $category->id );
+
+        $this->resources->css('kb/kb');
+
+        return $this->get_template_response( 'category' )
+            ->add_title( $category->name . ' | ' . _('Category') )
+            ->set( compact( 'category', 'parent_categories', 'child_categories', 'sibling_categories', 'articles', 'pages' ) );
     }
 
     /***** AJAX *****/
@@ -120,7 +151,7 @@ class KbController extends BaseController {
             $article = new KnowledgeBaseArticle();
             $article->get( $_GET['aid'] );
 
-            $category = new KnowledgeBaseCategory();
+            $category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ACCOUNT );
             $category->get( $article->kb_category_id );
             $categories = $category->get_all_parents( $article->kb_category_id );
             $categories[] = $category;

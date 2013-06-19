@@ -8,6 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var KnowledgeBaseArticle $article
+ * @var KnowledgeBaseArticle[] $articles
  * @var KnowledgeBaseCategory[] $categories
  * @var KnowledgeBaseCategory $category
  * @var KnowledgeBasePage $page
@@ -55,9 +56,18 @@ $rate_nonce = nonce::create('rate');
                 <div id="helpful-bar"></div>
                 <div id="helpful-fade"></div>
             </div>
-            <aside>
+            <?php if ( count( $articles ) > 1 ) { ?>
+            <aside id="right-sidebar">
                 <header><?php echo _('Other Articles'); ?></header>
+                <?php
+                foreach ( $articles as $art ) {
+                    if ( $art->id == $article->id )
+                        continue;
+                    ?>
+                    <a href="<?php echo url::add_query_arg( 'aid', $art->id, '/kb/article/' ); ?>" title="<?php echo $art->title; ?>"><?php echo $art->title; ?></a>
+                <?php } ?>
             </aside>
+            <?php } ?>
             <br class="clr" />
         </div>
     </div>
