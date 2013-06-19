@@ -22,6 +22,7 @@ class SubscribersController extends BaseController {
             $this->notify( _('You are only able to manage your subscribers. To have full use of the Email Marketing section you can sign up for it by calling our Online Specialists at (800) 549-9206.'), false );
 
         return $this->get_template_response( 'index' )
+            ->kb( 75 )
             ->add_title( _('Subscribers') )
             ->select( 'subscribers', 'subscribed' );
     }
@@ -33,6 +34,7 @@ class SubscribersController extends BaseController {
      */
     protected function unsubscribed() {
         return $this->get_template_response( 'unsubscribed' )
+            ->kb( 76 )
             ->add_title( _('Unsubscribers') )
             ->select( 'subscribers', 'unsubscribed' );
     }
@@ -118,6 +120,7 @@ class SubscribersController extends BaseController {
         $title = ( $email->id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 77 )
             ->select( 'subscribers', 'add-edit' )
             ->add_title( $title . ' ' . _('Subscriber') )
             ->set( compact( 'email', 'form' ) );
@@ -177,6 +180,7 @@ class SubscribersController extends BaseController {
             ->javascript( 'fileuploader', 'email-marketing/subscribers/import' );
 
         return $this->get_template_response( 'import' )
+            ->kb( 78 )
             ->select( 'subscribers', 'import' )
             ->add_title( _('Import') )
             ->set( compact( 'email_lists' ) );

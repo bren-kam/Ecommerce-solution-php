@@ -22,6 +22,7 @@ class EmailListsController extends BaseController {
             return new RedirectResponse('/email-marketing/subscribers/');
 
         return $this->get_template_response( 'index' )
+            ->kb( 80 )
             ->add_title( _('Email Lists') )
             ->select( 'email-lists' );
     }
@@ -95,6 +96,7 @@ class EmailListsController extends BaseController {
         $title = ( $email_list->id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 81 )
             ->select( 'email-lists', 'add-edit' )
             ->add_title( $title . ' ' . _('Email List') )
             ->set( compact( 'email_list', 'form' ) );

@@ -31,6 +31,7 @@ class MobileMarketingController extends BaseController {
         $logged_in = '1' == $trumpia_response->result;
 
         $response = $this->get_template_response( 'index' )
+            ->kb( 101 )
             ->select('mobile-marketing')
             ->set( compact( 'logged_in' ) );
 

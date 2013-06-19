@@ -20,7 +20,6 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
      * Get
      *
      * @param int $id
-     * @return KnowledgeBaseArticle
      */
     public function get( $id ) {
         $this->prepare(
@@ -28,6 +27,20 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
             , 'ii'
             , array( ':id' => $id, ':status' => self::STATUS_DELETED )
         )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get by page
+     *
+     * @param int $kb_page_id
+     * @return KnowledgeBaseArticle[]
+     */
+    public function get_by_page( $kb_page_id ) {
+        return $this->prepare(
+            'SELECT kba.`id`, kba.`kb_category_id`, kba.`kb_page_id`, kba.`user_id`, kba.`title`, kba.`slug`, kba.`content`, kba.`status` FROM `kb_article` AS kba LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) WHERE kbp.`id` = :kb_page_id AND kba.`status` <> :status'
+            , 'ii'
+            , array( ':kb_page_id' => $kb_page_id, ':status' => self::STATUS_DELETED )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
     }
 
     /**

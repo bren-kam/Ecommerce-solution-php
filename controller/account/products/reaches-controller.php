@@ -18,6 +18,7 @@ class ReachesController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 54 )
             ->select( 'reaches' );
     }
 
@@ -61,6 +62,7 @@ class ReachesController extends BaseController {
             ->javascript( 'jquery.autoresize', 'products/reaches/reach' );
 
         return $this->get_template_response( 'reach' )
+            ->kb( 55 )
             ->add_title( _('Reach') )
             ->select( 'reaches' )
             ->set( compact( 'reach', 'comments', 'assignable_users' ) );

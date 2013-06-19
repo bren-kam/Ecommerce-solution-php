@@ -18,10 +18,9 @@ class ShippingController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 124 )
             ->select( 'shipping' );
-
-        return $response;
     }
 
     /**
@@ -84,7 +83,8 @@ class ShippingController extends BaseController {
             return new RedirectResponse('/shopping-cart/shipping/');
         }
 
-        $response = $this->get_template_response( 'add-edit' )
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 125 )
             ->select( 'shipping', 'add-edit-custom' )
             ->set( array(
                 'form' => $form->generate_form()
@@ -92,8 +92,6 @@ class ShippingController extends BaseController {
                 , 'type' => 'Custom'
             ) )
             ->add_title( ( ( $website_shipping_method_id ) ? _('Edit Custom') : _('Add Custom') ) );
-
-        return $response;
     }
 
     /**
@@ -185,7 +183,8 @@ class ShippingController extends BaseController {
             return new RedirectResponse('/shopping-cart/shipping/');
         }
 
-        $response = $this->get_template_response( 'add-edit' )
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 126 )
             ->select( 'shipping', 'add-edit-ups' )
             ->set( array(
                 'form' => $form->generate_form()
@@ -193,8 +192,6 @@ class ShippingController extends BaseController {
                 , 'type' => 'UPS'
             ) )
             ->add_title( ( ( $website_shipping_method_id ) ? _('Edit UPS') : _('Add UPS') ) );
-
-        return $response;
     }
 
     /**
@@ -290,7 +287,8 @@ class ShippingController extends BaseController {
             return new RedirectResponse('/shopping-cart/shipping/');
         }
 
-        $response = $this->get_template_response( 'add-edit' )
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 127 )
             ->select( 'shipping', 'add-edit-fedex' )
             ->set( array(
                 'form' => $form->generate_form()
@@ -298,8 +296,6 @@ class ShippingController extends BaseController {
                 , 'type' => 'FedEx'
             ) )
             ->add_title( ( ( $website_shipping_method_id ) ? _('Edit FedEx') : _('Add FedEx') ) );
-
-        return $response;
     }
 
     /**
@@ -450,14 +446,13 @@ class ShippingController extends BaseController {
             return new RedirectResponse( '/shopping-cart/shipping/settings/' );
         }
 
-        $response = $this->get_template_response( 'settings' )
+        return $this->get_template_response( 'settings' )
+            ->kb( 128 )
             ->select( 'shipping', 'shipping-settings' )
             ->set( array(
                 'form' => $form->generate_form()
             ) )
             ->add_title( _('Settings') );
-
-        return $response;
     }
 
     /***** AJAX *****/

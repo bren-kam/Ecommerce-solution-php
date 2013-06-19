@@ -12,7 +12,6 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      * Will be executed before every test
      */
     public function setUp() {
-        $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->kb_category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ADMIN );
     }
 
@@ -226,7 +225,6 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      * Will be executed after every test
      */
     public function tearDown() {
-        unset( $_SERVER['MODEL_PATH'] );
         $this->kb_category = KnowledgeBaseCategory::$categories_by_parent = KnowledgeBaseCategory::$categories = null;
     }
 }

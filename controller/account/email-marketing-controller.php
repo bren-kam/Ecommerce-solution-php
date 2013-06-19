@@ -54,6 +54,7 @@ class EmailMarketingController extends BaseController {
             ->javascript( 'swfobject', 'email-marketing/dashboard');
 
         return $this->get_template_response( 'index' )
+            ->kb( 72 )
             ->add_title( _('Dashboard') )
             ->select( 'email-dashboard' )
             ->set( compact( 'messages', 'subscribers', 'email', 'bar_chart', 'email_count' ) );
@@ -101,6 +102,7 @@ class EmailMarketingController extends BaseController {
         }
 
         return $this->get_template_response( 'settings' )
+            ->kb( 84 )
             ->add_title( _('Settings') )
             ->select( 'settings' )
             ->set( array( 'form' => $form->generate_form() ) );

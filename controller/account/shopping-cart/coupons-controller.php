@@ -18,6 +18,7 @@ class CouponsController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 129 )
             ->select( 'coupons', 'view' );
     }
 
@@ -83,6 +84,7 @@ class CouponsController extends BaseController {
             ->javascript( 'shopping-cart/coupons/add-edit' );
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 130 )
             ->select( 'coupons', 'add' )
             ->set( compact( 'coupon', 'shipping_methods','free_shipping_methods', 'js_validation', 'errs' ) );
     }

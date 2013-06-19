@@ -8,7 +8,7 @@ body { background-color: #717c84 }
 #footer, #footer a { color: #d1dbe2 }
 #footer a:hover { color:  #fff }
 #sidebar a.sub { color: #77b253 }
-#sidebar a.sub:hover, #sidebar a.sub.selected, .service img:hover { background-color: #69727a !important; border-top-color: #ACDB00; border-bottom-color: #88AD00; }
+#sidebar a.sub:hover, #sidebar a.sub.selected, .service img:hover, #support-drop-down a.article { background-color: #69727a !important; border-top-color: #ACDB00; border-bottom-color: #88AD00; }
 .boxy-wrapper .title-bar, .boxy-footer { background-color: #69727a }
 
 .button { 
@@ -47,6 +47,6 @@ body { background-color: #717c84 }
 
 /**** OLD ****/
 a { color: #77b253; }
-a:hover { color: #68a841 }
+a:hover, #breadcrumb a:hover { color: #68a841 }
 #nav, .box h2 { background-color: #eff5fa }
 #description { color: #3e65a5 }
