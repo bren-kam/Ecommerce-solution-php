@@ -41,6 +41,31 @@ class KnowledgeBasePage extends ActiveRecordBase {
     }
 
     /**
+     * Search
+     *
+     * @param string $search
+     * @param array $kb_category_ids [optional]
+     * @return KnowledgeBasePage[]
+     */
+    public function search( $search, $kb_category_ids = array() ) {
+        if ( empty( $kb_category_ids ) ) {
+            $extra = '';
+        } else {
+            foreach ( $kb_category_ids as &$id ) {
+                $id = (int) $id;
+            }
+
+            $extra = " AND `kb_category_id` IN (" . implode( ',', $kb_category_ids ) . ')';
+        }
+
+        return $this->prepare(
+            "SELECT `id`, `kb_category_id`, `name` FROM `kb_page` WHERE `name` LIKE :search $extra"
+            , 's'
+            , array( ':search' => '%' . $search . '%' )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBasePage' );
+    }
+
+    /**
      * Create
      */
     public function create() {

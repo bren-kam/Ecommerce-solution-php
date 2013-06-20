@@ -67,6 +67,31 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
     }
 
     /**
+     * Search
+     *
+     * @param string $search
+     * @param array $kb_category_ids [optional]
+     * @return KnowledgeBaseCategory[]
+     */
+    public function search( $search, $kb_category_ids = array() ) {
+        if ( empty( $kb_category_ids ) ) {
+            $extra = '';
+        } else {
+            foreach ( $kb_category_ids as &$id ) {
+                $id = (int) $id;
+            }
+
+            $extra = " AND `id` IN (" . implode( ',', $kb_category_ids ) . ')';
+        }
+
+        return $this->prepare(
+            "SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name` FROM `kb_category` WHERE `name` LIKE :search $extra"
+            , 's'
+            , array( ':search' => '%' . $search . '%' )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseCategory' );
+    }
+
+    /**
      * Get all children categories
      *
      * @param int $id

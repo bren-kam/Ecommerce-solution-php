@@ -72,6 +72,31 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
     }
 
     /**
+     * Search
+     *
+     * @param string $search
+     * @param array $kb_category_ids [optional]
+     * @return KnowledgeBaseArticle[]
+     */
+    public function search( $search, $kb_category_ids = array() ) {
+        if ( empty( $kb_category_ids ) ) {
+            $extra = '';
+        } else {
+            foreach ( $kb_category_ids as &$id ) {
+                $id = (int) $id;
+            }
+
+            $extra = " AND `kb_category_id` IN (" . implode( ',', $kb_category_ids ) . ')';
+        }
+
+        return $this->prepare(
+            "SELECT `id`, `kb_category_id`, `kb_page_id`, `user_id`, `title`, `slug`, `content`, `status` FROM `kb_article` WHERE `status` <> :status AND `title` LIKE :search $extra"
+            , 'is'
+            , array( ':status' => self::STATUS_DELETED, ':search' => '%' . $search . '%' )
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
+    }
+
+    /**
      * Create
      */
     public function create() {

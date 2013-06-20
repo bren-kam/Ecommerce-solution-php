@@ -66,3 +66,40 @@ ul li { margin-left: 25px; list-style: disc }
 .divider { background: url(/images/kb/home-divider.png) 100% 0 repeat-y }
 #frequently > * { padding-left: 15px; }
 #frequently ol { padding-left: 15px; }
+
+#content{ padding-top: 20px }
+#kb-search { margin-left: 20px; height: 35px; background-color: #fff; width: 632px; position: relative;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+#kb-search img { position: relative; }
+#kbs { border: 0; border-right: 1px solid #dadfe3; height: 20px; padding: 7px 10px 8px 0;position: relative; bottom: 13px;  width: 277px; font-size: 14px; }
+#sKBCategory { width: 210px;position: relative; bottom: 13px; border: 0; padding: 8px 8px 6px; }
+#kbs-button {
+    width: 74px; height: 35px; padding-bottom: 3px; position: relative; bottom: 12px; color: #828487; cursor: pointer; font-weight: bold; font-size: 15px;
+    background-image: linear-gradient(bottom, rgb(36,37,37) 37%, rgb(63,65,66) 69%);
+    background-image: -o-linear-gradient(bottom, rgb(36,37,37) 37%, rgb(63,65,66) 69%);
+    background-image: -moz-linear-gradient(bottom, rgb(36,37,37) 37%, rgb(63,65,66) 69%);
+    background-image: -webkit-linear-gradient(bottom, rgb(36,37,37) 37%, rgb(63,65,66) 69%);
+    background-image: -ms-linear-gradient(bottom, rgb(36,37,37) 37%, rgb(63,65,66) 69%);
+
+    background-image: -webkit-gradient(
+    	linear,
+    	left bottom,
+    	left top,
+    	color-stop(0.37, rgb(36,37,37)),
+    	color-stop(0.69, rgb(63,65,66))
+    );
+
+    border: 0;
+    border-top: 1px solid #3f4142;
+    -webkit-border-top-right-radius: 10px;
+    -webkit-border-bottom-right-radius: 10px;
+    -moz-border-radius-topright: 10px;
+    -moz-border-radius-bottomright: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+#kbs-button:hover { color: #fff }
+section#articles, #articles section { width: 100%; margin-right: 0 !important; }
