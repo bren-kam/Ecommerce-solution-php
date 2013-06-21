@@ -156,9 +156,16 @@ class KbController extends BaseController {
      * @return RedirectResponse|TemplateResponse
      */
     public function browser() {
-        $this->resources->css('kb/kb');
+        $this->resources
+            ->css('kb/browser')
+            ->javascript('kb/browser');
+
+        $user = new User();
+        $user->get( $this->user->id );
+        $domain = $user->domain;
 
         return $this->get_template_response( 'browser' )
+            ->set( compact( 'domain' ) )
             ->add_title( _('Browser Support') );
     }
 

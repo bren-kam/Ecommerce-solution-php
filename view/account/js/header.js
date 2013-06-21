@@ -9,8 +9,12 @@ jQuery(function($) {
 	$('body').on( 'click', 'a[href^=#]', function(e) { e.preventDefault(); } );
 
 	// Trigger the dialog
-	$('#aTicket').click( function() {
+	$('#aTicket, a.support-ticket').click( function() {
 		var a = $(this);
+
+        if ( a.hasClass('support-ticket') ) {
+            window.scrollTo( 0, 0 );
+        }
 		
 		if( a.hasClass('loaded') ) {
 			new Boxy( $('#dTicketPopup'), {

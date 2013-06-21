@@ -109,6 +109,7 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                             }
                         }
                         ?>
+                        <a href="/kb/browser/" title="<?php echo _('Browser Support'); ?>"><?php echo _('Browser Support'); ?></a>
                     </div>
                 </div>
             </div>
