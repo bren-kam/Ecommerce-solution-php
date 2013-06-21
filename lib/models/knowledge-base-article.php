@@ -79,9 +79,9 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
      */
     public function search( $search ) {
         return $this->prepare(
-            "SELECT `id`, `kb_category_id`, `kb_page_id`, `user_id`, `title`, `slug`, `content`, `status` FROM `kb_article` WHERE `status` <> :status AND `title` LIKE :search"
+            "SELECT `id`, `kb_category_id`, `kb_page_id`, `user_id`, `title`, `slug`, `content`, `status`, MATCH ( `title`, `content` ) AGAINST( :search ) AS relevance FROM `kb_article` WHERE `status` <> :status AND MATCH ( `title`, `content` ) AGAINST( :search2 ) ORDER BY relevance DESC"
             , 'is'
-            , array( ':status' => self::STATUS_DELETED, ':search' => '%' . $search . '%' )
+            , array( ':status' => self::STATUS_DELETED, ':search' => $search, ':search2' => $search )
         )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
     }
 

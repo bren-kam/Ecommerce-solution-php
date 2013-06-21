@@ -74,9 +74,9 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
      */
     public function search( $search ) {
         return $this->prepare(
-            "SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name` FROM `kb_category` WHERE `name` LIKE :search"
-            , 's'
-            , array( ':search' => '%' . $search . '%' )
+            "SELECT `id`, COALESCE( `parent_id`, 0 ) AS parent_id, `section`, `name`, MATCH( `name` ) AGAINST (:search) AS relevance FROM `kb_category` WHERE MATCH( `name` ) AGAINST ( :search2 ) ORDER BY relevance DESC"
+            , 'ss'
+            , array( ':search' => $search, ':search2' => $search )
         )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseCategory' );
     }
 

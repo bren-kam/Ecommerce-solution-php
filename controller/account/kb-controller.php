@@ -140,6 +140,7 @@ class KbController extends BaseController {
         $categories = $category->search( $_GET['kbs'] );
         $pages = $page->search( $_GET['kbs'] );
         $articles = $article->search( $_GET['kbs'] );
+
         $search = $_GET['kbs'];
 
         $this->resources->css('kb/kb');
