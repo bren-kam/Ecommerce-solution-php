@@ -21,18 +21,12 @@
         <form name="fKBSearch" action="/kb/search/">
             <img src="/images/kb/search.png" width="48" height="35">
             <input type="text" id="kbs" name="kbs" tmpval="<?php echo _('Enter a question or keyword to search'); ?>">
-            <select name="cid" id="sKBCategory">
-                <option value="">-- <?php echo _('All'); ?> --</option>
-                <?php foreach ( $search_categories as $scat ) { ?>
-                    <option value="<?php echo $scat->id; ?>"<?php echo $selected; ?>><?php echo str_repeat( '&nbsp;', $scat->depth * 5 ) . $scat->name; ?></option>
-                <?php } ?>
-            </select>
             <input type="submit" id="kbs-button" value="<?php echo _('Search'); ?>">
         </form>
     </div>
     <div id="subcontent-wrapper">
         <div id="breadcrumb">
-            <a href="/kb/" title="<?php echo _('Home'); ?>"><?php echo _('Home'); ?></a> >
+            <a href="/kb/" title="<?php echo _('Home'); ?>"><img src="/images/kb/icons/home.png" width="14" height="12" alt="<?php echo _('Home'); ?>"></a> >
             <?php
             $parent_category_count = count( $parent_categories );
 
@@ -49,17 +43,19 @@
         <div id="subcontent">
             <h1><?php echo _('Category') . ': ' . $category->name; ?></h1>
             <br /><br />
-            <section>
-                <h2><?php echo _('Pages'); ?></h2>
-                <ul>
-                <?php
-                foreach ( $pages as $page ) {
-                    ?>
-                    <li><a href="<?php echo url::add_query_arg( 'pid', $page->id, '/kb/page/' ); ?>" title="<?php echo $page->name; ?>"><?php echo $page->name; ?></a></li>
-                <?php } ?>
-                </ul>
-            </section>
-            <br /><br />
+            <?php if ( !empty( $pages ) ) { ?>
+                <section>
+                    <h2><?php echo _('Pages'); ?></h2>
+                    <ul>
+                    <?php
+                    foreach ( $pages as $page ) {
+                        ?>
+                        <li><a href="<?php echo url::add_query_arg( 'pid', $page->id, '/kb/page/' ); ?>" title="<?php echo $page->name; ?>"><?php echo $page->name; ?></a></li>
+                    <?php } ?>
+                    </ul>
+                </section>
+                <br /><br />
+            <?php } ?>
             <section>
                 <h2><?php echo _('Articles'); ?></h2>
                 <ul>

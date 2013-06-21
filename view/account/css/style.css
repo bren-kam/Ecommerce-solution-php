@@ -62,6 +62,7 @@ strong { font-weight: bold }
 em { font-style: italic }
 ol { margin-left: 25px }
 ol li { list-style: decimal; }
+small { font-size: 0.8em }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }

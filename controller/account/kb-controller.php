@@ -23,11 +23,8 @@ class KbController extends BaseController {
         $article = new KnowledgeBaseArticle();
         $articles = $article->get_by_views( KnowledgeBaseCategory::SECTION_ACCOUNT );
 
-        $category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ACCOUNT );
-        $search_categories = $category->sort_by_hierarchy();
-
         return $this->get_template_response( 'home' )
-            ->set( compact( 'articles', 'search_categories' ) );
+            ->set( compact( 'articles' ) );
     }
 
     /**
@@ -58,13 +55,12 @@ class KbController extends BaseController {
 
         // Get data
         $articles = $article->get_by_page( $article->kb_page_id );
-        $search_categories = $category->sort_by_hierarchy();
 
         $this->resources->css('kb/kb');
 
         return $this->get_template_response( 'article' )
             ->add_title( $article->title . ' | ' . _('Article') )
-            ->set( compact( 'article', 'categories', 'page', 'articles', 'search_categories' ) );
+            ->set( compact( 'article', 'categories', 'page', 'articles' ) );
     }
 
     /**
@@ -89,13 +85,12 @@ class KbController extends BaseController {
         // Get data
         $articles = $article->get_by_page( $page->id );
         $pages = $page->get_by_category( $page->kb_category_id );
-        $search_categories = $category->sort_by_hierarchy();
 
         $this->resources->css('kb/kb');
 
         return $this->get_template_response( 'page' )
             ->add_title( $page->name . ' | ' . _('Page') )
-            ->set( compact( 'page', 'categories', 'articles', 'pages', 'search_categories' ) );
+            ->set( compact( 'page', 'categories', 'articles', 'pages' ) );
     }
 
     /**
@@ -119,13 +114,12 @@ class KbController extends BaseController {
         // Get items
         $articles = $article->get_by_category( $category->id );
         $pages = $page->get_by_category( $category->id );
-        $search_categories = $category->sort_by_hierarchy();
 
         $this->resources->css('kb/kb');
 
         return $this->get_template_response( 'category' )
             ->add_title( $category->name . ' | ' . _('Category') )
-            ->set( compact( 'category', 'parent_categories', 'child_categories', 'sibling_categories', 'articles', 'pages', 'search_categories' ) );
+            ->set( compact( 'category', 'parent_categories', 'child_categories', 'sibling_categories', 'articles', 'pages' ) );
     }
 
     /**
@@ -137,38 +131,34 @@ class KbController extends BaseController {
         if ( !isset( $_GET['kbs'] ) )
             return new RedirectResponse( '/kb/' );
 
-        // Are we looking in a specific category?
-        $kb_category_id = ( empty( $_GET['cid'] ) ) ? NULL : (int) $_GET['cid'];
-
         // Declare variables
         $category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ACCOUNT );
         $page = new KnowledgeBasePage();
         $article = new KnowledgeBaseArticle();
 
-        // Get categories
-        if ( $kb_category_id ) {
-            $categories = $category->get_all_children( $kb_category_id );
-            $kb_category_ids[] = $kb_category_id;
-
-            foreach ( $categories as $category ) {
-                $kb_category_ids[] = $category->id;
-            }
-        } else {
-            $kb_category_ids = array();
-        }
-
         // Search results
-        $categories = $category->search( $_GET['kbs'], $kb_category_ids );
-        $pages = $page->search( $_GET['kbs'], $kb_category_ids );
-        $articles = $article->search( $_GET['kbs'], $kb_category_ids );
-        $search_categories = $category->sort_by_hierarchy();
+        $categories = $category->search( $_GET['kbs'] );
+        $pages = $page->search( $_GET['kbs'] );
+        $articles = $article->search( $_GET['kbs'] );
         $search = $_GET['kbs'];
 
         $this->resources->css('kb/kb');
 
         return $this->get_template_response( 'search' )
             ->add_title( _('Search') )
-            ->set( compact( 'search', 'search_categories', 'categories', 'pages', 'articles' ) );
+            ->set( compact( 'search', 'categories', 'pages', 'articles' ) );
+    }
+
+    /**
+     * Browser support page
+     *
+     * @return RedirectResponse|TemplateResponse
+     */
+    public function browser() {
+        $this->resources->css('kb/kb');
+
+        return $this->get_template_response( 'browser' )
+            ->add_title( _('Browser Support') );
     }
 
     /***** AJAX *****/

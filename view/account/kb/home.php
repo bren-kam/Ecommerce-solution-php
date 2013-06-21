@@ -8,7 +8,6 @@
  * @var Template $template
  * @var User $user
  * @var KnowledgeBaseArticle[] $articles
- * @var KnowledgeBaseCategory[] $search_categories
  */
 
 $rate_nonce = nonce::create('rate');
@@ -19,20 +18,12 @@ $rate_nonce = nonce::create('rate');
         <form name="fKBSearch" action="/kb/search/">
             <img src="/images/kb/search.png" width="48" height="35">
             <input type="text" id="kbs" name="kbs" tmpval="<?php echo _('Enter a question or keyword to search'); ?>">
-            <select name="cid" id="sKBCategory">
-                <option value="">-- <?php echo _('All'); ?> --</option>
-                <?php
-                foreach ( $search_categories as $scat ) {
-                ?>
-                    <option value="<?php echo $scat->id; ?>"><?php echo str_repeat( '&nbsp;', $scat->depth * 5 ) . $scat->name; ?></option>
-                <?php } ?>
-            </select>
             <input type="submit" id="kbs-button" value="<?php echo _('Search'); ?>">
         </form>
     </div>
     <div id="subcontent-wrapper">
         <div id="breadcrumb">
-            <span class="last"><?php echo _('Home'); ?></span>
+            <span class="last"><img src="/images/kb/icons/home.png" width="14" height="12" alt="<?php echo _('Home'); ?>"></span>
         </div>
         <div id="subcontent">
             <div class="col-2 float-left divider">
@@ -46,6 +37,7 @@ $rate_nonce = nonce::create('rate');
                     , 123   => array( 'shopping-cart', _('Shopping Cart') )
                     , 22    => array( 'social-media', _('Social Media') )
                     , 98    => array( 'mobile-marketing', _('Mobile Marketing') )
+                    , 121   => array( 'faqs', _('Frequently Asked Questions') )
                 );
 
                 $keys = array_keys( $links );
