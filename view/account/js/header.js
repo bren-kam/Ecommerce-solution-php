@@ -12,10 +12,9 @@ jQuery(function($) {
 	$('#aTicket, a.support-ticket').click( function() {
 		var a = $(this);
 
-        if ( a.hasClass('support-ticket') ) {
+        if ( a.hasClass('support-ticket') )
             window.scrollTo( 0, 0 );
-        }
-		
+
 		if( a.hasClass('loaded') ) {
 			new Boxy( $('#dTicketPopup'), {
 				title : a.attr('title')
