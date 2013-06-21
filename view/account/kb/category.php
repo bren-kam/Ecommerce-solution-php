@@ -72,7 +72,7 @@
 
             <?php if ( count( $sibling_categories ) > 1 ) { ?>
             <aside id="right-sidebar">
-                <header><?php echo _('Other Categories'); ?></header>
+                <h2><?php echo _('Other Categories'); ?></h2>
                 <?php
                 foreach ( $sibling_categories as $sc ) {
                     if ( $sc->id == $category->id )

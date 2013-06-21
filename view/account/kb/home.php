@@ -47,13 +47,17 @@ $rate_nonce = nonce::create('rate');
                     <a href="<?php echo url::add_query_arg( 'cid', $kb_category_id, '/kb/category/' ); ?>" title="<?php echo $link[1]; ?>" class="service"><img src="/images/dashboard/<?php echo str_replace( '_', '-', $link[0] ); ?>.png" width="149" height="160" alt="<?php echo $link[1]; ?>" /></a>
                 <?php } ?>
             </div>
-            <div class="col-2 float-left" id="frequently">
+            <div class="col-4 float-left divider" id="frequently">
                 <p><strong><?php echo _('Most Frequently Viewed Articles'); ?></strong></p>
                 <ol>
                 <?php foreach( $articles as $article ) { ?>
                     <li><a href="<?php echo url::add_query_arg( 'aid', $article->id, '/kb/article/' ); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a> </li>
                 <?php } ?>
                 </ol>
+            </div>
+            <div class="col-4 float-left" id="browser-troubles">
+                <p><strong><?php echo _('Having browser troubles?'); ?></strong></p>
+                <p><?php echo _('Check out our'); ?> <a href="/kb/browser/" title="<?php echo _('Browser Troubleshooting'); ?>"><?php echo _('browser troubleshooting'); ?></a> <?php echo _('page'); ?>.</p>
             </div>
             <br class="clr" />
         </div>

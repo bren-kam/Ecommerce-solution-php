@@ -88,10 +88,11 @@
                 </section>
             <?php
             }
-
-
-
-?>
+            ?>
+            <br><br>
+            <hr>
+            <br>
+            <p><?php echo _("Can't find what you're looking for?"); ?> <a href="#" class="support-ticket" title="<?php echo _('Support Request'); ?>"><?php echo _('Submit a support request'); ?></a>. <?php echo _("We'll get back to you as soon as possible."); ?></p>
             <br class="clr" />
         </div>
     </div>
