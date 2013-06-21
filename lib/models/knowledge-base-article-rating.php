@@ -21,6 +21,6 @@ class KnowledgeBaseArticleRating extends ActiveRecordBase {
             'kb_article_id' => $this->kb_article_id
             , 'user_id' => $this->user_id
             , 'rating' => $this->rating
-        ), 'iii' );
+        ), 'iii', true );
     }
 }
