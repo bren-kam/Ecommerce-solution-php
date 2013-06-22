@@ -7,7 +7,7 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
     public $id, $kb_category_id, $kb_page_id, $user_id, $title, $slug, $content, $status, $date_created;
 
     // Artificial columns
-    public $category, $page;
+    public $category, $page, $helpful, $unhelpful, $rating, $views;
 
     /**
      * Setup the account initial data
@@ -131,7 +131,7 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT kba.`id`, kba.`title`, CONCAT( IF( kbc2.`name` IS NOT NULL, CONCAT( kbc2.`name`, ' > ' ), '' ), kbc.`name` ) AS category, kbp.`name` AS page FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) WHERE `status` <> " . self::STATUS_DELETED . " $where $order_by LIMIT $limit"
+            "SELECT kba.`id`, kba.`title`, CONCAT( IF( kbc2.`name` IS NOT NULL, CONCAT( kbc2.`name`, ' > ' ), '' ), kbc.`name` ) AS category, kbp.`name` AS page, kbar.helpful, kbar.unhelpful, kbar.rating, kbav.views FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) LEFT JOIN ( SELECT `kb_article_id`, SUM( `rating` ) AS rating, SUM( IF( " . KnowledgeBaseArticleRating::POSITIVE . " = `rating`, 1, 0 ) ) AS helpful, SUM( IF( " . KnowledgeBaseArticleRating::NEGATIVE . " = `rating`, 1, 0 ) ) AS unhelpful FROM `kb_article_rating` GROUP BY `kb_article_id` ) AS kbar ON ( kbar.`kb_article_id` = kba.`id` ) LEFT JOIN ( SELECT `kb_article_id`, COUNT(*) AS views FROM `kb_article_view` GROUP BY `kb_article_id` ) AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) WHERE kba.`status` <> " . self::STATUS_DELETED . " $where GROUP BY kba.`id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
@@ -149,7 +149,7 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
 
 		// Get the website count
         return $this->prepare(
-            "SELECT COUNT( kba.`id` ) FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) WHERE `status` <> " . self::STATUS_DELETED . $where
+            "SELECT COUNT( DISTINCT kba.`id` ) FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) LEFT JOIN ( SELECT `kb_article_id`, SUM( `rating` ) AS rating, SUM( IF( " . KnowledgeBaseArticleRating::POSITIVE . " = `rating`, 1, 0 ) ) AS helpful, SUM( IF( " . KnowledgeBaseArticleRating::NEGATIVE . " = `rating`, 1, 0 ) ) AS unhelpful FROM `kb_article_rating` GROUP BY `kb_article_id` ) AS kbar ON ( kbar.`kb_article_id` = kba.`id` ) LEFT JOIN ( SELECT `kb_article_id`, COUNT(*) AS views FROM `kb_article_view` GROUP BY `kb_article_id` ) AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) WHERE kba.`status` <> " . self::STATUS_DELETED . $where
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

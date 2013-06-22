@@ -155,7 +155,7 @@ class ArticlesController extends BaseController {
         $kb_article = new KnowledgeBaseArticle();
 
         // Set Order by
-        $dt->order_by( 'kba.`title`', 'category', 'page' );
+        $dt->order_by( 'kba.`title`', 'category', 'page', 'helpful', 'unhelpful', 'rating', 'views' );
         $dt->add_where( ' AND kbc.`section` = ' . $kb_article->quote( $_GET['section'] ) );
         $dt->add_where( ' AND ( kbc2.`section` = ' . $kb_article->quote( $_GET['section'] ) . ' OR kbc2.`section` IS NULL )' );
         $dt->search( array( 'kba.`title`' => false, 'kbc.`name`' => false, 'kbc2.`name`' => false, 'kbp.`name`' => false ) );
@@ -180,6 +180,10 @@ class ArticlesController extends BaseController {
                     '<a href="' . url::add_query_arg( array( 'kbaid' => $article->id, '_nonce' => $delete_nonce ), '/knowledge-base/articles/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
                 , $article->category
                 , $article->page
+                , (int) $article->helpful
+                , (int) $article->unhelpful
+                , (int) $article->rating
+                , (int) $article->views
             );
         }
 
