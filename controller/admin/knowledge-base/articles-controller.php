@@ -180,10 +180,10 @@ class ArticlesController extends BaseController {
                     '<a href="' . url::add_query_arg( array( 'kbaid' => $article->id, '_nonce' => $delete_nonce ), '/knowledge-base/articles/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
                 , $article->category
                 , $article->page
-                , (float) number_format( $article->helpful )
-                , (float) number_format( $article->unhelpful )
-                , (float) number_format( $article->rating )
-                , (float) number_format( $article->views )
+                , number_format( (int) $article->helpful )
+                , number_format( (int) $article->unhelpful )
+                , number_format( (int) $article->rating )
+                , number_format( (int) $article->views )
             );
         }
 
