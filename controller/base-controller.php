@@ -158,7 +158,7 @@ abstract class BaseController {
         $this->user->get_by_email( $email );
 
         // Check what permission needs to be checked
-        $permission = ( 'admin' == SUBDOMAIN ) ? 6 : 1;
+        $permission = ( 'admin' == SUBDOMAIN ) ? User::ROLE_COMPANY_ADMIN : User::ROLE_AUTHORIZED_USER;
 
         // See if we can get the user
         if ( !$this->user->has_permission( $permission ) )

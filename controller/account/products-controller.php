@@ -44,6 +44,7 @@ class ProductsController extends BaseController {
             ->css_url( Config::resource('jquery-ui') );
 
         return $this->get_template_response( 'index')
+            ->kb( 45 )
             ->select( 'sub-products', 'view' )
             ->set( compact( 'categories', 'product_count', 'coupons' ) );
     }
@@ -87,6 +88,7 @@ class ProductsController extends BaseController {
             ->css_url( Config::resource('jquery-ui') );
 
         $response = $this->get_template_response( 'add' )
+            ->kb( 46 )
             ->select( 'sub-products', 'add' )
             ->set( compact( 'product_count', 'categories', 'brands' ) );
 
@@ -104,6 +106,7 @@ class ProductsController extends BaseController {
         $products = $account_product->get_by_account( $this->user->account->id );
 
         $response = $this->get_template_response( 'all' )
+            ->kb( 47 )
             ->add_title( _('All Products') )
             ->select( 'sub-products', 'all' )
             ->set( compact( 'products' ) );
@@ -166,6 +169,7 @@ class ProductsController extends BaseController {
             ->css_url( Config::resource('jquery-ui') );
 
         $response = $this->get_template_response( 'catalog-dump' )
+            ->kb( 48 )
             ->add_title( _('Catalog Dump') )
             ->select( 'sub-products', 'catalog-dump' )
             ->set( compact( 'js_validation', 'errs' ) );
@@ -216,6 +220,7 @@ class ProductsController extends BaseController {
         $form = $form->generate_form();
 
         return $this->get_template_response( 'add-bulk' )
+            ->kb( 49 )
             ->add_title( _('Add Bulk') )
             ->select( 'sub-products', 'add-bulk' )
             ->set( compact( 'form', 'already_existed', 'not_added_skus', 'success' ) );
@@ -245,6 +250,7 @@ class ProductsController extends BaseController {
         $blocked_products = $account_product->get_blocked( $this->user->account->id );
 
         $response = $this->get_template_response( 'block-products' )
+            ->kb( 50 )
             ->add_title( _('Block Products') )
             ->select( 'sub-products', 'block-products' )
             ->set( array( 'form' => $form->generate_form(), 'blocked_products' => $blocked_products ) );
@@ -305,6 +311,7 @@ class ProductsController extends BaseController {
         }
 
         return $this->get_template_response( 'hide-categories' )
+            ->kb( 51 )
             ->add_title( _('Hide Categories') )
             ->select( 'sub-products', 'hide-categories' )
             ->set( array( 'form' => $form->generate_form(), 'hidden_categories' => $blocked_categories ) );
@@ -339,6 +346,7 @@ class ProductsController extends BaseController {
             ->javascript( 'products/product-prices' );
 
         return $this->get_template_response( 'product-prices' )
+            ->kb( 52 )
             ->add_title( _('Product Prices') )
             ->select( 'sub-products', 'product-prices' )
             ->set( compact( 'brands', 'categories' ) );
@@ -353,6 +361,7 @@ class ProductsController extends BaseController {
         $this->resources->javascript( 'fileuploader', 'products/multiply-prices' );
 
         return $this->get_template_response( 'price-multiplier' )
+            ->kb( 115 )
             ->add_title( _('Price Multiplier') )
             ->select( 'sub-products', 'price-multiplier' );
     }
@@ -436,6 +445,7 @@ class ProductsController extends BaseController {
         }
 
         return $this->get_template_response( 'settings' )
+            ->kb( 61 )
             ->add_title( _('Settings') )
             ->select( 'products', 'settings' )
             ->set( array( 'form' => $form->generate_form() ) );
@@ -454,6 +464,7 @@ class ProductsController extends BaseController {
         $website_top_brand = new WebsiteTopBrand();
 
         return $this->get_template_response( 'brands' )
+            ->kb( 58 )
             ->add_title( _('Brands') )
             ->select( 'products', 'brands' )
             ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );

@@ -58,11 +58,11 @@ h2 { font-size:22px; color: #404040; }
 h3 { font-size: 18px; color: #404040; }
 textarea { font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; }
 li { padding-bottom: 7px }
-strong, .redactor_editor b { font-weight: bold }
-em, .redactor_editor i { font-style: italic }
+strong { font-weight: bold }
+em { font-style: italic }
 ol { margin-left: 25px }
 ol li { list-style: decimal; }
-.redactor_editor ul li { list-style: disc }
+small { font-size: 0.8em }
 
 a { text-decoration:none; }
 a:hover { color:#595f65 }
@@ -160,8 +160,9 @@ input.button {
     background-color: #333436; padding: 8px 22px 8px 20px; color: #FFF; font-size: 17px; font-weight: bold; display: block; width: 188px;
     text-shadow: 0px -1px 0px #000000;
     filter: dropshadow(color=#000000, offx=0, offy=-1);
-    background-image: none;
+    background-image: none !important;
 }
+#support-drop-down a.article { color: #494949 !important; text-shadow: none; filter: dropshadow(color=#000000, offx=0, offy=0);}
 
 #support-drop-down a:hover {
     background-image: linear-gradient(top, rgb(63,65,66) 11%, rgb(33,33,34) 56%)
@@ -195,8 +196,8 @@ input.button {
 #sidebar a.top.last { border-bottom: none !important; }
 #sidebar a.top.first { border-top: none !important; }
 
-#sidebar a.sub { border-top: 1px solid #595B5D; border-bottom: 1px solid #303133; font-weight: bold; font-size: 12px; display: block; padding: 9px 8px 9px 28px; background-color: #434547; }
-#sidebar a.sub.selected, #sidebar a.sub:hover { color: #fff; }
+#sidebar a.sub, #right-sidebar a { border-top: 1px solid #595B5D; border-bottom: 1px solid #303133; font-weight: bold; font-size: 12px; display: block; padding: 9px 8px 9px 28px; background-color: #434547; }
+#sidebar a.sub.selected, #sidebar a.sub:hover, #right-sidebar a:hover { color: #fff; }
 #sidebar a.sub.first { border-top: 1px solid #434547 !important; }
 #sidebar a.sub.last { border-bottom: 1px solid #212121; }
 

@@ -18,6 +18,7 @@ class RelatedProductsController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 59 )
             ->select( 'related-products', 'view' );
     }
 
@@ -78,6 +79,7 @@ class RelatedProductsController extends BaseController {
         $title = ( $group->id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 60 )
             ->select( 'related-products', 'add' )
             ->add_title( $title . ' ' . _('Product Group') )
             ->set( compact( 'errs', 'js_validation', 'group', 'products' ) );

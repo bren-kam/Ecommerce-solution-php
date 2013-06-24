@@ -7,8 +7,8 @@ body { background-color: #A2AAB0 }
 #nav-right a, .highlight { color: #BE1E25 }
 #footer, #footer a { color: #DADFE3 }
 #footer a:hover { color:  #fff }
-#sidebar a.sub { color: #BE1E25 }
-#sidebar a.sub:hover, #sidebar a.sub.selected, .service img:hover { background-color: #BE1E25 !important; border-top-color: #ACDB00; border-bottom-color: #AD2900; }
+#sidebar a.sub, #right-sidebar a { color: #BE1E25 }
+#sidebar a.sub:hover, #sidebar a.sub.selected, #right-sidebar a:hover, .service img:hover, #support-drop-down a.article { background-color: #BE1E25 !important; border-top-color: #ACDB00; border-bottom-color: #AD2900; }
 .boxy-wrapper .title-bar, .boxy-footer { background-color: #3C3D40 }
 
 .button {
@@ -47,6 +47,6 @@ body { background-color: #A2AAB0 }
 
 /**** OLD ****/
 a { color: #282828; }
-a:hover { color: #a9c800 }
+a:hover, #breadcrumb a:hover { color: #a9c800 }
 #nav, .box h2 { background-color: #7a7b7d }
 #description { color: #a9c800 }

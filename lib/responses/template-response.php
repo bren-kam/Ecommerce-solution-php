@@ -93,6 +93,19 @@ class TemplateResponse extends Response {
     }
 
     /**
+     * Select knowledge base page
+     *
+     * @param int $kb_page_id
+     * @return TemplateResponse
+     */
+    public function kb( $kb_page_id ) {
+        $article = new KnowledgeBaseArticle();
+        $this->set( 'kbh_articles', $article->get_by_page( $kb_page_id ) );
+
+        return $this;
+    }
+
+    /**
      * Check to see if we have an error
      * @return bool
      */

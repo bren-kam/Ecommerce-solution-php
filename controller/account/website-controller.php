@@ -18,6 +18,7 @@ class WebsiteController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 36 )
             ->select( 'pages', 'view' );
     }
 
@@ -197,12 +198,11 @@ class WebsiteController extends BaseController {
             ->css_url( Config::resource('jquery-ui') )
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
-        $response = $this->get_template_response( 'edit' )
+        return $this->get_template_response( 'edit' )
+            ->kb( 37 )
             ->select( 'pages', 'edit' )
             ->add_title( $page->title . ' | ' . _('Pages') )
             ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title' ), $resources ) );
-
-        return $response;
     }
 
     /**
@@ -241,12 +241,11 @@ class WebsiteController extends BaseController {
 
         $this->resources->javascript('website/add');
 
-        $response = $this->get_template_response('add')
+        return $this->get_template_response('add')
+            ->kb( 34 )
             ->select( 'pages', 'add' )
             ->add_title( _('Add Page') )
             ->set( compact( 'form') );
-
-        return $response;
     }
 
     /**
@@ -280,6 +279,7 @@ class WebsiteController extends BaseController {
             ->javascript('website/categories');
 
         return $this->get_template_response( 'categories' )
+            ->kb( 38 )
             ->select( 'pages', 'category-pages' )
             ->set( compact( 'categories' ) );
     }
@@ -321,12 +321,11 @@ class WebsiteController extends BaseController {
             ->css( 'website/pages/page' )
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
-        $response = $this->get_template_response('edit-category')
+        return $this->get_template_response('edit-category')
+            ->kb( 39 )
             ->select( 'pages', 'edit-category' )
             ->add_title( _('Edit Category') )
             ->set( compact( 'category', 'files' ) );
-
-        return $response;
     }
 
     /**
@@ -354,12 +353,11 @@ class WebsiteController extends BaseController {
             ->css( 'website/website-sidebar' )
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/website-sidebar' );
 
-        $response = $this->get_template_response( 'website-sidebar' )
+        return $this->get_template_response( 'website-sidebar' )
+            ->kb( 40 )
             ->select( 'sidebar' )
             ->add_title( _('Sidebar') )
             ->set( compact( 'dimensions', 'files', 'attachments', 'page', 'images_alt' ) );
-
-        return $response;
     }
 
     /**
@@ -401,12 +399,11 @@ class WebsiteController extends BaseController {
             ->css( 'website/banners' )
             ->javascript( 'fileuploader', 'website/banners' );
 
-        $response = $this->get_template_response( 'banners' )
+        return $this->get_template_response( 'banners' )
+            ->kb( 41 )
             ->select( 'banners' )
             ->add_title( _('Banners') )
             ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page' ) );
-
-        return $response;
     }
 
     /**
@@ -443,6 +440,7 @@ class WebsiteController extends BaseController {
         $this->resources->javascript( 'website/sale' );
 
         return $this->get_template_response( 'sale' )
+            ->kb( 42 )
             ->add_title( _('Sale') )
             ->select( 'sale' )
             ->set( array( 'form' => $form->generate_form() ) );
@@ -477,12 +475,11 @@ class WebsiteController extends BaseController {
             return new RedirectResponse('/website/room-planner/');
         }
 
-        $response = $this->get_template_response( 'room-planner' )
+        return $this->get_template_response( 'room-planner' )
+            ->kb( 43 )
             ->add_title( _('Room Planner') )
             ->select( 'room-planner' )
             ->set( array( 'form' => $form->generate_form() ) );
-
-        return $response;
     }
 
     /**
@@ -574,6 +571,7 @@ class WebsiteController extends BaseController {
         }
 
         return $this->get_template_response( 'settings' )
+            ->kb( 44 )
             ->add_title( _('Settings') )
             ->select( 'settings' )
             ->set( array( 'form' => $form->generate_form() ) );

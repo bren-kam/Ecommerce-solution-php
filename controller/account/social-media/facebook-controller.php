@@ -26,6 +26,7 @@ class FacebookController extends BaseController {
         }
         
         return $this->get_template_response( 'index' )
+            ->kb( 85 )
             ->select( 'facebook-pages', 'view' );
     }
 
@@ -73,6 +74,7 @@ class FacebookController extends BaseController {
         $form = $form->generate_form();
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 86 )
             ->select( 'facebook-pages', 'add' )
             ->set( compact( 'page', 'has_permission', 'form' ) );
     }
@@ -103,6 +105,7 @@ class FacebookController extends BaseController {
         $this->resources->css( 'social-media/facebook/choose' );
 
         return $this->get_template_response( 'choose' )
+            ->kb( 88 )
             ->select( 'facebook-pages' )
             ->set( compact( 'settings' ) );
     }
@@ -163,6 +166,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'about-us' )
+            ->kb( 95 )
             ->add_title( _('About Us') )
             ->select( 'about-us' )
             ->set( compact( 'about_us', 'page', 'files' ) );
@@ -224,6 +228,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'contact-us' )
+            ->kb( 94 )
             ->add_title( _('Contact Us') )
             ->select( 'contact-us' )
             ->set( compact( 'contact_us', 'page', 'files' ) );
@@ -292,6 +297,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'email-sign-up' )
+            ->kb( 89 )
             ->add_title( _('Email Sign Up') )
             ->select( 'email-sign-up' )
             ->set( compact( 'email_sign_up', 'page', 'js_validation', 'errs', 'files', 'email_lists' ) );
@@ -343,6 +349,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'products' )
+            ->kb( 96 )
             ->add_title( _('Products') )
             ->select( 'products' )
             ->set( compact( 'products', 'page', 'files' ) );
@@ -404,6 +411,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'current-ad' )
+            ->kb( 97 )
             ->add_title( _('Current Ad') )
             ->select( 'current-ad' )
             ->set( compact( 'current_ad', 'page', 'files' ) );
@@ -451,6 +459,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'facebook-site' )
+            ->kb( 93 )
             ->add_title( _('Facebook Site') )
             ->select( 'facebook-site' )
             ->set( compact( 'facebook_site', 'page', 'files' ) );
@@ -521,6 +530,7 @@ class FacebookController extends BaseController {
             ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'share-and-save' )
+            ->kb( 92 )
             ->add_title( _('Share And Save') )
             ->select( 'share-and-save' )
             ->set( compact( 'share_and_save', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
@@ -647,6 +657,7 @@ class FacebookController extends BaseController {
             ->javascript( 'jquery.timepicker', 'fileuploader', 'gsr-media-manager', 'website/pages/page', 'social-media/facebook/dates' );
 
         return $this->get_template_response( 'sweepstakes' )
+            ->kb( 91 )
             ->add_title( _('Sweepstakes') )
             ->select( 'sweepstakes' )
             ->set( compact( 'sm_sweepstakes', 'page', 'files', 'errs', 'js_validation', 'email_lists', 'pages' ) );
@@ -765,6 +776,7 @@ class FacebookController extends BaseController {
             ->javascript( 'jquery.timepicker', 'fileuploader', 'gsr-media-manager', 'website/pages/page', 'social-media/facebook/dates' );
 
         return $this->get_template_response( 'fan-offer' )
+            ->kb( 90 )
             ->add_title( _('Fan Offer') )
             ->select( 'fan-offer' )
             ->set( compact( 'fan_offer', 'page', 'files', 'errs', 'js_validation', 'email_lists' ) );
@@ -802,6 +814,7 @@ class FacebookController extends BaseController {
         }
 
         return $this->get_template_response( 'settings' )
+            ->kb( 87 )
             ->add_title( _('Settings') )
             ->select( 'settings' )
             ->set( array( 'form' => $form->generate_form() ) );
