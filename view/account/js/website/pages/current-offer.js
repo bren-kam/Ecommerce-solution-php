@@ -1,4 +1,4 @@
-jQuery(function(){
+head.js( '/resources/js_single/?f=fileuploader', function() {
     // Setup File Uploader
     var uploader = new qq.FileUploader({
         action: '/website/upload-image/'
