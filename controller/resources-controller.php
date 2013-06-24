@@ -53,12 +53,21 @@ class ResourcesController extends BaseController {
     }
 
     /**
-     * Need different things for an image
+     * Need different things for media
      *
      * @return bool
      */
     protected function media() {
         return new MediaResponse( $_SERVER['REQUEST_URI'] );
+    }
+
+    /**
+     * Need different things for external files (i.e. ckeditor)
+     *
+     * @return bool
+     */
+    protected function external() {
+        return new ExternalResponse( $_SERVER['REQUEST_URI'] );
     }
 
     /**

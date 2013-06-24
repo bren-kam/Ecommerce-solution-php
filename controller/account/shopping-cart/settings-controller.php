@@ -45,11 +45,10 @@ class SettingsController extends BaseController {
 
         $form = $form->generate_form();
 
-        $response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 131 )
             ->set( compact( 'form' ) )
             ->select( 'settings', 'general' );
-
-        return $response;
     }
 
     /**
@@ -93,11 +92,10 @@ class SettingsController extends BaseController {
 
         $form = $form->generate_form();
 
-        $response = $this->get_template_response( 'payment-gateway' )
+        return $this->get_template_response( 'payment-gateway' )
+            ->kb( 132 )
             ->set( compact( 'form' ) )
             ->select( 'settings', 'payment-gateway' );
-
-        return $response;
     }
 
     /**
@@ -141,11 +139,10 @@ class SettingsController extends BaseController {
             ->css( 'shopping-cart/settings/taxes' )
             ->javascript( 'shopping-cart/settings/taxes' );
 
-        $response = $this->get_template_response( 'taxes' )
+        return $this->get_template_response( 'taxes' )
+            ->kb( 133 )
             ->select( 'settings', 'tax-settings' )
             ->set( compact( 'taxes', 'states' ) );
-
-        return $response;
     }
 }
 

@@ -13,15 +13,14 @@ class UsersController extends BaseController {
     }
 
     /**
-     * List Mobile Pages
+     * List
      *
      * @return TemplateResponse
      */
     protected function index() {
-        $response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 122 )
             ->select( 'users' );
-
-        return $response;
     }
 
     /**
@@ -123,6 +122,7 @@ class UsersController extends BaseController {
         /***** END FORM *****/
 
         $response = $this->get_template_response( 'edit' )
+            ->kb( 123 )
             ->select( 'users' )
             ->add_title( _('Edit User') )
             ->set( array( 'form' => $form->generate_form() ) );

@@ -77,7 +77,6 @@ class AnalyticsController extends BaseController {
         }
 
 
-
         // Setup Javascript chart
         $visits_plotting_array = array();
 
@@ -112,6 +111,7 @@ class AnalyticsController extends BaseController {
             ->javascript( 'analytics/jquery.flot/jquery.flot', 'analytics/jquery.flot/excanvas', 'swfobject', 'analytics/analytics' );
 
         return $this->get_template_response( 'index' )
+            ->kb( 62 )
             ->add_title( _('Dashboard') )
             ->select( 'dashboard' )
             ->set( compact( 'sparklines', 'traffic_sources', 'pie_chart', 'visits_plotting', 'total', 'content_overview_pages', 'date_start', 'date_end' ) );

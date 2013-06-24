@@ -30,6 +30,7 @@ class PostingController extends BaseController {
             return new RedirectResponse('/social-media/facebook/');
 
         return $this->get_template_response( 'index' )
+            ->kb( 85 )
             ->select( 'posting', 'view' )
             ->set( compact( 'page' ) );
     }
@@ -194,6 +195,7 @@ class PostingController extends BaseController {
             ->javascript( 'jquery.timepicker', 'social-media/facebook/posting/post' );
 
         return $this->get_template_response( 'post' )
+            ->kb( 86 )
             ->add_title( _('Post') )
             ->select( 'posting' )
             ->set( compact( 'sm_posting', 'errs', 'js_validation', 'page', 'pages', 'now', 'new_date_posted', 'post' ) );

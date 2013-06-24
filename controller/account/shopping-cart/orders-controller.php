@@ -19,6 +19,7 @@ class OrdersController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 120 )
             ->select( 'orders' );
     }
 
@@ -41,12 +42,11 @@ class OrdersController extends BaseController {
             ->css('shopping-cart/orders/view')
             ->javascript('shopping-cart/orders/view');
 
-        $response = $this->get_template_response( 'view' )
+        return $this->get_template_response( 'view' )
+            ->kb( 121 )
             ->add_title( _('View Order') )
             ->select( 'orders' )
             ->set( compact( 'order' ) );
-
-        return $response;
     }
 
     /***** AJAX *****/

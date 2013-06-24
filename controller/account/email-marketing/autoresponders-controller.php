@@ -19,6 +19,7 @@ class AutorespondersController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 82 )
             ->add_title( _('Autoresponders') )
             ->select( 'autoresponders' );
     }
@@ -92,6 +93,7 @@ class AutorespondersController extends BaseController {
         $title = ( $email_autoresponder->id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 83 )
             ->select( 'autoresponders', 'add-edit' )
             ->add_title( $title . ' ' . _('Email Autoresponder') )
             ->set( compact( 'email_autoresponder', 'form' ) );

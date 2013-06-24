@@ -21,6 +21,7 @@ class AuthorizedUsersController extends BaseController {
             return new RedirectResponse('/settings/');
 
         return $this->get_template_response( 'index' )
+            ->kb( 118 )
             ->select( 'authorized-users' );
     }
 
@@ -115,6 +116,7 @@ class AuthorizedUsersController extends BaseController {
         $title = ( $auth_user_website->user_id ) ? _('Edit') : _('Add');
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 119 )
             ->add_title( $title . ' ' . _('Authorized User') )
             ->select( 'authorized-users', 'add-edit' )
             ->set( compact( 'form', 'auth_user_website' ) );

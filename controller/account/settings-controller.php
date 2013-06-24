@@ -66,6 +66,7 @@ class SettingsController extends BaseController {
         }
 
         return $this->get_template_response( 'index' )
+            ->kb( 116 )
             ->add_title( _('Settings') )
             ->set( array( 'form' => $form->generate_form() ) )
             ->select( 'settings' );
@@ -87,6 +88,7 @@ class SettingsController extends BaseController {
         $this->resources->javascript( 'fileuploader', 'settings/logo-and-phone' );
 
         return $this->get_template_response( 'logo-and-phone' )
+            ->kb( 117 )
             ->add_title( _('Logo and Phone') )
             ->select( 'logo-and-phone' );
     }

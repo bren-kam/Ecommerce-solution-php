@@ -15,7 +15,7 @@ class PingdomController extends BaseController {
      */
     protected function main() {
         // Start timer
-        $timer = new Timer();
+        $timer = new timer();
 
         // Create XML
         $xml = new SimpleXMLElement('<pingdom_http_custom_check/>');

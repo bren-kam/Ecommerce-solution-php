@@ -22,6 +22,7 @@ class EmailsController extends BaseController {
             return new RedirectResponse('/email-marketing/subscribers/');
 
         return $this->get_template_response( 'index' )
+            ->kb( 74 )
             ->add_title( _('Emails') )
             ->select( 'emails', 'view' );
     }
@@ -80,6 +81,7 @@ class EmailsController extends BaseController {
         $templates = $email_template->get_by_account( $this->user->account->id );
 
         return $this->get_template_response( 'send' )
+            ->kb( 73 )
             ->add_title( _('Send') . ' | ' . _('Emails') )
             ->select( 'emails' )
             ->set( compact( 'email_lists', 'message', 'settings', 'timezone', 'server_timezone', 'templates' ) );
