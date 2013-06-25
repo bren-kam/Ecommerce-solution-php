@@ -155,14 +155,14 @@ input.button {
 #nav-right { height: 43px; float:right; background: url(/images/nav-divider.png) 0 0 no-repeat; }
 #support:hover div { display: block; z-index: 999 }
 #aSupport { background-image: none !important; }
-#support-drop-down { position: absolute; right: -20px; top: 35px; }
+#support-drop-down { position: absolute; right: -40px; top: 35px; }
 #support-drop-down a {
     background-color: #333436; padding: 8px 22px 8px 20px; color: #FFF; font-size: 17px; font-weight: bold; display: block; width: 188px;
     text-shadow: 0px -1px 0px #000000;
     filter: dropshadow(color=#000000, offx=0, offy=-1);
     background-image: none !important;
 }
-#support-drop-down a.article { color: #494949 !important; text-shadow: none; filter: dropshadow(color=#000000, offx=0, offy=0);}
+#support-drop-down a.article { text-shadow: none; filter: dropshadow(color=#000000, offx=0, offy=0); padding-left: 40px; font-size: 14px;background-color: #434547;  }
 
 #support-drop-down a:hover {
     background-image: linear-gradient(top, rgb(63,65,66) 11%, rgb(33,33,34) 56%)

@@ -22,9 +22,9 @@
     	color-stop(0.54, rgb(240,241,243))
     );
 
-    -moz-box-shadow: inset 0 1px 0px #fcfcfe;
-    -webkit-box-shadow: inset 0 1px 0px #fcfcfe;
-    box-shadow: inset 0 1px 0px #fcfcfe;
+    -moz-box-shadow: inset 0 1px 0 #fcfcfe;
+    -webkit-box-shadow: inset 0 1px 0 #fcfcfe;
+    box-shadow: inset 0 1px 0 #fcfcfe;
 }
 
 #breadcrumb a, #breadcrumb { color: #828387; font-weight: bold; }
@@ -63,7 +63,11 @@ ul li { margin-left: 25px; list-style: disc }
 .service { margin-right: 41px; }
 .service img { background-color: #c6cace; margin-bottom: 43px; }
 
-.divider { background: url(/images/kb/home-divider.png) 100% 0 repeat-y }
+.divider {
+    -moz-box-shadow: inset -1px 0 0 #d9d9d9;
+    -webkit-box-shadow: inset -1px 0 0 #d9d9d9;
+    box-shadow: inset -1px 0 0 #d9d9d9;
+}
 #frequently > *, #browser-troubles > * { padding-left: 15px; }
 #frequently ol { padding-left: 15px; }
 
@@ -76,7 +80,7 @@ ul li { margin-left: 25px; list-style: disc }
 #kb-search img { position: relative; }
 #kbs { border: 0; height: 20px; padding: 7px 10px 8px 0;position: relative; bottom: 13px;  width: 300px; font-size: 14px; }
 #kbs-button {
-    width: 74px; height: 35px; padding-bottom: 3px; position: relative; bottom: 12px; color: #828487; cursor: pointer; font-weight: bold; font-size: 15px;
+    width: 74px; height: 35px; padding-bottom: 6px; position: relative; bottom: 13px; color: #fff; cursor: pointer; font-weight: bold; font-size: 15px;
     -moz-box-shadow: inset 0 1px 0 #737677;
     -webkit-box-shadow: inset 0 1px 0 #737677;
     box-shadow: inset 0 1px 0 #737677;
@@ -104,7 +108,6 @@ ul li { margin-left: 25px; list-style: disc }
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-#kbs-button:hover { color: #fff }
 section#articles, #articles section, .browser-support { width: 100%; margin-right: 0 !important; }
 
 #browser-background { float: right; position: relative; left: 20px; max-width: 50%; }
