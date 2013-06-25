@@ -57,7 +57,7 @@
 
             <?php if ( count( $pages ) > 1 ) { ?>
             <aside id="right-sidebar">
-                <header><?php echo _('Other Pages'); ?></header>
+                <h2><?php echo _('Other Pages'); ?></h2>
                 <?php
                 foreach ( $pages as $p ) {
                     if ( $p->id == $page->id )
