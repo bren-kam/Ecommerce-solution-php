@@ -67,7 +67,7 @@ $rate_nonce = nonce::create('rate');
             </div>
             <?php if ( count( $articles ) > 1 ) { ?>
             <aside id="right-sidebar">
-                <header><?php echo _('Other Articles'); ?></header>
+                <h2><?php echo _('Other Articles'); ?></h2>
                 <?php
                 foreach ( $articles as $art ) {
                     if ( $art->id == $article->id )
