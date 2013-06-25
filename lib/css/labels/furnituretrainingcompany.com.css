@@ -8,7 +8,7 @@ body { background-color: #A2AAB0 }
 #footer, #footer a { color: #DADFE3 }
 #footer a:hover { color:  #fff }
 #sidebar a.sub, #right-sidebar a { color: #BE1E25 }
-#sidebar a.sub:hover, #sidebar a.sub.selected, #right-sidebar a:hover, .service img:hover, #support-drop-down a.article { background-color: #BE1E25 !important; border-top-color: #ACDB00; border-bottom-color: #AD2900; }
+#sidebar a.sub:hover, #sidebar a.sub.selected, #right-sidebar a:hover, .service img:hover, #support-drop-down a.article:hover { background-color: #BE1E25 !important; border-top-color: #ACDB00; border-bottom-color: #AD2900; }
 .boxy-wrapper .title-bar, .boxy-footer { background-color: #3C3D40 }
 
 .button {
