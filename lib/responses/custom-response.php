@@ -46,7 +46,7 @@ class CustomResponse extends Response {
      *
      * @param string|array $key
      * @param string $value [optional]
-     * @return Template Response
+     * @return CustomResponse
      */
     public function set( $key, $value = '' ) {
         if ( is_array( $key ) ) {
@@ -62,10 +62,23 @@ class CustomResponse extends Response {
      * Add Title
      *
      * @param string $title
-     * @return TemplateResponse
+     * @return CustomResponse
      */
     public function add_title( $title ) {
         $this->variables['title'] = $title . ' | ' . $this->variables['title'];
+
+        return $this;
+    }
+
+    /**
+     * Select knowledge base page
+     *
+     * @param int $kb_page_id
+     * @return CustomResponse
+     */
+    public function kb( $kb_page_id ) {
+        $article = new KnowledgeBaseArticle();
+        $this->set( 'kbh_articles', $article->get_by_page( $kb_page_id ) );
 
         return $this;
     }

@@ -34,6 +34,7 @@ class CategoriesController extends BaseController {
             ->css( 'products/categories/index' );
 
         return $this->get_template_response( 'index' )
+            ->kb( 32 )
             ->add_title( _('Categories') )
             ->select( 'categories', 'view' )
             ->set( compact( 'link' ) );
@@ -205,7 +206,9 @@ class CategoriesController extends BaseController {
         }
 
         $response = new CustomResponse( $this->resources, 'knowledge-base/categories/add-edit' );
-        $response->set( compact( 'category', 'categories', 'name', 'parent_id' ) );
+        $response->set( compact( 'category', 'categories', 'name', 'parent_id' ) )
+            ->kb( 28 );
+
 
         return $response;
     }

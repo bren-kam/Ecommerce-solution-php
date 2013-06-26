@@ -23,6 +23,7 @@ class PagesController extends BaseController {
         $link = '<a href="' . url::add_query_arg( 's', $kb_section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
         return $this->get_template_response( 'index' )
+            ->kb( 30 )
             ->add_title( _('Pages') )
             ->set( compact( 'link', 'kb_section' ) )
             ->select( 'pages', 'view' );
@@ -103,6 +104,7 @@ class PagesController extends BaseController {
 
         // Get Page
         return $this->get_template_response( 'add-edit' )
+            ->kb( 31 )
             ->select( 'pages', 'add' )
             ->add_title( ( ( $kb_page->id ) ? _('Edit') : _('Add') ) . ' ' . _('Page') )
             ->set( compact( 'form' ) );

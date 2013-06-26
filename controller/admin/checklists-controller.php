@@ -18,8 +18,6 @@ class ChecklistsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' )
-            ->select( 'checklists', 'view' );
 
         $this->resources
             ->css( 'checklists/list' )
@@ -28,7 +26,9 @@ class ChecklistsController extends BaseController {
         // Reset any defaults
         unset( $_SESSION['checklists'] );
 
-        return $template_response;
+        return $this->get_template_response( 'index' )
+            ->kb( 134 )
+            ->select( 'checklists', 'view' );
     }
 
     /**
@@ -60,16 +60,16 @@ class ChecklistsController extends BaseController {
             $items[$ia->section][] = $ia;
         }
 
-        $template_response = $this->get_template_response( 'checklist' )
-            ->add_title( _('View') )
-            ->select( 'checklists', 'edit' )
-            ->set( compact( 'checklist', 'items' ) );
 
         $this->resources
             ->css( 'checklists/checklist' )
             ->javascript( 'checklists/checklist' );
 
-        return $template_response;
+        return $this->get_template_response( 'checklist' )
+            ->kb( 22 )
+            ->add_title( _('View') )
+            ->select( 'checklists', 'edit' )
+            ->set( compact( 'checklist', 'items' ) );
     }
 
     /**
@@ -190,16 +190,16 @@ class ChecklistsController extends BaseController {
             }
         }
 
-        // Get response
-        $template_response = $this->get_template_response( 'manage' )
-            ->set( compact( 'sections', 'items' ) )
-            ->select( 'checklists', 'manage' );
-
         $this->resources
             ->css( 'checklists/manage' )
             ->javascript( 'checklists/manage' );
 
-        return $template_response;
+        // Get response
+        return $this->get_template_response( 'manage' )
+            ->kb( 23 )
+            ->set( compact( 'sections', 'items' ) )
+            ->select( 'checklists', 'manage' );
+
     }
 
     /***** AJAX *****/

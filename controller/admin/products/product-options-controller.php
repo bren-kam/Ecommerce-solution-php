@@ -19,11 +19,10 @@ class ProductOptionsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 18 )
             ->add_title( _('Product Options') )
             ->select( 'product_options', 'view' );
-
-        return $template_response;
     }
 
     /**
@@ -186,16 +185,15 @@ class ProductOptionsController extends BaseController {
             , 'text' => $form_text->generate_form()
         );
 
-        $template_response = $this->get_template_response( 'add-edit' )
-            ->select( 'product_options', 'add' )
-            ->add_title( ( $product_option_id ) ? _('Edit') : _('Add') )
-            ->set( compact( 'product_option', 'forms', 'product_option_list_items', 'validation', 'errs', 'button' ) );
-
         $this->resources
             ->javascript( 'products/product-options/add-edit' )
             ->css( 'products/product-options/add-edit' );
 
-        return $template_response;
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 19 )
+            ->select( 'product_options', 'add' )
+            ->add_title( ( $product_option_id ) ? _('Edit') : _('Add') )
+            ->set( compact( 'product_option', 'forms', 'product_option_list_items', 'validation', 'errs', 'button' ) );
     }
 
     /***** AJAX *****/

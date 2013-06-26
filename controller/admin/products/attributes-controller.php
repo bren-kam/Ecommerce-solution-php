@@ -19,11 +19,10 @@ class AttributesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 14 )
             ->add_title( _('Attributes') )
             ->select( 'attributes', 'view' );
-
-        return $template_response;
     }
 
     /**
@@ -124,16 +123,15 @@ class AttributesController extends BaseController {
             }
         }
 
-        $template_response = $this->get_template_response( 'add-edit' )
-            ->select( 'attributes', 'add' )
-            ->add_title( ( $attribute_id ) ? _('Edit') : _('Add') )
-            ->set( compact( 'attribute', 'attribute_items', 'validation', 'errs' ) );
-
         $this->resources
             ->javascript( 'products/attributes/add-edit' )
             ->css('products/attributes/add-edit');
 
-        return $template_response;
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 15 )
+            ->select( 'attributes', 'add' )
+            ->add_title( ( $attribute_id ) ? _('Edit') : _('Add') )
+            ->set( compact( 'attribute', 'attribute_items', 'validation', 'errs' ) );
     }
 
     /***** AJAX *****/

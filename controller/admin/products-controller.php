@@ -27,14 +27,14 @@ class ProductsController extends BaseController {
         // Get product users
         $product_users = $this->user->get_product_users();
 
-        $template_response = $this->get_template_response( 'index' )
+        $this->resources
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript('products/list');
+
+        return $this->get_template_response( 'index' )
+            ->kb( 11 )
             ->select( 'sub-products', 'view' )
             ->set( compact( 'categories', 'product_users' ) );
-
-        $this->resources->javascript('products/list');
-        $this->resources->css_url( Config::resource('jquery-ui') );
-
-        return $template_response;
     }
 
     /**
@@ -192,6 +192,7 @@ class ProductsController extends BaseController {
             ->css_url( Config::resource('jquery-ui') );
 
         return $this->get_template_response( 'add-edit' )
+            ->kb( 12 )
             ->select( 'sub-products', 'add' )
             ->add_title( $title )
             ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );

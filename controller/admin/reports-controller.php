@@ -30,16 +30,15 @@ class ReportsController extends BaseController {
             , 'additional_email_addresses' => _('Additional Email Addresses')
         );
 
-        $template_response = $this->get_template_response( 'index' )
-            ->select( 'search' )
-            ->set( compact( 'services' ) );
-
         $this->resources
             ->javascript('reports/index')
             ->css('reports/index')
             ->css_url( Config::resource('jquery-ui') );
 
-        return $template_response;
+        return $this->get_template_response( 'index' )
+            ->kb( 26 )
+            ->select( 'search' )
+            ->set( compact( 'services' ) );
     }
 
     /**
@@ -86,12 +85,11 @@ class ReportsController extends BaseController {
 
         $form = $form_reports->generate_form();
 
-        $template_response = $this->get_template_response( 'custom' )
+        return $this->get_template_response( 'custom' )
+            ->kb( 27 )
             ->select( 'custom' )
             ->add_title( _('Custom Reports') )
             ->set( compact( 'form' ) );
-
-        return $template_response;
     }
 
     /***** AJAX *****/

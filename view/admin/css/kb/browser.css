@@ -35,6 +35,7 @@ p.title { font-size: 21px; line-height: 25px !important; }
 h1, h2, h3, p { margin-left: 20px; }
 p { margin-bottom: 10px; }
 h2 { padding-bottom: 20px; font-size: 24px; }
+ol { margin-left: 25px }
 ul li { margin-left: 25px; list-style: disc }
 ol li { line-height: 19px; font-size: 16px; font-weight:  bold }
 
@@ -75,6 +76,7 @@ ol li { line-height: 19px; font-size: 16px; font-weight:  bold }
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
 section { width: 100%; margin-right: 0 !important; }
 
 #browser-background { float: right; position: relative; left: 20px; max-width: 50%; }

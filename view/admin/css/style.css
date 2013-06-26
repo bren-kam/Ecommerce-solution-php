@@ -60,6 +60,7 @@ textarea { font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px;
 li { padding-bottom: 7px }
 strong, .redactor_editor b { font-weight: bold }
 em, .redactor_editor i { font-style: italic }
+ol { margin-left: 25px }
 ol li { list-style: decimal; }
 .redactor_editor ul li { list-style: disc }
 
@@ -98,6 +99,7 @@ input.button {
 .col-1.info-box { width: 97.5% }
 .col-2 { width: 50%; }
 .col-3 { width: 33.33%; }
+.col-4 { width: 25% }
 .float-left { float:left; position:relative }
 .float-right { float:right; position:relative }
 .float-none { float: none }
@@ -154,8 +156,9 @@ input.button {
     background-color: #333436; padding: 8px 22px 8px 20px; color: #FFF; font-size: 17px; font-weight: bold; display: block; width: 188px;
     text-shadow: 0px -1px 0px #000000;
     filter: dropshadow(color=#000000, offx=0, offy=-1);
-    background-image: none;
+    background-image: none !important;
 }
+#support-drop-down a.article { text-shadow: none; filter: dropshadow(color=#000000, offx=0, offy=0); padding-left: 40px; font-size: 14px;background-color: #434547;  }
 
 #support-drop-down a:hover {
     background-image: linear-gradient(top, rgb(63,65,66) 11%, rgb(33,33,34) 56%)

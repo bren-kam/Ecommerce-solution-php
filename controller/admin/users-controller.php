@@ -19,6 +19,7 @@ class UsersController extends BaseController {
      */
     protected function index() {
         return $this->get_template_response( 'index' )
+            ->kb( 20 )
             ->select( 'users', 'view' );
     }
 
@@ -31,13 +32,15 @@ class UsersController extends BaseController {
         // Determine if we're adding or editing the user
         $user_id = ( isset( $_GET['uid'] ) ) ? (int) $_GET['uid'] : false;
 
-        // Get Page
-        $template_response = $this->get_template_response( 'add-edit' );
 
         // Select page
         $page = ( $user_id ) ? '' : 'add';
-        $template_response->select( 'users', $page );
-        $template_response->add_title( ( ( $user_id ) ? _('Edit') : _('Add') ) );
+
+        // Get Page
+        $template_response = $this->get_template_response( 'add-edit' )
+            ->kb( 21 )
+            ->select( 'users', $page )
+            ->add_title( ( ( $user_id ) ? _('Edit') : _('Add') ) );
 
         // Initialize classes
         $user = new User();

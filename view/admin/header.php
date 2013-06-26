@@ -7,6 +7,7 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var KnowledgeBaseArticle[] $kbh_articles
  */
 
 $resources->css_before( 'labels/' . DOMAIN, 'redactor', 'style');
@@ -72,7 +73,17 @@ $template->set( 'section_' . format::slug( $template->v('section') ), ' class="s
                     <a href="#" id="aSupport" title="<?php echo _('Support'); ?>"><?php echo _('Support'); ?></a>
                     <div id="support-drop-down" class="hidden">
                         <a href="#" id="aTicket" title="<?php echo _('Support'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Support Request'); ?></a>
-                        <a href="/help/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Knowledge Base'); ?></a>
+                        <a href="/kb/" title="<?php echo _('Knowledge Base'); ?>"<?php echo $template->v('section_support'); ?>><?php echo _('Knowledge Base'); ?></a>
+                        <?php
+                        if ( !empty( $kbh_articles ) ) {
+                            foreach( $kbh_articles as $kbh_article ) {
+                            ?>
+                            <a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" class="article" target="_blank"><?php echo $kbh_article->title; ?></a>
+                            <?php
+                            }
+                        }
+                        ?>
+                        <a href="/kb/browser/" title="<?php echo _('Browser Support'); ?>"><?php echo _('Browser Support'); ?></a>
                     </div>
                 </div>
             </div>
