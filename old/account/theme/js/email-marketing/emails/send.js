@@ -380,7 +380,9 @@ function saveForm( saveFormCallback ) {
 	
 	if ( 'function' == typeof( saveFormCallback ) )
 		globalCallback = saveFormCallback;
-	
+
+    alert( CKEDITOR.instances.taMessage.getData() );
+    alert( 'here' )
 	$('#fSendEmail').ajaxSubmit({
 		success: saveFormSuccess,
 		dataType: 'json'
