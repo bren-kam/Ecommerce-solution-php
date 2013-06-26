@@ -225,7 +225,8 @@ class UsersController extends BaseController {
         }
 
         // Generate the form
-        $template_response->set( 'form', $ft->generate_form() );
+        $template_response
+            ->set( array( 'form' => $ft->generate_form(), 'user_id' => $user_id ) );
 
         return $template_response;
     }
@@ -267,7 +268,7 @@ class UsersController extends BaseController {
     /***** AJAX *****/
 
     /**
-     * List Accounts
+     * List Users
      *
      * @return DataTableResponse
      */
@@ -305,6 +306,65 @@ class UsersController extends BaseController {
                     '<a href="' . url::add_query_arg( array( 'uid' => $u->id, '_nonce' => $delete_user_nonce ), '/users/delete/' ) . '" title="' . _('Delete User') . '" ajax="1" confirm="' . $confirm_delete . '">' . _('Delete') . '</a></div>'
                 , '<a href="mailto:' . $u->email . '" title="' . _('Email User') . '">' . $u->email . '</a>'
                 , $role
+            );
+        }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
+    /**
+     * List Articles
+     *
+     * @return DataTableResponse
+     */
+    protected function list_articles() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+
+        $user_id = (int) $_GET['uid'];
+
+        // Set Order by
+        $dt->order_by( 'kba.`title`', 'kbc.`section`', 'category', 'views', 'rating' );
+        $dt->search( array( 'kba.`title`' => false, 'kbc.`name`' => false, 'kbc2.`name`' => false, 'kbp.`name`' => false ) );
+        $dt->add_where( " AND ( kbar.`user_id` = $user_id OR kbar.`user_id` IS NULL ) AND kbav.`user_id` = $user_id" );
+
+        // Get accounts
+        $article = new KnowledgeBaseArticle();
+        $articles = $article->list_by_user( $dt->get_variables() );
+        $dt->set_row_count( $article->count_by_user( $dt->get_count_variables() ) );
+
+        // Set initial data
+        $data = false;
+
+        /**
+         * @var KnowledgeBaseArticle $article
+         */
+        if ( is_array( $articles ) )
+        foreach ( $articles as $article ) {
+            switch ( $article->rating ) {
+                case KnowledgeBaseArticleRating::POSITIVE:
+                    $rating = _('Yes');
+                break;
+
+                case KnowledgeBaseArticleRating::NEGATIVE:
+                    $rating = '<strong class="highlight">' . _('No') . '</strong>';
+                break;
+
+                default:
+                    $rating = _('N/A');
+                break;
+            }
+
+            $data[] = array(
+                $article->title
+                , ucwords( $article->section )
+                , $article->category
+                , $article->page
+                , number_format( (int) $article->views )
+                , $rating
             );
         }
 

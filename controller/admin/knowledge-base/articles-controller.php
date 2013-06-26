@@ -1,5 +1,6 @@
 <?php
-class ArticlesController extends BaseController {
+class
+ArticlesController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
