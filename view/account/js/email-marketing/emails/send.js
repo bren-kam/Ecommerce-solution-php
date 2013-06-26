@@ -248,7 +248,9 @@ function saveForm( saveFormCallback ) {
 	
 	if ( 'function' == typeof( saveFormCallback ) )
 		globalCallback = saveFormCallback;
-	
+
+    $('#taMessage').val( CKEDITOR.instances.taMessage.getData() );
+
 	$('#fSendEmail').ajaxSubmit({
 		success: saveFormSuccess,
 		dataType: 'json'
