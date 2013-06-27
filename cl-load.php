@@ -99,4 +99,4 @@ require ABS_PATH . 'controller/base-controller.php';
 require LIB_PATH . 'misc/loaders.php';
 
 /** Routing */
-require ABS_PATH . 'cl-routing.php';
+require ABS_PATH . 'routing.php';
