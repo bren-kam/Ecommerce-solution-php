@@ -1,7 +1,0 @@
-ul{list-style:none; padding:0px; margin:20px 0 19px; float:left}
-ul.last { background: none; }
-ul li{list-style:none; margin:0px; width:160px; float:left; text-align:center; padding-bottom: 10px;}
-li.padding { padding:0px 10px 0 0 };
-ul li img{ padding:1px; }
-ul li a{width:160px; overflow:hidden; display:block; float:left; font-size:18px; line-height:22px; font-weight:normal;}
-ul li a.img{width:160px; display:block; border:1px solid; padding:1px;}
