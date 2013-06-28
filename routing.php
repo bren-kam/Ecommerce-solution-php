@@ -21,6 +21,8 @@ if ( isset( $argv ) ) {
         if ( isset( $url['query'] ) ) {
             $_SERVER['QUERY_STRING'] = $url['query'];
             $_SERVER['REQUEST_URI'] .= '?' . $url['query'];
+        } else {
+            $_SERVER['QUERY_STRING'] = '';
         }
 
         unset( $url );
