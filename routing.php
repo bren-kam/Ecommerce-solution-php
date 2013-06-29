@@ -8,6 +8,27 @@
  * @since 1.0
  */
 
+if ( isset( $argv ) ) {
+    if ( !isset( $argv[1] ) ) {
+        // It's command line, we need a path ("crons/daily/")
+        trigger_error( 'No CL Argument', E_USER_ERROR );
+    } else {
+        // Create artificial query
+        $url = parse_url( 'http://' . SUBDOMAIN . '.' . DOMAIN . '/' . $argv[1] );
+
+        $_SERVER['REQUEST_URI'] = $url['path'];
+
+        if ( isset( $url['query'] ) ) {
+            $_SERVER['QUERY_STRING'] = $url['query'];
+            $_SERVER['REQUEST_URI'] .= '?' . $url['query'];
+        } else {
+            $_SERVER['QUERY_STRING'] = '';
+        }
+
+        unset( $url );
+    }
+}
+
 // If it's the home page
 if ( '/' == str_replace( '?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI'] ) ) {
     // Set the transaction name

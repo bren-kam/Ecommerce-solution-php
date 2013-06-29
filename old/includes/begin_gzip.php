@@ -1,2 +1,0 @@
-<?php
-$ob_compression = ( !stristr( $_SERVER['REQUEST_URI'], 'wp-admin' ) && !stristr( $_SERVER['REQUEST_URI'], 'wp-includes' ) && !stristr( $_SERVER['REQUEST_URI'], 'wp-content' ) && !stristr( $_SERVER['DOCUMENT_ROOT'], 'account' ) ); if ( $ob_compression ) ob_start("ob_gzhandler"); ?>

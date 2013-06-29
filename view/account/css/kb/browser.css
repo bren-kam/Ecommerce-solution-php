@@ -47,7 +47,7 @@ ol li { line-height: 19px; font-size: 16px; font-weight:  bold }
 #kb-search img { position: relative; }
 #kbs { border: 0; height: 20px; padding: 7px 10px 8px 0;position: relative; bottom: 13px;  width: 300px; font-size: 14px; }
 #kbs-button {
-    width: 74px; height: 35px; padding-bottom: 3px; position: relative; bottom: 12px; color: #828487; cursor: pointer; font-weight: bold; font-size: 15px;
+    width: 74px; height: 35px; padding-bottom: 3px; position: relative; bottom: 12px; color: #fff; cursor: pointer; font-weight: bold; font-size: 15px;
     -moz-box-shadow: inset 0 1px 0 #737677;
     -webkit-box-shadow: inset 0 1px 0 #737677;
     box-shadow: inset 0 1px 0 #737677;
@@ -75,7 +75,6 @@ ol li { line-height: 19px; font-size: 16px; font-weight:  bold }
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-#kbs-button:hover { color: #fff }
 section { width: 100%; margin-right: 0 !important; }
 
 #browser-background { float: right; position: relative; left: 20px; max-width: 50%; }

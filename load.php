@@ -51,7 +51,7 @@ $domain = ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) ? url::domain( $_SERVER
 
 if ( empty( $domain ) )
 	$domain = DEFAULT_DOMAIN;
-	
+
 define( 'DOMAIN', $domain );
 
 // Define the subdomain

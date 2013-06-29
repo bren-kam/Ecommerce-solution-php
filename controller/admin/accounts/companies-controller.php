@@ -22,10 +22,9 @@ class CompaniesController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 9 )
             ->select( 'companies', 'view' );
-
-        return $template_response;
     }
 
     /**
@@ -39,10 +38,6 @@ class CompaniesController extends BaseController {
 
         // Get the company_id if there is one
         $company_id = ( isset( $_GET['cid'] ) ) ? (int) $_GET['cid'] : false;
-
-        $template_response = $this->get_template_response( 'add-edit' )
-            ->select( 'companies', 'add' )
-            ->add_title( ( $company_id ) ? _('Edit') : _('Add') );
 
         $company = new Company();
 
@@ -84,9 +79,11 @@ class CompaniesController extends BaseController {
             return new RedirectResponse('/accounts/companies/');
         }
 
-        $template_response->set( 'form', $ft->generate_form() );
-
-        return $template_response;
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 10 )
+            ->select( 'companies', 'add' )
+            ->set( 'form', $ft->generate_form() )
+            ->add_title( ( $company_id ) ? _('Edit') : _('Add') );
     }
 
     /***** AJAX *****/

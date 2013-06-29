@@ -35,7 +35,7 @@ jQuery(function($) {
 			$('#fCreateTicket').addClass('ajax').ajaxForm({
 				dataType		: 'json',
 				beforeSubmit	: function() {
-					var tTicketSummary = $('#tTicketSummary'), summary = tTicketSummary.val(), taTicket = $('#taTicketMessage'), message = taTicket.val();
+                    var tTicketSummary = $('#tTicketSummary'), summary = $.trim( tTicketSummary.val() ), taTicket = $('#taTicketMessage'), message = $.trim( taTicket.val() );
 
 					if( !summary.length || summary == tTicketSummary.attr('tmpval') ) {
 						alert( tTicketSummary.attr('error') );

@@ -23,6 +23,7 @@ class CategoriesController extends BaseController {
             ->css( 'products/categories/index' );
 
         return $this->get_template_response( 'index' )
+            ->kb( 13 )
             ->add_title( _('Categories') )
             ->select( 'categories', 'view' );
     }

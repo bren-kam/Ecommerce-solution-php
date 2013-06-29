@@ -20,14 +20,13 @@ class AccountsController extends BaseController {
     protected function index() {
         unset( $_SESSION['accounts'] );
 
-        $template_response = $this->get_template_response( 'index' )
-            ->select( 'accounts', 'view' );
-
         $this->resources
             ->javascript('accounts/list')
             ->css_url( Config::resource('jquery-ui') );
 
-        return $template_response;
+        return $this->get_template_response( 'index' )
+            ->kb( 1 )
+            ->select( 'accounts', 'view' );
     }
 
     /**
@@ -36,10 +35,6 @@ class AccountsController extends BaseController {
      * @return TemplateResponse
      */
     protected function add() {
-        $template_response = $this->get_template_response( 'add' )
-            ->select( 'accounts', 'add' )
-            ->add_title( _('Add') );
-
         // Instantiate Objects
         $account = new Account();
 
@@ -109,9 +104,11 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
         }
 
-        $template_response->set( 'form', $ft->generate_form() );
-
-        return $template_response;
+        return $this->get_template_response( 'add' )
+            ->kb( 2 )
+            ->add_title( _('Add') )
+            ->select( 'accounts', 'add' )
+            ->set( 'form', $ft->generate_form() );
     }
 
     /**
@@ -272,6 +269,7 @@ class AccountsController extends BaseController {
             ->css('accounts/edit');
 
         $template_response = $this->get_template_response('edit')
+            ->kb( 4 )
             ->select( 'accounts' )
             ->add_title( _('Edit') )
             ->set( compact( 'account', 'owner', 'checkboxes', 'errs' ) );
@@ -391,14 +389,13 @@ class AccountsController extends BaseController {
         // Create Form
         $form = $ft->generate_form();
 
-        $template_response = $this->get_template_response('website-settings')
+        $this->resources->css('accounts/edit');
+
+        return $this->get_template_response('website-settings')
+            ->kb( 5 )
             ->add_title( _('Website Settings') )
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
-
-        $this->resources->css('accounts/edit');
-
-        return $template_response;
     }
 
     /**
@@ -502,6 +499,7 @@ class AccountsController extends BaseController {
         $this->resources->css('accounts/edit');
 
         return $this->get_template_response('other-settings')
+            ->kb( 6 )
             ->add_title( _('Other Settings') )
             ->select('accounts')
             ->set( compact( 'account', 'form' ) );
@@ -528,16 +526,16 @@ class AccountsController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
             return new RedirectResponse('/accounts/');
 
-        $template_response = $this->get_template_response('actions')
-            ->add_title( _('Actions') )
-            ->set( compact( 'account', 'settings' ) )
-            ->select('accounts');
-
         $this->resources
             ->css('accounts/edit')
             ->javascript('accounts/actions');
 
-        return $template_response;
+        return $this->get_template_response('actions')
+            ->kb( 7 )
+            ->add_title( _('Actions') )
+            ->set( compact( 'account', 'settings' ) )
+            ->select('accounts');
+
     }
 
     /**
@@ -839,14 +837,14 @@ class AccountsController extends BaseController {
 
 
         // Keep the resources that we need
-        $this->resources->javascript('accounts/dns');
-        $this->resources->css('accounts/edit', 'accounts/dns');
+        $this->resources
+            ->javascript('accounts/dns')
+            ->css('accounts/edit', 'accounts/dns');
 
-        $template_response = $this->get_template_response('dns')
+        return $this->get_template_response('dns')
+            ->kb( 8 )
             ->select( 'accounts', 'edit' )
             ->set( compact( 'account', 'zone_id', 'errs', 'domain_name', 'full_domain_name', 'records' ) );
-
-        return $template_response;
     }
 
     /**
@@ -883,13 +881,12 @@ class AccountsController extends BaseController {
         // Get notes
         $notes = $account_note->get_all( $_GET['aid'] );
 
-        $template_response = $this->get_template_response('notes')
-            ->select( 'accounts' )
-            ->set( compact( 'account', 'notes', 'v' ) );
-
         $this->resources->css('accounts/notes');
 
-        return $template_response;
+        return $this->get_template_response('notes')
+            ->kb( 3 )
+            ->select( 'accounts' )
+            ->set( compact( 'account', 'notes', 'v' ) );
     }
 
     /**
