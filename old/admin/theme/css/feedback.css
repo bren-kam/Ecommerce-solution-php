@@ -1,7 +1,0 @@
-/************/
-/* Feedback */
-/************/
-.yellow { color: #FFBA00; }
-.rb { position: relative; top: 3px; }
-label { margin-right: 10px }
-#dStatuses { position: absolute; right: 475px; top: 53px; z-index: 9999; }

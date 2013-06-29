@@ -32,6 +32,7 @@ class TicketsController extends BaseController {
             ->javascript( 'tickets/list' );
 
         return $this->get_template_response( 'index' )
+            ->kb( 24 )
             ->set( compact( 'assigned_to_users' ) );
     }
 
@@ -82,15 +83,14 @@ class TicketsController extends BaseController {
 
         $admin_users = $this->user->get_admin_users( $comment_user_ids );
 
-        $template_response = $this->get_template_response( 'ticket', _('Ticket') )
-            ->add_title( _('View') )
-            ->set( compact( 'ticket', 'ticket_uploads', 'comments', 'admin_users' ) );
-
         $this->resources
             ->css( 'tickets/ticket' )
             ->javascript( 'fileuploader', 'jquery.autoresize', 'tickets/ticket' );
 
-        return $template_response;
+        return $this->get_template_response( 'ticket', _('Ticket') )
+            ->kb( 25 )
+            ->add_title( _('View') )
+            ->set( compact( 'ticket', 'ticket_uploads', 'comments', 'admin_users' ) );
     }
 
     /***** AJAX *****/

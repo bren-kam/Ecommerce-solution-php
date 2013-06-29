@@ -1,5 +1,6 @@
 <?php
-class ArticlesController extends BaseController {
+class
+ArticlesController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
@@ -23,6 +24,7 @@ class ArticlesController extends BaseController {
         $link = '<a href="' . url::add_query_arg( 's', $kb_section, '/' . $this->view_base ) . '" class="small" title="' . $uc_section . '">(' . _('Switch to') . ' ' . $uc_section . ')</a>';
 
         return $this->get_template_response( 'index' )
+            ->kb( 28 )
             ->set( compact( 'link', 'kb_section' ) )
             ->select( 'articles', 'view' );
     }
@@ -136,6 +138,7 @@ class ArticlesController extends BaseController {
 
         // Get Page
         return $this->get_template_response( 'add-edit' )
+            ->kb( 29 )
             ->select( 'articles', 'add' )
             ->add_title( ( ( $kb_article->id ) ? _('Edit') : _('Add') ) . ' ' . _('Article') )
             ->set( compact( 'form', 'files' ) );

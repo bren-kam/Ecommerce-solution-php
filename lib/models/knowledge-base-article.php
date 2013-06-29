@@ -6,8 +6,8 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $kb_category_id, $kb_page_id, $user_id, $title, $slug, $content, $status, $date_created;
 
-    // Artificial columns
-    public $category, $page, $helpful, $unhelpful, $rating, $views;
+    // Artificial columns/columns from other tables
+    public $section, $category, $page, $helpful, $unhelpful, $rating, $views;
 
     /**
      * Setup the account initial data
@@ -150,6 +150,41 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
 		// Get the website count
         return $this->prepare(
             "SELECT COUNT( DISTINCT kba.`id` ) FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) LEFT JOIN ( SELECT `kb_article_id`, SUM( `rating` ) AS rating, SUM( IF( " . KnowledgeBaseArticleRating::POSITIVE . " = `rating`, 1, 0 ) ) AS helpful, SUM( IF( " . KnowledgeBaseArticleRating::NEGATIVE . " = `rating`, 1, 0 ) ) AS unhelpful FROM `kb_article_rating` GROUP BY `kb_article_id` ) AS kbar ON ( kbar.`kb_article_id` = kba.`id` ) LEFT JOIN ( SELECT `kb_article_id`, COUNT(*) AS views FROM `kb_article_view` GROUP BY `kb_article_id` ) AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) WHERE kba.`status` <> " . self::STATUS_DELETED . $where
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+	}
+
+    /**
+	 * List by User
+	 *
+	 * @param $variables array( $where, $order_by, $limit )
+	 * @return KnowledgeBaseArticle[]
+	 */
+	public function list_by_user( $variables ) {
+        // Get the variables
+		list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT kba.`id`, kba.`title`, kbc.`section`, CONCAT( IF( kbc2.`name` IS NOT NULL, CONCAT( kbc2.`name`, ' > ' ), '' ), kbc.`name` ) AS category, kbp.`name` AS page, kbar.`rating`, COUNT( kbav.`kb_article_id` ) AS views FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) LEFT JOIN `kb_article_view` AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) LEFT JOIN `kb_article_rating` AS kbar ON ( kbar.`kb_article_id` = kba.`id` ) WHERE kba.`status` <> " . self::STATUS_DELETED . " $where GROUP BY kba.`id` $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'KnowledgeBaseArticle' );
+	}
+
+    /**
+	 * Count all
+	 *
+	 * @param array $variables
+	 * @return int
+	 */
+	public function count_by_user( $variables ) {
+        // Get the variables
+		list( $where, $values ) = $variables;
+
+		// Get the website count
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT kba.`id` ) FROM `kb_article` AS kba LEFT JOIN `kb_category` AS kbc ON ( kbc.`id` = kba.`kb_category_id` ) LEFT JOIN `kb_category` AS kbc2 ON ( kbc2.`id` = kbc.`parent_id` ) LEFT JOIN `kb_page` AS kbp ON ( kbp.`id` = kba.`kb_page_id` ) LEFT JOIN `kb_article_view` AS kbav ON ( kbav.`kb_article_id` = kba.`id` ) LEFT JOIN `kb_article_rating` AS kbar ON ( kbar.`kb_article_id` = kba.`id` ) WHERE kba.`status` <> " . self::STATUS_DELETED . $where
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

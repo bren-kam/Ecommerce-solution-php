@@ -19,11 +19,10 @@ class BrandsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $template_response = $this->get_template_response( 'index' )
+        return $this->get_template_response( 'index' )
+            ->kb( 16 )
             ->add_title( _('Brands') )
             ->select( 'brands', 'view' );
-
-        return $template_response;
     }
 
     /**
@@ -111,16 +110,15 @@ class BrandsController extends BaseController {
             }
         }
 
-        $template_response = $this->get_template_response( 'add-edit' )
-            ->select( 'brands', 'add' )
-            ->add_title( ( $brand_id ) ? _('Edit') : _('Add') )
-            ->set( compact( 'brand', 'product_options_array', 'product_option_ids', 'validation', 'errs' ) );
-
         $this->resources
             ->javascript( 'products/brands/add-edit' )
             ->css( 'products/brands/add-edit' );
 
-        return $template_response;
+        return $this->get_template_response( 'add-edit' )
+            ->kb( 17 )
+            ->select( 'brands', 'add' )
+            ->add_title( ( $brand_id ) ? _('Edit') : _('Add') )
+            ->set( compact( 'brand', 'product_options_array', 'product_option_ids', 'validation', 'errs' ) );
     }
 
     /***** AJAX *****/
