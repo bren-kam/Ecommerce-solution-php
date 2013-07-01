@@ -32,6 +32,12 @@ class WebsiteController extends BaseController {
         if ( !isset( $_GET['apid'] ) )
             return new RedirectResponse('/website/');
 
+        // Set resources
+        $this->resources
+            ->css('website/pages/page')
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+
         // Initialize variables
         $page = new AccountPage();
         $page->get( $_GET['apid'], $this->user->account->id );
@@ -192,11 +198,6 @@ class WebsiteController extends BaseController {
 
         // Setup response
         $js_validation = $v->js_validation();
-
-        $this->resources
-            ->css('website/pages/page')
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'edit' )
             ->kb( 37 )
