@@ -19,11 +19,11 @@ class PostingController extends BaseController {
      */
     protected function index() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -42,11 +42,11 @@ class PostingController extends BaseController {
      */
     protected function post() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -213,13 +213,13 @@ class PostingController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) ) {
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) ) {
             $dt->set_data( array() );
             return $dt;
         }
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id ) {
@@ -299,10 +299,10 @@ class PostingController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have everything right
-        $response->check( isset( $_GET['smppid'], $_SESSION['sm']['facebook_page_id'] ), _('You cannot delete this post') );
+        $response->check( isset( $_GET['smppid'], $_SESSION['sm_facebook_page_id'] ), _('You cannot delete this post') );
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         $response->check( $page->id, _('You cannot delete this post') );
 

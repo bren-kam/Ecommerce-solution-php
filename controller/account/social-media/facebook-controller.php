@@ -97,7 +97,7 @@ class FacebookController extends BaseController {
             return new RedirectResponse('/social-media/facebook/');
 
         // Set the session
-        $_SESSION['sm']['facebook_page_id'] = $page->id;
+        $_SESSION['sm_facebook_page_id'] = $page->id;
 
         // Get settings
         $settings = $this->user->account->get_settings( 'facebook-url', 'social-media-add-ons' );
@@ -117,11 +117,11 @@ class FacebookController extends BaseController {
      */
     protected function about_us() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -179,11 +179,11 @@ class FacebookController extends BaseController {
      */
     protected function contact_us() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -241,11 +241,11 @@ class FacebookController extends BaseController {
      */
     protected function email_sign_up() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -310,11 +310,11 @@ class FacebookController extends BaseController {
      */
     protected function products() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -362,11 +362,11 @@ class FacebookController extends BaseController {
      */
     protected function current_ad() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -424,11 +424,11 @@ class FacebookController extends BaseController {
      */
     protected function facebook_site() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -472,11 +472,11 @@ class FacebookController extends BaseController {
      */
     protected function share_and_save() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -543,11 +543,11 @@ class FacebookController extends BaseController {
      */
     protected function sweepstakes() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -670,11 +670,11 @@ class FacebookController extends BaseController {
      */
     protected function fan_offer() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm']['facebook_page_id'] ) )
+        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm']['facebook_page_id'], $this->user->account->id );
+        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
