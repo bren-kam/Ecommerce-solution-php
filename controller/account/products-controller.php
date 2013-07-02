@@ -1183,7 +1183,7 @@ class ProductsController extends BaseController {
 
         // Create Ticket
         $ticket->user_id = $this->user->id;
-        $ticket->assigned_to = User::CHRIS;
+        $ticket->assigned_to_user_id = User::CHRIS;
         $ticket->website_id = $this->user->account->id;
         $ticket->summary = "$subject - Product Request";
         $ticket->message = $ticket_message;
