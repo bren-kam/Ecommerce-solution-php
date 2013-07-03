@@ -249,7 +249,7 @@ function saveForm( saveFormCallback ) {
 	if ( 'function' == typeof( saveFormCallback ) )
 		globalCallback = saveFormCallback;
 
-    $('#taMessage').val( CKEDITOR.instances.taMessage.getData() );
+    $('#taContent').val( CKEDITOR.instances.taContent.getData() );
 
 	$('#fSendEmail').ajaxSubmit({
 		success: saveFormSuccess,
