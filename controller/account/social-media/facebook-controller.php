@@ -19,6 +19,8 @@ class FacebookController extends BaseController {
      */
     protected function index() {
         $timezone = $this->user->account->get_settings('timezone');
+
+        unset( $_SESSION['sm_facebook_page_id'] );
         
         if ( empty( $timezone ) ) {
             $this->notify( _('Please set your timezone and return to Social Media - Pages.'), false );
