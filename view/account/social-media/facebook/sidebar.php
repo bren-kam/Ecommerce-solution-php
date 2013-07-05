@@ -12,7 +12,7 @@
     <?php
     }
 
-    if ( isset( $_SESSION['sm_facebook_page_id'] ) ) {
+    if ( isset( $_GET['smfbpid'] ) ) {
         $settings = $user->account->get_settings( 'facebook-url', 'social-media-add-ons' );
 
         $social_media_add_ons = array(
@@ -41,9 +41,11 @@
 
                     default:break;
                 }
+            
+            $link = url::add_query_arg( 'smfbpid', $_GET['smfbpid'], "/social-media/facebook/$url/" );
             ?>
-            <a href="/social-media/facebook/<?php echo $url; ?>/" class="top<?php $template->select( format::slug( $name ) ); ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a>
-            <?php if ( 'posting/post' == $url && isset( $posting ) ) { ?>
+            <a href="<?php echo $url; ?>" class="top<?php $template->select( format::slug( $name ) ); ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a>
+            <?php if ( stristr( $url, 'posting/post' ) && isset( $posting ) ) { ?>
                 <a href="/social-media/facebook/posting/" title="<?php echo _('View Posts'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
             <?php
             }
