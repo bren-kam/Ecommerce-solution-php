@@ -44,9 +44,9 @@
             
             $link = url::add_query_arg( 'smfbpid', $_GET['smfbpid'], "/social-media/facebook/$url/" );
             ?>
-            <a href="<?php echo $url; ?>" class="top<?php $template->select( format::slug( $name ) ); ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a>
+            <a href="<?php echo $link; ?>" class="top<?php $template->select( format::slug( $name ) ); ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a>
             <?php if ( stristr( $url, 'posting/post' ) && isset( $posting ) ) { ?>
-                <a href="/social-media/facebook/posting/" title="<?php echo _('View Posts'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+                <a href="<?php echo url::add_query_arg( 'smfbpid', $_GET['smfbpid'], '/social-media/facebook/posting/' ); ?>" title="<?php echo _('View Posts'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
             <?php
             }
         }
