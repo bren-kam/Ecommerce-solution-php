@@ -117,7 +117,7 @@ class PostingController extends BaseController {
                 // Let them know what happened
                 $this->notify( _('Your app lost permission with Facebook and has been reset automatically. Please reconnect with Facebook') );
 
-                return new RedirectResponse('/social-media/facebook/posting/post/');
+                return new RedirectResponse( url::add_query_arg( 'smfbpid', $_GET['smfbpid'], '/social-media/facebook/posting/post/' ) );
                 //echo "Contact Support!";
             }
         } else

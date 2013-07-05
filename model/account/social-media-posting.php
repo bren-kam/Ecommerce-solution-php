@@ -46,7 +46,6 @@ class SocialMediaPosting extends ActiveRecordBase {
             , 'access_token' => $this->access_token
         ), array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
-            , 'fb_page_id' => $this->fb_page_id
-        ), 'iis', 'ii' );
+        ), 'iis', 'i' );
     }
 }
