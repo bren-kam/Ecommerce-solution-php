@@ -32,6 +32,12 @@ class WebsiteController extends BaseController {
         if ( !isset( $_GET['apid'] ) )
             return new RedirectResponse('/website/');
 
+        // Set resources
+        $this->resources
+            ->css('website/pages/page')
+            ->css_url( Config::resource('jquery-ui') )
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+
         // Initialize variables
         $page = new AccountPage();
         $page->get( $_GET['apid'], $this->user->account->id );
@@ -192,11 +198,6 @@ class WebsiteController extends BaseController {
 
         // Setup response
         $js_validation = $v->js_validation();
-
-        $this->resources
-            ->css('website/pages/page')
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
 
         return $this->get_template_response( 'edit' )
             ->kb( 37 )
@@ -749,7 +750,7 @@ class WebsiteController extends BaseController {
         $uploader = new qqFileUploader( array( 'pdf', 'mov', 'wmv', 'flv', 'swf', 'f4v', 'mp4', 'avi', 'mp3', 'aif', 'wma', 'wav', 'csv', 'doc', 'docx', 'rtf', 'xls', 'xlsx', 'wpd', 'txt', 'wps', 'pps', 'ppt', 'wks', 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'tif', 'zip', '7z', 'rar', 'zipx', 'xml' ), 6144000 );
 
         // Change the name
-        $extension = f::extension( $_GET['qqfile'] );
+        $extension = strtolower( f::extension( $_GET['qqfile'] ) );
         $file_name =  format::slug( f::strip_extension( $_GET['fn'] ) ) . '.' . $extension;
 
 

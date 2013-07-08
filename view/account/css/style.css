@@ -182,8 +182,8 @@ input.button {
 #sidebar a.top.last, #support-drop-down a.top.last { border-bottom: none !important; }
 #sidebar a.top.first, #support-drop-down a.top.first { border-top: none !important; }
 
-#sidebar a.sub, #right-sidebar a, #support-drop-down a.article { border-top: 1px solid #595B5D; border-bottom: 1px solid #303133; font-weight: bold; font-size: 12px; display: block; padding: 9px 8px 9px 28px; background-color: #434547; }
-#sidebar a.sub.selected, #sidebar a.sub:hover, #right-sidebar a:hover, #support-drop-down a.article:hover { color: #fff; }
+#sidebar a.sub, aside#right-sidebar a, #support-drop-down a.article { border-top: 1px solid #595B5D; border-bottom: 1px solid #303133; font-weight: bold; font-size: 12px; display: block; padding: 9px 8px 9px 28px; background-color: #434547; }
+#sidebar a.sub.selected, #sidebar a.sub:hover, aside#right-sidebar a:hover, #support-drop-down a.article:hover { color: #fff; }
 #sidebar a.sub.first, #support-drop-down a.article.first { border-top: 1px solid #434547 !important; }
 #sidebar a.sub.last, #support-drop-down a.article.last { border-bottom: 1px solid #212121; }
 
@@ -316,7 +316,7 @@ select option {
 select.multiple { height: 150px }
 textarea {
 	border: 1px solid #B3B3B3;
-	padding: 5px 8px;#support-drop-down a
+	padding: 5px 8px;
 	width: 350px;
 }
 .top { vertical-align: top }

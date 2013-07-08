@@ -13,6 +13,7 @@
  * @var string $timezone
  * @var string $server_timezone
  * @var EmailTemplate[] $templates
+ * @var AccountFile[] $files
  */
 
 echo $template->start( _('Send Email'), '../sidebar' );
@@ -146,9 +147,12 @@ echo $template->start( _('Send Email'), '../sidebar' );
         <h2 class="col-2"><?php echo _('Email Content'); ?></h2>
         <p class="col-2 text-right" style="position: absolute; right: 10px; top: 5px"><a href="#" id="aPreviousStep2" class="previous button" title="<?php echo _('Previous'); ?>"><?php echo _('Previous'); ?></a> <a href="#" class="save button" title="<?php echo _('Save'); ?>"><?php echo _('Save'); ?></a></p>
         <br />
-        <textarea name="taMessage" id="taMessage" cols="50" rows="3" rte="1"><?php echo $message->message; ?></textarea>
+        <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $message->message; ?></textarea>
         <br />
-        <p><a href="http://www.ftc.gov/bcp/edu/pubs/business/ecommerce/bus61.shtm" target="_blank" title="<?php echo _('The CAN-SPAM Act'); ?>"><?php echo _('The CAN-SPAM Act'); ?></a></p>
+        <p>
+            <a href="http://www.ftc.gov/bcp/edu/pubs/business/ecommerce/bus61.shtm" target="_blank" title="<?php echo _('The CAN-SPAM Act'); ?>"><?php echo _('The CAN-SPAM Act'); ?></a> |
+            <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a>
+        </p>
         <br />
         <div id="dCustom_product" class="custom-template<?php if ( empty( $message->type ) || 'product' != $message->type ) echo ' hidden'; ?>">
             <br /><br />
@@ -253,5 +257,61 @@ echo $template->start( _('Send Email'), '../sidebar' );
     nonce::field( 'search', '_search' );
     ?>
 </div>
+<div id="dUploadFile" class="hidden">
+    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
+    <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
+    <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
+    <div class="hidden-fix position-absolute" id="upload-file"></div>
+    <br /><br />
+
+    <div id="file-list">
+    <?php
+    if ( empty( $files ) ) {
+        echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>';
+    } else {
+        // Set variables
+        $delete_file_nonce = nonce::create('delete_file');
+        $confirm = _('Are you sure you want to delete this file?');
+
+        /**
+         * @var AccountFile $file
+         */
+        foreach ( $files as $file ) {
+            $file_name = f::name( $file->file_path );
+            $extension = f::extension( $file->file_path );
+            $date = new DateTime( $file->date_created );
+
+            if ( in_array( $extension, image::$extensions ) ) {
+                // It's an image!
+                echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file img" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file->file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+            } else {
+                // It's not an image!
+                echo '<div id="file-' . $file->id . '" class="file"><a href="#', $file->file_path, '" id="aFile', $file->id, '" class="file" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'afid' => $file->id ), '/website/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+            }
+        }
+    }
+    ?>
+    </div>
+
+    <br /><br />
+    <div id="dCurrentLink" class="hidden">
+        <p><strong><?php echo _('Current Link'); ?>:</strong></p>
+        <p><input type="text" class="tb" id="tCurrentLink" value="<?php echo _('No link selected'); ?>" /></p>
+        <br />
+        <table class="col-1">
+            <tr>
+                <td class="col-3"><strong><?php echo _('Date'); ?>:</strong></td>
+                <td class="col-3"><strong><?php echo _('Size'); ?>:</strong></td>
+                <td class="col-3">&nbsp;</td>
+            </tr>
+            <tr>
+                <td id="tdDate"></td>
+                <td id="tdSize"></td>
+                <td class="text-right"><a href="#" id="insert-into-post" class="button close"><?php echo _('Insert Into Post'); ?></a></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<?php nonce::field( 'upload_file', '_upload_file' ); ?>
 
 <?php echo $template->end(); ?>

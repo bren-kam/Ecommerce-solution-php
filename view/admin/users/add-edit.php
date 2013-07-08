@@ -14,7 +14,7 @@
 echo $template->start( ( isset( $_GET['uid'] ) ? _('Edit User') : _('Add User') ) );
 echo $form;
 
-if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) {
+if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && isset( $_GET['uid'] ) ) {
 ?>
 <br><br>
 <hr>

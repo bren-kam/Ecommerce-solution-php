@@ -75,7 +75,11 @@ class EmailsController extends BaseController {
         $this->resources
             ->css( 'email-marketing/emails/send', 'jquery.timepicker' )
             ->css_url( Config::resource('jquery-ui') )
-            ->javascript( 'jquery.blockUI', 'jquery.timepicker', 'email-marketing/emails/send' );
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'jquery.blockUI', 'jquery.timepicker', 'email-marketing/emails/send' );
+
+        // Get fiels for media manager
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
 
         $email_template = new EmailTemplate();
         $templates = $email_template->get_by_account( $this->user->account->id );
@@ -84,7 +88,7 @@ class EmailsController extends BaseController {
             ->kb( 73 )
             ->add_title( _('Send') . ' | ' . _('Emails') )
             ->select( 'emails' )
-            ->set( compact( 'email_lists', 'message', 'settings', 'timezone', 'server_timezone', 'templates' ) );
+            ->set( compact( 'email_lists', 'message', 'settings', 'timezone', 'server_timezone', 'templates', 'files' ) );
     }
 
     /***** AJAX *****/
@@ -196,7 +200,7 @@ class EmailsController extends BaseController {
 
         $email_message->email_template_id = ( empty( $_POST['hEmailTemplateID'] ) ) ? 0 : $_POST['hEmailTemplateID'];
         $email_message->subject = $_POST['tSubject'];
-        $email_message->message = $_POST['taMessage'];
+        $email_message->message = $_POST['taContent'];
         $email_message->type = ( empty( $_POST['hEmailType'] ) ) ? 'none' : $_POST['hEmailType'];
 
         $date_sent = $_POST['tDate'];
