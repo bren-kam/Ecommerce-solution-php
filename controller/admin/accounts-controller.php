@@ -431,6 +431,9 @@ class AccountsController extends BaseController {
             , 'ashley-alternate-folder'
             , 'facebook-url'
             , 'advertising-url'
+            , 'ac-account'
+            , 'ac-username'
+            , 'ac-password'
             , 'trumpia-username'
             , 'trumpia-password'
             , 'facebook-pages'
@@ -457,6 +460,9 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
+        $ft->add_field( 'text', _('Active Campaign Account'), 'tACAccount', $settings['ac-account'] );
+        $ft->add_field( 'text', _('Active Campaign Password'), 'tACUsername', $settings['ac-username'] );
+        $ft->add_field( 'text', _('Active Campaign Password'), 'tACPassword', $settings['ac-password'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
@@ -483,6 +489,9 @@ class AccountsController extends BaseController {
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
+                , 'ac-account' => $_POST['tACAccount']
+                , 'ac-username' => $_POST['tACUsername']
+                , 'ac-password' => $_POST['tACPassword']
                 , 'trumpia-username' => $_POST['tTrumpiaUsername']
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
@@ -1296,6 +1305,139 @@ class AccountsController extends BaseController {
         }
 
         $response = new CustomResponse( $this->resources, 'accounts/create-trumpia-account' );
+        $response->set( compact( 'form' ) );
+
+        return $response;
+    }
+
+    /**
+     * Create email marketing account
+     *
+     * @return CustomResponse|AjaxResponse
+     */
+    protected function create_email_marketing_account() {
+        // Get the account
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Get mobile plans
+        library('ac/ActiveCampaign.class');
+        $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
+
+        $email_plans = $ac->api('account/plans');
+        $email_plan_options = array();
+
+        $email = new Email();
+        $count = $email->count_all( array( ' AND e.`status` = ' . Email::STATUS_SUBSCRIBED . ' AND e.`website_id` = ' . (int) $account->id ), array() );
+        $selected = false;
+        $recommended_text = ' - ' . _('Recommended') . ' (' . number_format( $count ) . ' ' . _('Subscribers') .  ')';
+        $last_id = NULL;
+
+        /**
+         * @var object $email_plans
+         * @var object $ep
+         */
+        foreach ( $email_plans->plans as $ep ) {
+            if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 )
+                continue;
+
+            $plan_name = _('Limit') . ': ' . $ep->limit_sub_formatted;
+
+            if ( isset( $last_plan ) && !$selected ) {
+                if ( $last_plan->limit_sub < $count && $ep->limit_sub > $count ) {
+                    $plan_name .= $recommended_text;
+                    $selected = $ep->id;
+                }
+            }
+
+            $email_plan_options[$ep->id] = $plan_name;
+
+            $last_plan = $ep;
+        }
+
+        if ( !$selected ) {
+            if ( $ep->limit_sub > $count ) {
+                $email_plan_options[$ep->id] .= $recommended_text;
+            } else {
+                $form = '<p class="error">' . _('This account has enough subscribers to be placed on a custom plan') . ': ' . number_format( $count ) . '.' . _(' Please contact support.');
+            }
+        }
+
+        // Create new form table
+        $ft = new FormTable( 'fCreateEmailMarketingAccount' );
+
+        $ft->submit( _('Create') )
+            ->attribute( 'ajax', '1' )
+            ->set_action( url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ) );
+
+        $ft->add_field( 'select', _('Email Marketing Plan'), 'sEmailMarketPlanId', $selected )
+            ->add_validation( 'req', _('The "Email Marketing Plan" field is required') )
+            ->options( $email_plan_options );
+
+        if ( !isset( $form ) )
+            $form = $ft->generate_form();
+
+        // Create the account
+        if ( $ft->posted() ) {
+            $response = new AjaxResponse(true);
+
+            // Get the user of the account
+            $user = new User();
+            $user->get( $account->user_id );
+
+            $technical_user = new User();
+            $technical_user->get( User::TECHNICAL );
+
+            // Figure out what the username would be
+            $username = format::slug( $account->title );
+
+            if ( !$ac->api( "account/name_check?account={$username}" ) ) {
+                $username .= '-2';
+
+                $response->check( $ac->api( "account/name_check?account={$username}" ), _('We are having trouble finding a username for you. A ticket has been created on your behalf for support.') );
+
+                // There might be something else wrong, create a ticket to invetsigate
+                if ( $response->has_error() ) {
+                    $ticket = new Ticket();
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to = User::KERRY;
+                    $ticket->website_id = $account->id;
+                    $ticket->summary = _("Couldn't find Email Marketing Username");
+                    $ticket->message = _('Username') . ": $username";
+                    $ticket->status = Ticket::STATUS_OPEN;
+                    $ticket->priority = Ticket::PRIORITY_HIGH;
+                    $ticket->create();
+
+                    return $response;
+                }
+            }
+
+            // Alert them that there was a problem
+            $result = $ac->api('account/add', array(
+                'account' => $username
+                , 'name' => $account->title
+                , 'cname' => $username . '.' . 'activehosted.com'
+                , 'email' => $user->email
+                , 'notification' => $technical_user->email
+                , 'plan' => $_GET['sEmailMarketPlanId']
+            ) );
+
+            // Store the results
+            $account->set_settings( array( 'ac-account' => $username, 'ac-username' => $result['username'], 'ac-password' => $result['password'] ) );
+
+            // Add notification
+            $this->notify( _('Email Marketing account successfully created') );
+
+            // Redirect to next page
+            jQuery('body')->redirect( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
+
+            // Add jquery
+            $response->add_response( 'jquery', jQuery::getResponse() );
+
+            return $response;
+        }
+
+        $response = new CustomResponse( $this->resources, 'accounts/create-email-marketing-account' );
         $response->set( compact( 'form' ) );
 
         return $response;

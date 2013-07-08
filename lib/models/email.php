@@ -1,5 +1,8 @@
 <?php
 class Email extends ActiveRecordBase {
+    const STATUS_SUBSCRIBED = 1;
+    const STATUS_UNSUBSCRIBED = 0;
+
     public $id, $email_id, $website_id, $email, $name, $phone, $status, $date_created, $date_unsubscribed, $date_synced, $timestamp;
 
     // Fields available from other tables
