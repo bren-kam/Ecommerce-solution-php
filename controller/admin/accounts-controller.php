@@ -1336,6 +1336,7 @@ class AccountsController extends BaseController {
         /**
          * @var object $email_plans
          * @var object $ep
+         * @var object $result
          */
         foreach ( $email_plans->plans as $ep ) {
             if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 )
@@ -1423,7 +1424,7 @@ class AccountsController extends BaseController {
             ) );
 
             // Store the results
-            $account->set_settings( array( 'ac-account' => $username, 'ac-username' => $result['username'], 'ac-password' => $result['password'] ) );
+            $account->set_settings( array( 'ac-account' => $username, 'ac-username' => $result->username, 'ac-password' => $result->password ) );
 
             // Add notification
             $this->notify( _('Email Marketing account successfully created') );
