@@ -1418,7 +1418,7 @@ class AccountsController extends BaseController {
             $result = $ac->api('account/add', array(
                 'account' => $username
                 , 'name' => $account->title
-                , 'cname' => $username . '.' . 'activehosted.com'
+                , 'cname' => ''
                 , 'email' => $user->email
                 , 'notification' => $technical_user->email
                 , 'plan' => $_POST['sEmailMarketPlanId']
