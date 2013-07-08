@@ -1363,7 +1363,7 @@ class AccountsController extends BaseController {
             $last_plan = $ep;
         }
 
-        if ( !$selected ) {
+        if ( false === $selected ) {
             if ( $ep->limit_sub > $count ) {
                 $email_plan_options[$ep->id] .= $recommended_text;
             } else {
