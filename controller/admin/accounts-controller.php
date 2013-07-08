@@ -1339,7 +1339,7 @@ class AccountsController extends BaseController {
          * @var object $result
          */
         foreach ( $email_plans->plans as $ep ) {
-            if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 )
+            if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 || $ep->limit_sub <= 250 )
                 continue;
 
             $plan_name = _('Limit') . ': ' . $ep->limit_sub_formatted;
