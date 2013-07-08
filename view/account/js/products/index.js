@@ -218,7 +218,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 			for( var i in p['coupons'] ) {
 				// Create all the divs
-				coupon_divs += '<div id="dCoupon' + i + '" class="coupon"><span class="coupon-name">' + p['coupons'][i] + '</span><div style="display:inline;float:right"><a href="javascript:;" class="delete-coupon" title=\'Delete "' + p['coupons'][i] + '" List Item\' id="aDeleteCoupon' + i + '"><img src="/media/images/icons/x.png" /></a></div></div>';
+				coupon_divs += '<div id="dCoupon' + i + '" class="coupon"><span class="coupon-name">' + p['coupons'][i] + '</span><div style="display:inline;float:right"><a href="javascript:;" class="delete-coupon" title="Delete Coupon" id="aDeleteCoupon' + i + '"><img src="/images/icons/x.png" /></a></div></div>';
 				coupons.find('option[value=' + i + ']').attr( 'disabled', true );
 			}
 

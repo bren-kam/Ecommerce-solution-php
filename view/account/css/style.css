@@ -316,7 +316,7 @@ select option {
 select.multiple { height: 150px }
 textarea {
 	border: 1px solid #B3B3B3;
-	padding: 5px 8px;#support-drop-down a
+	padding: 5px 8px;
 	width: 350px;
 }
 .top { vertical-align: top }

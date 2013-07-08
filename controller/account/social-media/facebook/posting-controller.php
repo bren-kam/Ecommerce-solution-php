@@ -19,11 +19,11 @@ class PostingController extends BaseController {
      */
     protected function index() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+        if ( !isset( $_GET['smfbpid'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+        $page->get( $_GET['smfbpid'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -42,11 +42,11 @@ class PostingController extends BaseController {
      */
     protected function post() {
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm_facebook_page_id'] ) )
+        if ( !isset( $_GET['smfbpid'] ) )
             return new RedirectResponse('/social-media/facebook/');
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+        $page->get( $_GET['smfbpid'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id )
@@ -117,7 +117,7 @@ class PostingController extends BaseController {
                 // Let them know what happened
                 $this->notify( _('Your app lost permission with Facebook and has been reset automatically. Please reconnect with Facebook') );
 
-                return new RedirectResponse('/social-media/facebook/posting/post/');
+                return new RedirectResponse( url::add_query_arg( 'smfbpid', $_GET['smfbpid'], '/social-media/facebook/posting/post/' ) );
                 //echo "Contact Support!";
             }
         } else
@@ -213,13 +213,13 @@ class PostingController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Make Sure they chose a facebook page
-        if ( !isset( $_SESSION['sm_facebook_page_id'] ) ) {
+        if ( !isset( $_GET['smfbpid'] ) ) {
             $dt->set_data( array() );
             return $dt;
         }
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+        $page->get( $_GET['smfbpid'], $this->user->account->id );
 
         // Make Sure they chose a facebook page
         if ( !$page->id ) {
@@ -299,10 +299,10 @@ class PostingController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         // Make sure we have everything right
-        $response->check( isset( $_GET['smppid'], $_SESSION['sm_facebook_page_id'] ), _('You cannot delete this post') );
+        $response->check( isset( $_GET['smppid'], $_GET['smfbpid'] ), _('You cannot delete this post') );
 
         $page = new SocialMediaFacebookPage();
-        $page->get( $_SESSION['sm_facebook_page_id'], $this->user->account->id );
+        $page->get( $_GET['smfbpid'], $this->user->account->id );
 
         $response->check( $page->id, _('You cannot delete this post') );
 

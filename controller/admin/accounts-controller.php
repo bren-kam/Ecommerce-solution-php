@@ -376,7 +376,8 @@ class AccountsController extends BaseController {
             // Update the settings
             $account->set_settings( array( 'custom-image-size' => $_POST['tCustomImageSize'] ));
 
-            // Add the industries
+            // Set the industries
+            $account->delete_industries();
             $account->add_industries( $_POST['sIndustries'] );
 
             // Let them know it was done

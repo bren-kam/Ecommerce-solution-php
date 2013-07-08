@@ -42,11 +42,13 @@ foreach ( $social_media_add_ons as $url => $name ) {
 
         default:break;
     }
+
+    $link = url::add_query_arg( 'smfbpid', $_GET['smfbpid'], "/social-media/facebook/$url/" );
     ?>
     <p class="sm">
-        <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $image; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>
+        <a href="<?php echo $link; ?>" title="<?php echo $name; ?>"><img src="/images/social-media/facebook/<?php echo $image; ?>.jpg" width="75" height="75" alt="<?php echo $name; ?>" /></a>
         <br />
-        <a href="/social-media/facebook/<?php echo $url; ?>/" title="<?php echo $name; ?>"><?php echo $name; ?></a>
+        <a href="<?php echo $link; ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a>
     </p>
     <?php
 }

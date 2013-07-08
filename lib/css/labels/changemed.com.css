@@ -7,8 +7,8 @@ body { background-color: #717c84 }
 #nav-right a, .highlight { color: #77b253 !important }
 #footer, #footer a { color: #d1dbe2 }
 #footer a:hover { color:  #fff }
-#sidebar a.sub, #right-sidebar a { color: #77b253 }
-#sidebar a.sub:hover, #sidebar a.sub.selected, #right-sidebar a:hover, .service img:hover, #support-drop-down a.article:hover { background-color: #69727a !important; border-top-color: #ACDB00; border-bottom-color: #88AD00; }
+#sidebar a.sub, aside#right-sidebar a { color: #77b253 }
+#sidebar a.sub:hover, #sidebar a.sub.selected, aside#right-sidebar a:hover, .service img:hover, #support-drop-down a.article:hover { background-color: #69727a !important; border-top-color: #ACDB00; border-bottom-color: #88AD00; }
 .boxy-wrapper .title-bar, .boxy-footer { background-color: #69727a }
 
 .button { 
