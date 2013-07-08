@@ -461,7 +461,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
         $ft->add_field( 'text', _('Active Campaign Account'), 'tACAccount', $settings['ac-account'] );
-        $ft->add_field( 'text', _('Active Campaign Password'), 'tACUsername', $settings['ac-username'] );
+        $ft->add_field( 'text', _('Active Campaign Username'), 'tACUsername', $settings['ac-username'] );
         $ft->add_field( 'text', _('Active Campaign Password'), 'tACPassword', $settings['ac-password'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
@@ -1323,43 +1323,45 @@ class AccountsController extends BaseController {
         // Get mobile plans
         library('ac/ActiveCampaign.class');
         $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
-
-        $email_plans = $ac->api('account/plans');
-        $email_plan_options = array();
-
-        $email = new Email();
-        $count = $email->count_all( array( ' AND e.`status` = ' . Email::STATUS_SUBSCRIBED . ' AND e.`website_id` = ' . (int) $account->id ), array() );
         $selected = false;
-        $recommended_text = ' - ' . _('Recommended') . ' (' . number_format( $count ) . ' ' . _('Subscribers') .  ')';
-        $last_id = NULL;
 
-        /**
-         * @var object $email_plans
-         * @var object $ep
-         */
-        foreach ( $email_plans->plans as $ep ) {
-            if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 )
-                continue;
+        if ( !isset( $_POST['sEmailMarketPlanId'] ) ) {
+            $email_plans = $ac->api('account/plans');
+            $email_plan_options = array();
 
-            $plan_name = _('Limit') . ': ' . $ep->limit_sub_formatted;
+            $email = new Email();
+            $count = $email->count_all( array( ' AND e.`status` = ' . Email::STATUS_SUBSCRIBED . ' AND e.`website_id` = ' . (int) $account->id ), array() );
+            $recommended_text = ' - ' . _('Recommended') . ' (' . number_format( $count ) . ' ' . _('Subscribers') .  ')';
+            $last_id = NULL;
 
-            if ( isset( $last_plan ) && !$selected ) {
-                if ( $last_plan->limit_sub < $count && $ep->limit_sub > $count ) {
-                    $plan_name .= $recommended_text;
-                    $selected = $ep->id;
+            /**
+             * @var object $email_plans
+             * @var object $ep
+             */
+            foreach ( $email_plans->plans as $ep ) {
+                if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 )
+                    continue;
+
+                $plan_name = _('Limit') . ': ' . $ep->limit_sub_formatted;
+
+                if ( isset( $last_plan ) && !$selected ) {
+                    if ( $last_plan->limit_sub < $count && $ep->limit_sub > $count ) {
+                        $plan_name .= $recommended_text;
+                        $selected = $ep->id;
+                    }
                 }
+
+                $email_plan_options[$ep->id] = $plan_name;
+
+                $last_plan = $ep;
             }
 
-            $email_plan_options[$ep->id] = $plan_name;
-
-            $last_plan = $ep;
-        }
-
-        if ( !$selected ) {
-            if ( $ep->limit_sub > $count ) {
-                $email_plan_options[$ep->id] .= $recommended_text;
-            } else {
-                $form = '<p class="error">' . _('This account has enough subscribers to be placed on a custom plan') . ': ' . number_format( $count ) . '.' . _(' Please contact support.');
+            if ( !$selected ) {
+                if ( $ep->limit_sub > $count ) {
+                    $email_plan_options[$ep->id] .= $recommended_text;
+                } else {
+                    $form = '<p class="error">' . _('This account has enough subscribers to be placed on a custom plan') . ': ' . number_format( $count ) . '.' . _(' Please contact support.');
+                }
             }
         }
 
@@ -1419,7 +1421,7 @@ class AccountsController extends BaseController {
                 , 'cname' => $username . '.' . 'activehosted.com'
                 , 'email' => $user->email
                 , 'notification' => $technical_user->email
-                , 'plan' => $_GET['sEmailMarketPlanId']
+                , 'plan' => $_POST['sEmailMarketPlanId']
             ) );
 
             // Store the results
