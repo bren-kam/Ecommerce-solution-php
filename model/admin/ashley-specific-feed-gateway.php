@@ -8,6 +8,7 @@
 class AshleySpecificFeedGateway extends ActiveRecordBase {
 	const FTP_URL = 'ftp.ashleyfurniture.com';
     const USER_ID = 353; // Ashley
+    const COMPLETE_CATALOG_MINIMUM = 10485760; // 10mb In bytes
 
     // Not used
     protected $testing_sites = array( 78, 123, 124, 134, 158, 168, 175, 186, 190, 218, 228, 243, 291, 292, 293, 317, 318
@@ -77,29 +78,40 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         // Get FTP
         $ftp = $this->get_ftp( $account );
+        $delete_files = array();
 
         // Figure out what file we're getting
 		if( empty( $file ) ) {
 			// Get al ist of the files
-			$files = $ftp->dir_list();
-			
-			while ( !empty( $files ) ) {
-				$file = array_pop( $files );
-				
-				if ( 'xml' != f::extension( $file ) )
-					continue;
-				
-				break;
-			}
+			$files = array_reverse( $ftp->raw_list() );
+
+            foreach ( $files as $f ) {
+                if ( 'xml' != f::extension( $f['name'] ) )
+                    continue;
+
+                $size = f::size2bytes( $f['size'] );
+
+                if ( empty( $file ) && $size >= self::COMPLETE_CATALOG_MINIMUM ) {
+                    $file = $f['name'];
+                } else {
+                    $delete_files[] = $f['name'];
+                }
+            }
 		}
 
         // Can't do anything without a file
         if ( empty( $file ) )
             return;
 
-        // Make sure the folder has been created
-		$local_folder = "/gsr/systems/backend/admin/media/downloads/ashley/$username/";
+        // Delete all the other files
+        if ( !empty( $delete_files ) )
+        foreach ( $delete_files as $df ) {
+            $ftp->delete( $df );
+        }
 
+        // Make sure the folder has been created
+		$local_folder = "/gsr/systems/backend/admin/media/downloads/ashley/$ftp->username/";
+        
 		if ( !file_exists( $local_folder ) ) {
             // @fix MkDir isnt' changing the permissions, so we have to do the second call too.
 			mkdir( $local_folder, 0777 );
