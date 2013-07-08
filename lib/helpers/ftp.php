@@ -70,14 +70,14 @@ class Ftp {
 	 * Delete a file on server
 	 *
 	 * @param string $file_name remote file name
-	 * @param string $remote_dir
+	 * @param string $remote_dir [optional]
      * @return bool
 	 */
-	public function delete( $file_name, $remote_dir ){
+	public function delete( $file_name, $remote_dir = '' ) {
 		if ( !$this->chdir( $this->cwd . $remote_dir ) )
 			return false;
-		
-		return $this->_delete( $this->cwd . $remote_dir . $file_name );
+
+    	return $this->_delete( $this->cwd . $remote_dir . $file_name );
 	}
 	
 	/**
