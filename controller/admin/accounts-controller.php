@@ -1344,10 +1344,17 @@ class AccountsController extends BaseController {
 
             $plan_name = _('Limit') . ': ' . $ep->limit_sub_formatted;
 
-            if ( isset( $last_plan ) && !$selected ) {
-                if ( $last_plan->limit_sub < $count && $ep->limit_sub > $count ) {
-                    $plan_name .= $recommended_text;
-                    $selected = $ep->id;
+            if ( !$selected ) {
+                if ( isset( $last_plan ) ) {
+                    if ( $last_plan->limit_sub < $count && $ep->limit_sub > $count ) {
+                        $plan_name .= $recommended_text;
+                        $selected = $ep->id;
+                    }
+                } else {
+                    if ( $ep->limit_sub > $count ) {
+                        $plan_name .= $recommended_text;
+                        $selected = $ep->id;
+                    }
                 }
             }
 
