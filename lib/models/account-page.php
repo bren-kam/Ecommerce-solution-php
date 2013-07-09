@@ -167,6 +167,17 @@ class AccountPage extends ActiveRecordBase {
     }
 
     /**
+     * Count products
+     * @return int
+     */
+    public function count_products() {
+        return $this->prepare(
+            'SELECT COUNT( `product_id` ) FROM `website_page_product` WHERE `website_page_id` = :website_page_id'
+            , 'i'
+            , array( ':website_page_id' => $this->id )
+        )->get_var();
+    }
+    /**
      * Delete Products
      */
     public function delete_products() {
