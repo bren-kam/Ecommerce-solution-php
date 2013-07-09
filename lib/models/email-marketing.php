@@ -64,7 +64,8 @@ class EmailMarketing extends ActiveRecordBase {
             if ( in_array( $list->ac_list_id, $ac_list_ids ) ) {
                 $synced_ac_list_ids[] = $list->ac_list_id;
             } else {
-                $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ) );
+                $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ) );
+                $list->save();
             }
         }
 

@@ -111,11 +111,12 @@ class EmailList extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'name' => $this->name
+            'ac_list_id' => $this->ac_list_id
+            , 'name' => $this->name
             , 'description' => $this->description
         ), array(
             'email_list_id' => $this->id
-        ), 'ss', 'i' );
+        ), 'iss', 'i' );
     }
 
     /**
