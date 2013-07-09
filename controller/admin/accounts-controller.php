@@ -142,6 +142,22 @@ class AccountsController extends BaseController {
             $errs = $v->validate();
 
             if ( empty( $errs ) ) {
+                // We must cancel email marketing
+                if ( 1 == $account->email_marketing && 1 != (int) isset( $_POST['cbEmailMarketing'] ) ) {
+                    // Get settings
+                    $ac_account = $account->get_settings( 'ac-account' );
+
+                    if ( !empty( $ac_account ) ) {
+                        library('ac/ActiveCampaign.class');
+                        $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
+
+                        $ac->api( 'account/cancel', array(
+                            'account' => $ac_account . '.activehosted.com'
+                            , 'reason' => _('Turned off email marketing')
+                        ));
+                    }
+                }
+
                 $account->title = $_POST['tTitle'];
                 $account->user_id = $_POST['sUserID'];
                 $account->os_user_id = $_POST['sOSUserID'];
@@ -1106,6 +1122,20 @@ class AccountsController extends BaseController {
         $account = new Account();
         $account->get( $_GET['aid'] );
 
+        // Get settings
+        $ac_account = $account->get_settings( 'ac-account' );
+
+        if ( !empty( $ac_account ) ) {
+            library('ac/ActiveCampaign.class');
+            $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
+
+            $ac->api('account/cancel', array(
+                'account' => $ac_account . '.activehosted.com'
+                , 'reason' => _('Canceled account with us')
+            ));
+        }
+
+
         // Deactivate account
         $account->status = 0;
         $account->save();
@@ -1320,7 +1350,7 @@ class AccountsController extends BaseController {
         $account = new Account();
         $account->get( $_GET['aid'] );
 
-        // Get mobile plans
+        // Get email plans
         library('ac/ActiveCampaign.class');
         $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
 

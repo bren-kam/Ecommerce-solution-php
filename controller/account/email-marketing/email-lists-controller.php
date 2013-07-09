@@ -21,6 +21,10 @@ class EmailListsController extends BaseController {
         if ( !$this->user->account->email_marketing )
             return new RedirectResponse('/email-marketing/subscribers/');
 
+        // Synchronize email lists if they need to
+        $email = new EmailMarketing( $this->user->account );
+        $email->synchronize_email_lists( $this->user->account );
+
         return $this->get_template_response( 'index' )
             ->kb( 80 )
             ->add_title( _('Email Lists') )
