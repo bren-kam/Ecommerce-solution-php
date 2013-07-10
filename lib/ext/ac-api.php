@@ -13,6 +13,8 @@ class ActiveCampaignAPI {
      */
     const DEBUG = false;
     const API_OUTPUT = 'json';
+    const REQUEST_TYPE_GET = 0;
+    const REQUEST_TYPE_POST = 1;
 
     /**
    	 * Hold the api data
@@ -126,9 +128,10 @@ class ActiveCampaignAPI {
      *
      * @param string $method The method being called
      * @param array $params an array of the parameters to be sent
+     * @param string $request_type [optional]
      * @return stdClass object
      */
-    public function execute( $method, $params = array() ) {
+    public function execute( $method, $params = array(), $request_type = self::REQUEST_TYPE_GET ) {
         // Set Request Parameters
         $this->request = array_merge( array(
             'api_key' => $this->api_key
@@ -139,10 +142,10 @@ class ActiveCampaignAPI {
         $this->raw_request = http_build_query( $this->request );
 
         // Set URL
-        $url = $this->api_url;
+        $url = $this->api_url . '/admin/api.php?';
 
-        if ( count( $this->request ) > 0 )
-            $url .= '/admin/api.php?' . $this->raw_request;
+        if ( self::REQUEST_TYPE_GET == $request_type )
+            $url .=  $this->raw_request;
 
         // Initialize cURL and set options
         $ch = curl_init();
@@ -151,6 +154,10 @@ class ActiveCampaignAPI {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
+        if ( self::REQUEST_TYPE_POST == $request_type )
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->raw_request );
+
         curl_setopt( $ch, CURLOPT_URL, $url );
 
         // Perform the request and get the response

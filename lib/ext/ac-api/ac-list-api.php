@@ -50,7 +50,7 @@ class ActiveCampaignListAPI {
             , 'get_unsubscribe_reason' => 1
             , 'send_last_broadcast' => 0
             , 'require_name' => 0
-        ));
+        ), ActiveCampaignAPI::REQUEST_TYPE_POST );
 
         return $result->id;
     }
