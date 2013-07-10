@@ -91,6 +91,25 @@ class EmailList extends ActiveRecordBase {
     }
 
     /**
+     * Get AC List IDs
+     *
+     * @param array $email_list_ids
+     * @param int $account_id
+     * @return array
+     */
+    public function get_ac_list_ids( array $email_list_ids, $account_id ) {
+        foreach( $email_list_ids as &$email_list_id ) {
+            $email_list_id = (int) $email_list_id;
+        }
+
+        return $this->prepare(
+            'SELECT `ac_list_id` FROM `email_lists` WHERE `website_id` = :account_id AND `email_list_id` IN (' . implode( ',', $email_list_ids ) . ')'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_col();
+    }
+
+    /**
      * Create Email List
      */
     public function create() {

@@ -114,7 +114,11 @@ class SubscribersController extends BaseController {
                 // Setup AC
                 $ac = EmailMarketing::setup_ac( $this->user->account );
                 $ac->setup_contact();
-                $ac->contact->sync( $email->email, $email->name, $email_list_ids );
+
+                // Get the ac_list_ids
+                $email_list = new EmailList();
+
+                $ac->contact->sync( $email->email, $email->name, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
 
                 if ( isset( $_POST['email-lists'] ) )
                     $email->add_associations( $email_list_ids );
