@@ -14,7 +14,12 @@ class AcController extends BaseController {
      * @return TemplateResponse
      */
     protected function unsubscribe() {
-        fn::mail( 'kerry@studio98.com', 'unsubscribe', fn::info( $_REQUEST, false ) );
+        $email = new Email();
+
+        $email->get_by_email( $_GET['aid'], $_POST['contact']['email'] );
+        $email->status = Email::STATUS_UNSUBSCRIBED;
+        $email->save();
+
         return new JsonResponse( TRUE );
     }
 }
