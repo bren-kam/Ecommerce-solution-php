@@ -31,7 +31,7 @@ class TestController extends BaseController {
             // Add webhook for this account
             $ac->webhook->add(
                 'Unsubscribe Hook'
-                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/ac/' )
+                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/ac/unsubscribe/' )
                 , $ac_list_ids
                 , 'unsubscribe'
                 , array( 'public', 'system', 'admin' )
