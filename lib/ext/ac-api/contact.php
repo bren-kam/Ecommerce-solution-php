@@ -33,9 +33,7 @@ class ActiveCampaignContactAPI {
     /**********************************************/
 
     /**
-     * Add
-     *
-     * @return int
+     * Sync
      *
      * @param string $email
      * @param string $name

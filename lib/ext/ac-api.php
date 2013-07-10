@@ -38,6 +38,13 @@ class ActiveCampaignAPI {
     public $contact;
 
     /**
+     * Hold webhook
+     *
+     * @var ActiveCampaignWebhookAPI
+     */
+    public $webhook;
+
+    /**
      * A few variables that will determine the basic status
      */
     protected $message = NULL;
@@ -135,6 +142,13 @@ class ActiveCampaignAPI {
      */
     public function setup_contact() {
         $this->_setup( 'contact' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_webhook() {
+        $this->_setup( 'webhook' );
     }
 
     /**
