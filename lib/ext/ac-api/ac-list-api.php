@@ -1,6 +1,6 @@
 <?php
 /**
- * Active Campaign - List -  API Library
+ * Active Campaign - List - API Library
  *
  * Library based on documentation available on 07/03/2013 from
  * @url http://www.activecampaign.com/api/overview.php

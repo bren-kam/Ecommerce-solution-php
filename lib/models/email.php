@@ -209,33 +209,16 @@ class Email extends ActiveRecordBase {
     /**
      * Remove All
      *
-     * @param string $mc_list_id
-     * @param MCAPI $mc [optional - for testing]
+     * @param Account $account
      */
-    public function remove_all( $mc_list_id, MCAPI $mc = null ) {
+    public function remove_all( Account $account ) {
         if ( !$this->id )
             return;
 
-        // Unsubscribe from Mailchimp
-        if ( is_null( $mc ) ) {
-            library( 'MCAPI' );
-            $mc = new MCAPI( Config::key('mc-api') );
-        }
-
-        // Delete the campaign
-        $mc->listUnsubscribe( $mc_list_id, $this->email );
-
-        // Simply note the error, don't stop
-        if ( $mc->errorCode ) {
-            switch ( $mc->errorCode ) {
-                case 232: // Says it doesn't exist in the first place
-                break;
-
-                default:
-                    throw new ModelException( $mc->errorMessage, $mc->errorCode );
-                break;
-            }
-        }
+        // Setup AC
+        $ac = EmailMarketing::setup_ac( $this->user->account );
+        $ac->setup_contact();
+        $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
 
         // Assuming the above is successful, delete everything about this email
         $this->remove_associations();

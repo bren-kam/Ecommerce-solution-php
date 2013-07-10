@@ -1,37 +1,15 @@
 <?php
 class EmailMarketing extends ActiveRecordBase {
     /**
-     * @var ActiveCampaignAPI @ac
+     * @var ActiveCampaignAPI
      */
     protected $ac;
 
     /**
      * Setup the account initial data
-     *
-     * @param Account $account [optional]
      */
-    public function __construct( Account $account = NULL ) {
+    public function __construct() {
         parent::__construct( '' );
-
-        if ( !is_null( $account ) ) {
-            $settings = $account->get_settings( 'ac-api-key', 'ac-api-url', 'ac-account', 'ac-username', 'ac-password' );
-
-            if ( empty( $settings['ac-api-key'] ) ) {
-                library('ac/ActiveCampaign.class');
-                $ac = new ActiveCampaign( $settings['ac-account'] . Config::key('ac-account-domain'), null, $settings['ac-username'], $settings['ac-password'] );
-                $ac_user = $ac->api('user/me');
-
-                $settings['ac-api-url'] = $ac_user->apiurl;
-                $settings['ac-api-key'] = $ac_user->apikey;
-
-                // Save the settings
-                $account->set_settings( $settings );
-
-            }
-
-            library('ac-api');
-            $this->ac = new ActiveCampaignAPI( $settings['ac-api-url'], $settings['ac-api-key'] );
-        }
     }
 
     /**
@@ -40,6 +18,9 @@ class EmailMarketing extends ActiveRecordBase {
      * @param Account $account
 	 */
 	public function synchronize_email_lists( Account $account ) {
+        if ( !$this->ac instanceof ActiveCampaignAPI )
+            $this->ac = $this->setup_ac( $account );
+
         // Look through remote lists
         $this->ac->setup_list();
         $ac_lists = $this->ac->list->list_all();
@@ -86,15 +67,6 @@ class EmailMarketing extends ActiveRecordBase {
 	}
 
     /***** PROTECTED FUNCTIONS *****/
-
-    /**
-     * Get Mailchimp > Website Index
-     *
-     * @return array
-     */
-    protected function get_mailchimp_website_index() {
-        return ar::assign_key( $this->get_results( "SELECT `website_id`, `mc_list_id` FROM `websites` WHERE `mc_list_id` <> '0' AND `email_marketing` <> 0", PDO::FETCH_ASSOC ), 'website_id', true );
-    }
 
     /**
      * Bulk unsubscribe by account
@@ -158,5 +130,32 @@ class EmailMarketing extends ActiveRecordBase {
 
         // Mark these emails as synced
         $this->query( "UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN( $email_ids )" );
+    }
+
+    /**
+     * Setup Active Campaign
+     *
+     * @param Account $account
+     * @return ActiveCampaignAPI
+     */
+    public static function setup_ac( Account $account ) {
+        $settings = $account->get_settings( 'ac-api-key', 'ac-api-url', 'ac-account', 'ac-username', 'ac-password' );
+
+        if ( empty( $settings['ac-api-key'] ) ) {
+            library('ac/ActiveCampaign.class');
+            $ac = new ActiveCampaign( $settings['ac-account'] . Config::key('ac-account-domain'), null, $settings['ac-username'], $settings['ac-password'] );
+            $ac_user = $ac->api('user/me');
+
+            $settings['ac-api-url'] = $ac_user->apiurl;
+            $settings['ac-api-key'] = $ac_user->apikey;
+
+            // Save the settings
+            $account->set_settings( $settings );
+
+        }
+
+        library('ac-api');
+
+        return new ActiveCampaignAPI( $settings['ac-api-url'], $settings['ac-api-key'] );
     }
 }

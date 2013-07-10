@@ -26,9 +26,16 @@ class ActiveCampaignAPI {
     /**
      * Hold list
      *
-     * @var ActiveCampaignListApi
+     * @var ActiveCampaignListAPI
      */
     public $list;
+
+    /**
+     * Hold contact
+     *
+     * @var ActiveCampaignContactAPI
+     */
+    public $contact;
 
     /**
      * A few variables that will determine the basic status
@@ -121,6 +128,13 @@ class ActiveCampaignAPI {
      */
     public function setup_list() {
         $this->_setup( 'list' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_contact() {
+        $this->_setup( 'contact' );
     }
 
     /**
