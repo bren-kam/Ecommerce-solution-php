@@ -195,12 +195,20 @@ class AccountsController extends BaseController {
                     ) )
                 ) );
 
+                // Set the account's official address
+                $account->set_settings( array(
+                    'address' => $_POST['tAddress']
+                    , 'city' => $_POST['tCity']
+                    , 'state' => $_POST['sState']
+                    , 'zip' => $_POST['tZip']
+                ) );
+
                 $this->notify( _('This account has been successfully updated!') );
             }
         }
 
         // Define fields
-        $fields = array( 'account_title', 'users', 'phone', 'products', 'os_users', 'plan', 'plan_description' );
+        $fields = array( 'account_title', 'users', 'phone', 'products', 'os_users', 'plan', 'plan_description', 'address', 'city', 'state', 'zip' );
 
         // Get users
         $user_array = $this->user->get_all();
@@ -233,6 +241,22 @@ class AccountsController extends BaseController {
         $plan = new FormTable_Text( _('Plan'), 'tPlan', $account->plan_name );
         $plan_description = new FormTable_Textarea( _('Plan Description'), 'taPlanDescription', $account->plan_description );
 
+        // Address
+        $address_settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
+
+        $address = new FormTable_Text( _('Address'), 'tAddress', $address_settings['address'] );
+        $address->attribute( 'tmpval', _('Address') );
+
+        $city = new FormTable_Text( _('City'), 'tCity', $address_settings['city'] );
+        $city->attribute( 'tmpval', _('City') );
+
+        $state = new FormTable_Select( _('State'), 'sState', $address_settings['state'] );
+        $state->options( data::states( false ) );
+
+        $zip = new FormTable_Text( _('Zip'), 'tZip', $address_settings['zip'] );
+        $zip->attribute( 'tmpval', _('Zip') );
+
+        // Validation
         foreach ( $fields as $field ) {
             $$field->validation( $v );
         }

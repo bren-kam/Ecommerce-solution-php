@@ -59,12 +59,19 @@ class EmailMarketing extends ActiveRecordBase {
             $ac_list_ids[] = $acl->id;
         }
 
-        // Create any lists
+        /**
+         * Create any lists
+         * @var string $address
+         * @var int $zip
+         */
         foreach ( $lists as $list ) {
             if ( in_array( $list->ac_list_id, $ac_list_ids ) ) {
                 $synced_ac_list_ids[] = $list->ac_list_id;
             } else {
-                $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ) );
+                if ( !isset( $address ) )
+                    extract( $account->get_settings( 'address', 'zip' ) );
+
+                $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $address, $zip );
                 $list->save();
             }
         }

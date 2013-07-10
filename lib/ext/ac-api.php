@@ -128,7 +128,7 @@ class ActiveCampaignAPI {
      *
      * @param string $method The method being called
      * @param array $params an array of the parameters to be sent
-     * @param string $request_type [optional]
+     * @param int $request_type [optional]
      * @return stdClass object
      */
     public function execute( $method, $params = array(), $request_type = self::REQUEST_TYPE_GET ) {
@@ -143,7 +143,7 @@ class ActiveCampaignAPI {
 
         // Set URL
         $url = $this->api_url . '/admin/api.php?';
-
+		echo $request_type;
         if ( self::REQUEST_TYPE_GET == $request_type )
             $url .=  $this->raw_request;
 
