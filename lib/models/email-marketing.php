@@ -62,6 +62,8 @@ class EmailMarketing extends ActiveRecordBase {
         /**
          * Create any lists
          * @var string $address
+         * @var string $city
+         * @var string $state
          * @var int $zip
          */
         foreach ( $lists as $list ) {
@@ -69,9 +71,9 @@ class EmailMarketing extends ActiveRecordBase {
                 $synced_ac_list_ids[] = $list->ac_list_id;
             } else {
                 if ( !isset( $address ) )
-                    extract( $account->get_settings( 'address', 'zip' ) );
+                    extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
 
-                $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $address, $zip );
+                $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
                 $list->save();
             }
         }

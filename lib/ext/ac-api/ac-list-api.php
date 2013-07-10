@@ -36,11 +36,14 @@ class ActiveCampaignListAPI {
      * @param string $name
      * @param int $analytics_ua
      * @param string $domain
+     * @param string $account_name
      * @param string $address
+     * @param string $city
+     * @param string $state
      * @param int $zip
      * @return int
      */
-    public function add( $name, $analytics_ua, $domain, $address, $zip ) {
+    public function add( $name, $analytics_ua, $domain, $account_name, $address, $city, $state, $zip ) {
         $result = $this->api( 'add', array(
             'name' => $name
             , 'to_name' => 'Subscriber'
@@ -52,9 +55,12 @@ class ActiveCampaignListAPI {
             , 'get_unsubscribe_reason' => 1
             , 'send_last_broadcast' => 0
             , 'require_name' => 0
+            , 'sender_name' => $account_name
             , 'sender_addr1' => $address
+            , 'sender_city' => $city
+            , 'sender_state' => $state
             , 'sender_zip' => $zip
-            , 'sender_country' => 'US'
+            , 'sender_country' => 'USA'
         ), ActiveCampaignAPI::REQUEST_TYPE_POST );
 
         return $result->id;
