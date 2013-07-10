@@ -208,7 +208,7 @@ class ActiveCampaignAPI {
      */
     private function _setup( $section ) {
         if ( is_null( $this->$section ) ) {
-            library( 'ac-api/ac-' . $section . '-api' );
+            library( "ac-api/$section" );
             $class_name = 'ActiveCampaign' . ucwords( $section ) . 'API';
             $this->$section = new $class_name( $this );
         }
