@@ -216,7 +216,7 @@ class Email extends ActiveRecordBase {
             return;
 
         // Setup AC
-        $ac = EmailMarketing::setup_ac( $this->user->account );
+        $ac = EmailMarketing::setup_ac( $account );
         $ac->setup_contact();
         $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
 
