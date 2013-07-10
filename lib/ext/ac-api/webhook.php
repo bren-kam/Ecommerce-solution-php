@@ -31,27 +31,34 @@ class ActiveCampaignWebhookAPI {
     /**
      * Add
      *
+     * @return object
+     */
+    public function list_all() {
+        return $this->api( 'list' );
+    }
+
+    /**
+     * Add
+     *
      * @param string $name
      * @param string $url
+     * @param array|string $ac_list_ids
      * @param array|string $action_array [subscribe, unsubscribe, update, sent, open, click, forward, share, bounce]
      * @param array|string $init_array
      * @return bool
      */
-    public function add( $name, $url, $action_array, $init_array ) {
+    public function add( $name, $url, array $ac_list_ids, $action_array, $init_array ) {
         $params = array(
             'name' => $name
             , 'url' => $url
         );
 
         // Transfer into array
-        if ( is_string( $init_array ) )
-            $init_array = array( $init_array );
+        if ( is_string( $ac_list_ids ) )
+            $ac_list_ids = array( $ac_list_ids );
 
-        $init_count = count( $init_array );
-
-        for ( $i = 0; $i < $init_count; $i++ ) {
-            $init = array_pop( $init_array );
-            $params["init[$i]"] = $init;
+        foreach( $ac_list_ids as $ac_list_id ) {
+            $params["lists[$ac_list_id]"] = $ac_list_id;
         }
 
         // Transfer into array
@@ -63,6 +70,17 @@ class ActiveCampaignWebhookAPI {
         for ( $i = 0; $i < $action_count; $i++ ) {
             $action = array_pop( $action_array );
             $params["action[$i]"] = $action;
+        }
+
+        // Transfer into array
+        if ( is_string( $init_array ) )
+            $init_array = array( $init_array );
+
+        $init_count = count( $init_array );
+
+        for ( $i = 0; $i < $init_count; $i++ ) {
+            $init = array_pop( $init_array );
+            $params["init[$i]"] = $init;
         }
 
         // Add it

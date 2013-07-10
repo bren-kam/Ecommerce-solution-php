@@ -30,7 +30,7 @@ class EmailMarketing extends ActiveRecordBase {
         $lists = $email_list->get_by_account( $account->id );
 
         // Initialize variables
-        $ac_list_ids = $synced_ac_list_ids = $ac_remaining_list_ids = array();
+        $ac_list_ids = $synced_ac_list_ids = $ac_remaining_list_ids = $new_ac_list_ids = array();
 
         // Create a list of IDS
         foreach ( $ac_lists as $acl ) {
@@ -54,9 +54,23 @@ class EmailMarketing extends ActiveRecordBase {
                 if ( !isset( $address ) )
                     extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
 
-                $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
+                $new_ac_list_ids[] = $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
                 $list->save();
             }
+        }
+
+        if ( !empty( $new_ac_list_ids ) ) {
+            // Make sure we can work on webhooks
+            $this->ac->setup_webhook();
+
+            // Add webhook for this account
+            $this->ac->webhook->add(
+                'Unsubscribe Hook'
+                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/ac/' )
+                , $ac_list_ids
+                , 'unsubscribe'
+                , array( 'public', 'system', 'admin' )
+            );
         }
 
         // Get the remaining list ids that need to be removed

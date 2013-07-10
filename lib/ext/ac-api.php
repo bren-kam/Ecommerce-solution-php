@@ -11,7 +11,7 @@ class ActiveCampaignAPI {
     /**
      * Constant paths to include files
      */
-    const DEBUG = false;
+    const DEBUG = true;
     const API_OUTPUT = 'json';
     const REQUEST_TYPE_GET = 0;
     const REQUEST_TYPE_POST = 1;
@@ -171,7 +171,7 @@ class ActiveCampaignAPI {
 
         // Set URL
         $url = $this->api_url . '/admin/api.php?';
-		echo $request_type;
+
         if ( self::REQUEST_TYPE_GET == $request_type )
             $url .=  $this->raw_request;
 
