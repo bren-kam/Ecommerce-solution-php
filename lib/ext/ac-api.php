@@ -11,7 +11,7 @@ class ActiveCampaignAPI {
     /**
      * Constant paths to include files
      */
-    const DEBUG = true;
+    const DEBUG = false;
     const API_OUTPUT = 'json';
     const REQUEST_TYPE_GET = 0;
     const REQUEST_TYPE_POST = 1;
