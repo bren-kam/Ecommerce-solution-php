@@ -29,12 +29,31 @@ class AcController extends BaseController {
      * @return TemplateResponse
      */
     protected function sent_campaign() {
+        // Get email message
         $email_message = new EmailMessage();
+        $email_message->get_by_ac_campaign_id( $_POST['campaign']['id'], $_GET['aid'] );
 
-        fn::mail( 'kerry@studio98.com', 'campaign_hook', fn::info( $_POST ) );
+        // Load library to get static values
+        library('ac-api/campaign');
 
-        $email_message->get( $_POST['list'], $_GET['aid'] );
-        $email_message->status = EmailMessage::STATUS_SENT;
+        // Find out what we're changing the status to
+        switch ( $_POST['campaign']['status'] ) {
+            case ActiveCampaignCampaignAPI::STATUS_SENDING:
+            case ActiveCampaignCampaignAPI::STATUS_COMPLETED:
+                $email_message->status = EmailMessage::STATUS_SENT;
+            break;
+
+            default:
+            case ActiveCampaignCampaignAPI::STATUS_DRAFT:
+            case ActiveCampaignCampaignAPI::STATUS_PAUSED:
+                $email_message->status = EmailMessage::STATUS_DRAFT;
+            break;
+
+            case ActiveCampaignCampaignAPI::STATUS_SCHEDULED:
+                $email_message->status = EmailMessage::STATUS_SCHEDULED;
+            break;
+        }
+
         $email_message->save();
 
         return new JsonResponse( TRUE );

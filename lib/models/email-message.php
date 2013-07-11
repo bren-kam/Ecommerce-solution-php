@@ -20,7 +20,6 @@ class EmailMessage extends ActiveRecordBase {
             $this->id = $this->email_message_id;
     }
 
-
     /**
      * Get
      *
@@ -32,6 +31,22 @@ class EmailMessage extends ActiveRecordBase {
             'SELECT * FROM `email_messages` WHERE `email_message_id` = :email_message_id AND `website_id` = :account_id'
             , 'ii'
             , array( ':email_message_id' => $email_message_id, ':account_id' => $account_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->email_message_id;
+    }
+
+    /**
+     * Get
+     *
+     * @param int $ac_campaign_id
+     * @param int $account_id
+     */
+    public function get_by_ac_campaign_id( $ac_campaign_id, $account_id ) {
+        $this->prepare(
+            'SELECT * FROM `email_messages` WHERE `ac_campaign_id` = :ac_campaign_id AND `website_id` = :account_id'
+            , 'ii'
+            , array( ':ac_campaign_id' => $ac_campaign_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->email_message_id;
