@@ -512,7 +512,6 @@ class AccountsController extends BaseController {
             $account->ga_tracking_key = $_POST['tGATrackingKey'];
             $account->wordpress_username = security::encrypt( $_POST['tWPUsername'], ENCRYPTION_KEY, true );
             $account->wordpress_password = security::encrypt( $_POST['tWPPassword'], ENCRYPTION_KEY, true );
-            $account->mc_list_id = $_POST['tMCListID'];
 
             $account->save();
 

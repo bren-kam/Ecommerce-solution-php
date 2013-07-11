@@ -34,11 +34,11 @@ class EmailMarketingController extends BaseController {
 
         if ( is_array( $messages ) ) {
         	// Get the analytics data
-        	while ( $i < $email_count && !$email->mc_campaign_id ) {
+        	while ( $i < $email_count && !$email->ac_campaign_id ) {
                 $message = $messages[$i];
 
                 try {
-                    $email->get_complete( $message->mc_campaign_id, $this->user->account->id );
+                    $email->get_complete( $message->ac_campaign_id, $this->user->account->id );
                 } catch( ModelException $e ) {
                     $this->notify( _('An error occurred while trying to get your email') . ', "' . $message->subject . '". ' . _('Please contact an online specialist for assistance.'), false );
                 }

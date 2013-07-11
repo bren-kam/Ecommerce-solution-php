@@ -131,12 +131,11 @@ class Account extends ActiveRecordBase {
             , 'ga_tracking_key' => $this->ga_tracking_key
             , 'wordpress_username' => $this->wordpress_username
             , 'wordpress_password' => $this->wordpress_password
-            , 'mc_list_id' => $this->mc_list_id
             , 'version' => $this->version
             , 'live' => $this->live
             , 'status' => $this->status
         ), array( 'website_id' => $this->id )
-        , 'iiisssssssiiiiiiiiiiiisisssssii', 'i' );
+        , 'iiisssssssiiiiiiiiiiiisissssii', 'i' );
     }
 
     /**

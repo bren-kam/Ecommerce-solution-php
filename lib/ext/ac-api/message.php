@@ -72,7 +72,7 @@ class ActiveCampaignMessageAPI {
     /**
      * Edit
      *
-     * @param int $mc_message_id
+     * @param int $ac_message_id
      * @param string $subject
      * @param string $from_email
      * @param string $from_name
@@ -82,9 +82,9 @@ class ActiveCampaignMessageAPI {
      * @param array $ac_list_ids
      * @return bool
      */
-    public function edit( $mc_message_id, $subject, $from_email, $from_name, $reply_to, $html, $text, array $ac_list_ids ) {
+    public function edit( $ac_message_id, $subject, $from_email, $from_name, $reply_to, $html, $text, array $ac_list_ids ) {
         $params = array(
-            'id' => $mc_message_id
+            'id' => $ac_message_id
             , 'format' => 'html' // 'html', 'text', 'mime' (both)
             , 'subject' => $subject
             , 'fromemail' => $from_email

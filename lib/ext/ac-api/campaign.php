@@ -116,6 +116,18 @@ class ActiveCampaignCampaignAPI {
     }
 
     /**
+     * Report Totals
+     *
+     * @param int $ac_campaign_id
+     * @return object
+     */
+    public function report_totals( $ac_campaign_id ) {
+        return $this->api( 'report_totals', array(
+            'campaignid' => $ac_campaign_id
+        ));
+    }
+
+    /**
      * Delete
      *
      * @param int $ac_campaign_id
