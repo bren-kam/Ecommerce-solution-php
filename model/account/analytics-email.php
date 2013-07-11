@@ -22,21 +22,15 @@ class AnalyticsEmail extends ActiveRecordBase {
      * Gets an individual email
      *
      * @throws ModelException
-     * @param string $mc_campaign_id
-     * @param int $account_id
-     * @param MCAPI $mc [optional]
+     * @param int $ac_campaign_id
+     * @param Account $account
      */
-    public function get_complete( $mc_campaign_id, $account_id, MCAPI $mc = null ) {
-        if ( is_null( $mc ) ) {
-            library( 'MCAPI' );
-            $mc = new MCAPI( Config::key('mc-api') );
-        }
+    public function get_complete( $ac_campaign_id, $account ) {
+        $ac = EmailMarketing::setup_ac( $account );
+        $ac->setup_campaign();
 
         // Get the statistics
-        $s = $mc->campaignStats( $mc_campaign_id );
-
-        if ( $mc->errorCode )
-            throw new ModelException( $mc->errorMessage, $mc->errorCode );
+        $s = $ac->campaign->report_totals( $ac_campaign_id );
 
         // Update the analytics
         $this->update_analytics( $mc_campaign_id, $s );

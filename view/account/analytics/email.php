@@ -61,7 +61,7 @@ if ( count( $email->advice ) > 0 ) {
     <br /><br />
 </div>
 <div id="dClickOverlay" class="hidden stat-screen">
-    <iframe src="<?php echo url::add_query_arg( 'mcid', $email->mc_campaign_id, '/analytics/email-click-overlay/' ); ?>" name="ifClickOverlay" id="ifClickOverlay" width="783" height="100"></iframe>
+    <iframe src="<?php echo url::add_query_arg( 'accid', $email->ac_campaign_id, '/analytics/email-click-overlay/' ); ?>" name="ifClickOverlay" id="ifClickOverlay" width="783" height="100"></iframe>
 </div>
 <script type="text/javascript">
     function open_flash_chart_data() {
