@@ -78,33 +78,6 @@ class Email extends ActiveRecordBase {
     }
 
     /**
-     * Get Unsynced Emails
-     *
-     * @return Email[]
-     */
-    public function get_unsynced() {
-        return $this->get_results(
-            "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`"
-            , PDO::FETCH_CLASS
-            , 'Email'
-        );
-    }
-
-    /**
-     * Get Unsynced Emails by account
-     *
-     * @param int $account_id
-     * @return Email[]
-     */
-    public function get_unsynced_by_account( $account_id ) {
-        return $this->prepare(
-            "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`website_id` = :account_id AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`"
-            , 'i'
-            , array( ':account_id' => $account_id )
-        )->get_results( PDO::FETCH_CLASS, 'Email' );
-    }
-
-    /**
      * Create
      */
     public function create() {
