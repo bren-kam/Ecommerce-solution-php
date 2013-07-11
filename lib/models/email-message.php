@@ -307,18 +307,6 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
-	 * Update scheduled emails
-	 *
-	 * This function assumes MailChimp will send the email at the right time.
-	 * We simply mark it as sent when it has past the date it is SUPPOSED to send
-	 *
-	 * @return bool
-	 */
-	public function update_scheduled_emails() {
-		$this->query( "UPDATE `email_messages` SET `status` = " . self::STATUS_SENT . " WHERE `status` = " . self::STATUS_SCHEDULED . " AND `date_sent` < NOW()" );
-    }
-
-    /**
      * Get Dashboard Messages By Account
      *
      * @param int $account_id
