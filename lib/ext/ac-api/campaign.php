@@ -11,6 +11,10 @@ class ActiveCampaignCampaignAPI {
     const PREFIX = 'campaign_';
     const STATUS_DRAFT = 0;
     const STATUS_SCHEDULED = 1;
+    const STATUS_SENDING = 2;
+    const STATUS_PAUSED = 3;
+    const STATUS_STOPPED = 4;
+    const STATUS_COMPLETED = 5;
     const VISIBILITY_PUBLIC = 1;
     const VISIBILITY_PRIVATE = 0;
 
@@ -72,6 +76,57 @@ class ActiveCampaignCampaignAPI {
         $result = $this->api( 'create', $params, ActiveCampaignAPI::REQUEST_TYPE_POST );
 
         return $result->id;
+    }
+
+    /**
+     * Send
+     *
+     * @param string $email
+     * @param int $ac_campaign_id
+     * @param int $ac_message_id
+     * @param string $action
+     * @return bool
+     */
+    public function send( $email, $ac_campaign_id, $ac_message_id, $action ) {
+        $this->api( 'send', array(
+            'email' => $email
+            , 'campaignid' => $ac_campaign_id
+            , 'message_id' => $ac_message_id
+            , 'type' => 'mime'
+            , 'action' => $action
+        ));
+
+        return $this->ac->success();
+    }
+
+    /**
+     * Update
+     *
+     * @param $ac_campaign_id
+     * @param int $status
+     * @return bool
+     */
+    public function update( $ac_campaign_id, $status ) {
+        $this->api( 'status', array(
+            'id' => $ac_campaign_id
+            , 'status' => $status
+        ));
+
+        return $this->ac->success();
+    }
+
+    /**
+     * Delete
+     *
+     * @param int $ac_campaign_id
+     * @return bool
+     */
+    public function delete( $ac_campaign_id ) {
+        $this->api( 'delete', array(
+            'id' => $ac_campaign_id
+        ));
+
+        return $this->ac->success();
     }
 
     /*********************************************/

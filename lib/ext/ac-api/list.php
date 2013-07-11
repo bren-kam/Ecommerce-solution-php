@@ -67,6 +67,46 @@ class ActiveCampaignListAPI {
     }
 
     /**
+     * Edit
+     *
+     * @return int
+     *
+     * @param int $ac_list_id
+     * @param string $name
+     * @param int $analytics_ua
+     * @param string $domain
+     * @param string $account_name
+     * @param string $address
+     * @param string $city
+     * @param string $state
+     * @param int $zip
+     * @return bool
+     */
+    public function edit( $ac_list_id, $name, $analytics_ua, $domain, $account_name, $address, $city, $state, $zip ) {
+        $this->api( 'edit', array(
+            'id' => $ac_list_id
+            , 'name' => $name
+            , 'to_name' => 'Subscriber'
+            , 'listid' => format::slug( $name )
+            , 'p_use_analytics_read' => 1
+            , 'analytics_ua' => $analytics_ua
+            , 'p_use_analytics_link' => 1
+            , 'analytics_domains[0]' => $domain
+            , 'get_unsubscribe_reason' => 1
+            , 'send_last_broadcast' => 0
+            , 'require_name' => 0
+            , 'sender_name' => $account_name
+            , 'sender_addr1' => $address
+            , 'sender_city' => $city
+            , 'sender_state' => $state
+            , 'sender_zip' => $zip
+            , 'sender_country' => 'USA'
+        ), ActiveCampaignAPI::REQUEST_TYPE_POST );
+
+        return $this->ac->success();
+    }
+
+    /**
      * List
      *
      * @return stdClass object

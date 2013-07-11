@@ -499,7 +499,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
-        $ft->add_field( 'text', _('Mailchimp List ID'), 'tMCListID', $account->mc_list_id );
         $ft->add_field( 'text', _('Active Campaign Account'), 'tACAccount', $settings['ac-account'] );
         $ft->add_field( 'text', _('Active Campaign Username'), 'tACUsername', $settings['ac-username'] );
         $ft->add_field( 'text', _('Active Campaign Password'), 'tACPassword', $settings['ac-password'] );

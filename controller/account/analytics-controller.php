@@ -669,7 +669,7 @@ class AnalyticsController extends BaseController {
             $date = new DateTime( $email->date_sent );
 
             $data[] = array(
-                '<a href="' . url::add_query_arg( 'mcid', $email->mc_campaign_id, '/analytics/email/' ) . '" title="' . $email->subject . '">' . $email->subject . '</a>'
+                '<a href="' . url::add_query_arg( 'acccid', $email->ac, '/analytics/email/' ) . '" title="' . $email->subject . '">' . $email->subject . '</a>'
                 , $email->emails_sent
                 , $email->opens
                 , $email->clicks

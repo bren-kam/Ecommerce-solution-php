@@ -133,7 +133,7 @@ class EmailsController extends BaseController {
                 $actions = '<a href="' . url::add_query_arg( 'emid', $message->id, '/email-marketing/emails/send/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ';
                 $actions .= '<a href="' . url::add_query_arg( array( 'emid' => $message->id, '_nonce' => $delete_nonce ), '/email-marketing/emails/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
             } else {
-                $actions = '<a href="' . url::add_query_arg( 'mcid', $message->mc_campaign_id, '/analytics/email/' ) . '" title="' . _('Analytics') . '">' . _('Analytics') . '</a>';
+                $actions = '<a href="' . url::add_query_arg( 'accid', $message->ac_campaign_id, '/analytics/email/' ) . '" title="' . _('Analytics') . '">' . _('Analytics') . '</a>';
             }
 
             $data[] = array(
@@ -167,7 +167,7 @@ class EmailsController extends BaseController {
         // Remove
         $email_message = new EmailMessage();
         $email_message->get( $_GET['emid'], $this->user->account->id );
-        $email_message->remove_all();
+        $email_message->remove_all( $this->user->account );
 
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();
@@ -251,19 +251,19 @@ class EmailsController extends BaseController {
 
         $response->add_response( 'email_message_id', $email_message->id );
 
-        if ( 0 == $email_message->mc_campaign_id )
+        if ( 0 == $email_message->ac_message_id )
             return $response;
 
         // Get email lists
         $email_list = new EmailList();
-        $email_list_objects = $email_list->get_by_message( $email_message->id, $this->user->account->id );
-        $email_lists = array();
+        $email_lists = $email_list->get_by_message( $email_message->id, $this->user->account->id );
+        $email_list_ids = array();
 
-        foreach ( $email_list_objects as $el ) {
-            $email_lists[$el->id] = $el->name;
+        foreach ( $email_lists as $el ) {
+            $email_lists_ids[] = $el->id;
         }
 
-        $email_message->update_mailchimp( $this->user->account, $email_lists );
+        $email_message->update_ac_message( $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
 
         return $response;
     }
@@ -291,16 +291,16 @@ class EmailsController extends BaseController {
         $email_message->get( $_POST['emid'], $this->user->account->id );
 
         // Get email lists
-        $email_list_objects = $email_list->get_by_message( $email_message->id, $this->user->account->id );
-        $email_lists = array();
+        $email_lists = $email_list->get_by_message( $email_message->id, $this->user->account->id );
+        $email_list_ids = array();
 
-        foreach ( $email_list_objects as $el ) {
-            $email_lists[$el->id] = $el->name;
+        foreach ( $email_lists as $el ) {
+            $email_lists_ids[] = $el->id;
         }
 
         // Test message
         try {
-            $email_message->test( $_POST['email'], $this->user->account, $email_lists );
+            $email_message->test( $_POST['email'], $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
         } catch ( ModelException $e ) {
             $response->check( false, $e->getMessage() );
         }
@@ -331,16 +331,16 @@ class EmailsController extends BaseController {
         $email_message->get( $_POST['emid'], $this->user->account->id );
 
         // Get email lists
-        $email_list_objects = $email_list->get_by_message( $email_message->id, $this->user->account->id );
-        $email_lists = array();
+        $email_lists = $email_list->get_by_message( $email_message->id, $this->user->account->id );
+        $email_list_ids = array();
 
-        foreach ( $email_list_objects as $el ) {
-            $email_lists[$el->id] = $el->name;
+        foreach ( $email_lists as $el ) {
+            $email_lists_ids[] = $el->id;
         }
 
         // Test message
         try {
-            $email_message->schedule( $this->user->account, $email_lists );
+            $email_message->schedule( $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
         } catch ( ModelException $e ) {
             $response->check( false, $e->getMessage() );
         }

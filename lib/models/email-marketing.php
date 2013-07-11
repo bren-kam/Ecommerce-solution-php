@@ -80,6 +80,49 @@ class EmailMarketing extends ActiveRecordBase {
             $this->ac->list->delete_multiple( $ac_remaining_list_ids );
 	}
 
+    /**
+     * Add Email List
+     *
+     * @throws ModelException
+     *
+     * @param Account $account
+     * @param EmailList $email_list
+     * @return int
+     */
+    public function add_email_list( Account $account, EmailList $email_list ) {
+        if ( !$this->ac instanceof ActiveCampaignAPI )
+            $this->ac = $this->setup_ac( $account );
+
+        extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
+
+        $ac_list_id = $this->ac->list->add( $email_list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
+
+        if ( !$ac_list_id )
+            throw new ModelException( "Failed to create email list:\n" . $this->ac->message() );
+
+        return $ac_list_id;
+    }
+
+    /**
+     * Update Email List
+     *
+     * @throws ModelException
+     *
+     * @param Account $account
+     * @param EmailList $email_list
+     */
+    public function update_email_list( Account $account, EmailList $email_list ) {
+        if ( !$this->ac instanceof ActiveCampaignAPI )
+            $this->ac = $this->setup_ac( $account );
+
+        extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
+
+        $this->ac->list->edit( $email_list->id, $email_list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
+
+        if ( $this->ac->error() )
+            throw new ModelException( "Failed to create email list:\n" . $this->ac->message() );
+    }
+
     /***** PROTECTED FUNCTIONS *****/
 
     /**

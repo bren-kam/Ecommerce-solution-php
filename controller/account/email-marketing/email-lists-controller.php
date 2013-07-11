@@ -59,35 +59,64 @@ class EmailListsController extends BaseController {
         if ( $form->posted() ) {
             $success = true;
 
-            // Get mailchimp
-            library( 'MCAPI' );
-            $mc = new MCAPI( Config::key('mc-api') );
+            // Get Active Campaign
+            $email_marketing = new EmailMarketing();
 
-            $original_name = $email_list->name;
             $email_list->name = $_POST['tName'];
             $email_list->description = $_POST['taDescription'];
 
             if ( $email_list->id ) {
-                $mc->listInterestGroupUpdate( $this->user->account->mc_list_id, $original_name, $email_list->name );
-
                 // Handle any error, but don't stop
-                if ( $mc->errorCode ) {
-                    $this->notify( $mc->errorMessage, false );
+
+                try {
+                    $email_list->ac_list_id = $email_marketing->update_email_list( $email_list, $this->user->account );
+                } catch ( ModelException $e ) {
+                    // We failed!
                     $success = false;
-                } else {
+
+                    // Let the client know
+                    $this->notify( _('There was a problem trying to update your email list. Please see your online specialist.'), false );
+
+                    // Let us know
+                    $ticket = new Ticket();
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to_user_id = ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) ? User::TECHNICAL : $this->user->account->os_user_id;
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->summary = _('Failed to create Email List');
+                    $ticket->message = _('The following error was received from Active Campaign, please report this to Technical:') . ' ' . $e->getMessage();
+                    $ticket->priority = Ticket::PRIORITY_HIGH;
+                    $ticket->status = Ticket::STATUS_OPEN;
+                    $ticket->create();
+                }
+
+                if ( $success )
                     $email_list->save();
-                }
             } else {
-                $mc->listInterestGroupAdd( $this->user->account->mc_list_id, $email_list->name );
+                $email_list->website_id = $this->user->account->id;
 
-                // Handle any error, but don't stop
-                if ( $mc->errorCode ) {
+                try {
+                    $email_list->ac_list_id = $email_marketing->add_email_list( $this->user->account, $email_list );
+                } catch ( ModelException $e ) {
+                    // We failed!
                     $success = false;
-                    $this->notify( $mc->errorMessage, false );
-                } else {
-                    $email_list->website_id = $this->user->account->id;
-                    $email_list->create();
+
+                    // Let the client know
+                    $this->notify( _('There was a problem trying to create your email list. Please see your online specialist.'), false );
+
+                    // Let us know
+                    $ticket = new Ticket();
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to_user_id = ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) ? User::TECHNICAL : $this->user->account->os_user_id;
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->summary = _('Failed to create Email List');
+                    $ticket->message = _('The following error was received from Active Campaign, please report this to Technical:') . ' ' . $e->getMessage();
+                    $ticket->priority = Ticket::PRIORITY_HIGH;
+                    $ticket->status = Ticket::STATUS_OPEN;
+                    $ticket->create();
                 }
+
+                if ( $success )
+                    $email_list->create();
             }
 
             if ( $success ) {
@@ -175,7 +204,7 @@ class EmailListsController extends BaseController {
         // Remove
         $email_list = new EmailList();
         $email_list->get( $_GET['elid'], $this->user->account->id );
-        $email_list->remove_all( $this->user->account );
+        $email_list->remove();
 
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();

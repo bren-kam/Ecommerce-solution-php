@@ -45,9 +45,23 @@ class ActiveCampaignAPI {
     public $webhook;
 
     /**
+     * Hold campaign
+     *
+     * @var ActiveCampaignCampaignAPI
+     */
+    public $campaign;
+
+    /**
+     * Hold message
+     *
+     * @var ActiveCampaignMessageAPI
+     */
+    public $message;
+
+    /**
      * A few variables that will determine the basic status
      */
-    protected $message = NULL;
+    protected $response_message = NULL;
     protected $success = false;
     protected $raw_request = NULL;
     protected $request = NULL;
@@ -73,7 +87,7 @@ class ActiveCampaignAPI {
      * @return string
      */
     public function message() {
-        return $this->message;
+        return $this->response_message;
     }
 
     /**
@@ -152,6 +166,20 @@ class ActiveCampaignAPI {
     }
 
     /**
+     * Setup a sub section
+     */
+    public function setup_campaign() {
+        $this->_setup( 'campaign' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_message() {
+        $this->_setup( 'message' );
+    }
+
+    /**
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
@@ -199,7 +227,7 @@ class ActiveCampaignAPI {
 
         // Set the response
         $this->success = 1 == $this->response->result_code;
-        $this->message = $this->response->result_message;
+        $this->response_message = $this->response->result_message;
 
         $this->error = ( $this->success ) ? NULL : true;
 

@@ -1,7 +1,7 @@
 <?php
 class AnalyticsEmail extends ActiveRecordBase {
     // The columns we will have access to
-    public $mc_campaign_id, $syntax_errors, $hard_bounces, $soft_bounces, $unsubscribes, $abuse_reports, $forwards
+    public $ac_campaign_id, $syntax_errors, $hard_bounces, $soft_bounces, $unsubscribes, $abuse_reports, $forwards
         , $forwards_opens, $opens, $unique_opens, $last_open, $clicks, $unique_clicks, $last_click, $users_who_clicked
         , $emails_sent, $last_updated;
 
