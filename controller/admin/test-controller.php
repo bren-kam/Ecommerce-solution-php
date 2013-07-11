@@ -28,13 +28,13 @@ class TestController extends BaseController {
 
             $ac_list_ids = $email_marketing->get_col( "SELECT `ac_list_id` FROM `email_lists` WHERE `website_id` = $account->id" );
 
-            // Add webhook for this account
+            // Add campaign sent webhook for this list
             $ac->webhook->add(
-                'Unsubscribe Hook'
-                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/unsubscribe/' )
+                'Campaign Sent Hook'
+                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/sent-campaign/' )
                 , $ac_list_ids
-                , 'unsubscribe'
-                , array( 'public', 'system', 'admin' )
+                , 'sent'
+                , array( 'public', 'system', 'admin', 'api' )
             );
         }
 

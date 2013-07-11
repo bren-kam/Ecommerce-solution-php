@@ -22,4 +22,21 @@ class AcController extends BaseController {
 
         return new JsonResponse( TRUE );
     }
+
+    /**
+     * The campaign is sent
+     *
+     * @return TemplateResponse
+     */
+    protected function sent_campaign() {
+        $email_message = new EmailMessage();
+
+        fn::mail( 'kerry@studio98.com', 'campaign_hook', fn::info( $_POST ) );
+
+        $email_message->get( $_POST['list'], $_GET['aid'] );
+        $email_message->status = EmailMessage::STATUS_SENT;
+        $email_message->save();
+
+        return new JsonResponse( TRUE );
+    }
 }
