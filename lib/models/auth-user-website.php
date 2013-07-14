@@ -116,7 +116,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             $token->create();
 
             // Create message for email
-            $message = '<br /><strong>' . $user['website']['title'] . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
+            $message = '<br /><strong>' . $account->title . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
             $message .= 'http://account.' . DOMAIN . "/activate-account/?t={$token->key}";
             $message .= '<br /><br />Please contact ' . DOMAIN . ' if you have any questions. Thank you for your time.<br /><br />';
             $message .= '<strong>Email:</strong> info@' . DOMAIN . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
