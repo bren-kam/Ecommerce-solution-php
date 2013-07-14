@@ -1,8 +1,8 @@
 <?php
 class AnalyticsEmail extends ActiveRecordBase {
     // The columns we will have access to
-    public $ac_campaign_id, $syntax_errors, $hard_bounces, $soft_bounces, $unsubscribes, $abuse_reports, $forwards
-        , $forwards_opens, $opens, $unique_opens, $last_open, $clicks, $unique_clicks, $last_click, $users_who_clicked
+    public $ac_campaign_id, $total_bounces, $unsubscribes, $forwards
+        , $opens, $unique_opens, $last_open, $clicks, $unique_clicks, $last_click, $users_who_clicked
         , $emails_sent, $last_updated;
 
     // Artificial field
@@ -33,7 +33,7 @@ class AnalyticsEmail extends ActiveRecordBase {
         $s = $ac->campaign->report_totals( $ac_campaign_id );
 
         // Update the analytics
-        $this->update_analytics( $mc_campaign_id, $s );
+        $this->update_analytics( $ac_campaign_id, $s );
 
         // Get analytics data
         $this->get( $mc_campaign_id, $account_id );
@@ -72,34 +72,26 @@ class AnalyticsEmail extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array( 
-            'mc_campaign_id' => $this->mc_campaign_id
-            , 'syntax_errors' => $this->syntax_errors
-            , 'hard_bounces' => $this->hard_bounces
-            , 'soft_bounces' => $this->soft_bounces
+            'ac_campaign_id' => $this->ac_campaign_id
+            , 'total_bounces' => $this->total_bounces
             , 'unsubscribes' => $this->unsubscribes
-            , 'abuse_reports' => $this->abuse_reports
             , 'forwards' => $this->forwards
-            , 'forwards_opens' => $this->forwards_opens
             , 'opens' => $this->opens
             , 'unique_opens' => $this->unique_opens
-            , 'last_open' => $this->last_open
-            , 'clicks' => $this->clicks
             , 'unique_clicks' => $this->unique_clicks
-            , 'last_click' => $this->last_click
-            , 'users_who_clicked' => $this->users_who_clicked
             , 'emails_sent' => $this->emails_sent
-        ), 'siiiiiiiiisiisii', true );
+        ), 'iiiiiiii', true );
     }
 
     /**
      * Update Analytics
      *
-     * @param string $mc_campaign_id
-     * @param array $s
+     * @param string $ac_campaign_id
+     * @param object $s
      */
-    protected function update_analytics( $mc_campaign_id, array $s ) {
-        $this->mc_campaign_id = $mc_campaign_id;
-        $this->syntax_errors = $s['syntax_errors'];
+    protected function update_analytics( $ac_campaign_id, array $s ) {
+        $this->ac_campaign_id = $ac_campaign_id;
+
         $this->hard_bounces = $s['hard_bounces'];
         $this->soft_bounces = $s['soft_bounces'];
         $this->unsubscribes = $s['unsubscribes'];

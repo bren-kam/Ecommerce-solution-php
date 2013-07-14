@@ -532,12 +532,20 @@ class AnalyticsController extends BaseController {
      * @return TemplateResponse
      */
     protected function email_marketing() {
-        $analytics_email = new AnalyticsEmail();
-        $analytics_email->update_by_account( $this->user->account->id );
+        $email_message = new EmailMessage();
+        $ac = EmailMarketing::setup_ac( $this->user->account );
+        $ac->setup_campaign();
+
+        // Get the emails
+        $ac_campaign_ids = $email_message->get_sent_emails( $this->user->account->id );
+
+        // Get sent
+        $emails = $ac->campaign->list_all( $ac_campaign_ids );
 
         return $this->get_template_response( 'email-marketing' )
             ->add_title( _('Email Marketing') )
-            ->select( 'email-marketing' );
+            ->select( 'email-marketing' )
+            ->set( compact( 'emails' ) );
     }
 
     /**
@@ -549,11 +557,27 @@ class AnalyticsController extends BaseController {
         if ( !$this->user->account->email_marketing )
         	return new RedirectResponse('/analytics/');
 
-        if ( !isset( $_GET['mcid'] ) )
+        if ( !isset( $_GET['accid'] ) )
             return new RedirectResponse('/analytics/email-marketing/');
 
-        $email = new AnalyticsEmail();
-        $email->get_complete( $_GET['mcid'], $this->user->account->id );
+        $email_message = new EmailMessage();
+        $email_message->get_by_ac_campaign_id( $_GET['accid'], $this->user->account->id );
+
+        if ( !$email_message->id )
+            return new RedirectResponse('/analytics/email-marketing/');
+
+        // Get report total
+        $ac = EmailMarketing::setup_ac( $this->user->account );
+        $ac->setup_campaign();
+
+        $email = $ac->campaign->report_totals( $email_message->ac_campaign_id );
+        $opens = $ac->campaign->report_open_totals( $email_message->ac_campaign_id, $email_message->ac_message_id );
+        $clicks = $ac->campaign->report_link_totals( $email_message->ac_campaign_id, $email_message->ac_message_id );
+        $forwards = $ac->campaign->report_forward_totals( $email_message->ac_campaign_id );
+
+        $email->opens = $opens->opens;
+        $email->linkclicks = $clicks->linkclicks;
+        $email->uniqueforwards = $forwards->uniqueforwards;
 
         // Get the bar chart
         $bar_chart = Analytics::bar_chart( $email );
@@ -566,31 +590,6 @@ class AnalyticsController extends BaseController {
             ->add_title( _('Email') . ' | ' . _('Email Marketing') . ' | ' . _('Email Marketing') )
             ->select( 'email-marketing' )
             ->set( compact( 'email', 'bar_chart' ) );
-    }
-
-    /**
-     * Email Marketing
-     *
-     * @return CustomResponse
-     */
-    protected function email_click_overlay() {
-        if ( !$this->user->account->email_marketing )
-            return new RedirectResponse('/analytics/');
-
-        if ( !isset( $_GET['mcid'] ) )
-            return new RedirectResponse('/analytics/email-marketing/');
-
-        library( 'MCAPI' );
-        $mc = new MCAPI( Config::key('mc-api') );
-        $message = $mc->campaignContent( $_GET['mcid'] );
-
-        if ( $message ) {
-            $html = $message['html'];
-        } else {
-            $html = '<p>' . _('There is no Click Overlay available for this email') . '</p>';
-        }
-
-        return new HtmlResponse( $html );
     }
 
     /***** AJAX *****/
@@ -636,51 +635,6 @@ class AnalyticsController extends BaseController {
         $response->add_response( 'plotting_array', $plotting_array );
 
         return $response;
-    }
-
-    /**
-     * List emails
-     *
-     * @return DataTableResponse
-     */
-    protected function list_emails() {
-        // Get response
-        $dt = new DataTableResponse( $this->user );
-
-        $analytics_email = new AnalyticsEmail();
-
-        // Set Order by
-        $dt->order_by( 'em.`subject`', 'ae.`emails_sent`', 'ae.`open`', 'ae.`clicks`', 'em.`date_sent`' );
-        $dt->add_where( ' AND em.`website_id` = ' . (int) $this->user->account->id );
-        $dt->search( array( 'em`subject`' => false ) );
-
-        // Get items
-        $emails = $analytics_email->list_all( $dt->get_variables() );
-        $dt->set_row_count( $analytics_email->count_all( $dt->get_count_variables() ) );
-
-        // Set initial data
-        $data = false;
-
-        /**
-         * @var AnalyticsEmail $email
-         */
-        if ( is_array( $emails ) )
-        foreach ( $emails as $email ) {
-            $date = new DateTime( $email->date_sent );
-
-            $data[] = array(
-                '<a href="' . url::add_query_arg( 'acccid', $email->ac, '/analytics/email/' ) . '" title="' . $email->subject . '">' . $email->subject . '</a>'
-                , $email->emails_sent
-                , $email->opens
-                , $email->clicks
-                , $date->format( 'F jS, Y g:ia' )
-            );
-        }
-
-        // Send response
-        $dt->set_data( $data );
-
-        return $dt;
     }
 }
 

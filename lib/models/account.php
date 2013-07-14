@@ -29,7 +29,7 @@ class Account extends ActiveRecordBase {
     public function get( $account_id ) {
         // Get the account
 		$this->prepare(
-            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ftp_username`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`mc_list_id`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, a.`status`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
+            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ftp_username`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, a.`status`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -46,7 +46,7 @@ class Account extends ActiveRecordBase {
      */
     public function get_by_user( $user_id ) {
         return $this->prepare(
-            'SELECT `website_id`, `os_user_id`, `domain`, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `mc_list_id`, `ga_profile_id`, `mc_list_id`, `live` FROM `websites` WHERE `user_id` = :user_id AND `status` = 1'
+            'SELECT `website_id`, `os_user_id`, `domain`, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `ga_profile_id`, `live` FROM `websites` WHERE `user_id` = :user_id AND `status` = 1'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
@@ -60,7 +60,7 @@ class Account extends ActiveRecordBase {
      */
     public function get_by_authorized_user( $user_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`os_user_id`, w.`domain`, w.`title`, w.`product_catalog`, w.`link_brands`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`wordpress_username`, w.`wordpress_password`, w.`mc_list_id`, w.`live`, w.`pages`, ( auw.`products` * w.`products` * w.`product_catalog` ) AS products, w.`ga_profile_id`, IF ( 1 = w.`blog`, auw.`blog`, 0 ) AS blog, IF( 1 = w.`email_marketing`, auw.`email_marketing`, 0 ) AS email_marketing, IF( 1 = w.`shopping_cart`, auw.`shopping_cart`, 0 ) AS shopping_cart FROM `websites` AS w LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) WHERE auw.`user_id` = :user_id AND w.`status` = 1 ORDER BY w.`title` ASC'
+            'SELECT w.`website_id`, w.`os_user_id`, w.`domain`, w.`title`, w.`product_catalog`, w.`link_brands`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`wordpress_username`, w.`wordpress_password`, w.`live`, w.`pages`, ( auw.`products` * w.`products` * w.`product_catalog` ) AS products, w.`ga_profile_id`, IF ( 1 = w.`blog`, auw.`blog`, 0 ) AS blog, IF( 1 = w.`email_marketing`, auw.`email_marketing`, 0 ) AS email_marketing, IF( 1 = w.`shopping_cart`, auw.`shopping_cart`, 0 ) AS shopping_cart FROM `websites` AS w LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) WHERE auw.`user_id` = :user_id AND w.`status` = 1 ORDER BY w.`title` ASC'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );

@@ -128,6 +128,77 @@ class ActiveCampaignCampaignAPI {
     }
 
     /**
+     * Report Open Totals
+     *
+     * @param int $ac_campaign_id
+     * @param int $ac_message_id
+     * @return object
+     */
+    public function report_open_totals( $ac_campaign_id, $ac_message_id ) {
+        return $this->api( 'report_open_totals', array(
+            'campaignid' => $ac_campaign_id
+            , 'messageid' => $ac_message_id
+        ));
+    }
+
+    /**
+     * Report Link Totals
+     *
+     * @param int $ac_campaign_id
+     * @param int $ac_message_id
+     * @return object
+     */
+    public function report_link_totals( $ac_campaign_id, $ac_message_id ) {
+        return $this->api( 'report_link_totals', array(
+            'campaignid' => $ac_campaign_id
+            , 'messageid' => $ac_message_id
+        ));
+    }
+
+    /**
+     * Report Forward Totals
+     *
+     * @param int $ac_campaign_id
+     * @return object
+     */
+    public function report_forward_totals( $ac_campaign_id ) {
+        return $this->api( 'report_link_totals', array(
+            'campaignid' => $ac_campaign_id
+        ));
+    }
+
+    /**
+     * Report Unsubscription Totals
+     *
+     * @param int $ac_campaign_id
+     * @param int $ac_message_id
+     * @return object
+     */
+    public function report_unsubscription_totals( $ac_campaign_id, $ac_message_id ) {
+        return $this->api( 'report_unsubscription_totals', array(
+            'campaignid' => $ac_campaign_id
+            , 'messageid' => $ac_message_id
+        ));
+    }
+
+    /**
+     * List
+     *
+     * @param array $ac_campaign_ids
+     * @param int $page
+     * @return object
+     */
+    public function list_all( array $ac_campaign_ids, $page = 1 ) {
+        return $this->api( 'list', array(
+            'ids' => implode( ',', $ac_campaign_ids )
+            , 'full' => 1
+            , 'page' => $page
+            , 'sort' => 'id'
+            , 'sort_direction' => 'DESC'
+        ));
+    }
+
+    /**
      * Delete
      *
      * @param int $ac_campaign_id

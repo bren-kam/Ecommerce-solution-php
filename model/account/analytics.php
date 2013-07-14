@@ -413,16 +413,16 @@ class Analytics {
     /**
      * Bar Chart data
      *
-     * @param AnalyticsEmail $email
+     * @param object $email
      * @return string (json encoded)
      */
     public static function bar_chart( $email ) {
         $max = max( array(
-            (int) $email->emails_sent,
-            (int) $email->opens,
-            (int) $email->clicks,
+            (int) $email->send_amt,
+            (int) $email->uniqueopens,
+            (int) $email->uniquelinkclicks,
             (int) $email->forwards,
-            $email->soft_bounces + $email->hard_bounces,
+            (int) $email->totalbounces,
             (int) $email->unsubscribes
         ) );
 

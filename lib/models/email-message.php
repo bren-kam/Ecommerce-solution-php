@@ -115,6 +115,20 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
+     * Get Sent emails for ac_campaign_list
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_sent_emails( $account_id ) {
+        return $this->prepare(
+            'SELECT `ac_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT 10'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_col();
+    }
+
+    /**
      * Create
      */
     public function create() {

@@ -7,28 +7,40 @@
  * @var Resources $resources
  * @var Template $template
  * @var User $user
+ * @var array $emails
  */
 
 echo $template->start( _('Email Marketing Analytics') );
 ?>
 
 <div>
-    <table ajax="/analytics/list-emails/" perPage="30,50,100">
+    <h2><?php echo _('Last 10 Emails'); ?></h2>
+    <table>
         <thead>
             <tr>
                 <th><?php echo _('Subject'); ?></th>
-                <th class="text-right" column="formatted-num"><?php echo _('Sent *'); ?></th>
-                <th class="text-right" column="formatted-num"><?php echo _('Opens *'); ?></th>
-                <th class="text-right" column="formatted-num"><?php echo _('Clicked *'); ?></th>
-                <th class="text-right" sort="1 desc"><?php echo _('Date'); ?></th>
+                <th><?php echo _('Sent *'); ?></th>
+                <th><?php echo _('Opens *'); ?></th>
+                <th><?php echo _('Clicked *'); ?></th>
+                <th><?php echo _('Date'); ?></th>
             </tr>
         </thead>
         <tbody>
+            <?php
+            if ( is_array( $emails ) )
+            foreach ( $emails as $email ) {
+                $date = new DateTime( $email->sdate );
+                ?>
+                <tr>
+                    <td><a href="<?php echo url::add_query_arg( 'accid', $email->id, '/analytics/email/' ); ?>" title="<?php echo $email->name; ?>"><?php echo $email->name; ?></a></td>
+                    <td><?php echo $email->send_amt; ?></td>
+                    <td><?php echo $email->uniqueopens; ?></td>
+                    <td><?php echo $email->uniquelinkclicks; ?></td>
+                    <td><?php echo $date->format( 'F jS, Y'); ?></td>
+                </tr>
+            <?php } ?>
         </tbody>
     </table>
 </div>
 
-<?php
-nonce::field( 'store_session', '_store_session' );
-echo $template->end();
-?>
+<?php echo $template->end(); ?>
