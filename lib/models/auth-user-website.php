@@ -110,7 +110,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             // Create token for them to authorize their account
             $expires = dt::hours_to_date( 72 );
             $token = new Token();
-            $token->user_id = $user;
+            $token->user_id = $user->id;
             $token->type = 'activate-account';
             $token->date_valid = $expires->format('Y-m-d H:i:s');
             $token->create();
