@@ -100,6 +100,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             }
         } else {
             // Create base user
+            $user->company_id = $account->company_id;
             $user->contact_name = $contact_name;
             $user->email = $email;
             $user->role = $role;
