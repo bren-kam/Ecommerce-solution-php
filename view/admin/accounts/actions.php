@@ -41,10 +41,12 @@
 
 <?php if ( empty( $settings['trumpia-username'] ) ) { ?>
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-trumpia-account/' ); ?>" title="<?php echo _('Create Trumpia Account'); ?>" rel="dialog" cache="0"><?php echo _('Create Trumpia Account'); ?></a></p>
-<?php } ?>
+<?php
 
-<?php if ( $account->craigslist && empty( $settings['craigslist-customer-id'] ) ) { ?>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-craigslist-account/' ); ?>" title="<?php echo _('Create Craigslist Account'); ?>"><?php echo _('Create Craigslist Account'); ?></a></p>
+}
+
+if ( empty( $settings['ac-username'] ) ) { ?>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" rel="dialog" cache="0"><?php echo _('Create Email Marketing Account'); ?></a></p>
 <?php } ?>
 
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>

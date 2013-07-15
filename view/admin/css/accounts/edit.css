@@ -13,3 +13,10 @@ input.tb { width: 368px; }
 
 #tAshleyFiles th { font-size: 18px }
 #tAshleyFiles th, #tAshleyFiles td { padding-bottom: 7px; padding-right: 10px; }
+
+#tPlan { margin-bottom: 7px }
+
+#tAddress { margin-bottom: 7px }
+#tCity { width: 142px }
+#sState { width: 150px; position: relative; bottom: 1px; }
+#tZip { width: 50px; position: relative; margin-left: 4px }

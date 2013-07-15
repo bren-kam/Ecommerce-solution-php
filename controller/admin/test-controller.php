@@ -17,40 +17,32 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-         //Update Craigslist Stats
-        //$craigslist = new Craigslist;
-        //$craigslist->update_stats();
-        //$ashley = new AshleyMasterProductFeedGateway();
-        //$ashley->run();
-        
-        //$ashley_package_feed = new AshleyPackageProductFeedGateway();
-        //$ashley_package_feed->run();
-        
-        /*$mobile_marketing = new MobileMarketing();
-        $mobile_marketing->synchronize_contacts();
+        $account = new Account();
+        $email_marketing = new EmailMarketing();
+        $website_ids = $email_marketing->get_col("SELECT DISTINCT `website_id` FROM `email_lists` WHERE `ac_list_id` > 0");
 
-        $product = new Product();
-        $product_ids = array( 183, 17122, 18479, 18482, 40641, 40642, 42600, 42651, 42652, 42715, 42716, 42717, 42718, 42721, 42722, 42723, 42754, 42760, 42762, 42763, 42764, 42765, 44180, 44192, 44203, 44204, 44210, 44211, 45063, 45064, 45065, 46552, 48676, 50141, 50145, 55791, 55793, 55794, 55795, 55804, 55806, 55808, 55809, 55810, 55812, 55813, 55814, 55817, 55818, 55820, 55821, 55840, 55841, 55842, 55845, 55950, 55952, 55953, 55954, 55955, 55956, 55958, 55963, 55964, 55965, 55966, 55967, 55969, 55970, 55971, 55972, 55973, 55974, 55975, 55976, 55977, 55978, 56083, 56084, 56085, 56087, 56089, 56090, 56091, 56093, 56096, 56097, 56098, 56099, 56102, 56104, 56105, 56106, 56107, 56108, 56110, 56111, 56112, 56114, 56115, 56118, 56147, 56149, 56150, 56151, 56152, 56154, 56155, 56195, 56216, 59495, 59855, 59856, 59857, 59859, 59860 );
+        foreach ( $website_ids as $website_id ) {
+            $account->get( $website_id );
+            $ac = EmailMarketing::setup_ac( $account );
+            $ac->setup_webhook();
 
-        foreach ( $product_ids as $pid ) {
-            $product->clone_product( $pid, $this->user->id );
-            $product->get( $product->id );
-            $product->website_id = 651;
-            $product->save();
-        }*/
+            $ac_list_ids = $email_marketing->get_col( "SELECT `ac_list_id` FROM `email_lists` WHERE `website_id` = $account->id" );
 
-        //return new HtmlResponse('eh');
-        // Get categories
+            // Add campaign sent webhook for this list
+            $ac->webhook->add(
+                'Campaign Sent Hook'
+                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/sent-campaign/' )
+                , $ac_list_ids
+                , 'sent'
+                , array( 'public', 'system', 'admin', 'api' )
+            );
+        }
 
-        //$coaster = new CoasterProductFeedGateway();
-        //$coaster->run();
-		//$coaster->cleanup();
-		//$ashley = new AshleyMasterProductFeedGateway();
-        //$ashley->run();
-
+        /**
         library('ac/ActiveCampaign.class');
 
         $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
+        */
 
         return new HtmlResponse( 'heh' );
     }

@@ -91,6 +91,9 @@ class SubscribersController extends BaseController {
             $email->email = $_POST['tEmail'];
             $email->phone = $_POST['tPhone'];
 
+            $email_list_ids = array_keys( $_POST['email-lists'] );
+
+
             if ( $email->id ) {
                 $email->save();
             } else {
@@ -108,8 +111,17 @@ class SubscribersController extends BaseController {
             }
 
             if ( $success ) {
+                // Setup AC
+                $ac = EmailMarketing::setup_ac( $this->user->account );
+                $ac->setup_contact();
+
+                // Get the ac_list_ids
+                $email_list = new EmailList();
+
+                $ac->contact->sync( $email->email, $email->name, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
+
                 if ( isset( $_POST['email-lists'] ) )
-                    $email->add_associations( array_keys( $_POST['email-lists'] ) );
+                    $email->add_associations( $email_list_ids );
 
                 $this->notify( _('Your email has been added/updated successfully!') );
                 return new RedirectResponse('/email-marketing/subscribers/');
@@ -264,7 +276,7 @@ class SubscribersController extends BaseController {
         // Remove
         $email = new Email();
         $email->get( $_GET['eid'], $this->user->account->id );
-        $email->remove_all( $this->user->account->mc_list_id );
+        $email->remove_all( $this->user->account );
 
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();

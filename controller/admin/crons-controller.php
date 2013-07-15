@@ -18,10 +18,6 @@ class CronsController extends BaseController {
         if ( extension_loaded('newrelic') )
             newrelic_background_job();
 
-        /** Update Scheduled Emails from Mailchimp */
-        $email_message = new EmailMessage;
-        $email_message->update_scheduled_emails();
-
         /** Remove uploads that were never used */
 
         // Instantiate classes
@@ -100,10 +96,6 @@ class CronsController extends BaseController {
         /** Run Site On Time Feed */
         $site_on_time = new SiteOnTimeProductFeedGateway();
         $site_on_time->run();
-
-        /** Sync Email Lists */
-        $email_marketing = new EmailMarketing();
-        $email_marketing->synchronize_email_lists();
 
         // Remove Discontinued products
         $account_product = new AccountProduct();

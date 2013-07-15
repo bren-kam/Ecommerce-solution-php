@@ -20,8 +20,6 @@ class Config {
 		, 'aws-access-key'			=> 'AKIAIM64EVOSIJZMTA3Q'
 		, 'aws-secret-key'			=> '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'
 		, 'aws-bucket-domain'		=> '.retailcatalog.us'
-		// MailChimp
-		, 'mc-api'					=> '54c6400139c4f457efb941516f903b98-us1'
 		// Craigslist
 		, 'craigslist-gsr-id'		=> 2
 		, 'craigslist-gsr-key'		=> 'uCYS6jfM6XbyBfZJ'
@@ -38,6 +36,7 @@ class Config {
         // Active Campaign
         , 'ac-api-key'              => 'd1b7dc478909f6fc34eab65d0fa4192054db2145edd43f0aa58ae2341307850ab095ff91'
         , 'ac-api-url'              => 'https://www.activecampaign.com'
+        , 'ac-account-domain'       => '.activehosted.com'
 	);
 
     /**

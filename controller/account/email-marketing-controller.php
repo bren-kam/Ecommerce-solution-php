@@ -27,26 +27,14 @@ class EmailMarketingController extends BaseController {
         $email = new Email();
         $subscribers = $email->get_dashboard_subscribers_by_account( $this->user->account->id );
 
-        // Setup variables
-        $email = new AnalyticsEmail();
-        $email_count = count( $messages );
-        $i = 0;
+        // Get report total
+        $ac = EmailMarketing::setup_ac( $this->user->account );
+        $ac->setup_campaign();
 
-        if ( is_array( $messages ) ) {
-        	// Get the analytics data
-        	while ( $i < $email_count && !$email->mc_campaign_id ) {
-                $message = $messages[$i];
+        $message = $messages[0];
+        $email = $ac->campaign->report_totals( $message->ac_campaign_id );
 
-                try {
-                    $email->get_complete( $message->mc_campaign_id, $this->user->account->id );
-                } catch( ModelException $e ) {
-                    $this->notify( _('An error occurred while trying to get your email') . ', "' . $message->subject . '". ' . _('Please contact an online specialist for assistance.'), false );
-                }
-
-        		$i++;
-        	}
-        }
-
+        // Get the bar chart
         $bar_chart = Analytics::bar_chart( $email );
 
         $this->resources

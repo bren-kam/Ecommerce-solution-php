@@ -100,6 +100,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             }
         } else {
             // Create base user
+            $user->company_id = $account->company_id;
             $user->contact_name = $contact_name;
             $user->email = $email;
             $user->role = $role;
@@ -109,13 +110,13 @@ class AuthUserWebsite extends ActiveRecordBase {
             // Create token for them to authorize their account
             $expires = dt::hours_to_date( 72 );
             $token = new Token();
-            $token->user_id = $user;
+            $token->user_id = $user->id;
             $token->type = 'activate-account';
             $token->date_valid = $expires->format('Y-m-d H:i:s');
             $token->create();
 
             // Create message for email
-            $message = '<br /><strong>' . $user['website']['title'] . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
+            $message = '<br /><strong>' . $account->title . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
             $message .= 'http://account.' . DOMAIN . "/activate-account/?t={$token->key}";
             $message .= '<br /><br />Please contact ' . DOMAIN . ' if you have any questions. Thank you for your time.<br /><br />';
             $message .= '<strong>Email:</strong> info@' . DOMAIN . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
