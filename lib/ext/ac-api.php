@@ -206,6 +206,7 @@ class ActiveCampaignAPI {
         // Initialize cURL and set options
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_HEADER, 0 );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array("Expect:") );
         curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );

@@ -445,7 +445,7 @@ class EmailMessage extends ActiveRecordBase {
         $message = $template->get_complete( $account, $this );
 
         // Create message
-        $this->ac_message_id = $ac->message->add( $this->subject, $from_email, $from_name, $from_email, $message, $this->message, $ac_list_ids );
+        $this->ac_message_id = $ac->message->add( $this->subject, $from_email, $from_name, $from_email, $message, strip_tags( $this->message ), $ac_list_ids );
 
         if ( !is_int( $this->ac_message_id ) || $this->ac_message_id <= 0 )
             throw new ModelException( "Active Campaign failed to create message:\n" . $ac->message() );

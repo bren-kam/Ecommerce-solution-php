@@ -45,7 +45,7 @@ class ActiveCampaignMessageAPI {
      */
     public function add( $subject, $from_email, $from_name, $reply_to, $html, $text, array $ac_list_ids ) {
         $params = array(
-            'format' => 'html' // 'html', 'text', 'mime' (both)
+            'format' => 'mime' // 'html', 'text', 'mime' (both)
             , 'subject' => $subject
             , 'fromemail' => $from_email
             , 'fromname' => $from_name

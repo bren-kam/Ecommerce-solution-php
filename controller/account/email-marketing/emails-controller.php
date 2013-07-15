@@ -295,7 +295,7 @@ class EmailsController extends BaseController {
         $email_list_ids = array();
 
         foreach ( $email_lists as $el ) {
-            $email_lists_ids[] = $el->id;
+            $email_list_ids[] = $el->id;
         }
 
         // Test message
