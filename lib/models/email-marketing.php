@@ -33,6 +33,7 @@ class EmailMarketing extends ActiveRecordBase {
         $ac_list_ids = $synced_ac_list_ids = $ac_remaining_list_ids = $new_ac_list_ids = array();
 
         // Create a list of IDS
+        if ( is_array( $ac_lists ) )
         foreach ( $ac_lists as $acl ) {
             if ( !is_object( $acl ) )
                 continue;
