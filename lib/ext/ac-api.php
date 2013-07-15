@@ -1,31 +1,67 @@
 <?php
 /**
- * Active Campaign - Reseller - API Library
+ * Active Campaign - API Library
  *
  * Library based on documentation available on 07/03/2013 from
- * @url https://www.activecampaign.com/partner/api/
+ * @url http://www.activecampaign.com/api/overview.php
  *
  */
 
-class ActiveCampaignResellerAPI {
+class ActiveCampaignAPI {
     /**
      * Constant paths to include files
      */
-    const API_URL = 'https://www.activecampaign.com/api.php';
-    const API_OUTPUT = 'json';
     const DEBUG = false;
+    const API_OUTPUT = 'json';
+    const REQUEST_TYPE_GET = 0;
+    const REQUEST_TYPE_POST = 1;
 
     /**
-   	 * Hold the api_key
+   	 * Hold the api data
    	 *
    	 * @var string
    	 */
-   	protected  $_api_key;
+   	protected $api_url, $api_key;
+
+    /**
+     * Hold list
+     *
+     * @var ActiveCampaignListAPI
+     */
+    public $list;
+
+    /**
+     * Hold contact
+     *
+     * @var ActiveCampaignContactAPI
+     */
+    public $contact;
+
+    /**
+     * Hold webhook
+     *
+     * @var ActiveCampaignWebhookAPI
+     */
+    public $webhook;
+
+    /**
+     * Hold campaign
+     *
+     * @var ActiveCampaignCampaignAPI
+     */
+    public $campaign;
+
+    /**
+     * Hold message
+     *
+     * @var ActiveCampaignMessageAPI
+     */
+    public $message;
 
     /**
      * A few variables that will determine the basic status
      */
-    protected $message = NULL;
+    protected $response_message = NULL;
     protected $success = false;
     protected $raw_request = NULL;
     protected $request = NULL;
@@ -37,37 +73,13 @@ class ActiveCampaignResellerAPI {
 	/**
 	 * Construct class will initiate and run everything
      *
+     * @param string $api_url
      * @param string $api_key
 	 */
-	public function __construct( $api_key ) {
-		$this->_api_key = $api_key;
+	public function __construct( $api_url, $api_key ) {
+        $this->api_url = $api_url;
+		$this->api_key = $api_key;
 	}
-
-	/**********************************/
-	/* Start: AC Reseller API Methods */
-	/**********************************/
-
-	/**
-	 * Add Subdomain
-	 *
-	 * @param string $rootdomain
-	 * @param string $domain
-	 * @param string $dir
-     *
-     * @return object
-	 */
-	public function add_subdomain( $rootdomain, $domain, $dir = NULL ) {
-		if ( is_null( $dir ) )
-			$dir = 'public_html/' . $domain;
-		
-		$response = $this->_call( 'SubDomain', 'addsubdomain', compact( 'dir', 'rootdomain', 'domain' ) );
-		
-		return ( $this->success() ) ? $response : false;
-	}
-
-	/********************************/
-	/* END: AC Reseller API Methods */
-	/********************************/
 
     /**
      * Get private message variable
@@ -75,7 +87,7 @@ class ActiveCampaignResellerAPI {
      * @return string
      */
     public function message() {
-        return $this->message;
+        return $this->response_message;
     }
 
     /**
@@ -133,32 +145,76 @@ class ActiveCampaignResellerAPI {
     }
 
     /**
+     * Setup a sub section
+     */
+    public function setup_list() {
+        $this->_setup( 'list' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_contact() {
+        $this->_setup( 'contact' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_webhook() {
+        $this->_setup( 'webhook' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_campaign() {
+        $this->_setup( 'campaign' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_message() {
+        $this->_setup( 'message' );
+    }
+
+    /**
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
      * @param array $params an array of the parameters to be sent
+     * @param int $request_type [optional]
      * @return stdClass object
      */
-    protected function _execute( $method, $params = array() ) {
+    public function execute( $method, $params = array(), $request_type = self::REQUEST_TYPE_GET ) {
         // Set Request Parameters
         $this->request = array_merge( array(
-            'api_key' => $this->_api_key
+            'api_key' => $this->api_key
             , 'api_action' => $method
             , 'api_output' => self::API_OUTPUT
         ), $params);
+
         $this->raw_request = http_build_query( $this->request );
 
         // Set URL
-        $url = self::API_URL;
+        $url = $this->api_url . '/admin/api.php?';
 
-        if ( count( $this->request ) > 0 )
-            $url .= '?' . $this->raw_request;
+        if ( self::REQUEST_TYPE_GET == $request_type )
+            $url .=  $this->raw_request;
 
         // Initialize cURL and set options
         $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_HEADER, 0 );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array("Expect:") );
         curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+
+        if ( self::REQUEST_TYPE_POST == $request_type )
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->raw_request );
+
         curl_setopt( $ch, CURLOPT_URL, $url );
 
         // Perform the request and get the response
@@ -171,8 +227,8 @@ class ActiveCampaignResellerAPI {
         curl_close($ch);
 
         // Set the response
-        $this->success = 1 == $this->response->succeeded;
-        $this->message = $this->response->message;
+        $this->success = 1 == $this->response->result_code;
+        $this->response_message = $this->response->result_message;
 
         $this->error = ( $this->success ) ? NULL : true;
 
@@ -186,5 +242,18 @@ class ActiveCampaignResellerAPI {
         }
 
         return $this->response;
+    }
+
+    /**
+     * Setup a section
+     *
+     * @param string $section
+     */
+    private function _setup( $section ) {
+        if ( is_null( $this->$section ) ) {
+            library( "ac-api/$section" );
+            $class_name = 'ActiveCampaign' . ucwords( $section ) . 'API';
+            $this->$section = new $class_name( $this );
+        }
     }
 }

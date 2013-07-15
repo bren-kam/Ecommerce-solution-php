@@ -12,6 +12,7 @@
  * @var array $files
  * @var string $js_validation
  * @var string $errs
+ * @var int $product_count
  */
 
 echo $template->start( _('Edit Page') );
@@ -19,7 +20,8 @@ echo $template->start( _('Edit Page') );
 if ( !empty( $errs ) )
     echo "<p class='red'>$errs</p>";
 ?>
-<form name="fEditPage" action="<?php echo url::add_query_arg( 'apid', $page->id, '/website/edit/' ); ?>" method="post">
+<form name="fEditPage" action="<?php echo url::add_query_arg( 'apid', $page->id, '/website/edit/' ); ?>" method="post"
+      xmlns="http://www.w3.org/1999/html">
     <div id="title-container">
         <input name="tTitle" id="tTitle" class="tb" value="<?php echo $page_title; ?>" tmpval="<?php echo _('Page Title...'); ?>" />
     </div>
@@ -54,8 +56,9 @@ if ( !empty( $errs ) )
     <div id="dAddProducts"<?php if ( empty( $page->products ) ) echo ' class="hidden"'; ?>>
         <div id="dNarrowSearchContainer">
             <div id="dNarrowSearch">
-                <h2><?php echo _('Narrow Your Search'); ?></h2>
-                <br />
+                <h3 class="float-right"><?php echo _('Limit'); ?>: <span id="product-count"><?php echo $product_count; ?></span> / 100</h3>
+                <h2 class="float-left"><?php echo _('Narrow Your Search'); ?></h2>
+                <br class="clr" /><br />
                 <table id="tNarrowSearch">
                     <tr>
                         <td width="264">

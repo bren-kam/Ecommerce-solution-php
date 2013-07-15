@@ -85,53 +85,6 @@ class EmailTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Getting Unsynchronized Emails (so they can be synced)
-     */
-    public function testGetUnsynced() {
-        // Declare variables
-        $account_id = -5;
-
-        // Insert an email that has not been synced
-        $this->db->insert( 'emails', array( 'website_id' => $account_id, 'email' => 'lan@caster.com', 'name' => 'George', 'date_created' => '2010-10-10 00:00:00' ), 'isss' );
-
-        $email_id = $this->db->get_insert_id();
-
-        // Get unsynced emails
-        $emails = $this->email->get_unsynced();
-
-        $this->assertTrue( current( $emails ) instanceof Email );
-
-        // Delete email
-        $this->db->delete( 'emails', array( 'email_id' => $email_id ), 'i' );
-    }
-
-    /**
-     * Get Unscynced By Account
-     */
-    public function testGetUnsyncedByAccount() {
-        // Declare variables
-        $email_marketing = 1;
-
-        // Insert an email that has not been synced
-        $website_id = $this->db->insert( 'websites', compact( 'email_marketing' ), 'i' );
-        $email_id = $this->db->insert( 'emails', compact( 'website_id' ), 'is' );
-        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
-        $this->db->insert( 'email_associations', compact( 'email_id', 'email_list_id' ), 'ii' );
-
-
-        // Get unsynced emails
-        $emails = $this->email->get_unsynced_by_account( $website_id );
-
-        $this->assertTrue( current( $emails ) instanceof Email );
-
-        // Delete email
-        $this->db->delete( 'websites', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
-    }
-
-    /**
      * Test create
      */
     public function testCreate() {

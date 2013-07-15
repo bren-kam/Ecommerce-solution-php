@@ -1,5 +1,8 @@
 <?php
 class Email extends ActiveRecordBase {
+    const STATUS_SUBSCRIBED = 1;
+    const STATUS_UNSUBSCRIBED = 0;
+
     public $id, $email_id, $website_id, $email, $name, $phone, $status, $date_created, $date_unsubscribed, $date_synced, $timestamp;
 
     // Fields available from other tables
@@ -69,33 +72,6 @@ class Email extends ActiveRecordBase {
     public function get_dashboard_subscribers_by_account( $account_id ) {
         return $this->prepare(
             'SELECT `email_id`, `email` FROM `emails` WHERE `website_id` = :account_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT 5'
-            , 'i'
-            , array( ':account_id' => $account_id )
-        )->get_results( PDO::FETCH_CLASS, 'Email' );
-    }
-
-    /**
-     * Get Unsynced Emails
-     *
-     * @return Email[]
-     */
-    public function get_unsynced() {
-        return $this->get_results(
-            "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`mc_list_id`, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`"
-            , PDO::FETCH_CLASS
-            , 'Email'
-        );
-    }
-
-    /**
-     * Get Unsynced Emails by account
-     *
-     * @param int $account_id
-     * @return Email[]
-     */
-    public function get_unsynced_by_account( $account_id ) {
-        return $this->prepare(
-            "SELECT e.`email`, e.`email_id`, e.`name`, GROUP_CONCAT( el.`name` ) AS interests, w.`mc_list_id`, w.`website_id` FROM `emails` AS e INNER JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) INNER JOIN `email_lists` AS el ON ( el.`email_list_id` = ea.`email_list_id` ) INNER JOIN `websites` AS w ON ( w.`website_id` = el.`website_id` ) WHERE e.`status` = 1 AND ( e.`date_synced` = '0000-00-00 00:00:00' OR e.`timestamp` > e.`date_synced` ) AND w.`website_id` = :account_id AND w.`email_marketing` = 1 GROUP BY el.`website_id`, e.`email`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'Email' );
@@ -206,33 +182,16 @@ class Email extends ActiveRecordBase {
     /**
      * Remove All
      *
-     * @param string $mc_list_id
-     * @param MCAPI $mc [optional - for testing]
+     * @param Account $account
      */
-    public function remove_all( $mc_list_id, MCAPI $mc = null ) {
+    public function remove_all( Account $account ) {
         if ( !$this->id )
             return;
 
-        // Unsubscribe from Mailchimp
-        if ( is_null( $mc ) ) {
-            library( 'MCAPI' );
-            $mc = new MCAPI( Config::key('mc-api') );
-        }
-
-        // Delete the campaign
-        $mc->listUnsubscribe( $mc_list_id, $this->email );
-
-        // Simply note the error, don't stop
-        if ( $mc->errorCode ) {
-            switch ( $mc->errorCode ) {
-                case 232: // Says it doesn't exist in the first place
-                break;
-
-                default:
-                    throw new ModelException( $mc->errorMessage, $mc->errorCode );
-                break;
-            }
-        }
+        // Setup AC
+        $ac = EmailMarketing::setup_ac( $account );
+        $ac->setup_contact();
+        $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
 
         // Assuming the above is successful, delete everything about this email
         $this->remove_associations();

@@ -10,6 +10,17 @@
  * @var User $owner
  * @var Account $account
  * @var array $checkboxes
+ * @var string $account_title
+ * @var string $users
+ * @var string $phone
+ * @var string $products
+ * @var string $os_users
+ * @var string $plan
+ * @var string $plan_description
+ * @var string $address
+ * @var string $city
+ * @var string $state
+ * @var string $zip
  */
 ?>
 
@@ -80,6 +91,12 @@ if ( $errs )
                 <label for="tPlan"><?php echo _('Plan'); ?></label>
                 <br />
                 <?php echo $plan; ?>
+
+                <br />
+                <label for="address"><?php echo _('Address'); ?></label>
+                <br />
+                <?php echo $address; ?><br />
+                <?php echo "$city $state $zip"; ?>
             </td>
             <td>
                 <label for="taPlanDescription"><?php echo _('Plan Description'); ?></label>

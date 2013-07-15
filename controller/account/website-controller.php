@@ -41,6 +41,7 @@ class WebsiteController extends BaseController {
         // Initialize variables
         $page = new AccountPage();
         $page->get( $_GET['apid'], $this->user->account->id );
+        $product_count = $page->count_products();
 
         $product_ids = $page->get_product_ids();
 
@@ -130,8 +131,15 @@ class WebsiteController extends BaseController {
 
                 $page->delete_products();
 
-                if ( isset( $_POST['products'] ) )
+                if ( isset( $_POST['products'] ) ) {
+                    $product_add_limit = 100 - $product_count;
+
+                    // Make sure they can only add the right amount
+                    if (  count( $_POST['products'] ) > $product_add_limit )
+                        $_POST['products'] = array_slice( $_POST['products'], 0, $product_add_limit );
+
                     $page->add_products( $_POST['products'] );
+                }
 
                 $this->notify( _('Your page has been successfully saved!') );
 
@@ -203,7 +211,7 @@ class WebsiteController extends BaseController {
             ->kb( 37 )
             ->select( 'pages', 'edit' )
             ->add_title( $page->title . ' | ' . _('Pages') )
-            ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title' ), $resources ) );
+            ->set( array_merge( compact( 'errs', 'files', 'js_validation', 'page', 'page_title', 'product_count' ), $resources ) );
     }
 
     /**
@@ -1543,8 +1551,8 @@ class WebsiteController extends BaseController {
          */
         if ( is_array( $products ) )
         foreach ( $products as $product ) {
-            $dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/email-marketing/emails/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
-            $actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/email-marketing/emails/add-product/' ) . '" title="' . _('Add Product') . '" ajax="1">' . _('Add Product') . '</a>';
+            $dialog = '<a href="' . url::add_query_arg( 'pid', $product->id, '/website/get-product/' ) . '#dProductDialog' . $product->id . '" title="' . _('View') . '" rel="dialog">';
+            $actions = '<a href="' . url::add_query_arg( array( '_nonce' => $add_product_nonce, 'pid' => $product->id ), '/website/add-product/' ) . '" class="add-product" title="' . _('Add Product') . '">' . _('Add Product') . '</a>';
 
             $data[] = array(
                 $dialog . format::limit_chars( $product->name,  50, '...' ) . '</a><br /><div class="actions">' . $actions . '</div>'
@@ -1558,5 +1566,75 @@ class WebsiteController extends BaseController {
         $dt->set_data( $data );
 
         return $dt;
+    }
+    
+    /**
+     * Get Product
+     *
+     * @return CustomResponse
+     */
+    protected function get_product() {
+        // Instantiate Object
+        $product = new Product();
+        $category = new Category();
+
+        // Get Product
+        $product->get( $_GET['pid'] );
+        $product->images = $product->get_images();
+
+        $category->get( $product->category_id );
+
+        $response = new CustomResponse( $this->resources, 'website/pages/get-product' );
+        $response->set( compact( 'product', 'category' ) );
+
+        return $response;
+    }
+    
+    /**
+     * Add Product
+     *
+     * @return AjaxResponse
+     */
+    protected function add_product() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $product_count = (int) $_POST['product-count'];
+
+        // Make sure we have everything right
+        $response->check( isset( $_GET['pid'] ), _('Unable to add product. Please try again.') );
+        $response->check( 100 > $product_count, _('You have reached your product limit for this page.') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        // Instantiate Object
+        $account_product = new AccountProduct();
+        $product = new Product();
+        $category = new Category();
+
+        // Get Product
+        $account_product->get( $_GET['pid'], $this->user->account->id );
+        $product->get( $account_product->product_id );
+        $product->images = $product->get_images();
+
+        $category->get( $product->category_id );
+
+        // Form the response HTML
+        $product_box = '<div id="dProduct_' . $product->id . '" class="product">';
+        $product_box .= '<h4>' . format::limit_chars( $product->name, 37 ) . '</h4>';
+        $product_box .= '<p align="center"><img src="http://' . $product->industry . '.retailcatalog.us/products/' . $product->id . '/small/' . current( $product->images ) . '" alt="' . $product->name . '" height="110" style="margin:10px" /></p>';
+        $product_box .= '<p>' . _('Brand') . ': ' . $product->brand . '<br /><label for="tProductPrice' . $product->id . '">' . _('Price') . ':</label> <input type="text" name="tProductPrice' . $product->id . '" class="tb product-price" id="tProductPrice' . $product->id . '" value="' . $account_product->price . '" maxlength="10" /></p>';
+        $product_box .= '<p class="product-actions" id="pProductAction' . $product->id . '"><a href="#" class="remove-product" title="' . _('Remove Product') . '">' . _('Remove') . '</a></p>';
+        $product_box .= '<input type="hidden" name="products[]" class="hidden-product" id="hProduct' . $product->id . '" value="' . $product->id . '|' . $account_product->price . '" />';
+        $product_box .= '</div>';
+
+        jQuery('#dSelectedProducts')->append( $product_box );
+        jQuery('#product-count')->text( number_format( $product_count + 1 ) );
+        jQuery('a.close:visible')->click();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
     }
 }
