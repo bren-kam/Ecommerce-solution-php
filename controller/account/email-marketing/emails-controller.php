@@ -260,7 +260,7 @@ class EmailsController extends BaseController {
         $email_list_ids = array();
 
         foreach ( $email_lists as $el ) {
-            $email_lists_ids[] = $el->id;
+            $email_list_ids[] = $el->id;
         }
 
         $email_message->update_ac_message( $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
@@ -335,7 +335,7 @@ class EmailsController extends BaseController {
         $email_list_ids = array();
 
         foreach ( $email_lists as $el ) {
-            $email_lists_ids[] = $el->id;
+            $email_list_ids[] = $el->id;
         }
 
         // Test message
