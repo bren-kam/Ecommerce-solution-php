@@ -410,7 +410,7 @@ class EmailMessage extends ActiveRecordBase {
             $this->status = self::STATUS_SCHEDULED;
             $this->save();
         } else {
-            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SENDING );
+            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED );
 
             if ( $ac->error() )
                 throw new ModelException( "Failed to send ActiveCampaign Campaign:\n" . $ac->message() );
