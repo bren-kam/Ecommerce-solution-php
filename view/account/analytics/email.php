@@ -9,12 +9,16 @@
  * @var User $user
  * @var object $email
  * @var string $bar_chart
+ * @var EmailMessage $email_message
  */
 
-echo $template->start( _('Email') . ': ' . $email->subject );
+echo $template->start( _('Email') . ': ' . $email_message->subject );
 ?>
 
 <div id="dStatistics">
+	<div id="dEmailStatistics"></div>
+	<br clear="all" />
+	<br />
     <div class="col-2">
         <div class="info-box">
             <p class="info-box-title"><?php echo _('Email Details'); ?></p>

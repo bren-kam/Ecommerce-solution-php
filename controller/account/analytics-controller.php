@@ -589,7 +589,7 @@ class AnalyticsController extends BaseController {
         return $this->get_template_response( 'email' )
             ->add_title( _('Email') . ' | ' . _('Email Marketing') . ' | ' . _('Email Marketing') )
             ->select( 'email-marketing' )
-            ->set( compact( 'email', 'bar_chart' ) );
+            ->set( compact( 'email', 'email_message', 'bar_chart' ) );
     }
 
     /***** AJAX *****/

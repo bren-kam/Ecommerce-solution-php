@@ -15,7 +15,8 @@ echo $template->start( _('Email Marketing Analytics') );
 
 <div>
     <h2><?php echo _('Last 10 Emails'); ?></h2>
-    <table>
+	<br />
+    <table class="dt">
         <thead>
             <tr>
                 <th><?php echo _('Subject'); ?></th>
@@ -27,8 +28,10 @@ echo $template->start( _('Email Marketing Analytics') );
         </thead>
         <tbody>
             <?php
-            if ( is_array( $emails ) )
             foreach ( $emails as $email ) {
+				if ( !isset( $email->name ) )
+					continue;
+					
                 $date = new DateTime( $email->sdate );
                 ?>
                 <tr>

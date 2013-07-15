@@ -439,15 +439,15 @@ class Analytics {
                     ),
                     'values' => array(
                         array(
-                            'top' => (int) $email->emails_sent,
+                            'top' => (int) $email->send_amt,
                             'tip' => '#val# Emails Sent'
                         ),
                         array(
-                              'top' => (int) $email->opens,
+                              'top' => (int) $email->uniqueopens,
                               'tip' => '#val# Opens'
                         ),
                         array(
-                              'top' => (int) $email->clicks,
+                              'top' => (int) $email->uniquelinkclicks,
                               'tip' => '#val# Clicks'
                         ),
                         array(
@@ -455,7 +455,7 @@ class Analytics {
                               'tip' => '#val# Forwards'
                         ),
                         array(
-                              'top' => $email->soft_bounces + $email->hard_bounces,
+                              'top' => $email->totalbounces,
                               'tip' => '#val# Bounces'
                         ),
                         array(
