@@ -156,7 +156,7 @@ input.button {
 #nav-right { height: 43px; float:right; background: url(/images/nav-divider.png) 0 0 no-repeat; }
 #support:hover div { display: block; z-index: 999 }
 #aSupport { background-image: none !important; }
-#support-drop-down { position: absolute; right: -20px; top: 48px; width: 250px; padding: 5px; background: #282829 url(/images/backgrounds/support.png) 0 0 no-repeat; }
+#support-drop-down { position: absolute; right: -20px; top: 48px; width: 250px; padding: 5px; background: #282829 url(/images/backgrounds/support.png) 0 0 no-repeat; z-index: 9999 }
 #support-drop-down a.article { padding-left: 18px !important}
 
 #current-site { height: 32px; padding: 18px 19px 0; background-color: #ECF1F4 }
