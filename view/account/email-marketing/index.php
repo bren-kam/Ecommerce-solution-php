@@ -18,7 +18,7 @@ echo $template->start( _('Dashboard') );
 
 if ( $email ) {
 ?>
-    <p><strong><?php echo _('Latest email:'); ?></strong> <?php echo $email->subject; ?></p>
+    <p><strong><?php echo _('Latest email:'); ?></strong> <?php echo $messages[0]->subject; ?></p>
 <?php } elseif( 0 == $email_count ) { ?>
     <p><?php echo _('You have not yet sent out an email.'); ?> <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to get started'); ?>.</p>
 <?php } ?>
