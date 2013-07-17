@@ -205,7 +205,7 @@ class EmailMessage extends ActiveRecordBase {
             , 'status' => $this->status
             , 'date_sent' => $this->date_sent
         ), array(
-            'email_message_id' => $this->email_message_id
+            'email_message_id' => $this->id
             , 'website_id' => $this->website_id
         ), 'iiisssis', 'ii' );
     }
@@ -399,8 +399,6 @@ class EmailMessage extends ActiveRecordBase {
         $date_sent = new DateTime( $this->date_sent );
 
         if ( $date_sent > $now ) {
-            $date_sent->add( new DateInterval('PT5H') );
-
             $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED );
 
             if ( $ac->error() )
@@ -450,7 +448,10 @@ class EmailMessage extends ActiveRecordBase {
         if ( !is_int( $this->ac_message_id ) || $this->ac_message_id <= 0 )
             throw new ModelException( "Active Campaign failed to create message:\n" . $ac->message() );
 
-        $this->ac_campaign_id = $ac->campaign->create( $this->ac_message_id, $this->subject, $this->date_sent, $ac_list_ids );
+        // Turn it into a date
+        $ac_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::setting('ac-timezone') );
+
+        $this->ac_campaign_id = $ac->campaign->create( $this->ac_message_id, $this->subject, $ac_date, $ac_list_ids );
 
         if ( !is_int( $this->ac_campaign_id ) || $this->ac_campaign_id <= 0 )
             throw new ModelException( "Active Campaign failed to create campaign:\n" . $ac->message() );
