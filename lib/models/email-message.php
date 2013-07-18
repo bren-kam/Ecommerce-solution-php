@@ -399,7 +399,7 @@ class EmailMessage extends ActiveRecordBase {
         $date_sent = new DateTime( $this->date_sent );
 
         // Get active campaign date
-        $ac_date = dt::adjust_timezone( $date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
+        $ac_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
 
         if ( $date_sent > $now ) {
             $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED, $ac_date );
