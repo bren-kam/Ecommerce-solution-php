@@ -126,8 +126,8 @@ class EmailsController extends BaseController {
          */
         if ( is_array( $messages ) )
         foreach ( $messages as $message ) {
-            $date = new DateTime( $message->date_sent );
             $message->date_sent = dt::adjust_timezone( $message->date_sent, $server_timezone, $timezone );
+            $date = new DateTime( $message->date_sent );
 
             if ( $message->status != EmailMessage::STATUS_SENT ) {
                 $actions = '<a href="' . url::add_query_arg( 'emid', $message->id, '/email-marketing/emails/send/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ';
