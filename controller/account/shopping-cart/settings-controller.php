@@ -71,7 +71,7 @@ class SettingsController extends BaseController {
         $form = new FormTable( 'fPaymentSettings' );
 
 
-        $form->add_field( 'row', _('All Payment Methods') );
+        $form->add_field( 'row', '', _('All Payment Methods') );
 
         $form->add_field( 'select', _('Status'), 'sStatus', $settings['payment-gateway-status'] )
             ->options( array(
