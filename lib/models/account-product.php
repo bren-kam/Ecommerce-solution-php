@@ -708,7 +708,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Get the website count
         return $this->prepare(
-            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where GROUP BY p.`product_id`"
+            "SELECT COUNT( DISTINCT p.`product_id` ) FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
