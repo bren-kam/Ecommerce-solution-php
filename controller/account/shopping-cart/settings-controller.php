@@ -64,6 +64,7 @@ class SettingsController extends BaseController {
             , 'paypal-express-username'
             , 'paypal-express-password'
             , 'paypal-express-signature'
+            , 'bill-me-later'
         );
 
         // Create Form
@@ -102,6 +103,8 @@ class SettingsController extends BaseController {
         $form->add_field( 'text', _('API Signature'), 'tPaypalExpressSignature', security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY ) )
             ->attribute( 'maxlength', 100 );
 
+        $form->add_field( 'checkbox', _('Bill Me Later'), 'cbBillMeLater', $settings['bill-me-later'] );
+
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'payment-gateway-status' => $_POST['sStatus']
@@ -110,6 +113,7 @@ class SettingsController extends BaseController {
                 , 'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
+                , 'bill-me-later' => $_POST['cbBillMeLater']
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
