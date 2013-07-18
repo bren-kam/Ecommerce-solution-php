@@ -449,7 +449,7 @@ class EmailMessage extends ActiveRecordBase {
             throw new ModelException( "Active Campaign failed to create message:\n" . $ac->message() );
 
         // Turn it into a date
-        $ac_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::setting('ac-timezone') );
+        $ac_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
 
         $this->ac_campaign_id = $ac->campaign->create( $this->ac_message_id, $this->subject, $ac_date, $ac_list_ids );
 
