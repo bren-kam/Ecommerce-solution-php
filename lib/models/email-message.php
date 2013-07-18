@@ -398,8 +398,11 @@ class EmailMessage extends ActiveRecordBase {
         $now = new DateTime();
         $date_sent = new DateTime( $this->date_sent );
 
+        // Get active campaign date
+        $ac_date = dt::adjust_timezone( $date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
+
         if ( $date_sent > $now ) {
-            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED );
+            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED, $ac_date );
 
             if ( $ac->error() )
                 throw new ModelException( "Failed to schedule ActiveCampaign Campaign:\n" . $ac->message() );
@@ -408,7 +411,7 @@ class EmailMessage extends ActiveRecordBase {
             $this->status = self::STATUS_SCHEDULED;
             $this->save();
         } else {
-            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED );
+            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED, $ac_date );
 
             if ( $ac->error() )
                 throw new ModelException( "Failed to send ActiveCampaign Campaign:\n" . $ac->message() );

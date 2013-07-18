@@ -104,12 +104,14 @@ class ActiveCampaignCampaignAPI {
      *
      * @param $ac_campaign_id
      * @param int $status
+     * @param string $date
      * @return bool
      */
-    public function update( $ac_campaign_id, $status ) {
+    public function update( $ac_campaign_id, $status, $date ) {
         $this->api( 'status', array(
             'id' => $ac_campaign_id
             , 'status' => $status
+            , 'sdate' => $date
         ));
 
         return $this->ac->success();
