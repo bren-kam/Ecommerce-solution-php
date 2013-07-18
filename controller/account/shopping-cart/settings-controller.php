@@ -52,17 +52,26 @@ class SettingsController extends BaseController {
     }
 
     /**
-     * Payment Gateway
+     * Payment Settings
      *
      * @return TemplateResponse|RedirectResponse
      */
-    protected function payment_gateway() {
-        $settings = $this->user->account->get_settings( 'payment-gateway-status', 'aim-login', 'aim-transaction-key' );
+    protected function payment_settings() {
+        $settings = $this->user->account->get_settings(
+            'payment-gateway-status'
+            , 'aim-login'
+            , 'aim-transaction-key'
+            , 'paypal-express-username'
+            , 'paypal-express-password'
+            , 'paypal-express-signature'
+            , 'bill-me-later'
+        );
 
         // Create Form
-        $form = new FormTable( 'fPaymentGateway' );
+        $form = new FormTable( 'fPaymentSettings' );
 
-        $form->add_field( 'row', _('Payment Gateway:'), _('Authorize.net AIM') );
+
+        $form->add_field( 'row', '', _('All Payment Methods') );
 
         $form->add_field( 'select', _('Status'), 'sStatus', $settings['payment-gateway-status'] )
             ->options( array(
@@ -70,6 +79,9 @@ class SettingsController extends BaseController {
                 , 1 => _("Live")
             )
         );
+
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'row', '', _('Authorize.net AIM') );
 
         $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) )
             ->attribute( 'maxlength', 30 )
@@ -79,23 +91,42 @@ class SettingsController extends BaseController {
             ->attribute( 'maxlength', 30 )
             ->add_validation( 'req', _('The "AIM Transaction Key" field is required') );
 
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'row', '', _('Paypal Express Checkout') );
+
+        $form->add_field( 'text', _('Username'), 'tPaypalExpressUsername', security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('Password'), 'tPaypalExpressPassword', security::decrypt( base64_decode( $settings['paypal-express-password'] ), PAYMENT_DECRYPTION_KEY ) )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'text', _('API Signature'), 'tPaypalExpressSignature', security::decrypt( base64_decode( $settings['paypal-express-signature'] ), PAYMENT_DECRYPTION_KEY ) )
+            ->attribute( 'maxlength', 100 );
+
+        $form->add_field( 'checkbox', _('Bill Me Later'), 'cbBillMeLater', $settings['bill-me-later'] );
+
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'payment-gateway-status' => $_POST['sStatus']
                 , 'aim-login' => base64_encode( security::encrypt( $_POST['tAIMLogin'], PAYMENT_DECRYPTION_KEY ) )
                 , 'aim-transaction-key' => base64_encode( security::encrypt( $_POST['tAIMTransactionKey'], PAYMENT_DECRYPTION_KEY ) )
+                , 'paypal-express-username' => base64_encode( security::encrypt( $_POST['tPaypalExpressUsername'], PAYMENT_DECRYPTION_KEY ) )
+                , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
+                , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
+                , 'bill-me-later' => $_POST['cbBillMeLater']
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
-            return new RedirectResponse( '/shopping-cart/settings/payment-gateway/' );
+            return new RedirectResponse( '/shopping-cart/settings/payment-settings/' );
         }
 
         $form = $form->generate_form();
 
-        return $this->get_template_response( 'payment-gateway' )
+        return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
             ->set( compact( 'form' ) )
-            ->select( 'settings', 'payment-gateway' );
+            ->select( 'settings', 'payment-settings' )
+            ->add_title( _('Payment Settings') );
     }
 
     /**

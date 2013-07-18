@@ -375,7 +375,7 @@ class AccountsController extends BaseController {
         $industry_list = array();
 
         foreach ( $industries as $i ) {
-            $industry_list[$i->id] = $i->name;
+            $industry_list[$i->id] = ucwords( $i->name );
         }
 
         $ft->add_field( 'select', _('Industries'), 'sIndustries[]', $account_industries )
