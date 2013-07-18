@@ -52,11 +52,11 @@ class SettingsController extends BaseController {
     }
 
     /**
-     * Payment Gateway
+     * Payment Settings
      *
      * @return TemplateResponse|RedirectResponse
      */
-    protected function payment_gateway() {
+    protected function payment_settings() {
         $settings = $this->user->account->get_settings(
             'payment-gateway-status'
             , 'aim-login'
@@ -68,10 +68,10 @@ class SettingsController extends BaseController {
         );
 
         // Create Form
-        $form = new FormTable( 'fPaymentGateway' );
+        $form = new FormTable( 'fPaymentSettings' );
 
 
-        $form->add_field( 'row', _('All Payment Gateways') );
+        $form->add_field( 'row', _('All Payment Methods') );
 
         $form->add_field( 'select', _('Status'), 'sStatus', $settings['payment-gateway-status'] )
             ->options( array(
@@ -117,16 +117,16 @@ class SettingsController extends BaseController {
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
-            return new RedirectResponse( '/shopping-cart/settings/payment-gateway/' );
+            return new RedirectResponse( '/shopping-cart/settings/payment-settings/' );
         }
 
         $form = $form->generate_form();
 
-        return $this->get_template_response( 'payment-gateways' )
+        return $this->get_template_response( 'payment-settings' )
             ->kb( 132 )
             ->set( compact( 'form' ) )
-            ->select( 'settings', 'payment-gateways' )
-            ->add_title( _('Payment Gateways') );
+            ->select( 'settings', 'payment-settings' )
+            ->add_title( _('Payment Settings') );
     }
 
     /**

@@ -10,7 +10,7 @@
  * @var string $form
  */
 
-echo $template->start( _('Payment Gateways'), '../sidebar' );
+echo $template->start( _('Payment Settings'), '../sidebar' );
 echo $form;
 echo $template->end();
 ?>
