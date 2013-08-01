@@ -90,8 +90,8 @@ class CronsController extends BaseController {
             newrelic_background_job();
 
         /** Run Ashley Feed */
-        //$ashley = new AshleyMasterProductFeedGateway();
-        //$ashley->run();
+        $ashley = new AshleyMasterProductFeedGateway();
+        $ashley->run();
 
         /** Run Site On Time Feed */
         $site_on_time = new SiteOnTimeProductFeedGateway();

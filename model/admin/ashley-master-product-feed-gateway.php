@@ -93,7 +93,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
      */
     protected function setup() {
         ini_set( 'max_execution_time', 1200 ); // 20 minutes
-		ini_set( 'memory_limit', '512M' );
+		ini_set( 'memory_limit', '1024M' );
 		set_time_limit( 1200 );
 
         // Time how long we've been on this page

@@ -262,11 +262,6 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
                 foreach ( $product_features['DIMENSIONS'] as $dimension ) {
                     $item_description .= "\n" . $dimension;
                 }
-
-                if ( memory_get_usage(true) > $memory_start ) {
-                    echo 'Item Description';
-                    exit;
-                }
             }
 
             // Add other items
@@ -303,10 +298,6 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
                         $product_specs .= '|&amp;nbsp;`' . htmlentities( $f, ENT_QUOTES, 'UTF-8' ) . '`' . $j;
                         $j++;
                     }
-                }
-                if ( memory_get_usage(true) > $memory_start ) {
-                    echo 'Product Specs';
-                    exit;
                 }
             }
 
@@ -371,14 +362,6 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
                     $images[] = $image_name;
 
                     $product->add_images( $images );
-                    if ( memory_get_usage(true) > $memory_start ) {
-                        echo 'Adding Image';
-                        exit;
-                    }
-                }
-                if ( memory_get_usage(true) > $memory_start ) {
-                    echo 'Upload Image';
-                    exit;
                 }
             }
 
@@ -406,10 +389,6 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
-            if ( memory_get_usage(true) > $memory_start ) {
-                echo 'Added new Product';
-                exit;
-            }
 
 			$this->products[$product_key] = NULL;
 		}
