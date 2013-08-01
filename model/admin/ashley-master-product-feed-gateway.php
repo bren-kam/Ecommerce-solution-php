@@ -249,7 +249,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo "AMF: $item_key - " . memory_get_usage(true) . "\n";
+            echo "AMF: $item_key\n";
             set_time_limit(30);
 			flush();
 
