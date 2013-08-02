@@ -36,7 +36,8 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Set specs to last longer
         ini_set( 'max_execution_time', 600 ); // 10 minutes
 		ini_set( 'memory_limit', '512M' );
-		set_time_limit( 600 );	}
+		set_time_limit( 600 );
+    }
 
 	/**
      *  Get websites to run
@@ -60,6 +61,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             // Need to make this not timeout and remove half the products first
             // @fix
             $this->run( $account, $file );
+            echo "Running: " . $account->title . "\n";
         }
     }
 
@@ -259,6 +261,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 		// Reorganize Categories
         $account_category = new AccountCategory();
 		$account_category->reorganize_categories( $account->id, new Category() );
+        $account->set_settings( array( 'feed-last-run' => dt::now() ) );
 	}
 	
 	/**
@@ -281,7 +284,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
      * @return mixed
      */
     protected function get_feed_accounts() {
-        return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1", PDO::FETCH_CLASS, 'Account' );
+        return $this->get_results( "SELECT ws.`website_id` FROM `website_settings` AS ws LEFT JOIN `websites` AS w ON ( w.`website_id` = ws.`website_id` ) LEFT JOIN `website_settings` AS ws2 ON ( ws2.`website_id` = w.`website_id` AND ws2.`key` = 'feed-last-run' ) WHERE ws.`key` = 'ashley-ftp-password' AND ws.`value` <> '' AND w.`status` = 1 ORDER BY ws2.`value`", PDO::FETCH_CLASS, 'Account' );
     }
 
     /**
