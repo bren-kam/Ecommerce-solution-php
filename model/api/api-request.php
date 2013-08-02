@@ -394,6 +394,18 @@ class ApiRequest {
                 $account->domain = $domain;
                 $account->save();
 
+                // Get user
+                $user = new User();
+                $user->get( $account->user_id );
+
+                // Set address settings
+                $account->set_settings( array(
+                    'address' => $user->billing_address1
+                    , 'city' => $user->billing_city
+                    , 'state' => $user->billing_state
+                    , 'zip' => $user->billing_zip
+                ));
+
                 // Now need to install the service
                 $install_service = new InstallService();
                 $install_service->install_website( $account );
