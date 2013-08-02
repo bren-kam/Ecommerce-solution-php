@@ -92,10 +92,14 @@ class CronsController extends BaseController {
         /** Run Ashley Feed */
         $ashley = new AshleyMasterProductFeedGateway();
         $ashley->run();
+        unset( $ashley );
+        gc_collect_cycles();
 
         /** Run Site On Time Feed */
         $site_on_time = new SiteOnTimeProductFeedGateway();
         $site_on_time->run();
+        unset( $site_on_time );
+        gc_collect_cycles();
 
         // Remove Discontinued products
         $account_product = new AccountProduct();
