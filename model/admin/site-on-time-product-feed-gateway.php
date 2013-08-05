@@ -146,9 +146,9 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
 
             $this->features[$f->ProductGroupID][$f->FeatureCategory][] = $f->Feature;
         }
-
-        unset( $product_features );
-
+		
+		$product_features = $f = $pf = NULL;
+		
         // Get Assets
         $arguments = http_build_query( array( 'cid' => self::COMPANY_ID, 'type' => 'assets' ) );
         $product_assets = json_decode( curl::get( self::FTP_URL . '?' . $arguments, 240 ) );
@@ -163,18 +163,19 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
             $this->assets[$a->SKU][$a->AssetName] = $a->AssetURL;
         }
 
-        unset( $product_assets );
+        $product_assets = $a = $pa = NULL;
     }
 
     /**
      * Now process everything with the data we have
      */
     protected function process() {
-		foreach ( $this->products as $product ) {
+		foreach ( $this->products as $product_key => $product ) {
             /***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo str_repeat( ' ', 50 );
+            $memory_start = memory_get_usage(true);
+            echo  "SOT: $product_key - " . $memory_start . "\n";
             set_time_limit(30);
 			flush();
 
@@ -218,8 +219,12 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
 
                 // Set publish date
                 $product->publish_date = dt::now();
-            }
 
+                if ( memory_get_usage(true) > $memory_start ) {
+                    echo 'New Product';
+                    exit;
+                }
+            }
             /***** PREPARE PRODUCT DATA *****/
 
             /** Industry **/
@@ -371,6 +376,7 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
             // If everything is identical, we don't want to do anything
             if ( $this->is_identical() ) {
                 $this->skip( $name );
+				$this->products[$product_key] = NULL;
                 continue;
             }
 
@@ -383,6 +389,8 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
+
+			$this->products[$product_key] = NULL;
 		}
     }
 
@@ -403,6 +411,8 @@ class SiteOnTimeProductFeedGateway extends ProductFeedGateway {
         $message .= "Categories We Don't Have:" . @implode( PHP_EOL, $this->non_existent_categories );
 
         fn::mail( $user->email, $subject, $message );
+		
+		$this->products = $this->existing_products = $this->skipped = $this->new_products = $this->non_existent_categories = NULL;
     }
 
     /**

@@ -863,6 +863,9 @@ class ProductsController extends BaseController {
 
         $response->check( isset( $_POST['hProductID'] ), _('Please select a product to edit') );
 
+        if ( !empty( $_POST['tSalePrice'] ) )
+            $response->check( !empty( $_POST['tPrice'] ), _('If you fill in the "Sale Price" you must also fill in the "Price"') );
+
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
@@ -1003,7 +1006,7 @@ class ProductsController extends BaseController {
 		}
 
         jQuery('.close:visible:first')->click();
-        jQuery( '#sPrice' . $account_product->product_id )->text( $account_product->price );
+        jQuery( '#sPrice' . $account_product->product_id )->text( (int) $account_product->price );
         jQuery( '#sAlternatePrice' . $account_product->product_id )->text( $account_product->alternate_price );
         jQuery( '#sAlternatePriceName' . $account_product->product_id )->text( $account_product->alternate_price_name );
 

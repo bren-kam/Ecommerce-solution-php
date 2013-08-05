@@ -219,6 +219,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
      * Make the uploader work
      */
     $('#aUpload').click( function() {
+        if( '' == $('#sIndustry').val() ) {
+            alert( $(this).attr('err') );
+            return;
+        }
+
         $('#upload-image input:first').click();
     });
 

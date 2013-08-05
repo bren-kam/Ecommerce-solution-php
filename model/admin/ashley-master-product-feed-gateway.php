@@ -93,7 +93,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
      */
     protected function setup() {
         ini_set( 'max_execution_time', 1200 ); // 20 minutes
-		ini_set( 'memory_limit', '512M' );
+		ini_set( 'memory_limit', '1024M' );
 		set_time_limit( 1200 );
 
         // Time how long we've been on this page
@@ -236,6 +236,8 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 		}
 
 		$xml_reader->close();
+		
+		$xml_reader = $files = NULL;
     }
 
     /**
@@ -243,11 +245,11 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
      */
     protected function process() {
         // Generate array of our items
-		foreach( $this->items as $item ) {
+		foreach( $this->items as $item_key => $item ) {
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo str_repeat( ' ', 50 );
+            echo "AMF: $item_key\n";
             set_time_limit(30);
 			flush();
 
@@ -389,6 +391,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // If everything is identical, we don't want to do anything
             if ( $this->is_identical() ) {
                 $this->skip( $name );
+				$this->items[$item_key] = NULL;
                 continue;
             }
 
@@ -398,6 +401,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
+			$this->items[$item_key] = NULL;
 		}
     }
 
@@ -428,6 +432,8 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
 			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
 		}
+		
+		$this->items = $this->existing_products = $this->codes = $this->new_products = $this->non_existent_groups = $new_products = NULL;
     }
 
     /**
