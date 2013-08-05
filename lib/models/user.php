@@ -151,7 +151,7 @@ class User extends ActiveRecordBase {
 	 */
 	public function get( $user_id ) {
         // Prepare the statement
-        $this->prepare( 'SELECT a.`user_id`, a.`company_id`, a.`email`, a.`contact_name`, a.`store_name`, a.`work_phone`, a.`cell_phone`, a.`billing_first_name`, a.`billing_last_name`, a.`billing_address1`, a.`billing_city`, a.`billing_state`, a.`billing_zip`, a.`role`, a.`status`, a.`date_created`, b.`name` AS company, b.`domain` FROM `users` AS a LEFT JOIN `companies` AS b ON ( a.`company_id` = b.`company_id` ) WHERE a.`user_id` = :user_id'
+        $this->prepare( 'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`user_id` = :user_id'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_row( PDO::FETCH_INTO, $this );
