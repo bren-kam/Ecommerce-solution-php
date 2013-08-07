@@ -34,6 +34,10 @@ $modules = array( 'validator' );
 
 // Options
 define( 'START_SESSIONS', TRUE ); // start sessions when included
+
+// 1 Hour
+session_set_cookie_params( 3600 );
+
 define( 'AUTOLOAD', TRUE ); // autoload these classes - if set to false, call s98lib_classes( $class_name )
 define( 'SAVE_QUERIES', FALSE ); // this will save information about every SQL query
 define( 'COOKIE_PATH', '/gsr/systems/backend/includes/cookies.txt' );
