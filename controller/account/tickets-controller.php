@@ -82,7 +82,7 @@ class TicketsController extends BaseController {
         }
 
         // Get browser information
-        $browser = get_browser();
+        $browser = fn::browser();
 
         // Set ticket information
         $ticket->user_id = $this->user->id;
@@ -90,10 +90,10 @@ class TicketsController extends BaseController {
         $ticket->website_id = $this->user->account->id;
         $ticket->summary = $_POST['tTicketSummary'];
         $ticket->message = nl2br( format::links_to_anchors( format::htmlentities( format::convert_characters( $_POST['taTicketMessage'] ), array('&') ), true , true ) );
-        $ticket->browser_name = $browser->browser;
-        $ticket->browser_version = $browser->version;
-        $ticket->browser_platform = $browser->platform;
-        $ticket->browser_user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $ticket->browser_name = $browser['name'];
+        $ticket->browser_version = $browser['version'];
+        $ticket->browser_platform = $browser['platform'];
+        $ticket->browser_user_agent = $browser['user_agent'];
         $ticket->status = 0;
         $ticket->priority = $priority;
 
