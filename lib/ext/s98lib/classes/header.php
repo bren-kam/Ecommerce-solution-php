@@ -60,9 +60,9 @@ class header extends Base_Class {
         // We don't want to do JSON if the browser doesn't support it
         if ( 'json' == $type ) {
             // Set the header if it's not IE8 (IE8 is stupid and doesn't recognize json/application header types)
-            $browser = fn::browser();
+            $browser = get_browser();
 
-            if ( 'Msie' == $browser['name'] && version_compare( 8, $browser['version'], '<=' ) )
+            if ( 'IE' == $browser->browser && version_compare( 8, $browser->majorver, '<=' ) )
                 return false;
         }
 

@@ -95,66 +95,7 @@ class fn extends Base_Class {
 		}
 		
 		return mail( $to_addresses, $subject, $message, $headers);
-}
-	
-	/**
-	 * Figure out what browser is used, its version and the platform it is running on.
-	 *
-	 * The following code was ported in part from JQuery v1.3.1
-	 *
-	 * @access public
-     *
-	 * @return array
-	 */
-	public static function browser() {
-		// Uses caching
-		global $s98_cache;
-		
-		$b = $s98_cache->get( 'browser' );
-		if ( is_array( $b ) )
-			return $b;
-		
-		$user_agent = ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) ? strtolower( $_SERVER['HTTP_USER_AGENT'] ) : 'undefined';
-
-		// Identify the browser. Check Opera and Safari first in case of spoof. Let Google Chrome be identified as Safari.
-		if ( preg_match( '/opera/', $user_agent ) ) {
-			$name = 'Opera';
-		} elseif ( preg_match( '/webkit/', $user_agent ) ) {
-			$name = 'Safari';
-		} elseif ( preg_match( '/msie/', $user_agent ) ) {
-			$name = 'Msie';
-		} elseif ( preg_match( '/mozilla/', $user_agent ) && !preg_match( '/compatible/', $user_agent ) ) {
-			$name = 'Mozilla';
-		} else {
-			$name = 'unrecognized';
-		}
-		
-		// What version?
-		$version = ( preg_match( '/.+(?:firefox|it|ra|ie)[\/: ]?([\d.]+)/', $user_agent, $matches ) ) ? $matches[1] : 'unknown';
-
-		// Running on what platform?
-		if ( preg_match('/linux/', $user_agent ) ) {
-			$platform = 'Linux';
-		} elseif ( preg_match( '/macintosh|mac os x/', $user_agent ) ) {
-			$platform = 'Mac';
-		} elseif ( preg_match( '/windows|win32/', $user_agent ) ) {
-			$platform = 'Windows';
-		} else {
-			$platform = 'unrecognized';
-		}
-
-		$b = array(
-			'name'	  		=> $name,
-			'version'   	=> $version,
-			'platform'  	=> $platform,
-			'user_agent' 	=> $user_agent
-		);
-		
-		// Add it to the cache
-		$s98_cache->add( 'browser', $b );
-		
-		return $b;
-	}
+    }
 	
 	/**
 	 * Check value to find if it was serialized.
