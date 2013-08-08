@@ -41,7 +41,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
      * Make the uploader work
      */
     $('#aUploadBanner').click( function() {
-        $('#upload-banner input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-banner input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 });
 
