@@ -30,6 +30,7 @@ class ProductsController extends BaseController {
         $coupons = $coupon->get_by_account( $this->user->account->id );
         $categories = array();
 
+
         foreach ( $categories_array as $category ) {
             if ( !in_array( $category->id, $website_category_ids ) )
                 continue;
@@ -39,6 +40,20 @@ class ProductsController extends BaseController {
 
         $product_count = $account_product->count( $this->user->account->id );
 
+        // Pricing points
+        $pricing_points = array();
+
+        $max_price = $account_product->get_max_price( $this->user->account->id );
+        if ( $max_price > 100 ) {
+            $quarter = round( ( $max_price / 4 ) );
+            $digits = preg_match_all( "/[0-9]/", $quarter, $matches );
+            $power = pow( 10, $digits - 1 );
+            $quarter -= $quarter % ( 2.5 * $power ) ;
+            //$quarter = floor( $quarter / $power ) * $power;
+
+            $pricing_points = array( $quarter, $quarter * 2, $quarter * 3 );
+        }
+
         $this->resources->javascript( 'products/index' )
             ->css( 'products/index' )
             ->css_url( Config::resource('jquery-ui') );
@@ -46,7 +61,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'index')
             ->kb( 45 )
             ->select( 'sub-products', 'view' )
-            ->set( compact( 'categories', 'product_count', 'coupons' ) );
+            ->set( compact( 'categories', 'product_count', 'coupons', 'pricing_points' ) );
     }
 
     /**
@@ -663,6 +678,16 @@ class ProductsController extends BaseController {
             }
 
             $where .= ' AND c.`category_id` IN (' . preg_replace( '/[^0-9,]/', '', implode( ',', array_merge( array( $category_id ), $child_category_ids ) ) ) . ')';
+        }
+
+        // Pricing
+        if ( !empty( $_POST['pr'] ) ) {
+            list( $min, $max ) = explode( '|', $_POST['pr'] );
+            $min = (int) $min;
+            $max = (int) $max;
+            $pricing_min_where = " ( wp.`sale_price` = 0 AND wp.`price` >= $min OR wp.`sale_price` >= $min )";
+
+            $where .= ( empty( $max ) ) ? " AND $pricing_min_where" : " AND ( $pricing_min_where AND ( wp.`sale_price` = 0 AND wp.`price` < $max OR wp.`sale_price` > 0 AND wp.`sale_price` < $max ) )";
         }
 
         // If they only want discontinued products, then only grab them

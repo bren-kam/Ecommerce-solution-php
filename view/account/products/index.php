@@ -10,6 +10,7 @@
  * @var Category[] $categories
  * @var int $product_count
  * @var WebsiteCoupon[] $coupons
+ * @var array $pricing_points
  */
 
 require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
@@ -31,7 +32,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
             <tr>
                 <td width="300">
                     <select id="sCategory">
-                        <option value="">-- <?php echo _('Select a Category'); ?> --</option>
+                        <option value="">-- <?php echo _('Select Category'); ?> --</option>
                         <?php foreach ( $categories as $category ) { ?>
                             <option value="<?php echo $category->id; ?>"><?php echo str_repeat( '&nbsp;', $category->depth * 5 ); echo $category->name; ?></option>
                         <?php } ?>
@@ -50,7 +51,18 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                 <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
             </tr>
             <tr>
-                <td>&nbsp;</td>
+                <td>
+                    <?php
+                    if ( !empty( $pricing_points ) )
+                    ?>
+                    <select id="sPricing">
+                        <option value="">-- <?php echo _('Select Price Range'); ?> --</option>
+                        <option value="0|<?php echo $pricing_points[0]; ?>"><?php echo '$' . number_format( $pricing_points[0] ) . ' ' . _('or less'); ?></option>
+                        <option value="<?php echo $pricing_points[0] . '|' . $pricing_points[1]; ?>"><?php echo '$' . number_format( $pricing_points[0] ) . ' - $' . number_format( $pricing_points[1] ); ?></option>
+                        <option value="<?php echo $pricing_points[1] . '|' . $pricing_points[2]; ?>"><?php echo '$' . number_format( $pricing_points[1] ) . ' - $' . number_format( $pricing_points[2] ); ?></option>
+                    <option value="<?php echo $pricing_points[2]; ?>|"><?php echo '$' . number_format( $pricing_points[2] ) . ' ' . _('or more'); ?></option>
+                    </select>
+                </td>
                 <td>
                     <input type="checkbox" class="cb" id="cbOnlyDiscontinued" value="1" /> <label for="cbOnlyDiscontinued"><?php echo _('Search Only Discontinued Products'); ?></label>
                     <br />
