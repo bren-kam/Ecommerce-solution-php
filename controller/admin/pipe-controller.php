@@ -62,6 +62,6 @@ class PipeController extends BaseController {
         $ticket_url = url::add_query_arg( 'tid', $ticket->id, 'http://admin.' . $user->domain . '/tickets/ticket/' );
         mail( $user->email, "New Response on Ticket #{$ticket_id}", "<p>A new response from the client has been received. See message below:</p><p><strong>Original Message:</strong><br />" . $ticket->message . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='{$ticket_url}'>{$ticket_url}</a></p>", $headers );
 
-        return new HtmlResponse( '#!/usr/local/bin/php -q' );
+        return new HtmlResponse( '' );
     }
 }
