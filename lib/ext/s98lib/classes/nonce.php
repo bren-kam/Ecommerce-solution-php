@@ -56,7 +56,7 @@ class nonce extends security {
         // substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 )
 		// Nonce generated 0-6 hours ago
 		if ( $nonce == $_SESSION[$action] ) {
-            unset( $_SESSION[$action] );
+            // unset( $_SESSION[$action] ); This makes it only be able to be used once -- we use many items multiple times... a monce?
 			return true;
         }
 		
