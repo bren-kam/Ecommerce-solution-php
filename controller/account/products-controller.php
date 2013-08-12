@@ -44,12 +44,16 @@ class ProductsController extends BaseController {
         $pricing_points = array();
 
         $max_price = $account_product->get_max_price( $this->user->account->id );
+
         if ( $max_price > 100 ) {
             $quarter = round( ( $max_price / 4 ) );
             $digits = preg_match_all( "/[0-9]/", $quarter, $matches );
             $power = pow( 10, $digits - 1 );
             $quarter -= $quarter % ( 2.5 * $power ) ;
             //$quarter = floor( $quarter / $power ) * $power;
+
+            if ( 0 == $quarter )
+                $quarter = $power * 2.5;
 
             $pricing_points = array( $quarter, $quarter * 2, $quarter * 3 );
         }
