@@ -47,14 +47,14 @@ class ActiveCampaignWebhookAPI {
      * @param array|string $init_array
      * @return bool
      */
-    public function add( $name, $url, array $ac_list_ids, $action_array, $init_array ) {
+    public function add( $name, $url, $ac_list_ids, $action_array, $init_array ) {
         $params = array(
             'name' => $name
             , 'url' => $url
         );
 
         // Transfer into array
-        if ( is_string( $ac_list_ids ) )
+        if ( !is_array( $ac_list_ids ) )
             $ac_list_ids = array( $ac_list_ids );
 
         foreach( $ac_list_ids as $ac_list_id ) {
