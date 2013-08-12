@@ -24,6 +24,10 @@ jQuery(function(){
      * Make the uploader work
      */
     $('#aUploadImage').click( function() {
-        $('#upload-image input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-image input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 });

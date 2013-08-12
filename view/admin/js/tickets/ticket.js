@@ -70,7 +70,11 @@ jQuery(function($) {
      * Make the uploader work
      */
     $('#attach').click( function() {
-        $('#uploader input:first').click();
+        if ( $.support.cors ) {
+            $('#uploader input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 
     // Make sure it works even if they click on it super fast

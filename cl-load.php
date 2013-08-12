@@ -14,7 +14,7 @@ define( 'DEFAULT_DOMAIN', 'greysuitretail.com' );
 define( 'LIVE', false );
 
 /** Define ABS_PATH as the files directory */
-define( 'ABS_PATH', getenv("PWD") . '/' );
+define( 'ABS_PATH', '/gsr/systems/backend/' );
 
 // Hold the library path
 define( 'LIB_PATH', ABS_PATH . 'lib/' );

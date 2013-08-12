@@ -112,7 +112,11 @@ jQuery(function($) {
     * Make the uploader work
     */
     $('#aUploadFile').click( function() {
-        $('#upload-file input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-file input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 });
 

@@ -19,7 +19,11 @@ jQuery(function(){
      * Make the uploader work
      */
     $('#aImportSubscribers').click( function() {
-        $('#import-subscribers input:first').click();
+        if ( $.support.cors ) {
+            $('#import-subscribers input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 
     // Change the email lists

@@ -224,7 +224,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             return;
         }
 
-        $('#upload-image input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-image input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 
     // Make attributes specific to a category

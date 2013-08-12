@@ -22,6 +22,10 @@ jQuery(function(){
      * Make the uploader work
      */
     $('#aMultiplyPrices').click( function() {
-        $('#multiply-prices input:first').click();
+        if ( $.support.cors ) {
+            $('#multiply-prices input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 });

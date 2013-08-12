@@ -42,7 +42,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
      * Make the uploader work
      */
     $('#aUploadSidebarImage').click( function() {
-        $('#upload-sidebar-image input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-sidebar-image input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 
     // Setup File Uploader
@@ -69,7 +73,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
      * Make the uploader work
      */
     $('#aUploadSidebarVideo').click( function() {
-        $('#upload-sidebar-video input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-sidebar-video input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 });
 

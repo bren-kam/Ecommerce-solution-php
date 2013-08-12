@@ -365,6 +365,7 @@ function loadProducts() {
 	// Define variables
 	var categoryID = $('#sCategory').val(), tAutoComplete = $('#tAutoComplete'), autoComplete = tAutoComplete.val(), hCurrentPage = $("#hCurrentPage"), sProductsPerPage = $('#sProductsPerPage'), cbOnlyDiscontinued = ( $('#cbOnlyDiscontinued').is(':checked') ) ? '1' : '0';
     var itemsPerPage = parseInt( ( sProductsPerPage.length ) ? sProductsPerPage.val() : 20 );
+    var pricing = $('#sPricing').val();
 
 	// If we're not supposed to refresh, do stuff
 	if ( parseInt( $("#doNotRefresh").val() ) > 0 )
@@ -382,7 +383,7 @@ function loadProducts() {
 	}
 
 	// Get the products
-	$.post( '/products/search/', { cid : categoryID, s : $('#sAutoComplete').val(), v : autoComplete, n : itemsPerPage, p : currentPage, od : cbOnlyDiscontinued }, function( html ) { //trigger this on success
+	$.post( '/products/search/', { cid : categoryID, s : $('#sAutoComplete').val(), v : autoComplete, n : itemsPerPage, p : currentPage, od : cbOnlyDiscontinued, pr : pricing }, function( html ) { //trigger this on success
 		// Load the content
 		$('#dProductList').html( html ).sparrow();
 
