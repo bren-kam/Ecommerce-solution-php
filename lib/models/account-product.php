@@ -1,5 +1,10 @@
 <?php
 class AccountProduct extends ActiveRecordBase {
+    const BLOCKED = 1;
+    const UNBLOCKED = 0;
+    const ACTIVE = 1;
+    const INACTIVE = 0;
+
     // Columns
     public $website_id, $product_id, $alternate_price, $price, $sale_price, $wholesale_price, $inventory
         , $additional_shipping_amount, $weight, $protection_amount, $additional_shipping_type
@@ -47,6 +52,20 @@ class AccountProduct extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
+    }
+
+    /**
+     * Get Max price
+     *
+     * @param int $account_id
+     * @return float
+     */
+    public function get_max_price( $account_id ) {
+        return $this->prepare(
+            "SELECT ROUND( MAX( combined.price ), 2 ) FROM ( SELECT IF ( wp.`sale_price` > 0, wp.`sale_price`, wp.`price` ) AS price FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = 'public' ) AS combined"
+            , 'iii'
+            , array( ':account_id' => $account_id, ':blocked' => self::UNBLOCKED, ':active' => self::ACTIVE )
+        )->get_var();
     }
 
     /**
@@ -147,7 +166,8 @@ class AccountProduct extends ActiveRecordBase {
 		$sql .= 'LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
 		$sql .= 'LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) ';
-		$sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' ";
+		$sql .= 'LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) ';
+		$sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' AND wbc.`category_id` IS NULL";
 		$sql .= $where;
 		$sql .= " GROUP BY p.`product_id` ORDER BY wp.`sequence` ASC $sql_limit";
 
@@ -690,7 +710,7 @@ class AccountProduct extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT p.`product_id`, p.`name`, p.`sku`, p.`status`, b.`name` AS brand FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE wp.`active` = 1 $where GROUP BY p.`product_id` $order_by LIMIT $limit"
+            "SELECT p.`product_id`, p.`name`, p.`sku`, p.`status`, b.`name` AS brand FROM `products` AS p LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN website_products AS wp ON ( wp.`product_id` = p.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) WHERE wp.`active` = 1 AND wbc.`category_id` IS NULL $where GROUP BY p.`product_id` $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'Product' );

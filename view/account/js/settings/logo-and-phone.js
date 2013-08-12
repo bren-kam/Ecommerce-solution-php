@@ -19,6 +19,10 @@ jQuery(function(){
      * Make the uploader work
      */
     $('#aUploadLogo').click( function() {
-        $('#upload-logo input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-image input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 });

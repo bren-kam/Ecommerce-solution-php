@@ -36,6 +36,8 @@
     <?php nonce::field( 'upload_to_ticket', '_upload_to_ticket' ); ?>
 </div>
 
+<span class="hidden" id="err-support-cors"><?php echo _('Uploading is not supported in your browser. Please use one of our suggested browsers: Chrome, Firefox or Safari. If you have any questions, please contact your Online Specialist.'); ?></span>
+
 <!-- End: Footer -->
 <script type="text/javascript">head.js( '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
 <?php $template->get_footer(); ?>

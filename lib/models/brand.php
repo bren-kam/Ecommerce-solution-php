@@ -192,7 +192,7 @@ class Brand extends ActiveRecordBase {
 	 */
 	public function autocomplete_by_account( $query, $account_id ) {
         return $this->prepare(
-            "SELECT DISTINCT b.`brand_id` AS value, b.`name` FROM `brands` AS b LEFT JOIN `products` AS p ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) WHERE b.`name` LIKE :query AND wp.`website_id` = :account_id $where ORDER BY b.`name` LIMIT 10"
+            "SELECT DISTINCT b.`brand_id` AS value, b.`name` FROM `brands` AS b LEFT JOIN `products` AS p ON ( p.`brand_id` = b.`brand_id` ) LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) WHERE b.`name` LIKE :query AND wp.`website_id` = :account_id AND wbc.`category_id` IS NULL ORDER BY b.`name` LIMIT 10"
             , 'si'
             , array( ':query' => $query . '%', ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );

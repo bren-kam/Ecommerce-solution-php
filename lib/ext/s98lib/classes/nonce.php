@@ -32,7 +32,10 @@ class nonce extends security {
 	 */
 	public static function create( $action = '', $user_id = 0 ) {
 		$i = self::_tick();
-		return substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 );
+
+		$_SESSION[$action] = substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 );
+
+        return $_SESSION[$action];
 	}
 	
 	/**
@@ -43,19 +46,23 @@ class nonce extends security {
 	 *
 	 * @param string $nonce the nonce to check it with
 	 * @param string $action (Optional) the action that the nonce is for
-	 * @param int $user_id (Optional) the user id
-	 * @return string
+	 * #param int $user_id (Optional) the user id
+	 * @return bool
 	 */
-	public static function verify( $nonce, $action = '' , $user_id = 0 ) {
-		$i = self::_tick();
-		
+	public static function verify( $nonce, $action = '' ) {
+        // , $user_id = 0
+		///$i = self::_tick();
+
+        // substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 )
 		// Nonce generated 0-6 hours ago
-		if ( $nonce == substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) )
-			return 1;
+		if ( $nonce == $_SESSION[$action] ) {
+            unset( $_SESSION[$action] );
+			return true;
+        }
 		
 		// Nonce generated 6-12 hours ago
-		if ( $nonce == substr( parent::hash( $i - 1 . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) )
-			return 2;
+		//if ( $nonce == substr( parent::hash( $i - 1 . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) )
+			//return 2;
 		
 		// Invalid nonce
 		return false;

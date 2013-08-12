@@ -77,7 +77,11 @@ jQuery(function($) {
      * Make the uploader work
      */
     $('#aUploadTicketAttachment').click( function() {
-        $('#upload-ticket-attachment input:first').click();
+        if ( $.support.cors ) {
+            $('#upload-ticket-attachment input:first').click();
+        } else {
+            alert( $('#err-support-cors').text() );
+        }
     });
 
     $('body')
