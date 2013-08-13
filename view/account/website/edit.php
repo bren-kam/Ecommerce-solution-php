@@ -13,6 +13,7 @@
  * @var string $js_validation
  * @var string $errs
  * @var int $product_count
+ * @var string $contact_validation
  */
 
 echo $template->start( _('Edit Page') );
@@ -137,7 +138,7 @@ if ( !empty( $errs ) )
 
 <?php if ( 'contact-us' == $page->slug ) { ?>
 <div id="dAddEditLocation" class="hidden">
-    <form action="/website/add-edit-location/" id="fAddEditLocation" method="post">
+    <form action="/website/add-edit-location/" name="fAddEditLocation" id="fAddEditLocation" method="post" ajax="1">
         <table class="form width-auto">
             <tr>
                 <td><input type="text" class="tb" name="name" id="name" tabindex="1" placeholder="Name"></td>
@@ -153,7 +154,7 @@ if ( !empty( $errs ) )
                 <td><input type="text" class="tb" name="fax" id="fax" maxlength="21" tabindex="2" placeholder="Fax"></td>
                 <td>&nbsp;</td>
                 <td>
-                    <select id="sState" tabindex="8">
+                    <select id="state" tabindex="8">
                         <option value="">-- <?php echo _('Select State'); ?> --</option>
                         <?php data::states(); ?>
                     </select>
@@ -168,15 +169,17 @@ if ( !empty( $errs ) )
                 <td><input type="text" class="tb" name="website" id="website" maxlength="200" tabindex="4" placeholder="Website"></td>
             </tr>
             <tr>
-                <td><textarea  name="store-hours" id="store-hours" cols="30" rows="3" tabindex="5" placeholder="Store Hours"></textarea></td>
+                <td><textarea name="store-hours" id="store-hours" cols="30" rows="3" tabindex="5" placeholder="Store Hours"></textarea></td>
             </tr>
         </table>
         <input type="submit" class="hidden" id="bAddEditLocation" value="<?php echo _('Submit'); ?>">
-        <input type="hidden" name="wlid" value="">
+        <input type="hidden" name="wlid" id="wlid" value="">
+        <?php nonce::field('add_edit_location'); ?>
     </form>
+    <?php echo $contact_validation; ?>
     <div class="boxy-footer hidden">
         <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
-        <p class="text-right col-2 float-right"><input type="submit" id="bSubmit" class="button" value="<?php echo _('Submit'); ?>" /></div>
+        <p class="text-right col-2 float-right"><input type="submit" id="bSubmitLocation" class="button" value="<?php echo _('Submit'); ?>" /></div>
     </div>
 </div>
 <?php } ?>
