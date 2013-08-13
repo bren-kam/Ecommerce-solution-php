@@ -46,23 +46,23 @@ class nonce extends security {
 	 *
 	 * @param string $nonce the nonce to check it with
 	 * @param string $action (Optional) the action that the nonce is for
-	 * @param int $user_id (Optional) the user id
+	 * #param int $user_id (Optional) the user id
 	 * @return bool
 	 */
-	public static function verify( $nonce, $action = '', $user_id = 0 ) {
+	public static function verify( $nonce, $action = '' ) {
         // , $user_id = 0
-		$i = self::_tick();
+		///$i = self::_tick();
 
-        //
+        // substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 )
 		// Nonce generated 0-6 hours ago
-		if ( $nonce == substr( parent::hash( $i . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) ) {
+		if ( $nonce == $_SESSION[$action] ) {
             // unset( $_SESSION[$action] ); This makes it only be able to be used once -- we use many items multiple times... a monce?
-			return 1;
+			return true;
         }
 		
 		// Nonce generated 6-12 hours ago
-		if ( $nonce == substr( parent::hash( $i - 1 . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) )
-			return 2;
+		//if ( $nonce == substr( parent::hash( $i - 1 . $action . $user_id, 'nonce', NONCE_KEY ), -12, 10 ) )
+			//return 2;
 		
 		// Invalid nonce
 		return false;
