@@ -24,4 +24,22 @@ jQuery(function(){
 	$('#cbHideAllMaps').click( function() {
 		$.post( '/website/set-pagemeta/', { _nonce: $('#_set_pagemeta').val(), k : 'ham', v : $(this).is(':checked') ? true : false, apid : $('#hAccountPageId').val() }, ajaxResponse, 'json' );
 	});
+
+    // Submit a form
+    $('#bAddEditProduct').click( function() {
+        $('#fAddEditLocation').submit();
+    });
+
+    $('#add-location').click( function() {
+        $('#fAddEditLocation')[0].reset();
+
+        new Boxy( $('#dAddEditLocation'), {
+            title : 'Add Location'
+        });
+    });
+
+    // Make the click trigger the other one
+    $('#bSubmit').click( function() {
+        $('#bAddEditLocation').click();
+    })
 });

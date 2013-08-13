@@ -135,6 +135,52 @@ if ( !empty( $errs ) )
 <?php echo $js_validation; ?>
 <br />
 
+<?php if ( 'contact-us' == $page->slug ) { ?>
+<div id="dAddEditLocation" class="hidden">
+    <form action="/website/add-edit-location/" id="fAddEditLocation" method="post">
+        <table class="form width-auto">
+            <tr>
+                <td><input type="text" class="tb" name="name" id="name" tabindex="1" placeholder="Name"></td>
+                <td width="10%">&nbsp;</td>
+                <td><input type="text" class="tb" name="address" id="address" tabindex="6" placeholder="Address"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="tb" name="phone" id="phone" maxlength="21" tabindex="2" placeholder="Phone"></td>
+                <td>&nbsp;</td>
+                <td><input type="text" class="tb" name="city" id="city" tabindex="7" placeholder="City"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="tb" name="fax" id="fax" maxlength="21" tabindex="2" placeholder="Fax"></td>
+                <td>&nbsp;</td>
+                <td>
+                    <select id="sState" tabindex="8">
+                        <option value="">-- <?php echo _('Select State'); ?> --</option>
+                        <?php data::states(); ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" class="tb" name="email" id="email" maxlength="200" tabindex="3" placeholder="Email"></td>
+                <td>&nbsp;</td>
+                <td><input type="text" class="tb" name="zip" id="zip" maxlength="10" tabindex="9" placeholder="Zip"></td>
+            </tr>
+            <tr>
+                <td><input type="text" class="tb" name="website" id="website" maxlength="200" tabindex="4" placeholder="Website"></td>
+            </tr>
+            <tr>
+                <td><textarea  name="store-hours" id="store-hours" cols="30" rows="3" tabindex="5" placeholder="Store Hours"></textarea></td>
+            </tr>
+        </table>
+        <input type="submit" class="hidden" id="bAddEditLocation" value="<?php echo _('Submit'); ?>">
+        <input type="hidden" name="wlid" value="">
+    </form>
+    <div class="boxy-footer hidden">
+        <p class="col-2 float-left"><a href="#" class="close"><?php echo _('Cancel'); ?></a></p>
+        <p class="text-right col-2 float-right"><input type="submit" id="bSubmit" class="button" value="<?php echo _('Submit'); ?>" /></div>
+    </div>
+</div>
+<?php } ?>
+
 <div id="dUploadFile" class="hidden">
     <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
