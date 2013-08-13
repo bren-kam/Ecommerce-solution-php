@@ -100,6 +100,7 @@ class WebsiteController extends BaseController {
                 // Update custom meta
                 switch ( $page->slug ) {
                     case 'contact-us':
+                        $website_location = new WebsiteLocation();
                         $pagemeta = array( 'addresses' => htmlspecialchars( $_POST['hAddresses'] ) );
                     break;
 
@@ -157,13 +158,18 @@ class WebsiteController extends BaseController {
                     ->css('website/pages/contact-us')
                     ->javascript('website/pages/contact-us');
 
-                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' );
+
+                $website_location = new WebsiteLocation();
+                $locations = $website_location->get_by_website( $this->user->account->id );
+
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps' );
+
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
                     $$key = $value;
                 }
 
-                $resources = compact( 'addresses', 'multiple_location_map', 'hide_all_maps' );
+                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps' );
             break;
 
             case 'current-offer':
