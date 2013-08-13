@@ -36,8 +36,8 @@ if ( $errs ) {
 <div id="login-logo"<?php if ( !empty( $margin_bottom ) ) echo ' style="margin-bottom: ' . $margin_bottom . ' "'; ?>><img src="/images/logos/login/<?php echo DOMAIN; ?>.png" alt="<?php echo TITLE; ?>" /></div>
 <div id="login">
     <form action="" name="fLogin" method="post">
-        <input type="text" class="tb" name="email" tmpval="<?php echo _('Email'); ?>" value="<?php echo $template->v('email'); ?>" maxlength="200" />
-        <input type="password" class="tb" name="password" tmpval="<?php echo _('Password'); ?>" maxlength="30" />
+        <input type="text" class="tb" name="email" placeholder="<?php echo _('Email'); ?>" value="<?php echo $template->v('email'); ?>" maxlength="200" />
+        <input type="password" class="tb" name="password" placeholder="<?php echo _('Password'); ?>" maxlength="30" />
         <input type="submit" class="login-button float-right" value="<?php echo _('Login'); ?>" />
         <p id="remember-me"><input type="checkbox" class="cb" name="remember-me" id="cbRememberMe" value="1"<?php if ( '1' == $template->v('remember-me') ) echo ' checked="checked"'; ?> /> <label for="cbRememberMe"><?php echo _('Remember Me'); ?></label></p>
         <input type="hidden" name="referer" value="<?php if ( isset( $r ) ) echo $r; ?>" />

@@ -70,7 +70,7 @@ echo $template->start( $title, '../sidebar' );
             <tr>
                 <td><strong><?php echo _('Items'); ?></strong></td>
                 <td>
-                    <input type="text" class="tb" id="list-item-value" tmpval="<?php echo _('Item Name'); ?>" />
+                    <input type="text" class="tb" id="list-item-value" placeholder="<?php echo _('Item Name'); ?>" />
                     <a href="#" id="add-list-item" title="<?php echo _('Add Item'); ?>"><?php echo _('Add Item...'); ?></a>
                     <br />
                     <div id="items-list">

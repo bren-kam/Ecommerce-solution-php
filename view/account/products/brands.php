@@ -15,7 +15,7 @@ echo $template->start( _('Brands') );
 <table class="form">
     <tr>
         <td><label for="tAutoComplete"><?php echo _('Add Brand'); ?></label></td>
-        <td><input type="text" class="tb" tmpval="<?php echo _('Enter Brand'); ?>..." id="tAutoComplete" /></td>
+        <td><input type="text" class="tb" placeholder="<?php echo _('Enter Brand'); ?>..." id="tAutoComplete" /></td>
     </tr>
     <tr>
         <td>&nbsp;</td>

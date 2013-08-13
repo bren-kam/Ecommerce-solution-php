@@ -20,7 +20,7 @@ if ( isset( $errs ) )
 ?>
 <form name="fAddEditPage" action="<?php echo url::add_query_arg( 'mpid', $page->id, '/mobile-marketing/website/add-edit/' ); ?>" method="post">
     <div id="title-container">
-        <input name="tTitle" id="tTitle" class="tb" value="<?php echo $page->title; ?>" tmpval="<?php echo _('Page Title...'); ?>" />
+        <input name="tTitle" id="tTitle" class="tb" value="<?php echo $page->title; ?>" placeholder="<?php echo _('Page Title...'); ?>" />
     </div>
     <?php if ( 'home' != $page->slug ) { ?>
     <div id="dSlug">

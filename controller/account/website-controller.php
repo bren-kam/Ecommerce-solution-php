@@ -995,7 +995,7 @@ class WebsiteController extends BaseController {
         $element_box .= '<div align="center">';
         $element_box .= '<p><img src="' . $image_url . '" alt="' . _('Sidebar Image') . '" /></p>';
         $element_box .= '<p><a href="' . $remove_attachment_url . '" id="aRemove' . $attachment->id . '" title="' . _('Remove Image') . '" ajax="1" confirm="' . _('Are you sure you want to remove this sidebar element?') . '">' . _('Remove') . '</a></p>';
-        $element_box .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
+        $element_box .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" placeholder="' . _('Enter Link...') . '" value="http://" /></p>';
         $element_box .= '<p id="pTempSidebarImage' . $attachment->id . '" class="success hidden">' . _('Your Sidebar Image link has been successfully updated.') . '</p><br />';
         $element_box .= '<p align="center"><input type="submit" class="button" value="' . _('Save') . '" /></p>';
         $element_box .= '</div>';
@@ -1158,7 +1158,7 @@ class WebsiteController extends BaseController {
         $banner .= '</div><br />';
         $banner .= '<form action="/website/update-attachment-extra/" method="post" ajax="1">';
         $banner .= '<p id="pTempSuccess' . $attachment->id . '" class="success hidden">' . _('Your banner link has been successfully updated.') . '</p>';
-        $banner .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
+        $banner .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" placeholder="' . _('Enter Link...') . '" value="http://" /></p>';
         $banner .= '<input type="submit" class="button" value="' . _('Save') . '" />';
         $banner .= '<input type="hidden" name="hAccountPageAttachmentId" value="' . $attachment->id . '" />';
         $banner .= '<input type="hidden" name="target" value="pTempSuccess' . $attachment->id . '" />';

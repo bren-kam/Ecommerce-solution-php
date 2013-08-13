@@ -69,7 +69,7 @@ echo $template->start( _('Manage Checklists') );
     <div class="section" id="section-template">
         <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
 
-        <input type="text" name="sections[checklist_section_id]" class="tb section-title" tmpval="<?php echo _('Section title...'); ?>" />
+        <input type="text" name="sections[checklist_section_id]" class="tb section-title" placeholder="<?php echo _('Section title...'); ?>" />
 
         <a href="#" class="remove-section" title="<?php echo _('Remove Section'); ?>" confirm="<?php echo $section_confirm; ?>" err="<?php echo $err_confirm; ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Remove Section'); ?>" /></a>
         <br />
@@ -80,8 +80,8 @@ echo $template->start( _('Manage Checklists') );
     </div>
     <div class="item" id="item-template">
         <a href="#" class="handle"><img src="/images/icons/move.png" width="16" height="16" alt="<?php echo _('Move'); ?>" /></a>
-        <input type="text" name="items[checklist_section_id][checklist_item_id][name]" class="tb item-name" tmpval="<?php echo _('Description...'); ?>" />
-        <input type="text" name="items[checklist_section_id][checklist_item_id][assigned_to]" class="tb item-assigned-to" tmpval="<?php echo _('Assigned to...'); ?>" />
+        <input type="text" name="items[checklist_section_id][checklist_item_id][name]" class="tb item-name" placeholder="<?php echo _('Description...'); ?>" />
+        <input type="text" name="items[checklist_section_id][checklist_item_id][assigned_to]" class="tb item-assigned-to" placeholder="<?php echo _('Assigned to...'); ?>" />
         <a href="#" class="remove-item" title="<?php echo _('Remove Item'); ?>" confirm="<?php echo $item_confirm; ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Remove Item'); ?>" /></a>
     </div>
 </div>

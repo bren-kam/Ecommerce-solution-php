@@ -24,7 +24,7 @@ require VIEW_PATH . $this->variables['view_base'] . '../sidebar.php';
         <div id="narrow-your-search-wrapper">
         <div id="narrow-your-search">
             <?php nonce::field( 'autocomplete_owned', '_autocomplete_owned' ); ?>
-            <input type="text" class="tb" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) ) ? $_POST['tName'] : $group->name; ?>" tmpval="<?php echo _('Related Product Group Name...'); ?>" />
+            <input type="text" class="tb" name="tName" id="tName" value="<?php echo ( isset( $_POST['tName'] ) ) ? $_POST['tName'] : $group->name; ?>" placeholder="<?php echo _('Related Product Group Name...'); ?>" />
             <br /><br />
             <h2><?php echo _('Narrow Your Search'); ?></h2>
             <br />
@@ -38,7 +38,7 @@ require VIEW_PATH . $this->variables['view_base'] . '../sidebar.php';
                             <option value="brand"><?php echo _('Brand'); ?></option>
                         </select>
                     </td>
-                    <td><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter SKU...'); ?>" style="position: relative; top: 1px;" /></td>
+                    <td><input type="text" class="tb" id="tAutoComplete" placeholder="<?php echo _('Enter SKU...'); ?>" style="position: relative; top: 1px;" /></td>
                     <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
                 </tr>
             </table>

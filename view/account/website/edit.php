@@ -23,7 +23,7 @@ if ( !empty( $errs ) )
 <form name="fEditPage" action="<?php echo url::add_query_arg( 'apid', $page->id, '/website/edit/' ); ?>" method="post"
       xmlns="http://www.w3.org/1999/html">
     <div id="title-container">
-        <input name="tTitle" id="tTitle" class="tb" value="<?php echo $page_title; ?>" tmpval="<?php echo _('Page Title...'); ?>" />
+        <input name="tTitle" id="tTitle" class="tb" value="<?php echo $page_title; ?>" placeholder="<?php echo _('Page Title...'); ?>" />
     </div>
     <?php if ( 'home' != $page->slug ) { ?>
     <div id="dPageSlug">
@@ -68,7 +68,7 @@ if ( !empty( $errs ) )
                                 <option value="brand"><?php echo _('Brand'); ?></option>
                             </select>
                         </td>
-                        <td valign="top"><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter SKU...'); ?>" style="width: 100% !important;" /></td>
+                        <td valign="top"><input type="text" class="tb" id="tAutoComplete" placeholder="<?php echo _('Enter SKU...'); ?>" style="width: 100% !important;" /></td>
                         <td class="text-right" width="125"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
                     </tr>
                 </table>
@@ -136,7 +136,7 @@ if ( !empty( $errs ) )
 <br />
 
 <div id="dUploadFile" class="hidden">
-    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
+    <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
     <div class="hidden-fix position-absolute" id="upload-file"></div>
