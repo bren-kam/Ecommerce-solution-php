@@ -68,7 +68,7 @@ class EmailMarketing extends ActiveRecordBase {
             $this->ac->webhook->add(
                 'Unsubscribe Hook'
                 , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/unsubscribe/' )
-                , $ac_list_ids
+                , $new_ac_list_ids
                 , 'unsubscribe'
                 , array( 'public', 'system', 'admin' )
             );
@@ -77,7 +77,7 @@ class EmailMarketing extends ActiveRecordBase {
             $this->ac->webhook->add(
                 'Campaign Sent Hook'
                 , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/sent-campaign/' )
-                , $ac_list_ids
+                , $new_ac_list_ids
                 , 'sent'
                 , array( 'public', 'system', 'admin', 'api' )
             );
