@@ -1,4 +1,4 @@
-.contact {
+.location, .location-placeholder {
 	border: 1px solid #eee;
 	display: block;
 	float: left;
@@ -9,13 +9,15 @@
 	width: 300px;
 }
 
+.location-placeholder { border: 1px dashed #eee }
+
 .actions { display: none; }
-.contact:hover { background-color: #EFFCFF; border-color: #ddd; }
-.contact:hover .actions { display: block }
+.location:hover { background-color: #EFFCFF; border-color: #ddd; cursor: move }
+.location:hover .actions { display: block }
 
-.contact-left, .contact-right { width: 150px; float:left; }
-.contact-right { text-align:right; }
+.location-left, .location-right { width: 150px; float:left; }
+.location-right { text-align:right; }
 
-.delete-address { position: absolute; top: 5px; right: 5px; }
-.edit-address { position: absolute; top: 5px; right: 27px; }
-span.location { font-size: 19px }
+.delete-location { position: absolute; top: 5px; right: 5px; }
+.edit-location { position: absolute; top: 5px; right: 27px; }
+span.name { font-size: 19px }

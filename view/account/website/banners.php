@@ -69,10 +69,10 @@ nonce::field( 'update_attachment_sequence', '_update_attachment_sequence' );
 
             <form action="/website/update-attachment-extra/" method="post" ajax="1">
                 <p id="pTempSuccess<?php echo $a->id; ?>" class="success hidden"><?php echo _('Your banner has been successfully updated.'); ?></p>
-                <input type="text" class="tb" name="extra" tmpval="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a->extra ) ) ? 'http://' : $a->extra; ?>" />
+                <input type="text" class="tb" name="extra" placeholder="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a->extra ) ) ? 'http://' : $a->extra; ?>" />
 
                 <?php if ( $images_alt ) { ?>
-                    <input type="text" class="tb" name="meta" tmpval="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a->meta ) ) echo $a->meta; ?>" />
+                    <input type="text" class="tb" name="meta" placeholder="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a->meta ) ) echo $a->meta; ?>" />
                 <?php } ?>
 
                 <input type="submit" class="button" value="<?php echo _('Save'); ?>" />

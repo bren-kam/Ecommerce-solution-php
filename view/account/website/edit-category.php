@@ -15,7 +15,7 @@ echo $template->start( _('Edit Category') . ' - ' . $category->title );
 
 <form name="fEditCategory" action="<?php echo url::add_query_arg( 'cid', $category->category_id, '/website/edit-category/' ); ?>" method="post">
     <div id="title-container">
-        <input name="tTitle" id="tTitle" class="tb" value="<?php echo $category->title; ?>" tmpval="<?php echo _('Category Title...'); ?>" />
+        <input name="tTitle" id="tTitle" class="tb" value="<?php echo $category->title; ?>" placeholder="<?php echo _('Category Title...'); ?>" />
     </div>
     <br />
     <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $category->content; ?></textarea>
@@ -53,7 +53,7 @@ echo $template->start( _('Edit Category') . ' - ' . $category->title );
 <br />
 
 <div id="dUploadFile" class="hidden">
-    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
+    <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
     <div class="hidden-fix position-absolute" id="upload-file"></div>

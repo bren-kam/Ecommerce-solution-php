@@ -99,10 +99,6 @@ class WebsiteController extends BaseController {
 
                 // Update custom meta
                 switch ( $page->slug ) {
-                    case 'contact-us':
-                        $pagemeta = array( 'addresses' => htmlspecialchars( $_POST['hAddresses'] ) );
-                    break;
-
                     case 'current-offer':
                         $pagemeta = array(
                             'email' => $_POST['tEmail']
@@ -157,13 +153,25 @@ class WebsiteController extends BaseController {
                     ->css('website/pages/contact-us')
                     ->javascript('website/pages/contact-us');
 
-                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'addresses', 'multiple-location-map', 'hide-all-maps' );
+                $website_location = new WebsiteLocation();
+                $locations = $website_location->get_by_website( $this->user->account->id );
+
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps' );
+
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
                     $$key = $value;
                 }
 
-                $resources = compact( 'addresses', 'multiple_location_map', 'hide_all_maps' );
+                $cv = new Validator( 'fAddEditLocation' );
+                $cv->add_validation( 'phone', 'phone', _('The "Phone" field must contain a valid phone number') );
+                $cv->add_validation( 'fax', 'phone', _('The "Fax" field must contain a valid fax number') );
+                $cv->add_validation( 'email', 'email', _('The "Email" field must contain a valid email') );
+                $cv->add_validation( 'website', 'URL', _('The "Website" field must contain a valid link') );
+                $cv->add_validation( 'zip', 'zip', _('The "Zip" field must contain a valid zip code') );
+                $contact_validation = $cv->js_validation();
+
+                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'contact_validation' );
             break;
 
             case 'current-offer':
@@ -989,7 +997,7 @@ class WebsiteController extends BaseController {
         $element_box .= '<div align="center">';
         $element_box .= '<p><img src="' . $image_url . '" alt="' . _('Sidebar Image') . '" /></p>';
         $element_box .= '<p><a href="' . $remove_attachment_url . '" id="aRemove' . $attachment->id . '" title="' . _('Remove Image') . '" ajax="1" confirm="' . _('Are you sure you want to remove this sidebar element?') . '">' . _('Remove') . '</a></p>';
-        $element_box .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
+        $element_box .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" placeholder="' . _('Enter Link...') . '" value="http://" /></p>';
         $element_box .= '<p id="pTempSidebarImage' . $attachment->id . '" class="success hidden">' . _('Your Sidebar Image link has been successfully updated.') . '</p><br />';
         $element_box .= '<p align="center"><input type="submit" class="button" value="' . _('Save') . '" /></p>';
         $element_box .= '</div>';
@@ -1152,7 +1160,7 @@ class WebsiteController extends BaseController {
         $banner .= '</div><br />';
         $banner .= '<form action="/website/update-attachment-extra/" method="post" ajax="1">';
         $banner .= '<p id="pTempSuccess' . $attachment->id . '" class="success hidden">' . _('Your banner link has been successfully updated.') . '</p>';
-        $banner .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" tmpval="' . _('Enter Link...') . '" value="http://" /></p>';
+        $banner .= '<p><input type="text" class="tb" name="extra" id="tSidebarImage' . $attachment->id . '" placeholder="' . _('Enter Link...') . '" value="http://" /></p>';
         $banner .= '<input type="submit" class="button" value="' . _('Save') . '" />';
         $banner .= '<input type="hidden" name="hAccountPageAttachmentId" value="' . $attachment->id . '" />';
         $banner .= '<input type="hidden" name="target" value="pTempSuccess' . $attachment->id . '" />';
@@ -1634,6 +1642,176 @@ class WebsiteController extends BaseController {
         jQuery('a.close:visible')->click();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Add/Edit Location
+     *
+     * @return AjaxResponse
+     */
+    protected function add_edit_location() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        // See if we're creating or not
+        $website_location_id = (int) $_POST['wlid'];
+
+        // Instantiate Object
+        $location = new WebsiteLocation();
+
+        if ( $website_location_id )
+            $location->get( $website_location_id, $this->user->account->id );
+
+        $location->name = $_POST['name'];
+        $location->address = $_POST['address'];
+        $location->city = $_POST['city'];
+        $location->state = $_POST['state'];
+        $location->zip = $_POST['zip'];
+        $location->phone = $_POST['phone'];
+        $location->fax = $_POST['fax'];
+        $location->email = $_POST['email'];
+        $location->website = $_POST['website'];
+        $location->store_hours = $_POST['store-hours'];
+
+        // Create or save
+        if ( $location->id ) {
+            $location->save();
+        } else {
+            $location->website_id = $this->user->account->website_id;
+            $location->create();
+        }
+
+
+        $delete_location = nonce::create( 'delete_location' );
+        $confirm_delete = _('Are you sure you want to delete this location? This cannot be undone.');
+
+        $location_html = '<div class="location" id="location-' . $location->id . '">';
+        $location_html .= '<h2><span class="name">' . $location->name . '</span></h2>';
+        $location_html .= '<div class="location-left">';
+        $location_html .= '<span class="address">' . $location->address . '</span><br />';
+        $location_html .= '<span class="city">' . $location->city . '</span>, <span class="state">' . $location->state . '</span> <span class="zip">' . $location->zip . '</span>';
+        $location_html .= '</div>';
+        $location_html .= '<div class="location-right">';
+        $location_html .= '<span class="phone">' . $location->phone . '</span><br />';
+        $location_html .= '<span class="fax">' . $location->fax . '</span><br />';
+        $location_html .= '</div>';
+        $location_html .= '<div class="float-right">';
+        $location_html .= '<span class="email">' . $location->email . '</span><br />';
+        $location_html .= '<span class="website">' . $location->website . '</span>';
+        $location_html .= '</div>';
+        $location_html .= '<br />';
+        $location_html .= '<br clear="all" />';
+        $location_html .= '<br />';
+        $location_html .= '<strong>' . _('Store Hours') . ':</strong>';
+        $location_html .= '<br />';
+        $location_html .= '<span class="store-hours">' . $location->store_hours . '</span>';
+        $location_html .= '<div class="actions">';
+        $location_html .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_location, 'wlid' => $location->id ), '/website/delete-location/' ) . '" class="delete-location" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm_delete . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" /></a>';
+        $location_html .= '<a href="#' . $location->id . '" class="edit-location" title="' . _('Edit') . '"><img src="/images/icons/edit.png" width="15" height="17" alt="' . _('Edit') . '" /></a>';
+        $location_html .= '</div>';
+        $location_html .= '</div>';
+
+        // Are we replacing or appending
+        if ( $website_location_id ) {
+            jQuery('#location-' . $location->id)->replaceWith( $location_html );
+            jQuery('#location-' . $location->id)->sparrow();
+        } else {
+            jQuery('#dContactUsList')->append( $location_html )->sparrow();
+        }
+
+        jQuery('a.close:visible')->click();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Get location
+     *
+     * @return AjaxResponse
+     */
+    public function get_location() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have everything right
+        $response->check( isset( $_POST['wlid'] ), _('Unable to get location. Please refresh the page and try again.') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $location = new WebsiteLocation();
+        $location->get( $_POST['wlid'], $this->user->account->id );
+
+        jQuery('#name')->val( $location->name );
+        jQuery('#address')->val( $location->address );
+        jQuery('#city')->val( $location->city );
+        jQuery('#state')->val( $location->state );
+        jQuery('#zip')->val( $location->zip );
+        jQuery('#phone')->val( $location->phone );
+        jQuery('#fax')->val( $location->fax );
+        jQuery('#email')->val( $location->email );
+        jQuery('#website')->val( $location->website );
+        jQuery('#store-hours')->val( $location->store_hours );
+        jQuery('#wlid')->val( $location->id );
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Delete location
+     *
+     * @return AjaxResponse
+     */
+    public function delete_location() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // Make sure we have everything right
+        $response->check( isset( $_GET['wlid'] ), _('Unable to delete location. Please refresh the page and try again.') );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $location = new WebsiteLocation();
+        $location->get( $_GET['wlid'], $this->user->account->id );
+        $location->remove();
+
+        jQuery('#location-' . $location->id)->remove();
+
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Update Location Sequence
+     *
+     * @return AjaxResponse
+     */
+    protected function update_location_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('Unable to update location sequence. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&location[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 9 );
+
+        $location = new WebsiteLocation();
+        $location->update_sequence( $this->user->account->id, $sequence );
 
         return $response;
     }

@@ -147,7 +147,7 @@ nonce::field( 'upload_to_comment', '_upload_to_comment' );
 <div id="comments">
     <form name="fAddComment" method="post" action="/tickets/add-comment/" ajax="1">
         <div id="comment-wrapper">
-            <textarea id="comment" name="comment" cols="5" rows="3" tmpval="<?php echo _('Write a comment...'); ?>"></textarea>
+            <textarea id="comment" name="comment" cols="5" rows="3" placeholder="<?php echo _('Write a comment...'); ?>"></textarea>
         </div>
         <input type="submit" id="add-comment" class="button hidden" value="<?php echo _('Add Comment'); ?>" />
         <div id="private-wrapper" class="hidden">

@@ -120,7 +120,7 @@ $delete_comment_nonce = nonce::create( 'delete_comment' );
 <div id="comments">
     <form action="/products/reaches/add-comment/" method="POST" ajax="1">
         <div id="comment-wrapper">
-            <textarea name="comment" id="comment" cols="5" rows="3" tmpVal="<?php echo _('Write a comment...'); ?>"></textarea>
+            <textarea name="comment" id="comment" cols="5" rows="3" placeholder="<?php echo _('Write a comment...'); ?>"></textarea>
         </div>
 
         <input type="submit" id="add-comment" class="button hidden" value="<?php echo _('Add Comment'); ?>" />

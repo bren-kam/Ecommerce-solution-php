@@ -143,10 +143,10 @@ foreach ( $attachments as $a ) {
                             <p><img src="<?php echo $image_url; ?>" alt="<?php echo _('Sidebar Image'); ?>" /></p>
                             <p><a href="<?php echo $remove_attachment_url; ?>" id="aRemove<?php echo $a->id; ?>" title="<?php echo _('Remove Image'); ?>" ajax="1" confirm="<?php echo $confirm_remove; ?>"><?php echo _('Remove'); ?></a></p>
 
-                            <p><input type="text" class="tb" name="extra" id="tSidebarImage<?php echo $a->id; ?>" tmpval="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a->extra ) ) ? 'http://' : $a->extra; ?>" /></p>
+                            <p><input type="text" class="tb" name="extra" id="tSidebarImage<?php echo $a->id; ?>" placeholder="<?php echo _('Enter Link...'); ?>" value="<?php echo ( empty( $a->extra ) ) ? 'http://' : $a->extra; ?>" /></p>
 
                             <?php if ( $images_alt ) { ?>
-                                <p><input type="text" class="tb" name="meta" tmpval="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a->meta ) ) echo $a->meta; ?>" /></p>
+                                <p><input type="text" class="tb" name="meta" placeholder="<?php echo _('Enter Alt Attribute...'); ?>" value="<?php if ( !empty( $a->meta ) ) echo $a->meta; ?>" /></p>
                             <?php } ?>
 
                             <p id="pTempSidebarImage<?php echo $a->id; ?>" class="success hidden"><?php echo _('Your Sidebar Image has been successfully updated.'); ?></p>
@@ -285,7 +285,7 @@ foreach ( $attachments as $a ) {
 </div>
 
 <div id="dUploadFile" class="hidden">
-    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
+    <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
     <div class="hidden-fix position-absolute" id="upload-file"></div>

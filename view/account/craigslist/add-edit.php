@@ -46,7 +46,7 @@ if ( !empty( $errs ) )
             <option value="sku"><?php echo _('SKU'); ?></option>
             <option value="product"><?php echo _('Product Name'); ?></option>
         </select>
-        <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php echo ( isset( $_POST['tAutoComplete'] ) ) ? $_POST['tAutoComplete'] : $ad->sku; ?>" tmpval="<?php echo _('Enter SKU'); ?>..." />
+        <input type="text" class="tb" name="tAutoComplete" id="tAutoComplete" tabindex="2" value="<?php echo ( isset( $_POST['tAutoComplete'] ) ) ? $_POST['tAutoComplete'] : $ad->sku; ?>" placeholder="<?php echo _('Enter SKU'); ?>..." />
         <br /><br />
     </div>
 
