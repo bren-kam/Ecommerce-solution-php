@@ -62,7 +62,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                     </td>
                     <td colspan="2">
                         <div style="margin-right: 18px">
-                            <input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Search...'); ?>" style="width: 100%" />
+                            <input type="text" class="tb" id="tAutoComplete" placeholder="<?php echo _('Enter Search...'); ?>" style="width: 100%" />
                         </div>
                     </td>
                 </tr>

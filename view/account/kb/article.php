@@ -21,7 +21,7 @@ $rate_nonce = nonce::create('rate');
     <div id="kb-search">
         <form name="fKBSearch" action="/kb/search/">
             <img src="/images/kb/search.png" width="48" height="35">
-            <input type="text" id="kbs" name="kbs" tmpval="<?php echo _('Enter a question or keyword to search'); ?>">
+            <input type="text" id="kbs" name="kbs" placeholder="<?php echo _('Enter a question or keyword to search'); ?>">
             <input type="submit" id="kbs-button" value="<?php echo _('Search'); ?>">
         </form>
     </div>

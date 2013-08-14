@@ -41,7 +41,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                         <option value="store_name"><?php echo _('Store Name'); ?></option>
                     </select>
                 </td>
-                <td><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter Name...'); ?>" style="position: relative; top: 1px;" /></td>
+                <td><input type="text" class="tb" id="tAutoComplete" placeholder="<?php echo _('Enter Name...'); ?>" style="position: relative; top: 1px;" /></td>
                 <td align="right"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
             </tr>
         </table>

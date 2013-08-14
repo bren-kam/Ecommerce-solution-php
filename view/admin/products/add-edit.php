@@ -71,13 +71,13 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                 <table width="222" id="tProductSpecifications">
                     <tr>
                         <td width="106" class="top">
-                            <input type="text" class="tb" id="tAddSpecName" maxlength="50" tmpval="<?php echo _('Name'); ?>" />
+                            <input type="text" class="tb" id="tAddSpecName" maxlength="50" placeholder="<?php echo _('Name'); ?>" />
                             <br />
                             <small><?php echo _('(example: Width)'); ?></small>
                         </td>
                         <td width="10">&nbsp;</td>
                         <td width="106" class="top" id="tdValue">
-                            <textarea id="taAddSpecValue" cols="1" rows="1" tmpval="<?php echo _('Value'); ?>"></textarea>
+                            <textarea id="taAddSpecValue" cols="1" rows="1" placeholder="<?php echo _('Value'); ?>"></textarea>
                             <br />
                             <small><?php echo _('(example: 22 in.)'); ?></small>
                         </td>
@@ -114,7 +114,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
         <div class="box">
             <h2><?php echo _('Tags'); ?></h2>
             <div class="content">
-                <div class="container"><input type="text" class="tb" id="tTags" tmpval="<?php echo _('Tag Name'); ?>" /></div>
+                <div class="container"><input type="text" class="tb" id="tTags" placeholder="<?php echo _('Tag Name'); ?>" /></div>
                 <small><?php echo _('Separate by comma'); ?></small>
                 <p><a href="#" class="button" id="add-tag" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
                 <div id="tags-list" class="list">
@@ -156,7 +156,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
 
     <div id="main-container">
         <div id="main">
-            <div id="name-container"><input type="text" name="tName" id="tName" class="tb" value="<?php echo $product->name; ?>" tmpval="<?php echo _('Product Name'); ?>" maxlength="200" /></div>
+            <div id="name-container"><input type="text" name="tName" id="tName" class="tb" value="<?php echo $product->name; ?>" placeholder="<?php echo _('Product Name'); ?>" maxlength="200" /></div>
             <div id="dProductSlug">
                 <span><strong><?php echo _('Link:'); ?></strong> <?php echo _('http://www.website.com/'); ?><span><?php echo _('products'); ?></span>/ <input type="text" name="tProductSlug" id="tProductSlug" maxlength="50" class="tb" value="<?php echo $product->slug; ?>" /> /
             </div>
@@ -200,7 +200,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                     </td>
                 </tr>
                 <tr>
-                    <td><div class="container"><input type="text" class="tb" name="tSKU" id="tSKU" maxlength="20" value="<?php echo $product->sku; ?>" tmpval="<?php echo _('SKU'); ?>" /></div></td>
+                    <td><div class="container"><input type="text" class="tb" name="tSKU" id="tSKU" maxlength="20" value="<?php echo $product->sku; ?>" placeholder="<?php echo _('SKU'); ?>" /></div></td>
                     <td>
                         <select name="sIndustry" id="sIndustry">
                             <option value="">-- <?php echo _('Select Industry'); ?> --</option>
@@ -215,7 +215,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                     </td>
                 </tr>
                 <tr>
-                    <td><div class="container"><input type="text" class="tb" name="tWeight" id="tWeight" value="<?php echo $product->weight; ?>" tmpval="<?php echo _('Weight'); ?>" /></div></td>
+                    <td><div class="container"><input type="text" class="tb" name="tWeight" id="tWeight" value="<?php echo $product->weight; ?>" placeholder="<?php echo _('Weight'); ?>" /></div></td>
                     <td>
                         <select name="sCategory" id="sCategory">
                             <option value="">-- <?php echo _('Select Category'); ?> --</option>

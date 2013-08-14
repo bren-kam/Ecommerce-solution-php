@@ -173,7 +173,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
                                     <option value="brand"><?php echo _('Brand'); ?></option>
                                 </select>
                             </td>
-                            <td valign="top"><input type="text" class="tb" id="tAutoComplete" tmpval="<?php echo _('Enter SKU...'); ?>" style="width: 100% !important;" /></td>
+                            <td valign="top"><input type="text" class="tb" id="tAutoComplete" placeholder="<?php echo _('Enter SKU...'); ?>" style="width: 100% !important;" /></td>
                             <td class="text-right" width="125"><a href="#" id="aSearch" title="<?php echo _('Search'); ?>" class="button"><?php echo _('Search'); ?></a></td>
                         </tr>
                     </table>
@@ -238,7 +238,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
         <p style="padding-bottom:0"><a href="#" id="aSendTest" title="<?php echo _('Send Test'); ?>"><?php echo _('Send Test'); ?> [ + ]</a></p>
         <div id="dSendTest" class="hidden">
             <p id="pSuccessMessage" class="hidden"><?php echo _('Please check your email in a minute or two for the test email.'); ?></p>
-            <input type="text" class="tb" id="tTestEmail" maxlength="200" tmpval="<?php echo _('Test email...'); ?>" /> <input type="button" id="bSendTest" class="button" value="<?php echo _('Send Test'); ?>" error="<?php echo _('Please enter a valid test email, then try again.'); ?>" />
+            <input type="text" class="tb" id="tTestEmail" maxlength="200" placeholder="<?php echo _('Test email...'); ?>" /> <input type="button" id="bSendTest" class="button" value="<?php echo _('Send Test'); ?>" error="<?php echo _('Please enter a valid test email, then try again.'); ?>" />
             <br />
         </div>
         <br />
@@ -258,7 +258,7 @@ echo $template->start( _('Send Email'), '../sidebar' );
     ?>
 </div>
 <div id="dUploadFile" class="hidden">
-    <input type="text" class="tb" id="tFileName" tmpval="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
+    <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
     <a href="#" id="aUploadFile" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Browse'); ?></a>
     <a href="#" class="button loader hidden" id="upload-file-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
     <div class="hidden-fix position-absolute" id="upload-file"></div>

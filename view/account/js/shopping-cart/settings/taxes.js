@@ -26,7 +26,7 @@ head.ready(function() {
 		}
 		
 		var newTr = '<tr id="trTax' + abbr + '">'
-			+ '<td><a href="#" class="zip-codes" title="Edit Tax Zip Codes"><span>' + name + '</span></a><textarea name="zip_codes[' + abbr + ']" class="hidden" col="50" rows="3" tmpval="[Zip] [Cost]"></textarea></td>'
+			+ '<td><a href="#" class="zip-codes" title="Edit Tax Zip Codes"><span>' + name + '</span></a><textarea name="zip_codes[' + abbr + ']" class="hidden" col="50" rows="3" placeholder="[Zip] [Cost]"></textarea></td>'
 			+ '<td><input id="tState' + abbr + '" name="states[' + abbr + ']" class="state tb" type="text" maxlength="5" value="' + tax + '" /></td>'
 			+ '<td><a href="#" class="delete-state" id="aDeleteTax' + abbr + '" title="Delete Tax"><img width="15" height="17" alt="Delete" src="/images/icons/x.png"></a></td></tr>';
 		
