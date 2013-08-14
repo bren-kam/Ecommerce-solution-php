@@ -36,7 +36,7 @@ class TestController extends BaseController {
                 $website_location->email = $add['email'];
                 $website_location->website = $add['website'];
                 $website_location->store_hours = $add['store-hours'];
-                $website_location->create();
+                //$website_location->create();
             }
         }
 
