@@ -15,6 +15,7 @@ class ActiveCampaignCampaignAPI {
     const STATUS_PAUSED = 3;
     const STATUS_STOPPED = 4;
     const STATUS_COMPLETED = 5;
+    const STATUS_PENDING_APPROVAL = 7;
     const VISIBILITY_PUBLIC = 1;
     const VISIBILITY_PRIVATE = 0;
 

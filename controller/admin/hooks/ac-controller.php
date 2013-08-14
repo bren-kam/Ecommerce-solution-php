@@ -38,6 +38,7 @@ class AcController extends BaseController {
 
         // Find out what we're changing the status to
         switch ( $_POST['campaign']['status'] ) {
+            case ActiveCampaignCampaignAPI::STATUS_PENDING_APPROVAL:
             case ActiveCampaignCampaignAPI::STATUS_SENDING:
             case ActiveCampaignCampaignAPI::STATUS_COMPLETED:
                 $email_message->status = EmailMessage::STATUS_SENT;
