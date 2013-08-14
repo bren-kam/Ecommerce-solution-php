@@ -20,7 +20,7 @@ jQuery(function(){
      */
     $('#aUploadLogo').click( function() {
         if ( $.support.cors ) {
-            $('#upload-image input:first').click();
+            $('#upload-logo input:first').click();
         } else {
             alert( $('#err-support-cors').text() );
         }
