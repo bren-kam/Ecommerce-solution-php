@@ -79,6 +79,21 @@ class format extends Base_Class {
 		return is_array( $value ) ? array_map( array( 'self', 'stripslashes_deep' ), $value ) : stripslashes( $value );
 	}
 
+	/**
+	 * Navigates through an array and specific tags
+	 *
+	 * If an array is passed, the array_map() function causes a callback to pass the
+	 * value back to the function. The slashes from this value will removed.
+	 *
+	 * @param array|string $value The array or string to be stripped
+     * @param string|array $tags the tags to remove
+     * @param bool $strip_content (optional|false) whether to remove the content in the tags or not
+     * @return array|string Stripped array (or string in the callback).
+	 */
+	public static function strip_only_deep( $value, $tags, $strip_content = false ) {
+		return is_array( $value ) ? array_map( array( 'self', 'strip_only' ), $value, $tags, $strip_content ) : stripslashes( $value );
+	}
+
     /**
 	 * Navigates through an array and applies html special chars to the values.
 	 *

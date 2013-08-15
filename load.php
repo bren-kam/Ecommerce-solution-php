@@ -105,6 +105,9 @@ require LIB_PATH . 'misc/loaders.php';
 if ( isset( $_POST ) && 0 != count( $_POST ) )
     $_POST = format::stripslashes_deep( $_POST );
 
+if ( isset( $_REQUEST ) && 0 != count( $_REQUEST ) )
+    $_REQUEST = format::strip_only_deep( $_REQUEST, 'script', true );
+
 /** Routing */
 require ABS_PATH . 'routing.php';
 
