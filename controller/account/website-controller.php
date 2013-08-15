@@ -1676,7 +1676,7 @@ class WebsiteController extends BaseController {
         $location->fax = $_POST['fax'];
         $location->email = $_POST['email'];
         $location->website = $_POST['website'];
-        $location->store_hours = $_POST['store-hours'];
+        $location->store_hours = nl2br( $_POST['store-hours'] );
 
         // Create or save
         if ( $location->id ) {
@@ -1758,7 +1758,7 @@ class WebsiteController extends BaseController {
         jQuery('#fax')->val( $location->fax );
         jQuery('#email')->val( $location->email );
         jQuery('#website')->val( $location->website );
-        jQuery('#store-hours')->val( $location->store_hours );
+        jQuery('#store-hours')->val( str_replace( '<br />', "\n", $location->store_hours ) );
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );
