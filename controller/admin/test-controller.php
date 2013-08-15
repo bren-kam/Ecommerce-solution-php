@@ -17,27 +17,35 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        set_time_limit(300);
-        $website_location = new WebsiteLocation();
-        $addresses = $website_location->get_results("SELECT w.`website_id`, wpm.`value` FROM `website_pagemeta` AS wpm LEFT JOIN `website_pages` AS wp ON ( wp.`website_page_id` = wpm.`website_page_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wp.`website_id` ) WHERE w.`status` = 1 AND wpm.`key` = 'addresses'", PDO::FETCH_ASSOC);
+        $account = new Account();
+        $email_marketing = new EmailMarketing();
+        $website_ids = $email_marketing->get_col("SELECT DISTINCT `website_id` FROM `email_lists` WHERE `ac_list_id` > 0");
 
-        foreach ( $addresses as $address ) {
-            $adds = unserialize( htmlspecialchars_decode( $address['value'] ) );
-            foreach ( $adds as $add ) {
-                $website_location = new WebsiteLocation();
-                $website_location->website_id = $address['website_id'];
-                $website_location->name = $add['location'];
-                $website_location->address = $add['address'];
-                $website_location->city = $add['city'];
-                $website_location->state = $add['state'];
-                $website_location->zip = $add['zip'];
-                $website_location->phone = $add['phone'];
-                $website_location->fax = $add['fax'];
-                $website_location->email = $add['email'];
-                $website_location->website = $add['website'];
-                $website_location->store_hours = $add['store-hours'];
-                //$website_location->create();
-            }
+        foreach ( $website_ids as $website_id ) {
+            $account->get( $website_id );
+            $ac = EmailMarketing::setup_ac( $account );
+            $ac->setup_webhook();
+
+            $ac_list_ids = $email_marketing->get_col( "SELECT `ac_list_id` FROM `email_lists` WHERE `website_id` = $account->id" );
+
+            // Add campaign sent webhook for this list
+            // Add webhook for this account
+            $ac->webhook->add(
+                'Unsubscribe Hook'
+                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/unsubscribe/' )
+                , $ac_list_ids
+                , 'unsubscribe'
+                , array( 'public', 'system', 'admin' )
+            );
+
+            // Add campaign sent webhook for this list
+            $ac->webhook->add(
+                'Campaign Sent Hook'
+                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/sent-campaign/' )
+                , $ac_list_ids
+                , 'sent'
+                , array( 'public', 'system', 'admin', 'api' )
+            );
         }
 
         return new HtmlResponse( 'heh' );
