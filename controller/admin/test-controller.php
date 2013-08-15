@@ -22,6 +22,7 @@ class TestController extends BaseController {
         $website_ids = $email_marketing->get_col("SELECT DISTINCT `website_id` FROM `email_lists` WHERE `ac_list_id` > 0");
 
         foreach ( $website_ids as $website_id ) {
+            continue;
             $account->get( $website_id );
             $ac = EmailMarketing::setup_ac( $account );
             $ac->setup_webhook();
