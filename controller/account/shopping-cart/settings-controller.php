@@ -84,12 +84,10 @@ class SettingsController extends BaseController {
         $form->add_field( 'row', '', _('Authorize.net AIM') );
 
         $form->add_field( 'text', _('AIM Login'), 'tAIMLogin', security::decrypt( base64_decode( $settings['aim-login'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 30 )
-            ->add_validation( 'req', _('The "AIM Login" field is required') );
+            ->attribute( 'maxlength', 30 );
 
         $form->add_field( 'text', _('AIM Transaction Key'), 'tAIMTransactionKey', security::decrypt( base64_decode( $settings['aim-transaction-key'] ), PAYMENT_DECRYPTION_KEY ) )
-            ->attribute( 'maxlength', 30 )
-            ->add_validation( 'req', _('The "AIM Transaction Key" field is required') );
+            ->attribute( 'maxlength', 30 );
 
         $form->add_field( 'blank', '' );
         $form->add_field( 'row', '', _('Paypal Express Checkout') );
