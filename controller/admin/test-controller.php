@@ -14,6 +14,7 @@ class TestController extends BaseController {
     /**
      * List Accounts
      *
+     *
      * @return TemplateResponse
      */
     protected function index() {
@@ -25,28 +26,16 @@ class TestController extends BaseController {
             continue;
             $account->get( $website_id );
             $ac = EmailMarketing::setup_ac( $account );
-            $ac->setup_webhook();
+            $ac->setup_list();
 
-            $ac_list_ids = $email_marketing->get_col( "SELECT `ac_list_id` FROM `email_lists` WHERE `website_id` = $account->id" );
-
-            // Add campaign sent webhook for this list
-            // Add webhook for this account
-            $ac->webhook->add(
-                'Unsubscribe Hook'
-                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/unsubscribe/' )
-                , $ac_list_ids
-                , 'unsubscribe'
-                , array( 'public', 'system', 'admin' )
-            );
-
-            // Add campaign sent webhook for this list
-            $ac->webhook->add(
-                'Campaign Sent Hook'
-                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/sent-campaign/' )
-                , $ac_list_ids
-                , 'sent'
-                , array( 'public', 'system', 'admin', 'api' )
-            );
+            $email_lists = $email_marketing->get_results( "SELECT * FROM `email_lists` WHERE `website_id` = $account->id", PDO::FETCH_CLASS, 'EmailList' );
+            extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
+            /**
+             * @var EmailList $list
+             */
+            foreach ( $email_lists as $list ) {
+                $ac->list->edit( $list->ac_list_id, $list->name, $this->user->account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
+            }
         }
 
         return new HtmlResponse( 'heh' );
