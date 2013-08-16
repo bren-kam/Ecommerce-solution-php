@@ -79,6 +79,8 @@ class AuthorizedUsersController extends BaseController {
         $form->add_field( 'checkbox', _('Shopping Cart'), 'cbShoppingCart', $auth_user_website->shopping_cart );
 
         if ( $form->posted() ) {
+            $success = true;
+
             if ( $auth_user_website->user_id ) {
                 $auth_user_website->pages = ( isset( $_POST['cbPages'] ) ) ? 1 : 0;
                 $auth_user_website->products = ( isset( $_POST['cbProducts'] ) ) ? 1 : 0;
@@ -94,22 +96,29 @@ class AuthorizedUsersController extends BaseController {
                     $role = User::ROLE_AUTHORIZED_USER;
                 }
 
-                $auth_user_website->add(
-                    $_POST['tName']
-                    , $_POST['tEmail']
-                    , $this->user->account->id
-                    , isset( $_POST['cbPages'] )
-                    , isset( $_POST['cbProducts'] )
-                    , isset( $_POST['cbAnalytics'] )
-                    , isset( $_POST['cbBlog'] )
-                    , isset( $_POST['cbEmailMarketing'] )
-                    , isset( $_POST['cbShoppingCart'] )
-                    , $role
-                );
+                try {
+                    $auth_user_website->add(
+                        $_POST['tName']
+                        , $_POST['tEmail']
+                        , $this->user->account->id
+                        , isset( $_POST['cbPages'] )
+                        , isset( $_POST['cbProducts'] )
+                        , isset( $_POST['cbAnalytics'] )
+                        , isset( $_POST['cbBlog'] )
+                        , isset( $_POST['cbEmailMarketing'] )
+                        , isset( $_POST['cbShoppingCart'] )
+                        , $role
+                    );
+                } catch ( ModelException $e ) {
+                    $this->notify( _('This user already has an account which is ineligible to be added as an authorized user, please use another email address.' ), false );
+                    $success = false;
+                }
             }
 
-            $this->notify( _('Your authorized user has been added/updated successfully!') );
-            return new RedirectResponse('/settings/authorized-users/');
+            if ( $success ) {
+                $this->notify( _('Your authorized user has been added/updated successfully!') );
+                return new RedirectResponse('/settings/authorized-users/');
+            }
         }
 
         $form = $form->generate_form();
