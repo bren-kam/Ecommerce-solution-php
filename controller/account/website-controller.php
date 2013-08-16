@@ -1294,6 +1294,8 @@ class WebsiteController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
+        $response->check( isset( $_POST['hAccountPageAttachmentId'] ), _('Oops! Something went wrong. Please refresh the page and try again.') );
+
         if ( $response->has_error() )
             return $response;
 
