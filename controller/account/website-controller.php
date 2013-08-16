@@ -1001,7 +1001,7 @@ class WebsiteController extends BaseController {
         $element_box .= '<p id="pTempSidebarImage' . $attachment->id . '" class="success hidden">' . _('Your Sidebar Image link has been successfully updated.') . '</p><br />';
         $element_box .= '<p align="center"><input type="submit" class="button" value="' . _('Save') . '" /></p>';
         $element_box .= '</div>';
-        $element_box .= '<input type="hidden" name="hWebsiteAttachmentID" value="' . $attachment->id . '" />';
+        $element_box .= '<input type="hidden" name="hAccountPageAttachmentId" value="' . $attachment->id . '" />';
         $element_box .= '<input type="hidden" name="target" value="pTempSidebarImage' . $attachment->id . '" />';
         $element_box .= nonce::field( 'update_attachment_extra', '_nonce', false );
         $element_box .= '</form></div></div>';
