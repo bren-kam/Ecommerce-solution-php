@@ -1001,7 +1001,7 @@ class WebsiteController extends BaseController {
         $element_box .= '<p id="pTempSidebarImage' . $attachment->id . '" class="success hidden">' . _('Your Sidebar Image link has been successfully updated.') . '</p><br />';
         $element_box .= '<p align="center"><input type="submit" class="button" value="' . _('Save') . '" /></p>';
         $element_box .= '</div>';
-        $element_box .= '<input type="hidden" name="hWebsiteAttachmentID" value="' . $attachment->id . '" />';
+        $element_box .= '<input type="hidden" name="hAccountPageAttachmentId" value="' . $attachment->id . '" />';
         $element_box .= '<input type="hidden" name="target" value="pTempSidebarImage' . $attachment->id . '" />';
         $element_box .= nonce::field( 'update_attachment_extra', '_nonce', false );
         $element_box .= '</form></div></div>';
@@ -1293,6 +1293,8 @@ class WebsiteController extends BaseController {
     protected function update_attachment_extra() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['hAccountPageAttachmentId'] ), _('Oops! Something went wrong. Please refresh the page and try again.') );
 
         if ( $response->has_error() )
             return $response;
@@ -1676,7 +1678,7 @@ class WebsiteController extends BaseController {
         $location->fax = $_POST['fax'];
         $location->email = $_POST['email'];
         $location->website = $_POST['website'];
-        $location->store_hours = $_POST['store-hours'];
+        $location->store_hours = nl2br( $_POST['store-hours'] );
 
         // Create or save
         if ( $location->id ) {
@@ -1758,7 +1760,7 @@ class WebsiteController extends BaseController {
         jQuery('#fax')->val( $location->fax );
         jQuery('#email')->val( $location->email );
         jQuery('#website')->val( $location->website );
-        jQuery('#store-hours')->val( $location->store_hours );
+        jQuery('#store-hours')->val( str_replace( '<br />', "\n", $location->store_hours ) );
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );
