@@ -53,7 +53,6 @@ class ActiveCampaignListAPI {
             , 'p_use_analytics_link' => 1
             , 'analytics_domains[0]' => $domain
             , 'get_unsubscribe_reason' => 1
-            , 'send_last_broadcast' => 0
             , 'require_name' => 0
             , 'sender_name' => $account_name
             , 'sender_addr1' => $address
@@ -93,7 +92,6 @@ class ActiveCampaignListAPI {
             , 'p_use_analytics_link' => 1
             , 'analytics_domains[0]' => $domain
             , 'get_unsubscribe_reason' => 1
-            , 'send_last_broadcast' => 0
             , 'require_name' => 0
             , 'sender_name' => $account_name
             , 'sender_addr1' => $address
