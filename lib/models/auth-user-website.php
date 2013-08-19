@@ -72,6 +72,7 @@ class AuthUserWebsite extends ActiveRecordBase {
      * @param bool $email_marketing
      * @param bool $shopping_cart
      * @param int $role (optional|1)
+     * @throws ModelException
      */
     public function add( $contact_name, $email, $account_id, $pages, $products, $analytics, $blog, $email_marketing, $shopping_cart, $role = User::ROLE_AUTHORIZED_USER ) {
         // Setup variables
@@ -85,7 +86,7 @@ class AuthUserWebsite extends ActiveRecordBase {
         if ( $user->id ) {
             // You must have role 1 to be an authorized user
             if ( !in_array( $user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) || $this->is_authorized( $user->id, $account_id ) )
-                return;
+                throw new ModelException( _('Invalid Role') );
 
             $message = '<br /><strong>' . $account->title . '</strong> is using ' . DOMAIN . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
             $message .= '<a href="http://account.' . DOMAIN . '/login/" title="Login">http://account.' . DOMAIN . '/login/</a>';
