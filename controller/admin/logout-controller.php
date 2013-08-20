@@ -26,5 +26,3 @@ class LogoutController extends BaseController {
         return true;
     }
 }
-
-
