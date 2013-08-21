@@ -190,8 +190,10 @@ class Email extends ActiveRecordBase {
 
         // Setup AC
         $ac = EmailMarketing::setup_ac( $account );
-        $ac->setup_contact();
-        $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
+        if ( !$ac->error() ) {
+            $ac->setup_contact();
+            $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
+        }
 
         // Assuming the above is successful, delete everything about this email
         $this->remove_associations();
