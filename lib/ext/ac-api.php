@@ -79,6 +79,9 @@ class ActiveCampaignAPI {
 	public function __construct( $api_url, $api_key ) {
         $this->api_url = $api_url;
 		$this->api_key = $api_key;
+
+        if ( empty( $api_url ) || empty( $api_key ) )
+            $this->error = true;
 	}
 
     /**
