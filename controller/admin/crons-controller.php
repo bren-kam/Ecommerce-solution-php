@@ -122,6 +122,10 @@ class CronsController extends BaseController {
         $ashley = new AshleySpecificFeedGateway();
         $ashley->run_all();
 
+        // Clean up old API logs (1 month)
+        $api_ext_log = new ApiExtLog();
+        $api_ext_log->purge();
+
         return new HtmlResponse( 'Weekly Jobs Completed' );
     }
 }
