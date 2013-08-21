@@ -1,7 +1,7 @@
 <?php
 class ApiExtLog extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $api, $method, $url, $request, $raw_request, $response, $raw_response, $date_created;
+    public $id, $website_id, $api, $method, $url, $request, $raw_request, $response, $raw_response, $date_created;
 
     /**
      * Setup the account initial data
@@ -17,7 +17,8 @@ class ApiExtLog extends ActiveRecordBase {
         $this->date_created = dt::now();
 
         $this->id = $this->insert( array(
-            'api' => $this->api
+            'website_id' => $this->website_id
+            , 'api' => $this->api
             , 'method' => $this->method
             , 'url' => $this->url
             , 'request' => $this->request
@@ -25,6 +26,6 @@ class ApiExtLog extends ActiveRecordBase {
             , 'response' => $this->response
             , 'raw_response' => $this->raw_response
             , 'date_created' => $this->date_created
-        ), 'ssssssss' );
+        ), 'issssssss' );
     }
 }
