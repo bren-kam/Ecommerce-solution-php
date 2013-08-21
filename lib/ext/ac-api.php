@@ -241,6 +241,17 @@ class ActiveCampaignAPI {
             echo "<h1>Response</h1>\n<pre>", var_export( $this->response, true ), "</pre>\n<hr />\n<br /><br />\n";
         }
 
+        $api_log = new ApiExtLog();
+        $api_log->api = 'Active Campaign API';
+        $api_log->method = $method;
+        $api_log->url = $url;
+        $api_log->request = json_encode( $this->request );
+        $api_log->raw_request = $this->raw_request;
+        $api_log->response = json_encode( $this->response );
+        $api_log->raw_response = $this->raw_response;
+        $api_log->create();
+
+
         return $this->response;
     }
 
