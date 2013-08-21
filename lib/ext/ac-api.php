@@ -24,6 +24,11 @@ class ActiveCampaignAPI {
    	protected $api_url, $api_key;
 
     /**
+     * @var Account
+     */
+    protected $account;
+
+    /**
      * Hold list
      *
      * @var ActiveCampaignListAPI
@@ -73,10 +78,11 @@ class ActiveCampaignAPI {
 	/**
 	 * Construct class will initiate and run everything
      *
+     * @param Account $account This is for logging
      * @param string $api_url
      * @param string $api_key
 	 */
-	public function __construct( $api_url, $api_key ) {
+	public function __construct( $account, $api_url, $api_key ) {
         $this->api_url = $api_url;
 		$this->api_key = $api_key;
 
@@ -245,6 +251,7 @@ class ActiveCampaignAPI {
         }
 
         $api_log = new ApiExtLog();
+        $api_log->website_id = $this->account->id;
         $api_log->api = 'Active Campaign API';
         $api_log->method = $method;
         $api_log->url = $url;
@@ -253,7 +260,6 @@ class ActiveCampaignAPI {
         $api_log->response = json_encode( $this->response );
         $api_log->raw_response = $this->raw_response;
         $api_log->create();
-
 
         return $this->response;
     }
