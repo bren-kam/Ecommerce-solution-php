@@ -118,7 +118,6 @@ input.button {
 .top { vertical-align: top }
 .relative { position: relative; }
 .clr { clear: both; }
-.tmpval { color: #929292 }
 .position-absolute { position: absolute }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }

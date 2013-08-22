@@ -84,7 +84,7 @@ if ( !empty( $zone_id ) ) {
                                     <?php } ?>
                                 </td>
                                 <td class="top"><?php if ( $no_delete ) { echo $r['TTL']; } else { ?><input type="text" name="changes[ttl][]" class="tb disabled" placeholder="TTL" value="<?php echo $r['TTL']; ?>" disabled="disabled" /><?php } ?></td>
-                                <td class="top"><?php if ( $no_delete ) { echo implode( "<br />\n", preg_replace( '/\.$/', '', $r['ResourceRecords'] ) ); } else { ?><textarea name="changes[records][]" class="tmpval disabled" cols="50" rows="3" placeholder="<?php echo _('Records - 1 per line'); ?>" disabled="disabled"><?php echo implode( "\n", $r['ResourceRecords'] ); ?></textarea><?php } ?></td>
+                                <td class="top"><?php if ( $no_delete ) { echo implode( "<br />\n", preg_replace( '/\.$/', '', $r['ResourceRecords'] ) ); } else { ?><textarea name="changes[records][]" class="disabled" cols="50" rows="3" placeholder="<?php echo _('Records - 1 per line'); ?>" disabled="disabled"><?php echo implode( "\n", $r['ResourceRecords'] ); ?></textarea><?php } ?></td>
                                 <td class="top">
                                     <?php if ( !$no_delete ) { ?>
                                         <a href="#" class="edit-record" title="<?php echo _('Edit Record'); ?>"><img src="/images/icons/edit.png" width="15" height="17" alt="<?php echo _('Edit Record'); ?>" /></a>
@@ -120,7 +120,7 @@ if ( !empty( $zone_id ) ) {
                 </select>
             </td>
             <td class="top"><input type="text" name="changes[ttl][]" class="tb changes-ttl" placeholder="TTL" value="14400" /></td>
-            <td class="top"><textarea name="changes[records][]" class="tmpval changes-records" cols="50" rows="3" placeholder="<?php echo _('Records - 1 per line'); ?>"><?php echo _('Records - 1 per line'); ?></textarea></td>
+            <td class="top"><textarea name="changes[records][]" class="changes-records" cols="50" rows="3" placeholder="<?php echo _('Records - 1 per line'); ?>"><?php echo _('Records - 1 per line'); ?></textarea></td>
             <td>
                 <a href="#" class="edit-record" title="<?php echo _('Edit Record'); ?>"><img src="/images/icons/edit.png" width="15" height="17" alt="<?php echo _('Edit Record'); ?>" /></a>
                 <a href="#" class="delete-record" title="<?php echo _('Delete Record'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete Record'); ?>" /></a>

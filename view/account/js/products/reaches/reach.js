@@ -26,14 +26,14 @@ jQuery(function($) {
 
 	comment.click( function() {
         var value = $(this).val();
-		if ( $(this).attr('tmpval') == value || '' == value ) {
-			$(this).val('').css( 'height', '39px' );
+		if ( !value.length ) {
+			$(this).css( 'height', '39px' );
 			$('#add-comment, #private-wrapper').show();
 		}
 	}).blur( function() {
-		var value = $(this).val(), tmpVal = $(this).attr('tmpval');
-		if ( '' == value || tmpVal == value ) {
-			$(this).val( tmpVal ).css( 'height', '19px' );
+		var value = $(this).val();
+		if ( !value.length ) {
+			$(this).css( 'height', '19px' );
 			$('#add-comment, #private-wrapper').hide();
 		}
 	}).autoResize();
@@ -41,8 +41,8 @@ jQuery(function($) {
     // Make sure it works even if they click on it super fast
     if ( comment.is(':focus') ) {
         var value = $(this).val();
-		if ( comment.attr('tmpval') == value || '' == value ) {
-			comment.val('').css( 'height', '39px' );
+		if ( !value.length ) {
+			comment.css( 'height', '39px' );
 			$('#add-comment, #private-wrapper').show();
 		}
     }
