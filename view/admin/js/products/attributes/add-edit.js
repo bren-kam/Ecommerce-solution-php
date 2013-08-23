@@ -9,13 +9,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // The 'Add List Item' link
 	$('#add-list-item').click( function() {
-		var listItemValue = $('#list-item-value'), itemNames = listItemValue.val().split(','), tmpValue = $(this).attr('tmpval'), listItemTemplate = $('#list-item-template'), itemsList = $('#items-list');
+		var listItemValue = $('#list-item-value'), itemNames = listItemValue.val().split(','), listItemTemplate = $('#list-item-template'), itemsList = $('#items-list');
 
 		for ( var i in itemNames ) {
 			var itemName = itemNames[i];
 
 			// If they entered nothing, do nothing
-			if ( '' == itemName || tmpValue == itemName )
+			if ( !itemName.length )
 				return;
 
 			// Start creating new div

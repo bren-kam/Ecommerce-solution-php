@@ -165,6 +165,7 @@ class CategoriesController extends BaseController {
             $category->parent_category_id = $_POST['sParentCategoryID'];
             $category->name = $_POST['tName'];
             $category->slug = $_POST['tSlug'];
+            $category->google_taxonomy = $_POST['tGoogleTaxonomy'];
 
             if ( $category_id ) {
                 $category->save();
@@ -204,15 +205,17 @@ class CategoriesController extends BaseController {
             $category->get( $category_id );
             $name = $category->name;
             $slug = $category->slug;
+            $google_taxonomy = $category->google_taxonomy;
             $parent_category_id = $category->parent_category_id;
         } else {
             $name = ( isset( $_POST['tName'] ) ) ? $_POST['tName'] : '';
             $slug = ( isset( $_POST['tSlug'] ) ) ? $_POST['tSlug'] : '';
+            $google_taxonomy = ( isset( $_POST['tGoogleTaxonomy'] ) ) ? $_POST['tGoogleTaxonomy'] : '';;
             $parent_category_id = 0;
         }
 
         $response = new CustomResponse( $this->resources, 'products/categories/add-edit' );
-        $response->set( compact( 'category', 'attributes', 'category_attribute_ids', 'categories', 'name', 'slug', 'parent_category_id' ) );
+        $response->set( compact( 'category', 'attributes', 'category_attribute_ids', 'categories', 'name', 'slug', 'google_taxonomy', 'parent_category_id' ) );
 
         return $response;
     }

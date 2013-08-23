@@ -34,12 +34,12 @@ jQuery(function($) {
 				beforeSubmit	: function() {
 					var tTicketSummary = $('#tTicketSummary'), summary = $.trim( tTicketSummary.val() ), taTicket = $('#taTicketMessage'), message = $.trim( taTicket.val() );
 
-					if( !summary.length || summary == tTicketSummary.attr('tmpval') ) {
+					if( !summary.length ) {
 						alert( tTicketSummary.attr('error') );
 						return false;
 					}
 
-					if( !message.length || message == taTicket.attr('tmpval') ) {
+					if( !message.length ) {
 						alert( taTicket.attr('error') );
 						return false;
 					}

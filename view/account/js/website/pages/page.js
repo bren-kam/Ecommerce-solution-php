@@ -78,7 +78,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
     $('#sAutoComplete').change( function() {
         var tAutoComplete = $('#tAutoComplete');
 
-        tAutoComplete.attr( 'tmpval', tAutoComplete.attr('tmpval').replace( /\s([\w\s]+).../, ' ' + $(this).find('option:selected').text() + '...' ) ).val('').blur();
+        tAutoComplete.attr( 'placeholder', 'Enter ' + $(this).find('option:selected').text() + '...' ).val('').blur();
     });
 
     $('#tAutoComplete').autocomplete({

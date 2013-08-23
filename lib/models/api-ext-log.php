@@ -28,4 +28,11 @@ class ApiExtLog extends ActiveRecordBase {
             , 'date_created' => $this->date_created
         ), 'issssssss' );
     }
+
+    /**
+     * Purges all records further than 30 days ago
+     */
+    public function purge() {
+        $this->query( "DELETE FROM `api_ext_log` WHERE `date_created` < DATE_SUB( NOW(), INTERVAL 1 MONTH )" );
+    }
 }
