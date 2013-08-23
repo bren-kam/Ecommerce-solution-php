@@ -83,6 +83,7 @@ class ActiveCampaignAPI {
      * @param string $api_key
 	 */
 	public function __construct( $account, $api_url, $api_key ) {
+        $this->account = $account;
         $this->api_url = $api_url;
 		$this->api_key = $api_key;
 
