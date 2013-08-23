@@ -1754,13 +1754,13 @@ class WebsiteController extends BaseController {
         jQuery('#name')->val( $location->name );
         jQuery('#address')->val( $location->address );
         jQuery('#city')->val( $location->city );
-        jQuery('#state')->val( str_replace( '<br />', "\n", $location->state ) );
+        jQuery('#state')->val( $location->state );
         jQuery('#zip')->val( $location->zip );
         jQuery('#phone')->val( $location->phone );
         jQuery('#fax')->val( $location->fax );
         jQuery('#email')->val( $location->email );
         jQuery('#website')->val( $location->website );
-        jQuery('#store-hours')->val( str_replace( '<br />', "\n", $location->store_hours ) );
+        jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );
