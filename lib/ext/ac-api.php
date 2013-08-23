@@ -24,6 +24,11 @@ class ActiveCampaignAPI {
    	protected $api_url, $api_key;
 
     /**
+     * @var Account
+     */
+    protected $account;
+
+    /**
      * Hold list
      *
      * @var ActiveCampaignListAPI
@@ -73,12 +78,16 @@ class ActiveCampaignAPI {
 	/**
 	 * Construct class will initiate and run everything
      *
+     * @param Account $account This is for logging
      * @param string $api_url
      * @param string $api_key
 	 */
-	public function __construct( $api_url, $api_key ) {
+	public function __construct( $account, $api_url, $api_key ) {
         $this->api_url = $api_url;
 		$this->api_key = $api_key;
+
+        if ( empty( $api_url ) || empty( $api_key ) )
+            $this->error = true;
 	}
 
     /**
@@ -240,6 +249,17 @@ class ActiveCampaignAPI {
             echo "<h1>Raw Response</h1>\n<pre>", $this->raw_response, "</pre>\n<hr />\n<br /><br />\n";
             echo "<h1>Response</h1>\n<pre>", var_export( $this->response, true ), "</pre>\n<hr />\n<br /><br />\n";
         }
+
+        $api_log = new ApiExtLog();
+        $api_log->website_id = $this->account->id;
+        $api_log->api = 'Active Campaign API';
+        $api_log->method = $method;
+        $api_log->url = $url;
+        $api_log->request = json_encode( $this->request );
+        $api_log->raw_request = $this->raw_request;
+        $api_log->response = json_encode( $this->response );
+        $api_log->raw_response = $this->raw_response;
+        $api_log->create();
 
         return $this->response;
     }

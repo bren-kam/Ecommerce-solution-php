@@ -90,7 +90,7 @@ jQuery(function($) {
         , onSubmit: function( id, fileName ) {
             var tFileName = $('#tFileName');
 
-            if ( tFileName.val() == tFileName.attr('tmpval') ) {
+            if ( !tFileName.val().length ) {
                 alert( tFileName.attr('error') );
                 return false;
             }

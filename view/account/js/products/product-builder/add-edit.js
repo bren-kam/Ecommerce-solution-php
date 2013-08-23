@@ -10,7 +10,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // Trigger the check to make sure the slug is available
 	$('#tName').change( function() {
-		if ( $(this).attr('tmpval') == $(this).val() || '' == $(this).val().replace(/\s/g, '') )
+		if ( '' == $(this).val().replace(/\s/g, '') )
             return;
 
         // Get slugs
@@ -64,15 +64,9 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // The 'Add Spec' button
     $('#add-product-spec').click( function() {
-        var tAddSpecName = $('#tAddSpecName'), specName = tAddSpecName.val().trim().replace( /[|`]/g, ''), tmpSpecName = tAddSpecName.attr('tmpval');
-        var taAddSpecValue = $('#taAddSpecValue'), specValue = taAddSpecValue.val().trim().replace( /[|`]/g, ''), tmpSpecValue = taAddSpecValue.attr('tmpval');
+        var tAddSpecName = $('#tAddSpecName'), specName = tAddSpecName.val().trim().replace( /[|`]/g, '');
+        var taAddSpecValue = $('#taAddSpecValue'), specValue = taAddSpecValue.val().trim().replace( /[|`]/g, '');
         var productSpecsList = $('#product-specs-list'), productSpecTemplate = $('#product-spec-template');
-
-        if ( tmpSpecName == specName )
-            specName = '';
-
-        if ( tmpSpecValue == specValue )
-            specValue = '';
 
 		// ake sure it's a valid entry
 		if ( '' == specName && '' == specValue )
@@ -109,13 +103,13 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
     // The 'Add Tag' button
 	$('#add-tag').click( function() {
-		var tagValue = $('#tTags'), tagValues = tagValue.val().split(','), tmpValue = $(this).attr('tmpval'), tagTemplate = $('#tag-template'), tagsList = $('#tags-list');
+		var tagValue = $('#tTags'), tagValues = tagValue.val().split(','), tagTemplate = $('#tag-template'), tagsList = $('#tags-list');
 
 		for ( var i in tagValues ) {
 			var tag = tagValues[i];
 
 			// If they entered nothing, do nothing
-			if ( '' == tag || tmpValue == tag )
+			if ( !tag.length )
 				return;
 
 			// Start creating new div

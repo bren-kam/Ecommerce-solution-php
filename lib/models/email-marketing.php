@@ -239,6 +239,6 @@ class EmailMarketing extends ActiveRecordBase {
 
         library('ac-api');
 
-        return new ActiveCampaignAPI( $settings['ac-api-url'], $settings['ac-api-key'] );
+        return new ActiveCampaignAPI( $account, $settings['ac-api-url'], $settings['ac-api-key'] );
     }
 }

@@ -60,7 +60,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	$('#sAutoComplete').change( function() {
 		var tAutoComplete = $('#tAutoComplete');
 		
-		tAutoComplete.attr( 'tmpval', tAutoComplete.attr('tmpval').replace( /\s([\w\s]+).../, ' ' + $(this).find('option:selected').text() + '...' ) ).val('').blur();
+		tAutoComplete.attr( 'placeholder', 'Enter ' + $(this).find('option:selected').text() + '...' ).val('').blur();
 	});
 	
 	$('#tAutoComplete').autocomplete({
@@ -144,7 +144,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	$('#bSendTest').click( function() {
 		var tTestEmail = $('#tTestEmail'), email = tTestEmail.val();
 		
-		if ( 0 == email.length || email == tTestEmail.attr('tmpval') || null == email.match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/) ) {
+		if ( !email.length || null == email.match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/) ) {
 			alert( $(this).attr('error') );
 			$('#tTestEmail').focus();
 			return false;

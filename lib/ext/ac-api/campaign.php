@@ -51,7 +51,7 @@ class ActiveCampaignCampaignAPI {
     public function create( $ac_message_id, $subject, $date, array $ac_list_ids, $status = self::STATUS_DRAFT ) {
         $params = array(
             'type' => 'single' // 'single', 'recurring', 'split', 'responder', 'reminder', 'special', 'activerss', 'text'
-            , 'filterid' => 0 // 0 for no segment
+            , 'segmentid' => 0 // 0 for no segment
             , 'bounceid' => -1 // -1 = use all available bounce accounts, 0 = don't use bounce management, or ID of a bounce account
             , 'name' => $subject
             , 'sdate' => $date

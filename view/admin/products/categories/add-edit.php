@@ -11,6 +11,7 @@
  * @var array $categories
  * @var array $attributes
  * @var array $category_attribute_ids
+ * @var string $google_taxonomy
  */
 
 $add_edit_url = '/products/categories/add-edit/';
@@ -41,6 +42,10 @@ if ( $category->id )
     <tr>
         <td><label for="tSlug"><?php echo _('Slug'); ?>:</label></td>
         <td><input type="text" class="tb" name="tSlug" id="tSlug" value="<?php echo $template->v('slug'); ?>" /></td>
+    </tr>
+    <tr>
+        <td><label for="tGoogleTaxonomy"><a href="http://www.google.com/basepages/producttype/taxonomy.en-US.txt" target="_blank" title="<?php echo _('Google Taxonomy'); ?>"><?php echo _('Google Taxonomy'); ?>:</a></label></td>
+        <td><input type="text" class="tb" name="tGoogleTaxonomy" id="tGoogleTaxonomy" value="<?php echo $google_taxonomy; ?>" /></td>
     </tr>
     <tr>
         <td class="top"><label for="sAttributes"><?php echo _('Attributes'); ?>:</label></td>

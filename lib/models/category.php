@@ -1,7 +1,7 @@
 <?php
 class Category extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $category_id, $parent_category_id, $name, $slug, $sequence;
+    public $id, $category_id, $parent_category_id, $name, $slug, $google_taxonomy, $sequence;
 
     // Artificial field
     public $depth;
@@ -39,12 +39,14 @@ class Category extends ActiveRecordBase {
             Category::$categories[$this->id]->parent_category_id = $this->parent_category_id;
             Category::$categories[$this->id]->name = $this->name;
             Category::$categories[$this->id]->slug = $this->slug;
+            Category::$categories[$this->id]->google_taxonomy = $this->google_taxonomy;
             Category::$categories[$this->id]->sequence = $this->sequence;
         } else {
             $this->id = $this->category_id = $category_id;
             $this->parent_category_id = Category::$categories[$category_id]->parent_category_id;
             $this->name = Category::$categories[$category_id]->name;
             $this->slug = Category::$categories[$category_id]->slug;
+            $this->google_taxonomy = Category::$categories[$category_id]->google_taxonomy;
             $this->sequence = Category::$categories[$category_id]->sequence;
         }
     }
@@ -55,7 +57,7 @@ class Category extends ActiveRecordBase {
      * @return array
      */
     public function get_all() {
-		$categories_array = $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", PDO::FETCH_CLASS, 'Category' );
+		$categories_array = $this->get_results( "SELECT `category_id`, `parent_category_id`, `name`, `slug`, `google_taxonomy` FROM `categories` ORDER BY `parent_category_id` ASC, sequence ASC", PDO::FETCH_CLASS, 'Category' );
         $categories = array();
 
         foreach ( $categories_array as $c ) {
@@ -232,7 +234,8 @@ class Category extends ActiveRecordBase {
             'parent_category_id' => $this->parent_category_id
             , 'name' => $this->name
             , 'slug' => $this->slug
-        ), 'iss' );
+            , 'google_taxonomy' => $this->google_taxonomy
+        ), 'isss' );
 
         $this->id = $this->get_insert_id();
     }
@@ -249,7 +252,8 @@ class Category extends ActiveRecordBase {
             'parent_category_id' => $this->parent_category_id
             , 'name' => $this->name
             , 'slug' => $this->slug
-        ), array( 'category_id' => $this->id ), 'iss', 'i' );
+            , 'google_taxonomy' => $this->google_taxonomy
+        ), array( 'category_id' => $this->id ), 'isss', 'i' );
     }
 
     /**
