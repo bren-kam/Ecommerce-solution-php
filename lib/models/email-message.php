@@ -372,7 +372,7 @@ class EmailMessage extends ActiveRecordBase {
             $this->create_ac_campaign( $ac, $account, $ac_list_ids );
 
         // Send test
-        $ac->campaign->send( $email, $this->ac_campaign_id, $this->ac_message_id, 'test' );
+        $ac->campaign->send( $email, $this->ac_campaign_id, 'test' );
 
         if ( $ac->error() )
             throw new ModelException( "Failed to send test ActiveCampaign message:\n" . $ac->message() );
