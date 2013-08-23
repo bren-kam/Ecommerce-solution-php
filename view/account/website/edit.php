@@ -154,7 +154,7 @@ if ( !empty( $errs ) )
                 <td><input type="text" class="tb" name="fax" id="fax" maxlength="21" tabindex="2" placeholder="Fax"></td>
                 <td>&nbsp;</td>
                 <td>
-                    <select id="state" tabindex="8">
+                    <select name="state" id="state" tabindex="8">
                         <option value="">-- <?php echo _('Select State'); ?> --</option>
                         <?php data::states(); ?>
                     </select>

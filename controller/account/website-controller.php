@@ -1754,7 +1754,7 @@ class WebsiteController extends BaseController {
         jQuery('#name')->val( $location->name );
         jQuery('#address')->val( $location->address );
         jQuery('#city')->val( $location->city );
-        jQuery('#state')->val( $location->state );
+        jQuery('#state')->val( str_replace( '<br />', "\n", $location->state ) );
         jQuery('#zip')->val( $location->zip );
         jQuery('#phone')->val( $location->phone );
         jQuery('#fax')->val( $location->fax );
