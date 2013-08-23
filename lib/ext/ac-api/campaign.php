@@ -54,7 +54,6 @@ class ActiveCampaignCampaignAPI {
             , 'segmentid' => 0 // 0 for no segment
             , 'bounceid' => -1 // -1 = use all available bounce accounts, 0 = don't use bounce management, or ID of a bounce account
             , 'name' => $subject
-            , 'sdate' => $date
             , 'status' => $status
             , 'visibility' => self::VISIBILITY_PUBLIC
             , 'tracklinks' => 'all'
@@ -68,6 +67,10 @@ class ActiveCampaignCampaignAPI {
             , 'textunsub' => 1
             , "m[$ac_message_id]" => 100 // Send this message ID
         );
+
+        // Separate per Matt Thomes, Active Campaign's programmer
+        if ( self::STATUS_DRAFT != $status )
+            $params['sdate'] = $date;
 
         foreach ( $ac_list_ids as $ac_list_id ) {
             $ac_list_id = (int) $ac_list_id;
@@ -84,15 +87,14 @@ class ActiveCampaignCampaignAPI {
      *
      * @param string $email
      * @param int $ac_campaign_id
-     * @param int $ac_message_id
      * @param string $action
      * @return bool
      */
-    public function send( $email, $ac_campaign_id, $ac_message_id, $action ) {
+    public function send( $email, $ac_campaign_id, $action ) {
         $this->api( 'send', array(
             'email' => $email
             , 'campaignid' => $ac_campaign_id
-            , 'message_id' => $ac_message_id
+            , 'message_id' => 0 // Changed per Matt Thomes, Active Campaign's Programer. Original: $ac_message_id
             , 'type' => 'mime'
             , 'action' => $action
         ));
