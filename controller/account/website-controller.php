@@ -1109,8 +1109,8 @@ class WebsiteController extends BaseController {
         $page->get( $_GET['apid'], $this->user->account->id );
         $settings = $this->user->account->get_settings( 'banner-width', 'banner-height' );
 
-        $max_width = ( empty ( $settings['banner-width'] ) ) ? 1000 : $settings['banner-width'];
-        $max_height = ( empty ( $settings['banner-height'] ) ) ? 1000 : $settings['banner-height'];
+        $max_width = ( empty ( $settings['banner-width'] ) ) ? 1500 : $settings['banner-width'];
+        $max_height = ( empty ( $settings['banner-height'] ) ) ? 1500 : $settings['banner-height'];
 
         $banner_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
 
