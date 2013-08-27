@@ -527,7 +527,6 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
-            ->add_validation( 'req', _('The "Banners - Speed" field is required') )
             ->add_validation( 'num', _('The "Banners - Speed" field may only contain a number') );
 
         $effects = array(
