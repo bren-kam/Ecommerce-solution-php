@@ -509,7 +509,11 @@ class WebsiteController extends BaseController {
         $form = new FormTable( 'fSettings' );
 
         // Get settings
-        $settings_array = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt' );
+        $settings_array = array(
+            'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
+            , 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt'
+            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link'
+        );
         $settings = $this->user->account->get_settings( $settings_array );
 
         // Create form
@@ -561,6 +565,19 @@ class WebsiteController extends BaseController {
         $form->add_field( 'text', _('Width'), 'sidebar-image-width', $settings['sidebar-image-width'] )
             ->attribute( 'maxlength', '4' )
             ->add_validation( 'num', _('The "Sidebar Image - Width" field may only contain a number') );
+
+        // Next section
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'title', _('Social Media') );
+
+        $form->add_field( 'text', _('Facebook Link'), 'sm-facebook-link', $settings['sm-facebook-link'] )
+            ->add_validation( 'url', _('The "Facebook Link" must be a valid link') );
+
+        $form->add_field( 'text', _('Twitter Link'), 'sm-twitter-link', $settings['sm-twitter-link'] )
+            ->add_validation( 'url', _('The "Twitter Link" must be a valid link') );
+
+        $form->add_field( 'text', _('Google Link'), 'sm-google-link', $settings['sm-google-link'] )
+            ->add_validation( 'url', _('The "Google Link" must be a valid link') );
 
         // Next section
         $form->add_field( 'blank', '' );
