@@ -46,6 +46,7 @@ if ( is_array( $top_brands ) ) {
 <?php
     }
 }?>
+    <br clear="left" /><br />
 </div>
 <br clear="left" /><br />
 <?php echo $template->end(); ?>
