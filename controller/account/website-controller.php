@@ -509,7 +509,11 @@ class WebsiteController extends BaseController {
         $form = new FormTable( 'fSettings' );
 
         // Get settings
-        $settings_array = array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt' );
+        $settings_array = array(
+            'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
+            , 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt'
+            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link'
+        );
         $settings = $this->user->account->get_settings( $settings_array );
 
         // Create form
@@ -521,13 +525,12 @@ class WebsiteController extends BaseController {
             ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
 
         $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
-            ->attribute( 'maxlength', '3' )
+            ->attribute( 'maxlength', '4' )
             ->add_validation( 'req', _('The "Banners - Height" field is required') )
             ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
 
         $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
-            ->add_validation( 'req', _('The "Banners - Speed" field is required') )
             ->add_validation( 'num', _('The "Banners - Speed" field may only contain a number') );
 
         $effects = array(
@@ -562,6 +565,19 @@ class WebsiteController extends BaseController {
         $form->add_field( 'text', _('Width'), 'sidebar-image-width', $settings['sidebar-image-width'] )
             ->attribute( 'maxlength', '4' )
             ->add_validation( 'num', _('The "Sidebar Image - Width" field may only contain a number') );
+
+        // Next section
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'title', _('Social Media') );
+
+        $form->add_field( 'text', _('Facebook Link'), 'sm-facebook-link', $settings['sm-facebook-link'] )
+            ->add_validation( 'url', _('The "Facebook Link" must be a valid link') );
+
+        $form->add_field( 'text', _('Twitter Link'), 'sm-twitter-link', $settings['sm-twitter-link'] )
+            ->add_validation( 'url', _('The "Twitter Link" must be a valid link') );
+
+        $form->add_field( 'text', _('Google Link'), 'sm-google-link', $settings['sm-google-link'] )
+            ->add_validation( 'url', _('The "Google Link" must be a valid link') );
 
         // Next section
         $form->add_field( 'blank', '' );
@@ -1109,8 +1125,8 @@ class WebsiteController extends BaseController {
         $page->get( $_GET['apid'], $this->user->account->id );
         $settings = $this->user->account->get_settings( 'banner-width', 'banner-height' );
 
-        $max_width = ( empty ( $settings['banner-width'] ) ) ? 1000 : $settings['banner-width'];
-        $max_height = ( empty ( $settings['banner-height'] ) ) ? 1000 : $settings['banner-height'];
+        $max_width = ( empty ( $settings['banner-width'] ) ) ? 1500 : $settings['banner-width'];
+        $max_height = ( empty ( $settings['banner-height'] ) ) ? 1500 : $settings['banner-height'];
 
         $banner_name =  format::slug( f::strip_extension( $_GET['qqfile'] ) ) . '.' . f::extension( $_GET['qqfile'] );
 
@@ -1760,7 +1776,7 @@ class WebsiteController extends BaseController {
         jQuery('#fax')->val( $location->fax );
         jQuery('#email')->val( $location->email );
         jQuery('#website')->val( $location->website );
-        jQuery('#store-hours')->val( str_replace( '<br />', "\n", $location->store_hours ) );
+        jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );
