@@ -407,7 +407,7 @@ class AccountsController extends BaseController {
                 ssh2_exec( $ssh_connection, "sed -i 's/#Rewrite/Rewrite/g' /home/$username/public_html/.htaccess" );
 
                 $account->live = 1;
-            } else {
+            } elseif ( !$account->live ) {
                 $account->live = 0;
             }
 

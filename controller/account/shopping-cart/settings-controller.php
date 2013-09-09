@@ -94,7 +94,7 @@ class SettingsController extends BaseController {
             ->attribute( 'maxlength', 30 );
 
         $form->add_field( 'blank', '' );
-        $form->add_field( 'row', '', _('Paypal Express Checkout') );
+        $form->add_field( 'row', '', _('PayPal Express Checkout') );
 
         $form->add_field( 'text', _('Username'), 'tPaypalExpressUsername', security::decrypt( base64_decode( $settings['paypal-express-username'] ), PAYMENT_DECRYPTION_KEY ) )
             ->attribute( 'maxlength', 100 );
