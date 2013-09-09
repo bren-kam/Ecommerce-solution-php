@@ -342,9 +342,9 @@ class ProductsController extends BaseController {
 
         // Create the different versions we need
         $file->upload_image( $result['file_path'], $new_image_name, 320, 320, $industry_name, 'products/' . $product->id . '/', false, true );
-        $file->upload_image( $result['file_path'], $new_image_name, 46, 46, $industry_name, 'products/' . $product->id . '/thumbnail/', false, true );
+        $file->upload_image( $result['file_path'], $new_image_name, 64, 64, $industry_name, 'products/' . $product->id . '/thumbnail/', false, true );
         $file->upload_image( $result['file_path'], $new_image_name, 200, 200, $industry_name, 'products/' . $product->id . '/small/', false, true );
-        $image_name = $file->upload_image( $result['file_path'], $new_image_name, 700, 700, $industry_name, 'products/' . $product->id . '/large/', false, true );
+        $image_name = $file->upload_image( $result['file_path'], $new_image_name, 1000, 1000, $industry_name, 'products/' . $product->id . '/large/', false, true );
 
         // Get image url
         $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";

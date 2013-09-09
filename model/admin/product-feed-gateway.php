@@ -232,9 +232,9 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
 		fclose( $fp );
 		
 		$this->file->upload_image( $image_path, $new_image_name, 320, 320, $industry, "products/{$product_id}/", false, true );
-		$this->file->upload_image( $image_path, $new_image_name, 46, 46, $industry, "products/{$product_id}/thumbnail/", false, true );
+		$this->file->upload_image( $image_path, $new_image_name, 64, 64, $industry, "products/{$product_id}/thumbnail/", false, true );
 		$this->file->upload_image( $image_path, $new_image_name, 200, 200, $industry, "products/{$product_id}/small/", false, true );
-		$full_image_name = $this->file->upload_image( $image_path, $new_image_name, 700, 700, $industry, "products/{$product_id}/large/", false, true );
+		$full_image_name = $this->file->upload_image( $image_path, $new_image_name, 1000, 1000, $industry, "products/{$product_id}/large/", false, true );
 
 		if( file_exists( $image_path ) )
 			@unlink( $image_path );
