@@ -2,7 +2,7 @@
 class WebsiteLocation extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $website_id, $name, $address, $city, $state, $zip, $phone, $fax, $email, $website, $store_hours
-        , $sequence, $date_created;
+        , $lat, $lng, $sequence, $date_created;
 
     /**
      * Setup the account initial data
@@ -73,9 +73,11 @@ class WebsiteLocation extends ActiveRecordBase {
             , 'email' => $this->email
             , 'website' => $this->website
             , 'store_hours' => $this->store_hours
+            , 'lat' => $this->lat
+            , 'lng' => $this->lng
             , 'sequence' => $this->sequence
             , 'date_created' => $this->date_created
-        ), 'issssssssssis' );
+        ), 'issssssssssssis' );
    }
 
     /**
@@ -93,9 +95,11 @@ class WebsiteLocation extends ActiveRecordBase {
             , 'email' => $this->email
             , 'website' => $this->website
             , 'store_hours' => $this->store_hours
+            , 'lat' => $this->lat
+            , 'lng' => $this->lng
         ), array(
             'id' => $this->id
-        ), 'issssssssss', 'i' );
+        ), 'issssssssssss', 'i' );
    }
 
     /**
