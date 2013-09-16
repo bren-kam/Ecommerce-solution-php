@@ -1696,6 +1696,16 @@ class WebsiteController extends BaseController {
         $location->website = $_POST['website'];
         $location->store_hours = nl2br( $_POST['store-hours'] );
 
+        // Get latitude and longitude
+        library('google-maps-api');
+        $gmaps = new GoogleMapsAPI( $this->user->account );
+        $geo_location = $gmaps->geocode( $location->address . ', ' . $location->city . ', ' . $location->state . ' ' . $location->zip );
+
+        if ( $gmaps->success() ) {
+            $location->lat = $geo_location->lat;
+            $location->lng = $geo_location->lng;
+        }
+
         // Create or save
         if ( $location->id ) {
             $location->save();
