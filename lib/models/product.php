@@ -1,10 +1,12 @@
 <?php
 class Product extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $product_id, $category_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku, $status, $weight, $product_specifications, $publish_visibility, $publish_date, $user_id_created, $user_id_modified, $date_created;
+    public $id, $product_id, $category_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku
+        , $price, $list_price, $status, $weight, $product_specifications, $publish_visibility, $publish_date
+        , $user_id_created, $user_id_modified, $date_created;
 
     // Artificial columns
-    public $images, $industry, $order, $price, $created_by, $updated_by;
+    public $images, $industry, $order, $created_by, $updated_by;
 
     // Columns from other tables
     public $brand, $category;

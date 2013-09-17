@@ -162,17 +162,17 @@ class ButlerFeedGateway extends ProductFeedGateway {
         , 'LEATHER STOOL' => 560 // Leather  > Leather Barstools
         , 'UMBRELLA STAND' => 756 // Other
         , 'CHEVAL MIRROR' => 114 // Bedroom > Cheval Mirrors
-        , 'WINE RACK' => replace // replace
-        , 'WALL CURIO' => replace // replace
-        , 'PEDESTAL PLANT STAND' => replace // replace
-        , 'BLANKET RACK' => replace // replace
+        , 'WINE RACK' => 136 // Dining Room > Wine Rack
+        , 'WALL CURIO' => 434 // Accessories > Curio
+        , 'PEDESTAL PLANT STAND' => 747 // Accessories > Plant Stands
+        , 'BLANKET RACK' => 756 // Other
         , 'BUNCHING ACCENT TABLE' => 233 // Occasional > End Tables
-        , 'TRAY TABLE' => replace // replace
-        , 'ARM CHAIR' => replace // replace
+        , 'TRAY TABLE' => 737 // Occasional > Tray Tables
+        , 'ARM CHAIR' => 131 // Dining Room > Arm Chairs
         , 'REVOLVING BAR STOOL' => 142 // Dining Room > Bar Stools
-        , 'NEST OF TABLES' => replace // replace
+        , 'NEST OF TABLES' => 237 // Occasional > Chair Side Tables
         , 'CONSOLE/SOFA TABLE' => 234 // Occasional > Sofa Tables
-        , 'ALMIRAH' => replace // replace
+        , 'ALMIRAH' => 657 // Occasional > Cabinet
         , 'FLIP-TOP CONSOLE TABLE' => 130 // Dining Room Tables
         , 'CORNER CABINET' => 334 // Home Entertainment > Corner Cabinets
         , 'SECRETARY' => 329 // Home Office > Home Office Desks
@@ -180,103 +180,103 @@ class ButlerFeedGateway extends ProductFeedGateway {
         , 'OCTAGONAL ACCENT TABLE' => 233 // Occasional > End Tables
         , 'TIERED ACCENT TABLE' => 233 // Occasional > End Tables
         , 'STORAGE DRUM TABLE' => 237 // Occasional > Chair Side Tables
-        , 'BUTLER TABLE' => replace // replace
+        , 'BUTLER TABLE' => 130 // Dining Room Tables
         , 'NESTING COCKTAIL TABLES' => 231 // Occasional > Cocktail Tables
         , 'PEDESTAL ACCENT TABLE' => 233 // Occasional > End Tables
         , 'PUB GAME TABLE' => 144 // Dining Room > Pub Tables
         , 'COCKTAIL GAME TABLE' => 231 // Occasional > Cocktail Tables
-        , 'FOLDING TABLE' => replace // replace
-        , 'ANCHOR TABLE' => replace // replace
-        , 'TABLE' => replace // replace
-        , 'DROP-LEAF TABLE' => replace // replace
+        , 'FOLDING TABLE' => 130 // Dining Room Tables
+        , 'ANCHOR TABLE' => 130 // Dining Room Tables
+        , 'TABLE' => 130 // Dining Room Tables
+        , 'DROP-LEAF TABLE' => 130 // Dining Room Tables
         , 'STANDING VANITY MIRROR' => 202 // Accessories > Mirrors
         , 'WINE CONSOLE' => 235 // Occasional > Consoles
         , 'STORAGE CABINET' => 626 // Bedroom > Storage Cabinet
         , 'ENTERTAINMENT CONSOLE' => 235 // Occasional > Consoles
-        , 'WINE STAND' => replace // replace
-        , 'BUNCHING SIDE TABLE' => replace // replace
-        , 'KIDNEY-SHAPED TABLE' => replace // replace
+        , 'WINE STAND' => 136 // Dining Room > Wine Rack
+        , 'BUNCHING SIDE TABLE' => 237 // Occasional > Chair Side Tables
+        , 'KIDNEY-SHAPED TABLE' => 130 // Dining Room Tables
         , 'TRAY COCKTAIL TABLE' => 231 // Occasional > Cocktail Tables
         , 'IRON BAR STOOL' => 142 // Dining Room > Bar Stools
-        , 'STORAGE BASKET SET' => replace // replace
-        , 'SWIVEL CHAIR' => replace // replace
+        , 'STORAGE BASKET SET' => 756 // Other
+        , 'SWIVEL CHAIR' => 437 // Home Office > Home Office Desk Chair
         , 'PEDESTAL CHEST' => 103 // Bedroom > Chests
-        , 'PLANT STAND' => replace // replace
+        , 'PLANT STAND' => 747 // Accessories > Plant Stands
         , 'STORAGE TRUNK' => 103 // Bedroom > Chests
-        , 'ACCENT CHAIR' => replace // replace
-        , 'CANDLE SCONCE' => replace // replace
-        , 'MOVIE PROJECTOR' => replace // replace
+        , 'ACCENT CHAIR' => 132 // Dining Room > Side Chairs
+        , 'CANDLE SCONCE' => 702 // Accessories > Candles
+        , 'MOVIE PROJECTOR' => 299 // TV & Video > Projectors
         , 'TABLETOP CHEVAL MIRROR' => 114 // Bedroom > Cheval Mirrors
-        , 'CANDLE HOLDER' => replace // replace
-        , 'AIRPLANE CLOCK' => replace // replace
+        , 'CANDLE HOLDER' => 702 // Accessories > Candles
+        , 'AIRPLANE CLOCK' => 196 // Accessories > Clocks
         , 'BUNCHING COCKTAIL TABLE' => 231 // Occasional > Cocktail Tables
         , 'BAR CABINET' => 325 // Dining Room > Storage Cabinets
         , 'WINE CABINET' => 325 // Dining Room > Storage Cabinets
-        , 'STANDING PROPELLER' => replace // replace
-        , 'VASE' => replace // replace
-        , 'VASE SET' => replace // replace
-        , 'WALL PLATTER' => replace // replace
-        , 'FLOOR VASE' => replace // replace
-        , 'FLOOR VASE SET' => replace // replace
-        , 'STORAGE CASE' => replace // replace
-        , 'TISSUE BOX' => replace // replace
-        , 'STORAGE BASKET' => replace // replace
-        , 'STORAGE BIN' => replace // replace
+        , 'STANDING PROPELLER' => 756 // Other
+        , 'VASE' => 703 // Accessories > Vases
+        , 'VASE SET' => 703 // Accessories > Vases
+        , 'WALL PLATTER' => 756 // Other
+        , 'FLOOR VASE' => 703 // Accessories > Vases
+        , 'FLOOR VASE SET' => 703 // Accessories > Vases
+        , 'STORAGE CASE' => 103 // Bedroom > Chests
+        , 'TISSUE BOX' => 756 // Other
+        , 'STORAGE BASKET' => 103 // Bedroom > Chests
+        , 'STORAGE BIN' => 103 // Bedroom > Chests
         , 'STORAGE TRUNK SET' => 103 // Bedroom > Chests
-        , 'ANGEL FIGURINE' => replace // replace
-        , 'CANDLE HOLDER SET' => replace // replace
-        , 'FOLDING WINE RACK' => replace // replace
-        , 'SERVING TRAY' => replace // replace
-        , 'STORAGE BOX' => replace // replace
-        , 'PICTURE FRAME' => replace // replace
-        , 'TELEPHONE BENCH' => replace // replace
+        , 'ANGEL FIGURINE' => 756 // Other
+        , 'CANDLE HOLDER SET' => 702 // Accessories > Candles
+        , 'FOLDING WINE RACK' => 136 // Dining Room > Wine Rack
+        , 'SERVING TRAY' => 756 // Other
+        , 'STORAGE BOX' => 103 // Bedroom > Chests
+        , 'PICTURE FRAME' => 756 // Other
+        , 'TELEPHONE BENCH' => 443 // Occasional > Benches
         , 'WAGON COCKTAIL TABLE' => 231 // Occasional > Cocktail Tables
-        , 'DRAFTING CHAIR' => replace // replace
-        , 'MOROCCAN TRAY TABLE' => replace // replace
-        , 'MANGDAR TRAY TABLE' => replace // replace
+        , 'DRAFTING CHAIR' => 437 // Home Office > Home Office Desk Chair
+        , 'MOROCCAN TRAY TABLE' => 737 // Occasional > Tray Tables
+        , 'MANGDAR TRAY TABLE' => 737 // Occasional > Tray Tables
         , 'PEDESTAL STAND' => 464 // Occasional > Pedestal
         , 'REVOLVING STOOL' => 142 // Dining Room > Bar Stools
         , 'JEWELRY CHEST' => 115 // Bedroom > Jewelry Chests
         , 'DROP-LEAF HALL TABLE' => 235 // Occasional > Sofa Tables
         , 'DROP-LEAF ACCENT TABLE' => 233 // Occasional > End Tables
-        , 'NESTING OTTOMANS' => replace // replace
-        , 'PARSONS CHAIR' => replace // replace
-        , 'BOX ON STAND' => replace // replace
+        , 'NESTING OTTOMANS' => 229 // Living Room  > Ottomans
+        , 'PARSONS CHAIR' => 728 // Dining Room > Parson Chairs
+        , 'BOX ON STAND' => 756 // Other
         , 'LOW BOY CONSOLE' => 235 // Occasional > Consoles
         , 'MIRROR' => 202 // Accessories > Mirrors
-        , 'EASEL' => replace // replace
-        , 'HEXAGONAL GAME TABLE' => replace // replace
+        , 'EASEL' => 756 // Other
+        , 'HEXAGONAL GAME TABLE' => 727 // Dining Room > Game Tables
         , 'WINE STORAGE CABINET (ITEM SHIPS IN TWO CARTONS)' => 325 // Dining Room > Storage Cabinets
         , 'BOOKCASE CONSOLE' => 235 // Occasional > Consoles
         , 'LOW BOOKCASE' => 424 // Accessories > Bookcase
-        , 'GAME PIECES' => replace // replace
+        , 'GAME PIECES' => 756 // Other
         , 'DRUM COCKTAIL TABLE' => 231 // Occasional > Cocktail Tables
         , 'TROLLEY BUFFET' => 133 // Dining Room > Buffets
-        , 'NESTING PLANT STANDS' => replace // replace
-        , 'FOLDING SIDE TABLE' => replace // replace
-        , 'BAR CART' => replace // replace
-        , 'FIGURINE' => replace // replace
-        , 'DUCK FIGURINE' => replace // replace
-        , 'ROCKING HORSE' => replace // replace
-        , 'KEY BOX' => replace // replace
-        , 'STORAGE CONTAINER' => replace // replace
-        , 'DISPLAY SHELF' => replace // replace
+        , 'NESTING PLANT STANDS' => 747 // Accessories > Plant Stands
+        , 'FOLDING SIDE TABLE' => 237 // Occasional > Chair Side Tables
+        , 'BAR CART' => 746 // Dining Room > Serving Carts
+        , 'FIGURINE' => 756 // Other
+        , 'DUCK FIGURINE' => 756 // Other
+        , 'ROCKING HORSE' => 756 // Other
+        , 'KEY BOX' => 756 // Other
+        , 'STORAGE CONTAINER' => 103 // Bedroom > Chests
+        , 'DISPLAY SHELF' => 657 // Occasional > Cabinet
         , 'JEWELRY CASE' => 115 // Bedroom > Jewelry Chests
-        , 'STORAGE OTTOMAN' => replace // replace
-        , 'BUNCHING CHESS TABLE' => replace // replace
+        , 'STORAGE OTTOMAN' => 229 // Living Room  > Ottomans
+        , 'BUNCHING CHESS TABLE' => 233 // Occasional > End Tables
         , 'ELEPHANT ACCENT TABLE' => 233 // Occasional > End Tables
         , 'BOMBE CHEST' => 103 // Bedroom > Chests
         , 'SIDE CHEST' => 103 // Bedroom > Chests
-        , 'CHAMPAGNE BUCKET' => replace // replace
+        , 'CHAMPAGNE BUCKET' => 756 // Other
         , 'MIRRORED PEDESTAL' => 464 // Occasional > Pedestal
         , 'LIFT-TOP CHEST' => 103 // Bedroom > Chests
         , 'OCTAGONAL COCKTAIL TABLE' => 231 // Occasional > Cocktail Tables
-        , 'ROUND SIDE TABLE' => replace // replace
+        , 'ROUND SIDE TABLE' => 237 // Occasional > Chair Side Tables
         , 'OCTAGON ACCENT TABLE' => 233 // Occasional > End Tables
-        , 'MAGAZINE STAND' => replace // replace
-        , 'MISSION HALL TREE (ITEM SHIPS IN TWO CARTONS)' => replace // replace
-        , 'TIERED SIDE TABLE' => replace // replace
-        , 'MOBILE TRAY TABLE' => replace // replace
+        , 'MAGAZINE STAND' => 738 // Occasional > Magazine Racks
+        , 'MISSION HALL TREE (ITEM SHIPS IN TWO CARTONS)' => 756 // Other
+        , 'TIERED SIDE TABLE' => 237 // Occasional > Chair Side Tables
+        , 'MOBILE TRAY TABLE' => 737 // Occasional > Tray Tables
         , 'CORNER CURIO CABINET' => 422 // Dining Room > Curio Cabinets
     );
 
@@ -316,11 +316,8 @@ class ButlerFeedGateway extends ProductFeedGateway {
      * Now process everything with the data we have
      */
     protected function process() {
-        $categories = array();
         // Generate array of our items
 		foreach( $this->items as $item ) {
-            $categories[] = $item[4];
-            continue;
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
@@ -349,6 +346,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
                 $product->website_id = 0;
                 $product->user_id_created = self::USER_ID;
                 $product->publish_visibility = 'public';
+                $product->category_id = $this->categories[$item[4]];
                 $product->create();
 
                 // Set publish date
@@ -410,6 +408,8 @@ class ButlerFeedGateway extends ProductFeedGateway {
 			}
 
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
+            $product->price = $this->identical( $item[15], $product->price, 'price' );
+            $product->list_price = $this->identical( $item[17], $product->list_price, 'list-price' );
             $product->status = $this->identical( 'in-stock', $product->status, 'status' );
             $product->brand_id = self::BRAND_ID;
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item[56] . '</p>' ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
@@ -432,6 +432,8 @@ class ButlerFeedGateway extends ProductFeedGateway {
             // Setup images array
             $images = explode( '|', $product->images );
 			$last_character = substr( $images[0], -1 );
+
+            fn::info( $product );exit;
 
             if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $item[10] ) && curl::check_file( $image_url ) ) {
 				try {
@@ -495,10 +497,6 @@ class ButlerFeedGateway extends ProductFeedGateway {
             $this->existing_products[$product->sku] = $product;
 			$this->items[$sku] = NULL;
 		}
-
-        $categories = array_unique( $categories );
-        echo implode( '<br>', $categories );
-        exit;
     }
 
     /**
