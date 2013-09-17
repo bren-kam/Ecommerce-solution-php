@@ -74,7 +74,7 @@ if ( !empty( $zone_id ) ) {
                                     <?php if ( $no_delete ) { echo $r['Type']; } else { ?>
                                     <select name="changes[type][]" class="disabled" disabled="disabled">
                                         <?php
-                                        $types = array( 'A', 'CNAME', 'MX', 'NS' );
+                                        $types = array( 'A', 'CNAME', 'MX', 'NS', 'TXT' );
                                         foreach ( $types as $type ) {
                                             $selected = ( $type == $r['Type'] ) ? ' selected="Selected"' : '';
                                             ?>
@@ -112,7 +112,7 @@ if ( !empty( $zone_id ) ) {
             <td class="top">
                 <select name="changes[type][]" class="changes-type">
                 <?php
-                    $types = array( 'A', 'CNAME', 'MX', 'NS' );
+                    $types = array( 'A', 'CNAME', 'MX', 'NS', 'TXT' );
                     foreach ( $types as $type ) {
                         ?>
                         <option value="<?php echo $type; ?>"><?php echo $type; ?></option>
