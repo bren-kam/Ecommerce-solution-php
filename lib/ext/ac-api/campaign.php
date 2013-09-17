@@ -60,7 +60,7 @@ class ActiveCampaignCampaignAPI {
             , 'tracklinksanalytics' => 1
             , 'trackreads' => 1
             , 'trackreadsanalytics' => 1
-            , 'trackreplies' => 1
+            //, 'trackreplies' => 1
             , 'analytics_campaign_name' => $subject
             , 'embed_images' => 1
             , 'htmlunsub' => 1
