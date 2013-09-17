@@ -78,7 +78,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
         , 'SCATTER TABLE' => 233 // Occasional > End Tables
         , 'STEP STOOL' => 756 // Other
         , 'JARDINIERE' => 747 // Accessories > Plant Stands
-        , 'COSTUMER (ITEM SHIPS IN TWO CARTONS)' => -1 // None
+        , 'COSTUMER (ITEM SHIPS IN TWO CARTONS)' => 756 // Other
         , 'COSTUMER' => 756 // Other
         , 'BLANKET STAND' => 756 // Other
         , 'MARTINI TABLE' => 231 // Occasional > Cocktail Tables
@@ -294,7 +294,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
         ini_set( 'max_execution_time', 1200 ); // 20 minutes
 		ini_set( 'memory_limit', '1024M' );
 		set_time_limit( 1200 );
-
+		
         // Load excel reader
         library('Excel_Reader/Excel_Reader');
         $this->reader = new Excel_Reader();
@@ -304,6 +304,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
     }
 
     /**
+
      * Get Data from Ashley
      */
     protected function get_data() {
@@ -316,12 +317,13 @@ class ButlerFeedGateway extends ProductFeedGateway {
      * Now process everything with the data we have
      */
     protected function process() {
+		
         // Generate array of our items
 		foreach( $this->items as $item ) {
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo 'BF: ' . $item[3];
+            echo 'BF: ' . $item[3] . "\n";
             set_time_limit(30);
 			flush();
 
@@ -376,7 +378,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
             $count = isset( $ps[2] ) ? $ps[2] : 0;
 
             if ( !empty( $item[49] ) ) {
-                $new_product_specifications = '|Width`' . round( $item[49], 2 ) . ' inches`' . ( $count + 1 );
+                $new_product_specifications = 'Width`' . round( $item[49], 2 ) . ' inches`' . ( $count + 1 );
                 $new_product_specifications .= '|Depth`' . round( $item[50], 2 ) . ' inches`' . ( $count + 2 );
                 $new_product_specifications .= '|Height`' . round( $item[51], 2 ) . ' inches`' . ( $count + 3 );
             } else {
@@ -392,6 +394,8 @@ class ButlerFeedGateway extends ProductFeedGateway {
 
                     $new_product_specifications .= '`' . trim( $new_product_spec ) . '`' . $i;
                 }
+				
+				$new_product_specifications = str_replace( array( '¼', '½', '¾' ), array( '&frac14;', '&frac12;', '&frac34;' ), $new_product_specifications );
             }
 
             /***** ADD PRODUCT DATA *****/
@@ -426,59 +430,59 @@ class ButlerFeedGateway extends ProductFeedGateway {
 
             /***** ADD PRODUCT IMAGES *****/
 
-            // Let's hope it's big!
-            $image_url = self::IMAGE_BASE . $item[10];
-            
-            // Setup images array
-            $images = explode( '|', $product->images );
-			$last_character = substr( $images[0], -1 );
-
-            fn::info( $product );exit;
-
-            if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $item[10] ) && curl::check_file( $image_url ) ) {
-				try {
-					$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-				} catch( InvalidParametersException $e ) {
-					fn::info( $product );
-					echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
-					exit;
-				}
-
-                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                    $this->not_identical[] = 'images';
-                    $images[] = $image_name;
-
-                    if ( !empty( $item[11] ) && curl::check_file( $image_url ) ) {
-                        $image_url = self::IMAGE_BASE . $item[11];
-                        try {
-                            $images[] = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-                        } catch( InvalidParametersException $e ) {
-                            fn::info( $product );
-                            echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
-                            exit;
-                        }
-                    }
-
-                    if ( !empty( $item[12] ) && curl::check_file( $image_url ) ) {
-                        $image_url = self::IMAGE_BASE . $item[12];
-                        try {
-                            $images[] = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-                        } catch( InvalidParametersException $e ) {
-                            fn::info( $product );
-                            echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
-                            exit;
-                        }
-                    }
-
-					$product->add_images( $images );
-                }
-            }
-
-            // Change publish visibility to private if there are no images
-            if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
-                $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'private';
-            }
+//            // Let's hope it's big!
+//            $image_url = self::IMAGE_BASE . $item[10];
+//            
+//            // Setup images array
+//            $images = explode( '|', $product->images );
+//			$last_character = substr( $images[0], -1 );
+//			
+//            if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $item[10] ) ) {
+//				try {
+//					$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+//				} catch( InvalidParametersException $e ) {
+//					fn::info( $product );
+//					echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
+//					exit;
+//				}
+//
+//                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+//                    $this->not_identical[] = 'images';
+//                    $images[] = $image_name;
+//
+//
+//                    if ( !empty( $item[11] ) ) {
+//                        $image_url = self::IMAGE_BASE . $item[11];
+//						echo '2';exit;
+//                        try {
+//                            $images[] = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+//                        } catch( InvalidParametersException $e ) {
+//                            fn::info( $product );
+//                            echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
+//                            exit;
+//                        }
+//                    }
+//
+//                    if ( !empty( $item[12] ) ) {
+//                        $image_url = self::IMAGE_BASE . $item[12];
+//                        try {
+//                            $images[] = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+//                        } catch( InvalidParametersException $e ) {
+//                            fn::info( $product );
+//                            echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
+//                            exit;
+//                        }
+//                    }
+//
+//					$product->add_images( $images );
+//                }
+//            }
+//
+//			// Change publish visibility to private if there are no images
+//            if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
+//                $this->not_identical[] = 'publish_visibility';
+//                $product->publish_visibility = 'private';
+//            }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
 
