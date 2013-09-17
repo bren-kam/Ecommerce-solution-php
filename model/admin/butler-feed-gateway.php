@@ -323,7 +323,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo 'BF: ' . $item[3] . "\n";
+            //echo 'BF: ' . $item[3] . "\n";
             set_time_limit(30);
 			flush();
 
@@ -360,6 +360,18 @@ class ButlerFeedGateway extends ProductFeedGateway {
                 $new_product = false;
 				$product->user_id_modified = self::USER_ID;
 			}
+
+            echo "http://admin.greysuitretail.com/products/add-edit/?pid={$product->id} - " . self::IMAGE_BASE . $item[10] . "\n";
+
+            if ( !empty( $item[11] ) ) {
+                echo "http://admin.greysuitretail.com/products/add-edit/?pid={$product->id} - " . self::IMAGE_BASE . $item[11] . "\n";
+            }
+
+            if ( !empty( $item[12] ) ) {
+                echo "http://admin.greysuitretail.com/products/add-edit/?pid={$product->id} - " . self::IMAGE_BASE . $item[12] . "\n";
+            }
+
+            continue;
 
             /***** PREPARE PRODUCT DATA *****/
 
