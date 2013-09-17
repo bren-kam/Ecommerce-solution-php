@@ -10,7 +10,7 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
      * Setup the array for existing products
      * @var array
      */
-    protected $existing_products;
+    protected $existing_products = array();
 
     /**
      * Set the UserId Responsible

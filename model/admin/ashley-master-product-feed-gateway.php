@@ -296,6 +296,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
                 // Increment product count
                 $this->new_product( format::convert_characters( $this->groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
             } else {
+                $new_product = false;
 				$product->user_id_modified = self::USER_ID;
 			}
 
@@ -411,7 +412,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
     protected function send_report() {
         // Report just to CTO
         $user = new User();
-        $user->get(1); // Kerry Jones
+        $user->get( User::KERRY ); // Kerry Jones
 
         $subject = 'Ashley Feed - ' . dt::now();
 

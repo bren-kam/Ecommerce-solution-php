@@ -18,9 +18,8 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        // Remove Discontinued products
-                $account_product = new AccountProduct();
-                $account_product->remove_all_discontinued();
+        $butler_feed = new ButlerFeedGateway();
+        $butler_feed->run();
 
         return new HtmlResponse( 'heh' );
     }
