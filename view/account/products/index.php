@@ -204,13 +204,6 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 				</td>
 			</tr>
 			<tr>
-				<td valign="top"><?php echo _('Protection'); ?>:</td>
-				<td>
-					<p><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodFlatRate" value="Flat Rate" checked="checked" /> <label for="tProtectionFlatRate"><?php echo _('Flate Rate'); ?></label> &nbsp; &nbsp;<span class="protection selected">$ <input type="text" class="tb price" name="tProtectionFlatRate" id="tProtectionFlatRate" maxlength="10" /></span></p>
-					<p><input type="radio" class="rb-protection" name="rProtectionMethod" id="rProtectionMethodPercentage" value="Percentage" /> <label for="tProtectionPercentage"><?php echo _('Percentage'); ?></label> &nbsp;% <input type="text" class="tb price" name="tProtectionPercentage" id="tProtectionPercentage" maxlength="10" /></p>
-				</td>
-			</tr>
-			<tr>
 				<td><label for="tWholesalePrice"><?php echo _('Wholesale Price'); ?>:</label></td>
 				<td><input type="text" class="tb" name="tWholesalePrice" id="tWholesalePrice" /></td>
 			</tr>

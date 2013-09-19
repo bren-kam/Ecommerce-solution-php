@@ -7,8 +7,8 @@ class AccountProduct extends ActiveRecordBase {
 
     // Columns
     public $website_id, $product_id, $alternate_price, $price, $sale_price, $wholesale_price, $inventory
-        , $additional_shipping_amount, $weight, $protection_amount, $additional_shipping_type
-        , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $protection_type, $price_note
+        , $additional_shipping_amount, $weight, $additional_shipping_type
+        , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $price_note
         , $product_note, $ships_in, $store_sku, $warranty_length, $alternate_price_strikethrough
         , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $date_updated;
 
@@ -102,9 +102,7 @@ class AccountProduct extends ActiveRecordBase {
             , 'wholesale_price' => $this->wholesale_price
             , 'additional_shipping_amount' => $this->additional_shipping_amount
             , 'weight' => $this->weight
-            , 'protection_amount' => $this->protection_amount
             , 'additional_shipping_type' => $this->additional_shipping_type
-            , 'protection_type' => $this->protection_type
             , 'ships_in' => $this->ships_in
             , 'store_sku' => $this->store_sku
             , 'active' => $this->active
