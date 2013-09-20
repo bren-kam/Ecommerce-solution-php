@@ -32,11 +32,11 @@ class CustomizeController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-    protected function css() {
+    protected function stylesheet() {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) || !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        // Get Accoutn
+        // Get Accoubt
         $account = new Account();
         $account->get( $_GET['aid'] );
 
