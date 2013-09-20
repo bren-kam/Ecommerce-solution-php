@@ -152,6 +152,7 @@ class Product extends ActiveRecordBase {
                 , 'slug' => $this->slug
                 , 'description' => $this->description
                 , 'sku' => $this->sku
+				, 'price' => $this->price
                 , 'status' => $this->status
                 , 'weight' => $this->weight
                 , 'product_specifications' => $this->product_specifications
@@ -160,7 +161,7 @@ class Product extends ActiveRecordBase {
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iiiisssssisssi'
+            , 'iiiissssdsisssi'
             , 'i'
         );
     }

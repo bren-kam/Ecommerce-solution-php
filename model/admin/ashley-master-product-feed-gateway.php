@@ -220,7 +220,8 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
 				// Weight
 				case 'unitPrice':
-                    $this->items[$j]['price'] = trim( $xml_reader->getAttribute('price') );
+					if ( !isset( $this->items[$j]['price'] ) )
+						$this->items[$j]['price'] = (float) trim( $xml_reader->readString() );
 				break;
 
 				/*// Volume
@@ -394,7 +395,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
-
+			
             // If everything is identical, we don't want to do anything
             if ( $this->is_identical() ) {
                 $this->skip( $name );
