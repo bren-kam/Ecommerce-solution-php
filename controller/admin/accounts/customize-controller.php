@@ -59,4 +59,37 @@ class CustomizeController extends BaseController {
             ->set( 'form', $ft->generate_form() )
             ->add_title( _('CSS') );
     }
+
+    /**
+     * Add/Edit A Company
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function favicon() {
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) || !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Get Accoubt
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+
+        // Create new form table
+        $ft = new FormTable( 'fCustomCSS' );
+
+        $ft->submit(  _('Save') );
+
+        $ft->add_field( 'textarea', _('CSS'), 'taCSS', $account->get_settings('css') );
+
+        // Update the company if posted
+        if ( $ft->posted() ) {
+            $account->set_settings( array( 'css' => $_POST['taCSS'] ) );
+            $this->notify( 'CSS has been successfully updated!');
+        }
+
+        return $this->get_template_response( 'css' )
+            ->kb( 10 )
+            ->select( 'customize', 'css' )
+            ->set( 'form', $ft->generate_form() )
+            ->add_title( _('CSS') );
+    }
 }
