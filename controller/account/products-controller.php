@@ -386,6 +386,24 @@ class ProductsController extends BaseController {
     }
 
     /**
+     * Price Multiplier
+     *
+     * @return TemplateResponse
+     */
+    protected function auto_price() {
+        $ft = new FormTable('fAutoPrice');
+        $ft->submit( 'Auto Price' );
+
+        $ft->add_field( 'text', 'Price', 'tPrice' )
+            ->add_validation( 'req', 'The "Price" ' );
+
+        return $this->get_template_response( 'auto-price' )
+            ->kb( 0 )
+            ->add_title( _('Auto Price') )
+            ->select( 'sub-products', 'auto-price' );
+    }
+
+    /**
      * Unblock products
      *
      * @return RedirectResponse

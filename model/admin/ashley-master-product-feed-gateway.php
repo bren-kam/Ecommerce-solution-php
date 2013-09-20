@@ -218,6 +218,11 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 						$this->items[$j]['weight'] = trim( $xml_reader->getAttribute('value') );
 				break;
 
+				// Weight
+				case 'unitPrice':
+                    $this->items[$j]['price'] = trim( $xml_reader->getAttribute('price') );
+				break;
+
 				/*// Volume
 				case 'volume':
 					if ( !isset( $this->items[$j]['volume'] ) )
@@ -339,6 +344,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
+            $product->price = $this->identical( $item['price'], $product->price, 'price' );
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Product Prices | Products
+ * @page Price Multiplier | Products
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
