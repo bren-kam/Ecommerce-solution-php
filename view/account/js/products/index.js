@@ -200,11 +200,6 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             $( '#tShippingPercentage, #tShippingFlatRate' ).val('');
             $( '#tShipping' + shipping_type ).val( p['additional_shipping_amount'] );
 
-			var protection_type =  ( 'Percentage' == p['protection_type'] ) ? 'Percentage' : 'FlatRate';
-			$( '#rProtectionMethod' + protection_type ).attr( 'checked', true );
-            $( '#tProtectionPercentage, #tProtectionFlatRate' ).val('');
-            $( '#tProtection' + protection_type ).val(  p['protection_amount'] );
-
 			$('#tWholesalePrice').val( p['wholesale_price'] );
 			$('#tWeight').val( p['weight'] );
 

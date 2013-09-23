@@ -386,6 +386,24 @@ class ProductsController extends BaseController {
     }
 
     /**
+     * Price Multiplier
+     *
+     * @return TemplateResponse
+     */
+    protected function auto_price() {
+        $ft = new FormTable('fAutoPrice');
+        $ft->submit( 'Auto Price' );
+
+        $ft->add_field( 'text', 'Price', 'tPrice' )
+            ->add_validation( 'req', 'The "Price" ' );
+
+        return $this->get_template_response( 'auto-price' )
+            ->kb( 0 )
+            ->add_title( _('Auto Price') )
+            ->select( 'sub-products', 'auto-price' );
+    }
+
+    /**
      * Unblock products
      *
      * @return RedirectResponse
@@ -927,9 +945,7 @@ class ProductsController extends BaseController {
             $account_product->wholesale_price = $_POST['tWholesalePrice'];
             $account_product->additional_shipping_amount = ( 'Flat Rate' == $_POST['rShippingMethod'] ) ? $_POST['tShippingFlatRate'] : $_POST['tShippingPercentage'];
             $account_product->weight = $_POST['tWeight'];
-            $account_product->protection_amount = ( 'Flat Rate' == $_POST['rProtectionMethod'] ) ? $_POST['tProtectionFlatRate'] : $_POST['tProtectionPercentage'];
             $account_product->additional_shipping_type = $_POST['rShippingMethod'];
-            $account_product->protection_type = $_POST['rProtectionMethod'];
             $account_product->ships_in = $_POST['tShipsIn'];
             $account_product->store_sku = $_POST['tStoreSKU'];
 

@@ -218,6 +218,12 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 						$this->items[$j]['weight'] = trim( $xml_reader->getAttribute('value') );
 				break;
 
+				// Weight
+				case 'unitPrice':
+					if ( !isset( $this->items[$j]['price'] ) )
+						$this->items[$j]['price'] = (float) trim( $xml_reader->readString() );
+				break;
+
 				/*// Volume
 				case 'volume':
 					if ( !isset( $this->items[$j]['volume'] ) )
@@ -296,6 +302,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
                 // Increment product count
                 $this->new_product( format::convert_characters( $this->groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
             } else {
+                $new_product = false;
 				$product->user_id_modified = self::USER_ID;
 			}
 
@@ -338,6 +345,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->status = $this->identical( $item['status'], $product->status, 'status' );
+            $product->price = $this->identical( $item['price'], $product->price, 'price' );
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
@@ -387,7 +395,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
-
+			
             // If everything is identical, we don't want to do anything
             if ( $this->is_identical() ) {
                 $this->skip( $name );
@@ -411,7 +419,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
     protected function send_report() {
         // Report just to CTO
         $user = new User();
-        $user->get(1); // Kerry Jones
+        $user->get( User::KERRY ); // Kerry Jones
 
         $subject = 'Ashley Feed - ' . dt::now();
 

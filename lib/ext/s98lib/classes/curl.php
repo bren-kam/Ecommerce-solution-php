@@ -144,6 +144,38 @@ class curl {
 		
 		return true;
 	}
+
+    /**
+   	 * Returns a range of data from a file
+     *
+     * @param string $url
+   	 * @return string
+   	 */
+   	public static function ranger( $url ){
+   		// Whether we should close
+   		$close = true;
+
+   		if ( isset( $this ) ) {
+   			$ch = &$this->ch;
+   			$close = false;
+   		} else {
+   			$ch = curl_init();
+   		}
+
+           $headers = array(
+   			"Range: bytes=0-32768"
+           );
+
+           $ch = curl_init( $url );
+           curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+           curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+           $data = curl_exec( $ch );
+
+   		if ( $close )
+   			curl_close( $ch );
+
+           return $data;
+       }
 	
 	/**
 	 * Creates a continuous instance of curl
