@@ -864,13 +864,15 @@ class AccountProduct extends ActiveRecordBase {
      * @return array
      */
     protected function get_discontinued_website_ids() {
-        return $this->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
+        //  AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )
+        return $this->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued'" );
     }
 
     /**
      * Get Discontinued Products Website IDs
      */
     protected function remove_all_discontinued_products() {
-        $this->query( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`active` = 0 WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
+        //  AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )
+        $this->query( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`active` = 0 WHERE wp.`active` = 1 AND p.`status` = 'discontinued'" );
     }
 }
