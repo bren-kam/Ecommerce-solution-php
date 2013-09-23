@@ -139,9 +139,6 @@ if ( !empty( $order->phone ) ) {
                     $additional_price += $product_option->price;
                 }
 
-                if ( 0 != $item->protection_price )
-                    echo '<p>Protection ($', number_format( $item->protection_price, 2 ), ')</p>';
-
                 if ( is_array( $item->extra ) && !empty( $item->extra ) )
                 foreach ( $item->extra as $name => $value ) {
                     echo '<p>' . ucwords( $name ) . ": " . $value . '</p>';
@@ -150,7 +147,7 @@ if ( !empty( $order->phone ) ) {
             </div>
             <?php } ?>
         </td>
-        <td class="price"><strong>$<?php $item_price = $item->price + $item->protection_price + $additional_price; echo number_format( $item_price, 2 ); ?></strong></td>
+        <td class="price"><strong>$<?php $item_price = $item->price + $additional_price; echo number_format( $item_price, 2 ); ?></strong></td>
         <td class="qty"><strong><?php echo number_format( $item->quantity ); ?></strong></td>
         <td class="total"><strong>$<?php echo number_format( $item_price * $item->quantity, 2 ); ?></strong></td>
     </tr>

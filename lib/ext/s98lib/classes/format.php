@@ -156,6 +156,9 @@ class format extends Base_Class {
             , '‘' => "'"
             , '–' => '-'
             , ' ' => '' // This is not a space -- it's a "non-breaking space" Hex #A0
+			, '¼' => '&frac14;'
+			, '½' => '&frac12;'
+			, '¾' => '&frac34;'
         );
 
         return str_replace( array_keys( $conversion ), array_values( $conversion ), $string );

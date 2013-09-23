@@ -2,7 +2,7 @@
 class WebsiteOrderItem extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $website_order_item_id, $website_order_id, $product_id, $name, $sku, $quantity, $price
-        , $additional_shipping_price, $protection_price, $extra, $price_note, $product_note, $ships_in
+        , $additional_shipping_price, $extra, $price_note, $product_note, $ships_in
         , $store_sku, $warranty_length, $status;
 
     // Belongs to other tables
