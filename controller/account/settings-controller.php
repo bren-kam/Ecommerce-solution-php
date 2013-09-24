@@ -136,6 +136,10 @@ class SettingsController extends BaseController {
         $file_url = $file->upload_image( $result['file_path'], $logo_name, 700, 700, 'websites', $logo_dir . 'large/' );
 		$file_url = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/logo/' . $file_url;
 
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         // Create account file
         $account_file->website_id = $this->user->account->id;
         $account_file->file_path = $file_url;
