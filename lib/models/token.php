@@ -29,4 +29,20 @@ class Token extends ActiveRecordBase {
 
         $this->id = $this->token_id = $this->get_insert_id();
     }
+    public function get_token($token){
+         $this->prepare(
+            'SELECT * FROM `tokens` WHERE `key` = :key'
+            , 'ii'
+            , array( ':key' => $token)
+        )->get_row( PDO::FETCH_INTO, $this );
+        $this->id = $this->token_id;
+    }
+     /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'token_id' => $this->id
+        ), 'ii' );
+    }
 }
