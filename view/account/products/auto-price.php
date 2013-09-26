@@ -16,7 +16,7 @@ echo $template->start( _('Auto Price') );
 ?>
 
 <p><?php echo _('On this page you set all of your prices based on the whole sale price.'); ?></p>
-<p><?php echo _('Please enter in the multipliers in the fields below before uploading. A "0" will be ignored.'); ?></p>
+<p><?php echo _('Please enter in the percent increase in the fields below before uploading. A "0" will be ignored.'); ?></p>
 <br><br>
 <?php if ( empty( $auto_price_candidates ) ) { ?>
     <p>This would affect none of your current products.</p>

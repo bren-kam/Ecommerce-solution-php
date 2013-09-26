@@ -399,10 +399,10 @@ class ProductsController extends BaseController {
         $settings = $this->user->account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending', 'ashley-ftp-username' );
 
         if ( empty( $settings['auto-price'] ) )
-            $settings['auto-price'] = 3;
+            $settings['auto-price'] = 200;
 
         if ( empty( $settings['auto-sale-price'] ) )
-            $settings['auto-sale-price'] = 2;
+            $settings['auto-sale-price'] = 100;
 
         if ( empty( $settings['auto-alternate-price'] ) )
             $settings['auto-alternate-price'] = 0;
@@ -468,7 +468,11 @@ class ProductsController extends BaseController {
 
         if ( $ft->posted() ) {
             // Autoprice
-            $product->auto_price( $_POST['tPrice'], $_POST['tSalePrice'], $_POST['tAlternatePrice'], $_POST['tPriceEnding'], $this->user->account->id );
+            $price = ( empty( $_POST['tPrice'] ) ) ? 0 : ( $_POST['tPrice'] + 100 ) / 100;
+            $sale_price = ( empty( $_POST['tSalePrice'] ) ) ? 0 : ( $_POST['tSalePrice'] + 100 ) / 100;
+            $alternate_price = ( empty( $_POST['tAlternatePrice'] ) ) ? 0 : ( $_POST['tAlternatePrice'] + 100 ) / 100;
+
+            $product->auto_price( $price, $sale_price, $alternate_price, $_POST['tPriceEnding'], $this->user->account->id );
             $this->notify( _('Your products have been successfully priced!' ) );
         }
 
