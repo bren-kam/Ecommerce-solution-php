@@ -62,7 +62,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_auto_price_count( $account_id ) {
         return $this->prepare(
-            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL GROUP BY b.`brand_id`"
+            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL GROUP BY b.`brand_id`"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -104,7 +104,7 @@ class AccountProduct extends ActiveRecordBase {
         $set = implode( ',', $set );
 
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL"
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
