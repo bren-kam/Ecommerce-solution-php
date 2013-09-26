@@ -1,5 +1,9 @@
 <?php
 class Product extends ActiveRecordBase {
+    const PUBLISH_VISIBILITY_PUBLIC = 'public';
+    const PUBLISH_VISIBILITY_PRIVATE = 'private';
+    const PUBLISH_VISIBILITY_DELETED = 'deleted';
+
     // The columns we will have access to
     public $id, $product_id, $category_id, $brand_id, $industry_id, $website_id, $name, $slug, $description, $sku
         , $price, $list_price, $status, $weight, $product_specifications, $publish_visibility, $publish_date

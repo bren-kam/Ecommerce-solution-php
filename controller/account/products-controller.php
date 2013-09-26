@@ -391,7 +391,12 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function auto_price() {
-        $settings = $this->user->account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'ashley-ftp-username' );
+        // Find out what products will be affected
+        $product = new AccountProduct();
+        $auto_price_candidates = $product->get_auto_price_count( $this->user->account->id );
+
+        // Get settings
+        $settings = $this->user->account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending', 'ashley-ftp-username' );
 
         if ( empty( $settings['auto-price'] ) )
             $settings['auto-price'] = 3;
@@ -401,6 +406,9 @@ class ProductsController extends BaseController {
 
         if ( empty( $settings['auto-alternate-price'] ) )
             $settings['auto-alternate-price'] = 0;
+
+        if ( empty( $settings['auto-price-ending'] ) )
+            $settings['auto-price-ending'] = 9.99;
 
         if ( !empty( $settings['ashley-ftp-username'] ) ) {
             // Auto Settings
@@ -416,7 +424,10 @@ class ProductsController extends BaseController {
             $fts->add_field( 'text', 'Alternate Price', 'tAutoAlternatePrice', $settings['auto-alternate-price'] )
                 ->add_validation( 'req', 'The "Alternate Price" field is required' );
 
-                $fts->add_field( 'checkbox', 'Auto Price New Feed Items', 'cbAutoPriceFeed', $settings['auto-price-feed'] );
+            $fts->add_field( 'text', 'Price Ending', 'tAutoPriceEnding', $settings['auto-price-ending'] )
+                ->add_validation( 'req', 'The "Price Ending" field is required' );
+
+            $fts->add_field( 'checkbox', 'Auto Price New Feed Items', 'cbAutoPriceFeed', $settings['auto-price-feed'] );
 
             // Save settings
             if ( $fts->posted() ) {
@@ -424,6 +435,7 @@ class ProductsController extends BaseController {
                     'auto-price' => $_POST['tAutoPrice']
                     , 'auto-sale-price' => $_POST['tAutoSalePrice']
                     , 'auto-alternate-price' => $_POST['tAutoAlternatePrice']
+                    , 'auto-price-ending' => $_POST['tAutoPriceEnding']
                     , 'auto-price-feed' => $_POST['cbAutoPriceFeed']
                 );
 
@@ -451,12 +463,22 @@ class ProductsController extends BaseController {
         $ft->add_field( 'text', 'Alternate Price', 'tAlternatePrice', $settings['auto-alternate-price'] )
             ->add_validation( 'req', 'The "Alternate Price" field is required' );
 
+        $ft->add_field( 'text', 'Price Ending', 'tPriceEnding', $settings['auto-price-ending'] )
+            ->add_validation( 'req', 'The "Price Ending" field is required' );
+
+        if ( $ft->posted() ) {
+            // Autoprice
+            $product->auto_price( $_POST['tPrice'], $_POST['tSalePrice'], $_POST['tAlternatePrice'], $_POST['tPriceEnding'], $this->user->account->id );
+            $this->notify( _('Your products have been successfully priced!' ) );
+        }
+
         return $this->get_template_response( 'auto-price' )
             ->kb( 0 )
             ->add_title( _('Auto Price') )
             ->set( array(
                 'auto_price_settings' => $auto_price_settings
                 , 'auto_price' => $ft->generate_form()
+                , 'auto_price_candidates' => $auto_price_candidates
             ))
             ->select( 'sub-products', 'auto-price' );
     }
