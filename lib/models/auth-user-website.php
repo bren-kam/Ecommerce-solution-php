@@ -88,7 +88,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             if ( !in_array( $user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) || $this->is_authorized( $user->id, $account_id ) )
                 throw new ModelException( _('Invalid Role') );
 
-            $message = '<br /><strong>' . $account->title . '</strong> is using ' . $account->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
+            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
             $message .= '<a href="http://account.' . $user->domain . '/login/" title="Login">http://account.' .  $user->domain  . '/login/</a>';
             $message .= '<br /><br />Please contact ' . $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
             $message .= '<strong>Email:</strong> info@' . $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
@@ -99,6 +99,8 @@ class AuthUserWebsite extends ActiveRecordBase {
                 $user->status = 1;
                 $user->save();
             }
+            
+            
         } else {
             // Create base user
             $user->company_id = $account->company_id;
@@ -107,6 +109,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             $user->role = $role;
             $user->status = 1;
             $user->create();
+            $user->get($user->id);
 
             // Create token for them to authorize their account
             $expires = dt::hours_to_date( 72 );
@@ -121,7 +124,7 @@ class AuthUserWebsite extends ActiveRecordBase {
             $message .= 'http://account.' .  $user->domain. "/login/activate/?t={$token->key}";
             $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
             $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
-           
+    
         }
 
         // Create the auth user website
