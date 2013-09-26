@@ -89,9 +89,9 @@ class AuthUserWebsite extends ActiveRecordBase {
                 throw new ModelException( _('Invalid Role') );
 
             $message = '<br /><strong>' . $account->title . '</strong> is using ' . $account->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to login:<br /><br />';
-            $message .= '<a href="http://account.' . $account->domain . '/login/" title="Login">http://account.' . DOMAIN . '/login/</a>';
-            $message .= '<br /><br />Please contact ' . $account->domain . ' if you have any questions. Thank you for your time.<br /><br />';
-            $message .= '<strong>Email:</strong> info@' . $account->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
+            $message .= '<a href="http://account.' . $user->domain . '/login/" title="Login">http://account.' .  $user->domain  . '/login/</a>';
+            $message .= '<br /><br />Please contact ' . $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
+            $message .= '<strong>Email:</strong> info@' . $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
           
             if ( 1 != $user->status ) {
                 $user->contact_name = $contact_name;
@@ -117,10 +117,10 @@ class AuthUserWebsite extends ActiveRecordBase {
             $token->create();
 
             // Create message for email
-            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $account->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
-            $message .= 'http://account.' .  $account->domain. "/login/activate/?t={$token->key}";
-            $message .= '<br /><br />Please contact ' .  $account->domain . ' if you have any questions. Thank you for your time.<br /><br />';
-            $message .= '<strong>Email:</strong> info@' .  $account->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
+            $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
+            $message .= 'http://account.' .  $user->domain. "/login/activate/?t={$token->key}";
+            $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
+            $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
            
         }
 

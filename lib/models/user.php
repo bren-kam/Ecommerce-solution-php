@@ -178,11 +178,11 @@ class User extends ActiveRecordBase {
      * @param string $email
      * @param bool $status [optional]
      */
-    public function get_by_email( $email, $status = true ) {
-        $status_where = ( $status ) ? ' AND `status` = 1' : '';
+     public function get_by_email( $email, $status = true ) {
+        $status_where = ( $status ) ? ' AND `u.status` = 1' : '';
 
         $this->prepare(
-            'SELECT ' . $this->get_columns() . ' FROM `users` WHERE `email` = :email' . $status_where
+            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email '
             , 's'
             , array( ':email' => $email )
         )->get_row(  PDO::FETCH_INTO, $this );
