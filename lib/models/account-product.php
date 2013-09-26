@@ -86,7 +86,7 @@ class AccountProduct extends ActiveRecordBase {
         $set = array();
 
         // Round to the ending
-        $calculation = 'REPLACE( FORMAT( [price], 2 ), SUBSTRING( FORMAT( [price], 2 ), -[digits] ), FORMAT( [price_ending], 2 ) )';
+        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
         $price_ending = (float) $price_ending;
 
         if ( $price > 0 )
