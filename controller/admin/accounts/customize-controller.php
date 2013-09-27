@@ -78,7 +78,7 @@ class CustomizeController extends BaseController {
 
         return $this->get_template_response('favicon')
                         ->set('favicon', $favicon)
-                        ->add_title(_('CSS'));
+                        ->add_title(_('Favicon'));
     }
 
     /***** AJAX *****/
@@ -142,6 +142,7 @@ class CustomizeController extends BaseController {
         $account_file->file_path = $file_url;
         $account_file->create();
 
+        $response->add_response( 'file', $account_file->file_path );
         // Update account favicon
         $account->set_settings( array( 'favicon' => $account_file->file_path ) );
         jQuery('#dFaviconContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Favicon') . '" /><br />');
