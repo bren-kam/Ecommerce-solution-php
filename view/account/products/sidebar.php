@@ -23,6 +23,7 @@
         <a href="/products/hide-categories/" title="<?php echo _('Hide Categories'); ?>" class="sub<?php $template->select('hide-categories'); ?>"><?php echo _('Hide Categories'); ?></a>
         <a href="/products/product-prices/" title="<?php echo _('Product Prices'); ?>" class="sub<?php $template->select('product-prices'); ?>"><?php echo _('Product Prices'); ?></a>
         <a href="/products/price-multiplier/" title="<?php echo _('Price Multiplier'); ?>" class="sub<?php $template->select('price-multiplier'); ?>"><?php echo _('Price Multiplier'); ?></a>
+        <a href="/products/auto-price/" title="<?php echo _('Auto Price'); ?>" class="sub<?php $template->select('auto-price'); ?>"><?php echo _('Auto Price'); ?></a>
         <a href="/products/export/" title="<?php echo _('Export'); ?>" class="sub"><?php echo _('Export'); ?></a>
     <?php } ?>
 

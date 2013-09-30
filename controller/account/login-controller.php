@@ -56,6 +56,52 @@ class LoginController extends BaseController {
         return $custom_response;
     }
 
+    
+          /**
+     * Activate user 
+     *
+     *  
+     */
+    
+     protected function activate() {
+            $token = new Token();
+            $token->get_token( $_GET['t'] );
+
+            if ( !$token->id )  
+                            return new RedirectResponse('/login/');
+		
+                $form = new FormTable('activate_account');
+
+               $form->add_field( 'password', _('Password'), 'password' )
+                ->attribute( 'maxlength', 30 )
+                ->add_validation( 'req', _('The "Password" field is required') );
+                       
+
+               $form->add_field( 'password', _('Confirm Password'), 'repassword|password' )
+                   ->attribute( 'maxlength', 30 )
+                   ->add_validation( 'match', _('The "Password" and "Confirm Password" field must match') );
+
+                if ($form->posted()) {
+                        $password = $_POST["password"];
+                        $user = new User();
+                        $user->get($token->user_id);
+                        $user->set_password($password);
+
+                        $token->remove();
+
+                        if ( $user->login($user->email, $password ) ) {
+                            $this->user = $user;
+                            $this->notify( _('Your account has been successfully activated!') );
+                            return new RedirectResponse('/');
+                        }
+                    }
+
+
+                $form = $form->generate_form();
+                return $this->get_template_response('change-password')
+                                ->set(compact('form'));
+    }
+
     /**
      * Override login function
      * @return bool

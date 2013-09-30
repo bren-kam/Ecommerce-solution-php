@@ -314,7 +314,7 @@ class InstallService {
         $account_category->reorganize_categories( $account->id, new Category() );
 
         // Copy Website Settings
-		$account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' ) );
+		$account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'css' ) );
     }
 
     /**

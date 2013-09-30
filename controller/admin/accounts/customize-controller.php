@@ -60,36 +60,96 @@ class CustomizeController extends BaseController {
             ->add_title( _('CSS') );
     }
 
-    /**
-     * Add/Edit A Company
+     /**
+     * Add/Edit Favicon
      *
      * @return TemplateResponse|RedirectResponse
      */
-    protected function favicon() {
-        if ( !$this->user->has_permission( User::ROLE_ADMIN ) || !isset( $_GET['aid'] ) )
+   protected function favicon() {
+         if (!$this->user->has_permission(User::ROLE_ADMIN) || !isset($_GET['aid']))
             return new RedirectResponse('/accounts/');
-
-        // Get Accoubt
+         
+        // Get Account
         $account = new Account();
-        $account->get( $_GET['aid'] );
+        $account->get($_GET['aid']);
 
-        // Create new form table
-        $ft = new FormTable( 'fCustomCSS' );
+        $favicon = $account->get_settings("favicon");
+        $this->resources->javascript('fileuploader', 'customize/favicon');
 
-        $ft->submit(  _('Save') );
+        return $this->get_template_response('favicon')
+                        ->set('favicon', $favicon)
+                        ->add_title(_('Favicon'));
+    }
 
-        $ft->add_field( 'textarea', _('CSS'), 'taCSS', $account->get_settings('css') );
+    /***** AJAX *****/
 
-        // Update the company if posted
-        if ( $ft->posted() ) {
-            $account->set_settings( array( 'css' => $_POST['taCSS'] ) );
-            $this->notify( 'CSS has been successfully updated!');
+    /**
+     * Upload Favicon
+     *
+     * @return AjaxResponse
+     */
+   protected function upload_favicon() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse($this->verified());
+       
+        // Get account
+        $account = new Account();
+        $account->get($_GET['aid']);
+        
+        // If there is an error or now user id, return
+        if ( $response->has_error() ) {
+             $response->add_response("error", $result["error"]);
+             return $response;
         }
 
-        return $this->get_template_response( 'css' )
-            ->kb( 10 )
-            ->select( 'customize', 'css' )
-            ->set( 'form', $ft->generate_form() )
-            ->add_title( _('CSS') );
+        // Get file uploader
+        library('file-uploader');
+
+        // Instantiate classes
+        $file = new File( 'websites' . Config::key('aws-bucket-domain') );
+        $account_file = new AccountFile();
+
+        // Create uploader
+        $uploader = new qqFileUploader( array( 'ico' ), 6144000 );
+        
+        // Upload file
+        $result = $uploader->handleUpload('gsr_');
+
+        $response->check( $result['success'], _('Failed to upload favicon') );
+        
+        // If there is an error or now user id, return
+        if ( $response->has_error() ) {
+             $response->add_response( "error", $result["error"] );
+             return $response;
+        }
+
+        //Create favicon name
+        $favicon_name =  'favicon.ico';
+
+        // Create the different versions we need
+        $favicon_dir = $account->id . '/favicon/';
+ 
+        // Normal and large
+        $file_url =  $file->upload_file( $result['file_path'], $favicon_name, $favicon_dir );
+
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
+        // Create account file
+        $account_file->website_id = $account->id;
+        $account_file->file_path = $file_url;
+        $account_file->create();
+
+        $response->add_response( 'file', $account_file->file_path );
+        // Update account favicon
+        $account->set_settings( array( 'favicon' => $account_file->file_path ) );
+        jQuery('#dFaviconContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Favicon') . '" /><br />');
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
     }
 }
