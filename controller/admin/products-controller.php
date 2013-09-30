@@ -346,6 +346,10 @@ class ProductsController extends BaseController {
         $file->upload_image( $result['file_path'], $new_image_name, 200, 200, $industry_name, 'products/' . $product->id . '/small/', false, true );
         $image_name = $file->upload_image( $result['file_path'], $new_image_name, 1000, 1000, $industry_name, 'products/' . $product->id . '/large/' );
 
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         // Get image url
         $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";
 

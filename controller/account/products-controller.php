@@ -391,15 +391,99 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function auto_price() {
+        // Find out what products will be affected
+        $product = new AccountProduct();
+        $auto_price_candidates = $product->get_auto_price_count( $this->user->account->id );
+
+        // Get settings
+        $settings = $this->user->account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending', 'ashley-ftp-username' );
+
+        if ( empty( $settings['auto-price'] ) )
+            $settings['auto-price'] = 200;
+
+        if ( empty( $settings['auto-sale-price'] ) )
+            $settings['auto-sale-price'] = 100;
+
+        if ( empty( $settings['auto-alternate-price'] ) )
+            $settings['auto-alternate-price'] = 0;
+
+        if ( empty( $settings['auto-price-ending'] ) )
+            $settings['auto-price-ending'] = 9.99;
+
+        if ( !empty( $settings['ashley-ftp-username'] ) ) {
+            // Auto Settings
+            $fts = new FormTable('fAutoPriceSettings');
+            $fts->submit( 'Save' );
+
+            $fts->add_field( 'text', 'Price', 'tAutoPrice', $settings['auto-price'] )
+                ->add_validation( 'req', 'The "Price" field is required' );
+
+            $fts->add_field( 'text', 'Sale Price', 'tAutoSalePrice', $settings['auto-sale-price'] )
+                ->add_validation( 'req', 'The "Sale Price" field is required' );
+
+            $fts->add_field( 'text', 'Alternate Price', 'tAutoAlternatePrice', $settings['auto-alternate-price'] )
+                ->add_validation( 'req', 'The "Alternate Price" field is required' );
+
+            $fts->add_field( 'text', 'Price Ending', 'tAutoPriceEnding', $settings['auto-price-ending'] )
+                ->add_validation( 'req', 'The "Price Ending" field is required' );
+
+            $fts->add_field( 'checkbox', 'Auto Price New Feed Items', 'cbAutoPriceFeed', $settings['auto-price-feed'] );
+
+            // Save settings
+            if ( $fts->posted() ) {
+                $settings = array(
+                    'auto-price' => $_POST['tAutoPrice']
+                    , 'auto-sale-price' => $_POST['tAutoSalePrice']
+                    , 'auto-alternate-price' => $_POST['tAutoAlternatePrice']
+                    , 'auto-price-ending' => $_POST['tAutoPriceEnding']
+                    , 'auto-price-feed' => $_POST['cbAutoPriceFeed']
+                );
+
+                // Set new settings
+                $this->user->account->set_settings( $settings );
+
+                $this->notify( _('Your Auto Price Settings have been saved!') );
+            }
+
+            $auto_price_settings = $fts->generate_form();
+        } else {
+            $auto_price_settings = '';
+        }
+
+        // Do it just once
         $ft = new FormTable('fAutoPrice');
         $ft->submit( 'Auto Price' );
 
-        $ft->add_field( 'text', 'Price', 'tPrice' )
-            ->add_validation( 'req', 'The "Price" ' );
+        $ft->add_field( 'text', 'Price', 'tPrice', $settings['auto-price'] )
+            ->add_validation( 'req', 'The "Price" field is required' );
+
+        $ft->add_field( 'text', 'Sale Price', 'tSalePrice', $settings['auto-sale-price'] )
+            ->add_validation( 'req', 'The "Sale Price" field is required' );
+
+        $ft->add_field( 'text', 'Alternate Price', 'tAlternatePrice', $settings['auto-alternate-price'] )
+            ->add_validation( 'req', 'The "Alternate Price" field is required' );
+
+        $ft->add_field( 'text', 'Price Ending', 'tPriceEnding', $settings['auto-price-ending'] )
+            ->add_validation( 'req', 'The "Price Ending" field is required' );
+
+        if ( $ft->posted() ) {
+            // Autoprice
+            $price = ( empty( $_POST['tPrice'] ) ) ? 0 : ( $_POST['tPrice'] + 100 ) / 100;
+            $sale_price = ( empty( $_POST['tSalePrice'] ) ) ? 0 : ( $_POST['tSalePrice'] + 100 ) / 100;
+            $alternate_price = ( empty( $_POST['tAlternatePrice'] ) ) ? 0 : ( $_POST['tAlternatePrice'] + 100 ) / 100;
+
+            $product->auto_price( $price, $sale_price, $alternate_price, $_POST['tPriceEnding'], $this->user->account->id );
+            $this->notify( _('Your products have been successfully priced!' ) );
+        }
 
         return $this->get_template_response( 'auto-price' )
             ->kb( 0 )
             ->add_title( _('Auto Price') )
+            ->set( array(
+                'auto_price_settings' => $auto_price_settings
+                , 'auto_price' => $ft->generate_form()
+                , 'auto_price_candidates' => $auto_price_candidates
+            ))
             ->select( 'sub-products', 'auto-price' );
     }
 

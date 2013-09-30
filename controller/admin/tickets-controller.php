@@ -376,6 +376,11 @@ class TicketsController extends BaseController {
             return $response;
 
         $file_url = $file->upload_file( $result['file_path'], $ticket_upload->key, 'attachments/' );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         $confirmation = _('Are you sure you want to remove this attachment?');
         $delete_upload = nonce::create('delete_upload');
 
@@ -439,6 +444,11 @@ class TicketsController extends BaseController {
             return $response;
 
         $file_url = $file->upload_file( $result['file_path'], $ticket_upload->key, 'attachments/' );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         $confirmation = _('Are you sure you want to remove this attachment?');
         $delete_upload = nonce::create('delete_upload');
 

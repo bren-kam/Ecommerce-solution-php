@@ -339,6 +339,11 @@ ArticlesController extends BaseController {
 
         // Create the different versions we need
         $file->upload_file( $result['file_path'], $file_name );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         $file_path = 'http://kb.retailcatalog.us/' . $file_name;
 
         // If they don't have any files, remove the message that is sitting there

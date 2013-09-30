@@ -262,6 +262,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         $account_category = new AccountCategory();
 		$account_category->reorganize_categories( $account->id, new Category() );
         $account->set_settings( array( 'feed-last-run' => dt::now() ) );
+
+        // Set prices
+        $settings = $account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending' );
+
+        if ( $settings['auto-price-feed'] )
+            $account_product->auto_price( $settings['auto-price'], $settings['auto-sale-price'], $settings['auto-price-feed'], $settings['auto-price-ending'], $account->id );
 	}
 	
 	/**

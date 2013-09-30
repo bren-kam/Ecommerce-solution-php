@@ -13,7 +13,7 @@ class AccountProduct extends ActiveRecordBase {
         , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $date_updated;
 
     // Artificial columns
-    public $link, $industry, $coupons, $product_options, $created_by;
+    public $link, $industry, $coupons, $product_options, $created_by, $count;
 
     // Columns from other tables
     public $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image;
@@ -52,6 +52,67 @@ class AccountProduct extends ActiveRecordBase {
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
+    }
+
+    /**
+     * Get Auto Price Candidates
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_auto_price_count( $account_id ) {
+        return $this->prepare(
+            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL GROUP BY b.`brand_id`"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get Auto Price Candidates
+     *
+     * @param float $price
+     * @param float $sale_price
+     * @param float $alternate_price
+     * @param float $price_ending
+     * @param int $account_id
+     */
+    public function auto_price( $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+        $set = array();
+
+        // Round to the ending
+        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
+        $price_ending = (float) $price_ending;
+
+        if ( $price > 0 )
+            $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
+
+        if ( $sale_price > 0 )
+            $set[] = 'wp.`sale_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $sale_price, strlen( $price_ending ), $price_ending ), $calculation );
+
+        if ( $alternate_price > 0 )
+            $set[] = 'wp.`alternate_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $alternate_price, strlen( $price_ending ), $price_ending ), $calculation );
+
+        if ( empty( $set ) )
+            return;
+
+        $set = implode( ',', $set );
+
+        $this->prepare(
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->query();
     }
 
     /**

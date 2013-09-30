@@ -798,6 +798,10 @@ class WebsiteController extends BaseController {
         // Create the different versions we need
         $file->upload_file( $result['file_path'], $file_name, $this->user->account->id . '/mm/' );
 
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         // Create the account file
         $account_file->website_id = $this->user->account->id;
         $account_file->file_path = 'http://websites.retailcatalog.us/' . $this->user->account->id . '/mm/' . $file_name;
@@ -895,6 +899,10 @@ class WebsiteController extends BaseController {
         $image_dir = $this->user->account->id . "/$key/";
         $image_name = $file->upload_image( $result['file_path'], $name, $width, $height, 'websites', $image_dir );
 
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         // Form image url
         $image_url = 'http://websites.retailcatalog.us/' . $image_dir . $image_name;
 
@@ -902,7 +910,7 @@ class WebsiteController extends BaseController {
         $attachment = $attachment->get_by_key( $page->id, $key );
 
         if ( !$attachment instanceof AccountPageAttachment )
-            $attachment = new AccountPageAttachment();
+        $attachment = new AccountPageAttachment();
 
         // Set variables
         $attachment->website_page_id = $page->id;
@@ -977,6 +985,10 @@ class WebsiteController extends BaseController {
         // Create the different versions we need
         $image_dir = $this->user->account->id . "/sidebar/";
         $image_name = $file->upload_image( $result['file_path'], $image_name, $max_width, 1000, 'websites', $image_dir );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
 
         // Form image url
         $image_url = 'http://websites.retailcatalog.us/' . $image_dir . $image_name;
@@ -1081,6 +1093,10 @@ class WebsiteController extends BaseController {
         $video_url = $file->upload_file( $result['file_path'], $video_name, $video_dir );
         $video_url = str_replace( 's3.amazonaws.com/', '', $video_url );
 
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
+
         // Create account file
         $account_file->website_id = $this->user->account->id;
         $account_file->file_path = $video_url;
@@ -1142,6 +1158,10 @@ class WebsiteController extends BaseController {
         // Create the different versions we need
         $banner_dir = $this->user->account->id . "/banners/";
         $banner_name = $file->upload_image( $result['file_path'], $banner_name, $max_width, $max_height, 'websites', $banner_dir );
+
+        // Delete file
+        if ( is_file( $result['file_path'] ) )
+            unlink( $result['file_path'] );
 
         // Form image url
         $banner_url = 'http://websites.retailcatalog.us/' . $banner_dir . $banner_name;
