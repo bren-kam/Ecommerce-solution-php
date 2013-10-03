@@ -138,7 +138,7 @@ class AuthorizedUsersController extends BaseController {
      *
      * @return DataTableResponse
      */
-    protected function list_all() {
+   protected function list_all() {
         // Get response
         $dt = new DataTableResponse( $this->user );
         $auth_user_website = new AuthUserWebsite();
@@ -157,31 +157,60 @@ class AuthorizedUsersController extends BaseController {
 
         $confirm = _('Are you sure you want to delete this Authorized user? This cannot be undone.');
         $delete_nonce = nonce::create( 'delete' );
-
+        $resend_nonce = nonce::create( 'send_activation_link' );
+        
         /**
          * @var AuthUserWebsite $au
          */
-        if ( is_array( $auth_users ) )
-        foreach ( $auth_users as $au ) {
-            $data[] = array(
-                $au->email . '<div class="actions">' .
-                    '<a href="' . url::add_query_arg( 'uid', $au->user_id, '/settings/authorized-users/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ' .
-                    '<a href="' . url::add_query_arg( array( 'uid' => $au->user_id, '_nonce' => $delete_nonce ), '/settings/authorized-users/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' .
-                    '</div>'
-                , ( $au->pages ) ? _('Yes') : _('No')
-                , ( $au->products ) ? _('Yes') : _('No')
-                , ( $au->analytics ) ? _('Yes') : _('No')
-                , ( $au->blog ) ? _('Yes') : _('No')
-                , ( $au->email_marketing ) ? _('Yes') : _('No')
-                , ( $au->shopping_cart ) ? _('Yes') : _('No')
-            );
+        if ( is_array( $auth_users ) ){
+             foreach ( $auth_users as $au ) {
+                 $options_html = $au->email . '<div class="actions">' .
+                        '<a href="' . url::add_query_arg( 'uid', $au->user_id, '/settings/authorized-users/add-edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ' .
+                        '<a href="' . url::add_query_arg( array( 'uid' => $au->user_id, '_nonce' => $delete_nonce ), '/settings/authorized-users/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' ;
+                 
+                 if ( empty( $au->password ) )
+                     $options_html .= ' | <a href="' . url::add_query_arg( array( 'uid' => $au->user_id, '_nonce' => $resend_nonce ), '/settings/authorized-users/send-activation-link/' ) . '" title="' . _('Delete') . '" ajax="1">' . _('resend activation link') .'</a>';
+                 
+                 $options_html .= '</div>';
+                
+                 $data[] = array(
+                     $options_html
+                     , ( $au->pages ) ? _('Yes') : _('No')
+                     , ( $au->products ) ? _('Yes') : _('No')
+                     , ( $au->analytics ) ? _('Yes') : _('No')
+                     , ( $au->blog ) ? _('Yes') : _('No')
+                     , ( $au->email_marketing ) ? _('Yes') : _('No')
+                     , ( $au->shopping_cart ) ? _('Yes') : _('No')
+                );
+            }
         }
-
+       
         // Send response
         $dt->set_data( $data );
 
         return $dt;
     }
+    
+    /**
+     *  Resend activation link
+     * 
+     * 
+     */
+    public function send_activation_link() {
+         // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+        
+        // If there is an error, return
+        if ( $response->has_error() )
+            return $response;
+            
+        // Send activation link
+        $auth_user_website = new AuthUserWebsite();
+        $auth_user_website->send_activation_link( $_GET["uid"] , $this->user->account );
+        
+        return $response;
+    }
+
 
     /**
      * Delete
