@@ -477,7 +477,7 @@ class ProductsController extends BaseController {
         }
 
         return $this->get_template_response( 'auto-price' )
-            ->kb( 0 )
+            ->kb( 134 )
             ->add_title( _('Auto Price') )
             ->set( array(
                 'auto_price_settings' => $auto_price_settings
