@@ -64,7 +64,7 @@ if ( !$about_us->fb_page_id ) {
         echo '<p>', _('Your app is currently active.'), '</p>';
     } else {
     ?>
-    <form name="fAboutUs" action="/social-media/facebook/about-us/" method="post">
+    <form name="fAboutUs" action="<?php echo url::add_query_arg( 'smfbpid', $page->id, '/social-media/facebook/about-us/'); ?>" method="post">
         <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $about_us->content; ?></textarea>
 
         <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 520px Image Height: 700px Max'); ?>)</p>

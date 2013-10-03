@@ -60,7 +60,7 @@ if ( !$facebook_site->fb_page_id ) {
     ?>
     <p class="text-right"><a href="http://www.facebook.com/pages/ABC-Company/<?php echo $facebook_site->fb_page_id; ?>?sk=app_114243368669744" title="<?php echo _('View Facebook Page'); ?>" target="_blank"><?php echo _('View Facebook Page'); ?></a></p>
 
-    <form name="fCurrentAd" action="/social-media/facebook/facebook-site/" method="post">
+    <form name="fCurrentAd" action="<?php echo url::add_query_arg( 'smfbpid', $page->id, '/social-media/facebook/facebook-site/' ); ?>" method="post">
         <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $facebook_site->content; ?></textarea>
 
         <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
