@@ -222,7 +222,7 @@ class AuthUserWebsite extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT u.`user_id`, u.`email`, auw.`pages`, auw.`products`, auw.`analytics`, auw.`blog`, auw.`email_marketing`, auw.`shopping_cart` FROM `users` AS u LEFT JOIN `auth_user_websites` AS auw ON ( auw.`user_id` = u.`user_id` ) WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT u.`user_id`,u.`password`, u.`email`, auw.`pages`, auw.`products`, auw.`analytics`, auw.`blog`, auw.`email_marketing`, auw.`shopping_cart` FROM `users` AS u LEFT JOIN `auth_user_websites` AS auw ON ( auw.`user_id` = u.`user_id` ) WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'AuthUserWebsite' );
@@ -244,5 +244,40 @@ class AuthUserWebsite extends ActiveRecordBase {
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
+    }
+
+    
+    
+    /**
+     * Send activation link
+     * 
+     * @param int $user_id
+     * @param int $account
+     * 
+     */
+    public function send_activation_link( $user_id , $account ) {
+        $user = new User();
+        $user->get( $user_id );
+        
+        $token = new Token();
+        $token->get_token_by_user( $user_id,"activate-account" );
+        
+        $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
+        $message .= 'http://account.' .  $user->domain. "/login/activate/?t={$token->key}";
+        $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
+        $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
+      
+        
+        // Send email if it's not in the blocked list
+        if ( in_array( $email, $this->blocked_emails ) )
+            return;
+
+        $intro = new EmailHelper();
+        $intro->to = $user->email;
+        $intro->message = $message;
+        $intro->from = "{$account->title} <{$user->email}>";
+        $intro->extra_headers = "CC: {$intro->from}\r\n";
+        $intro->subject = $account->title . ' Account activation ' . DOMAIN . '.';
+        $intro->send();
     }
 }
