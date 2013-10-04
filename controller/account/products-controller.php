@@ -398,18 +398,6 @@ class ProductsController extends BaseController {
         // Get settings
         $settings = $this->user->account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending', 'ashley-ftp-username' );
 
-        if ( empty( $settings['auto-price'] ) )
-            $settings['auto-price'] = 200;
-
-        if ( empty( $settings['auto-sale-price'] ) )
-            $settings['auto-sale-price'] = 100;
-
-        if ( empty( $settings['auto-alternate-price'] ) )
-            $settings['auto-alternate-price'] = 0;
-
-        if ( empty( $settings['auto-price-ending'] ) )
-            $settings['auto-price-ending'] = 9.99;
-
         if ( !empty( $settings['ashley-ftp-username'] ) ) {
             // Auto Settings
             $fts = new FormTable('fAutoPriceSettings');
