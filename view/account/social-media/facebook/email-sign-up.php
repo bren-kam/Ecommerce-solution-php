@@ -84,7 +84,9 @@ if ( !$email_sign_up->fb_page_id ) {
                 <?php } ?>
             </select>
             <br />
+            <?php if ( $user->account->email_marketing ) { ?>
             <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
+            <?php } ?>
         </p>
 
         <br /><br />
