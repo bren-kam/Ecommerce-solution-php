@@ -169,7 +169,7 @@ class AuthorizedUsersController extends BaseController {
                         '<a href="' . url::add_query_arg( array( 'uid' => $au->user_id, '_nonce' => $delete_nonce ), '/settings/authorized-users/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>' ;
                  
                  if ( empty( $au->password ) )
-                     $options_html .= ' | <a href="' . url::add_query_arg( array( 'uid' => $au->user_id, '_nonce' => $resend_nonce ), '/settings/authorized-users/send-activation-link/' ) . '" title="' . _('Delete') . '" ajax="1">' . _('resend activation link') .'</a>';
+                     $options_html .= ' | <a href="' . url::add_query_arg( array( 'uid' => $au->user_id, '_nonce' => $resend_nonce ), '/settings/authorized-users/send-activation-link/' ) . '" title="' . _('Delete') . '" ajax="1">' . _('Resend Activation Link') .'</a>';
                  
                  $options_html .= '</div>';
                 
