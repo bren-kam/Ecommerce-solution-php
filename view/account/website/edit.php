@@ -107,6 +107,7 @@ if ( !empty( $errs ) )
                     <div id="dProduct_<?php echo $product->id; ?>" class="product">
                         <h4><?php echo $product->name; ?></h4>
                         <p align="center"><img src="<?php echo $product_image; ?>" alt="<?php echo $product->name; ?>" height="110" style="margin:10px" /></p>
+                        <p><?php echo _('Brand'); ?>: <?php echo $product->brand; ?></p>
                         <p class="product-actions" id="pProductAction<?php echo $product->id; ?>"><a href="#" class="remove-product" title="<?php echo _('Remove'); ?>"><?php echo _('Remove'); ?></a></p>
                         <input type="hidden" name="products[]" class="hidden" value="<?php echo $product->id; ?>" />
                     </div>
