@@ -89,7 +89,7 @@ class TicketsController extends BaseController {
 
         return $this->get_template_response( 'ticket', _('Ticket') )
             ->kb( 25 )
-            ->add_title( _('View') )
+            ->add_title( format::limit_chars( $ticket->summary, 30 ) )
             ->set( compact( 'ticket', 'ticket_uploads', 'comments', 'admin_users' ) );
     }
 
