@@ -1,4 +1,3 @@
-alert('okay then');
 // When the page has loaded
 head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
     // Cache
@@ -116,18 +115,12 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
             }, 'json' );
         }
     });
-	alert('made-it');
 
     $('html').on( 'click', 'a.add-product', function(e) {
         // We don't want it to submit the normal ajax thing
         e.preventDefault();
-		alert('here');
 
-        $.post( $(this).attr('href'), { 'product-count' : $('#product-count').text() }, function( response ) {
-		 console.log(response);
-		 ajaxResponse( response );
-		 console.log('after');
-		 });
+        $.post( $(this).attr('href'), { 'product-count' : $('#product-count').text() }, ajaxResponse, 'json' );
     });
 
     // Create the search functionality
@@ -158,4 +151,4 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 });
 
 // Turns text into a slug
-String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); };
+String.prototype.slug = function() { return this.replace(/^\s+|\s+$/g,"").replace( /[^-a-zA-Z0-9\s]/g, '' ).replace( /[\s]/g, '-' ).toLowerCase(); }
