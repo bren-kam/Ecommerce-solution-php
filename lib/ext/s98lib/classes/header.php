@@ -22,6 +22,7 @@ class header extends Base_Class {
         , 'gif' => 'image/gif'
         , 'jpg' => 'image/jpeg'
         , 'png' => 'image/png'
+        , 'ico' => 'image/x-icon'
         , 'css' => 'text/css; charset=utf-8'
         , 'js' => 'text/javascript; charset=utf-8'
         , 'javascript' => 'text/javascript; charset=utf-8'

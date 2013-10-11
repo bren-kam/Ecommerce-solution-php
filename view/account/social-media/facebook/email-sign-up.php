@@ -67,7 +67,7 @@ if ( !$email_sign_up->fb_page_id ) {
     if ( !empty( $errs ) )
         echo "<p class='error'>$errs</p>";
     ?>
-    <form name="fEmailSignUp" action="/social-media/facebook/email-sign-up/" method="post">
+    <form name="fEmailSignUp" action="<?php echo url::add_query_arg( 'smfbpid', $page->id, '/social-media/facebook/email-sign-up/' ); ?>" method="post">
         <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $email_sign_up->tab; ?></textarea>
 
         <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
@@ -84,7 +84,9 @@ if ( !$email_sign_up->fb_page_id ) {
                 <?php } ?>
             </select>
             <br />
+            <?php if ( $user->account->email_marketing ) { ?>
             <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
+            <?php } ?>
         </p>
 
         <br /><br />

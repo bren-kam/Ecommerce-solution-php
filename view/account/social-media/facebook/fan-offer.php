@@ -70,7 +70,7 @@ if ( !$fan_offer->fb_page_id ) {
     if ( !empty( $errs ) )
         echo "<p class='error'>$errs</p>";
     ?>
-    <form name="fFanOffer" action="/social-media/facebook/fan-offer/" method="post">
+    <form name="fFanOffer" action="<?php echo url::add_query_arg( 'smfbpid', $page->id, '/social-media/facebook/fan-offer/' ); ?>" method="post">
         <h2 class="title"><label for="taBefore"><?php echo _('What Non-Fans See'); ?>:</label></h2>
         <textarea name="taBefore" id="taBefore" cols="50" rows="3" rte="1"><?php echo $fan_offer->before; ?></textarea>
         <p><a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a> | (<?php echo _('Image Width: 810px Image Height: 700px Max'); ?>)</p>
@@ -106,7 +106,9 @@ if ( !$fan_offer->fb_page_id ) {
                 <option value="<?php echo $el->id; ?>"<?php echo $selected; ?>><?php echo $el->name; ?></option>
                 <?php } ?>
             </select>
+            <?php if ( $user->account->email_marketing ) { ?>
             <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
+            <?php } ?>
         </p>
         <br />
 
