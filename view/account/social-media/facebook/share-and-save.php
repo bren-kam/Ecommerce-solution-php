@@ -93,7 +93,9 @@ if ( !$share_and_save->fb_page_id ) {
                 <option value="<?php echo $el->id; ?>"<?php echo $selected; ?>><?php echo $el->name; ?></option>
                 <?php } ?>
             </select>
+            <?php if ( $user->account->email_marketing ) { ?>
             <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
+            <?php } ?>
         </p>
         <br />
 
@@ -112,7 +114,9 @@ if ( !$share_and_save->fb_page_id ) {
                 <option value="<?php echo $el->id; ?>"<?php echo $selected; ?>><?php echo $el->name; ?></option>
                 <?php } ?>
             </select>
+            <?php if ( $user->account->email_marketing ) { ?>
             <a href="/email-marketing/email-lists/add-edit/" title="<?php echo _('Add New Email List'); ?>" target="_blank"><?php echo _('Add New Email List'); ?></a>
+            <?php } ?>
         </p>
         <br />
 

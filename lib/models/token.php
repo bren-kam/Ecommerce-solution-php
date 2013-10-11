@@ -45,4 +45,25 @@ class Token extends ActiveRecordBase {
             'token_id' => $this->id
         ), 'ii' );
     }
+    /**
+     * check it theuser has token registed
+     * 
+     * @param int $user_id 
+     * @param string $token_type 
+     * 
+     * @return boolean return true if the tokend found false otherwise
+     * 
+     */
+    public function get_token_by_user( $user_id, $token_type ) {
+         $this->prepare(
+            'SELECT * FROM `tokens` WHERE `user_id` = :user_id AND `token_type` = :token_type' 
+            , 'ii'
+            , array( 
+                ':user_id' => $user_id,
+                ':token_type' => $token_type
+                 )
+        )->get_row( PDO::FETCH_INTO, $this );
+        $this->id = $this->token_id;
+
+    }
 }
