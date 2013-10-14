@@ -87,7 +87,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Round to the ending
         $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
-        $price_ending = number_format( (float) $price_ending );
+        $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
             $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
