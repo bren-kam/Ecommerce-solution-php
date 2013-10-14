@@ -120,7 +120,7 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
         // We don't want it to submit the normal ajax thing
         e.preventDefault();
 
-        $.post( $(this).attr('href'), { 'product-count' : $('#product-count').text() }, ajaxResponse );
+        $.post( $(this).attr('href'), { 'product-count' : $('#product-count').text() }, ajaxResponse, 'json' );
     });
 
     // Create the search functionality
