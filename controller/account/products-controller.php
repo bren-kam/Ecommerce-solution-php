@@ -599,6 +599,25 @@ class ProductsController extends BaseController {
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
     }
 
+    /**
+     * Download non auto price products
+     *
+     * @return CsvResponse
+     */
+    protected function download_non_autoprice_products() {
+        // Get the products
+        $account_product = new AccountProduct();
+        $products = $account_product->get_non_autoprice_products( $this->user->account->id );
+
+        $output[]  = array( 'SKU', 'Price', 'Note', 'Name' );
+
+        foreach ( $products as $product ) {
+            $output[] = array( $product->sku, $product->price, $product->price_note, $product->name );
+        }
+
+        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-non-autoprice-products.csv' );
+    }
+
     /***** AJAX *****/
 
     /**
