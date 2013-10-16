@@ -795,13 +795,18 @@ class ProductsController extends BaseController {
 
         // Pricing
         if ( !empty( $_POST['pr'] ) ) {
-            list( $min, $max ) = explode( '|', $_POST['pr'] );
-            $min = (int) $min;
-            $max = (int) $max;
-            $pricing_min_where = " ( wp.`sale_price` = 0 AND wp.`price` >= $min OR wp.`sale_price` >= $min )";
+            if ( '0|0' == $_POST['pr'] ) {
+                $where .= " AND ( wp.`sale_price` = 0 AND wp.`price` = 0 )";
+            } else {
+                list( $min, $max ) = explode( '|', $_POST['pr'] );
+                $min = (int) $min;
+                $max = (int) $max;
+                $pricing_min_where = " ( wp.`sale_price` = 0 AND wp.`price` >= $min OR wp.`sale_price` >= $min )";
 
-            $where .= ( empty( $max ) ) ? " AND $pricing_min_where" : " AND ( $pricing_min_where AND ( wp.`sale_price` = 0 AND wp.`price` < $max OR wp.`sale_price` > 0 AND wp.`sale_price` < $max ) )";
+                $where .= ( empty( $max ) ) ? " AND $pricing_min_where" : " AND ( $pricing_min_where AND ( wp.`sale_price` = 0 AND wp.`price` < $max OR wp.`sale_price` > 0 AND wp.`sale_price` < $max ) )";
+            }
         }
+
 
         // If they only want discontinued products, then only grab them
         if ( '1' == $_POST['od'] )
