@@ -1312,14 +1312,14 @@ class ProductsController extends BaseController {
 
         foreach ( $_POST['requests'] as $r ) {
         	if ( !empty( $ticket_message ) )
-        		$ticket_message .= "\n\n";
+        		$ticket_message .= "<br><br>";
 
         	// Get the brand, sku and collection
         	$ticket_array = explode( '|', $r );
 
         	// Add it to the message
-        	$ticket_message .= 'Brand: ' . $ticket_array[0] . "\n";
-        	$ticket_message .= 'SKU: ' . $ticket_array[1] . "\n";
+        	$ticket_message .= 'Brand: ' . $ticket_array[0] . "<br>";
+        	$ticket_message .= 'SKU: ' . $ticket_array[1] . "<br><br>";
         	$ticket_message .= 'Collection: ' . $ticket_array[2];
 
         	$subject = ( $this->user->account->live ) ? 'Live' : 'Staging';
