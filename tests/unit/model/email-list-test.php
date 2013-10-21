@@ -24,7 +24,7 @@ class EmailListTest extends BaseDatabaseTest {
         $name = 'Dig My Dipper';
 
         // Insert an email list
-        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id', 'name' ), 'is' );
+        $email_list_id = $this->phactory->insert( 'email_lists', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->email_list->get( $email_list_id, $website_id );
@@ -32,7 +32,7 @@ class EmailListTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->email_list->name );
 
         // Delete
-        $this->db->delete( 'email_lists',compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_lists',compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -44,16 +44,16 @@ class EmailListTest extends BaseDatabaseTest {
         $category_id = 0;
 
         // Insert an email list
-        $this->db->insert( 'email_lists', compact( 'website_id', 'category_id' ), 'ii' );
+        $this->phactory->insert( 'email_lists', compact( 'website_id', 'category_id' ), 'ii' );
 
-        $email_list_id = $this->db->get_insert_id();
+        $email_list_id = $this->phactory->get_insert_id();
 
         $this->email_list->get_default_email_list( $website_id );
 
         $this->assertEquals( $email_list_id, $this->email_list->id );
 
         // Delete
-        $this->db->delete( 'email_lists',compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_lists',compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -64,14 +64,14 @@ class EmailListTest extends BaseDatabaseTest {
         $website_id = -5;
 
         // Insert an email list
-        $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->phactory->insert( 'email_lists', compact( 'website_id' ), 'i' );
 
         $email_lists = $this->email_list->get_by_account( $website_id );
 
         $this->assertTrue( current( $email_lists ) instanceof EmailList );
 
         // Delete
-        $this->db->delete( 'email_lists',compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_lists',compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -83,9 +83,9 @@ class EmailListTest extends BaseDatabaseTest {
         $status = 1;
 
         // Insert
-        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
-        $email_id = $this->db->insert( 'emails', compact( 'website_id', 'status' ), 'ii' );
-        $this->db->insert( 'email_associations', compact( 'email_list_id', 'email_id' ), 'ii' );
+        $email_list_id = $this->phactory->insert( 'email_lists', compact( 'website_id' ), 'i' );
+        $email_id = $this->phactory->insert( 'emails', compact( 'website_id', 'status' ), 'ii' );
+        $this->phactory->insert( 'email_associations', compact( 'email_list_id', 'email_id' ), 'ii' );
 
         // Get count
         $email_lists = $this->email_list->get_count_by_account( $website_id );
@@ -93,9 +93,9 @@ class EmailListTest extends BaseDatabaseTest {
         $this->assertTrue( current( $email_lists ) instanceof EmailList );
 
         // Delete
-        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
+        $this->phactory->delete( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
     }
 
     /**
@@ -106,11 +106,11 @@ class EmailListTest extends BaseDatabaseTest {
         $website_id = -5;
 
         // Insert
-        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
-        $email_message_id = $this->db->insert( 'email_messages', compact( 'website_id' ), 'i' );
-        $this->db->insert( 'email_message_associations', compact( 'email_list_id', 'email_message_id' ), 'ii' );
-        $email_id = $this->db->insert( 'emails', compact( 'website_id'), 'i' );
-        $this->db->insert( 'email_associations', compact( 'email_list_id', 'email_id' ), 'ii' );
+        $email_list_id = $this->phactory->insert( 'email_lists', compact( 'website_id' ), 'i' );
+        $email_message_id = $this->phactory->insert( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->phactory->insert( 'email_message_associations', compact( 'email_list_id', 'email_message_id' ), 'ii' );
+        $email_id = $this->phactory->insert( 'emails', compact( 'website_id'), 'i' );
+        $this->phactory->insert( 'email_associations', compact( 'email_list_id', 'email_id' ), 'ii' );
 
         // Get count
         $email_lists = $this->email_list->get_by_message( $email_message_id, $website_id );
@@ -118,11 +118,11 @@ class EmailListTest extends BaseDatabaseTest {
         $this->assertTrue( current( $email_lists ) instanceof EmailList );
 
         // Delete
-        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_message_associations', compact( 'email_list_id' ), 'i' );
-        $this->db->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
+        $this->phactory->delete( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_message_associations', compact( 'email_list_id' ), 'i' );
+        $this->phactory->delete( 'email_associations', compact( 'email_list_id' ), 'i' );
     }
 
     /**
@@ -138,12 +138,12 @@ class EmailListTest extends BaseDatabaseTest {
         $this->email_list->create();
 
         // Make sure it's in the database
-        $fetched_name = $this->db->get_var( 'SELECT `name` FROM `email_lists` WHERE `email_list_id` = ' . (int) $this->email_list->id );
+        $fetched_name = $this->phactory->get_var( 'SELECT `name` FROM `email_lists` WHERE `email_list_id` = ' . (int) $this->email_list->id );
 
         $this->assertEquals( $name, $fetched_name );
 
         // Delete
-        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_lists', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -165,12 +165,12 @@ class EmailListTest extends BaseDatabaseTest {
         $this->email_list->save();
 
         // Make sure it's in the database
-        $fetched_name = $this->db->get_var( 'SELECT `name` FROM `email_lists` WHERE `email_list_id` = ' . (int) $this->email_list->id );
+        $fetched_name = $this->phactory->get_var( 'SELECT `name` FROM `email_lists` WHERE `email_list_id` = ' . (int) $this->email_list->id );
 
         $this->assertEquals( $name, $fetched_name );
 
         // Delete
-        $this->db->delete( 'email_lists', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_lists', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -183,7 +183,7 @@ class EmailListTest extends BaseDatabaseTest {
         $website_id = -7;
 
         // Create
-        $email_list_id = $this->db->insert( 'email_lists', compact( 'website_id' ), 'i' );
+        $email_list_id = $this->phactory->insert( 'email_lists', compact( 'website_id' ), 'i' );
 
         // Get
         $this->email_list->get( $email_list_id, $website_id );
@@ -191,7 +191,7 @@ class EmailListTest extends BaseDatabaseTest {
         // Remove
         $this->email_list->remove();
 
-        $email_list = $this->db->get_row( 'SELECT * FROM `email_lists` WHERE `email_list_id` = ' . (int) $email_list_id );
+        $email_list = $this->phactory->get_row( 'SELECT * FROM `email_lists` WHERE `email_list_id` = ' . (int) $email_list_id );
 
         // Make sure we grabbed the right one
         $this->assertFalse( $email_list );

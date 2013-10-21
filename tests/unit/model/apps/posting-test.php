@@ -27,15 +27,15 @@ class PostingTest extends BaseDatabaseTest {
         $status = 1;
 
         // Insert Website Page/FB Page/About Us
-        $this->db->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => $status ), 'iii' );
-        $this->db->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => $status ), 'iii' );
+        $this->phactory->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
 
         $connected = $this->posting->connected( $fb_user_id );
 
         $this->assertTrue( $connected );
 
-        $this->db->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
+        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
     }
 
     /**
@@ -49,15 +49,15 @@ class PostingTest extends BaseDatabaseTest {
         $status = 0;
 
         // Insert Website Page/FB Page/About Us
-        $this->db->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => $status ), 'iii' );
-        $this->db->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => $status ), 'iii' );
+        $this->phactory->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
 
         $connected = $this->posting->connected( $fb_user_id );
 
         $this->assertFalse( $connected );
 
-        $this->db->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
+        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
     }
 
     /**
@@ -69,9 +69,9 @@ class PostingTest extends BaseDatabaseTest {
         $fb_user_id = -3;
 
         // Add posting
-        $this->db->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+        $this->phactory->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
 
-        $fb_page_id = $this->db->get_insert_id();
+        $fb_page_id = $this->phactory->get_insert_id();
 
         // Get the IDS
         $fb_page_ids = $this->posting->get_connected_pages( $fb_user_id );
@@ -79,7 +79,7 @@ class PostingTest extends BaseDatabaseTest {
         $this->assertTrue( in_array( $fb_page_id, $fb_page_ids ) );
 
         // Delete
-        $this->db->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
+        $this->phactory->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
     }
 
     /**
@@ -93,18 +93,18 @@ class PostingTest extends BaseDatabaseTest {
         $key = 'Red Baron';
 
         // Insert About Us
-        $this->db->insert( 'sm_posting', array( 'fb_user_id' => $fb_user_id, 'key' => $key ), 's' );
+        $this->phactory->insert( 'sm_posting', array( 'fb_user_id' => $fb_user_id, 'key' => $key ), 's' );
 
         // Get it
         $this->posting->connect( $fb_user_id, $fb_page_id, $access_token, $key );
 
         // Get the key
-        $fetched_access_token = $this->db->get_var( "SELECT `access_token` FROM `sm_posting` WHERE `key` = '$key'" );
+        $fetched_access_token = $this->phactory->get_var( "SELECT `access_token` FROM `sm_posting` WHERE `key` = '$key'" );
 
         $this->assertEquals( $access_token, $fetched_access_token );
 
         // Delete it
-        $this->db->delete( 'sm_posting', array( 'key' => $key ), 's' );
+        $this->phactory->delete( 'sm_posting', array( 'key' => $key ), 's' );
     }
 
     /**
@@ -117,18 +117,18 @@ class PostingTest extends BaseDatabaseTest {
         $access_token = 'Ring around the rosey';
 
         // Insert About Us
-        $this->db->insert( 'sm_posting', array( 'fb_page_id' => $fb_page_id, 'fb_user_id' => $fb_user_id ), 'ss' );
+        $this->phactory->insert( 'sm_posting', array( 'fb_page_id' => $fb_page_id, 'fb_user_id' => $fb_user_id ), 'ss' );
 
         // Get it
         $this->posting->update_access_token( $access_token, $fb_page_id );
 
         // Get the key
-        $fetched_access_token = $this->db->get_var( 'SELECT `access_token` FROM `sm_posting` WHERE `fb_page_id` = ' . (int) $fb_page_id );
+        $fetched_access_token = $this->phactory->get_var( 'SELECT `access_token` FROM `sm_posting` WHERE `fb_page_id` = ' . (int) $fb_page_id );
 
         $this->assertEquals( $fetched_access_token, $access_token );
 
         // Delete it
-        $this->db->delete( 'sm_posting', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        $this->phactory->delete( 'sm_posting', array( 'fb_page_id' => $fb_page_id ), 'i' );
     }
 
     /**

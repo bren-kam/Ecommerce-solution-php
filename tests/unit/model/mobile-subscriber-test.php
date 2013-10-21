@@ -24,18 +24,18 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $mobile_numbers = array( '5555555555', '8185551234', '8185554321' );
 
         // Now delete them
-        $this->db->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
 
         // Add the subscribers
         $this->mobile_subscriber->add_bulk( $account_id, $mobile_numbers );
 
         // Get the numbers
-        $numbers = $this->db->get_col( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $account_id AND `status` = 1 ORDER BY `phone` ASC" );
+        $numbers = $this->phactory->get_col( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $account_id AND `status` = 1 ORDER BY `phone` ASC" );
 
         $this->assertEquals( $mobile_numbers, $numbers );
 
         // Now delete them
-        $this->db->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -49,7 +49,7 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $mobile_numbers = array( '8185551234', '8185554321', '5555555555' );
 
         // Now delete them
-        $this->db->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
 
         // Add the subscribers
         $this->mobile_subscriber->add_bulk( $account_id, $mobile_numbers );
@@ -60,7 +60,7 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $this->assertEquals( count( $fetched_index ), count( $mobile_numbers ) );
 
         // Now delete them
-        $this->db->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -80,12 +80,12 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $this->mobile_subscriber->empty_by_account( $account_id );
 
         // Make sure there aren't any
-        $numbers = $this->db->get_col( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $account_id AND `status` = 1" );
+        $numbers = $this->phactory->get_col( "SELECT `phone` FROM `mobile_subscribers` WHERE `website_id` = $account_id AND `status` = 1" );
 
         $this->assertTrue( empty( $numbers ) );
 
         // Delete
-        $this->db->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -110,18 +110,18 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         );
 
         // Now delete them
-        $this->db->query( "DELETE FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 )" );
+        $this->phactory->query( "DELETE FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 )" );
 
         // Add the associations
         $this->mobile_subscriber->add_bulk_associations( $associations );
 
         // Get Associations
-        $fetched_associations = $this->db->get_results( "SELECT * FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 ) ORDER BY `mobile_subscriber_id` DESC, `mobile_list_id` DESC", PDO::FETCH_ASSOC );
+        $fetched_associations = $this->phactory->get_results( "SELECT * FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 ) ORDER BY `mobile_subscriber_id` DESC, `mobile_list_id` DESC", PDO::FETCH_ASSOC );
 
         $this->assertEquals( $associations, $fetched_associations );
 
         // Now delete them
-        $this->db->query( "DELETE FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 )" );
+        $this->phactory->query( "DELETE FROM `mobile_associations` WHERE `mobile_subscriber_id` IN ( -1, -2 )" );
     }
 
     /**
@@ -135,9 +135,9 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $mobile_subscriber_id = -55;
 
         // Create subscriber
-        $this->db->insert( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id, 'website_id' => $account_id, 'phone' => '8185551234', 'status' => 1 ), 'iisi' );
+        $this->phactory->insert( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id, 'website_id' => $account_id, 'phone' => '8185551234', 'status' => 1 ), 'iisi' );
 
-        $mobile_subscriber_id = $this->db->get_insert_id();
+        $mobile_subscriber_id = $this->phactory->get_insert_id();
 
         $associations = array(
             array( $mobile_subscriber_id, -2, -3 ) // Mobile_subscriber_id, mobile list id, trumpia_contact_id
@@ -154,8 +154,8 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $this->assertTrue( current( $fetched_associations ) instanceof stdClass );
 
         // Delete everything
-        $this->db->delete( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i' );
-        $this->db->delete( 'mobile_associations', array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i' );
+        $this->phactory->delete( 'mobile_associations', array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i' );
     }
 
     /**
@@ -169,9 +169,9 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $account_id = -5;
 
         // Create subscriber
-        $this->db->insert( 'mobile_subscribers', array( 'website_id' => $account_id, 'phone' => '8185551234', 'status' => 0 ), 'is' );
+        $this->phactory->insert( 'mobile_subscribers', array( 'website_id' => $account_id, 'phone' => '8185551234', 'status' => 0 ), 'is' );
 
-        $mobile_subscriber_id = $this->db->get_insert_id();
+        $mobile_subscriber_id = $this->phactory->get_insert_id();
 
         $associations = array(
             array( $mobile_subscriber_id, -2, -3 ) // Mobile_subscriber_id, mobile list id, trumpia_contact_id
@@ -190,7 +190,7 @@ class MobileSubscriberTest extends BaseDatabaseTest {
         $this->assertTrue( empty( $fetched_associations ) );
 
         // Delete subscriber
-        $this->db->delete( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i' );
+        $this->phactory->delete( 'mobile_subscribers', array( 'mobile_subscriber_id' => $mobile_subscriber_id ), 'i' );
     }
 
 

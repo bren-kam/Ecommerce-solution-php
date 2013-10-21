@@ -29,12 +29,12 @@ class ApiLogTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->api_log->id ) );
 
         // Make sure it's in the database
-        $method = $this->db->get_var( 'SELECT `method` FROM `api_log` WHERE `api_log_id` = ' . (int) $this->api_log->id );
+        $method = $this->phactory->get_var( 'SELECT `method` FROM `api_log` WHERE `api_log_id` = ' . (int) $this->api_log->id );
 
         $this->assertEquals( $this->api_log->method, $method );
 
         // Delete the attribute
-        $this->db->delete( 'api_log', array( 'api_log_id' => $this->api_log->id ), 'i' );
+        $this->phactory->delete( 'api_log', array( 'api_log_id' => $this->api_log->id ), 'i' );
     }
 
     /**

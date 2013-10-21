@@ -23,7 +23,7 @@ class ApiKeyTest extends BaseDatabaseTest {
         $key = md5('googoo dolls');
 
         // Insert a key
-        $this->db->insert( 'api_keys', array( 'key' => $key, 'status' => 1 ), 's' );
+        $this->phactory->insert( 'api_keys', array( 'key' => $key, 'status' => 1 ), 's' );
 
         // Get the API Key
         $this->api_key->get_by_key( $key );
@@ -32,7 +32,7 @@ class ApiKeyTest extends BaseDatabaseTest {
         $this->assertEquals( $this->api_key->key, $key );
 
         // Now delete it
-        $this->db->delete( 'api_keys', array( 'key' => $key ), 's' );
+        $this->phactory->delete( 'api_keys', array( 'key' => $key ), 's' );
     }
 
     /**

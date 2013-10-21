@@ -24,7 +24,7 @@ class EmailTest extends BaseDatabaseTest {
         $email = 'cranky@crank.com';
 
         // Create
-        $email_id = $this->db->insert( 'emails', compact( 'website_id', 'email' ), 'is' );
+        $email_id = $this->phactory->insert( 'emails', compact( 'website_id', 'email' ), 'is' );
 
         // Get
         $this->email->get( $email_id, $website_id );
@@ -33,7 +33,7 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertEquals( $email, $this->email->email );
 
         // Clean up
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -45,9 +45,9 @@ class EmailTest extends BaseDatabaseTest {
         $email_address = 'conn@ells.com';
 
         // Insert an email that has not been synced
-        $this->db->insert( 'emails', array( 'website_id' => $account_id, 'email' => $email_address ), 'is' );
+        $this->phactory->insert( 'emails', array( 'website_id' => $account_id, 'email' => $email_address ), 'is' );
 
-        $email_id = $this->db->get_insert_id();
+        $email_id = $this->phactory->get_insert_id();
 
         // Get unsynced emails
         $this->email->get_by_email( $account_id, $email_address );
@@ -55,7 +55,7 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertEquals( $this->email->id, $email_id );
 
         // Delete email
-        $this->db->delete( 'emails', array( 'email' => $email_address ), 's' );
+        $this->phactory->delete( 'emails', array( 'email' => $email_address ), 's' );
     }
 
     /**
@@ -72,7 +72,7 @@ class EmailTest extends BaseDatabaseTest {
         $email6 = 'con6@nells.com';
 
         // Insert an email that has not been synced
-        $this->db->query( "INSERT INTO `emails` ( `website_id`, `email` ) VALUES ( $website_id, '$email' ), ( $website_id, '$email2' ), ( $website_id, '$email3' ), ( $website_id, '$email4' ), ( $website_id, '$email5' ), ( $website_id, '$email6' )" );
+        $this->phactory->query( "INSERT INTO `emails` ( `website_id`, `email` ) VALUES ( $website_id, '$email' ), ( $website_id, '$email2' ), ( $website_id, '$email3' ), ( $website_id, '$email4' ), ( $website_id, '$email5' ), ( $website_id, '$email6' )" );
 
         // Get unsynced emails
         $emails = $this->email->get_dashboard_subscribers_by_account( $website_id );
@@ -81,7 +81,7 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertLessThanOrEqual( count( $emails ), 5 );
 
         // Clean up
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -97,12 +97,12 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->email->id ) );
 
         // Make sure it's in the database
-        $email = $this->db->get_var( 'SELECT `email` FROM `emails` WHERE `email_id` = ' . (int) $this->email->id );
+        $email = $this->phactory->get_var( 'SELECT `email` FROM `emails` WHERE `email_id` = ' . (int) $this->email->id );
 
         $this->assertEquals( 'ender@game.com', $email );
 
         // Delete
-        $this->db->delete( 'emails', array( 'email_id' => $this->email->id ), 'i' );
+        $this->phactory->delete( 'emails', array( 'email_id' => $this->email->id ), 'i' );
     }
     
     /**
@@ -123,12 +123,12 @@ class EmailTest extends BaseDatabaseTest {
         $this->email->save();
 
         // Now check it!
-        $status = $this->db->get_var( 'SELECT `status` FROM `emails` WHERE `email_id` = ' . (int) $this->email->id );
+        $status = $this->phactory->get_var( 'SELECT `status` FROM `emails` WHERE `email_id` = ' . (int) $this->email->id );
 
         $this->assertEquals( '0', $status );
 
         // Delete the email
-        $this->db->delete( 'emails', array( 'email_id' => $this->email->id ), 'i' );
+        $this->phactory->delete( 'emails', array( 'email_id' => $this->email->id ), 'i' );
     }
 
     /**
@@ -141,21 +141,21 @@ class EmailTest extends BaseDatabaseTest {
         $email = $emails[] = 'idon@care.com';
 
         // Insert 2
-        $this->db->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
+        $this->phactory->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
 
         $email = $emails[] = 'idont@care.com';
-        $this->db->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
+        $this->phactory->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
 
         // Unsubscribe
         $this->email->unsubscribe_bulk( $emails, $website_id );
 
         // Make sure there are none left
-        $email = $this->db->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id AND `status` <> $status" );
+        $email = $this->phactory->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id AND `status` <> $status" );
 
         $this->assertFalse( $email );
 
         // Clean up
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -168,21 +168,21 @@ class EmailTest extends BaseDatabaseTest {
         $email = $emails[] = 'idon@care.com';
 
         // Insert 2
-        $this->db->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
+        $this->phactory->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
 
         $email = $emails[] = 'idont@care.com';
-        $this->db->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
+        $this->phactory->insert( 'emails', compact( 'website_id', 'email', 'status' ), 'iss' );
 
         // Unsubscribe
         $this->email->clean_bulk( $emails, $website_id );
 
         // Make sure there are none left
-        $email = $this->db->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id AND `status` <> $status" );
+        $email = $this->phactory->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id AND `status` <> $status" );
 
         $this->assertFalse( $email );
 
         // Clean up
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -194,19 +194,19 @@ class EmailTest extends BaseDatabaseTest {
         $date_synced = '2012-01-01 00:00:00';
 
         // Insert 2
-        $email_ids[] = $this->db->insert( 'emails', compact( 'website_id', 'date_synced' ), 'is' );
-        $email_ids[] = $this->db->insert( 'emails', compact( 'website_id', 'date_synced' ), 'is' );
+        $email_ids[] = $this->phactory->insert( 'emails', compact( 'website_id', 'date_synced' ), 'is' );
+        $email_ids[] = $this->phactory->insert( 'emails', compact( 'website_id', 'date_synced' ), 'is' );
 
         // Unsubscribe
         $this->email->sync_bulk( $email_ids );
 
         // Make sure there are none left
-        $retrieved_date_synced = $this->db->get_var( "SELECT `date_synced` FROM `emails` WHERE `website_id` = $website_id AND `date_synced` < '2013-01-01 00:00:00'" );
+        $retrieved_date_synced = $this->phactory->get_var( "SELECT `date_synced` FROM `emails` WHERE `website_id` = $website_id AND `date_synced` < '2013-01-01 00:00:00'" );
 
         $this->assertFalse( $retrieved_date_synced );
 
         // Clean up
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -221,12 +221,12 @@ class EmailTest extends BaseDatabaseTest {
         $this->email->id = $email_id;
 
         // Create
-        $this->db->insert( 'email_associations', compact( 'email_id', 'email_list_id' ), 'i' );
+        $this->phactory->insert( 'email_associations', compact( 'email_id', 'email_list_id' ), 'i' );
 
         // Remove associations
         $this->email->remove_associations();
 
-        $retrieved_email_list_id = $this->db->get_var( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id" );
+        $retrieved_email_list_id = $this->phactory->get_var( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id" );
 
         $this->assertFalse( $retrieved_email_list_id );
     }
@@ -251,7 +251,7 @@ class EmailTest extends BaseDatabaseTest {
         $this->email->status = $status;
         $this->email->create();
 
-        $this->db->insert( 'email_associations', array( 'email_id' => $this->email->id, 'email_list_id' => $email_list_id ), 'ii' );
+        $this->phactory->insert( 'email_associations', array( 'email_id' => $this->email->id, 'email_list_id' => $email_list_id ), 'ii' );
 
         // Setup stub
         library( 'MCAPI' );
@@ -266,12 +266,12 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertEquals( $new_status, $this->email->status );
 
         // Should have no associations
-        $retrieved_email_list_id = $this->db->get_var( 'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = ' . (int) $this->email->id );
+        $retrieved_email_list_id = $this->phactory->get_var( 'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = ' . (int) $this->email->id );
 
         $this->assertFalse( $retrieved_email_list_id );
 
         // Clean Up
-        $this->db->delete( 'emails', array( 'email_id' => $this->email->id ), 'i' );
+        $this->phactory->delete( 'emails', array( 'email_id' => $this->email->id ), 'i' );
     }
 
     /**
@@ -345,12 +345,12 @@ class EmailTest extends BaseDatabaseTest {
         $method->invokeArgs( $this->email, array( $website_id, $values ) );
 
         // Get emails
-        $fetched_email = $this->db->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
+        $fetched_email = $this->phactory->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
 
         $this->assertEquals( $fetched_email, $email );
 
         // Cleanup
-        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -367,19 +367,19 @@ class EmailTest extends BaseDatabaseTest {
         $email = 'test@flock.com';
 
         // Insert
-        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+        $this->phactory->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
 
         // Test
         $method->invokeArgs( $this->email, array( $website_id ) );
 
         // Get
-        $fetched_email = $this->db->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id" );
+        $fetched_email = $this->phactory->get_var( "SELECT `email` FROM `emails` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $email, $fetched_email );
 
         // Cleanup
-        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -397,20 +397,20 @@ class EmailTest extends BaseDatabaseTest {
         $email_list_ids = array( -2, -4, -6 );
 
         // Insert
-        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
-        $email_id = $this->db->insert( 'emails', compact( 'website_id', 'email' ), 'is' );
+        $this->phactory->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+        $email_id = $this->phactory->insert( 'emails', compact( 'website_id', 'email' ), 'is' );
 
         // Add
         $method->invokeArgs( $this->email, array( $website_id, $email_list_ids ) );
 
         // Get
-        $fetched_email_list_ids = $this->db->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
+        $fetched_email_list_ids = $this->phactory->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
 
         $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
 
-        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_associations', compact( 'email_id' ), 'i' );
+        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_associations', compact( 'email_id' ), 'i' );
     }
 
     /**
@@ -422,13 +422,13 @@ class EmailTest extends BaseDatabaseTest {
         $email = 'test@googoo.com';
 
         // Insert
-        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+        $this->phactory->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
 
         // Delete imported
         $this->email->delete_imported( $website_id );
 
         // Make sure there are none left
-        $email = $this->db->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id" );
+        $email = $this->phactory->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id" );
 
         $this->assertFalse( $email );
     }
@@ -458,19 +458,19 @@ class EmailTest extends BaseDatabaseTest {
         );
 
         // Insert
-        $this->db->insert( 'emails', array( 'website_id' => $website_id, 'email' => $unsubscribed_email, 'name' => $unsubscribed_name, 'status' => 0 ), 'issi' );
+        $this->phactory->insert( 'emails', array( 'website_id' => $website_id, 'email' => $unsubscribed_email, 'name' => $unsubscribed_name, 'status' => 0 ), 'issi' );
 
         // Import all
         $this->email->import_all( $website_id, $emails );
 
         // Get emails
-        $fetched_email = $this->db->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
+        $fetched_email = $this->phactory->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
 
         $this->assertEquals( $fetched_email, $email );
 
         // Cleanup
-        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -487,25 +487,25 @@ class EmailTest extends BaseDatabaseTest {
         $email_list_ids = array( -2, -4, -6 );
 
         // Insert
-        $this->db->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
+        $this->phactory->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
 
         // Complete the import
         $this->email->complete_import( $website_id, $email_list_ids );
 
-        $email_id = $this->db->get_var( "SELECT `email_id` FROM `emails` WHERE `website_id` = $website_id AND `email` = " . $this->db->quote( $email ) );
+        $email_id = $this->phactory->get_var( "SELECT `email_id` FROM `emails` WHERE `website_id` = $website_id AND `email` = " . $this->phactory->quote( $email ) );
 
         // Make sure it's there
         $this->assertGreaterThan( 0, $email_id );
 
         // Make sure it has the emails it should
-        $fetched_email_list_ids = $this->db->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
+        $fetched_email_list_ids = $this->phactory->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
 
         $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
 
         // Clean Up
-        $this->db->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'emails', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'email_associations', compact( 'email_id' ), 'i' );
+        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_associations', compact( 'email_id' ), 'i' );
     }
 
     /**
@@ -517,10 +517,10 @@ class EmailTest extends BaseDatabaseTest {
         $email_list_ids = array( '-2', '-3', '-4' );
 
         // Delete any associations from before hand
-        $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
+        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
 
         // Insert
-        $this->db->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) VALUES ( $email_id, " . implode( "), ( $email_id, ", $email_list_ids ) . ")" );
+        $this->phactory->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) VALUES ( $email_id, " . implode( "), ( $email_id, ", $email_list_ids ) . ")" );
 
         // Get associations
         $fetched_email_list_ids = $this->email->get_associations();
@@ -531,7 +531,7 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
 
         // Delete any images from before hand
-        $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
+        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
     }
 
     /**
@@ -543,18 +543,18 @@ class EmailTest extends BaseDatabaseTest {
         $email_list_ids = array( '-2', '-3', '-4' );
 
         // Delete any associations from before hand
-        $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
+        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
 
         // Add
         $this->email->add_associations( $email_list_ids );
 
         // See if they are there
-        $fetched_email_list_ids = $this->db->get_col( 'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = ' . $this->email->id . ' ORDER BY `email_list_id` DESC' );
+        $fetched_email_list_ids = $this->phactory->get_col( 'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = ' . $this->email->id . ' ORDER BY `email_list_id` DESC' );
 
         $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
 
         // Delete any images from before hand
-        $this->db->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
+        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
     }
 
     /**

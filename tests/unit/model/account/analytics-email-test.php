@@ -25,12 +25,12 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->analytics_email->create();
 
         // Make sure it's in the database
-        $email = $this->db->get_row( 'SELECT * FROM `analytics_emails` WHERE `mc_campaign_id` = ' . (int) $this->analytics_email->mc_campaign_id );
+        $email = $this->phactory->get_row( 'SELECT * FROM `analytics_emails` WHERE `mc_campaign_id` = ' . (int) $this->analytics_email->mc_campaign_id );
 
         $this->assertEquals( $this->analytics_email->mc_campaign_id, $email->mc_campaign_id );
 
         // Delete
-        $this->db->delete( 'analytics_emails', array( 'mc_campaign_id' => $this->analytics_email->mc_campaign_id ), 'i' );
+        $this->phactory->delete( 'analytics_emails', array( 'mc_campaign_id' => $this->analytics_email->mc_campaign_id ), 'i' );
     }
 
     /**
@@ -48,7 +48,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->analytics_email->mc_campaign_id = $mc_campaign_id;
         $this->analytics_email->create();
 
-        $email_message_id = $this->db->insert( 'email_messages', array(
+        $email_message_id = $this->phactory->insert( 'email_messages', array(
             'website_id' => $account_id
             , 'mc_campaign_id' => $mc_campaign_id
             , 'subject' => $subject
@@ -61,8 +61,8 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->assertEquals( $subject, $this->analytics_email->subject );
 
         // Clean up
-        $this->db->delete( 'email_messages', compact( 'email_message_id' ), 'i' );
-        $this->db->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
     }
 
     /**
@@ -103,12 +103,12 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         ) );
 
         // Make sure it's in the database
-        $analytics_email = $this->db->get_row( 'SELECT * FROM `analytics_emails` WHERE `mc_campaign_id` = ' . (int) $this->analytics_email->mc_campaign_id );
+        $analytics_email = $this->phactory->get_row( 'SELECT * FROM `analytics_emails` WHERE `mc_campaign_id` = ' . (int) $this->analytics_email->mc_campaign_id );
 
         $this->assertEquals( $campaign_array['users_who_clicked'], $analytics_email->users_who_clicked );
 
         // Delete
-        $this->db->delete( 'analytics_emails', array( 'mc_campaign_id' => $mc_campaign_id ), 'i' );
+        $this->phactory->delete( 'analytics_emails', array( 'mc_campaign_id' => $mc_campaign_id ), 'i' );
     }
 
     /**
@@ -143,7 +143,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         );
 
         // Create
-        $this->db->insert( 'email_messages', array(
+        $this->phactory->insert( 'email_messages', array(
             'website_id' => $website_id
             , 'mc_campaign_id' => $mc_campaign_id
             , 'subject' => $subject
@@ -166,8 +166,8 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->assertEquals( $campaign_advice, $this->analytics_email->advice );
 
         // Cleanup
-        $this->db->delete( 'email_messages', compact( 'mc_campaign_id' ), 'i' );
-        $this->db->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'mc_campaign_id' ), 'i' );
+        $this->phactory->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
     }
 
     /**
@@ -180,7 +180,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $mc_campaign_id = -9;
 
         // Create
-        $email_message_id = $this->db->insert( 'email_messages', array(
+        $email_message_id = $this->phactory->insert( 'email_messages', array(
             'website_id' => $account_id
             , 'mc_campaign_id' => $mc_campaign_id
             , 'status' => $status
@@ -191,7 +191,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->assertTrue( is_array( $mc_campaign_ids ) );
 
         // Delete
-        $this->db->delete( 'email_messages', array( 'email_message_id' => $email_message_id ), 'i' );
+        $this->phactory->delete( 'email_messages', array( 'email_message_id' => $email_message_id ), 'i' );
     }
 
     /**
@@ -229,7 +229,7 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $stub_mc->expects($this->any())->method('campaignStats')->with( $mc_campaign_id )->will($this->returnValue( $campaign_array ) );
 
         // Create
-        $this->db->insert( 'email_messages', array(
+        $this->phactory->insert( 'email_messages', array(
             'website_id' => $website_id
             , 'mc_campaign_id' => $mc_campaign_id
             , 'status' => $status
@@ -244,8 +244,8 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
         $this->assertEquals( $campaign_array['unique_opens'], $this->analytics_email->unique_opens );
 
         // Clean Up
-        $this->db->delete( 'email_messages', compact( 'mc_campaign_id' ), 'i' );
-        $this->db->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'mc_campaign_id' ), 'i' );
+        $this->phactory->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
     }
 
     /**

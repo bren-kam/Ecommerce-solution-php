@@ -25,7 +25,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $name = 'Gumdrops';
 
         // Create
-        $website_coupon_id = $this->db->insert( 'website_coupons', compact( 'website_id', 'name' ), 'is' );
+        $website_coupon_id = $this->phactory->insert( 'website_coupons', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->website_coupon->get( $website_coupon_id, $website_id );
@@ -33,7 +33,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->website_coupon->name );
 
         // Delete
-        $this->db->delete( 'website_coupons', compact( 'website_coupon_id' ), 'i' );
+        $this->phactory->delete( 'website_coupons', compact( 'website_coupon_id' ), 'i' );
     }
 
     /**
@@ -46,8 +46,8 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $product_id = -9;
 
         // Create
-        $website_coupon_id = $this->db->insert( 'website_coupons', compact( 'website_id', 'name' ), 'is' );
-        $this->db->insert( 'website_coupon_relations', compact( 'website_coupon_id', 'product_id' ), 'ii' );
+        $website_coupon_id = $this->phactory->insert( 'website_coupons', compact( 'website_id', 'name' ), 'is' );
+        $this->phactory->insert( 'website_coupon_relations', compact( 'website_coupon_id', 'product_id' ), 'ii' );
 
         // Get by products
         $website_coupons = $this->website_coupon->get_by_product( $website_id, $product_id );
@@ -56,8 +56,8 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $current_website_coupon );
 
         // Delete
-        $this->db->delete( 'website_coupons', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
     }
 
     /**
@@ -68,7 +68,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $website_id = -7;
 
         // Create
-        $this->db->insert( 'website_coupons', compact( 'website_id' ), 'i' );
+        $this->phactory->insert( 'website_coupons', compact( 'website_id' ), 'i' );
 
         // Get
         $website_coupons = $this->website_coupon->get_by_account( $website_id );
@@ -76,7 +76,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->assertTrue( current( $website_coupons ) instanceof WebsiteCoupon );
 
         // Delete
-        $this->db->delete( 'website_coupons', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -90,7 +90,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->website_coupon->id = $website_coupon_id;
 
         // Create
-        $website_shipping_method_id = $this->db->insert( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
+        $website_shipping_method_id = $this->phactory->insert( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
 
         // Get
         $website_shipping_method_ids = $this->website_coupon->get_free_shipping_methods( );
@@ -98,7 +98,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->assertEquals( array( $website_shipping_method_id ), $website_shipping_method_ids );
 
         // Delete
-        $this->db->delete( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
+        $this->phactory->delete( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
     }
 
     /**
@@ -117,12 +117,12 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->website_coupon->id ) );
 
         // Get the message
-        $name = $this->db->get_var( 'SELECT `name` FROM `website_coupons` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );
+        $name = $this->phactory->get_var( 'SELECT `name` FROM `website_coupons` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );
 
         $this->assertEquals( $original_name, $name );
 
         // Delete the note
-        $this->db->delete( 'website_coupons', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -152,7 +152,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->assertEquals( $new_name, $this->website_coupon->name );
 
         // Delete the attribute item
-        $this->db->delete( 'website_coupons', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -164,19 +164,19 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $website_coupon_ids = array( -2, -4, -6 );
 
         // Clear it just in case
-        $this->db->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
 
         // Add relations
         $this->website_coupon->add_relations( $product_id, $website_coupon_ids );
 
         // See if they are still there
-        $retrieved_website_coupon_ids = $this->db->get_col( 'SELECT `website_coupon_id` FROM `website_coupon_relations` WHERE `product_id` = ' . (int) $product_id . ' ORDER BY `website_coupon_id` DESC' );
+        $retrieved_website_coupon_ids = $this->phactory->get_col( 'SELECT `website_coupon_id` FROM `website_coupon_relations` WHERE `product_id` = ' . (int) $product_id . ' ORDER BY `website_coupon_id` DESC' );
 
         // Make sure they are equal
         $this->assertEquals( $website_coupon_ids, $retrieved_website_coupon_ids );
 
         // Clean up
-        $this->db->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
     }
 
     /**
@@ -192,13 +192,13 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->website_coupon->add_free_shipping_methods( $website_shipping_method_ids );
 
         // See if they are still there
-        $retrieved_website_shipping_method_ids = $this->db->get_col( 'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = ' . (int) $website_coupon_id . ' ORDER BY `website_shipping_method_id` DESC' );
+        $retrieved_website_shipping_method_ids = $this->phactory->get_col( 'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = ' . (int) $website_coupon_id . ' ORDER BY `website_shipping_method_id` DESC' );
 
         // Make sure they are equal
         $this->assertEquals( $website_shipping_method_ids, $retrieved_website_shipping_method_ids );
 
         // Clean up
-        $this->db->delete( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
+        $this->phactory->delete( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
     }
 
     /**
@@ -221,7 +221,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->website_coupon->remove();
 
         // Make sure it's not there
-        $website_id = $this->db->get_var( "SELECT `website_id` FROM `website_coupons` WHERE `website_coupon_id` = $website_coupon_id" );
+        $website_id = $this->phactory->get_var( "SELECT `website_id` FROM `website_coupons` WHERE `website_coupon_id` = $website_coupon_id" );
 
         $this->assertFalse( $website_id );
     }
@@ -250,11 +250,11 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         // Delete relations
         $this->website_coupon->delete_relations_by_product( $website_id, $product_id );
 
-        $retrieved_website_coupon_ids = $this->db->get_col( 'SELECT `website_coupon_id` FROM `website_coupon_relations` WHERE `product_id` = ' . (int) $product_id );
+        $retrieved_website_coupon_ids = $this->phactory->get_col( 'SELECT `website_coupon_id` FROM `website_coupon_relations` WHERE `product_id` = ' . (int) $product_id );
 
         $this->assertTrue( empty( $retrieved_website_coupon_ids ) );
 
-        $this->db->delete( 'website_coupons', array( 'website_coupon_id' => $this->website_coupon->id ), 'i' );
+        $this->phactory->delete( 'website_coupons', array( 'website_coupon_id' => $this->website_coupon->id ), 'i' );
     }
 
     /**
@@ -274,7 +274,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         // Delete relations
         $this->website_coupon->delete_free_shipping_methods();
 
-        $retrieved_website_shipping_methods = $this->db->get_col( 'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );
+        $retrieved_website_shipping_methods = $this->phactory->get_col( 'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );
 
         $this->assertTrue( empty( $retrieved_website_shipping_methods ) );
     }

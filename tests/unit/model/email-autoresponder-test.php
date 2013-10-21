@@ -24,7 +24,7 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $name = 'Bedroom Responder';
 
         // Create
-        $email_autoresponder_id = $this->db->insert( 'email_autoresponders', compact( 'website_id', 'name' ), 'is' );
+        $email_autoresponder_id = $this->phactory->insert( 'email_autoresponders', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->email_autoresponder->get( $email_autoresponder_id, $website_id );
@@ -33,7 +33,7 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->email_autoresponder->name );
 
         // Clean up
-        $this->db->delete( 'email_autoresponders', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_autoresponders', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -52,12 +52,12 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->email_autoresponder->id ) );
 
         // Make sure it's in the database
-        $subject = $this->db->get_var( 'SELECT `subject` FROM `email_autoresponders` WHERE `email_autoresponder_id` = ' . (int) $this->email_autoresponder->id );
+        $subject = $this->phactory->get_var( 'SELECT `subject` FROM `email_autoresponders` WHERE `email_autoresponder_id` = ' . (int) $this->email_autoresponder->id );
 
         $this->assertEquals( 'Welcome to Testing', $subject );
 
         // Delete
-        $this->db->delete( 'email_autoresponders', array( 'email_autoresponder_id' => $this->email_autoresponder->id ), 'i' );
+        $this->phactory->delete( 'email_autoresponders', array( 'email_autoresponder_id' => $this->email_autoresponder->id ), 'i' );
     }
     
     /**
@@ -71,7 +71,7 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $name = 'Bedroom Responder';
 
         // Create
-        $email_autoresponder_id = $this->db->insert( 'email_autoresponders', compact( 'website_id' ), 'i' );
+        $email_autoresponder_id = $this->phactory->insert( 'email_autoresponders', compact( 'website_id' ), 'i' );
 
         // Get
         $this->email_autoresponder->get( $email_autoresponder_id, $website_id );
@@ -79,12 +79,12 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $this->email_autoresponder->save();
 
         // Now check it!
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `email_autoresponders` WHERE `email_autoresponder_id` = $email_autoresponder_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `email_autoresponders` WHERE `email_autoresponder_id` = $email_autoresponder_id" );
 
         $this->assertEquals( $retrieved_name, $name );
 
         // Clean up
-        $this->db->delete( 'email_autoresponders', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_autoresponders', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -98,7 +98,7 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $name = 'Bedroom Responder';
 
         // Create
-        $email_autoresponder_id = $this->db->insert( 'email_autoresponders', compact( 'website_id', 'name' ), 'is' );
+        $email_autoresponder_id = $this->phactory->insert( 'email_autoresponders', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->email_autoresponder->get( $email_autoresponder_id, $website_id );
@@ -106,7 +106,7 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->email_autoresponder->remove();
 
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `email_autoresponders` WHERE `email_autoresponder_id` = $email_autoresponder_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `email_autoresponders` WHERE `email_autoresponder_id` = $email_autoresponder_id" );
 
         $this->assertFalse( $retrieved_name );
     }

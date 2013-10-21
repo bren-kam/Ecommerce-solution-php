@@ -25,7 +25,7 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
         $name = 'Grandma Shipping';
 
         // Create
-        $website_shipping_method_id = $this->db->insert( 'website_shipping_methods', compact( 'website_id', 'name' ), 'is' );
+        $website_shipping_method_id = $this->phactory->insert( 'website_shipping_methods', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->website_shipping_method->get( $website_shipping_method_id, $website_id );
@@ -34,7 +34,7 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->website_shipping_method->name );
 
         // Clean up
-        $this->db->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -46,7 +46,7 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
         $name = 'Grandma Shipping';
 
         // Create
-        $this->db->insert( 'website_shipping_methods', compact( 'website_id', 'name' ), 'is' );
+        $this->phactory->insert( 'website_shipping_methods', compact( 'website_id', 'name' ), 'is' );
 
         // Get all
         $website_shipping_methods = $this->website_shipping_method->get_by_account( $website_id );
@@ -54,7 +54,7 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
         $this->assertTrue( current( $website_shipping_methods ) instanceof WebsiteShippingMethod );
 
         // Clean up
-        $this->db->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -71,12 +71,12 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
         $this->website_shipping_method->create();
 
         // Make sure it's in the database
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $name, $retrieved_name );
 
         // Delete
-        $this->db->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -98,12 +98,12 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
             $this->website_shipping_method->save();
 
             // Make sure it's in the database
-            $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
+            $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
 
             $this->assertEquals( $name, $retrieved_name );
 
             // Clean up
-            $this->db->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
+            $this->phactory->delete( 'website_shipping_methods', compact( 'website_id' ), 'i' );
         }
 
     /**
@@ -123,7 +123,7 @@ class WebsiteShippingMethodTest extends BaseDatabaseTest {
         $this->website_shipping_method->remove();
 
         // Make sure it's in the database
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_shipping_methods` WHERE `website_id` = $website_id" );
 
         $this->assertFalse( $retrieved_name );
     }

@@ -25,7 +25,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $website_id = -3;
 
         // Create
-        $craigslist_ad_id = $this->db->insert( 'craigslist_ads', array(
+        $craigslist_ad_id = $this->phactory->insert( 'craigslist_ads', array(
             'website_id' => $website_id
             , 'text' => $text
         ), 'is' );
@@ -36,7 +36,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         // Compare
         $this->assertEquals( $text, $this->craigslist_ad->text );
 
-        $this->db->delete( 'craigslist_ads', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ads', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -53,7 +53,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $craigslist_market_id = -5;
 
         // Insert
-        $this->db->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id'  ), 'ii' );
+        $this->phactory->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id'  ), 'ii' );
 
         // Assign id
         $this->craigslist_ad->id = $craigslist_ad_id;
@@ -64,7 +64,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->assertEquals( array( $craigslist_market_id ), $craigslist_market_ids );
 
         // Delete
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -80,13 +80,13 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $craigslist_market_id = -7;
 
         // Create
-        $craigslist_ad_id = $this->db->insert( 'craigslist_ads', array(
+        $craigslist_ad_id = $this->phactory->insert( 'craigslist_ads', array(
             'website_id' => $website_id
             , 'text' => $text
         ), 'is' );
 
         // Insert
-        $this->db->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id'  ), 'ii' );
+        $this->phactory->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id'  ), 'ii' );
 
         // Get ad
         $this->craigslist_ad->get_complete( $craigslist_ad_id, $website_id );
@@ -95,8 +95,8 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->assertEquals( $text, $this->craigslist_ad->text );
         $this->assertEquals( array( $craigslist_market_id ), $this->craigslist_ad->craigslist_markets );
 
-        $this->db->delete( 'craigslist_ads', compact( 'craigslist_ad_id' ), 'i' );
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ads', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -115,12 +115,12 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->craigslist_ad->id ) );
 
         // Get the message
-        $text = $this->db->get_var( 'SELECT `text` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ' . (int) $this->craigslist_ad->id );
+        $text = $this->phactory->get_var( 'SELECT `text` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ' . (int) $this->craigslist_ad->id );
 
         $this->assertEquals( $original_text, $text );
 
         // Delete the note
-        $this->db->delete( 'craigslist_ads', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ads', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -150,7 +150,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->assertEquals( $new_text, $this->craigslist_ad->text );
 
         // Delete the attribute item
-        $this->db->delete( 'craigslist_ads', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ads', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -168,12 +168,12 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->add_headlines( $headlines );
 
         // Get headlines
-        $retrieved_headlines = $this->db->get_col( "SELECT `headline` FROM `craigslist_ad_headlines` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `headline` ASC" );
+        $retrieved_headlines = $this->phactory->get_col( "SELECT `headline` FROM `craigslist_ad_headlines` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `headline` ASC" );
 
         $this->assertEquals( $headlines, $retrieved_headlines );
 
         // Clean up
-        $this->db->delete( 'craigslist_ad_headlines', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_headlines', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -196,7 +196,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->delete_headlines();
 
         // Get headlines
-        $retrieved_headlines = $this->db->get_col( "SELECT `headline` FROM `craigslist_ad_headlines` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+        $retrieved_headlines = $this->phactory->get_col( "SELECT `headline` FROM `craigslist_ad_headlines` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
 
         $this->assertTrue( empty( $retrieved_headlines ) );
     }
@@ -221,12 +221,12 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $method->invokeArgs( $this->craigslist_ad, array( $craigslist_market_ids ) );
 
         // Get
-        $retrieved_craigslist_market_ids = $this->db->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `craigslist_market_id` DESC" );
+        $retrieved_craigslist_market_ids = $this->phactory->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `craigslist_market_id` DESC" );
 
         $this->assertEquals( $craigslist_market_ids, $retrieved_craigslist_market_ids );
 
         // Clean up
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -246,12 +246,12 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->id = $craigslist_ad_id;
 
         // Insert them
-        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -7 ), ( $craigslist_ad_id, -8 ), ( $craigslist_ad_id, -9 ) ON DUPLICATE KEY UPDATE `craigslist_ad_id` = VALUES( `craigslist_ad_id` )" );
+        $this->phactory->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -7 ), ( $craigslist_ad_id, -8 ), ( $craigslist_ad_id, -9 ) ON DUPLICATE KEY UPDATE `craigslist_ad_id` = VALUES( `craigslist_ad_id` )" );
 
         // Delete
         $method->invokeArgs( $this->craigslist_ad, array( $craigslist_market_ids ) );
 
-        $retrieved_craigslist_market_ids = $this->db->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+        $retrieved_craigslist_market_ids = $this->phactory->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
 
         $this->assertEquals( $craigslist_market_ids, $retrieved_craigslist_market_ids );
     }
@@ -273,18 +273,18 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->craigslist_markets = $craigslist_market_ids;
 
         // Insert other ones (which should be deleted
-        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -7 ), ( $craigslist_ad_id, -8 ), ( $craigslist_ad_id, -9 ) ON DUPLICATE KEY UPDATE `craigslist_ad_id` = VALUES( `craigslist_ad_id` )" );
+        $this->phactory->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -7 ), ( $craigslist_ad_id, -8 ), ( $craigslist_ad_id, -9 ) ON DUPLICATE KEY UPDATE `craigslist_ad_id` = VALUES( `craigslist_ad_id` )" );
 
         // Set markets
         $this->craigslist_ad->set_markets( $set_craigslist_market_ids );
 
         // Get
-        $retrieved_craigslist_market_ids = $this->db->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `craigslist_market_id` DESC" );
+        $retrieved_craigslist_market_ids = $this->phactory->get_col( "SELECT `craigslist_market_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `craigslist_market_id` DESC" );
 
         $this->assertEquals( $set_craigslist_market_ids, $retrieved_craigslist_market_ids );
 
         // Clean up
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -354,7 +354,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->id = $craigslist_ad_id;
 
         // Insert
-        $this->db->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'primus_product_id' ), 'ii' );
+        $this->phactory->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'primus_product_id' ), 'ii' );
 
         // Get
         $retrieved_primus_product_ids = $method->invoke( $this->craigslist_ad );
@@ -362,7 +362,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->assertEquals( array( $primus_product_id ), $retrieved_primus_product_ids );
 
         // Clean up
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -382,18 +382,18 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->id = $craigslist_ad_id;
 
         // Insert
-        $this->db->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'primus_product_id' ), 'ii' );
+        $this->phactory->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'primus_product_id' ), 'ii' );
 
         // Remove
         $method->invoke( $this->craigslist_ad );
 
         // Get primus product id
-        $retrieved_primus_product_id = $this->db->get_var( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
+        $retrieved_primus_product_id = $this->phactory->get_var( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id" );
 
         $this->assertEquals( 0, $retrieved_primus_product_id );
 
         // Clean up
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**
@@ -423,7 +423,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->save();
 
         // Insert ad markets
-        $this->db->insert( 'craigslist_ad_markets', array( 'craigslist_ad_id' => $this->craigslist_ad->id, 'primus_product_id' => $primus_product_id ), 'ii' );
+        $this->phactory->insert( 'craigslist_ad_markets', array( 'craigslist_ad_id' => $this->craigslist_ad->id, 'primus_product_id' => $primus_product_id ), 'ii' );
 
         // Do it
         $this->craigslist_ad->delete_from_primus( $stub_craigslist );
@@ -432,13 +432,13 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->assertEquals( $blank_date, $this->craigslist_ad->date_posted );
 
         // Test primus product id
-        $retrieved_primus_product_id = $this->db->get_var( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = " . (int) $this->craigslist_ad->id );
+        $retrieved_primus_product_id = $this->phactory->get_var( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = " . (int) $this->craigslist_ad->id );
 
         $this->assertEquals( 0, $retrieved_primus_product_id );
 
         // Clean up
-        $this->db->delete( 'craigslist_ad_markets', array( 'craigslist_ad_id' => $this->craigslist_ad->id ), 'i' );
-        $this->db->delete( 'craigslist_ads', array( 'craigslist_ad_id' => $this->craigslist_ad->id ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', array( 'craigslist_ad_id' => $this->craigslist_ad->id ), 'i' );
+        $this->phactory->delete( 'craigslist_ads', array( 'craigslist_ad_id' => $this->craigslist_ad->id ), 'i' );
     }
 
     /**
@@ -462,19 +462,19 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->id = $craigslist_ad_id;
 
         // Insert a few craigslist_market_ads
-        $this->db->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -2 ), ( $craigslist_ad_id, -4 ), ( $craigslist_ad_id, -6 )" );
+        $this->phactory->query( "INSERT INTO `craigslist_ad_markets` ( `craigslist_ad_id`, `craigslist_market_id` ) VALUES ( $craigslist_ad_id, -2 ), ( $craigslist_ad_id, -4 ), ( $craigslist_ad_id, -6 )" );
 
         // Set primus ads
         $method->invokeArgs( $this->craigslist_ad, array( $craigslist_market_ads ) );
 
         // Get primus product_ids
-        $primus_product_ids = $this->db->get_col( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `primus_product_id` DESC" );
+        $primus_product_ids = $this->phactory->get_col( "SELECT `primus_product_id` FROM `craigslist_ad_markets` WHERE `craigslist_ad_id` = $craigslist_ad_id ORDER BY `primus_product_id` DESC" );
 
         // Make sure they're equal
         $this->assertEquals( array_values( $craigslist_market_ads ), $primus_product_ids );
 
         // Clean Up
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
     }
 
     /**

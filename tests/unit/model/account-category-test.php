@@ -3,6 +3,10 @@
 require_once 'base-database-test.php';
 
 class AccountCategoryTest extends BaseDatabaseTest {
+    const TITLE = 'Test Category';
+    const CATEGORY_NAME = 'elbow pads';
+    const CATEGORY_ID = 5;
+
     /**
      * @var AccountCategory
      */
@@ -13,103 +17,85 @@ class AccountCategoryTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->account_category = new AccountCategory();
+
+        // Define
+        $this->phactory->define( 'categories', array( 'name' => self::CATEGORY_NAME ) );
+        $this->phactory->define( 'website_blocked_category', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID ) );
+        $this->phactory->define( 'website_categories', array(
+            'website_id' => self::WEBSITE_ID
+            , 'category_id' => self::CATEGORY_ID
+            , 'title' => self::TITLE
+        ) );
+        $this->phactory->recall();
     }
     
     /**
      * Get
      */
     public function testGet() {
-        // Set variables
-        $website_id = -7;
-        $name = 'elbow pads';
-
         // Create
-        $category_id = $this->db->insert( 'categories', compact( 'name' ), 's' );
-        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id' ), 'ii' );
+        $ph_category = $this->phactory->create( 'categories' );
+        $this->phactory->create( 'website_categories', array( 'category_id' => $ph_category->category_id ) );
 
         // Get
-        $this->account_category->get( $website_id, $category_id );
+        $this->account_category->get( self::WEBSITE_ID, $ph_category->category_id );
 
         // Make sure we grabbed the right one
-        $this->assertEquals( $name, $this->account_category->title );
-
-        // Clean up
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'website_categories', compact( 'website_id' ), 'i' );
+        $this->assertEquals( self::TITLE, $this->account_category->title );
     }
 
     /**
      * Get All Ids
      */
     public function testGetAllIds() {
-        // Set variables
-        $website_id = -7;
-        $category_id = -5;
-
         // Create
-        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id' ), 'ii' );
-        $category_id = -5;
-        $this->db->insert( 'website_categories', compact( 'category_id', 'website_id' ), 'ii' );
+        $this->phactory->create( 'website_categories' );
 
         // Get
-        $category_ids = $this->account_category->get_all_ids( $website_id );
+        $category_ids = $this->account_category->get_all_ids( self::WEBSITE_ID );
 
         // Make sure we grabbed the right one
-        $this->assertTrue( in_array( $category_id, $category_ids ) );
-
-        // Clean up
-        $this->db->delete( 'website_categories', compact( 'website_id' ), 'i' );
+        $this->assertContains( self::CATEGORY_ID, $category_ids );
     }
 
     /**
      * Get Blocked Website Category Ids
      */
     public function testGetBlockedWebsiteCategoryIds() {
-        // Set variables
-        $website_id = -7;
-        $category_id = -5;
-
         // Create
-        $this->db->insert( 'website_blocked_category', compact( 'category_id', 'website_id' ), 'ii' );
-        $category_id = -5;
-        $this->db->insert( 'website_blocked_category', compact( 'category_id', 'website_id' ), 'ii' );
+        $this->phactory->create( 'website_categories' );
+        $this->phactory->create( 'website_blocked_category' );
 
         // Get
-        $blocked_website_category_ids = $this->account_category->get_blocked_website_category_ids( $website_id );
+        $blocked_website_category_ids = $this->account_category->get_blocked_website_category_ids( self::WEBSITE_ID );
 
         // Make sure we grabbed the right one
-        $this->assertTrue( in_array( $category_id, $blocked_website_category_ids ) );
+        $this->assertContains( self::CATEGORY_ID, $blocked_website_category_ids );
 
-        // Clean up
-        $this->db->delete( 'website_blocked_category', compact( 'website_id' ), 'i' );
+        $this->phactory->recall();
     }
-    
+
     /**
      * Save
      *
      * @depends testGet
      */
     public function testSave() {
-        // Set variables
-        $website_id = -7;
-        $category_id = -5;
-        $title = 'Helllo!';
+        // Declare
+        $title = 'Woot!';
 
         // Create
-        $this->db->insert( 'website_categories', compact( 'website_id', 'category_id' ), 'ii' );
+        $this->phactory->create( 'website_categories' );
 
         // Get
-        $this->account_category->get( $website_id, $category_id );
+        $this->account_category->get( self::WEBSITE_ID, self::CATEGORY_ID );
         $this->account_category->title = $title;
         $this->account_category->save();
 
         // Now check it!
-        $retrieved_title = $this->db->get_var( "SELECT `title` FROM `website_categories` WHERE `website_id` = $website_id AND `category_id` = $category_id" );
+        $ph_website_category = $this->phactory->get( 'website_categories', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID ) );
 
-        $this->assertEquals( $retrieved_title, $title );
-
-        // Clean up
-        $this->db->delete( 'website_categories', compact( 'website_id' ), 'i' );
+        $this->assertEquals( $title, $ph_website_category->title );
     }
 
     /**
@@ -117,19 +103,18 @@ class AccountCategoryTest extends BaseDatabaseTest {
      */
     public function testHide() {
          // Set variables
-        $website_id = -7;
-        $category_ids = array( -3, -5, -9 );
+        $category_ids = array( self::CATEGORY_ID );
 
         // Hide
-        $this->account_category->hide( $website_id, $category_ids );
+        $this->account_category->hide( self::WEBSITE_ID, $category_ids );
 
         // Check IDS
-        $retrieved_category_ids = $this->db->get_col( "SELECT `category_id` FROM `website_blocked_category` WHERE `website_id` = $website_id ORDER BY `category_id` DESC" );
+        $ph_website_blocked_category = $this->phactory->get( 'website_blocked_category', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID ) );
 
-        $this->assertEquals( $retrieved_category_ids, $category_ids );
+        $this->assertEquals( self::CATEGORY_ID, $ph_website_blocked_category->category_id );
 
         // Clean up
-        $this->db->delete( 'website_blocked_category', compact( 'website_id' ), 'i' );
+        $this->phactory->recall();
     }
 
     /**
@@ -139,72 +124,56 @@ class AccountCategoryTest extends BaseDatabaseTest {
      */
     public function testUnhide() {
          // Set variables
-        $website_id = -7;
-        $category_ids = array( -3, -5, -9 );
+        $category_ids = array( self::CATEGORY_ID );
 
         // Hide
-        $this->account_category->hide( $website_id, $category_ids );
+        $this->account_category->hide( self::WEBSITE_ID, $category_ids );
 
         // Unhide
-        $this->account_category->unhide( $website_id, $category_ids );
+        $this->account_category->unhide( self::WEBSITE_ID, $category_ids );
 
         // Check it
-        $retrieved_category_ids = $this->db->get_col( "SELECT `category_id` FROM `website_blocked_category` WHERE `website_id` = $website_id ORDER BY `category_id` DESC" );
+        $ph_website_blocked_category = $this->phactory->get( 'website_blocked_category', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID ) );
 
-        $this->assertEquals( $retrieved_category_ids, array() );
+        $this->assertEmpty( $ph_website_blocked_category );
     }
 
     /**
      * Test delete by account
      */
     public function testDeleteByAccount() {
-        // Declare variables
-        $account_id = -5;
-
         // Insert categories
-        $this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id` ) VALUES ( $account_id, -1 ), ( $account_id, -2 ), ( $account_id, -3 )" );
+        $this->phactory->create( 'website_categories' );
+
+        // Delete by account
+        $this->account_category->delete_by_account( self::WEBSITE_ID );
 
         // Make sure they exist
-        $category_ids = $this->db->get_col( "SELECT `category_id` FROM `website_categories` WHERE `website_id` = $account_id" );
+        $ph_website_category = $this->phactory->get( 'website_categories', array( 'website_id' => self::WEBSITE_ID ) );
 
-        $this->assertEquals( 3, count( $category_ids ) );
-
-        // Delete
-        $this->account_category->delete_by_account( $account_id );
-
-        // Make sure they're not there
-        $category_ids = $this->db->get_col( "SELECT `category_id` FROM `website_categories` WHERE `website_id` = $account_id" );
-
-        $this->assertEquals( 0, count( $category_ids ) );
+        $this->assertEmpty( $ph_website_category );
     }
 
     /**
      * Test reorganizing categories
-     *
-     * @depends testDeleteByAccount
-     */
+     
     public function testReorganizeCategories() {
-        // Declare variables
-        $account_id = 96; // Testing
-
-        // Delete all website products
-        $this->account_category->delete_by_account( $account_id );
-
-        // Insert bad categories
-        $this->db->query( "INSERT INTO `website_categories` ( `website_id`, `category_id` ) VALUES ( $account_id, -1 ), ( $account_id, -2 ), ( $account_id, -3 )" );
+        // Create
+        $this->phactory->recall();
+        $this->phactory->create( 'website_categories' );
 
         // Reorganize
-        $this->account_category->reorganize_categories( $account_id, new Category() );
+        $this->account_category->reorganize_categories( self::WEBSITE_ID, new Category() );
 
         // check again
-        $category_ids = $this->db->get_col( "SELECT `category_id` FROM `website_categories` WHERE `website_id` = $account_id" );
-
-        $this->assertGreaterThan( 0, $category_ids );
+        $ph_website_category = $this->phactory->get( 'website_categories', array( 'website_id' => self::WEBSITE_ID ) );
+        fn::info( $ph_website_category );exit;
+        $this->assertEmpty( $ph_website_category );
     }
-    
+
     /**
      * List All
-     */
+     /
     public function testListAll() {
         $user = new User();
         $user->get_by_email('test@greysuitretail.com');
@@ -229,7 +198,7 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
     /**
      * Count All
-     */
+
     public function testCountAll() {
         $user = new User();
         $user->get_by_email('test@greysuitretail.com');
@@ -250,7 +219,7 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
-    }
+    }*/
 
     /**
      * Will be executed after every test

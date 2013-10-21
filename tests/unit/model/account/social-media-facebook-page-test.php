@@ -26,7 +26,7 @@ class SocialMediaFacebookPageTest extends BaseDatabaseTest {
         $name = 'Gertrude';
 
         // Insert
-        $this->db->insert( 'sm_facebook_page', compact( 'id', 'website_id', 'name' ), 'iis' );
+        $this->phactory->insert( 'sm_facebook_page', compact( 'id', 'website_id', 'name' ), 'iis' );
 
         // Get
         $this->sm_facebook_page->get( $id, $website_id );
@@ -34,7 +34,7 @@ class SocialMediaFacebookPageTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->sm_facebook_page->name );
 
         // Clean up
-        $this->db->delete( 'sm_facebook_page', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'sm_facebook_page', compact( 'id' ), 'i' );
     }
 
     /**
@@ -51,12 +51,12 @@ class SocialMediaFacebookPageTest extends BaseDatabaseTest {
         $this->sm_facebook_page->create();
 
         // Get
-        $retrieved_name = $this->db->get_var( 'SELECT `name` FROM `sm_facebook_page` WHERE `id` = ' . (int) $this->sm_facebook_page->id );
+        $retrieved_name = $this->phactory->get_var( 'SELECT `name` FROM `sm_facebook_page` WHERE `id` = ' . (int) $this->sm_facebook_page->id );
 
         $this->assertEquals( $retrieved_name, $this->sm_facebook_page->name );
 
         // Clean up
-        $this->db->delete( 'sm_facebook_page', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'sm_facebook_page', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -78,12 +78,12 @@ class SocialMediaFacebookPageTest extends BaseDatabaseTest {
         $this->sm_facebook_page->save();
 
         // Check it
-        $retrieved_name = $this->db->get_var( 'SELECT `name` FROM `sm_facebook_page` WHERE `id` = ' . (int) $this->sm_facebook_page->id );
+        $retrieved_name = $this->phactory->get_var( 'SELECT `name` FROM `sm_facebook_page` WHERE `id` = ' . (int) $this->sm_facebook_page->id );
 
         $this->assertEquals( $retrieved_name, $this->sm_facebook_page->name );
 
         // Clean up
-        $this->db->delete( 'sm_facebook_page', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'sm_facebook_page', compact( 'website_id' ), 'i' );
     }
 
     /**

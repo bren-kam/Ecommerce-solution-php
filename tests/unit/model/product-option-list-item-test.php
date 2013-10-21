@@ -54,7 +54,7 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
         $this->assertEquals( 'Testee', $this->product_option_list_item->value );
 
         // Delete the product option list item
-        $this->db->delete( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ), 'i' );
+        $this->phactory->delete( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ), 'i' );
     }
 
     /**
@@ -82,7 +82,7 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
         $this->assertEquals( 'eetseT', $this->product_option_list_item->value );
 
         // Delete the product option list item
-        $this->db->delete( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ), 'i' );
+        $this->phactory->delete( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ), 'i' );
     }
 
     /**
@@ -105,7 +105,7 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
         $this->product_option_list_item->delete();
 
         // Make sure it doesn't exist
-        $name = $this->db->get_var( "SELECT `name` FROM `product_option_list_items` WHERE `product_option_list_item_id` = " . (int) $this->product_option_list_item->id );
+        $name = $this->phactory->get_var( "SELECT `name` FROM `product_option_list_items` WHERE `product_option_list_item_id` = " . (int) $this->product_option_list_item->id );
 
         $this->assertFalse( $name );
     }
