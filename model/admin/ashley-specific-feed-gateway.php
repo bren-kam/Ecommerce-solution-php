@@ -266,8 +266,12 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Set prices
         $settings = $account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending' );
 
-        if ( $settings['auto-price-feed'] )
-            $account_product->auto_price( $settings['auto-price'], $settings['auto-sale-price'], $settings['auto-price-feed'], $settings['auto-price-ending'], $account->id );
+        if ( $settings['auto-price-feed'] ) {
+            $price = ( empty( $_POST['auto-price'] ) ) ? 0 : ( $_POST['auto-price'] + 100 ) / 100;
+            $sale_price = ( empty( $_POST['auto-sale-price'] ) ) ? 0 : ( $_POST['auto-sale-price'] + 100 ) / 100;
+            $alternate_price = ( empty( $_POST['auto-alternate-price'] ) ) ? 0 : ( $_POST['auto-alternate-price'] + 100 ) / 100;
+            $account_product->auto_price( $price, $sale_price, $alternate_price, $settings['auto-price-ending'], $account->id );
+        }
 	}
 	
 	/**
