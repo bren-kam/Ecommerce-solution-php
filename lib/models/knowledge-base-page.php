@@ -60,7 +60,7 @@ class KnowledgeBasePage extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'kb_category_id' => $this->kb_category_id
-            , 'name' => $this->name
+            , 'name' => strip_tags($this->name)
         ), 'is' );
 
         $this->id = $this->get_insert_id();
@@ -72,7 +72,7 @@ class KnowledgeBasePage extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'kb_category_id' => $this->kb_category_id
-            , 'name' => $this->name
+            , 'name' => strip_tags($this->name)
         ), array(
             'id' => $this->id
         ), 'is', 'i' );

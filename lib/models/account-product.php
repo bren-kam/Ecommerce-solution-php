@@ -169,22 +169,22 @@ class AccountProduct extends ActiveRecordBase {
             , 'price' => $this->price
             , 'sale_price' => $this->sale_price
             , 'inventory' => $this->inventory
-            , 'alternate_price_name' => $this->alternate_price_name
-            , 'price_note' => $this->price_note
-            , 'product_note' => $this->product_note
-            , 'warranty_length' => $this->warranty_length
+            , 'alternate_price_name' => strip_tags($this->alternate_price_name)
+            , 'price_note' => strip_tags($this->price_note)
+            , 'product_note' => strip_tags($this->product_note)
+            , 'warranty_length' => strip_tags($this->warranty_length)
             , 'display_inventory' => $this->display_inventory
             , 'on_sale' => $this->on_sale
-            , 'status' => $this->status
-            , 'meta_title' => $this->meta_title
-            , 'meta_description' => $this->meta_description
-            , 'meta_keywords' => $this->meta_keywords
-            , 'wholesale_price' => $this->wholesale_price
+            , 'status' => strip_tags($this->status)
+            , 'meta_title' => strip_tags($this->meta_title)
+            , 'meta_description' => strip_tags($this->meta_description)
+            , 'meta_keywords' => strip_tags($this->meta_keywords)
+            , 'wholesale_price' => strip_tags($this->wholesale_price)
             , 'additional_shipping_amount' => $this->additional_shipping_amount
-            , 'weight' => $this->weight
-            , 'additional_shipping_type' => $this->additional_shipping_type
-            , 'ships_in' => $this->ships_in
-            , 'store_sku' => $this->store_sku
+            , 'weight' => strip_tags($this->weight)
+            , 'additional_shipping_type' => strip_tags($this->additional_shipping_type)
+            , 'ships_in' => strip_tags($this->ships_in)
+            , 'store_sku' => strip_tags($this->store_sku)
             , 'active' => $this->active
         ), array(
             'website_id' => $this->website_id
@@ -872,6 +872,9 @@ class AccountProduct extends ActiveRecordBase {
 
             // Get the values
             extract( $array );
+
+            $alternate_price_name = strip_tags($alternate_price_name);
+            $price_note = strip_tags($price_note);
 
             $statement->query();
         }

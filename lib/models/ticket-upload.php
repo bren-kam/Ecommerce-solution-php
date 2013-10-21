@@ -89,14 +89,11 @@ class TicketUpload extends ActiveRecordBase {
     public function create() {
         $this->date_created = dt::now();
 
-        $this->insert(
-            array(
-                'ticket_id' => $this->ticket_id
-                , 'key' => $this->key
-                , 'date_created' => $this->date_created
-            )
-            , 'iss'
-        );
+        $this->insert(array(
+            'ticket_id' => $this->ticket_id
+            , 'key' => strip_tags($this->key)
+            , 'date_created' => $this->date_created
+        ), 'iss' );
 
         $this->id = $this->ticket_upload_id = $this->get_insert_id();
     }

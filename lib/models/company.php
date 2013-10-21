@@ -41,7 +41,14 @@ class Company extends ActiveRecordBase {
      * Create a company
      */
     public function create() {
-        $this->insert( array( 'name' => $this->name, 'domain' => $this->domain, 'email' => $this->email, 'date_created' => dt::date('Y-m-d H:i:s') ), 'ssss' );
+        $this->date_created = dt::now();
+
+        $this->insert( array(
+            'name' => strip_tags($this->name)
+            , 'domain' => strip_tags($this->domain)
+            , 'email' => strip_tags($this->email)
+            , 'date_created' => $this->date_created
+        ), 'ssss' );
 
         $this->company_id = $this->id = $this->get_insert_id();
     }
@@ -51,9 +58,9 @@ class Company extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'name' => $this->name
-            , 'domain' => $this->domain
-            , 'email' => $this->email
+            'name' => strip_tags($this->name)
+            , 'domain' => strip_tags($this->domain)
+            , 'email' => strip_tags($this->email)
         ), array( 'company_id' => $this->id ), 'sss', 'i' );
     }
 

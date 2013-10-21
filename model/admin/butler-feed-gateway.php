@@ -507,7 +507,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
 
             /***** UPDATE PRODUCT *****/
 
-			$product->save();
+            $product->save();
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;

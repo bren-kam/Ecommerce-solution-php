@@ -46,12 +46,12 @@ class AccountCategory extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'title' => $this->title
-            , 'content' => $this->content
-            , 'meta_title' => $this->meta_title
-            , 'meta_description' => $this->meta_description
-            , 'meta_keywords' => $this->meta_keywords
-            , 'image_url' => $this->image_url
+            'title' => strip_tags( $this->title )
+            , 'content' => strip_tags($this->content)
+            , 'meta_title' => strip_tags($this->meta_title)
+            , 'meta_description' => strip_tags($this->meta_description)
+            , 'meta_keywords' => strip_tags($this->meta_keywords)
+            , 'image_url' => strip_tags($this->image_url)
             , 'top' => $this->top
         ), array(
             'website_id' => $this->website_id
@@ -363,7 +363,7 @@ class AccountCategory extends ActiveRecordBase {
             $values .= '( ' . (int) $va['account_id'] . ', ' . (int) $va['category_id'] . ", ? )";
 
             // Store that image
-            $images[] = $va['image'];
+            $images[] = strip_tags($va['image']);
         }
 
         $this->prepare(

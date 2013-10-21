@@ -48,7 +48,7 @@ class ProductOptionListItem extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'product_option_id' => $this->product_option_id
-            , 'value' => $this->value
+            , 'value' => strip_tags($this->value)
             , 'sequence' => $this->sequence
         ), 'isi' );
 
@@ -60,7 +60,7 @@ class ProductOptionListItem extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'value' => $this->value
+            'value' => strip_tags($this->value)
             , 'sequence' => $this->sequence
         ), array(
             'product_option_list_item_id' => $this->id

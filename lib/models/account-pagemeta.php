@@ -133,8 +133,8 @@ class AccountPagemeta extends ActiveRecordBase {
                 $values .= ', ';
 
             $values .= '( ' . (int) $pm['website_page_id'] . ', ?, ? )';
-            $key_values[] = $pm['key'];
-            $key_values[] = $pm['value'];
+            $key_values[] = strip_tags($pm['key']);
+            $key_values[] = strip_tags($pm['value']);
         }
 
         $this->prepare(
@@ -160,8 +160,8 @@ class AccountPagemeta extends ActiveRecordBase {
                 $values .= ', ';
 
             $values .= "( $account_page_id, ?, ? )";
-            $key_values[] = $key;
-            $key_values[] = $value;
+            $key_values[] = strip_tags($key);
+            $key_values[] = strip_tags($value);
         }
 
         $this->prepare(

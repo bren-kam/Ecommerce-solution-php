@@ -42,11 +42,11 @@ class SocialMediaPostingPost extends ActiveRecordBase {
 
         $this->insert( array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
-            , 'access_token' => $this->access_token
-            , 'post' => $this->post
-            , 'link' => $this->link
+            , 'access_token' => strip_tags($this->access_token)
+            , 'post' => strip_tags($this->post)
+            , 'link' => strip_tags($this->link)
             , 'status' => $this->status
-            , 'date_posted' => $this->date_posted
+            , 'date_posted' => strip_tags($this->date_posted)
             , 'date_created' => $this->date_created
         ), 'isssiss' );
 

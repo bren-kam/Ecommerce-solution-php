@@ -18,9 +18,9 @@ class ApiExtLog extends ActiveRecordBase {
 
         $this->id = $this->insert( array(
             'website_id' => $this->website_id
-            , 'api' => $this->api
-            , 'method' => $this->method
-            , 'url' => $this->url
+            , 'api' => strip_tags($this->api)
+            , 'method' => strip_tags($this->method)
+            , 'url' => strip_tags($this->url)
             , 'request' => $this->request
             , 'raw_request' => $this->raw_request
             , 'response' => $this->response

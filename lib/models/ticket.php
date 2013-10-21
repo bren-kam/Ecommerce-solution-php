@@ -46,7 +46,7 @@ class Ticket extends ActiveRecordBase {
             'user_id' => $this->user_id
             , 'assigned_to_user_id' => $this->assigned_to_user_id
             , 'website_id' => $this->website_id
-            , 'summary' => $this->summary
+            , 'summary' => strip_tags($this->summary)
             , 'message' => $this->message
             , 'status' => $this->status
             , 'priority' => $this->priority
@@ -65,17 +65,17 @@ class Ticket extends ActiveRecordBase {
                 'user_id' => $this->user_id
                 , 'assigned_to_user_id' => $this->assigned_to_user_id
                 , 'website_id' => $this->website_id
-                , 'summary' => $this->summary
+                , 'summary' => strip_tags($this->summary)
                 , 'message' => $this->message
-                , 'browser_name' => $this->browser_name
-                , 'browser_version' => $this->browser_version
-                , 'browser_platform' => $this->browser_platform
-                , 'browser_user_agent' => $this->browser_user_agent
+                , 'browser_name' => strip_tags($this->browser_name)
+                , 'browser_version' => strip_tags($this->browser_version)
+                , 'browser_platform' => strip_tags($this->browser_platform)
+                , 'browser_user_agent' => strip_tags($this->browser_user_agent)
                 , 'priority' => $this->priority
                 , 'status' => $this->status
             )
             , array( 'ticket_id' => $this->id )
-            , 'iiissssssis'
+            , 'iiissssssii'
             , 'i'
         );
     }

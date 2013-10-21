@@ -53,7 +53,7 @@ class Posting extends ActiveRecordBase {
         parent::update( array(
             'fb_user_id' => $fb_user_id
             , 'fb_page_id' => $fb_page_id
-            , 'access_token' => $access_token
+            , 'access_token' => strip_tags($access_token)
         ), array(
             'key' => $key
         ), 'iis', 's' );
@@ -67,9 +67,9 @@ class Posting extends ActiveRecordBase {
      */
     public function update_access_token( $access_token, $fb_page_id ) {
         parent::update( array(
-           'access_token' => $access_token
+           'access_token' => strip_tags($access_token)
         ), array(
             'fb_page_id' => $fb_page_id
-        ), 'is', 'i' );
+        ), 's', 'i' );
     }
 }

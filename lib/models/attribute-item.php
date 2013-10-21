@@ -109,7 +109,7 @@ class AttributeItem extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'attribute_id' => $this->attribute_id
-            , 'attribute_item_name' => $this->name
+            , 'attribute_item_name' => strip_tags($this->name)
             , 'sequence' => $this->sequence
         ), 'isi' );
 
@@ -121,7 +121,7 @@ class AttributeItem extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'attribute_item_name' => $this->name
+            'attribute_item_name' => strip_tags($this->name)
             , 'sequence' => $this->sequence
         ), array(
             'attribute_item_id' => $this->id

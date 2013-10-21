@@ -137,10 +137,10 @@ class EmailMessage extends ActiveRecordBase {
         $this->insert( array(
             'website_id' => $this->website_id
             , 'email_template_id' => $this->email_template_id
-            , 'subject' => $this->subject
-            , 'message' => $this->message
-            , 'type' => $this->type
-            , 'date_sent' => $this->date_sent
+            , 'subject' => strip_tags($this->subject)
+            , 'message' => format::strip_only( $this->message, '<script>' )
+            , 'type' => strip_tags($this->type)
+            , 'date_sent' => strip_tags($this->date_sent)
             , 'date_created' => $this->date_created
         ), 'iisssss' );
 
@@ -199,11 +199,11 @@ class EmailMessage extends ActiveRecordBase {
             'email_template_id' => $this->email_template_id
             , 'ac_message_id' => $this->ac_message_id
             , 'ac_campaign_id' => $this->ac_campaign_id
-            , 'subject' => $this->subject
-            , 'message' => $this->message
-            , 'type' => $this->type
+            , 'subject' => strip_tags($this->subject)
+            , 'message' => format::strip_only( $this->message, '<script>' )
+            , 'type' => strip_tags($this->type)
             , 'status' => $this->status
-            , 'date_sent' => $this->date_sent
+            , 'date_sent' => strip_tags($this->date_sent)
         ), array(
             'email_message_id' => $this->id
             , 'website_id' => $this->website_id

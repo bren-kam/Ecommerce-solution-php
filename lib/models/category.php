@@ -232,9 +232,9 @@ class Category extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'parent_category_id' => $this->parent_category_id
-            , 'name' => $this->name
-            , 'slug' => $this->slug
-            , 'google_taxonomy' => $this->google_taxonomy
+            , 'name' => strip_tags($this->name)
+            , 'slug' => strip_tags($this->slug)
+            , 'google_taxonomy' => strip_tags($this->google_taxonomy)
         ), 'isss' );
 
         $this->id = $this->get_insert_id();
@@ -250,9 +250,9 @@ class Category extends ActiveRecordBase {
 
         parent::update( array(
             'parent_category_id' => $this->parent_category_id
-            , 'name' => $this->name
-            , 'slug' => $this->slug
-            , 'google_taxonomy' => $this->google_taxonomy
+            , 'name' => strip_tags($this->name)
+            , 'slug' => strip_tags($this->slug)
+            , 'google_taxonomy' => strip_tags($this->google_taxonomy)
         ), array( 'category_id' => $this->id ), 'isss', 'i' );
     }
 

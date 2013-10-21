@@ -21,7 +21,7 @@ class Notification extends ActiveRecordBase {
 
         $this->insert( array(
             'user_id' => $this->user_id
-            , 'message' => $this->message
+            , 'message' => strip_tags( $this->message, '<a><p><strong>' )
             , 'success' => $this->success
         ), 'isi' );
     }

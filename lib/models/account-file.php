@@ -69,7 +69,7 @@ class AccountFile extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'file_path' => $this->file_path
+            , 'file_path' => strip_tags($this->file_path)
             , 'date_created' => $this->date_created
         ), 'iss' );
 

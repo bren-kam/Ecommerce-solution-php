@@ -22,9 +22,9 @@ class ApiLog extends ActiveRecordBase {
 
         $this->insert( array(
             'company_id' => $this->company_id
-            , 'type' => $this->type
-            , 'method' => $this->method
-            , 'message' => $this->message
+            , 'type' => strip_tags($this->type)
+            , 'method' => strip_tags($this->method)
+            , 'message' => strip_tags($this->message)
             , 'success' => $this->success
             , 'date_created' => $this->date_created
         ), 'isssis' );

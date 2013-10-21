@@ -95,9 +95,9 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
             'kb_category_id' => $this->kb_category_id
             , 'kb_page_id' => $this->kb_page_id
             , 'user_id' => $this->user_id
-            , 'title' => $this->title
-            , 'slug' => $this->slug
-            , 'content' => $this->content
+            , 'title' => strip_tags($this->title)
+            , 'slug' => strip_tags($this->slug)
+            , 'content' => format::strip_only( $this->content, '<script>' )
             , 'status' => $this->status
             , 'date_created' => $this->date_created
         ), 'iiisssis' );
@@ -111,9 +111,9 @@ class KnowledgeBaseArticle extends ActiveRecordBase {
             'kb_category_id' => $this->kb_category_id
             , 'kb_page_id' => $this->kb_page_id
             , 'user_id' => $this->user_id
-            , 'title' => $this->title
-            , 'slug' => $this->slug
-            , 'content' => $this->content
+            , 'title' => strip_tags($this->title)
+            , 'slug' => strip_tags($this->slug)
+            , 'content' => format::strip_only( $this->content, '<script>' )
             , 'status' => $this->status
         ), array(
             'id' => $this->id

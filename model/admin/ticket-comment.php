@@ -59,7 +59,7 @@ class TicketComment extends ActiveRecordBase {
         $this->insert( array(
             'ticket_id' => $this->ticket_id
             , 'user_id' => $this->user_id
-            , 'comment' => $this->comment
+            , 'comment' => strip_tags($this->comment, '<br><a>')
             , 'private' => $this->private
             , 'date_created' => $this->date_created
         ), 'iisis' );

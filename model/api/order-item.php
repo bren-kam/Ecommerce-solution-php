@@ -20,7 +20,7 @@ class OrderItem extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'order_id' => $this->order_id
-            , 'item' => $this->item
+            , 'item' => strip_tags($this->item)
             , 'quantity' => $this->quantity
             , 'amount' => $this->amount
             , 'monthly' => $this->monthly

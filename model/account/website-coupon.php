@@ -86,16 +86,16 @@ class WebsiteCoupon extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'name' => $this->name
-            , 'code' => $this->code
-            , 'type' => $this->type
+            , 'name' => strip_tags($this->name)
+            , 'code' => strip_tags($this->code)
+            , 'type' => strip_tags($this->type)
             , 'amount' => $this->amount
             , 'minimum_purchase_amount' => $this->minimum_purchase_amount
             , 'store_wide' => $this->store_wide
             , 'buy_one_get_one_free' => $this->buy_one_get_one_free
             , 'item_limit' => $this->item_limit
-            , 'date_start' => $this->date_start
-            , 'date_end' => $this->date_end
+            , 'date_start' => strip_tags($this->date_start)
+            , 'date_end' => strip_tags($this->date_end)
             , 'date_created' => $this->date_created
         ), 'isssddiiisss' );
 
@@ -107,16 +107,16 @@ class WebsiteCoupon extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'name' => $this->name
-            , 'code' => $this->code
-            , 'type' => $this->type
+            'name' => strip_tags($this->name)
+            , 'code' => strip_tags($this->code)
+            , 'type' => strip_tags($this->type)
             , 'amount' => $this->amount
             , 'minimum_purchase_amount' => $this->minimum_purchase_amount
             , 'store_wide' => $this->store_wide
             , 'buy_one_get_one_free' => $this->buy_one_get_one_free
             , 'item_limit' => $this->item_limit
-            , 'date_start' => $this->date_start
-            , 'date_end' => $this->date_end
+            , 'date_start' => strip_tags($this->date_start)
+            , 'date_end' => strip_tags($this->date_end)
         ), array(
             'website_coupon_id' => $this->website_coupon_id )
         , 'sssddiiiss', 'i' );

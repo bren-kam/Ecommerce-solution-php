@@ -84,8 +84,8 @@ class AccountPage extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'slug' => $this->slug
-            , 'title' => $this->title
+            , 'slug' => strip_tags($this->slug)
+            , 'title' => strip_tags($this->title)
             , 'content' => $this->content
             , 'status' => $this->status
             , 'date_created' => $this->date_created
@@ -127,12 +127,12 @@ class AccountPage extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'slug' => $this->slug
-            , 'title' => $this->title
+            'slug' => strip_tags($this->slug)
+            , 'title' => strip_tags($this->title)
             , 'content' => $this->content
-            , 'meta_title' => $this->meta_title
-            , 'meta_description' => $this->meta_description
-            , 'meta_keywords' => $this->meta_keywords
+            , 'meta_title' => strip_tags($this->meta_title)
+            , 'meta_description' => strip_tags($this->meta_description)
+            , 'meta_keywords' => strip_tags($this->meta_keywords)
             , 'mobile' => $this->mobile
         ), array( 'website_page_id' => $this->id )
         , 'ssssssi', 'i' );
