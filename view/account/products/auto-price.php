@@ -17,6 +17,7 @@ echo $template->start( _('Auto Price') );
 
 <p><?php echo _('On this page you set all of your prices based on the wholesale price.'); ?></p>
 <p><?php echo _('Please enter in the percent increase in the fields below before clicking the "Auto Price" button. A "0" will be ignored.'); ?></p>
+<p><a href="/products/download-non-autoprice-products/" title="<?php echo _('Downloads Products'); ?>"><?php echo _('Click here' ); ?></a> <?php echo _('to download a spreadsheet of all items that cannot be priced using the auto price.' ); ?></p>
 <br><br>
 <?php if ( empty( $auto_price_candidates ) ) { ?>
     <p>This would affect none of your current products.</p>
