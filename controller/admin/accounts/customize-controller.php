@@ -40,23 +40,16 @@ class CustomizeController extends BaseController {
         $account = new Account();
         $account->get( $_GET['aid'] );
 
-        // Create new form table
-        $ft = new FormTable( 'fCustomCSS' );
+        $css = $account->get_settings('css');
 
-        $ft->submit(  _('Save') );
-
-        $ft->add_field( 'textarea', _('CSS'), 'taCSS', $account->get_settings('css') );
-
-        // Update the company if posted
-        if ( $ft->posted() ) {
-            $account->set_settings( array( 'css' => $_POST['taCSS'] ) );
-            $this->notify( 'CSS has been successfully updated!');
-        }
+        $this->resources
+            ->css('accounts/customize/css')
+            ->javascript('accounts/customize/css');
 
         return $this->get_template_response( 'css' )
             ->kb( 10 )
             ->select( 'customize', 'css' )
-            ->set( 'form', $ft->generate_form() )
+            ->set( compact( 'css', 'account' ) )
             ->add_title( _('CSS') );
     }
 
@@ -65,7 +58,7 @@ class CustomizeController extends BaseController {
      *
      * @return TemplateResponse|RedirectResponse
      */
-   protected function favicon() {
+    protected function favicon() {
          if (!$this->user->has_permission(User::ROLE_ADMIN) || !isset($_GET['aid']))
             return new RedirectResponse('/accounts/');
          
@@ -74,7 +67,7 @@ class CustomizeController extends BaseController {
         $account->get($_GET['aid']);
 
         $favicon = $account->get_settings("favicon");
-        $this->resources->javascript('fileuploader', 'customize/favicon');
+        $this->resources->javascript('fileuploader', 'accounts/customize/favicon');
 
         return $this->get_template_response('favicon')
                         ->set('favicon', $favicon)
@@ -84,11 +77,11 @@ class CustomizeController extends BaseController {
     /***** AJAX *****/
 
     /**
-     * Upload Favicon
+     * Save CSS
      *
      * @return AjaxResponse
      */
-   protected function upload_favicon() {
+    protected function save_css() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse($this->verified());
        
@@ -97,10 +90,31 @@ class CustomizeController extends BaseController {
         $account->get($_GET['aid']);
         
         // If there is an error or now user id, return
-        if ( $response->has_error() ) {
-             $response->add_response("error", $result["error"]);
+        if ( $response->has_error() )
              return $response;
-        }
+
+        $account->set_settings( array( 'css' => $_POST['css'] ) );
+        $response->notify( 'CSS has been successfully updated!' );
+
+        return $response;
+    }
+
+    /**
+     * Upload Favicon
+     *
+     * @return AjaxResponse
+     */
+    protected function upload_favicon() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse($this->verified());
+
+        // Get account
+        $account = new Account();
+        $account->get($_GET['aid']);
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+             return $response;
 
         // Get file uploader
         library('file-uploader');
@@ -111,12 +125,12 @@ class CustomizeController extends BaseController {
 
         // Create uploader
         $uploader = new qqFileUploader( array( 'ico' ), 6144000 );
-        
+
         // Upload file
         $result = $uploader->handleUpload('gsr_');
 
         $response->check( $result['success'], _('Failed to upload favicon') );
-        
+
         // If there is an error or now user id, return
         if ( $response->has_error() ) {
              $response->add_response( "error", $result["error"] );
@@ -128,7 +142,7 @@ class CustomizeController extends BaseController {
 
         // Create the different versions we need
         $favicon_dir = $account->id . '/favicon/';
- 
+
         // Normal and large
         $file_url =  $file->upload_file( $result['file_path'], $favicon_name, $favicon_dir );
 

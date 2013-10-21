@@ -57,6 +57,7 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
                     ?>
                     <select id="sPricing">
                         <option value="">-- <?php echo _('Select Price Range'); ?> --</option>
+                        <option value="0|0"><?php echo _('Unpriced'); ?></option>
                         <option value="0|<?php echo $pricing_points[0]; ?>"><?php echo '$' . number_format( $pricing_points[0] ) . ' ' . _('or less'); ?></option>
                         <option value="<?php echo $pricing_points[0] . '|' . $pricing_points[1]; ?>"><?php echo '$' . number_format( $pricing_points[0] ) . ' - $' . number_format( $pricing_points[1] ); ?></option>
                         <option value="<?php echo $pricing_points[1] . '|' . $pricing_points[2]; ?>"><?php echo '$' . number_format( $pricing_points[1] ) . ' - $' . number_format( $pricing_points[2] ); ?></option>

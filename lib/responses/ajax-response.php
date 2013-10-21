@@ -41,6 +41,19 @@ class AjaxResponse extends Response {
     }
 
     /**
+     * Notify now
+     *
+     * @param string $message
+     * @param bool $success
+     */
+    public function notify( $message, $success = true ) {
+        $this->add_response( 'notification', array(
+            'message' => $message
+            , 'success' => $success
+        ));
+    }
+
+    /**
      * Checks to make sure something is not false
      *
      * @param mixed $assertion

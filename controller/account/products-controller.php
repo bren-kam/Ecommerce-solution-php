@@ -599,6 +599,25 @@ class ProductsController extends BaseController {
         return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-products.csv' );
     }
 
+    /**
+     * Download non auto price products
+     *
+     * @return CsvResponse
+     */
+    protected function download_non_autoprice_products() {
+        // Get the products
+        $account_product = new AccountProduct();
+        $products = $account_product->get_non_autoprice_products( $this->user->account->id );
+
+        $output[]  = array( 'SKU', 'Price', 'Note', 'Name' );
+
+        foreach ( $products as $product ) {
+            $output[] = array( $product->sku, $product->price, $product->price_note, $product->name );
+        }
+
+        return new CsvResponse( $output, format::slug( $this->user->account->title ) . '-non-autoprice-products.csv' );
+    }
+
     /***** AJAX *****/
 
     /**
@@ -776,13 +795,18 @@ class ProductsController extends BaseController {
 
         // Pricing
         if ( !empty( $_POST['pr'] ) ) {
-            list( $min, $max ) = explode( '|', $_POST['pr'] );
-            $min = (int) $min;
-            $max = (int) $max;
-            $pricing_min_where = " ( wp.`sale_price` = 0 AND wp.`price` >= $min OR wp.`sale_price` >= $min )";
+            if ( '0|0' == $_POST['pr'] ) {
+                $where .= " AND ( wp.`sale_price` = 0 AND wp.`price` = 0 )";
+            } else {
+                list( $min, $max ) = explode( '|', $_POST['pr'] );
+                $min = (int) $min;
+                $max = (int) $max;
+                $pricing_min_where = " ( wp.`sale_price` = 0 AND wp.`price` >= $min OR wp.`sale_price` >= $min )";
 
-            $where .= ( empty( $max ) ) ? " AND $pricing_min_where" : " AND ( $pricing_min_where AND ( wp.`sale_price` = 0 AND wp.`price` < $max OR wp.`sale_price` > 0 AND wp.`sale_price` < $max ) )";
+                $where .= ( empty( $max ) ) ? " AND $pricing_min_where" : " AND ( $pricing_min_where AND ( wp.`sale_price` = 0 AND wp.`price` < $max OR wp.`sale_price` > 0 AND wp.`sale_price` < $max ) )";
+            }
         }
+
 
         // If they only want discontinued products, then only grab them
         if ( '1' == $_POST['od'] )
@@ -1288,14 +1312,14 @@ class ProductsController extends BaseController {
 
         foreach ( $_POST['requests'] as $r ) {
         	if ( !empty( $ticket_message ) )
-        		$ticket_message .= "\n\n";
+        		$ticket_message .= "<br><br>";
 
         	// Get the brand, sku and collection
         	$ticket_array = explode( '|', $r );
 
         	// Add it to the message
-        	$ticket_message .= 'Brand: ' . $ticket_array[0] . "\n";
-        	$ticket_message .= 'SKU: ' . $ticket_array[1] . "\n";
+        	$ticket_message .= 'Brand: ' . $ticket_array[0] . "<br>";
+        	$ticket_message .= 'SKU: ' . $ticket_array[1] . "<br><br>";
         	$ticket_message .= 'Collection: ' . $ticket_array[2];
 
         	$subject = ( $this->user->account->live ) ? 'Live' : 'Staging';
