@@ -156,7 +156,7 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
     /**
      * Test reorganizing categories
-     
+
     public function testReorganizeCategories() {
         // Create
         $this->phactory->recall();
