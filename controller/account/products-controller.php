@@ -463,7 +463,7 @@ class ProductsController extends BaseController {
             $product->auto_price( $price, $sale_price, $alternate_price, $_POST['tPriceEnding'], $this->user->account->id );
 
             // See if he had set prices too lower
-            $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+            $adjusted_products = $product->adjust_to_minimum_price( $this->user->account->id );
 
             // Give a notification
             if ( $adjusted_products ) {
@@ -1067,8 +1067,10 @@ class ProductsController extends BaseController {
         $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
 
         // Give a notification
-        if ( $adjusted_products )
+        if ( $adjusted_products ) {
             $response->notify( 'Your price was too low and has been adjusted to the MAP price of $' . number_format( $account_product->price_min, 2 ), false );
+            $account_product->get( $account_product->product_id, $account_product->website_id );
+        }
 
         /***** UPDATE COUPONS *****/
         $website_coupon->delete_relations_by_product( $this->user->account->id, $account_product->product_id );
