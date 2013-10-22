@@ -173,8 +173,8 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'parent_id' => $this->parent_id
-            , 'name' => $this->name
-            , 'section' => $this->section
+            , 'name' => strip_tags($this->name)
+            , 'section' => strip_tags($this->section)
         ), 'iss' );
 
         $this->id = $this->get_insert_id();

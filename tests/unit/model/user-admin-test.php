@@ -27,7 +27,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $email = 'test@greysu1tretail.com';
 
         // Create User
-        $this->db->insert( 'users', compact( 'user_id', 'email' ), 'is' );
+        $this->phactory->insert( 'users', compact( 'user_id', 'email' ), 'is' );
 
         // Get User
         $this->user->get( $user_id );
@@ -35,7 +35,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->assertEquals( $this->user->email, $email );
 
         // Delete
-        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
+        $this->phactory->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
@@ -81,7 +81,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->assertEquals( $new_email, $this->user->email );
 
         // Delete the user
-        $this->db->delete( 'users', array( 'user_id' => $this->user->id ), 'i' );
+        $this->phactory->delete( 'users', array( 'user_id' => $this->user->id ), 'i' );
     }
 
     /**
@@ -109,7 +109,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->assertEquals( 'jiminy@cricket.com', $this->user->email );
 
         // Delete the company
-        $this->db->delete( 'users', array( 'user_id' => $this->user->id ), 'i' );
+        $this->phactory->delete( 'users', array( 'user_id' => $this->user->id ), 'i' );
     }
 
     /**
@@ -123,11 +123,11 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->get(514);
         $this->user->set_password( $new_password );
 
-        $password = $this->db->get_var( 'SELECT `password` FROM `users` WHERE `user_id` = 514' );
+        $password = $this->phactory->get_var( 'SELECT `password` FROM `users` WHERE `user_id` = 514' );
 
         $this->assertEquals( md5($new_password), $password );
 
-        $this->db->update( 'users', array( 'password' => md5('sapp123') ), array( 'user_id' => 514 ), 's', 'i' );
+        $this->phactory->update( 'users', array( 'password' => md5('sapp123') ), array( 'user_id' => 514 ), 's', 'i' );
     }
 
     /**
@@ -166,7 +166,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $role = 7;
 
         // Create User
-        $this->db->insert( 'users', compact( 'user_id', 'email', 'password', 'role' ), 'issi' );
+        $this->phactory->insert( 'users', compact( 'user_id', 'email', 'password', 'role' ), 'issi' );
 
         $result = $this->user->login( $email, 'sapp123', $straight_password );
 
@@ -174,7 +174,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->assertTrue( $result );
 
         // Delete User
-        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
+        $this->phactory->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
@@ -188,14 +188,14 @@ class UserAdminTest extends BaseDatabaseTest {
         $status = 1;
 
         // Create User
-        $this->db->insert( 'users', compact( 'user_id', 'email', 'role', 'status' ), 'isii' );
+        $this->phactory->insert( 'users', compact( 'user_id', 'email', 'role', 'status' ), 'isii' );
 
         $this->user->get_by_email( $email );
 
         $this->assertNotNull( $this->user->id );
 
         // Delete User
-        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
+        $this->phactory->delete( 'users', compact( 'user_id' ), 'i' );
     }
 
     /**
@@ -271,7 +271,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->record_login();
 
         // Get the last login as a date time
-        $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = 514' ) );
+        $last_login = new DateTime( $this->phactory->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = 514' ) );
 
         // It should be more recent
         $this->assertLessThan( $datetime->getTimestamp() - 5, $last_login->getTimestamp() );
@@ -289,7 +289,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->record_login();
 
         // Get the last login as a date time
-        $last_login = new DateTime( $this->db->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
+        $last_login = new DateTime( $this->phactory->get_var( 'SELECT `last_login` FROM `users` WHERE `user_id` = ' . (int) $this->user->id ) );
 
         // It should be more recent
         $this->assertGreaterThan( $datetime->getTimestamp() - 600, $last_login->getTimestamp() );
@@ -356,7 +356,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $user_id = (int) $users[0]->id;
 
         // Get the product that he created
-        $product_id = $this->db->get_var( "SELECT `product_id` FROM `products` WHERE `publish_date` <> '0000-00-00 00:00:00' AND ( `user_id_modified` = $user_id OR `user_id_created` = $user_id ) LIMIT 1" );
+        $product_id = $this->phactory->get_var( "SELECT `product_id` FROM `products` WHERE `publish_date` <> '0000-00-00 00:00:00' AND ( `user_id_modified` = $user_id OR `user_id_created` = $user_id ) LIMIT 1" );
 
         $this->assertGreaterThan( 0, $product_id );
     }
@@ -373,13 +373,13 @@ class UserAdminTest extends BaseDatabaseTest {
         $user_id = (int) $users[0]->id;
 
         // Make sure they have the same company id
-        $company_id = $this->db->get_var( "SELECT `company_id` FROM `users` WHERE `user_id` = $user_id" );
+        $company_id = $this->phactory->get_var( "SELECT `company_id` FROM `users` WHERE `user_id` = $user_id" );
 
         // Should be the same
         $this->assertEquals( $this->user->company_id, $company_id );
 
         // Get the product that he created
-        $product_id = $this->db->get_var( "SELECT `product_id` FROM `products` WHERE `publish_date` <> '0000-00-00 00:00:00' AND ( `user_id_modified` = $user_id OR `user_id_created` = $user_id ) LIMIT 1" );
+        $product_id = $this->phactory->get_var( "SELECT `product_id` FROM `products` WHERE `publish_date` <> '0000-00-00 00:00:00' AND ( `user_id_modified` = $user_id OR `user_id_created` = $user_id ) LIMIT 1" );
 
         // Make sure it could grab it
         $this->assertGreaterThan( 0, $product_id );
@@ -410,9 +410,9 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->company_id = 4;
 
         // Create user
-        $this->db->insert( 'users', array( 'company_id' => 4, 'email' => md5(time()), 'password' => md5(microtime()), 'contact_name' => 'Habba dashery', 'role' => 8 ), 'isssi' );
+        $this->phactory->insert( 'users', array( 'company_id' => 4, 'email' => md5(time()), 'password' => md5(microtime()), 'contact_name' => 'Habba dashery', 'role' => 8 ), 'isssi' );
 
-        $user_id = $this->db->get_insert_id();
+        $user_id = $this->phactory->get_insert_id();
 
         // Get Users
         $users = $this->user->autocomplete( 'Habba', 'contact_name' );
@@ -420,7 +420,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->assertEquals( $users[0]['contact_name'], 'Habba dashery' );
 
         // Delete
-        $this->db->delete( 'users', array( 'user_id' => $user_id ), 'i' );
+        $this->phactory->delete( 'users', array( 'user_id' => $user_id ), 'i' );
     }
 
     /**
@@ -432,9 +432,9 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->user->company_id = 1;
 
         // Create user
-        $this->db->insert( 'users', array( 'company_id' => 3, 'email' => md5(time()), 'password' => md5(microtime()), 'contact_name' => 'Habba dashery', 'role' => 8 ), 'isssi' );
+        $this->phactory->insert( 'users', array( 'company_id' => 3, 'email' => md5(time()), 'password' => md5(microtime()), 'contact_name' => 'Habba dashery', 'role' => 8 ), 'isssi' );
 
-        $user_id = $this->db->get_insert_id();
+        $user_id = $this->phactory->get_insert_id();
 
         // Get Users
         $users = $this->user->autocomplete( 'Habba', 'contact_name' );
@@ -443,7 +443,7 @@ class UserAdminTest extends BaseDatabaseTest {
         $this->assertFalse( isset( $users[0] ) );
 
         // Delete
-        $this->db->delete( 'users', array( 'user_id' => $user_id ), 'i' );
+        $this->phactory->delete( 'users', array( 'user_id' => $user_id ), 'i' );
     }
 
     /**

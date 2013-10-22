@@ -63,16 +63,16 @@ class WebsiteLocation extends ActiveRecordBase {
 
         $this->id = $this->insert( array(
             'website_id' => $this->website_id
-            , 'name' => $this->name
-            , 'address' => $this->address
-            , 'city' => $this->city
-            , 'state' => $this->state
-            , 'zip' => $this->zip
-            , 'phone' => $this->phone
-            , 'fax' => $this->fax
-            , 'email' => $this->email
-            , 'website' => $this->website
-            , 'store_hours' => $this->store_hours
+            , 'name' => strip_tags($this->name)
+            , 'address' => strip_tags($this->address)
+            , 'city' => strip_tags($this->city)
+            , 'state' => strip_tags($this->state)
+            , 'zip' => strip_tags($this->zip)
+            , 'phone' => strip_tags($this->phone)
+            , 'fax' => strip_tags($this->fax)
+            , 'email' => strip_tags($this->email)
+            , 'website' => strip_tags($this->website)
+            , 'store_hours' => strip_tags( $this->store_hours, '<br><strong><p>' )
             , 'lat' => $this->lat
             , 'lng' => $this->lng
             , 'sequence' => $this->sequence
@@ -85,21 +85,21 @@ class WebsiteLocation extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'name' => $this->name
-            , 'address' => $this->address
-            , 'city' => $this->city
-            , 'state' => $this->state
-            , 'zip' => $this->zip
-            , 'phone' => $this->phone
-            , 'fax' => $this->fax
-            , 'email' => $this->email
-            , 'website' => $this->website
-            , 'store_hours' => $this->store_hours
+            'name' => strip_tags($this->name)
+            , 'address' => strip_tags($this->address)
+            , 'city' => strip_tags($this->city)
+            , 'state' => strip_tags($this->state)
+            , 'zip' => strip_tags($this->zip)
+            , 'phone' => strip_tags($this->phone)
+            , 'fax' => strip_tags($this->fax)
+            , 'email' => strip_tags($this->email)
+            , 'website' => strip_tags($this->website)
+            , 'store_hours' => strip_tags( $this->store_hours, '<br><strong><p>' )
             , 'lat' => $this->lat
             , 'lng' => $this->lng
         ), array(
             'id' => $this->id
-        ), 'issssssssssss', 'i' );
+        ), 'ssssssssssss', 'i' );
    }
 
     /**

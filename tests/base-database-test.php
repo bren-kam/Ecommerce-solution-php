@@ -13,17 +13,20 @@ require LIB_PATH . 'helpers/registry.php';
 require LIB_PATH . 'misc/functions.php';
 
 // DB class for helping
-require LIB_PATH . 'test/db.php';
+require_once LIB_PATH . 'ext/Phactory/autoload.php';
 
 /**
  * Base classe for all tests that needs to connect to Database
  */
 abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
+    // Website ID
+    const WEBSITE_ID = 1352;
+
     /**
      * Hold the database variable
-     * @var DB
+     * @var Phactory\Sql\Phactory
      */
-    protected $db;
+    protected $phactory;
 
     private static $pdo = null;
 
@@ -31,7 +34,20 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
      * Initialize DB
      */
     public function __construct() {
-        $this->db = new DB();
+        $pdo = Registry::get('pdo');
+
+        if ( !$pdo ) {
+            try {
+                // TravisCI MySQL Database
+                $pdo = new PDO( "mysql:host=127.0.0.1;dbname=myapp_test", 'travis' );
+            } catch (PDOException $e) {
+                $pdo = new PDO( "mysql:host=localhost;dbname=test" );
+            }
+
+            Registry::set( 'pdo', $pdo );
+        }
+
+        $this->phactory = new Phactory\Sql\Phactory( $pdo );
     }
 
     /**

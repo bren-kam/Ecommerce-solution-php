@@ -32,12 +32,12 @@ class CraigslistTagTest extends BaseDatabaseTest {
         $this->craigslist_tag->create();
 
         // Make sure it's in the database
-        $craigslist_tag = $this->db->get_row( 'SELECT * FROM `craigslist_tags` WHERE `craigslist_tag_id` = ' . (int) $this->craigslist_tag->id );
+        $craigslist_tag = $this->phactory->get_row( 'SELECT * FROM `craigslist_tags` WHERE `craigslist_tag_id` = ' . (int) $this->craigslist_tag->id );
 
         $this->assertEquals( $craigslist_tag->object_id, $this->craigslist_tag->object_id );
 
         // Clean Up
-        $this->db->delete( 'craigslist_tags', compact( 'object_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_tags', compact( 'object_id' ), 'i' );
     }
 
     /**
@@ -75,7 +75,7 @@ class CraigslistTagTest extends BaseDatabaseTest {
         $this->assertTrue( current( $craigslist_tags ) instanceof CraigslistTag );
 
         // Clean Up
-        $this->db->delete( 'craigslist_tags', compact( 'object_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_tags', compact( 'object_id' ), 'i' );
     }
 
     /**

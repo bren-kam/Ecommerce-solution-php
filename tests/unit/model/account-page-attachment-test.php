@@ -24,8 +24,8 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $key = 'Hungry';
 
         // Insert id
-        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id' ), 'i' );
-        $website_attachment_id = $this->db->insert( 'website_attachments', compact( 'website_page_id', 'key' ), 'is' );
+        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id' ), 'i' );
+        $website_attachment_id = $this->phactory->insert( 'website_attachments', compact( 'website_page_id', 'key' ), 'is' );
 
         // Get
         $this->account_page_attachment->get( $website_attachment_id, $website_id );
@@ -33,8 +33,8 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->assertEquals( $key, $this->account_page_attachment->key );
 
         // Cleanup
-        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
     }
 
     /**
@@ -47,7 +47,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $value = 'Hippos';
 
         // Insert id
-        $this->db->insert( 'website_attachments', compact( 'website_page_id', 'key', 'value' ), 'iss' );
+        $this->phactory->insert( 'website_attachments', compact( 'website_page_id', 'key', 'value' ), 'iss' );
 
         // Get
         $attachment = $this->account_page_attachment->get_by_key( $website_page_id, $key );
@@ -55,7 +55,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->assertEquals( $value, $attachment->value );
 
         // Cleanup
-        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
     }
 
     /**
@@ -66,7 +66,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $account_page_ids = array( -5 );
 
         // Insert attachment
-        $this->db->insert( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
+        $this->phactory->insert( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
 
         // Get by account page ids
         $attachments = $this->account_page_attachment->get_by_account_page_ids( $account_page_ids );
@@ -74,7 +74,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->assertTrue( current( $attachments ) instanceof AccountPageAttachment );
 
         // Delete
-        $this->db->delete( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
+        $this->phactory->delete( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
     }
 
     /**
@@ -90,12 +90,12 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->account_page_attachment->create();
 
         // Make sure it's in the database
-        $value = $this->db->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+        $value = $this->phactory->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
 
         $this->assertEquals( $this->account_page_attachment->value, $value );
 
         // Delete the attribute
-        $this->db->delete( 'website_attachments', array( 'website_attachment_id' => $this->account_page_attachment->id ), 'i' );
+        $this->phactory->delete( 'website_attachments', array( 'website_attachment_id' => $this->account_page_attachment->id ), 'i' );
     }
 
     /**
@@ -116,12 +116,12 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->account_page_attachment->save();
 
         // Make sure it's in the database
-        $value = $this->db->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+        $value = $this->phactory->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
 
         $this->assertEquals( $this->account_page_attachment->value, $value );
 
         // Delete the attribute
-        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
     }
 
    /**
@@ -133,8 +133,8 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $sequence = 5;
 
         // Insert id
-        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id' ), 'i' );
-        $website_attachment_id = $this->db->insert( 'website_attachments', compact( 'website_page_id' ), 'is' );
+        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id' ), 'i' );
+        $website_attachment_id = $this->phactory->insert( 'website_attachments', compact( 'website_page_id' ), 'is' );
 
         $sequence_array = array( $sequence => $website_attachment_id );
 
@@ -142,13 +142,13 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->account_page_attachment->update_sequence( $website_id, $sequence_array );
 
         // Make sure it's in the database
-        $fetched_sequence = $this->db->get_var( 'SELECT `sequence` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $website_attachment_id );
+        $fetched_sequence = $this->phactory->get_var( 'SELECT `sequence` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $website_attachment_id );
 
         $this->assertEquals( $sequence, $fetched_sequence );
 
         // Cleanup
-        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
     }
 
    /**
@@ -168,7 +168,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $this->account_page_attachment->remove();
 
         // Make sure it's in the database
-        $value = $this->db->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+        $value = $this->phactory->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
 
         $this->assertFalse( $value );
     }
@@ -183,7 +183,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
         $account_page_ids = array( -1 );
 
         // Insert a few
-        $this->db->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value` ) VALUES (-1, 'video', 'google.mp4'), (-1, 'search', ''), (-1, 'email', '')" );
+        $this->phactory->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value` ) VALUES (-1, 'video', 'google.mp4'), (-1, 'search', ''), (-1, 'email', '')" );
 
         // Yarr! Delete them!
         $this->account_page_attachment->delete_unique_attachments( $account_page_ids );

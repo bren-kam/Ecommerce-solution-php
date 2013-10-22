@@ -24,7 +24,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $slug = 'currents-offers';
 
         // Create
-        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id', 'slug' ), 'is' );
+        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id', 'slug' ), 'is' );
 
         // Get
         $this->account_page->get( $website_page_id, $website_id );
@@ -33,7 +33,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->assertEquals( $slug, $this->account_page->slug );
 
         // Clean up
-        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -46,7 +46,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $title = 'The great and powerful Oz';
 
         // Create
-        $this->db->insert( 'website_pages', compact( 'website_id', 'slug', 'title' ), 'is' );
+        $this->phactory->insert( 'website_pages', compact( 'website_id', 'slug', 'title' ), 'is' );
 
         // Get
         $this->account_page->get_by_slug( $website_id, $slug );
@@ -55,7 +55,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->assertEquals( $title, $this->account_page->title );
 
         // Clean up
-        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -80,7 +80,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $product_ids = array( $product_id );
 
         // Insert
-        $this->db->insert( 'website_page_product', compact( 'website_page_id', 'product_id' ), 'ii' );
+        $this->phactory->insert( 'website_page_product', compact( 'website_page_id', 'product_id' ), 'ii' );
 
         // Get
         $fetched_product_ids = $this->account_page->get_product_ids();
@@ -88,7 +88,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->assertEquals( $product_ids, $fetched_product_ids );
 
         // Clean up
-        $this->db->delete( 'website_page_product', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_page_product', compact( 'website_page_id' ), 'i' );
     }
 
     /**
@@ -104,12 +104,12 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->account_page->id ) );
 
         // Make sure it's in the database
-        $slug = $this->db->get_var( 'SELECT `slug` FROM `website_pages` WHERE `website_id` = ' . (int) $this->account_page->website_id );
+        $slug = $this->phactory->get_var( 'SELECT `slug` FROM `website_pages` WHERE `website_id` = ' . (int) $this->account_page->website_id );
 
         $this->assertEquals( $this->account_page->slug, $slug );
 
         // Delete the attribute
-        $this->db->delete( 'website_pages', array( 'website_page_id' => $this->account_page->id ), 'i' );
+        $this->phactory->delete( 'website_pages', array( 'website_page_id' => $this->account_page->id ), 'i' );
     }
 
     /**
@@ -124,12 +124,12 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->account_page->add_products( $product_ids );
 
         // Get ids
-        $fetched_product_ids = $this->db->get_col( "SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = $website_page_id ORDER BY `product_id` DESC" );
+        $fetched_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = $website_page_id ORDER BY `product_id` DESC" );
 
         $this->assertEquals( $product_ids, $fetched_product_ids );
 
         // Cleanup
-        $this->db->delete( 'website_page_product', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_page_product', compact( 'website_page_id' ), 'i' );
     }
 
     /**
@@ -143,7 +143,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $slug = 'wizard-of-oz';
 
         // Create
-        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id' ), 'i' );
+        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id' ), 'i' );
 
         // Get
         $this->account_page->get( $website_page_id, $website_id );
@@ -151,12 +151,12 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->account_page->save();
 
         // Now check it!
-        $retrieved_slug = $this->db->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
+        $retrieved_slug = $this->phactory->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
 
         $this->assertEquals( $retrieved_slug, $slug );
 
         // Clean up
-        $this->db->delete( 'website_pages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -168,18 +168,18 @@ class AccountPageTest extends BaseDatabaseTest {
         $account_id = -5;
 
         // Delete before
-        $this->db->delete( 'website_pages', array( 'website_id' => $account_id ) , 'i' );
+        $this->phactory->delete( 'website_pages', array( 'website_id' => $account_id ) , 'i' );
 
         // Do the copying
         $this->account_page->copy_by_account( $template_account_id, $account_id );
 
         // Get account page ids
-        $account_page_ids = $this->db->get_col( "SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $account_id" );
+        $account_page_ids = $this->phactory->get_col( "SELECT `website_page_id` FROM `website_pages` WHERE `website_id` = $account_id" );
 
         $this->assertGreaterThan( 5, count( $account_page_ids ) );
 
         // Delete
-        $this->db->delete( 'website_pages', array( 'website_id' => $account_id ) , 'i' );
+        $this->phactory->delete( 'website_pages', array( 'website_id' => $account_id ) , 'i' );
     }
 
     /**
@@ -193,7 +193,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $slug = 'currents-offers';
 
         // Create
-        $website_page_id = $this->db->insert( 'website_pages', compact( 'website_id', 'slug' ), 'is' );
+        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id', 'slug' ), 'is' );
 
         // Get
         $this->account_page->get( $website_page_id, $website_id );
@@ -201,7 +201,7 @@ class AccountPageTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->account_page->remove();
 
-        $retrieved_slug = $this->db->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
+        $retrieved_slug = $this->phactory->get_var( "SELECT `slug` FROM `website_pages` WHERE `website_page_id` = $website_page_id" );
 
         $this->assertFalse( $retrieved_slug );
     }
@@ -215,13 +215,13 @@ class AccountPageTest extends BaseDatabaseTest {
         $product_id = -5;
 
         // Insert
-        $this->db->insert( 'website_page_product', compact( 'website_page_id', 'product_id' ), 'ii' );
+        $this->phactory->insert( 'website_page_product', compact( 'website_page_id', 'product_id' ), 'ii' );
 
         // Delete
         $this->account_page->delete_products();
 
         // Get
-        $fetched_product_id = $this->db->get_var( "SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = $website_page_id" );
+        $fetched_product_id = $this->phactory->get_var( "SELECT `product_id` FROM `website_page_product` WHERE `website_page_id` = $website_page_id" );
 
         $this->assertFalse( $fetched_product_id );
     }

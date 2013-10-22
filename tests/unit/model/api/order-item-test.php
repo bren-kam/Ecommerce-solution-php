@@ -30,12 +30,12 @@ class OrderItemTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->order_item->id ) );
 
         // Make sure it's in the database
-        $item = $this->db->get_var( 'SELECT `item` FROM `order_items` WHERE `order_item_id` = ' . (int) $this->order_item->id );
+        $item = $this->phactory->get_var( 'SELECT `item` FROM `order_items` WHERE `order_item_id` = ' . (int) $this->order_item->id );
 
         $this->assertEquals( $this->order_item->item, $item );
 
         // Delete the attribute
-        $this->db->delete( 'order_items', array( 'order_item_id' => $this->order_item->id ), 'i' );
+        $this->phactory->delete( 'order_items', array( 'order_item_id' => $this->order_item->id ), 'i' );
     }
 
     /**

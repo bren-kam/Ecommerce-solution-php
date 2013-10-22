@@ -27,10 +27,10 @@ class WebsiteOrderItemTest extends BaseDatabaseTest {
         $name = 'White Paint';
 
         // Create order
-        $industry_id = $this->db->insert( 'industries', array( 'name' => $industry ), 's' );
-        $product_id = $this->db->insert( 'products', compact( 'industry_id' ), 'i' );
-        $this->db->insert( 'product_images', compact( 'product_id', 'image' ), 'is' );
-        $this->db->insert( 'website_order_items', compact( 'website_order_id', 'product_id', 'name' ), 'iis' );
+        $industry_id = $this->phactory->insert( 'industries', array( 'name' => $industry ), 's' );
+        $product_id = $this->phactory->insert( 'products', compact( 'industry_id' ), 'i' );
+        $this->phactory->insert( 'product_images', compact( 'product_id', 'image' ), 'is' );
+        $this->phactory->insert( 'website_order_items', compact( 'website_order_id', 'product_id', 'name' ), 'iis' );
 
         // Get by order
         $website_order_items = $this->website_order_item->get_by_order( $website_order_id );
@@ -38,10 +38,10 @@ class WebsiteOrderItemTest extends BaseDatabaseTest {
         $this->assertTrue( current( $website_order_items ) instanceof WebsiteOrderItem );
 
         // Clean up
-        $this->db->delete( 'industries', compact( 'industry_id' ), 'i' );
-        $this->db->delete( 'products', compact( 'product_id' ), 'i' );
-        $this->db->delete( 'product_images', compact( 'product_id' ), 'i' );
-        $this->db->delete( 'website_order_items', compact( 'website_order_id' ), 'i' );
+        $this->phactory->delete( 'industries', compact( 'industry_id' ), 'i' );
+        $this->phactory->delete( 'products', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'product_images', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'website_order_items', compact( 'website_order_id' ), 'i' );
     }
 
     /**
@@ -57,10 +57,10 @@ class WebsiteOrderItemTest extends BaseDatabaseTest {
         $name = 'White Paint';
 
         // Create order
-        $industry_id = $this->db->insert( 'industries', array( 'name' => $industry ), 's' );
-        $product_id = $this->db->insert( 'products', compact( 'industry_id' ), 'i' );
-        $this->db->insert( 'product_images', compact( 'product_id', 'image' ), 'is' );
-        $website_order_item_id = $this->db->insert( 'website_order_items', compact( 'website_order_id', 'product_id', 'name' ), 'iis' );
+        $industry_id = $this->phactory->insert( 'industries', array( 'name' => $industry ), 's' );
+        $product_id = $this->phactory->insert( 'products', compact( 'industry_id' ), 'i' );
+        $this->phactory->insert( 'product_images', compact( 'product_id', 'image' ), 'is' );
+        $website_order_item_id = $this->phactory->insert( 'website_order_items', compact( 'website_order_id', 'product_id', 'name' ), 'iis' );
 
         // Create stubs
         $website_order_item_option = $this->getMock( 'WebsiteOrderItemOption' );
@@ -76,10 +76,10 @@ class WebsiteOrderItemTest extends BaseDatabaseTest {
         $this->assertTrue( current( $website_order_items ) instanceof WebsiteOrderItem );
 
         // Clean up
-        $this->db->delete( 'industries', compact( 'industry_id' ), 'i' );
-        $this->db->delete( 'products', compact( 'product_id' ), 'i' );
-        $this->db->delete( 'product_images', compact( 'product_id' ), 'i' );
-        $this->db->delete( 'website_order_items', compact( 'website_order_id' ), 'i' );
+        $this->phactory->delete( 'industries', compact( 'industry_id' ), 'i' );
+        $this->phactory->delete( 'products', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'product_images', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'website_order_items', compact( 'website_order_id' ), 'i' );
     }
 
     /**

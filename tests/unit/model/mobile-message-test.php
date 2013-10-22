@@ -24,7 +24,7 @@ class MobileMessageTest extends BaseDatabaseTest {
         $scheuled_status = 2;
 
         // Create an email message
-        $this->db->insert( 'mobile_messages', array(
+        $this->phactory->insert( 'mobile_messages', array(
             'website_id' => $account_id
             , 'title' => 'George of the Jungle'
             , 'message' => 'George, George, George of the Jungle!'
@@ -33,18 +33,18 @@ class MobileMessageTest extends BaseDatabaseTest {
             , 'date_sent' => '2012-10-10 00:00:00'
         ), 'ississ' );
 
-        $mobile_message_id = $this->db->get_insert_id();
+        $mobile_message_id = $this->phactory->get_insert_id();
 
         // Update it to scheduled
         $this->mobile_message->update_scheduled();
 
         // Get status to make sure it's scheduled
-        $status = $this->db->get_var( "SELECT `status` FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id" );
+        $status = $this->phactory->get_var( "SELECT `status` FROM `mobile_messages` WHERE `mobile_message_id` = $mobile_message_id" );
 
         $this->assertEquals( $scheuled_status, $status );
 
         // Delete email
-        $this->db->delete( 'mobile_messages', array( 'mobile_message_id' => $mobile_message_id ), 'i' );
+        $this->phactory->delete( 'mobile_messages', array( 'mobile_message_id' => $mobile_message_id ), 'i' );
     }
 
     /**

@@ -62,7 +62,7 @@ class CompanyTest extends BaseDatabaseTest {
         $this->assertEquals( 'Master Hoppers', $this->company->name );
 
         // Delete the company
-        $this->db->delete( 'companies', array( 'company_id' => $this->company->id ), 'i' );
+        $this->phactory->delete( 'companies', array( 'company_id' => $this->company->id ), 'i' );
     }
 
     /**
@@ -89,7 +89,7 @@ class CompanyTest extends BaseDatabaseTest {
         $this->assertEquals( 'misterhoppers.com', $this->company->domain );
 
         // Delete the company
-        $this->db->delete( 'companies', array( 'company_id' => $this->company->id ), 'i' );
+        $this->phactory->delete( 'companies', array( 'company_id' => $this->company->id ), 'i' );
     }
 
     /**

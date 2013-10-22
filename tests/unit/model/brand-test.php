@@ -46,8 +46,8 @@ class BrandTest extends BaseDatabaseTest {
         $product_option_id = -7;
 
         // Create
-        $this->db->insert( 'brands', compact( 'brand_id' ), 'i' );
-        $this->db->insert( 'product_option_relations', compact( 'brand_id', 'product_option_id' ), 'ii' );
+        $this->phactory->insert( 'brands', compact( 'brand_id' ), 'i' );
+        $this->phactory->insert( 'product_option_relations', compact( 'brand_id', 'product_option_id' ), 'ii' );
 
         // Get
         $this->brand->get( $brand_id );
@@ -57,8 +57,8 @@ class BrandTest extends BaseDatabaseTest {
         $this->assertTrue( is_array( $product_option_ids ) );
 
         // Delete
-        $this->db->delete( 'brands', compact( 'brand_id' ), 'i' );
-        $this->db->delete( 'product_option_relations', compact( 'brand_id' ), 'i' );
+        $this->phactory->delete( 'brands', compact( 'brand_id' ), 'i' );
+        $this->phactory->delete( 'product_option_relations', compact( 'brand_id' ), 'i' );
     }
 
     /**
@@ -81,7 +81,7 @@ class BrandTest extends BaseDatabaseTest {
         $this->assertEquals( 'www.testbrand.com', $this->brand->link );
 
         // Delete the brand
-        $this->db->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
+        $this->phactory->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
     }
 
     /**
@@ -95,7 +95,7 @@ class BrandTest extends BaseDatabaseTest {
         $product_option_ids = array( '-2', '-1' );
 
         // Delete any previous relations
-        $this->db->delete( 'product_option_relations', array( 'brand_id' => 612 ), 'i' );
+        $this->phactory->delete( 'product_option_relations', array( 'brand_id' => 612 ), 'i' );
 
         // Get brand
         $this->brand->get( $brand_id );
@@ -135,7 +135,7 @@ class BrandTest extends BaseDatabaseTest {
         $this->assertEquals( 'dnarb-tset', $this->brand->slug );
 
         // Delete the brand
-        $this->db->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
+        $this->phactory->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
     }
 
     /**
@@ -145,9 +145,9 @@ class BrandTest extends BaseDatabaseTest {
      */
     public function testDelete() {
         // Create Brand
-        $this->db->insert( 'brands', array( 'name' => 'Test Brand', 'slug' => 'test-brand', 'link' => '', 'image' => '' ), 'ssss' );
+        $this->phactory->insert( 'brands', array( 'name' => 'Test Brand', 'slug' => 'test-brand', 'link' => '', 'image' => '' ), 'ssss' );
 
-        $brand_id = $this->db->get_insert_id();
+        $brand_id = $this->phactory->get_insert_id();
 
         // Get it
         $this->brand->get( $brand_id );
@@ -156,7 +156,7 @@ class BrandTest extends BaseDatabaseTest {
         $this->brand->delete();
 
         // Make sure it doesn't exist
-        $name = $this->db->get_var( "SELECT `name` FROM `brands` WHERE `brand_id` = $brand_id" );
+        $name = $this->phactory->get_var( "SELECT `name` FROM `brands` WHERE `brand_id` = $brand_id" );
 
         $this->assertFalse( $name );
     }

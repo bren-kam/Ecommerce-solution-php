@@ -29,12 +29,12 @@ class KnowledgeBaseArticleViewTest extends BaseDatabaseTest {
         $this->kb_article_view->create();
 
         // Make sure it's in the database
-        $fetched_user_id = $this->db->get_var( "SELECT `user_id` FROM `kb_article_view` WHERE `kb_article_id` = $kb_article_id" );
+        $fetched_user_id = $this->phactory->get_var( "SELECT `user_id` FROM `kb_article_view` WHERE `kb_article_id` = $kb_article_id" );
 
         $this->assertEquals( $user_id, $fetched_user_id );
 
         // Delete the comment
-        $this->db->delete( 'kb_article_view', compact( 'kb_article_id' ), 'i' );
+        $this->phactory->delete( 'kb_article_view', compact( 'kb_article_id' ), 'i' );
     }
 
     /**

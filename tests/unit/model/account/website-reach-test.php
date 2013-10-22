@@ -30,7 +30,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $message = 'Grandma Shipping';
 
         // Create
-        $website_reach_id = $this->db->insert( 'website_reaches', compact( 'website_id', 'message' ), 'is' );
+        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id', 'message' ), 'is' );
 
         // Get
         $this->website_reach->get( $website_reach_id, $website_id );
@@ -39,7 +39,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->assertEquals( $message, $this->website_reach->message );
 
         // Clean up
-        $this->db->delete( 'website_reaches', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -55,7 +55,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->website_reach->id = $website_reach_id;
 
         // Create
-        $this->db->insert( 'website_reach_meta', compact( 'website_reach_id', 'key', 'value' ), 'iss' );
+        $this->phactory->insert( 'website_reach_meta', compact( 'website_reach_id', 'key', 'value' ), 'iss' );
 
         // Get
         $this->website_reach->get_meta();
@@ -64,7 +64,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->assertEquals( $value, $this->website_reach->meta[$key] );
 
         // Clean up
-        $this->db->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
+        $this->phactory->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
     }
 
     /**
@@ -81,7 +81,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->website_reach->id = $website_reach_id;
 
         // Create the meta necessary
-        $this->db->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ), ( $website_reach_id, 'product-link', 'http://test.com/' ), ( $website_reach_id, 'product-name', 'goo goo' ), ( $website_reach_id, 'product-sku', '$product_sku' )" );
+        $this->phactory->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ), ( $website_reach_id, 'product-link', 'http://test.com/' ), ( $website_reach_id, 'product-name', 'goo goo' ), ( $website_reach_id, 'product-sku', '$product_sku' )" );
 
         // Get
         $this->website_reach->get_info();
@@ -90,7 +90,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->assertTrue( (bool) stristr( $this->website_reach->info['SKU'], $product_sku ) );
 
         // Clean up
-        $this->db->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
+        $this->phactory->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
     }
 
     /**
@@ -107,7 +107,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->website_reach->id = $website_reach_id;
 
         // Create the meta necessary
-        $this->db->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ) " );
+        $this->phactory->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ) " );
 
         // Get meta
         $this->website_reach->get_meta();
@@ -118,7 +118,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->assertEquals( $friendly_type, $type );
 
         // Clean up
-        $this->db->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
+        $this->phactory->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
     }
     
     /**
@@ -132,7 +132,7 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $priority = 5;
 
         // Create
-        $website_reach_id = $this->db->insert( 'website_reaches', compact( 'website_id' ), 'i' );
+        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id' ), 'i' );
 
         // Get
         $this->website_reach->get( $website_reach_id, $website_id );
@@ -142,12 +142,12 @@ class WebsiteReachTest extends BaseDatabaseTest {
         $this->website_reach->save();
 
         // Make sure it's in the database
-        $retrieved_priority = $this->db->get_var( "SELECT `priority` FROM `website_reaches` WHERE `website_id` = $website_id" );
+        $retrieved_priority = $this->phactory->get_var( "SELECT `priority` FROM `website_reaches` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $priority, $retrieved_priority );
 
         // Clean up
-        $this->db->delete( 'website_reaches', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
     }
 
     /**

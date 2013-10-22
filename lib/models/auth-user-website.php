@@ -246,30 +246,26 @@ class AuthUserWebsite extends ActiveRecordBase {
         )->get_var();
     }
 
-    
-    
     /**
      * Send activation link
      * 
      * @param int $user_id
-     * @param int $account
-     * 
+     * @param Account $account
      */
-    public function send_activation_link( $user_id , $account ) {
+    public function send_activation_link( $user_id, $account ) {
         $user = new User();
         $user->get( $user_id );
         
         $token = new Token();
-        $token->get_token_by_user( $user_id,"activate-account" );
+        $token->get_by_user( $user_id, "activate-account" );
         
-        $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
-        $message .= '<a href="http://account.' .  $user->domain. '/login/activate/?t={$token->key}">http://account.' .  $user->domain. '/login/activate/?t={$token->key}</a>';
+        $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
+        $message .= '<a href="http://account.' .  $user->domain . '/login/activate/?t={$token->key}">http://account.' .  $user->domain . '/login/activate/?t={$token->key}</a>';
         $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
         $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
-      
-        
+
         // Send email if it's not in the blocked list
-        if ( in_array( $email, $this->blocked_emails ) )
+        if ( in_array( $user->email, $this->blocked_emails ) )
             return;
 
         $intro = new EmailHelper();

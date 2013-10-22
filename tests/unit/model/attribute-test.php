@@ -50,7 +50,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->assertEquals( 'Testee - Section', $this->attribute->title );
 
         // Delete the attribute
-        $this->db->delete( 'attributes', array( 'attribute_id' => $this->attribute->id ), 'i' );
+        $this->phactory->delete( 'attributes', array( 'attribute_id' => $this->attribute->id ), 'i' );
     }
 
     /**
@@ -77,7 +77,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->assertEquals( 'noitceS - eetseT', $this->attribute->title );
 
         // Delete the attribute
-        $this->db->delete( 'attributes', array( 'attribute_id' => $this->attribute->id ), 'i' );
+        $this->phactory->delete( 'attributes', array( 'attribute_id' => $this->attribute->id ), 'i' );
     }
 
     /**
@@ -88,19 +88,19 @@ class AttributeTest extends BaseDatabaseTest {
         $attribute_ids = array( '-1', '-2', '-3', '-4', '-5' );
 
         // Delete any that may have been created before the test
-        $this->db->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
+        $this->phactory->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
 
         // Add the relations
         $this->attribute->add_category_relations( $category_id, $attribute_ids );
 
         // Get them for testing
-        $fetched_attribute_ids = $this->db->get_col( "SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id ORDER BY `attribute_id` DESC" );
+        $fetched_attribute_ids = $this->phactory->get_col( "SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id ORDER BY `attribute_id` DESC" );
 
         // Should be the same
         $this->assertEquals( $attribute_ids, $fetched_attribute_ids );
 
         // Delete them
-        $this->db->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
+        $this->phactory->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
     }
 
     /**
@@ -120,7 +120,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->attribute->delete_category_relations( $category_id );
 
         // See if we can get it
-        $attribute_id = $this->db->get_var( "SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id" );
+        $attribute_id = $this->phactory->get_var( "SELECT `attribute_id` FROM `attribute_relations` WHERE `category_id` = $category_id" );
 
         $this->assertFalse( $attribute_id );
     }
@@ -145,7 +145,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->assertEquals( $attribute_ids, $fetched_attribute_ids );
 
         // Delete them
-        $this->db->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
+        $this->phactory->query( "DELETE FROM `attribute_relations` WHERE `category_id` = $category_id" );
     }
 
     /**
@@ -155,9 +155,9 @@ class AttributeTest extends BaseDatabaseTest {
      */
     public function testDelete() {
         // Create attribute
-        $this->db->insert( 'attributes', array( 'title' => 'Temp Test', 'name' => 'Temp' ), 'iss' );
+        $this->phactory->insert( 'attributes', array( 'title' => 'Temp Test', 'name' => 'Temp' ), 'iss' );
 
-        $attribute_id = $this->db->get_insert_id();
+        $attribute_id = $this->phactory->get_insert_id();
 
         // Get it
         $this->attribute->get( $attribute_id );
@@ -166,7 +166,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->attribute->delete();
 
         // Make sure it doesn't exist
-        $title = $this->db->get_var( "SELECT `title` FROM `attributes` WHERE `attribute_id` = $attribute_id" );
+        $title = $this->phactory->get_var( "SELECT `title` FROM `attributes` WHERE `attribute_id` = $attribute_id" );
 
         $this->assertFalse( $title );
     }

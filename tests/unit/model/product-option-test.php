@@ -45,9 +45,9 @@ class ProductOptionTest extends BaseDatabaseTest {
         $brand_id = -3;
 
         // Create
-        $product_option_id = $this->db->insert( 'product_options', compact( 'option_type' ), 's' );
-        $this->db->insert( 'product_option_relations', compact( 'product_option_id', 'brand_id' ), 'ii' );
-        $product_id = $this->db->insert( 'products', compact( 'brand_id' ), 'i' );
+        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
+        $this->phactory->insert( 'product_option_relations', compact( 'product_option_id', 'brand_id' ), 'ii' );
+        $product_id = $this->phactory->insert( 'products', compact( 'brand_id' ), 'i' );
 
         // Get product Options
         $product_options = $this->product_option->get_by_product( $product_id );
@@ -55,9 +55,9 @@ class ProductOptionTest extends BaseDatabaseTest {
         $this->assertTrue( current( $product_options ) instanceof ProductOption );
 
         // Clean Up
-        $this->db->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'product_option_relations', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'products', compact( 'brand_id' ), 'i' );
+        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'product_option_relations', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'products', compact( 'brand_id' ), 'i' );
     }
 
     /**
@@ -79,7 +79,7 @@ class ProductOptionTest extends BaseDatabaseTest {
         $this->assertEquals( 'Extra Info', $this->product_option->name );
 
         // Delete the product option
-        $this->db->delete( 'product_options', array( 'product_option_id' => $this->product_option->id ), 'i' );
+        $this->phactory->delete( 'product_options', array( 'product_option_id' => $this->product_option->id ), 'i' );
     }
 
     /**
@@ -106,7 +106,7 @@ class ProductOptionTest extends BaseDatabaseTest {
         $this->assertEquals( 'ofnI artxE', $this->product_option->name );
 
         // Delete the product option list item
-        $this->db->delete( 'product_options', array( 'product_option_id' => $this->product_option->id ), 'i' );
+        $this->phactory->delete( 'product_options', array( 'product_option_id' => $this->product_option->id ), 'i' );
     }
 
     /**
@@ -116,13 +116,13 @@ class ProductOptionTest extends BaseDatabaseTest {
      */
     public function testDelete() {
         // Create product option
-        $this->db->insert( 'product_options', array( 'option_type' => 'select', 'option_title' => 'Temp Color Test', 'option_name' => 'Color Test' ), 'sss' );
+        $this->phactory->insert( 'product_options', array( 'option_type' => 'select', 'option_title' => 'Temp Color Test', 'option_name' => 'Color Test' ), 'sss' );
 
-        $product_option_id = $this->db->get_insert_id();
+        $product_option_id = $this->phactory->get_insert_id();
 
         // Create other relations
-        $this->db->insert( 'product_options_relations', array( 'product_option_id' => $product_option_id, 'brand_id' => -1 ), 'ii' );
-        $this->db->insert( 'product_option_list_items', array( 'product_option_id' => $product_option_id, 'value' => 'Test Value', 'sequence' => 0 ), 'isi' );
+        $this->phactory->insert( 'product_options_relations', array( 'product_option_id' => $product_option_id, 'brand_id' => -1 ), 'ii' );
+        $this->phactory->insert( 'product_option_list_items', array( 'product_option_id' => $product_option_id, 'value' => 'Test Value', 'sequence' => 0 ), 'isi' );
 
 
         // Get it
@@ -132,17 +132,17 @@ class ProductOptionTest extends BaseDatabaseTest {
         $this->product_option->delete();
 
         // Make sure the product option it doesn't exist
-        $title = $this->db->get_var( "SELECT `title` FROM `product_options` WHERE `product_option_id` = $product_option_id" );
+        $title = $this->phactory->get_var( "SELECT `title` FROM `product_options` WHERE `product_option_id` = $product_option_id" );
 
         $this->assertFalse( $title );
 
         // Make sure there are no relations
-        $brand_id = $this->db->get_var( "SELECT `brand_id` FROM `product_option_relations` WHERE `product_option_id` = $product_option_id" );
+        $brand_id = $this->phactory->get_var( "SELECT `brand_id` FROM `product_option_relations` WHERE `product_option_id` = $product_option_id" );
 
         $this->assertFalse( $brand_id );
 
         // Make sure there are nos
-        $value = $this->db->get_var( "SELECT `value` FROM `product_option_list_items` WHERE `product_option_id` = $product_option_id" );
+        $value = $this->phactory->get_var( "SELECT `value` FROM `product_option_list_items` WHERE `product_option_id` = $product_option_id" );
 
         $this->assertFalse( $value );
     }
@@ -155,13 +155,13 @@ class ProductOptionTest extends BaseDatabaseTest {
         $brand_id = -5;
 
         // Create relations
-        $this->db->insert( 'product_options_relations', array( 'product_option_id' => 1, 'brand_id' => $brand_id ), 'ii' );
+        $this->phactory->insert( 'product_options_relations', array( 'product_option_id' => 1, 'brand_id' => $brand_id ), 'ii' );
 
         // Delete relations
         $this->product_option->delete_relations_by_brand( $brand_id );
 
         // Make sure there are no relations
-        $product_option_id = $this->db->get_var( "SELECT `product_option_id` FROM `product_option_relations` WHERE `brand_id` = $brand_id" );
+        $product_option_id = $this->phactory->get_var( "SELECT `product_option_id` FROM `product_option_relations` WHERE `brand_id` = $brand_id" );
 
         $this->assertFalse( $product_option_id );
     }

@@ -78,19 +78,19 @@ class AccountPagemetaTest extends BaseDatabaseTest {
         );
 
         // Delete anything before hand
-        $this->db->query( 'DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( -1, -2 )' );
+        $this->phactory->query( 'DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( -1, -2 )' );
 
         // Add them
         $this->account_pagemeta->add_bulk( $pagemeta );
 
         // Get them
-        $fetched_pagemeta = ar::assign_key( $this->db->get_results( 'SELECT * FROM `website_pagemeta` WHERE `website_page_id` IN( -1, -2 )', PDO::FETCH_ASSOC ), 'website_page_id' );
+        $fetched_pagemeta = ar::assign_key( $this->phactory->get_results( 'SELECT * FROM `website_pagemeta` WHERE `website_page_id` IN( -1, -2 )', PDO::FETCH_ASSOC ), 'website_page_id' );
 
         $this->assertEquals( count( $fetched_pagemeta ), 2 );
         $this->assertEquals( $fetched_pagemeta[-2]['key'], 'skittles' );
 
         // Delete
-        $this->db->query( 'DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( -1, -2 )' );
+        $this->phactory->query( 'DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( -1, -2 )' );
     }
 
     /**
@@ -108,12 +108,12 @@ class AccountPagemetaTest extends BaseDatabaseTest {
         $this->account_pagemeta->add_bulk_by_page( $website_page_id, $pagemeta );
 
         // Get them
-        $fetched_pagemeta = ar::assign_key( $this->db->get_results( "SELECT * FROM `website_pagemeta` WHERE `website_page_id` = $website_page_id", PDO::FETCH_ASSOC ), 'key', true );
+        $fetched_pagemeta = ar::assign_key( $this->phactory->get_results( "SELECT * FROM `website_pagemeta` WHERE `website_page_id` = $website_page_id", PDO::FETCH_ASSOC ), 'key', true );
 
         $this->assertEquals( $fetched_pagemeta['skittles']['value'], 'bitter' );
 
         // Delete
-        $this->db->delete( 'website_pagemeta', compact( 'website_page_id' ), 'i' );
+        $this->phactory->delete( 'website_pagemeta', compact( 'website_page_id' ), 'i' );
     }
 
     /**

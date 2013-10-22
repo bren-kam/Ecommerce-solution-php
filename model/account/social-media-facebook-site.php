@@ -31,7 +31,7 @@ class SocialMediaFacebookSite extends ActiveRecordBase {
 
         $this->insert( array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
-            , 'key' => $this->key
+            , 'key' => strip_tags($this->key)
             , 'date_created' => $this->date_created
         ), 'iss' );
     }

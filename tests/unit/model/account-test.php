@@ -61,8 +61,8 @@ class AccountTest extends BaseDatabaseTest {
         $user_id = -4;
 
         // Create website/product
-        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'i' );
-        $this->db->insert( 'auth_user_websites', array( 'website_id' => $account_id, 'user_id' => $user_id ), 'ii' );
+        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'i' );
+        $this->phactory->insert( 'auth_user_websites', array( 'website_id' => $account_id, 'user_id' => $user_id ), 'ii' );
 
         // Get the account
 
@@ -71,8 +71,8 @@ class AccountTest extends BaseDatabaseTest {
         $this->assertTrue( current( $accounts ) instanceof Account );
 
         // Delete
-        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'auth_user_websites', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'auth_user_websites', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -84,8 +84,8 @@ class AccountTest extends BaseDatabaseTest {
         $account_id = -5;
 
         // Create website/product
-        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'i' );
-        $this->db->insert( 'website_products', array( 'website_id' => $account_id, 'product_id' => $product_id, 'blocked' => 0 ), 'iii' );
+        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'i' );
+        $this->phactory->insert( 'website_products', array( 'website_id' => $account_id, 'product_id' => $product_id, 'blocked' => 0 ), 'iii' );
 
         // Get the account
         $accounts = $this->account->get_by_product( $product_id );
@@ -93,8 +93,8 @@ class AccountTest extends BaseDatabaseTest {
         $this->assertTrue( current( $accounts ) instanceof Account );
 
         // Delete
-        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'website_products', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -114,7 +114,7 @@ class AccountTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->account->user_id ) );
 
         // Delete the account
-        $this->db->delete( 'websites', array( 'website_id' => $this->account->id ), 'i' );
+        $this->phactory->delete( 'websites', array( 'website_id' => $this->account->id ), 'i' );
     }
 
     /**
@@ -131,12 +131,12 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->save();
 
         // Get title
-        $title = $this->db->get_var( 'SELECT `title` FROM `websites` WHERE `website_id` = 96' );
+        $title = $this->phactory->get_var( 'SELECT `title` FROM `websites` WHERE `website_id` = 96' );
 
         $this->assertEquals( 'Piglatin', $title );
 
         // Rename the account
-        $this->db->update( 'websites', array( 'title' => 'Testing' ), array( 'website_id' => 96 ), 's', 'i' );
+        $this->phactory->update( 'websites', array( 'title' => 'Testing' ), array( 'website_id' => 96 ), 's', 'i' );
     }
 
     /**
@@ -217,8 +217,8 @@ class AccountTest extends BaseDatabaseTest {
         $value = 'haunted@echoes.com';
 
         // Create website/product
-        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'ii' );
-        $this->db->insert( 'website_settings', array( 'website_id' => $account_id, 'key' => $key, 'value' => $value ), 'iss' );
+        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'status' => 1 ), 'ii' );
+        $this->phactory->insert( 'website_settings', array( 'website_id' => $account_id, 'key' => $key, 'value' => $value ), 'iss' );
 
         // Get the account
         $this->account->get( $account_id );
@@ -228,8 +228,8 @@ class AccountTest extends BaseDatabaseTest {
         $this->assertEquals( $value, $setting );
 
         // Delete
-        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'website_settings', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'website_settings', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -243,13 +243,13 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->get( $account_id );
 
         // Set it wrong in the first place
-        $this->db->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( 160, 'test-settings', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
+        $this->phactory->query( "INSERT INTO `website_settings` ( `website_id`, `key`, `value` ) VALUES ( 160, 'test-settings', '' ) ON DUPLICATE KEY UPDATE `value` = VALUES( `value` ) " );
 
         // Set it with the method
         $this->account->set_settings( array( 'test-settings' => '3.14159' ) );
 
         // Get the value
-        $setting_value = $this->db->get_var( "SELECT `value` FROM `website_settings` WHERE `website_id` = $account_id AND `key` = 'test-settings'" );
+        $setting_value = $this->phactory->get_var( "SELECT `value` FROM `website_settings` WHERE `website_id` = $account_id AND `key` = 'test-settings'" );
 
         // Make sure they equal each other
         $this->assertEquals( '3.14159', $setting_value );
@@ -296,8 +296,8 @@ class AccountTest extends BaseDatabaseTest {
         // Declare variables
         $account_id = -5; // Testing account
 
-        $this->db->insert( 'websites', array( 'website_id' => -5 ), 'i' );
-        $this->db->query( "INSERT INTO `website_industries` VALUES ( $account_id, 1), ( $account_id, 5 ), ( $account_id, 3 ) ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )" );
+        $this->phactory->insert( 'websites', array( 'website_id' => -5 ), 'i' );
+        $this->phactory->query( "INSERT INTO `website_industries` VALUES ( $account_id, 1), ( $account_id, 5 ), ( $account_id, 3 ) ON DUPLICATE KEY UPDATE `industry_id` = VALUES( `industry_id` )" );
 
         // Get the testing account
         $this->account->get( $account_id );
@@ -308,8 +308,8 @@ class AccountTest extends BaseDatabaseTest {
         // House Plans industry
         $this->assertTrue( in_array( 5, $industries ) );
 
-        $this->db->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -337,7 +337,7 @@ class AccountTest extends BaseDatabaseTest {
         $this->assertEquals( $template_industry_ids, $account_industry_ids );
 
         // Now delete
-        $this->db->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'website_industries', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -356,7 +356,7 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->delete_industries();
 
         // See if we have industries right now
-        $count_industries = $this->db->get_var( 'SELECT COUNT(`industry_id`) FROM `website_industries` WHERE `website_id` = 96' );
+        $count_industries = $this->phactory->get_var( 'SELECT COUNT(`industry_id`) FROM `website_industries` WHERE `website_id` = 96' );
 
         $this->assertEquals( 0, $count_industries );
     }
@@ -377,7 +377,7 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->add_industries( array( 1, 2, 3, 4, 5, 6, 7, 8, 10, 11 ) );
 
         // See if we have industries right now
-        $count_industries = $this->db->get_var( 'SELECT COUNT(`industry_id`) FROM `website_industries` WHERE `website_id` = 96' );
+        $count_industries = $this->phactory->get_var( 'SELECT COUNT(`industry_id`) FROM `website_industries` WHERE `website_id` = 96' );
 
         $this->assertEquals( 10, $count_industries );
     }
@@ -432,12 +432,12 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->copy_top_brands_by_account( $template_account_id, $account_id );
 
         // Get brand ids
-        $brand_ids = $this->db->get_col( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $account_id" );
+        $brand_ids = $this->phactory->get_col( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $account_id" );
 
         $this->assertGreaterThan( 1, count( $brand_ids ) );
 
         // Delete
-        $this->db->delete( 'website_top_brands', array( 'website_id' => $account_id ) , 'i' );
+        $this->phactory->delete( 'website_top_brands', array( 'website_id' => $account_id ) , 'i' );
     }
 
     /**
@@ -453,13 +453,13 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->copy_settings_by_account( $template_account_id, $account_id, $settings );
 
         // Get brand ids
-        $copied_settings = ar::assign_key( $this->db->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $account_id ORDER BY `key`", PDO::FETCH_ASSOC ), 'key', true );
+        $copied_settings = ar::assign_key( $this->phactory->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $account_id ORDER BY `key`", PDO::FETCH_ASSOC ), 'key', true );
 
         $this->assertEquals( array_keys( $copied_settings ), $settings );
         $this->assertEquals( '4C86B0', $copied_settings['banner-loading-color'] );
 
         // Delete
-        $this->db->delete( 'website_settings', array( 'website_id' => $account_id ) , 'i' );
+        $this->phactory->delete( 'website_settings', array( 'website_id' => $account_id ) , 'i' );
     }
 
     /**

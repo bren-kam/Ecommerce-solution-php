@@ -29,12 +29,12 @@ class KnowledgeBaseArticleRatingTest extends BaseDatabaseTest {
         $this->kb_article_rating->create();
 
         // Make sure it's in the database
-        $fetched_rating = $this->db->get_var( "SELECT `rating` FROM `kb_article_rating` WHERE `kb_article_id` = $kb_article_id" );
+        $fetched_rating = $this->phactory->get_var( "SELECT `rating` FROM `kb_article_rating` WHERE `kb_article_id` = $kb_article_id" );
 
         $this->assertEquals( $rating, $fetched_rating );
 
         // Delete the comment
-        $this->db->delete( 'kb_article_rating', compact( 'kb_article_id' ), 'i' );
+        $this->phactory->delete( 'kb_article_rating', compact( 'kb_article_id' ), 'i' );
     }
 
     /**

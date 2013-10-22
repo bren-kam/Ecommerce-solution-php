@@ -25,18 +25,18 @@ class TagTest extends BaseDatabaseTest {
         $tags = array( 'abc', 'def', 'ghi' );
 
         // Delete any preexisting tags
-        $this->db->delete( 'tags', array( 'type' => $type, 'object_id' => $object_id ), 'si' );
+        $this->phactory->delete( 'tags', array( 'type' => $type, 'object_id' => $object_id ), 'si' );
 
         // Add tags
         $this->tag->add_bulk( $type, $object_id, $tags );
 
         // Check to see if they exist
-        $fetched_tags = $this->db->get_col( "SELECT `value` FROM `tags` WHERE `type` = '$type' AND `object_id` = $object_id ORDER BY `value` ASC" );
+        $fetched_tags = $this->phactory->get_col( "SELECT `value` FROM `tags` WHERE `type` = '$type' AND `object_id` = $object_id ORDER BY `value` ASC" );
 
         $this->assertEquals( $tags, $fetched_tags );
 
         // Delete tags
-        $this->db->delete( 'tags', array( 'type' => $type, 'object_id' => $object_id ), 'si' );
+        $this->phactory->delete( 'tags', array( 'type' => $type, 'object_id' => $object_id ), 'si' );
     }
 
     /**
@@ -59,7 +59,7 @@ class TagTest extends BaseDatabaseTest {
         $this->assertEquals( $tags, $fetched_tags );
 
         // Delete tags
-        $this->db->delete( 'tags', array( 'type' => $type, 'object_id' => $object_id ), 'si' );
+        $this->phactory->delete( 'tags', array( 'type' => $type, 'object_id' => $object_id ), 'si' );
     }
 
     /**

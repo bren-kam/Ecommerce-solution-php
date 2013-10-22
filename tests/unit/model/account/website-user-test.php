@@ -25,7 +25,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $email = 'cranky@crank.com';
 
         // Create
-        $website_user_id = $this->db->insert( 'website_users', compact( 'website_id', 'email' ), 'is' );
+        $website_user_id = $this->phactory->insert( 'website_users', compact( 'website_id', 'email' ), 'is' );
 
         // Get
         $this->website_user->get( $website_user_id, $website_id );
@@ -34,7 +34,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $this->assertEquals( $email, $this->website_user->email );
 
         // Clean up
-        $this->db->delete( 'website_users', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_users', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -46,7 +46,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $email = 'cranky@crank.com';
 
         // Create
-        $this->db->insert( 'website_users', compact( 'website_id', 'email' ), 'is' );
+        $this->phactory->insert( 'website_users', compact( 'website_id', 'email' ), 'is' );
 
         // Get
         $this->website_user->get_by_email( $email, $website_id );
@@ -55,7 +55,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $this->assertEquals( $email, $this->website_user->email );
 
         // Clean up
-        $this->db->delete( 'website_users', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_users', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -69,7 +69,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $email = 'stranger@strange.com';
 
         // Create
-        $website_user_id = $this->db->insert( 'website_users', compact( 'website_id' ), 'i' );
+        $website_user_id = $this->phactory->insert( 'website_users', compact( 'website_id' ), 'i' );
 
         // Get
         $this->website_user->get( $website_user_id, $website_id );
@@ -77,12 +77,12 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $this->website_user->save();
 
         // Now check it!
-        $retrieved_email = $this->db->get_var( 'SELECT `email` FROM `website_users` WHERE `website_user_id` = ' . (int) $website_user_id );
+        $retrieved_email = $this->phactory->get_var( 'SELECT `email` FROM `website_users` WHERE `website_user_id` = ' . (int) $website_user_id );
 
         $this->assertEquals( $retrieved_email, $email );
 
         // Clean up
-        $this->db->delete( 'website_users', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_users', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -97,19 +97,19 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $md5_password = md5( $password );
 
         // Create
-        $website_user_id = $this->db->insert( 'website_users', compact( 'website_id' ), 'i' );
+        $website_user_id = $this->phactory->insert( 'website_users', compact( 'website_id' ), 'i' );
 
         // Get
         $this->website_user->get( $website_user_id, $website_id );
         $this->website_user->set_password( $password );
 
         // Now check it!
-        $retrieved_password = $this->db->get_var( 'SELECT `password` FROM `website_users` WHERE `website_user_id` = ' . (int) $website_user_id );
+        $retrieved_password = $this->phactory->get_var( 'SELECT `password` FROM `website_users` WHERE `website_user_id` = ' . (int) $website_user_id );
 
         $this->assertEquals( $retrieved_password, $md5_password );
 
         // Clean up
-        $this->db->delete( 'website_users', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_users', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -123,7 +123,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         $email = 'stranger@strange.com';
 
         // Create
-        $website_user_id = $this->db->insert( 'website_users', compact( 'website_id', 'email' ), 'is' );
+        $website_user_id = $this->phactory->insert( 'website_users', compact( 'website_id', 'email' ), 'is' );
 
         // Get
         $this->website_user->get( $website_user_id, $website_id );
@@ -131,7 +131,7 @@ class WebsiteUserTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->website_user->remove();
 
-        $retrieved_email = $this->db->get_var( 'SELECT `email` FROM `website_users` WHERE `website_user_id` = ' . (int) $website_user_id );
+        $retrieved_email = $this->phactory->get_var( 'SELECT `email` FROM `website_users` WHERE `website_user_id` = ' . (int) $website_user_id );
 
         $this->assertFalse( $retrieved_email );
     }

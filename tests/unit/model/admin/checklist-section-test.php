@@ -55,7 +55,7 @@ class ChecklistSectionTest extends BaseDatabaseTest {
         $this->assertEquals( 5, $this->checklist_section->status );
 
         // Delete
-        $this->db->delete( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ), 'i' );
+        $this->phactory->delete( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ), 'i' );
     }
 
     /**
@@ -81,7 +81,7 @@ class ChecklistSectionTest extends BaseDatabaseTest {
         $this->assertEquals( "Sweet jumpin' jambalaya", $this->checklist_section->name );
 
         // Delete
-        $this->db->delete( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ), 'i' );
+        $this->phactory->delete( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ), 'i' );
     }
 
     /**

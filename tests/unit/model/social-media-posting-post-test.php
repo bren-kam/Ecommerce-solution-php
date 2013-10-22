@@ -24,7 +24,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $sm_facebook_page_id = -5;
 
         // Create
-        $sm_posting_post_id = $this->db->insert( 'sm_posting_posts', compact( 'status', 'sm_facebook_page_id' ), 'ii' );
+        $sm_posting_post_id = $this->phactory->insert( 'sm_posting_posts', compact( 'status', 'sm_facebook_page_id' ), 'ii' );
 
         // Get
         $this->post->get( $sm_posting_post_id, $sm_facebook_page_id );
@@ -33,7 +33,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $this->assertEquals( $status, $this->post->status );
 
         // Clean up
-        $this->db->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
     }
     
     /**
@@ -48,12 +48,12 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $this->post->create();
 
         // Make sure it's in the database
-        $retrieved_post = $this->db->get_var( 'SELECT `post` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
+        $retrieved_post = $this->phactory->get_var( 'SELECT `post` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
 
         $this->assertEquals( $post, $retrieved_post );
 
         // Delete
-        $this->db->delete( 'sm_posting_posts', array( 'sm_posting_post_id' => $this->post->id ), 'i' );
+        $this->phactory->delete( 'sm_posting_posts', array( 'sm_posting_post_id' => $this->post->id ), 'i' );
     }
 
     /**
@@ -64,7 +64,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $sm_facebook_page_id = -6;
 
         // Create the post
-        $sm_posting_post_id = $this->db->insert( 'sm_posting_posts', array(
+        $sm_posting_post_id = $this->phactory->insert( 'sm_posting_posts', array(
             'sm_facebook_page_id' => $sm_facebook_page_id
             , 'access_post' => 'AAAD0VdBxxPMBAJGsPbZASGsqinooBUU2PVosdm1JQZBi9OOWTdiJPwidaSaODEIUwnmzZBKkqiWBuSiCRcV7oTw6OYZAHrLR4l5jUOzs2wZDZD'
             , 'post' => 'test post'
@@ -79,7 +79,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $this->assertTrue( current( $test_posts ) instanceof SocialMediaPostingPost );
 
         // Delete post
-        $this->db->delete( 'sm_posting_posts', compact( 'sm_posting_post_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_posting_post_id' ), 'i' );
     }
 
     /**
@@ -91,20 +91,20 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $status = -1;
 
         // Create the post
-        $sm_posting_post_id = $this->db->insert( 'sm_posting_posts', compact( 'status' ), 'i' );
+        $sm_posting_post_id = $this->phactory->insert( 'sm_posting_posts', compact( 'status' ), 'i' );
 
         // Mark posts
         $errors[$sm_posting_post_id] = $error_message;
         $this->post->mark_errors( $errors );
 
         // Test to make sure that's the error
-        $message = $this->db->get_var( "SELECT `error` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id" );
+        $message = $this->phactory->get_var( "SELECT `error` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id" );
 
         // Make sure they are the same
         $this->assertEquals( $error_message, $message );
 
         // Delete post
-        $this->db->delete( 'sm_posting_posts', compact( 'sm_posting_post_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_posting_post_id' ), 'i' );
     }
 
     /**
@@ -117,18 +117,18 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $new_status = 1;
 
         // Create posting post
-        $this->post->id = $this->db->insert( 'sm_posting_posts', compact( 'status' ), 'i' );
+        $this->post->id = $this->phactory->insert( 'sm_posting_posts', compact( 'status' ), 'i' );
 
         // Update test
         $this->post->status = $new_status;
         $this->post->save();
 
-        $retrieved_status = $this->db->get_var( 'SELECT `status` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
+        $retrieved_status = $this->phactory->get_var( 'SELECT `status` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
 
         $this->assertEquals( $retrieved_status, $new_status );
 
         // Delete
-        $this->db->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -149,7 +149,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->post->remove();
 
-        $retrieved_post = $this->db->get_var( 'SELECT `post` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
+        $retrieved_post = $this->phactory->get_var( 'SELECT `post` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
 
         $this->assertFalse( $retrieved_post );
     }

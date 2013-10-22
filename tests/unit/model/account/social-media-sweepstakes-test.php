@@ -25,7 +25,7 @@ class SocialMediaSweepstakesTest extends BaseDatabaseTest {
         $fb_page_id = -7;
 
         // Insert
-        $this->db->insert( 'sm_sweepstakes', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        $this->phactory->insert( 'sm_sweepstakes', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
 
         // Get
         $this->sm_sweepstakes->get( $sm_facebook_page_id );
@@ -33,7 +33,7 @@ class SocialMediaSweepstakesTest extends BaseDatabaseTest {
         $this->assertEquals( $fb_page_id, $this->sm_sweepstakes->fb_page_id );
 
         // Clean up
-        $this->db->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -50,12 +50,12 @@ class SocialMediaSweepstakesTest extends BaseDatabaseTest {
         $this->sm_sweepstakes->create();
 
         // Get
-        $retrieved_key = $this->db->get_var( "SELECT `key` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_key, $this->sm_sweepstakes->key );
 
         // Clean up
-        $this->db->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -77,12 +77,12 @@ class SocialMediaSweepstakesTest extends BaseDatabaseTest {
         $this->sm_sweepstakes->save();
 
         // Now check it!
-        $retrieved_before = $this->db->get_var( "SELECT `before` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_before = $this->phactory->get_var( "SELECT `before` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_before, $before );
 
         // Clean up
-        $this->db->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**

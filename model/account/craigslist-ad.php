@@ -79,7 +79,7 @@ class CraigslistAd extends ActiveRecordBase {
         $this->insert( array(
             'website_id' => $this->website_id
             , 'product_id' => $this->product_id
-            , 'text' => $this->text
+            , 'text' => format::strip_only( $this->text, '<script>' )
             , 'price' => $this->price
             , 'date_created' => $this->date_created
         ), 'iisis' );
@@ -93,9 +93,9 @@ class CraigslistAd extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'product_id' => $this->product_id
-            , 'text' => $this->text
+            , 'text' => format::strip_only( $this->text, '<script>' )
             , 'price' => $this->price
-            , 'date_posted' => $this->date_posted
+            , 'date_posted' => strip_tags($this->date_posted)
             , 'active' => $this->active
         ), array(
             'craigslist_ad_id' => $this->craigslist_ad_id )
@@ -116,7 +116,7 @@ class CraigslistAd extends ActiveRecordBase {
             if ( empty( $h ) )
                 continue;
 
-            $values[] = $h;
+            $values[] = strip_tags($h);
         }
 
         $value_count = count( $values );

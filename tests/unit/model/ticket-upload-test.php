@@ -23,7 +23,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $key = '123/321/feeling.rig';
 
         // Insert
-        $ticket_upload_id = $this->db->insert( 'ticket_uploads', compact( 'key' ), 's' );
+        $ticket_upload_id = $this->phactory->insert( 'ticket_uploads', compact( 'key' ), 's' );
 
         // Get
         $this->ticket_upload->get( $ticket_upload_id );
@@ -31,7 +31,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->assertEquals( $this->ticket_upload->key, $key );
 
         // Clean up
-        $this->db->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
+        $this->phactory->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
     }
 
     /**
@@ -56,8 +56,8 @@ class TicketUploadTest extends BaseDatabaseTest {
         $key = 'hey-hey';
 
         // Create a comment
-        $ticket_comment_id = $this->db->insert( 'ticket_comments', compact( 'ticket_id' ), 'ii' );
-        $ticket_upload_id = $this->db->insert( 'ticket_uploads', compact( 'ticket_comment_id', 'key' ), 'iis' );
+        $ticket_comment_id = $this->phactory->insert( 'ticket_comments', compact( 'ticket_id' ), 'ii' );
+        $ticket_upload_id = $this->phactory->insert( 'ticket_uploads', compact( 'ticket_comment_id', 'key' ), 'iis' );
 
         // Get uploads
         $uploads = $this->ticket_upload->get_by_comments( $ticket_id );
@@ -65,8 +65,8 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->assertTrue( current( $uploads ) instanceof TicketUpload );
 
         // Clean Up
-        $this->db->delete( 'ticket_comments', compact( 'ticket_id' ), 'i' );
-        $this->db->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
+        $this->phactory->delete( 'ticket_comments', compact( 'ticket_id' ), 'i' );
+        $this->phactory->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
     }
 
     /**
@@ -78,7 +78,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $key = 'hey-hey';
 
         // Create a comment
-        $ticket_upload_id = $this->db->insert( 'ticket_uploads', compact( 'ticket_comment_id', 'key' ), 'iis' );
+        $ticket_upload_id = $this->phactory->insert( 'ticket_uploads', compact( 'ticket_comment_id', 'key' ), 'iis' );
 
         // Get uploads
         $uploads = $this->ticket_upload->get_by_comment( $ticket_comment_id );
@@ -86,7 +86,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->assertTrue( current( $uploads ) instanceof TicketUpload );
 
         // Clean up
-        $this->db->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
+        $this->phactory->delete( 'ticket_uploads', compact( 'ticket_upload_id' ), 'i' );
     }
 
     /**
@@ -110,7 +110,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->assertEquals( $key, $this->ticket_upload->key );
 
         // Delete the upload
-        $this->db->delete( 'ticket_uploads', array( 'ticket_upload_id' => $this->ticket_upload->id ), 'i' );
+        $this->phactory->delete( 'ticket_uploads', array( 'ticket_upload_id' => $this->ticket_upload->id ), 'i' );
     }
 
     /**
@@ -120,7 +120,7 @@ class TicketUploadTest extends BaseDatabaseTest {
      */
     public function testGetKeysByUncreatedTickets() {
         // Create ticket
-        $ticket_id = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
+        $ticket_id = $this->phactory->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
 
         // Create ticket uploads
         $this->ticket_upload->ticket_id = $ticket_id;
@@ -136,7 +136,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->assertTrue( in_array( $this->ticket_upload->key, $keys ) );
 
         // Now delete everything
-        $this->db->query( "DELETE tu.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`ticket_id` = $ticket_id AND t.`status` = -1");
+        $this->phactory->query( "DELETE tu.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`ticket_id` = $ticket_id AND t.`status` = -1");
     }
 
     /**
@@ -146,7 +146,7 @@ class TicketUploadTest extends BaseDatabaseTest {
      */
     public function testAddRelations() {
         // Create ticket
-        $ticket_id = $this->db->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
+        $ticket_id = $this->phactory->insert( 'tickets', array( 'status' => -1, 'date_created' => '2012-10-09 00:00:00' ), 'is' );
 
         // Create ticket uploads
         $this->ticket_upload->key = 'url/path/file.jpg';
@@ -157,13 +157,13 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->ticket_upload->add_relations( $ticket_id, $ticket_upload_ids );
 
         // Now check it
-        $fetched_ticket_upload_ids = $this->db->get_col( "SELECT `ticket_upload_id` FROM `ticket_uploads` WHERE `ticket_id` = " . (int) $ticket_id );
+        $fetched_ticket_upload_ids = $this->phactory->get_col( "SELECT `ticket_upload_id` FROM `ticket_uploads` WHERE `ticket_id` = " . (int) $ticket_id );
 
         $this->assertEquals( $ticket_upload_ids, $fetched_ticket_upload_ids );
 
         // Delete links and ticket
-        $this->db->delete( 'tickets', compact( 'ticket_id' ), 'i' );
-        $this->db->delete( 'ticket_uploads', compact( 'ticket_id' ), 'i' );
+        $this->phactory->delete( 'tickets', compact( 'ticket_id' ), 'i' );
+        $this->phactory->delete( 'ticket_uploads', compact( 'ticket_id' ), 'i' );
     }
 
     /**
@@ -182,7 +182,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->ticket_upload->delete_upload();
 
         // Check
-        $fetched_ticket_upload_id = $this->db->get_var( "SELECT `ticket_upload_id` FROM `ticket_uploads` WHERE `ticket_upload_id` = $ticket_upload_id" );
+        $fetched_ticket_upload_id = $this->phactory->get_var( "SELECT `ticket_upload_id` FROM `ticket_uploads` WHERE `ticket_upload_id` = $ticket_upload_id" );
 
         $this->assertFalse( $fetched_ticket_upload_id );
     }

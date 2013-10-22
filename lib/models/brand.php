@@ -69,10 +69,10 @@ class Brand extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array(
-            'name' => $this->name
-            , 'slug' => $this->slug
-            , 'link' => $this->link
-            , 'image' => $this->image
+            'name' => strip_tags($this->name)
+            , 'slug' => strip_tags($this->slug)
+            , 'link' => strip_tags($this->link)
+            , 'image' => strip_tags($this->image)
         ), 'ssss' );
 
         $this->brand_id = $this->id = $this->get_insert_id();
@@ -107,10 +107,10 @@ class Brand extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'name' => $this->name
-            , 'slug' => $this->slug
-            , 'link' => $this->link
-            , 'image' => $this->image
+            'name' => strip_tags($this->name)
+            , 'slug' => strip_tags($this->slug)
+            , 'link' => strip_tags($this->link)
+            , 'image' => strip_tags($this->image)
         ), array(
             'brand_id' => $this->id
         ), 'ssss', 'i' );

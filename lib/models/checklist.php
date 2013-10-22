@@ -39,9 +39,9 @@ class Checklist extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'type' => $this->type
+            , 'type' => strip_tags($this->type)
             , 'date_created' => $this->date_created
-        ), 'iisssis' );
+        ), 'iss' );
 
         $this->checklist_id = $this->id = $this->get_insert_id();
     }

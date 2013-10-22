@@ -26,7 +26,7 @@ class FanOfferTest extends BaseDatabaseTest {
         $before = 'What do you need to like me?';
 
         // Insert About Us
-        $this->db->insert( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id, 'before' => $before ), 'is' );
+        $this->phactory->insert( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id, 'before' => $before ), 'is' );
 
         // Get it
         $tab = $this->fan_offer->get_tab( $fb_page_id, $liked );
@@ -34,7 +34,7 @@ class FanOfferTest extends BaseDatabaseTest {
         $this->assertEquals( $tab->content, $before );
 
         // Delete it
-        $this->db->delete( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id ), 'i' );
     }
 
     /**
@@ -47,7 +47,7 @@ class FanOfferTest extends BaseDatabaseTest {
         $after = 'Yay! You liked me!';
 
         // Insert About Us
-        $this->db->insert( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id, 'after' => $after ), 'is' );
+        $this->phactory->insert( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id, 'after' => $after ), 'is' );
 
         // Get it
         $tab = $this->fan_offer->get_tab( $fb_page_id, $liked );
@@ -55,7 +55,7 @@ class FanOfferTest extends BaseDatabaseTest {
         $this->assertEquals( $after, $tab->content );
 
         // Delete it
-        $this->db->delete( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id ), 'i' );
     }
 
     /**
@@ -69,18 +69,18 @@ class FanOfferTest extends BaseDatabaseTest {
         $key = 'Sirius Black';
 
         // Insert Website Page/FB Page/About Us
-        $this->db->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
-        $this->db->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
-        $this->db->insert( 'sm_fan_offer', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
+        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
+        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
+        $this->phactory->insert( 'sm_fan_offer', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
 
         $account = $this->fan_offer->get_connected_website( $fb_page_id );
 
         $this->assertEquals( $account->key, $key );
 
         // Delete it
-        $this->db->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->db->delete( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', array( 'fb_page_id' => $fb_page_id ), 'i' );
     }
 
     /**
@@ -92,18 +92,18 @@ class FanOfferTest extends BaseDatabaseTest {
         $key = 'Red Baron';
 
         // Insert About Us
-        $this->db->insert( 'sm_fan_offer', array( 'key' => $key,  ), 's' );
+        $this->phactory->insert( 'sm_fan_offer', array( 'key' => $key,  ), 's' );
 
         // Get it
         $this->fan_offer->connect( $fb_page_id, $key );
 
         // Get the key
-        $fetched_fb_page_id = $this->db->get_var( "SELECT `fb_page_id` FROM `sm_fan_offer` WHERE `key` = '$key'" );
+        $fetched_fb_page_id = $this->phactory->get_var( "SELECT `fb_page_id` FROM `sm_fan_offer` WHERE `key` = '$key'" );
 
         $this->assertEquals( $fb_page_id, $fetched_fb_page_id );
 
         // Delete it
-        $this->db->delete( 'sm_fan_offer', array( 'key' => $key ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', array( 'key' => $key ), 'i' );
     }
 
     /**

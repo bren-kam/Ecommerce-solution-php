@@ -27,12 +27,12 @@ class AccountNoteTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->account_note->id ) );
 
         // Get the message
-        $message = $this->db->get_var( 'SELECT `message` FROM `website_notes` WHERE `website_note_id` = ' . (int) $this->account_note->id );
+        $message = $this->phactory->get_var( 'SELECT `message` FROM `website_notes` WHERE `website_note_id` = ' . (int) $this->account_note->id );
 
         $this->assertEquals( $message, 'test' );
 
         // Delete the note
-        $this->db->delete( 'website_notes', array( 'website_note_id' => $this->account_note->id ), 'i' );
+        $this->phactory->delete( 'website_notes', array( 'website_note_id' => $this->account_note->id ), 'i' );
     }
 
     /**
@@ -40,8 +40,8 @@ class AccountNoteTest extends BaseDatabaseTest {
      */
     public function testGet() {
         // Insert a note
-        $this->db->insert( 'website_notes', array( 'website_id' => 96, 'user_id' => 1, 'message' => 'test' ), 'iis' );
-        $website_note_id = $this->db->get_insert_id();
+        $this->phactory->insert( 'website_notes', array( 'website_id' => 96, 'user_id' => 1, 'message' => 'test' ), 'iis' );
+        $website_note_id = $this->phactory->get_insert_id();
 
         // Get it
         $this->account_note->get($website_note_id);
@@ -49,7 +49,7 @@ class AccountNoteTest extends BaseDatabaseTest {
         $this->assertEquals( $this->account_note->message, 'test' );
 
         // Delete the note
-        $this->db->delete( 'website_notes', array( 'website_note_id' => $website_note_id ), 'i' );
+        $this->phactory->delete( 'website_notes', array( 'website_note_id' => $website_note_id ), 'i' );
     }
 
     /**
@@ -59,8 +59,8 @@ class AccountNoteTest extends BaseDatabaseTest {
      */
     public function testDelete() {
         // Insert a note
-        $this->db->insert( 'website_notes', array( 'website_id' => 96, 'user_id' => 1, 'message' => 'test' ), 'iis' );
-        $website_note_id = $this->db->get_insert_id();
+        $this->phactory->insert( 'website_notes', array( 'website_id' => 96, 'user_id' => 1, 'message' => 'test' ), 'iis' );
+        $website_note_id = $this->phactory->get_insert_id();
 
         // Make sure it exists
         $this->account_note->get( $website_note_id );
@@ -69,7 +69,7 @@ class AccountNoteTest extends BaseDatabaseTest {
         $this->account_note->delete();
 
         // Shouldn't exist
-        $message = $this->db->get_var( 'SELECT `message` FROM `website_notes` WHERE `website_note_id` = ' . (int) $website_note_id );
+        $message = $this->phactory->get_var( 'SELECT `message` FROM `website_notes` WHERE `website_note_id` = ' . (int) $website_note_id );
 
         $this->assertFalse( $message );
     }

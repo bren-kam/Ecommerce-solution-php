@@ -26,16 +26,16 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $status = 1;
 
         // Insert
-        $user_id = $this->db->insert( 'users', compact( 'email', 'contact_name', 'status' ), 'ssi' );
-        $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
+        $user_id = $this->phactory->insert( 'users', compact( 'email', 'contact_name', 'status' ), 'ssi' );
+        $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
 
         $users = $this->auth_user_website->get_by_account( $website_id );
 
         $this->assertTrue( current( $users ) instanceof User );
 
         // Delete
-        $this->db->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'users', compact( 'user_id' ), 'i' );
+        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'users', compact( 'user_id' ), 'i' );
     }
     
     /**
@@ -48,7 +48,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $pages = -11;
 
         // Insert
-        $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id', 'pages' ), 'iii' );
+        $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id', 'pages' ), 'iii' );
 
         // Get
         $this->auth_user_website->get( $user_id, $website_id );
@@ -56,7 +56,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $this->assertEquals( $pages, $this->auth_user_website->pages );
 
         // Delete
-        $this->db->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -73,12 +73,12 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $this->auth_user_website->create();
 
         // Make sure it's in the database
-        $fetched_user_id = $this->db->get_var( 'SELECT `user_id` FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $this->auth_user_website->id );
+        $fetched_user_id = $this->phactory->get_var( 'SELECT `user_id` FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $this->auth_user_website->id );
 
         $this->assertEquals( $user_id, $fetched_user_id );
 
         // Delete
-        $this->db->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -102,12 +102,12 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $this->auth_user_website->save();
 
         // Make sure it's in the database
-        $fetched_pages = $this->db->get_var( 'SELECT `pages` FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $this->auth_user_website->id );
+        $fetched_pages = $this->phactory->get_var( 'SELECT `pages` FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $this->auth_user_website->id );
 
         $this->assertEquals( $pages, $fetched_pages );
 
         // Delete
-        $this->db->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -121,7 +121,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $user_id = -7;
 
         // Insert
-        $auth_user_website_id = $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
+        $auth_user_website_id = $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
 
         // Get
         $this->auth_user_website->get( $user_id, $website_id );
@@ -129,7 +129,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         // Remove
         $this->auth_user_website->remove();
 
-        $auth_user_website = $this->db->get_row( 'SELECT * FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $auth_user_website_id );
+        $auth_user_website = $this->phactory->get_row( 'SELECT * FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $auth_user_website_id );
 
         // Make sure we grabbed the right one
         $this->assertFalse( $auth_user_website );
@@ -144,7 +144,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $user_id = -7;
 
         // Insert
-        $this->db->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
+        $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
 
         // Get
         $fetched_authorize_user_id = $this->auth_user_website->is_authorized( $user_id, $website_id );
@@ -152,7 +152,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $this->assertEquals( $fetched_authorize_user_id, $user_id );
 
         // Delete
-        $this->db->delete( 'auth_user_websites',compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'auth_user_websites',compact( 'website_id' ), 'i' );
     }
 
     /**

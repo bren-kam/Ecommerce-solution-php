@@ -88,9 +88,9 @@ class Account extends ActiveRecordBase {
         $this->insert( array(
             'user_id' => $this->user_id
             , 'os_user_id' => $this->os_user_id
-            , 'domain' => $this->domain
-            , 'title' => $this->title
-            , 'type' => $this->type
+            , 'domain' => strip_tags($this->domain)
+            , 'title' => strip_tags($this->title)
+            , 'type' => strip_tags($this->type)
             , 'status' => 1
             , 'date_created' => $this->date_created
         ), 'iisssis' );
@@ -106,12 +106,12 @@ class Account extends ActiveRecordBase {
             'company_package_id' => $this->company_package_id
             , 'user_id' => $this->user_id
             , 'os_user_id' => $this->os_user_id
-            , 'domain' => $this->domain
-            , 'title' => $this->title
-            , 'plan_name' => $this->plan_name
-            , 'plan_description' => $this->plan_description
-            , 'theme' => $this->theme
-            , 'logo' => $this->logo
+            , 'domain' => strip_tags($this->domain)
+            , 'title' => strip_tags($this->title)
+            , 'plan_name' => strip_tags($this->plan_name)
+            , 'plan_description' => strip_tags($this->plan_description)
+            , 'theme' => strip_tags($this->theme)
+            , 'logo' => strip_tags($this->logo)
             , 'phone' => $this->phone
             , 'products' => $this->products
             , 'pages' => $this->pages
@@ -126,12 +126,12 @@ class Account extends ActiveRecordBase {
             , 'social_media' => $this->social_media
             , 'domain_registration' => $this->domain_registration
             , 'additional_email_addresses' => $this->additional_email_Addresses
-            , 'ftp_username' => $this->ftp_username
-            , 'ga_profile_id' => $this->ga_profile_id
-            , 'ga_tracking_key' => $this->ga_tracking_key
-            , 'wordpress_username' => $this->wordpress_username
-            , 'wordpress_password' => $this->wordpress_password
-            , 'version' => $this->version
+            , 'ftp_username' => strip_tags($this->ftp_username)
+            , 'ga_profile_id' => strip_tags($this->ga_profile_id)
+            , 'ga_tracking_key' => strip_tags($this->ga_tracking_key)
+            , 'wordpress_username' => strip_tags($this->wordpress_username)
+            , 'wordpress_password' => strip_tags($this->wordpress_password)
+            , 'version' => strip_tags($this->version)
             , 'live' => $this->live
             , 'status' => $this->status
         ), array( 'website_id' => $this->id )
@@ -283,8 +283,8 @@ class Account extends ActiveRecordBase {
 
         foreach ( $settings as $k => $v ) {
             $setting_values[] = $this->id;
-            $setting_values[] = $k;
-            $setting_values[] = $v;
+            $setting_values[] = strip_tags($k);
+            $setting_values[] = strip_tags( $v, '<p><font>' );
         }
 
 		// Insert it or update it

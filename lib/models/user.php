@@ -68,18 +68,18 @@ class User extends ActiveRecordBase {
 
         $this->insert( array(
             'company_id' => $this->company_id
-            , 'email' => $this->email
-            , 'contact_name' => $this->contact_name
-            , 'work_phone' => $this->work_phone
-            , 'cell_phone' => $this->cell_phone
-            , 'store_name' => $this->store_name
+            , 'email' => strip_tags($this->email)
+            , 'contact_name' => strip_tags($this->contact_name)
+            , 'work_phone' => strip_tags($this->work_phone)
+            , 'cell_phone' => strip_tags($this->cell_phone)
+            , 'store_name' => strip_tags($this->store_name)
             , 'status' => $this->status
             , 'role' => $this->role
-            , 'billing_first_name' => $this->billing_first_name
-            , 'billing_last_name' => $this->billing_last_name
-            , 'billing_address1' => $this->billing_address1
-            , 'billing_state' => $this->billing_state
-            , 'billing_zip' => $this->billing_zip
+            , 'billing_first_name' => strip_tags($this->billing_first_name)
+            , 'billing_last_name' => strip_tags($this->billing_last_name)
+            , 'billing_address1' => strip_tags($this->billing_address1)
+            , 'billing_state' => strip_tags($this->billing_state)
+            , 'billing_zip' => strip_tags($this->billing_zip)
             , 'date_created' => $this->date_created
         ), 'isssssiissssss' );
 
@@ -92,19 +92,19 @@ class User extends ActiveRecordBase {
     public function save() {
         parent::update( array(
             'company_id' => $this->company_id
-            , 'email' => $this->email
-            , 'contact_name' => $this->contact_name
-            , 'work_phone' => $this->work_phone
-            , 'cell_phone' => $this->cell_phone
-            , 'store_name' => $this->store_name
+            , 'email' => strip_tags($this->email)
+            , 'contact_name' => strip_tags($this->contact_name)
+            , 'work_phone' => strip_tags($this->work_phone)
+            , 'cell_phone' => strip_tags($this->cell_phone)
+            , 'store_name' => strip_tags($this->store_name)
             , 'status' => $this->status
             , 'role' => $this->role
-            , 'billing_first_name' => $this->billing_first_name
-            , 'billing_last_name' => $this->billing_last_name
-            , 'billing_address1' => $this->billing_address1
-            , 'billing_city' => $this->billing_city
-            , 'billing_state' => $this->billing_state
-            , 'billing_zip' => $this->billing_zip
+            , 'billing_first_name' => strip_tags($this->billing_first_name)
+            , 'billing_last_name' => strip_tags($this->billing_last_name)
+            , 'billing_address1' => strip_tags($this->billing_address1)
+            , 'billing_city' => strip_tags($this->billing_city)
+            , 'billing_state' => strip_tags($this->billing_state)
+            , 'billing_zip' => strip_tags($this->billing_zip)
         ), array( 'user_id' => $this->id )
             , 'isssssiissssss', 'i'
         );
@@ -179,10 +179,10 @@ class User extends ActiveRecordBase {
      * @param bool $status [optional]
      */
      public function get_by_email( $email, $status = true ) {
-        $status_where = ( $status ) ? ' AND `u.status` = 1' : '';
+        $status_where = ( $status ) ? ' AND u.`status` = ' . self::STATUS_ACTIVE : '';
 
         $this->prepare(
-            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email '
+            'SELECT u.`user_id`, u.`company_id`, u.`email`, u.`contact_name`, u.`store_name`, u.`work_phone`, u.`cell_phone`, u.`billing_first_name`, u.`billing_last_name`, u.`billing_address1`, u.`billing_city`, u.`billing_state`, u.`billing_zip`, u.`role`, u.`status`, u.`date_created`, c.`name` AS company, c.`domain` FROM `users` AS u LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE u.`email` = :email' . $status_where
             , 's'
             , array( ':email' => $email )
         )->get_row(  PDO::FETCH_INTO, $this );
@@ -278,7 +278,7 @@ class User extends ActiveRecordBase {
      */
     public function record_login() {
         if ( $this->id )
-            parent::update( array( 'last_login' => dt::date('Y-m-d H:i:s') ), array( 'user_id' => $this->id ), 's', 'i' );
+            parent::update( array( 'last_login' => dt::now() ), array( 'user_id' => $this->id ), 's', 'i' );
     }
 
     /**

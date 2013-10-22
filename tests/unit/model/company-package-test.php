@@ -37,18 +37,18 @@ class CompanyPackageTest extends BaseDatabaseTest {
         $company_id = -1; // Imagine Retailer
 
         // Create website/user
-        $user_id = $this->db->insert( 'users', compact( 'company_id', 'email' ), 'is' );
-        $website_id = $this->db->insert( 'websites', compact( 'user_id' ), 'ii' );
-        $this->db->insert( 'company_packages', compact( 'company_id', 'website_id' ), 'ii' );
+        $user_id = $this->phactory->insert( 'users', compact( 'company_id', 'email' ), 'is' );
+        $website_id = $this->phactory->insert( 'websites', compact( 'user_id' ), 'ii' );
+        $this->phactory->insert( 'company_packages', compact( 'company_id', 'website_id' ), 'ii' );
 
         // Get all packages
         $packages = $this->company_package->get_all( $website_id );
 
         $this->assertTrue( current( $packages ) instanceof CompanyPackage );
 
-        $this->db->delete( 'company_packages', compact( 'company_id' ), 'i' );
-        $this->db->delete( 'websites', compact( 'user_id' ), 'i' );
-        $this->db->delete( 'users', compact( 'company_id' ), 'i' );
+        $this->phactory->delete( 'company_packages', compact( 'company_id' ), 'i' );
+        $this->phactory->delete( 'websites', compact( 'user_id' ), 'i' );
+        $this->phactory->delete( 'users', compact( 'company_id' ), 'i' );
     }
 
     /**

@@ -63,9 +63,9 @@ class ProductOption extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array(
-            'option_type' => $this->type
-            , 'option_title' => $this->title
-            , 'option_name' => $this->name
+            'option_type' => strip_tags($this->type)
+            , 'option_title' => strip_tags($this->title)
+            , 'option_name' => strip_tags($this->name)
         ), 'sss' );
 
         $this->product_option_id = $this->id = $this->get_insert_id();
@@ -76,9 +76,9 @@ class ProductOption extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'option_type' => $this->type
-            , 'option_title' => $this->title
-            , 'option_name' => $this->name
+            'option_type' => strip_tags($this->type)
+            , 'option_title' => strip_tags($this->title)
+            , 'option_name' => strip_tags($this->name)
         ), array(
             'product_option_id' => $this->id
         ), 'sss', 'i' );

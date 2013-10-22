@@ -68,7 +68,7 @@ class ChecklistItemTest extends BaseDatabaseTest {
         $this->assertEquals( -3, $this->checklist_item->checklist_section_id );
 
         // Delete
-        $this->db->delete( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ), 'i' );
+        $this->phactory->delete( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ), 'i' );
     }
 
     /**
@@ -96,7 +96,7 @@ class ChecklistItemTest extends BaseDatabaseTest {
         $this->assertEquals( 'Morning Glory', $this->checklist_item->assigned_to );
 
         // Delete
-        $this->db->delete( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ), 'i' );
+        $this->phactory->delete( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ), 'i' );
     }
 
     /**

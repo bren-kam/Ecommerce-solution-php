@@ -26,12 +26,12 @@ class MobileListTest extends BaseDatabaseTest {
         $this->mobile_list->create();
 
         // Make sure it's in the database
-        $name = $this->db->get_var( 'SELECT `name` FROM `mobile_lists` WHERE `mobile_list_id` = ' . (int) $this->mobile_list->id );
+        $name = $this->phactory->get_var( 'SELECT `name` FROM `mobile_lists` WHERE `mobile_list_id` = ' . (int) $this->mobile_list->id );
 
         $this->assertEquals( 'Wee Hart', $name );
 
         // Delete
-        $this->db->delete( 'mobile_lists', array( 'mobile_list_id' => $this->mobile_list->id ), 'i' );
+        $this->phactory->delete( 'mobile_lists', array( 'mobile_list_id' => $this->mobile_list->id ), 'i' );
     }
 
     /**
@@ -67,7 +67,7 @@ class MobileListTest extends BaseDatabaseTest {
         ), $lists );
 
         // Delete lists
-        $this->db->delete( 'mobile_lists', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'mobile_lists', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**

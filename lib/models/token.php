@@ -22,22 +22,30 @@ class Token extends ActiveRecordBase {
 
         $this->insert( array(
             'user_id' => $this->user_id
-            , 'key' => $this->key
-            , 'token_type' => $this->type
-            , 'date_valid' => $this->date_valid
+            , 'key' => strip_tags($this->key)
+            , 'token_type' => strip_tags($this->type)
+            , 'date_valid' => strip_tags($this->date_valid)
         ), 'isss' );
 
         $this->id = $this->token_id = $this->get_insert_id();
     }
-    public function get_token($token){
+
+    /**
+     * Get Token
+     *
+     * @param $token
+     */
+    public function get( $token ) {
          $this->prepare(
             'SELECT * FROM `tokens` WHERE `key` = :key'
             , 'ii'
-            , array( ':key' => $token)
+            , array( ':key' => $token )
         )->get_row( PDO::FETCH_INTO, $this );
+
         $this->id = $this->token_id;
     }
-     /**
+
+    /**
      * Remove
      */
     public function remove() {
@@ -45,8 +53,9 @@ class Token extends ActiveRecordBase {
             'token_id' => $this->id
         ), 'ii' );
     }
+
     /**
-     * check it theuser has token registed
+     * Check it the user has token registed
      * 
      * @param int $user_id 
      * @param string $token_type 
@@ -54,16 +63,13 @@ class Token extends ActiveRecordBase {
      * @return boolean return true if the tokend found false otherwise
      * 
      */
-    public function get_token_by_user( $user_id, $token_type ) {
-         $this->prepare(
-            'SELECT * FROM `tokens` WHERE `user_id` = :user_id AND `token_type` = :token_type' 
+    public function get_by_user( $user_id, $token_type ) {
+        $this->prepare(
+            'SELECT * FROM `tokens` WHERE `user_id` = :user_id AND `token_type` = :token_type'
             , 'ii'
-            , array( 
-                ':user_id' => $user_id,
-                ':token_type' => $token_type
-                 )
+            , array( ':user_id' => $user_id, ':token_type' => $token_type )
         )->get_row( PDO::FETCH_INTO, $this );
-        $this->id = $this->token_id;
 
+        $this->id = $this->token_id;
     }
 }

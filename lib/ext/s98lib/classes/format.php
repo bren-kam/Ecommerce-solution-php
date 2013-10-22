@@ -394,5 +394,4 @@ class format extends Base_Class {
     public static function slug_to_name( $string ) {
         return ucwords( str_replace( '-', ' ', $string ) );
     }
-
 }
