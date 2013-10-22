@@ -16,7 +16,7 @@ class AccountProduct extends ActiveRecordBase {
     public $link, $industry, $coupons, $product_options, $created_by, $count;
 
     // Columns from other tables
-    public $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image;
+    public $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
 
     /**
      * Setup the account initial data
@@ -33,7 +33,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get( $product_id, $account_id ) {
         $this->prepare(
-            'SELECT * FROM `website_products` WHERE `product_id` = :product_id AND `website_id` = :account_id'
+            'SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`product_id` = :product_id AND wp.`website_id` = :account_id'
             , 'ii'
             , array( ':product_id' => $product_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -48,7 +48,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT p.`sku`, p.`name`, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
+            "SELECT p.`sku`, p.`name`, p.`price_min`, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' GROUP BY wp.`product_id`"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
@@ -939,6 +939,21 @@ class AccountProduct extends ActiveRecordBase {
                 $account_category->reorganize_categories( $website_id, $category );
             }
         }
+    }
+
+    /**
+     * Adjust to Minimum price
+     *
+     * @param int $account_id
+     * @return int
+     */
+    public function adjust_to_minimum_price( $account_id ) {
+        $this->prepare( 'UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`price` = IF( p.`price_min` > wp.`price` AND wp.`price` > 0, p.`price_min`, wp.`price` ), wp.`sale_price` = IF ( p.`price_min` > wp.`sale_price` AND wp.`sale_price` > 0, p.`price_min`, wp.`sale_price` ), wp.`alternate_price` = IF( p.`price_min` > wp.`alternate_price` AND wp.`alternate_price` > 0, p.`price_min`, wp.`alternate_price` ) WHERE wp.`website_id` = :website_id AND p.`price_min` > 0'
+            , 'i'
+            , array( ':website_id' => $account_id )
+        )->query();
+
+        return $this->get_row_count();
     }
 
     /**

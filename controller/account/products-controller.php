@@ -461,7 +461,16 @@ class ProductsController extends BaseController {
             $alternate_price = ( empty( $_POST['tAlternatePrice'] ) ) ? 0 : ( $_POST['tAlternatePrice'] + 100 ) / 100;
 
             $product->auto_price( $price, $sale_price, $alternate_price, $_POST['tPriceEnding'], $this->user->account->id );
-            $this->notify( _('Your products have been successfully priced!' ) );
+
+            // See if he had set prices too lower
+            $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+
+            // Give a notification
+            if ( $adjusted_products ) {
+                $this->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+            } else {
+                $this->notify( _('Your prices have been successfully updated!') );
+            }
         }
 
         return $this->get_template_response( 'auto-price' )
@@ -1054,6 +1063,13 @@ class ProductsController extends BaseController {
         // Update product
         $account_product->save();
 
+        // See if he had set prices too lower
+        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+
+        // Give a notification
+        if ( $adjusted_products )
+            $response->notify( 'Your price was too low and has been adjusted to the MAP price of $' . number_format( $account_product->price_min, 2 ), false );
+
         /***** UPDATE COUPONS *****/
         $website_coupon->delete_relations_by_product( $this->user->account->id, $account_product->product_id );
 
@@ -1434,6 +1450,13 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->set_product_prices( $this->user->account->id, $_POST['v'] );
 
+        // See if he had set prices too lower
+        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+
+        // Give a notification
+        if ( $adjusted_products )
+            $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+
         jQuery('span.success')->show()->delay(5000)->hide();
 
         $response->add_response( 'jquery', jQuery::getResponse() );
@@ -1713,8 +1736,15 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->multiply_product_prices_by_sku( $this->user->account->id, $prices, $_GET['price'], $_GET['sale_price'], $_GET['alternate_price'] );
 
-        // Notify
-        $this->notify( _('Your prices have been successfully updated!') );
+        // See if he had set prices too lower
+        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+
+        // Give a notification
+        if ( $adjusted_products ) {
+            $this->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+        } else {
+            $this->notify( _('Your prices have been successfully updated!') );
+        }
 
         // Refresh
         $response->add_response( 'refresh', 1 );
