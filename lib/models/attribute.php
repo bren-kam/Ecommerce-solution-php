@@ -33,9 +33,9 @@ class Attribute extends ActiveRecordBase {
      */
     public function create() {
         $this->insert( array(
-            'title' => $this->title
+            'title' => strip_tags($this->title)
             , 'name' => strip_tags($this->name)
-        ), 'iss' );
+        ), 'ss' );
 
         $this->attribute_id = $this->id = $this->get_insert_id();
     }
@@ -45,11 +45,11 @@ class Attribute extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'title' => $this->title
+            'title' => strip_tags($this->title)
             , 'name' => strip_tags($this->name)
         ), array(
             'attribute_id' => $this->id
-        ), 'iss', 'i' );
+        ), 'ss', 'i' );
     }
 
     /**
