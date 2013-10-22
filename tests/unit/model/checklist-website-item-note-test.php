@@ -59,7 +59,7 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
         $this->assertEquals( 'with a love that was more than love', $this->checklist_website_item_note->note );
 
         // Delete
-        $this->db->delete( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $this->checklist_website_item_note->id ), 'i' );
+        $this->phactory->delete( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $this->checklist_website_item_note->id ), 'i' );
     }
 
     /**
@@ -75,7 +75,7 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
         $this->checklist_website_item_note->note = 'two paths diverged';
         $this->checklist_website_item_note->create();
 
-        $checklist_website_item_note_id = $this->db->get_insert_id();
+        $checklist_website_item_note_id = $this->phactory->get_insert_id();
 
         // Get it
         $this->checklist_website_item_note->get( $checklist_website_item_note_id );
@@ -84,7 +84,7 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
         $this->checklist_website_item_note->delete();
 
         // Make sure it doesn't exist
-        $note = $this->db->get_var( "SELECT `note` FROM `checklist_website_item_notes` WHERE `checklist_website_item_note_id` = $checklist_website_item_note_id" );
+        $note = $this->phactory->get_var( "SELECT `note` FROM `checklist_website_item_notes` WHERE `checklist_website_item_note_id` = $checklist_website_item_note_id" );
 
         $this->assertFalse( $note );
     }

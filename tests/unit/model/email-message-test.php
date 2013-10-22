@@ -24,7 +24,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $subject = 'Right from the start';
 
         // Create
-        $email_message_id = $this->db->insert( 'email_messages', compact( 'website_id', 'subject' ), 'is' );
+        $email_message_id = $this->phactory->insert( 'email_messages', compact( 'website_id', 'subject' ), 'is' );
 
         // Get
         $this->email_message->get( $email_message_id, $website_id );
@@ -33,7 +33,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->assertEquals( $subject, $this->email_message->subject );
 
         // Clean up
-        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -52,7 +52,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->email_message->id = $email_message_id;
 
         // Create
-        $this->db->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
 
         // Get
         $meta = $this->email_message->get_meta();
@@ -61,7 +61,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->assertEquals( $meta[0]['value'], $value );
 
         // Clean up
-        $this->db->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -85,7 +85,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->email_message->type = $type;
 
         // Create
-        $this->db->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
 
         // Get
         $this->email_message->get_smart_meta();
@@ -94,7 +94,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->assertEquals( $this->email_message->meta[$product_id]->price, $price );
 
         // Clean up
-        $this->db->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -131,7 +131,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->email_message->id = $email_message_id;
 
         // Create
-        $this->db->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
 
         // Get
         $this->email_message->get_smart_meta();
@@ -140,7 +140,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->assertEquals( $this->email_message->meta[$type], $value );
 
         // Clean up
-        $this->db->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -157,12 +157,12 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->email_message->create();
 
         // Make sure it's in the database
-        $fetched_subject = $this->db->get_var( 'SELECT `subject` FROM `email_messages` WHERE `email_message_id` = ' . (int) $this->email_message->id );
+        $fetched_subject = $this->phactory->get_var( 'SELECT `subject` FROM `email_messages` WHERE `email_message_id` = ' . (int) $this->email_message->id );
 
         $this->assertEquals( $subject, $fetched_subject );
 
         // Delete
-        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -178,12 +178,12 @@ class EmailMessageTest extends BaseDatabaseTest {
         // Add
         $this->email_message->add_associations( $email_list_ids );
 
-        $fetched_email_list_ids = $this->db->get_col( "SELECT `email_list_id` FROM `email_message_associations` WHERE `email_message_id` = $email_message_id ORDER BY `email_list_id` DESC");
+        $fetched_email_list_ids = $this->phactory->get_col( "SELECT `email_list_id` FROM `email_message_associations` WHERE `email_message_id` = $email_message_id ORDER BY `email_list_id` DESC");
 
         $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
 
         // Clean up
-        $this->db->delete( 'email_message_associations', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_associations', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -199,12 +199,12 @@ class EmailMessageTest extends BaseDatabaseTest {
         // Add
         $this->email_message->add_meta( $meta );
 
-        $fetched_meta_color = $this->db->get_var( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id AND `type` = " . $this->db->quote( $meta[0][0] ) );
+        $fetched_meta_color = $this->phactory->get_var( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id AND `type` = " . $this->phactory->quote( $meta[0][0] ) );
 
         $this->assertEquals( $meta[0][1], $fetched_meta_color );
 
         // Clean up
-        $this->db->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -226,12 +226,12 @@ class EmailMessageTest extends BaseDatabaseTest {
         $this->email_message->save();
 
         // Make sure it's in the database
-        $fetched_subject = $this->db->get_var( 'SELECT `subject` FROM `email_messages` WHERE `email_message_id` = ' . (int) $this->email_message->id );
+        $fetched_subject = $this->phactory->get_var( 'SELECT `subject` FROM `email_messages` WHERE `email_message_id` = ' . (int) $this->email_message->id );
 
         $this->assertEquals( $subject, $fetched_subject );
 
         // Delete
-        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -250,7 +250,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $subject = 'Right from the start';
 
         // Create
-        $email_message_id = $this->db->insert( 'email_messages', compact( 'website_id', 'subject' ), 'is' );
+        $email_message_id = $this->phactory->insert( 'email_messages', compact( 'website_id', 'subject' ), 'is' );
 
         // Get
         $this->email_message->get( $email_message_id, $website_id );
@@ -258,7 +258,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         // Remove
         $method->invoke( $this->email_message );
 
-        $email_message = $this->db->get_row( "SELECT * FROM `email_messages` WHERE `email_message_id` = $email_message_id" );
+        $email_message = $this->phactory->get_row( "SELECT * FROM `email_messages` WHERE `email_message_id` = $email_message_id" );
 
         // Make sure we grabbed the right one
         $this->assertFalse( $email_message );
@@ -273,19 +273,19 @@ class EmailMessageTest extends BaseDatabaseTest {
         $email_list_id = -5;
 
         // Insert
-        $this->db->insert( 'email_message_associations', compact( 'email_message_id', 'email_list_id' ), 'ii' );
+        $this->phactory->insert( 'email_message_associations', compact( 'email_message_id', 'email_list_id' ), 'ii' );
 
         // Remove
         $this->email_message->id = $email_message_id;
         $this->email_message->remove_associations();
 
         // Get/check
-        $email_list_id = $this->db->get_var( "SELECT `email_list_id` FROM `email_message_associations` WHERE `email_message_id` = $email_message_id" );
+        $email_list_id = $this->phactory->get_var( "SELECT `email_list_id` FROM `email_message_associations` WHERE `email_message_id` = $email_message_id" );
 
         $this->assertFalse( $email_list_id );
 
         // Clean up
-        $this->db->delete( 'email_message_associations', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_associations', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -298,19 +298,19 @@ class EmailMessageTest extends BaseDatabaseTest {
         $value = 'ff0000';
 
         // Create
-        $this->db->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
 
         // Remove
         $this->email_message->id = $email_message_id;
         $this->email_message->remove_meta();
 
         // Get/check
-        $fetched_value = $this->db->get_var( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id AND `type` = " . $this->db->quote( $type ) );
+        $fetched_value = $this->phactory->get_var( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id AND `type` = " . $this->phactory->quote( $type ) );
 
         $this->assertFalse( $fetched_value );
 
         // Clean up
-        $this->db->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
     }
 
     /**
@@ -322,7 +322,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         $scheuled_status = 2;
 
         // Create an email message
-        $this->db->insert( 'email_messages', array(
+        $this->phactory->insert( 'email_messages', array(
             'website_id' => $account_id
             , 'email_template_id' => -3
             , 'subject' => 'George of the Jungle'
@@ -333,18 +333,18 @@ class EmailMessageTest extends BaseDatabaseTest {
             , 'date_sent' => '2012-10-10 00:00:00'
         ), 'iisssis' );
 
-        $email_message_id = $this->db->get_insert_id();
+        $email_message_id = $this->phactory->get_insert_id();
 
         // Update it to scheduled
         $this->email_message->update_scheduled_emails();
 
         // Get status to make sure it's scheduled
-        $status = $this->db->get_var( "SELECT `status` FROM `email_messages` WHERE `email_message_id` = $email_message_id" );
+        $status = $this->phactory->get_var( "SELECT `status` FROM `email_messages` WHERE `email_message_id` = $email_message_id" );
 
         $this->assertEquals( $scheuled_status, $status );
 
         // Delete email
-        $this->db->delete( 'email_messages', array( 'email_message_id' => $email_message_id ), 'i' );
+        $this->phactory->delete( 'email_messages', array( 'email_message_id' => $email_message_id ), 'i' );
     }
 
     /**
@@ -357,14 +357,14 @@ class EmailMessageTest extends BaseDatabaseTest {
         $subject = "You just threw it away";
 
         // Insert
-        $this->db->insert( 'email_messages', compact( 'website_id', 'subject', 'status' ), 'isi' );
+        $this->phactory->insert( 'email_messages', compact( 'website_id', 'subject', 'status' ), 'isi' );
 
         $email_messages = $this->email_message->get_dashboard_messages_by_account( $website_id );
 
         $this->assertTrue( current( $email_messages ) instanceof EmailMessage );
 
         // Clean up
-        $this->db->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
     }
 
     /**

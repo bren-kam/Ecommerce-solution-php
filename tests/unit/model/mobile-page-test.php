@@ -24,7 +24,7 @@ class MobilePageTest extends BaseDatabaseTest {
         $slug = 'something-unique';
 
         // Create
-        $mobile_page_id = $this->db->insert( 'mobile_pages', compact( 'website_id', 'slug' ), 'is' );
+        $mobile_page_id = $this->phactory->insert( 'mobile_pages', compact( 'website_id', 'slug' ), 'is' );
 
         // Get
         $this->mobile_page->get( $mobile_page_id, $website_id );
@@ -33,7 +33,7 @@ class MobilePageTest extends BaseDatabaseTest {
         $this->assertEquals( $slug, $this->mobile_page->slug );
 
         // Clean up
-        $this->db->delete( 'mobile_pages', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'mobile_pages', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -48,12 +48,12 @@ class MobilePageTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->mobile_page->id ) );
 
         // Make sure it's in the database
-        $slug = $this->db->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
+        $slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
 
         $this->assertEquals( 'enders-game', $slug );
 
         // Delete
-        $this->db->delete( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ), 'i' );
+        $this->phactory->delete( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ), 'i' );
     }
     
     /**
@@ -65,18 +65,18 @@ class MobilePageTest extends BaseDatabaseTest {
         $new_slug = 'original-slug';
 
         // Create posting post
-        $this->mobile_page->id = $this->db->insert( 'mobile_pages', compact( 'slug' ), 's' );
+        $this->mobile_page->id = $this->phactory->insert( 'mobile_pages', compact( 'slug' ), 's' );
     
         // Update test
         $this->mobile_page->slug = $new_slug;
         $this->mobile_page->save();
     
-        $retrieved_slug = $this->db->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
+        $retrieved_slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
     
         $this->assertEquals( $retrieved_slug, $new_slug );
     
         // Delete
-        $this->db->delete( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ), 'i' );
+        $this->phactory->delete( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ), 'i' );
     }
     
     /**
@@ -95,7 +95,7 @@ class MobilePageTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->mobile_page->remove();
 
-        $retrieved_slug = $this->db->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
+        $retrieved_slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
 
         $this->assertFalse( $retrieved_slug );
     }

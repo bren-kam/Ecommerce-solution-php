@@ -35,8 +35,8 @@ class Tag extends ActiveRecordBase {
         // Create the array for all the values
         foreach ( $tags as $tag ) {
             $values_array[] = $object_id;
-            $values_array[] = $type;
-            $values_array[] = $tag;
+            $values_array[] = strip_tags($type);
+            $values_array[] = strip_tags($tag);
         }
 
         // Determine the SQL setting to get the values

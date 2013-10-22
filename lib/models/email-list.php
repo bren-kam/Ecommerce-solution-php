@@ -118,8 +118,8 @@ class EmailList extends ActiveRecordBase {
         $this->insert( array(
             'website_id' => $this->website_id
             , 'ac_list_id' => $this->ac_list_id
-            , 'name' => $this->name
-            , 'description' => $this->description
+            , 'name' => strip_tags($this->name)
+            , 'description' => strip_tags($this->description)
             , 'date_created' => $this->date_created
         ), 'iisss' );
 
@@ -132,8 +132,8 @@ class EmailList extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'ac_list_id' => $this->ac_list_id
-            , 'name' => $this->name
-            , 'description' => $this->description
+            , 'name' => strip_tags($this->name)
+            , 'description' => strip_tags($this->description)
         ), array(
             'email_list_id' => $this->id
         ), 'iss', 'i' );

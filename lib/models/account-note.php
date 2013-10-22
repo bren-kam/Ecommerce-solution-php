@@ -24,7 +24,7 @@ class AccountNote extends ActiveRecordBase {
         $this->insert( array(
             'website_id' => $this->website_id
             , 'user_id' => $this->user_id
-            , 'message' => $this->message
+            , 'message' => strip_tags($this->message)
             , 'date_created' => dt::date('Y-m-d H:i:s')
         ), 'iiss' );
 

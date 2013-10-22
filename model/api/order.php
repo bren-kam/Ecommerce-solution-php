@@ -24,7 +24,7 @@ class Order extends ActiveRecordBase {
             'user_id' => $this->user_id
             , 'total_amount' => $this->total_amount
             , 'total_monthly' => $this->total_monthly
-            , 'type' => $this->type
+            , 'type' => strip_tags($this->type)
             , 'status' => $this->status
             , 'date_created' => $this->date_created
         ), 'iiisis' );

@@ -24,7 +24,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $name = 'Long board';
 
         // Create
-        $website_product_group_id = $this->db->insert( 'website_product_groups', compact( 'website_id', 'name' ), 'is' );
+        $website_product_group_id = $this->phactory->insert( 'website_product_groups', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->account_product_group->get_by_name( $website_id, $name );
@@ -32,7 +32,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->assertEquals( $website_product_group_id, $this->account_product_group->id );
 
         // Delete the attribute
-        $this->db->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -49,12 +49,12 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->account_product_group->create();
 
         // Make sure it's in the database
-        $fetched_name = $this->db->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $name, $fetched_name );
 
         // Delete the attribute
-        $this->db->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -68,21 +68,21 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $active = 1;
 
         // Insert products
-        $product_id = $this->db->insert( 'products', compact( 'sku' ), 's' );
-        $this->db->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ) , 'iii' );
+        $product_id = $this->phactory->insert( 'products', compact( 'sku' ), 's' );
+        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ) , 'iii' );
 
         // Add Relations
         $this->account_product_group->add_relations_by_series( $series );
 
         // Get
-        $fetched_product_id = $this->db->get_var( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
+        $fetched_product_id = $this->phactory->get_var( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
 
         $this->assertEquals( $product_id, $fetched_product_id );
 
         // Clean Up
-        $this->db->delete( 'website_product_group_relations', compact( 'product_id' ), 'i' );
-        $this->db->delete( 'products', compact( 'product_id' ), 'i' );
-        $this->db->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_group_relations', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'products', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -97,12 +97,12 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->account_product_group->add_relations( $product_ids );
 
         // Get
-        $fetched_product_ids = $this->db->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
+        $fetched_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
 
         $this->assertEquals( $product_ids, $fetched_product_ids );
 
         // Clean Up
-        $this->db->delete( 'website_product_group_relations', compact( 'website_product_group_id' ), 'i' );
+        $this->phactory->delete( 'website_product_group_relations', compact( 'website_product_group_id' ), 'i' );
     }
 
     /**
@@ -124,7 +124,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->account_product_group->remove();
 
         // Make sure it's in the database
-        $fetched_name = $this->db->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
 
         $this->assertFalse( $fetched_name );
     }

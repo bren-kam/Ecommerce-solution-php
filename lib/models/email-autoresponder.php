@@ -38,9 +38,9 @@ class EmailAutoresponder extends ActiveRecordBase {
         $this->insert( array(
             'website_id' => $this->website_id
             , 'email_list_id' => $this->email_list_id
-            , 'name' => $this->name
-            , 'subject' => $this->subject
-            , 'message' => $this->message
+            , 'name' => strip_tags($this->name)
+            , 'subject' => strip_tags($this->subject)
+            , 'message' => format::strip_only( $this->message, '<script>' )
             , 'current_offer' => $this->current_offer
             , 'default' => $this->default
             , 'date_created' => $this->date_created
@@ -55,9 +55,9 @@ class EmailAutoresponder extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'email_list_id' => $this->email_list_id
-            , 'name' => $this->name
-            , 'subject' => $this->subject
-            , 'message' => $this->message
+            , 'name' => strip_tags($this->name)
+            , 'subject' => strip_tags($this->subject)
+            , 'message' => format::strip_only( $this->message, '<script>' )
             , 'current_offer' => $this->current_offer
         ), array(
             'email_autoresponder_id' => $this->email_autoresponder_id

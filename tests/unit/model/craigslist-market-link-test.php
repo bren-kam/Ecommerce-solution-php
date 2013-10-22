@@ -20,7 +20,7 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
      */
     public function testCreate() {
         // Delete before
-        $this->db->delete( 'craigslist_market_links', array( 'website_id' => -1 ), 'i' );
+        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => -1 ), 'i' );
 
         // Create
         $this->craigslist_market_link->website_id = -1;
@@ -30,12 +30,12 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
         $this->craigslist_market_link->create();
 
         // Try to get something
-        $cl_category_id = $this->db->get_var( "SELECT `cl_category_id` FROM `craigslist_market_links` WHERE `website_id` = -1 AND `craigslist_market_id` = -2 AND `market_id` = -3" );
+        $cl_category_id = $this->phactory->get_var( "SELECT `cl_category_id` FROM `craigslist_market_links` WHERE `website_id` = -1 AND `craigslist_market_id` = -2 AND `market_id` = -3" );
 
         $this->assertEquals( '-4', $cl_category_id );
 
         // Now delete it
-        $this->db->delete( 'craigslist_market_links', array( 'website_id' => -1 ), 'i' );
+        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => -1 ), 'i' );
     }
     /**
      * Test Getting all
@@ -48,7 +48,7 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
         $account_id = -16;
 
         // Create market link
-        $this->db->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id ), 'ii' );
+        $this->phactory->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id ), 'ii' );
 
         // Now get them
         $craigslist_markets = $this->craigslist_market_link->get_by_account( $account_id );
@@ -56,7 +56,7 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
         $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarketLink );
 
         // Delete
-        $this->db->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -72,7 +72,7 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
         $cl_market_id = 222;
 
         // Create market link
-        $this->db->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id, 'cl_category_id' => $cl_category_id ), 'ii' );
+        $this->phactory->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id, 'cl_category_id' => $cl_category_id ), 'ii' );
 
         // Get the IDs
         $cl_category_ids = $this->craigslist_market_link->get_cl_category_ids_by_account( $account_id, $cl_market_id );
@@ -80,7 +80,7 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
         $this->assertEquals( array( '2086' ), $cl_category_ids );
 
         // Delete
-        $this->db->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**

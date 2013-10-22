@@ -25,7 +25,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $domain = 'www.google.com';
 
         // Create
-        $website_file_id = $this->db->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
+        $website_file_id = $this->phactory->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
 
         // Get
         $this->account_file->get( $website_file_id, $domain, $website_id );
@@ -34,7 +34,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $this->assertEquals( str_replace( '[domain]', $domain, $file_path ), $this->account_file->file_path );
 
         // Clean up
-        $this->db->delete( 'website_files', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_files', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -47,7 +47,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $domain = 'www.google.com';
 
         // Create
-        $this->db->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
+        $this->phactory->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
 
         // Get
         $this->account_file->get_by_file_path( $file_path, $domain, $website_id );
@@ -56,7 +56,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $this->assertEquals( str_replace( '[domain]', $domain, $file_path ), $this->account_file->file_path );
 
         // Clean up
-        $this->db->delete( 'website_files', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_files', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -70,12 +70,12 @@ class AccountFileTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->account_file->id ) );
 
         // Get the message
-        $file_path = $this->db->get_var( 'SELECT `file_path` FROM `website_files` WHERE `website_file_id` = ' . (int) $this->account_file->id );
+        $file_path = $this->phactory->get_var( 'SELECT `file_path` FROM `website_files` WHERE `website_file_id` = ' . (int) $this->account_file->id );
 
         $this->assertEquals( $file_path, $this->account_file->file_path );
 
         // Delete
-        $this->db->delete( 'website_files', array( 'website_file_id' => $this->account_file->id ), 'i' );
+        $this->phactory->delete( 'website_files', array( 'website_file_id' => $this->account_file->id ), 'i' );
     }
 
 
@@ -99,7 +99,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $this->assertTrue( current( $account_files ) instanceof AccountFile );
 
         // Delete
-        $this->db->delete( 'website_files', array( 'website_id' => $account_id ), 'i' );
+        $this->phactory->delete( 'website_files', array( 'website_id' => $account_id ), 'i' );
     }
 
     /**
@@ -114,7 +114,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $domain = 'www.google.com';
 
         // Create
-        $website_file_id = $this->db->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
+        $website_file_id = $this->phactory->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
 
         // Get
         $this->account_file->get( $website_file_id, $domain, $website_id );
@@ -122,7 +122,7 @@ class AccountFileTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->account_file->remove();
 
-        $retrieved_file_path = $this->db->get_var( "SELECT `file_path` FROM `website_files` WHERE `website_file_id` = $website_file_id" );
+        $retrieved_file_path = $this->phactory->get_var( "SELECT `file_path` FROM `website_files` WHERE `website_file_id` = $website_file_id" );
 
         $this->assertFalse( $retrieved_file_path );
     }

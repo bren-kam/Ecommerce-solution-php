@@ -24,12 +24,12 @@ class WebsiteOrderItemOptionTest extends BaseDatabaseTest {
         $website_order_id = -3;
 
         // Insert website order item
-        $website_order_item_id = $this->db->insert( 'website_order_items', array(
+        $website_order_item_id = $this->phactory->insert( 'website_order_items', array(
             'website_order_id' => $website_order_id
         ), 'i' );
 
         // Create option
-        $this->db->insert( 'website_order_item_options', array(
+        $this->phactory->insert( 'website_order_item_options', array(
             'website_order_item_id' => $website_order_item_id
         ), 'i' );
 
@@ -39,8 +39,8 @@ class WebsiteOrderItemOptionTest extends BaseDatabaseTest {
         $this->assertTrue( current( $options ) instanceof WebsiteOrderItemOption );
 
         // Clean up
-        $this->db->delete( 'website_order_items', array( 'website_order_id' => $website_order_id ), 'i' );
-        $this->db->delete( 'website_order_item_options', array( 'website_order_item_id' => $website_order_item_id ), 'i' );
+        $this->phactory->delete( 'website_order_items', array( 'website_order_id' => $website_order_id ), 'i' );
+        $this->phactory->delete( 'website_order_item_options', array( 'website_order_item_id' => $website_order_item_id ), 'i' );
     }
 
     /**

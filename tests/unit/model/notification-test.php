@@ -25,13 +25,13 @@ class NotificationTest extends BaseDatabaseTest {
         $this->notification->create();
 
         // Get the message
-        $message = $this->db->get_var( 'SELECT `message` FROM `notification` WHERE `user_id` = 513' );
+        $message = $this->phactory->get_var( 'SELECT `message` FROM `notification` WHERE `user_id` = 513' );
 
         // Assert it
         $this->assertEquals( $this->notification->message, $message );
 
         // Delete the message
-        $this->db->query( 'DELETE FROM `notification` WHERE `user_id` = 513' );
+        $this->phactory->query( 'DELETE FROM `notification` WHERE `user_id` = 513' );
     }
 
     /**
@@ -53,7 +53,7 @@ class NotificationTest extends BaseDatabaseTest {
         $this->assertEquals( $notifications[0]->message, 'Hiphop' );
 
         // Delete the message
-        $this->db->query( 'DELETE FROM `notification` WHERE `user_id` = 513' );
+        $this->phactory->query( 'DELETE FROM `notification` WHERE `user_id` = 513' );
     }
 
     /**
@@ -71,7 +71,7 @@ class NotificationTest extends BaseDatabaseTest {
         $this->notification->delete_by_user( 513 );
 
         // Count how many notifications there are
-        $count = $this->db->get_var( 'SELECT COUNT( `id` ) FROM `notification` WHERE `user_id` = 513' );
+        $count = $this->phactory->get_var( 'SELECT COUNT( `id` ) FROM `notification` WHERE `user_id` = 513' );
 
         // Should be nothing left
         $this->assertEquals( $count, 0 );

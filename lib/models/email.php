@@ -86,8 +86,8 @@ class Email extends ActiveRecordBase {
         $this->insert(
             array(
                 'website_id' => $this->website_id
-                , 'email' => $this->email
-                , 'name' => $this->name
+                , 'email' => strip_tags($this->email)
+                , 'name' => strip_tags($this->name)
                 , 'status' => $this->status
                 , 'date_created' => $this->date_created
             ), 'issis'
@@ -102,9 +102,9 @@ class Email extends ActiveRecordBase {
     public function save() {
         parent::update(
             array(
-                'name' => $this->name
-                , 'email' => $this->email
-                , 'phone' => $this->phone
+                'name' =>strip_tags( $this->name)
+                , 'email' => strip_tags($this->email)
+                , 'phone' => strip_tags($this->phone)
                 , 'status' => $this->status
             )
             , array( 'email_id' => $this->id )

@@ -55,7 +55,7 @@ class ChecklistWebsiteItemNote extends ActiveRecordBase {
         $this->insert( array(
             'checklist_website_item_id' => $this->checklist_website_item_id
             , 'user_id' => $this->user_id
-            , 'note' => $this->note
+            , 'note' => strip_tags($this->note)
             , 'date_created' => $this->date_created
         ), 'iiss' );
 

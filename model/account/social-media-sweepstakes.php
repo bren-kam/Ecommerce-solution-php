@@ -32,7 +32,7 @@ class SocialMediaSweepstakes extends ActiveRecordBase {
 
         $this->insert( array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
-            , 'key' => $this->key
+            , 'key' => strip_tags($this->key)
             , 'date_created' => $this->date_created
         ), 'iiss' );
     }
@@ -43,14 +43,14 @@ class SocialMediaSweepstakes extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'email_list_id' => $this->email_list_id
-            , 'before' => $this->before
-            , 'after' => $this->after
-            , 'start_date' => $this->start_date
-            , 'end_date' => $this->end_date
-            , 'contest_rules_url' => $this->contest_rules_url
-            , 'share_title' => $this->share_title
-            , 'share_image_url' => $this->share_image_url
-            , 'share_text' => $this->share_text
+            , 'before' => strip_tags($this->before)
+            , 'after' => strip_tags($this->after)
+            , 'start_date' => strip_tags($this->start_date)
+            , 'end_date' => strip_tags($this->end_date)
+            , 'contest_rules_url' => strip_tags($this->contest_rules_url)
+            , 'share_title' => strip_tags($this->share_title)
+            , 'share_image_url' => strip_tags($this->share_image_url)
+            , 'share_text' => strip_tags($this->share_text)
         ), array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
         ), 'issssssss', 'i' );

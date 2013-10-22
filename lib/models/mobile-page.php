@@ -37,8 +37,8 @@ class MobilePage extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'slug' => $this->slug
-            , 'title' => $this->title
+            , 'slug' => strip_tags($this->slug)
+            , 'title' => strip_tags($this->title)
             , 'content' => $this->content
             , 'date_created' => $this->date_created
         ), 'issss' );
@@ -51,13 +51,12 @@ class MobilePage extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-                'slug' => $this->slug
-                , 'title' => $this->title
-                , 'content' => $this->content
-            ), array(
-                'mobile_page_id' => $this->id
-            ), 'sss', 'i'
-        );
+            'slug' => strip_tags($this->slug)
+            , 'title' => strip_tags($this->title)
+            , 'content' => $this->content
+        ), array(
+            'mobile_page_id' => $this->id
+        ), 'sss', 'i' );
     }
 
     /**

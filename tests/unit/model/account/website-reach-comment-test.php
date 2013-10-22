@@ -30,12 +30,12 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         $this->website_reach_comment->create();
 
         // Make sure it's in the database
-        $retrieved_comment = $this->db->get_var( "SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_id` = $website_reach_id" );
+        $retrieved_comment = $this->phactory->get_var( "SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_id` = $website_reach_id" );
 
         $this->assertEquals( $comment, $retrieved_comment );
 
         // Delete
-        $this->db->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
+        $this->phactory->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
     }
 
     /**
@@ -46,8 +46,8 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         $website_id = -7;
 
         // Create
-        $website_reach_id = $this->db->insert( 'website_reaches', compact( 'website_id' ), 'i' );
-        $website_reach_comment_id = $this->db->insert( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
+        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id' ), 'i' );
+        $website_reach_comment_id = $this->phactory->insert( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
 
         // Get
         $this->website_reach_comment->get( $website_reach_comment_id, $website_id );
@@ -56,8 +56,8 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         $this->assertEquals( $website_reach_comment_id, $this->website_reach_comment->id );
 
         // Clean up
-        $this->db->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
-        $this->db->delete( 'website_reaches', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
+        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -69,8 +69,8 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         $user_id = 1; // Kerry Jones
 
         // Create
-        $website_reach_id = $this->db->insert( 'website_reaches', compact( 'website_id' ), 'i' );
-        $this->db->insert( 'website_reach_comments', compact( 'website_reach_id', 'user_id' ), 'ii' );
+        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id' ), 'i' );
+        $this->phactory->insert( 'website_reach_comments', compact( 'website_reach_id', 'user_id' ), 'ii' );
 
         // Get all
         $website_reach_comments = $this->website_reach_comment->get_by_reach( $website_reach_id, $website_id );
@@ -78,8 +78,8 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         $this->assertTrue( current( $website_reach_comments ) instanceof WebsiteReachComment );
 
         // Clean up
-        $this->db->delete( 'website_reaches', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
+        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
     }
 
     /**
@@ -100,7 +100,7 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->website_reach_comment->remove();
 
-        $retrieved_comment = $this->db->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_comment_id` = ' . (int) $this->website_reach_comment->id );
+        $retrieved_comment = $this->phactory->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_comment_id` = ' . (int) $this->website_reach_comment->id );
 
         $this->assertFalse( $retrieved_comment );
     }

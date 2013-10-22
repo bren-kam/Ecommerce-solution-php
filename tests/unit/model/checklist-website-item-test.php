@@ -38,13 +38,13 @@ class ChecklistWebsiteItemTest extends BaseDatabaseTest {
         $this->checklist_website_item->add_all_to_checklist( $checklist_id );
 
         // Get items
-        $checklist_website_items = $this->db->get_results( "SELECT FROM `checklist_website_items` WHERE `checklist_id` = $checklist_id" );
+        $checklist_website_items = $this->phactory->get_results( "SELECT FROM `checklist_website_items` WHERE `checklist_id` = $checklist_id" );
 
         // Make sure that there are many of them
         $this->assertGreaterThan( count( $checklist_website_items ), 20 );
 
         // Delete
-        $this->db->delete( 'checklist_website_items', array( 'checklist_id' => $checklist_id ), 'i' );
+        $this->phactory->delete( 'checklist_website_items', array( 'checklist_id' => $checklist_id ), 'i' );
     }
 
     /**
@@ -65,7 +65,7 @@ class ChecklistWebsiteItemTest extends BaseDatabaseTest {
         $this->checklist_website_item->save();
 
         // Now check it!
-        $date_checked = $this->db->get_var( 'SELECT `date_checked` FROM `checklist_website_items` WHERE `checklist_website_item_id` = ' . (int) $this->checklist_website_item->id );
+        $date_checked = $this->phactory->get_var( 'SELECT `date_checked` FROM `checklist_website_items` WHERE `checklist_website_item_id` = ' . (int) $this->checklist_website_item->id );
 
         $this->assertEquals( $now, $date_checked );
     }

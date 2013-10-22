@@ -26,8 +26,8 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $billing_first_name = 'John';
 
         // Create website shipping method
-        $website_shipping_method_id = $this->db->insert( 'website_shipping_methods', compact( 'name' ), 's' );
-        $website_order_id = $this->db->insert( 'website_orders', compact( 'website_id', 'website_shipping_method_id', 'billing_first_name' ), 'iis' );
+        $website_shipping_method_id = $this->phactory->insert( 'website_shipping_methods', compact( 'name' ), 's' );
+        $website_order_id = $this->phactory->insert( 'website_orders', compact( 'website_id', 'website_shipping_method_id', 'billing_first_name' ), 'iis' );
 
         // Get
         $this->website_order->get( $website_order_id, $website_id );
@@ -36,8 +36,8 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $this->assertEquals( $billing_first_name, $this->website_order->billing_first_name );
 
         // Clean up
-        $this->db->delete( 'website_orders', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_shipping_methods', compact( 'website_shipping_method_id' ), 'i' );
+        $this->phactory->delete( 'website_orders', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_shipping_methods', compact( 'website_shipping_method_id' ), 'i' );
     }
 
     /**
@@ -51,8 +51,8 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $items = array( 'Delicate Love Seat', 'Amelie Couch' );
 
         // Create website shipping method
-        $website_shipping_method_id = $this->db->insert( 'website_shipping_methods', compact( 'name' ), 's' );
-        $website_order_id = $this->db->insert( 'website_orders', compact( 'website_id', 'website_shipping_method_id', 'billing_first_name' ), 'iis' );
+        $website_shipping_method_id = $this->phactory->insert( 'website_shipping_methods', compact( 'name' ), 's' );
+        $website_order_id = $this->phactory->insert( 'website_orders', compact( 'website_id', 'website_shipping_method_id', 'billing_first_name' ), 'iis' );
 
         // Get mock
         $stub_website_order_item = $this->getMock( 'WebsiteOrderItem' );
@@ -66,8 +66,8 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $this->assertEquals( $items, $this->website_order->items );
 
         // Clean up
-        $this->db->delete( 'website_orders', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_shipping_methods', compact( 'website_shipping_method_id' ), 'i' );
+        $this->phactory->delete( 'website_orders', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_shipping_methods', compact( 'website_shipping_method_id' ), 'i' );
     }
     
     /**
@@ -81,7 +81,7 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $status = -5;
 
         // Create
-        $website_order_id = $this->db->insert( 'website_orders', compact( 'website_id' ), 'i' );
+        $website_order_id = $this->phactory->insert( 'website_orders', compact( 'website_id' ), 'i' );
 
         // Get
         $this->website_order->get( $website_order_id, $website_id );
@@ -91,12 +91,12 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $this->website_order->save();
 
         // Now check it!
-        $retrieved_status = $this->db->get_var( "SELECT `status` FROM `website_orders` WHERE `website_order_id` = $website_order_id" );
+        $retrieved_status = $this->phactory->get_var( "SELECT `status` FROM `website_orders` WHERE `website_order_id` = $website_order_id" );
 
         $this->assertEquals( $retrieved_status, $status );
 
         // Clean up
-        $this->db->delete( 'website_orders', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_orders', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -110,7 +110,7 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         $billing_first_name = 'John';
 
         // Create
-        $website_order_id = $this->db->insert( 'website_orders', compact( 'website_id', 'billing_first_name' ), 'is' );
+        $website_order_id = $this->phactory->insert( 'website_orders', compact( 'website_id', 'billing_first_name' ), 'is' );
         
         // Get
         $this->website_order->get( $website_order_id, $website_id );
@@ -118,7 +118,7 @@ class WebsiteOrderTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->website_order->remove();
 
-        $retrieved_billing_first_name = $this->db->get_var( "SELECT `billing_first_name` FROM `website_orders` WHERE `website_order_id` = $website_order_id" );
+        $retrieved_billing_first_name = $this->phactory->get_var( "SELECT `billing_first_name` FROM `website_orders` WHERE `website_order_id` = $website_order_id" );
 
         // Clean Up
         $this->assertFalse( $retrieved_billing_first_name );

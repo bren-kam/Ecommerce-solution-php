@@ -24,7 +24,7 @@ class CategoryTest extends BaseDatabaseTest {
         $name = 'Test Parent';
 
         // Create Category
-        $this->db->insert( 'categories', compact( 'category_id', 'name' ), 'is' );
+        $this->phactory->insert( 'categories', compact( 'category_id', 'name' ), 'is' );
 
         // Get category
         $this->category->get( $category_id );
@@ -40,7 +40,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $this->category->name, 'Test Parent' );
 
         // Delete Category
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
     }
 
     /**
@@ -73,8 +73,8 @@ class CategoryTest extends BaseDatabaseTest {
         $sub_category_id = -80;
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
 
         // Get all categories
         $categories = $this->category->get_all_parents( $sub_category_id );
@@ -82,8 +82,8 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $category_id, $categories[0]->id );
 
         // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
 
     /**
@@ -97,8 +97,8 @@ class CategoryTest extends BaseDatabaseTest {
         $sub_category_id = -80;
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
 
         // Get all categories
         $this->category->get_top( $sub_category_id );
@@ -106,8 +106,8 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $category_id, $this->category->id );
 
         // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
 
     /**
@@ -119,8 +119,8 @@ class CategoryTest extends BaseDatabaseTest {
         $sub_category_id = -80;
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
 
         // Get all categories
         $category_ids = $this->category->get_all_parent_category_ids( $sub_category_id );
@@ -128,8 +128,8 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertTrue( in_array( $category_id, $category_ids ) );
 
         // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
 
     /**
@@ -160,8 +160,8 @@ class CategoryTest extends BaseDatabaseTest {
         $url = '/parent/sub-name/';
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id', 'slug' ), 'is' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id, 'slug' => $sub_slug ), 'iis' );
+        $this->phactory->insert( 'categories', compact( 'category_id', 'slug' ), 'is' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id, 'slug' => $sub_slug ), 'iis' );
 
         // Get the categories
         $this->category->id = $sub_category_id;
@@ -170,8 +170,8 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $url, $fetched_url );
 
         // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
 
     /**
@@ -186,8 +186,8 @@ class CategoryTest extends BaseDatabaseTest {
         $sub_category_id = -80;
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
 
         // Get the categories
         $this->category->id = $category_id;
@@ -196,8 +196,8 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertTrue( $has_children );
 
         // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
     }
 
     /**
@@ -219,7 +219,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( 'Test Cat', $this->category->name );
 
         // Delete the category
-        $this->db->delete( 'categories', array( 'category_id' => $this->category->id ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $this->category->id ), 'i' );
     }
 
     /**
@@ -247,7 +247,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( 'cat-test', $this->category->slug );
 
         // Delete the category
-        $this->db->delete( 'categories', array( 'category_id' => $this->category->id ), 'i' );
+        $this->phactory->delete( 'categories', array( 'category_id' => $this->category->id ), 'i' );
     }
 
     /**
@@ -260,25 +260,25 @@ class CategoryTest extends BaseDatabaseTest {
         $sub_category_id2 = -90;
 
         // Create Categories
-        $this->db->insert( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
-        $this->db->insert( 'categories', array( 'category_id' => $sub_category_id2, 'parent_category_id' => $category_id ), 'ii' );
+        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
+        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id2, 'parent_category_id' => $category_id ), 'ii' );
 
         // Update the sequence
-        $this->db->update( 'categories', array( 'sequence' => -5 ), array( 'category_id' => $category_id ), 'i', 'i' );
+        $this->phactory->update( 'categories', array( 'sequence' => -5 ), array( 'category_id' => $category_id ), 'i', 'i' );
 
         // Adjust it properly
         $this->category->update_sequence( $category_id, array( $sub_category_id2, $sub_category_id ) );
 
         // Let's get the sequence and check
-        $sequence = $this->db->get_var( 'SELECT `sequence` FROM `categories` WHERE `category_id` = ' . (int) $sub_category_id2 );
+        $sequence = $this->phactory->get_var( 'SELECT `sequence` FROM `categories` WHERE `category_id` = ' . (int) $sub_category_id2 );
 
         // Should be 0;
         $this->assertEquals( 0, $sequence );
 
         // Delete
-        $this->db->delete( 'categories', compact( 'category_id' ), 'i' );
-        $this->db->delete( 'categories', array( 'parent_category_id' => $category_id ), 'i' );
+        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
+        $this->phactory->delete( 'categories', array( 'parent_category_id' => $category_id ), 'i' );
     }
 
     /**
@@ -300,7 +300,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->category->delete();
 
         // Make sure it doesn't exist
-        $name = $this->db->get_var( "SELECT `name` FROM `categories` WHERE `category_id` = " .(int) $this->category->id );
+        $name = $this->phactory->get_var( "SELECT `name` FROM `categories` WHERE `category_id` = " .(int) $this->category->id );
 
         $this->assertFalse( $name );
     }

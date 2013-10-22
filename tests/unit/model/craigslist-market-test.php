@@ -47,16 +47,16 @@ class CraigslistMarketTest extends BaseDatabaseTest {
         $craigslist_market_id = 1;
 
         // Insert
-        $this->db->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id' ), 'ii' );
-        $this->db->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
+        $this->phactory->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id' ), 'ii' );
+        $this->phactory->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
 
         $craigslist_markets = $this->craigslist_market->get_by_ad( $craigslist_ad_id, $website_id );
 
         $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
 
         // Cleanup
-        $this->db->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
-        $this->db->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -68,14 +68,14 @@ class CraigslistMarketTest extends BaseDatabaseTest {
         $craigslist_market_id = 1;
 
         // Insert
-        $this->db->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
+        $this->phactory->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
 
         $craigslist_markets = $this->craigslist_market->get_by_account( $website_id );
 
         $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
 
         // Cleanup
-        $this->db->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
     }
 
     /**

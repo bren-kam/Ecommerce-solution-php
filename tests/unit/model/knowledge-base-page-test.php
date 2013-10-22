@@ -23,14 +23,14 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $name = 'Import Subscribers';
 
         // Create
-        $id = $this->db->insert( 'kb_page', compact( 'name' ), 's' );
+        $id = $this->phactory->insert( 'kb_page', compact( 'name' ), 's' );
 
         $this->kb_page->get( $id );
 
         $this->assertEquals( $this->kb_page->name, $name );
 
         // Clean up
-        $this->db->delete( 'kb_page', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_page', compact( 'id' ), 'i' );
     }
 
     /**
@@ -42,14 +42,14 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $name = 'Import Subscribers';
 
         // Create
-        $this->db->insert( 'kb_page', compact( 'kb_category_id', 'name' ), 'is' );
+        $this->phactory->insert( 'kb_page', compact( 'kb_category_id', 'name' ), 'is' );
 
         $pages = $this->kb_page->get_by_category( $kb_category_id );
 
         $this->assertTrue( current( $pages ) instanceof KnowledgeBasePage );
 
         // Clean up
-        $this->db->delete( 'kb_page', compact( 'kb_category_id' ), 'i' );
+        $this->phactory->delete( 'kb_page', compact( 'kb_category_id' ), 'i' );
     }
 
     /**
@@ -71,7 +71,7 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->kb_page->name );
 
         // Delete the comment
-        $this->db->delete( 'kb_page', array( 'id' => $this->kb_page->id ), 'i' );
+        $this->phactory->delete( 'kb_page', array( 'id' => $this->kb_page->id ), 'i' );
     }
 
     /**
@@ -93,12 +93,12 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $this->kb_page->save();
 
         // Make sure it's in the database
-        $fetched_name = $this->db->get_var( "SELECT `name` FROM `kb_page` WHERE `id` = " . (int) $this->kb_page->id );
+        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `kb_page` WHERE `id` = " . (int) $this->kb_page->id );
 
         $this->assertEquals( $fetched_name, $second_name );
 
         // Delete the comment
-        $this->db->delete( 'kb_page', array( 'id' => $this->kb_page->id ), 'i' );
+        $this->phactory->delete( 'kb_page', array( 'id' => $this->kb_page->id ), 'i' );
     }
 
     /**
@@ -120,7 +120,7 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $this->kb_page->remove();
 
         // Check
-        $fetched_kb_page_id = $this->db->get_var( "SELECT `kb_page_id` FROM `kb_page` WHERE `id` = $id" );
+        $fetched_kb_page_id = $this->phactory->get_var( "SELECT `kb_page_id` FROM `kb_page` WHERE `id` = $id" );
 
         $this->assertFalse( $fetched_kb_page_id );
     }

@@ -32,7 +32,7 @@ class SocialMediaShareAndSave extends ActiveRecordBase {
 
         $this->insert( array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
-            , 'key' => $this->key
+            , 'key' => strip_tags($this->key)
             , 'date_created' => $this->date_created
         ), 'iiss' );
     }
@@ -44,13 +44,13 @@ class SocialMediaShareAndSave extends ActiveRecordBase {
         $this->update( array(
             'email_list_id' => $this->email_list_id
             , 'maximum_email_list_id' => $this->maximum_email_list_id
-            , 'before' => $this->before
+            , 'before' => strip_tags($this->before)
             , 'after' => $this->after
             , 'minimum' => $this->minimum
             , 'maximum' => $this->maximum
-            , 'share_title' => $this->share_title
-            , 'share_image_url' => $this->share_image_url
-            , 'share_text' => $this->share_text
+            , 'share_title' => strip_tags($this->share_title)
+            , 'share_image_url' => strip_tags($this->share_image_url)
+            , 'share_text' => strip_tags($this->share_text)
         ), array(
             'sm_facebook_page_id' => $this->sm_facebook_page_id
         ), 'iissiisss', 'i' );

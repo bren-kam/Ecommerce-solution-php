@@ -56,50 +56,47 @@ class LoginController extends BaseController {
         return $custom_response;
     }
 
-    
-          /**
-     * Activate user 
+    /**
+     * Activate user
      *
-     *  
+     * @return RedirectResponse|TemplateResponse
      */
-    
-     protected function activate() {
-            $token = new Token();
-            $token->get_token( $_GET['t'] );
+    protected function activate() {
+        $token = new Token();
+        $token->get( $_GET['t'] );
 
-            if ( !$token->id )  
-                            return new RedirectResponse('/login/');
-		
-                $form = new FormTable('activate_account');
+        if ( !$token->id )
+            return new RedirectResponse('/login/');
 
-               $form->add_field( 'password', _('Password'), 'password' )
-                ->attribute( 'maxlength', 30 )
-                ->add_validation( 'req', _('The "Password" field is required') );
-                       
+        $form = new FormTable('activate_account');
 
-               $form->add_field( 'password', _('Confirm Password'), 'repassword|password' )
-                   ->attribute( 'maxlength', 30 )
-                   ->add_validation( 'match', _('The "Password" and "Confirm Password" field must match') );
+        $form->add_field( 'password', _('Password'), 'password' )
+            ->attribute( 'maxlength', 30 )
+            ->add_validation( 'req', _('The "Password" field is required') );
 
-                if ($form->posted()) {
-                        $password = $_POST["password"];
-                        $user = new User();
-                        $user->get($token->user_id);
-                        $user->set_password($password);
+        $form->add_field( 'password', _('Confirm Password'), 'repassword|password' )
+            ->attribute( 'maxlength', 30 )
+            ->add_validation( 'match', _('The "Password" and "Confirm Password" field must match') );
 
-                        $token->remove();
+        if ( $form->posted() ) {
+            $password = $_POST["password"];
+            $user = new User();
+            $user->get($token->user_id);
+            $user->set_password($password);
 
-                        if ( $user->login($user->email, $password ) ) {
-                            $this->user = $user;
-                            $this->notify( _('Your account has been successfully activated!') );
-                            return new RedirectResponse('/');
-                        }
-                    }
+            $token->remove();
 
+            if ( $user->login($user->email, $password ) ) {
+                $this->user = $user;
+                $this->notify( _('Your account has been successfully activated!') );
+                return new RedirectResponse('/');
+            }
+        }
 
-                $form = $form->generate_form();
-                return $this->get_template_response('change-password')
-                                ->set(compact('form'));
+        $form = $form->generate_form();
+
+        return $this->get_template_response('change-password')
+            ->set(compact('form'));
     }
 
     /**
@@ -111,4 +108,3 @@ class LoginController extends BaseController {
         return true;
     }
 }
-

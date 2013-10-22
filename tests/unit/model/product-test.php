@@ -37,7 +37,7 @@ class ProductTest extends BaseDatabaseTest {
         $sku = 'mess-with-me';
 
         // Create
-        $product_id = $this->db->insert( 'products', compact( 'sku' ), 's' );
+        $product_id = $this->phactory->insert( 'products', compact( 'sku' ), 's' );
 
         // Get
         $this->product->get_by_sku( $sku );
@@ -45,7 +45,7 @@ class ProductTest extends BaseDatabaseTest {
         $this->assertEquals( $this->product->sku, $sku );
 
         // Clean Up
-        $this->db->delete( 'products', compact( 'product_id' ), 'i' );
+        $this->phactory->delete( 'products', compact( 'product_id' ), 'i' );
     }
 
     /**
@@ -56,8 +56,8 @@ class ProductTest extends BaseDatabaseTest {
         $website_id = -1;
 
         // Create
-        $product_id = $this->db->insert( 'products', compact( 'website_id' ), 'i' );
-        $product_id2 = $this->db->insert( 'products', compact( 'website_id' ), 'i' );
+        $product_id = $this->phactory->insert( 'products', compact( 'website_id' ), 'i' );
+        $product_id2 = $this->phactory->insert( 'products', compact( 'website_id' ), 'i' );
         $product_ids = array( $product_id, $product_id2 );
 
         // Get
@@ -66,7 +66,7 @@ class ProductTest extends BaseDatabaseTest {
         $this->assertTrue( current( $products ) instanceof Product );
 
         // Clean Up
-        $this->db->delete( 'products', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'products', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -110,7 +110,7 @@ class ProductTest extends BaseDatabaseTest {
         $this->assertEquals( $publish_visibility, $this->product->publish_visibility );
 
         // Delete the company
-        $this->db->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
+        $this->phactory->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
     }
 
     /**
@@ -124,7 +124,7 @@ class ProductTest extends BaseDatabaseTest {
         $images = array( 'test.png', 'test1.gif' );
 
         // Delete any images from before hand
-        $this->db->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
+        $this->phactory->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
 
         // Get product
         $this->product->get( $product_id );
@@ -133,12 +133,12 @@ class ProductTest extends BaseDatabaseTest {
         $this->product->add_images( $images );
 
         // See if they are there
-        $fetched_images = $this->db->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id ORDER BY `image` ASC" );
+        $fetched_images = $this->phactory->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id ORDER BY `image` ASC" );
 
         $this->assertEquals( $images, $fetched_images );
 
         // Delete any images from before hand
-        $this->db->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
+        $this->phactory->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
     }
 
     /**
@@ -150,7 +150,7 @@ class ProductTest extends BaseDatabaseTest {
         // Declare variables
         $product_id = 36385;
 
-        $this->db->update( 'products', array( 'publish_visibility' => 'deleted' ), array( 'product_id' => $product_id ), 's', 'i' );
+        $this->phactory->update( 'products', array( 'publish_visibility' => 'deleted' ), array( 'product_id' => $product_id ), 's', 'i' );
 
         $this->product->get( $product_id );
 
@@ -158,7 +158,7 @@ class ProductTest extends BaseDatabaseTest {
         $this->product->publish_visibility = 'public';
         $this->product->save();
 
-        $publish_visibility = $this->db->get_var( "SELECT `publish_visibility` FROM `products` WHERE `product_id` = $product_id" );
+        $publish_visibility = $this->phactory->get_var( "SELECT `publish_visibility` FROM `products` WHERE `product_id` = $product_id" );
 
         $this->assertEquals( $publish_visibility, 'public' );
     }
@@ -184,7 +184,7 @@ class ProductTest extends BaseDatabaseTest {
         $this->product->delete_images();
 
         // Make sure there are no images
-        $images = $this->db->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id" );
+        $images = $this->phactory->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id" );
 
         $this->assertTrue( 0 == count( $images ) );
     }
@@ -195,11 +195,11 @@ class ProductTest extends BaseDatabaseTest {
     public function testCloneProduct() {
         $this->product->clone_product( 36385, 1 );
 
-        $name = $this->db->get_var( 'SELECT `name` FROM `products` WHERE `product_id` = ' . (int) $this->product->id );
+        $name = $this->phactory->get_var( 'SELECT `name` FROM `products` WHERE `product_id` = ' . (int) $this->product->id );
 
         $this->assertEquals( $name, 'ZZZZZZZZZ Test (Clone)' );
 
-        $this->db->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
+        $this->phactory->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
     }
 
     /**

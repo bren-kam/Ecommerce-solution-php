@@ -30,12 +30,12 @@ class WebsiteTopBrandTest extends BaseDatabaseTest {
         $this->website_top_brand->create();
 
         // Make sure it's in the database
-        $retrieved_brand_id = $this->db->get_var( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $website_id" );
+        $retrieved_brand_id = $this->phactory->get_var( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $brand_id, $retrieved_brand_id );
 
         // Delete
-        $this->db->delete( 'website_top_brand', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_top_brand', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -48,8 +48,8 @@ class WebsiteTopBrandTest extends BaseDatabaseTest {
         $name = 'Ooh, la la!';
 
         // Create
-        $this->db->insert( 'brands', compact( 'brand_id', 'name' ), 'is' );
-        $this->db->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
+        $this->phactory->insert( 'brands', compact( 'brand_id', 'name' ), 'is' );
+        $this->phactory->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
 
         // Get all
         $brands = $this->website_top_brand->get_by_account( $website_id );
@@ -57,8 +57,8 @@ class WebsiteTopBrandTest extends BaseDatabaseTest {
         $this->assertTrue( current( $brands ) instanceof Brand );
 
         // Clean up
-        $this->db->delete( 'brands', compact( 'website_id' ), 'i' );
-        $this->db->delete( 'website_top_brands', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'brands', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_top_brands', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -71,20 +71,20 @@ class WebsiteTopBrandTest extends BaseDatabaseTest {
         $brand_id2 = -7;
 
         // Create Categories
-        $this->db->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
-        $this->db->insert( 'website_top_brands', array( 'website_id' => $website_id, 'brand_id' => $brand_id2 ), 'ii' );
+        $this->phactory->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
+        $this->phactory->insert( 'website_top_brands', array( 'website_id' => $website_id, 'brand_id' => $brand_id2 ), 'ii' );
 
         // Adjust it properly
         $this->website_top_brand->update_sequence( $website_id, array( $brand_id, $brand_id2 ) );
 
         // Let's get the sequence and check
-        $sequence = $this->db->get_var( "SELECT `sequence` FROM `website_top_brands` WHERE `website_id` = $website_id AND `sequence` > 0" );
+        $sequence = $this->phactory->get_var( "SELECT `sequence` FROM `website_top_brands` WHERE `website_id` = $website_id AND `sequence` > 0" );
 
         // Should be 0;
         $this->assertEquals( 1, $sequence );
 
         // Delete
-        $this->db->delete( 'website_top_brands', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_top_brands', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -96,12 +96,12 @@ class WebsiteTopBrandTest extends BaseDatabaseTest {
         $brand_id = -7;
 
         // Create
-        $this->db->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
+        $this->phactory->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
 
         // Get
         $this->website_top_brand->remove( $website_id, $brand_id );
 
-        $retrieved_brand_id = $this->db->get_var( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $website_id" );
+        $retrieved_brand_id = $this->phactory->get_var( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $website_id" );
 
         $this->assertFalse( $retrieved_brand_id );
     }

@@ -25,7 +25,7 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $name = 'Ceiling Collection';
 
         // Create
-        $website_product_group_id = $this->db->insert( 'website_product_groups', compact( 'website_id', 'name' ), 'is' );
+        $website_product_group_id = $this->phactory->insert( 'website_product_groups', compact( 'website_id', 'name' ), 'is' );
 
         // Get
         $this->website_product_group->get( $website_product_group_id, $website_id );
@@ -34,7 +34,7 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->website_product_group->name );
 
         // Clean up
-        $this->db->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -51,12 +51,12 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $this->website_product_group->create();
 
         // Make sure it's in the database
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $name, $retrieved_name );
 
         // Delete
-        $this->db->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -74,13 +74,13 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $this->website_product_group->add_relations( $product_ids );
 
         // See if they are still there
-        $retrieved_product_ids = $this->db->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
+        $retrieved_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
 
         // Make sure they are equal
         $this->assertEquals( $product_ids, $retrieved_product_ids );
 
         // Clean up
-        $this->db->delete( 'website_product_group_relations', compact( 'website_product_group_id' ), 'i' );
+        $this->phactory->delete( 'website_product_group_relations', compact( 'website_product_group_id' ), 'i' );
     }
 
     /**
@@ -94,7 +94,7 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $name = 'Ceiling Collection';
 
         // Create
-        $website_product_group_id = $this->db->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $website_product_group_id = $this->phactory->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
 
         // Get
         $this->website_product_group->get( $website_product_group_id, $website_id );
@@ -104,12 +104,12 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $this->website_product_group->save();
 
         // Make sure it's in the database
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
 
         $this->assertEquals( $name, $retrieved_name );
 
         // Clean up
-        $this->db->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -123,7 +123,7 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $product_ids = array( -2, -4, -6 );
 
         // Create
-        $this->website_product_group->id = $this->db->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->website_product_group->id = $this->phactory->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
         $this->website_product_group->add_relations( $product_ids );
 
         // See if they are still there
@@ -133,8 +133,8 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $this->assertEquals( $product_ids, $retrieved_product_ids );
 
         // Clean up
-        $this->db->delete( 'website_product_group_relations', array( 'website_product_group_id' => $this->website_product_group->id ), 'i' );
-        $this->db->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_group_relations', array( 'website_product_group_id' => $this->website_product_group->id ), 'i' );
+        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
     }
     
     /**
@@ -155,7 +155,7 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         // Remove/Delete
         $this->website_product_group->remove();
 
-        $retrieved_name = $this->db->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
 
         $this->assertFalse( $retrieved_name );
     }
@@ -171,14 +171,14 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
         $product_ids = array( -2, -4, -6 );
 
         // Create
-        $this->website_product_group->id = $this->db->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->website_product_group->id = $this->phactory->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
         $this->website_product_group->add_relations( $product_ids );
 
         // See if they are still there
         $this->website_product_group->remove_relations();
 
         // See if they are still there
-        $retrieved_product_ids = $this->db->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = " . (int) $this->website_product_group->id );
+        $retrieved_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = " . (int) $this->website_product_group->id );
 
         // Make sure they are equal
         $this->assertEquals( array(), $retrieved_product_ids );

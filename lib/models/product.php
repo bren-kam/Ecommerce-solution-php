@@ -152,16 +152,16 @@ class Product extends ActiveRecordBase {
                 , 'brand_id' => $this->brand_id
                 , 'industry_id' => $this->industry_id
                 , 'website_id' => $this->website_id
-                , 'name' => $this->name
-                , 'slug' => $this->slug
-                , 'description' => $this->description
-                , 'sku' => $this->sku
+                , 'name' => strip_tags($this->name)
+                , 'slug' => strip_tags($this->slug)
+                , 'description' => format::strip_only( $this->description, '<script>' )
+                , 'sku' => strip_tags($this->sku)
 				, 'price' => $this->price
-                , 'status' => $this->status
+                , 'status' => strip_tags($this->status)
                 , 'weight' => $this->weight
-                , 'product_specifications' => $this->product_specifications
-                , 'publish_date' => $this->publish_date
-                , 'publish_visibility' => $this->publish_visibility
+                , 'product_specifications' => strip_tags($this->product_specifications)
+                , 'publish_date' => strip_tags($this->publish_date)
+                , 'publish_visibility' => strip_tags($this->publish_visibility)
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )

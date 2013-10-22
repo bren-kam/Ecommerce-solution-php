@@ -48,7 +48,7 @@ class ChecklistTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->checklist->website_id ) );
 
         // Delete the account
-        $this->db->delete( 'checklists', array( 'checklist_id' => $this->checklist->id ), 'i' );
+        $this->phactory->delete( 'checklists', array( 'checklist_id' => $this->checklist->id ), 'i' );
     }
 
     /**

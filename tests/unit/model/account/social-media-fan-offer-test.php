@@ -25,7 +25,7 @@ class SocialMediaFanOfferTest extends BaseDatabaseTest {
         $fb_page_id = -7;
 
         // Insert
-        $this->db->insert( 'sm_fan_offer', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        $this->phactory->insert( 'sm_fan_offer', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
 
         // Get
         $this->sm_fan_offer->get( $sm_facebook_page_id );
@@ -33,7 +33,7 @@ class SocialMediaFanOfferTest extends BaseDatabaseTest {
         $this->assertEquals( $fb_page_id, $this->sm_fan_offer->fb_page_id );
 
         // Clean up
-        $this->db->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -50,12 +50,12 @@ class SocialMediaFanOfferTest extends BaseDatabaseTest {
         $this->sm_fan_offer->create();
 
         // Get
-        $retrieved_key = $this->db->get_var( "SELECT `key` FROM `sm_fan_offer` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_fan_offer` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_key, $this->sm_fan_offer->key );
 
         // Clean up
-        $this->db->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -77,12 +77,12 @@ class SocialMediaFanOfferTest extends BaseDatabaseTest {
         $this->sm_fan_offer->save();
 
         // Now check it!
-        $retrieved_before = $this->db->get_var( "SELECT `before` FROM `sm_fan_offer` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_before = $this->phactory->get_var( "SELECT `before` FROM `sm_fan_offer` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_before, $before );
 
         // Clean up
-        $this->db->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_fan_offer', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**

@@ -36,7 +36,7 @@ class WebsiteProductGroup extends ActiveRecordBase {
     public function create() {
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'name' => $this->name
+            , 'name' => strip_tags($this->name)
         ), 'is' );
 
         $this->id = $this->website_product_group_id = $this->get_insert_id();
@@ -70,7 +70,7 @@ class WebsiteProductGroup extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'name' => $this->name
+            'name' => strip_tags($this->name)
         ), array(
             'website_product_group_id' => $this->id
         ), 's', 'i' );

@@ -21,9 +21,9 @@ class MobileList extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'name' => $this->name
+            , 'name' => strip_tags($this->name)
             , 'frequency' => $this->frequency
-            , 'description' => $this->description
+            , 'description' => strip_tags($this->description)
             , 'date_created' => $this->date_created
         ), 'isiss' );
 

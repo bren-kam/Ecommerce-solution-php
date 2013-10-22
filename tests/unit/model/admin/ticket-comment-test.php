@@ -61,7 +61,7 @@ class TicketCommentTest extends BaseDatabaseTest {
         $this->assertEquals( 'Gobbledygook', $this->ticket_comment->comment );
 
         // Delete the comment
-        $this->db->delete( 'ticket_comments', array( 'ticket_comment_id' => $this->ticket_comment->id ), 'i' );
+        $this->phactory->delete( 'ticket_comments', array( 'ticket_comment_id' => $this->ticket_comment->id ), 'i' );
     }
 
     /**
@@ -83,7 +83,7 @@ class TicketCommentTest extends BaseDatabaseTest {
         $this->ticket_comment->delete();
 
         // Check
-        $fetched_ticket_comment_id = $this->db->get_var( "SELECT `ticket_comment_id` FROM `ticket_comments` WHERE `ticket_comment_id` = $ticket_comment_id" );
+        $fetched_ticket_comment_id = $this->phactory->get_var( "SELECT `ticket_comment_id` FROM `ticket_comments` WHERE `ticket_comment_id` = $ticket_comment_id" );
 
         $this->assertFalse( $fetched_ticket_comment_id );
     }

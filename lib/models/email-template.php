@@ -65,11 +65,11 @@ class EmailTemplate extends ActiveRecordBase {
         $this->date_created = dt::now();
 
         $this->insert( array(
-            'name' => $this->name
-            , 'template' => $this->template
-            , 'image' => $this->image
-            , 'thumbnail' => $this->thumbnail
-            , 'type' => $this->type
+            'name' => strip_tags($this->name)
+            , 'template' => format::strip_only( $this->template, '<script>' )
+            , 'image' => strip_tags($this->image)
+            , 'thumbnail' => strip_tags($this->thumbnail)
+            , 'type' => strip_tags($this->type)
             , 'date_created' => $this->date_created
         ), 'ssssss' );
 
@@ -81,10 +81,10 @@ class EmailTemplate extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'name' => $this->name
-            , 'template' => $this->template
-            , 'image' => $this->image
-            , 'thumbnail' => $this->thumbnail
+            'name' => strip_tags($this->name)
+            , 'template' => format::strip_only( $this->template, '<script>' )
+            , 'image' => strip_tags($this->image)
+            , 'thumbnail' => strip_tags($this->thumbnail)
             , 'type' => $this->type
         ), array( 'email_template_id' => $this->id, ), 'sssss', 'i' );
     }

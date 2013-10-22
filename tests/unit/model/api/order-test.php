@@ -30,12 +30,12 @@ class OrderTest extends BaseDatabaseTest {
         $this->assertTrue( !is_null( $this->order->id ) );
 
         // Make sure it's in the database
-        $type = $this->db->get_var( 'SELECT `type` FROM `orders` WHERE `order_id` = ' . (int) $this->order->id );
+        $type = $this->phactory->get_var( 'SELECT `type` FROM `orders` WHERE `order_id` = ' . (int) $this->order->id );
 
         $this->assertEquals( $this->order->type, $type );
 
         // Delete the attribute
-        $this->db->delete( 'orders', array( 'order_id' => $this->order->id ), 'i' );
+        $this->phactory->delete( 'orders', array( 'order_id' => $this->order->id ), 'i' );
     }
 
     /**

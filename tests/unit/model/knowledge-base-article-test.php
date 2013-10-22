@@ -23,14 +23,14 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         $title = 'How to Import Subscribers';
 
         // Create
-        $id = $this->db->insert( 'kb_article', compact( 'title' ), 's' );
+        $id = $this->phactory->insert( 'kb_article', compact( 'title' ), 's' );
 
         $this->kb_article->get( $id );
 
         $this->assertEquals( $title, $this->kb_article->title );
 
         // Clean up
-        $this->db->delete( 'kb_article', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_article', compact( 'id' ), 'i' );
     }
 
     /**
@@ -52,7 +52,7 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         $this->assertEquals( $title, $this->kb_article->title );
 
         // Delete the comment
-        $this->db->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
+        $this->phactory->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
     }
 
     /**
@@ -74,12 +74,12 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         $this->kb_article->save();
 
         // Make sure it's in the database
-        $fetched_title = $this->db->get_var( "SELECT `title` FROM `kb_article` WHERE `id` = " . (int) $this->kb_article->id );
+        $fetched_title = $this->phactory->get_var( "SELECT `title` FROM `kb_article` WHERE `id` = " . (int) $this->kb_article->id );
 
         $this->assertEquals( $second_title, $fetched_title );
 
         // Delete the comment
-        $this->db->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
+        $this->phactory->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
     }
 
     /**
@@ -93,7 +93,7 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         $section = 'admin';
 
         // Insert
-        $kb_category_id = $this->db->insert( 'kb_category', compact('section'), 's' );
+        $kb_category_id = $this->phactory->insert( 'kb_category', compact('section'), 's' );
 
         // Create
         $this->kb_article->kb_category_id = $kb_category_id;
@@ -125,8 +125,8 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         unset( $user, $_GET, $dt, $articles );
 
         // Delete the comment
-        $this->db->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
-        $this->db->delete( 'kb_category', array( 'id' => $kb_category_id ), 'i' );
+        $this->phactory->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
+        $this->phactory->delete( 'kb_category', array( 'id' => $kb_category_id ), 'i' );
     }
 
     /**

@@ -25,7 +25,7 @@ class SocialMediaCurrentAdTest extends BaseDatabaseTest {
         $fb_page_id = -7;
 
         // Insert
-        $this->db->insert( 'sm_current_ad', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        $this->phactory->insert( 'sm_current_ad', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
 
         // Get
         $this->sm_current_ad->get( $sm_facebook_page_id );
@@ -33,7 +33,7 @@ class SocialMediaCurrentAdTest extends BaseDatabaseTest {
         $this->assertEquals( $fb_page_id, $this->sm_current_ad->fb_page_id );
 
         // Clean up
-        $this->db->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -50,12 +50,12 @@ class SocialMediaCurrentAdTest extends BaseDatabaseTest {
         $this->sm_current_ad->create();
 
         // Get
-        $retrieved_website_page_id = $this->db->get_var( "SELECT `website_page_id` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_website_page_id = $this->phactory->get_var( "SELECT `website_page_id` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_website_page_id, $this->sm_current_ad->website_page_id );
 
         // Clean up
-        $this->db->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -77,12 +77,12 @@ class SocialMediaCurrentAdTest extends BaseDatabaseTest {
         $this->sm_current_ad->save();
 
         // Now check it!
-        $retrieved_content = $this->db->get_var( "SELECT `content` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_content = $this->phactory->get_var( "SELECT `content` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_content, $content );
 
         // Clean up
-        $this->db->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**

@@ -51,11 +51,11 @@ class WebsiteShippingMethod extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'type' => $this->type
-            , 'name' => $this->name
-            , 'method' => $this->method
+            , 'type' => strip_tags($this->type)
+            , 'name' => strip_tags($this->name)
+            , 'method' => strip_tags($this->method)
             , 'amount' => $this->amount
-            , 'zip_codes' => $this->zip_codes
+            , 'zip_codes' => strip_tags($this->zip_codes)
             , 'date_created' => $this->date_created
         ), 'isssiss' );
 
@@ -67,11 +67,11 @@ class WebsiteShippingMethod extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-                'name' => $this->name
-                , 'method' => $this->method
-                , 'amount' => $this->amount
-                , 'zip_codes' => $this->zip_codes
-                , 'extra' => $this->extra
+                'name' => strip_tags($this->name)
+                , 'method' => strip_tags($this->method)
+                , 'amount' => strip_tags($this->amount)
+                , 'zip_codes' => strip_tags($this->zip_codes)
+                , 'extra' => strip_tags($this->extra)
             ), array(
                 'website_shipping_method_id' => $this->id
             ), 'sssss', 'i'

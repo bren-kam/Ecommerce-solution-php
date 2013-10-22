@@ -48,7 +48,7 @@ class ChecklistWebsiteItem extends ActiveRecordBase {
         parent::update(
             array(
                 'checked' => $this->checked
-                , 'date_checked' => $this->date_checked
+                , 'date_checked' => strip_tags($this->date_checked)
             )
             , array( 'checklist_website_item_id' => $this->id )
             , 'is'

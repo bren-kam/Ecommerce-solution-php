@@ -24,7 +24,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
 
         // Get category
         $this->kb_category->get( $id );
@@ -33,7 +33,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $this->kb_category->name, $name );
 
         // Delete Category
-        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
     }
 
     /**
@@ -46,16 +46,16 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $parent_id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+        $parent_id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->phactory->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
 
         $categories = $this->kb_category->get_all_children( $parent_id );
 
         $this->assertEquals( $id, $categories[0]->id );
 
         // Clean Up
-        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
-        $this->db->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
     }
 
     /**
@@ -68,8 +68,8 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $parent_id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+        $parent_id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->phactory->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
 
         // Get all categories
         $categories = $this->kb_category->get_all_parents( $id );
@@ -77,8 +77,8 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $parent_id, $categories[0]->id );
 
         // Delete
-        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
-        $this->db->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
     }
 
     /**
@@ -91,8 +91,8 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create Category
-        $parent_id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-        $id = $this->db->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+        $parent_id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->phactory->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
 
         // Get the categories
         $categories = $this->kb_category->get_by_parent( $parent_id );
@@ -100,8 +100,8 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $id, $categories[0]->id );
 
         // Clean Up
-        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
-        $this->db->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
     }
 
     /**
@@ -113,14 +113,14 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $section = KnowledgeBaseCategory::SECTION_ADMIN;
 
         // Create
-        $id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
 
         $categories = $this->kb_category->get_all();
 
         $this->assertTrue( current( $categories ) instanceof KnowledgeBaseCategory );
 
         // Clean up
-        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
     }
 
     /**
@@ -142,7 +142,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $name, $this->kb_category->name );
 
         // Delete the category
-        $this->db->delete( 'kb_category', array( 'id' => $this->kb_category->id ), 'i' );
+        $this->phactory->delete( 'kb_category', array( 'id' => $this->kb_category->id ), 'i' );
     }
 
     /**
@@ -164,12 +164,12 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->kb_category->save();
 
         // Get the name
-        $fetched_name = $this->db->get_var( "SELECT `name` FROM `kb_category` WHERE `id` = " . (int) $this->kb_category->id );
+        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `kb_category` WHERE `id` = " . (int) $this->kb_category->id );
 
         $this->assertEquals( $fetched_name, $new_name );
 
         // Delete the category
-        $this->db->delete( 'kb_category', array( 'id' => $this->kb_category->id ), 'i' );
+        $this->phactory->delete( 'kb_category', array( 'id' => $this->kb_category->id ), 'i' );
     }
 
     /**
@@ -189,7 +189,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->kb_category->delete();
 
         // Make sure it doesn't exist
-        $name = $this->db->get_var( "SELECT `name` FROM `kb_category` WHERE `id` = " . (int) $this->kb_category->id );
+        $name = $this->phactory->get_var( "SELECT `name` FROM `kb_category` WHERE `id` = " . (int) $this->kb_category->id );
 
         $this->assertFalse( $name );
     }
@@ -206,7 +206,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $greater_than = -1;
 
         // Create Category
-        $id = $this->db->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
 
         // Get them
         $this->kb_category->get_all();
@@ -218,7 +218,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
         $this->assertGreaterThan( $greater_than, $categories[0]->depth );
 
         // Clean up
-        $this->db->delete( 'kb_category', compact( 'id' ), 'i' );
+        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
     }
 
     /**

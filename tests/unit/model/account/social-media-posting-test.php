@@ -25,7 +25,7 @@ class SocialMediaPostingTest extends BaseDatabaseTest {
         $fb_page_id = -7;
 
         // Insert
-        $this->db->insert( 'sm_posting', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        $this->phactory->insert( 'sm_posting', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
 
         // Get
         $this->sm_posting->get( $sm_facebook_page_id );
@@ -33,7 +33,7 @@ class SocialMediaPostingTest extends BaseDatabaseTest {
         $this->assertEquals( $fb_page_id, $this->sm_posting->fb_page_id );
 
         // Clean up
-        $this->db->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -50,12 +50,12 @@ class SocialMediaPostingTest extends BaseDatabaseTest {
         $this->sm_posting->create();
 
         // Get
-        $retrieved_key = $this->db->get_var( "SELECT `key` FROM `sm_posting` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_posting` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_key, $this->sm_posting->key );
 
         // Clean up
-        $this->db->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**
@@ -78,12 +78,12 @@ class SocialMediaPostingTest extends BaseDatabaseTest {
         $this->sm_posting->save();
 
         // Now check it!
-        $retrieved_access_token = $this->db->get_var( "SELECT `access_token` FROM `sm_posting` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $retrieved_access_token = $this->phactory->get_var( "SELECT `access_token` FROM `sm_posting` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
 
         $this->assertEquals( $retrieved_access_token, $access_token );
 
         // Clean up
-        $this->db->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
+        $this->phactory->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
     }
 
     /**

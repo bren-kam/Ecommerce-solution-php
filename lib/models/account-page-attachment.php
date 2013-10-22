@@ -72,10 +72,10 @@ class AccountPageAttachment extends ActiveRecordBase {
 
         $this->insert( array(
             'website_page_id' => $this->website_page_id
-            , 'key' => $this->key
-            , 'value' => $this->value
-            , 'extra' => $this->extra
-            , 'meta' => $this->meta
+            , 'key' => strip_tags($this->key)
+            , 'value' => strip_tags($this->value)
+            , 'extra' => strip_tags($this->extra)
+            , 'meta' => strip_tags($this->meta)
             , 'sequence' => $this->sequence
             , 'status' => $this->status
         ), 'issssii' );

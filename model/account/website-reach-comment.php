@@ -28,7 +28,7 @@ class WebsiteReachComment extends ActiveRecordBase {
         $this->insert( array(
             'website_reach_id' => $this->website_reach_id
             , 'user_id' => $this->user_id
-            , 'comment' => $this->comment
+            , 'comment' => strip_tags($this->comment)
             , 'private' => $this->private
             , 'date_created' => $this->date_created
         ), 'iisis' );

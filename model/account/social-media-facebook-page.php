@@ -33,7 +33,7 @@ class SocialMediaFacebookPage extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'name' => $this->name
+            , 'name' => strip_tags($this->name)
             , 'status' => $this->status
             , 'date_created' => $this->date_created
         ), 'isis' );
@@ -46,7 +46,7 @@ class SocialMediaFacebookPage extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'name' => $this->name
+            'name' => strip_tags($this->name)
             , 'status' => $this->status
         ), array(
             'id' => $this->id

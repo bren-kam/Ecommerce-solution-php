@@ -41,7 +41,9 @@ class ChecklistSection extends ActiveRecordBase {
      * Create
      */
     public function create() {
-        $this->insert( array( 'status' => $this->status ), 'i' );
+        $this->insert( array(
+            'status' => $this->status
+        ), 'i' );
 
         $this->id = $this->checklist_section_id = $this->get_insert_id();
     }
@@ -50,15 +52,12 @@ class ChecklistSection extends ActiveRecordBase {
      * Update
      */
     public function save() {
-        parent::update(
-            array(
-                'name' => $this->name
-                , 'sequence' => $this->sequence
-                , 'status' => $this->status
-            )
-            , array( 'checklist_section_id' => $this->id )
-            , 'sii'
-            , 'i'
-        );
+        parent::update( array(
+            'name' => strip_tags($this->name)
+            , 'sequence' => $this->sequence
+            , 'status' => $this->status
+        ) , array(
+            'checklist_section_id' => $this->id
+        ), 'sii', 'i' );
     }
 }

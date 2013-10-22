@@ -27,10 +27,10 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $value = 'Extra Help';
 
         // Create everything
-        $product_option_id = $this->db->insert( 'product_options', compact( 'option_type' ), 's' );
-        $product_option_list_item_id = $this->db->insert( 'product_option_list_items', compact( 'product_option_id', 'value' ), 'is' );
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id' ), 'iii' );
-        $this->db->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'product_option_list_item_id' ), 'iiii' );
+        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
+        $product_option_list_item_id = $this->phactory->insert( 'product_option_list_items', compact( 'product_option_id', 'value' ), 'is' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id' ), 'iii' );
+        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'product_option_list_item_id' ), 'iiii' );
 
         // Get the notes
         $account_product_options = $this->account_product_option->get_with_list_items( $website_id, $product_id );
@@ -38,10 +38,10 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $this->assertTrue( current( $account_product_options ) instanceof AccountProductOption );
 
         // Clean up
-        $this->db->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'product_option_list_items', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'website_product_option_list_items', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'product_option_list_items', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'website_product_option_list_items', compact( 'product_option_id' ), 'i' );
     }
 
     /**
@@ -54,8 +54,8 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $option_type = 'text';
 
         // Create everything
-        $product_option_id = $this->db->insert( 'product_options', compact( 'option_type' ), 's' );
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id' ), 'iii' );
+        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id' ), 'iii' );
 
         // Get the notes
         $account_product_options = $this->account_product_option->get_without_list_items( $website_id, $product_id );
@@ -63,8 +63,8 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $this->assertTrue( current( $account_product_options ) instanceof AccountProductOption );
 
         // Clean up
-        $this->db->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
     }
 
     /**
@@ -82,10 +82,10 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $price = -5;
 
         // Create everything
-        $product_option_id = $this->db->insert( 'product_options', compact( 'option_type' ), 's' );
-        $product_option_list_item_id = $this->db->insert( 'product_option_list_items', compact( 'product_option_id', 'value' ), 'is' );
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'iiii' );
-        $this->db->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'product_option_list_item_id' ), 'iiii' );
+        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
+        $product_option_list_item_id = $this->phactory->insert( 'product_option_list_items', compact( 'product_option_id', 'value' ), 'is' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'iiii' );
+        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'product_option_list_item_id' ), 'iiii' );
 
         // Get the notes
         $account_product_options = $this->account_product_option->get_all( $website_id, $product_id );
@@ -94,10 +94,10 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $this->assertEquals( $price, $account_product_option['price'] );
 
         // Clean up
-        $this->db->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'product_option_list_items', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
-        $this->db->delete( 'website_product_option_list_items', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'product_option_list_items', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
+        $this->phactory->delete( 'website_product_option_list_items', compact( 'product_option_id' ), 'i' );
     }
 
     /**
@@ -129,12 +129,12 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $this->account_product_option->add_bulk( $website_id, $product_id, $product_options );
 
         // Check if it's there
-        $retrieved_product_option_ids = $this->db->get_col( "SELECT `product_option_id` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id ORDER BY `product_option_id` DESC" );
+        $retrieved_product_option_ids = $this->phactory->get_col( "SELECT `product_option_id` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id ORDER BY `product_option_id` DESC" );
 
         $this->assertEquals( $product_option_ids, $retrieved_product_option_ids );
 
         // Clean Up
-        $this->db->delete( 'website_product_options', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_options', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -172,12 +172,12 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $this->account_product_option->add_bulk_list_items( $website_id, $product_id, $product_option_list_items );
 
         // Check if it's there
-        $retrieved_product_option_list_item_ids = $this->db->get_col( "SELECT `product_option_list_item_id` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id ORDER BY `product_option_list_item_id` DESC" );
+        $retrieved_product_option_list_item_ids = $this->phactory->get_col( "SELECT `product_option_list_item_id` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id ORDER BY `product_option_list_item_id` DESC" );
 
         $this->assertEquals( $product_option_list_item_ids, $retrieved_product_option_list_item_ids );
 
         // Clean Up
-        $this->db->delete( 'website_product_option_list_items', compact( 'website_id' ), 'i' );
+        $this->phactory->delete( 'website_product_option_list_items', compact( 'website_id' ), 'i' );
     }
 
     /**
@@ -191,11 +191,11 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $price = -10;
 
         // Insert
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
 
         // One more
         $product_option_id = -9;
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
 
         // Access refactory
         $class = new ReflectionClass('AccountProductOption');
@@ -206,7 +206,7 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $method->invokeArgs( $this->account_product_option, array( $website_id, $product_id ) );
 
         // Check
-        $price = $this->db->get_var( "SELECT `price` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+        $price = $this->phactory->get_var( "SELECT `price` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
 
         $this->assertFalse( $price );
     }
@@ -222,11 +222,11 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $price = -10;
 
         // Insert
-        $this->db->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
 
         // One more
         $product_option_id = -9;
-        $this->db->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
 
         // Access refactory
         $class = new ReflectionClass('AccountProductOption');
@@ -237,7 +237,7 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $method->invokeArgs( $this->account_product_option, array( $website_id, $product_id ) );
 
         // Check
-        $price = $this->db->get_var( "SELECT `price` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+        $price = $this->phactory->get_var( "SELECT `price` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
 
         $this->assertFalse( $price );
     }
@@ -256,20 +256,20 @@ class AccountProductOptionTest extends BaseDatabaseTest {
         $price = -10;
 
         // Insert
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-        $this->db->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
 
         // One more
         $product_option_id = -9;
-        $this->db->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-        $this->db->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
 
         // Delete everything!
         $this->account_product_option->delete_by_product( $website_id, $product_id );
 
         // Check both
-        $website_product_option_list_items_price = $this->db->get_var( "SELECT `price` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-        $website_product_options_price = $this->db->get_var( "SELECT `price` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+        $website_product_option_list_items_price = $this->phactory->get_var( "SELECT `price` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+        $website_product_options_price = $this->phactory->get_var( "SELECT `price` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
 
         $this->assertFalse( $website_product_option_list_items_price );
         $this->assertFalse( $website_product_options_price );

@@ -54,23 +54,23 @@ class WebsiteUser extends ActiveRecordBase {
      */
     public function save() {
         parent::update( array(
-            'email' => $this->email
-            , 'billing_first_name' => $this->billing_first_name
-            , 'billing_last_name' => $this->billing_last_name
-            , 'billing_address1' => $this->billing_address1
-            , 'billing_address2' => $this->billing_address2
-            , 'billing_city' => $this->billing_city
-            , 'billing_state' => $this->billing_state
-            , 'billing_zip' => $this->billing_zip
-            , 'billing_phone' => $this->billing_phone
-            , 'billing_alt_phone' => $this->billing_alt_phone
-            , 'shipping_first_name' => $this->shipping_first_name
-            , 'shipping_last_name' => $this->shipping_last_name
-            , 'shipping_address1' => $this->shipping_address1
-            , 'shipping_address2' => $this->shipping_address2
-            , 'shipping_city' => $this->shipping_city
-            , 'shipping_state' => $this->shipping_state
-            , 'shipping_zip' => $this->shipping_zip
+            'email' => strip_tags($this->email)
+            , 'billing_first_name' => strip_tags($this->billing_first_name)
+            , 'billing_last_name' => strip_tags($this->billing_last_name)
+            , 'billing_address1' => strip_tags($this->billing_address1)
+            , 'billing_address2' => strip_tags($this->billing_address2)
+            , 'billing_city' => strip_tags($this->billing_city)
+            , 'billing_state' => strip_tags($this->billing_state)
+            , 'billing_zip' => strip_tags($this->billing_zip)
+            , 'billing_phone' => strip_tags($this->billing_phone)
+            , 'billing_alt_phone' => strip_tags($this->billing_alt_phone)
+            , 'shipping_first_name' => strip_tags($this->shipping_first_name)
+            , 'shipping_last_name' => strip_tags($this->shipping_last_name)
+            , 'shipping_address1' => strip_tags($this->shipping_address1)
+            , 'shipping_address2' => strip_tags($this->shipping_address2)
+            , 'shipping_city' => strip_tags($this->shipping_city)
+            , 'shipping_state' => strip_tags($this->shipping_state)
+            , 'shipping_zip' => strip_tags($this->shipping_zip)
             , 'status' => $this->status
         ), array( 'website_user_id' => $this->id )
             , 'sssssssssssssssssi', 'i'
