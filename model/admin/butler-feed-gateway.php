@@ -425,7 +425,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
 
             $product->sku = $this->identical( $sku, $product->sku, 'sku' );
             $product->price = $this->identical( $item[15], $product->price, 'price' );
-            $product->list_price = $this->identical( $item[17], $product->list_price, 'list-price' );
+            $product->price_min = $this->identical( $item[17], $product->price_min, 'price-min' );
             $product->status = $this->identical( 'in-stock', $product->status, 'status' );
             $product->brand_id = self::BRAND_ID;
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item[56] . '</p>' ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );

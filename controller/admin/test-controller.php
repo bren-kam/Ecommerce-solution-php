@@ -18,27 +18,22 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        //$butler_feed = new ButlerFeedGateway();
-        //$butler_feed->run();
-        //$ashley = new AshleyMasterProductFeedGateway();
-        //$ashley->run();
+        library('Excel_Reader/Excel_Reader');
+        $er = new Excel_Reader();
+        // Set the basics and then read in the rows
+        $er->setOutputEncoding('ASCII');
+        $er->read( ABS_PATH . 'temp/map-price-list.xls' );
 
-        $wl = new WebsiteLocation();
-        $website_locations = $wl->get_results( 'SELECT wl.* FROM `website_location` AS wl LEFT JOIN `websites` AS w ON ( w.`website_id` = wl.`website_id` ) WHERE wl.`lng` IS NULL AND w.`status` = 1 AND w.`website_id` = 633', PDO::FETCH_CLASS, 'WebsiteLocation' );
+        $rows = array_slice( $er->sheets[0]['cells'], 3 );
 
-        library('google-maps-api');
-        $gmaps = new GoogleMapsAPI( new Account() );
+        foreach ( $rows as $row ) {
+            $product = new Product();
+            $product->get_by_sku( $row[3] );
 
-        /**
-         * @var WebsiteLocation $location
-         */
-        foreach ( $website_locations as $location ) {
-            $geo_location = $gmaps->geocode( $location->address . ', ' . $location->city . ', ' . $location->state . ' ' . $location->zip );
-
-            if ( $gmaps->success() ) {
-                $location->lat = $geo_location->lat;
-                $location->lng = $geo_location->lng;
-                $location->save();
+            if ( $product->id ) {
+                $product->price_min = $row[17];
+                fn::info( $product );exit;
+                $product->save();
             }
         }
 
