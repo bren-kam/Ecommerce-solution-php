@@ -340,4 +340,40 @@ class Category extends ActiveRecordBase {
 
         return $hierarchical_categories;
     }
+
+    /**
+     * Filter By Ids
+     *
+     * @param array Category[] $categories
+     * @param array $category_ids
+     * @param bool $filter_branch [optional] means it has to be in the branch somewhere
+     * @return Category[]
+     */
+    public function filter_by_ids( array $categories, array $category_ids, $filter_branch = false ) {
+        $filtered_categories = array();
+
+        /**
+         * @var Category $category
+         * @var Category $category_twig
+         */
+        foreach ( $categories as $category ) {
+            if ( in_array( $category->id, $category_ids ) ) {
+                $filtered_categories[] = $category;
+                continue;
+            }
+
+            if ( $filter_branch ) {
+                $category_branch = array_merge( $category->get_all_parents( $category->id ), $category->get_all_children( $category->id ) );
+
+                foreach ( $category_branch as $category_twig ) {
+                    if ( in_array( $category_twig->id, $category_ids ) ) {
+                        $filtered_categories[] = $category;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $filtered_categories;
+    }
 }

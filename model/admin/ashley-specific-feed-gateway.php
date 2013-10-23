@@ -264,14 +264,36 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         $account->set_settings( array( 'feed-last-run' => dt::now() ) );
 
         // Set prices
-        $settings = $account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending' );
+        $auto_price = new WebsiteAutoPrice();
+        $category = new Category();
+        $auto_prices = $auto_price->load_all( $account->id );
 
-        if ( $settings['auto-price-feed'] ) {
-            $price = ( empty( $_POST['auto-price'] ) ) ? 0 : ( $_POST['auto-price'] + 100 ) / 100;
-            $sale_price = ( empty( $_POST['auto-sale-price'] ) ) ? 0 : ( $_POST['auto-sale-price'] + 100 ) / 100;
-            $alternate_price = ( empty( $_POST['auto-alternate-price'] ) ) ? 0 : ( $_POST['auto-alternate-price'] + 100 ) / 100;
-            $account_product->auto_price( $price, $sale_price, $alternate_price, $settings['auto-price-ending'], $account->id );
+        // Make sure we have something to work with
+        if ( empty( Category::$categories ) )
+            $category->get_all();
+
+        foreach ( $auto_prices as $auto_price ) {
+            // Make sure they want it
+            if ( !$auto_price->future )
+                continue;
+
+            $price = ( empty( $auto_price->price ) ) ? 0 : ( $auto_price->price + 100 ) / 100;
+            $sale_price = ( empty( $auto_price->sale_price ) ) ? 0 : ( $auto_price->sale_price + 100 ) / 100;
+            $alternate_price = ( empty( $auto_price->alternate_price ) ) ? 0 : ( $auto_price->alternate_price + 100 ) / 100;
+
+            $child_categories = $category->get_all_children( $auto_price->category_id );
+            $category_ids = array();
+
+            foreach ( $child_categories as $child_cat ) {
+                $category_ids[] = $child_cat->id;
+            }
+
+            // Auto price for these categories
+            $account_product->auto_price( $category_ids, $price, $sale_price, $alternate_price, $auto_price->ending, $account->id );
         }
+
+        // Make sure they didn't go below a minimum price
+        $account_product->adjust_to_minimum_price( $account->id );
 	}
 	
 	/**

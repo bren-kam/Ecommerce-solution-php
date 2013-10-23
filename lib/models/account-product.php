@@ -95,13 +95,14 @@ class AccountProduct extends ActiveRecordBase {
     /**
      * Get Auto Price Candidates
      *
+     * @param array $category_ids
      * @param float $price
      * @param float $sale_price
      * @param float $alternate_price
      * @param float $price_ending
      * @param int $account_id
      */
-    public function auto_price( $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+    public function auto_price( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
         $set = array();
 
         // Round to the ending
@@ -120,10 +121,16 @@ class AccountProduct extends ActiveRecordBase {
         if ( empty( $set ) )
             return;
 
+        // Protect Category IDS from DB
+        foreach ( $category_ids as &$category_id ) {
+            $category_id = (int) $category_id;
+        }
+
         $set = implode( ',', $set );
+        $category_ids = implode( ',', $category_ids );
 
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL"
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -954,6 +961,31 @@ class AccountProduct extends ActiveRecordBase {
         )->query();
 
         return $this->get_row_count();
+    }
+
+    /**
+     * Adjust to Minimum price
+     *
+     * @param array $category_ids
+     * @param int $account_id
+     */
+    public function reset_prices( array $category_ids, $account_id ) {
+        // DB proof category ids
+        foreach ( $category_ids as &$category_id ) {
+            $category_id = (int) $category_id;
+        }
+
+        $category_ids = implode( ',', $category_ids );
+
+        $this->prepare( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET wp.`price` = 0, wp.`sale_price` = 0, wp.`alternate_price` = 0 WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->query();
     }
 
     /**

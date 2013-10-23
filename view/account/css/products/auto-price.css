@@ -1,0 +1,4 @@
+#auto-prices { width: auto }
+#auto-prices th { text-align: left; font-weight: bold; }
+#auto-prices tr td, #auto-prices tr th { padding-bottom: 7px; padding-right: 7px }
+input.tb { width: 50px }

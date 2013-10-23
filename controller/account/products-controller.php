@@ -395,90 +395,38 @@ class ProductsController extends BaseController {
         $product = new AccountProduct();
         $auto_price_candidates = $product->get_auto_price_count( $this->user->account->id );
 
-        // Get settings
-        $settings = $this->user->account->get_settings( 'auto-price', 'auto-sale-price', 'auto-alternate-price', 'auto-price-feed', 'auto-price-ending', 'ashley-ftp-username' );
+        // Get auto prices
+        $website_auto_price = new WebsiteAutoPrice();
+        $website_auto_price->load_all( $this->user->account->id );
 
-        if ( !empty( $settings['ashley-ftp-username'] ) ) {
-            // Auto Settings
-            $fts = new FormTable('fAutoPriceSettings');
-            $fts->submit( 'Save' );
+        // Get categories
+        $category = new Category();
+        $account_category = new AccountCategory();
 
-            $fts->add_field( 'text', 'Price', 'tAutoPrice', $settings['auto-price'] )
-                ->add_validation( 'req', 'The "Price" field is required' );
+        $categories = $category->filter_by_ids( $category->get_by_parent(0), $account_category->get_all_ids( $this->user->account->id ) );
 
-            $fts->add_field( 'text', 'Sale Price', 'tAutoSalePrice', $settings['auto-sale-price'] )
-                ->add_validation( 'req', 'The "Sale Price" field is required' );
+        if ( $this->verified() ) {
+            foreach ( $_POST['auto-price'] as $category_id => $values ) {
+                $auto_price = new WebsiteAutoPrice();
+                $auto_price->get_by_category( $this->user->account->id, $category_id );
 
-            $fts->add_field( 'text', 'Alternate Price', 'tAutoAlternatePrice', $settings['auto-alternate-price'] )
-                ->add_validation( 'req', 'The "Alternate Price" field is required' );
+                foreach( $values as $key => $value ) {
+                    $auto_price->$key = $value;
+                }
 
-            $fts->add_field( 'text', 'Price Ending', 'tAutoPriceEnding', $settings['auto-price-ending'] )
-                ->add_validation( 'req', 'The "Price Ending" field is required' );
-
-            $fts->add_field( 'checkbox', 'Auto Price New Feed Items', 'cbAutoPriceFeed', $settings['auto-price-feed'] );
-
-            // Save settings
-            if ( $fts->posted() ) {
-                $settings = array(
-                    'auto-price' => $_POST['tAutoPrice']
-                    , 'auto-sale-price' => $_POST['tAutoSalePrice']
-                    , 'auto-alternate-price' => $_POST['tAutoAlternatePrice']
-                    , 'auto-price-ending' => $_POST['tAutoPriceEnding']
-                    , 'auto-price-feed' => $_POST['cbAutoPriceFeed']
-                );
-
-                // Set new settings
-                $this->user->account->set_settings( $settings );
-
-                $this->notify( _('Your Auto Price Settings have been saved!') );
+                $auto_price->save();
             }
 
-            $auto_price_settings = $fts->generate_form();
-        } else {
-            $auto_price_settings = '';
+            $website_auto_price->load_all( $this->user->account->id );
         }
 
-        // Do it just once
-        $ft = new FormTable('fAutoPrice');
-        $ft->submit( 'Auto Price' );
-
-        $ft->add_field( 'text', 'Price', 'tPrice', $settings['auto-price'] )
-            ->add_validation( 'req', 'The "Price" field is required' );
-
-        $ft->add_field( 'text', 'Sale Price', 'tSalePrice', $settings['auto-sale-price'] )
-            ->add_validation( 'req', 'The "Sale Price" field is required' );
-
-        $ft->add_field( 'text', 'Alternate Price', 'tAlternatePrice', $settings['auto-alternate-price'] )
-            ->add_validation( 'req', 'The "Alternate Price" field is required' );
-
-        $ft->add_field( 'text', 'Price Ending', 'tPriceEnding', $settings['auto-price-ending'] )
-            ->add_validation( 'req', 'The "Price Ending" field is required' );
-
-        if ( $ft->posted() ) {
-            // Autoprice
-            $price = ( empty( $_POST['tPrice'] ) ) ? 0 : ( $_POST['tPrice'] + 100 ) / 100;
-            $sale_price = ( empty( $_POST['tSalePrice'] ) ) ? 0 : ( $_POST['tSalePrice'] + 100 ) / 100;
-            $alternate_price = ( empty( $_POST['tAlternatePrice'] ) ) ? 0 : ( $_POST['tAlternatePrice'] + 100 ) / 100;
-
-            $product->auto_price( $price, $sale_price, $alternate_price, $_POST['tPriceEnding'], $this->user->account->id );
-
-            // See if he had set prices too lower
-            $adjusted_products = $product->adjust_to_minimum_price( $this->user->account->id );
-
-            // Give a notification
-            if ( $adjusted_products ) {
-                $this->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
-            } else {
-                $this->notify( _('Your prices have been successfully updated!') );
-            }
-        }
+        $this->resources->css('products/auto-price');
 
         return $this->get_template_response( 'auto-price' )
             ->kb( 134 )
             ->add_title( _('Auto Price') )
             ->set( array(
-                'auto_price_settings' => $auto_price_settings
-                , 'auto_price' => $ft->generate_form()
+                'categories' => $categories
                 , 'auto_price_candidates' => $auto_price_candidates
             ))
             ->select( 'sub-products', 'auto-price' );
@@ -1750,6 +1698,96 @@ class ProductsController extends BaseController {
 
         // Refresh
         $response->add_response( 'refresh', 1 );
+
+        return $response;
+    }
+
+    /**
+     * Run Auto Prices
+     *
+     * @return AjaxResponse
+     */
+    protected function run_auto_prices() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['cid'] ), _('Unable to run auto pricing. Please refresh the page and try again.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Get category
+        $category = new Category();
+        $category->get_all();
+        $category->get( $_GET['cid'] );
+
+        $categories = $category->get_all_children( $category->id );
+        $category_ids = array();
+
+        foreach ( $categories as $cat ) {
+            $category_ids[] = $cat->id;
+        }
+
+        // Get Autopricing
+        $auto_price = new WebsiteAutoPrice();
+        $auto_price->load_all( $this->user->account->id ); // This populates categories
+        $auto_price->get_by_category( $this->user->account->id, $category->id );
+
+        $price = ( empty( $auto_price->price ) ) ? 0 : ( $auto_price->price + 100 ) / 100;
+        $sale_price = ( empty( $auto_price->sale_price ) ) ? 0 : ( $auto_price->sale_price + 100 ) / 100;
+        $alternate_price = ( empty( $auto_price->alternate_price ) ) ? 0 : ( $auto_price->alternate_price + 100 ) / 100;
+
+        // Now autoprice
+        $account_product = new AccountProduct();
+        $account_product->auto_price( $category_ids, $price, $sale_price, $alternate_price, $auto_price->ending, $this->user->account->id );
+
+        // Set map pricing
+        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+
+        // Give notification
+        if ( $adjusted_products ) {
+            $response->notify( _('Auto Pricing has been run on ') . $category->name . '. Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+        } else {
+            $response->notify( _('Auto Pricing has been run on ') . $category->name . '.' );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Reset Auto Prices
+     *
+     * @return AjaxResponse
+     */
+    protected function reset_auto_prices() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['cid'] ), _('Unable to reset prices. Please refresh the page and try again.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Get category
+        $category = new Category();
+        $category->get_all();
+        $category->get( $_GET['cid'] );
+
+        $categories = $category->get_all_children( $category->id );
+        $category_ids = array();
+
+        foreach ( $categories as $cat ) {
+            $category_ids[] = $cat->id;
+        }
+
+
+        // Now autoprice
+        $account_product = new AccountProduct();
+        $account_product->reset_prices( $category_ids, $this->user->account->id );
+
+        $response->notify( _('Prices have been reset for ') . $category->name . ' category.' );
 
         return $response;
     }
