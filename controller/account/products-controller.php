@@ -421,7 +421,7 @@ class ProductsController extends BaseController {
             $website_auto_price->load_all( $this->user->account->id );
 
             // Notification
-            $this->notify( _('Your Auto Price settings have been saved successfully!') );
+            $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
 
         $this->resources->css('products/auto-price');
