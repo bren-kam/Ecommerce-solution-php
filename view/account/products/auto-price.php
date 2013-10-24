@@ -57,10 +57,10 @@ echo $template->start( _('Auto Price') );
             <td>
                 <?php echo $category->name; ?>
             </td>
-            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][price]" value="<?php echo $auto_price->price; ?>"></td>
-            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][sale_price]" value="<?php echo $auto_price->sale_price; ?>"></td>
-            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][alternate_price]" value="<?php echo $auto_price->alternate_price; ?>"></td>
-            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][ending]" value="<?php echo $auto_price->ending; ?>"></td>
+            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][price]" value="<?php echo (float) $auto_price->price; ?>"></td>
+            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][sale_price]" value="<?php echo (float) $auto_price->sale_price; ?>"></td>
+            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][alternate_price]" value="<?php echo (float) $auto_price->alternate_price; ?>"></td>
+            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][ending]" value="<?php echo (float) $auto_price->ending; ?>"></td>
             <td><input type="checkbox" name="auto-price[<?php echo $category->id; ?>][future]" value="1"<?php if ( $auto_price->future ) echo ' checked="checked"'; ?>></td>
             <td>
                 <a href="<?php echo url::add_query_arg( array( 'cid' => $category->id, '_nonce' => $run_auto_prices ), '/products/run-auto-prices/' ); ?>" ajax="1" confirm='<?php echo _('Make sure you have pressed "Save" before continuing.'); ?>'><?php echo _('Run Now'); ?></a> |
