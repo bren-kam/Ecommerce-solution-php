@@ -31,7 +31,7 @@ class CacheResponse extends Response {
         $real_user_path = realpath( $user_path );
 
         // Stop directory traversal
-        if ( $real_user_path === false || strpos( $real_user_path, $real_base ) !== 0 )
+        if ( ( !in_array( $cache_type, array( 'media', 'image' ) ) && !stristr( $file, '//' ) ) && ( $real_user_path === false || strpos( $real_user_path, $real_base ) !== 0 ) )
             throw new ResponseException( 'Directory Traversal Attempt' );
 
         // This can be overridden if necessary
