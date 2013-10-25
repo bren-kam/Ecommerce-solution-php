@@ -11,6 +11,11 @@
 $resources->css_before( 'labels/' . 'greysuitretail.com', 'login' );
 $resources->javascript( 'sparrow' );
 
+$referer = ( isset( $r ) ) ? strip_tags( base64_decode( $r ) ) : '';
+
+if ( stristr( $referer, '//' ) )
+    $referer = '';
+
 $margin_bottom = ( 'greysuitretail' == DOMAIN ) ? '' : '20px';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -36,11 +41,11 @@ if ( $errs ) {
 <div id="login-logo"<?php if ( !empty( $margin_bottom ) ) echo ' style="margin-bottom: ' . $margin_bottom . ' "'; ?>><img src="/images/logos/login/<?php echo DOMAIN; ?>.png" alt="<?php echo TITLE; ?>" /></div>
 <div id="login">
     <form action="" name="fLogin" method="post">
-        <input type="text" class="tb" name="email" placeholder="<?php echo _('Email'); ?>" value="<?php echo $template->v('email'); ?>" maxlength="200" />
-        <input type="password" class="tb" name="password" placeholder="<?php echo _('Password'); ?>" maxlength="30" />
+        <input type="text" class="tb" name="email" placeholder="<?php echo _('Email'); ?>" value="<?php echo strip_tags( $template->v('email') ); ?>" maxlength="200" />
+        <input type="password" class="tb" name="password" placeholder="<?php echo _('Password'); ?>" autocomplete="off" maxlength="30" />
         <input type="submit" class="login-button float-right" value="<?php echo _('Login'); ?>" />
         <p id="remember-me"><input type="checkbox" class="cb" name="remember-me" id="cbRememberMe" value="1"<?php if ( '1' == $template->v('remember-me') ) echo ' checked="checked"'; ?> /> <label for="cbRememberMe"><?php echo _('Remember Me'); ?></label></p>
-        <input type="hidden" name="referer" value="<?php if ( isset( $r ) ) echo $r; ?>" />
+        <input type="hidden" name="referer" value="<?php echo $referer; ?>" />
         <br clear="both" />
         <?php nonce::field('index'); ?>
     </form>
