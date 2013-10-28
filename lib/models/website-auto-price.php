@@ -48,6 +48,8 @@ class WebsiteAutoPrice extends ActiveRecordBase {
      * @return WebsiteAutoPrice[]
      */
     public function load_all( $website_id ) {
+        WebsiteAutoPrice::$auto_prices = null;
+
         $results = $this->prepare(
             'SELECT * FROM `website_auto_price` WHERE `website_id` = :website_id'
             , 'i'
