@@ -25,7 +25,7 @@ class LoginController extends BaseController {
 
         $errs = false;
         $validation = $v->js_validation();
-        
+
         // If posted
         if ( $this->verified() && !stristr( $_POST['referer'], '//' )  ) {
             $errs = $v->validate();
