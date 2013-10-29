@@ -40,10 +40,12 @@ class LoginController extends BaseController {
                     $expiration = ( isset( $_POST['remember-me'] ) ) ? 1209600 : 172800;
                     set_cookie( AUTH_COOKIE, base64_encode( security::encrypt( $this->user->email, security::hash( COOKIE_KEY, 'secure-auth' ) ) ), $expiration );
 
-                    if( !isset( $_POST['referer'] ) || isset( $_POST['referer'] ) && empty( $_POST['referer'] ) ) {
+                    if( !isset( $_SESSION['referer'] ) || isset( $_SESSION['referer'] ) && empty( $_SESSION['referer'] ) ) {
                         return new RedirectResponse('/');
                     } else {
-                        return new RedirectResponse( $_POST['referer'] );
+                        $referer = $_SESSION['referer'];
+                        unset( $_SESSION['referer'] );
+                        return new RedirectResponse( $referer );
                     }
                 } else {
                     $errs .= _('Your email and password do not match. Please try again.');

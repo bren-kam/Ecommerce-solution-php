@@ -11,11 +11,6 @@
 $resources->css_before( 'labels/' . 'greysuitretail.com', 'login' );
 $resources->javascript( 'sparrow' );
 
-$referer = ( isset( $r ) ) ? strip_tags( base64_decode( $r ) ) : '';
-
-if ( stristr( $referer, '//' ) )
-    $referer = '';
-
 $margin_bottom = ( 'greysuitretail' == DOMAIN ) ? '' : '20px';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -45,7 +40,6 @@ if ( $errs ) {
         <input type="password" class="tb" name="password" placeholder="<?php echo _('Password'); ?>" autocomplete="off" maxlength="30" />
         <input type="submit" class="login-button float-right" value="<?php echo _('Login'); ?>" />
         <p id="remember-me"><input type="checkbox" class="cb" name="remember-me" id="cbRememberMe" value="1"<?php if ( '1' == $template->v('remember-me') ) echo ' checked="checked"'; ?> /> <label for="cbRememberMe"><?php echo _('Remember Me'); ?></label></p>
-        <input type="hidden" name="referer" value="<?php echo $referer; ?>" />
         <br clear="both" />
         <?php nonce::field('index'); ?>
     </form>
