@@ -24,6 +24,7 @@ class url extends Base_Class {
 
 		/* Redirect to new location */
 		header::send( "Location: $location" );
+        exit;
 	}
 	
 	/**

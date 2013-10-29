@@ -35,7 +35,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
     protected $ftp;
 
     /**
-     * Hold the category code translation
+     * Hold the brand code translation
      */
     protected $codes = array(
 			'AB' => 8
