@@ -204,7 +204,7 @@ abstract class BaseController {
                 }
             }
 
-            if ( !$this->user->account && '/home/select-account/' == $_SERVER['REQUEST_URI'] && stristr( $_SERVER['REQUEST_URI'], '/home/change-account/' ) ) {
+            if ( !$this->user->account && '/home/select-account/' != $_SERVER['REQUEST_URI'] && !stristr( $_SERVER['REQUEST_URI'], '/home/change-account/' ) ) {
                 $url = ( count( $this->user->accounts ) > 0 ) ? '/home/select-account/' : '/logout/';
                 url::redirect($url);
                 return true;
