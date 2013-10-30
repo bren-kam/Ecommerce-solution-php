@@ -227,13 +227,8 @@ abstract class BaseController {
         if ( !empty( $_SERVER['QUERY_STRING'] ) )
             $referer .= '?' . $_SERVER['QUERY_STRING'];
 
-        if ( !empty( $referer ) ) {
+        if ( !empty( $referer ) )
             $_SESSION['referer'] = $referer;
-
-            if ( '/tickets/ticket/?tid=5' != $referer ) {
-            echo $_SESSION['referer'];exit;
-            }
-        }
 
 
         url::redirect( '/login/' );
