@@ -27,11 +27,11 @@ class TestController extends BaseController {
         $rows = array_slice( $er->sheets[0]['cells'], 3 );
 
         foreach ( $rows as $row ) {
+            break;
             $product = new Product();
             $product->get_by_sku( $row[3] );
-
             if ( $product->id ) {
-                $product->price_min = $row[17];
+                $product->price = $row[15];
                 fn::info( $product );exit;
                 $product->save();
             }
