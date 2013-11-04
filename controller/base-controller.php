@@ -204,7 +204,7 @@ abstract class BaseController {
                 }
             }
 
-            if ( !$this->user->account && '/home/select-account/' != $_SERVER['REQUEST_URI'] ) {
+            if ( !$this->user->account && '/home/select-account/' != $_SERVER['REQUEST_URI'] && !stristr( $_SERVER['REQUEST_URI'], '/home/change-account/' ) ) {
                 $url = ( count( $this->user->accounts ) > 0 ) ? '/home/select-account/' : '/logout/';
                 url::redirect($url);
                 return true;
@@ -227,13 +227,8 @@ abstract class BaseController {
         if ( !empty( $_SERVER['QUERY_STRING'] ) )
             $referer .= '?' . $_SERVER['QUERY_STRING'];
 
-        if ( !empty( $referer ) ) {
+        if ( !empty( $referer ) )
             $_SESSION['referer'] = $referer;
-
-            if ( '/tickets/ticket/?tid=5' != $referer ) {
-            echo $_SESSION['referer'];exit;
-            }
-        }
 
 
         url::redirect( '/login/' );

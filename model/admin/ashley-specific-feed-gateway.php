@@ -272,6 +272,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         if ( empty( Category::$categories ) )
             $category->get_all();
 
+        if ( is_array( $auto_prices ) )
         foreach ( $auto_prices as $auto_price ) {
             // Make sure they want it
             if ( !$auto_price->future )
