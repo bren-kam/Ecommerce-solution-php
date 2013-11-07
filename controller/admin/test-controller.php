@@ -23,7 +23,7 @@ class TestController extends BaseController {
         library('sendgrid-api');
 
         // Get accounts with email marketing
-        $accounts = $account->get_results('SELECT w.*, u.`email`, u.`contact_name`, COALESCE( u.`work_phone`, u.`cell_phone` ) AS phone FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) WHERE w.`status` = 1 AND w.`email_marketing` = 1 AND `website_id` <> 96', PDO::FETCH_CLASS, 'Account' );
+        $accounts = $account->get_results('SELECT w.*, u.`email`, u.`contact_name`, COALESCE( u.`work_phone`, u.`cell_phone` ) AS phone FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) WHERE w.`status` = 1 AND w.`email_marketing` = 1 AND `website_id` <> 96 LIMIT 5, 50', PDO::FETCH_CLASS, 'Account' );
 
         /**
          * @var Account $account
