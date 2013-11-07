@@ -18,13 +18,6 @@ class SendGridAPI {
     const API_KEY = 'Wxk8UXfOkV';
 
     /**
-   	 * Hold the api data
-   	 *
-   	 * @var string
-   	 */
-   	protected $api_url, $api_key;
-
-    /**
      * @var Account
      */
     protected $account;
@@ -145,7 +138,7 @@ class SendGridAPI {
         $this->raw_request = http_build_query( $this->request );
 
         // Set URL
-        $url = $this->api_url . $method . '.' . self::API_OUTPUT . '?' . $this->raw_request;
+        $url = self::API_URL . $method . '.' . self::API_OUTPUT . '?' . $this->raw_request;
 
         // Initialize cURL and set options
         $ch = curl_init();
