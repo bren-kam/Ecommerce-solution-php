@@ -12,7 +12,7 @@ class SendGridAPI {
      * Constant paths to include files
      */
     const DEBUG = true;
-    const API_URL = 'https://sendgrid.com/api/';
+    const API_URL = 'https://sendgrid.com/apiv2/';
     const API_OUTPUT = 'json';
     const API_USER = 'greysuitretail';
     const API_KEY = 'Wxk8UXfOkV';
