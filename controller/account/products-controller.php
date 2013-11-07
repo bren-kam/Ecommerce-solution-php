@@ -414,6 +414,8 @@ class ProductsController extends BaseController {
                     $auto_price->$key = $value;
                 }
 
+                $auto_price->future = (int) isset( $values['future'] );
+
                 $auto_price->save();
             }
 
