@@ -37,7 +37,8 @@ class TestController extends BaseController {
             list( $first_name, $last_name ) = explode( ' ', $account->contact_name, 2 );
 
             $settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
-            $sendgrid->subuser->add( $username, $password, $account->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $account->phone, $account->domain, $account->title );
+            $phone = ( empty( $account->phone ) ) ? '8185551234' : $account->phone;
+            $sendgrid->subuser->add( $username, $password, $account->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
             break;
         }
 
