@@ -33,14 +33,15 @@ class TestController extends BaseController {
             $sendgrid->setup_subuser();
 
             $username = format::slug( $account->title );
-            if ( 'furniture-connection' == $username )
-                continue;
+
             $password = substr( $account->id . md5(microtime()), 0, 10 );
             list( $first_name, $last_name ) = explode( ' ', $account->contact_name, 2 );
 
             $settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
             $phone = ( empty( $account->phone ) ) ? '8185551234' : $account->phone;
             $sendgrid->subuser->add( $username, $password, $account->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
+
+            $account->set_settings( array( 'sendgrid-username' => $username, 'sendgrid-password' => $password ) );
         }
 
         /*
