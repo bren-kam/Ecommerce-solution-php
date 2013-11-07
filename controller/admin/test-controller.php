@@ -18,6 +18,30 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        $account = new Account();
+
+        library('sendgrid-api');
+
+        // Get accounts with email marketing
+        $accounts = $account->get_results('SELECT w.*, u.`email`, u.`contact_name`, COALESCE( u.`work_phone`, u.`cell_phone` ) AS phone FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) WHERE w.`status` = 1 AND w.`email_marketing` = 1 AND `website_id` <> 96', PDO::FETCH_CLASS, 'Account' );
+
+        /**
+         * @var Account $account
+         */
+        foreach ( $accounts as $account ) {
+            $sendgrid = new SendGridAPI( $account );
+            $sendgrid->setup_subuser();
+
+            $username = format::slug( $account->title );
+            $password = substr( $account->id . md5(microtime()), 0, 10 );
+            list( $first_name, $last_name ) = explode( ' ', $account->contact_name, 2 );
+
+            $settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
+            $sendgrid->subuser->add( $username, $password, $account->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $account->phone, $account->domain, $account->title );
+            break;
+        }
+
+        /*
         library('Excel_Reader/Excel_Reader');
         $er = new Excel_Reader();
         // Set the basics and then read in the rows
@@ -35,7 +59,7 @@ class TestController extends BaseController {
                 fn::info( $product );exit;
                 $product->save();
             }
-        }
+        }*/
 
         return new HtmlResponse( 'heh' );
     }
