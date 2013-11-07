@@ -111,6 +111,9 @@ function loadProduct( productID ) {
  * Gets the next product in the lineup for sampling purposes
  */
 function refreshPreview() {
+    if ( 'undefined' == typeof CKEDITOR )
+        return setTimeout( refreshPreview, 1000 );
+
 	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
 	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val(), productSpecifications = $("#hProductSpecifications").val();
 
@@ -143,4 +146,6 @@ function refreshPreview() {
 	
 	$("#dCraigslistCustomPreview").html( newContent );
     $('#hCraigslistPost').val( newContent );
+
+    return true;
 }
