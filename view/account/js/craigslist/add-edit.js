@@ -112,7 +112,7 @@ function loadProduct( productID ) {
  */
 function refreshPreview() {
     if ( 'undefined' == typeof CKEDITOR )
-        return setTimeout( refreshPreview, 1000 );
+        return setTimeout( refreshPreview, 500 );
 
 	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
 	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val(), productSpecifications = $("#hProductSpecifications").val();
