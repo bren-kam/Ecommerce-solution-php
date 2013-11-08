@@ -8,6 +8,7 @@
  */
 
 class SendGridSubuserAPI {
+    const API_URL = 'https://sendgrid.com/apiv2/';
     const PREFIX = 'customer';
 
     /**
@@ -66,6 +67,6 @@ class SendGridSubuserAPI {
      * @return stdClass object
      */
     protected function api( $method, $params = array() ) {
-        return $this->sendgrid->execute( self::PREFIX . '.' . $method, $params );
+        return $this->sendgrid->execute( self::PREFIX . '.' . $method, $params, self::API_URL );
     }
 }

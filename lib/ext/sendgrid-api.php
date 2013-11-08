@@ -12,10 +12,15 @@ class SendGridAPI {
      * Constant paths to include files
      */
     const DEBUG = true;
-    const API_URL = 'https://sendgrid.com/apiv2/';
     const API_OUTPUT = 'json';
     const API_USER = 'greysuitretail';
     const API_KEY = 'Wxk8UXfOkV';
+    const API_URL = 'https://sendgrid.com/api/';
+
+    /**
+     * Hold API credentials
+     */
+    protected $api_user, $api_key;
 
     /**
      * @var Account
@@ -23,11 +28,18 @@ class SendGridAPI {
     protected $account;
 
     /**
-     * Hold list
+     * Hold Subuser
      *
      * @var SendGridSubuserAPI
      */
     public $subuser;
+
+    /**
+     * Hold List
+     *
+     * @var SendGridListAPI
+     */
+    public $list;
 
 
     /**
@@ -46,9 +58,13 @@ class SendGridAPI {
 	 * Construct class will initiate and run everything
      *
      * @param Account $account This is for logging
+     * @param string $api_user [optional]
+     * @param string $api_key [optional]
 	 */
-	public function __construct( Account $account ) {
+	public function __construct( Account $account, $api_user = self::API_USER, $api_key = self::API_KEY ) {
         $this->account = $account;
+        $this->api_user = $api_user;
+        $this->api_key = $api_key;
 	}
 
     /**
@@ -126,19 +142,20 @@ class SendGridAPI {
      *
      * @param string $method The method being called
      * @param array $params an array of the parameters to be sent
+     * @param string $api_url
      * @return stdClass object
      */
-    public function execute( $method, $params = array() ) {
+    public function execute( $method, $params = array(), $api_url = self::API_URL ) {
         // Set Request Parameters
         $this->request = array_merge( array(
-            'api_user' => self::API_USER
-            , 'api_key' => self::API_KEY
+            'api_user' => $this->api_user
+            , 'api_key' => $this->api_key
         ), $params );
 
         $this->raw_request = http_build_query( $this->request );
 
         // Set URL
-        $url = self::API_URL . $method . '.' . self::API_OUTPUT . '?' . $this->raw_request;
+        $url = $api_url . $method . '.' . self::API_OUTPUT . '?' . $this->raw_request;
 
         // Initialize cURL and set options
         $ch = curl_init();
