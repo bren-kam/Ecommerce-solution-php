@@ -55,6 +55,18 @@ class SendGridSubuserAPI {
         return $this->sendgrid->success();
     }
 
+    /**
+     * Delete
+     * 
+     * @param string $username
+     * @return bool
+     */
+    public function delete( $username ) {
+        $this->api( 'delete', compact( 'username' ) );
+
+        return $this->sendgrid->success();
+    }
+
     /*************************************/
     /* End: SendGrid Subuser API Methods */
     /*************************************/
