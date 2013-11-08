@@ -60,8 +60,20 @@ class Email extends ActiveRecordBase {
     }
 
     /**
-     * Get By Account
-     */
+     * Get by email list
+     *
+     * @param int $email_list_id
+     * @return Email[]
+\     */
+    public function get_by_email_list( $email_list_id ) {
+		return $this->prepare( 'SELECT `email` FROM `emails` WHERE `email_list_id` = :email_list_id AND `status` = :status'
+            , 'ii'
+            , array(
+                ':email_list_id' => $email_list_id
+                , ':status' => self::STATUS_SUBSCRIBED
+            )
+        )->get_results( PDO::FETCH_CLASS, 'Email' );
+    }
 
     /**
      * Get Dashboard Subscribers By Account

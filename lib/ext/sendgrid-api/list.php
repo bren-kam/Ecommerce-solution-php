@@ -46,14 +46,24 @@ class SendGridListAPI {
     /**
      * Edit
      *
-     * @return int
-     *
      * @param string $list
      * @param string $newlist
      * @return bool
      */
     public function edit( $list, $newlist ) {
         $this->api( 'edit', compact( 'list', 'newlist' ) );
+
+        return $this->sendgrid->success();
+    }
+
+    /**
+     * Delete
+     *
+     * @param string $list
+     * @return bool
+     */
+    public function delete( $list ) {
+        $this->api( 'delete', compact( 'list' ) );
 
         return $this->sendgrid->success();
     }

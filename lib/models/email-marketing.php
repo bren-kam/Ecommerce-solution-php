@@ -13,84 +13,6 @@ class EmailMarketing extends ActiveRecordBase {
     }
 
     /**
-	 * Synchronize email lists
-     *
-     * @param Account $account
-	 */
-	public function synchronize_email_lists( Account $account ) {
-        if ( !$this->ac instanceof ActiveCampaignAPI )
-            $this->ac = $this->setup_ac( $account );
-
-        // Look through remote lists
-        $this->ac->setup_list();
-        $ac_lists = $this->ac->list->list_all();
-
-        // Look through local lists
-        $email_list = new EmailList();
-        $lists = $email_list->get_by_account( $account->id );
-
-        // Initialize variables
-        $ac_list_ids = $synced_ac_list_ids = $ac_remaining_list_ids = $new_ac_list_ids = array();
-
-        // Create a list of IDS
-        if ( count( $ac_lists ) > 0 )
-        foreach ( $ac_lists as $acl ) {
-            if ( !is_object( $acl ) )
-                continue;
-
-            $ac_list_ids[] = $acl->id;
-        }
-
-        /**
-         * Create any lists
-         * @var string $address
-         * @var string $city
-         * @var string $state
-         * @var int $zip
-         */
-        foreach ( $lists as $list ) {
-            if ( in_array( $list->ac_list_id, $ac_list_ids ) ) {
-                $synced_ac_list_ids[] = $list->ac_list_id;
-            } else {
-                if ( !isset( $address ) )
-                    extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
-
-                $new_ac_list_ids[] = $list->ac_list_id = $this->ac->list->add( $list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
-                $list->save();
-            }
-        }
-
-        if ( !empty( $new_ac_list_ids ) ) {
-            // Make sure we can work on webhooks
-            $this->ac->setup_webhook();
-
-            // Add webhook for this account
-            $this->ac->webhook->add(
-                'Unsubscribe Hook'
-                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/unsubscribe/' )
-                , $new_ac_list_ids
-                , 'unsubscribe'
-                , array( 'public', 'system', 'admin' )
-            );
-
-            // Add campaign sent webhook for this list
-            $this->ac->webhook->add(
-                'Campaign Sent Hook'
-                , url::add_query_arg( 'aid', $account->id, 'http://admin.greysuitretail.com/hooks/ac/sent-campaign/' )
-                , $new_ac_list_ids
-                , 'sent'
-                , array( 'public', 'system', 'admin', 'api' )
-            );
-        }
-
-        // Get the remaining list ids that need to be removed
-        $ac_remaining_list_ids = array_diff( $ac_list_ids, $synced_ac_list_ids );
-
-        if ( !empty( $ac_remaining_list_ids ) )
-            $this->ac->list->delete_multiple( $ac_remaining_list_ids );
-	}
-
-    /**
      * Add Email List
      *
      * @throws ModelException
@@ -136,26 +58,6 @@ class EmailMarketing extends ActiveRecordBase {
         );
 
         return $ac_list_id;
-    }
-
-    /**
-     * Update Email List
-     *
-     * @throws ModelException
-     *
-     * @param Account $account
-     * @param EmailList $email_list
-     */
-    public function update_email_list( Account $account, EmailList $email_list ) {
-        if ( !$this->ac instanceof ActiveCampaignAPI )
-            $this->ac = $this->setup_ac( $account );
-
-        extract( $account->get_settings( 'address', 'city', 'state', 'zip' ) );
-
-        $this->ac->list->edit( $email_list->id, $email_list->name, $account->ga_profile_id, url::domain( $account->domain, false ), $account->title, $address, $city, $state, $zip );
-
-        if ( $this->ac->error() )
-            throw new ModelException( "Failed to create email list:\n" . $this->ac->message() );
     }
 
     /***** PROTECTED FUNCTIONS *****/
@@ -213,32 +115,5 @@ class EmailMarketing extends ActiveRecordBase {
 
         // Mark these emails as synced
         $this->query( "UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN( $email_ids )" );
-    }
-
-    /**
-     * Setup Active Campaign
-     *
-     * @param Account $account
-     * @return ActiveCampaignAPI
-     */
-    public static function setup_ac( Account $account ) {
-        $settings = $account->get_settings( 'ac-api-key', 'ac-api-url', 'ac-account', 'ac-username', 'ac-password' );
-
-        if ( empty( $settings['ac-api-key'] ) ) {
-            library('ac/ActiveCampaign.class');
-            $ac = new ActiveCampaign( $settings['ac-account'] . Config::key('ac-account-domain'), null, $settings['ac-username'], $settings['ac-password'] );
-            $ac_user = $ac->api('user/me');
-
-            $settings['ac-api-url'] = $ac_user->apiurl;
-            $settings['ac-api-key'] = $ac_user->apikey;
-
-            // Save the settings
-            $account->set_settings( $settings );
-
-        }
-
-        library('ac-api');
-
-        return new ActiveCampaignAPI( $account, $settings['ac-api-url'], $settings['ac-api-key'] );
     }
 }

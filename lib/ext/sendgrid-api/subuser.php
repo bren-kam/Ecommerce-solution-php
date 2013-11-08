@@ -57,7 +57,7 @@ class SendGridSubuserAPI {
 
     /**
      * Delete
-     * 
+     *
      * @param string $username
      * @return bool
      */

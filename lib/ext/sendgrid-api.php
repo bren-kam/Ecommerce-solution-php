@@ -253,8 +253,8 @@ class SendGridAPI {
         curl_close($ch);
 
         // Set the response
-        $this->success = 1 == $this->response->result_code;
-        $this->response_message = $this->response->result_message;
+        $this->success = 'error' != $this->response->message;
+        $this->response_message = ( $this->success ) ? $this->response->message : implode( "\n", $this->response->errors );
 
         $this->error = ( $this->success ) ? NULL : true;
 
