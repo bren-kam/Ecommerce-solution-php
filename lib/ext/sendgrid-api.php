@@ -41,6 +41,40 @@ class SendGridAPI {
      */
     public $list;
 
+    /**
+     * Hold Email
+     *
+     * @var SendGridEmailAPI
+     */
+    public $email;
+
+    /**
+     * Hold Marketing Email
+     *
+     * @var SendGridMarketingEmailAPI
+     */
+    public $marketing_email;
+
+    /**
+     * Hold Recipient
+     *
+     * @var SendGridRecipientAPI
+     */
+    public $recipient;
+
+    /**
+     * Hold Schedule
+     *
+     * @var SendGridScheduleAPI
+     */
+    public $schedule;
+
+    /**
+     * Hold Sender Address
+     *
+     * @var SendGridSenderAddressAPI
+     */
+    public $sender_address;
 
     /**
      * A few variables that will determine the basic status
@@ -138,6 +172,48 @@ class SendGridAPI {
     }
 
     /**
+     * Setup a sub section
+     */
+    public function setup_email() {
+        $this->_setup( 'email' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_list() {
+        $this->_setup( 'list' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_marketing_email() {
+        $this->_setup( 'marketing-email' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_recipient() {
+        $this->_setup( 'recipient' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_schedule() {
+        $this->_setup( 'schedule' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_sender_address() {
+        $this->_setup( 'sender-address' );
+    }
+
+    /**
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
@@ -213,7 +289,7 @@ class SendGridAPI {
     private function _setup( $section ) {
         if ( is_null( $this->$section ) ) {
             library( "sendgrid-api/$section" );
-            $class_name = 'SendGrid' . ucwords( $section ) . 'API';
+            $class_name = 'SendGrid' . str_replace( ' ', '', ucwords( str_replace( '-', ' ', $section ) ) ) . 'API';
             $this->$section = new $class_name( $this );
         }
     }
