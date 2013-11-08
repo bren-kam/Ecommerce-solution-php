@@ -47,6 +47,23 @@ class SendGridSenderAddressAPI {
 
         return $this->sendgrid->success();
     }
+    /**
+     * Add
+     *
+     * @param string $identity
+     * @param string $name
+     * @param string $email
+     * @param string $address
+     * @param string $city
+     * @param string $state
+     * @param string $zip
+     * @return bool
+     */
+    public function edit( $identity, $name, $email, $address, $city, $state, $zip ) {
+        $this->api( 'edit', compact( 'identity', 'name', 'email', 'address', 'city', 'state', 'zip' ) );
+
+        return $this->sendgrid->success();
+    }
 
     /********************************************/
     /* End: SendGrid Sender Address API Methods */

@@ -83,6 +83,14 @@ class EmailMarketingController extends BaseController {
 
             $this->user->account->set_settings( $new_settings );
 
+            // Edit sender address
+            $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password', 'address', 'city', 'state', 'zip' );
+            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+            $sendgrid->setup_sender_address();
+            $name = ( empty ( $_POST['from_name'] ) ) ? $this->user->contact_name : $_POST['from_email'];
+            $email = ( empty( $_POST['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $_POST['from_email'];
+            $sendgrid->sender_address->edit( $this->user->account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'] );
+
             $this->notify( _('Your email settings have been successfully saved!') );
 
             // Refresh to get all the changes

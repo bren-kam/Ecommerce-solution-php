@@ -96,7 +96,7 @@ class SubscribersController extends BaseController {
 
             // Set Sendgrid
             $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
-            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sengrid-password'] );
+            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_email();
 
             $email_list = new EmailList();
@@ -199,7 +199,7 @@ class SubscribersController extends BaseController {
 
             // Set Sendgrid
             $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
-            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sengrid-password'] );
+            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_email();
 
             $email->complete_import( $this->user->account->id, $sendgrid, explode( '|', $_POST['hEmailLists'] ) );
@@ -301,7 +301,7 @@ class SubscribersController extends BaseController {
 
         // Set Sendgrid
         $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
-        $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sengrid-password'] );
+        $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
         $sendgrid->setup_email();
 
         $email_list = new EmailList();

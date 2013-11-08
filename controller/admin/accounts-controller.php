@@ -1377,12 +1377,20 @@ class AccountsController extends BaseController {
         $password = substr( $account->id . md5(microtime()), 0, 10 );
         list( $first_name, $last_name ) = explode( ' ', $user->contact_name, 2 );
 
-        $settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
+        $settings = $account->get_settings( 'address', 'city', 'state', 'zip', 'from_email', 'from_name' );
         $phone = ( empty( $user->work_phone ) ) ? $user->cell_phone : $user->work_phone;
         if ( empty( $phone ) )
             $phone = '8185551234';
 
         $sendgrid->subuser->add( $username, $password, $user->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
+
+        // Create identity
+        $sendgrid->setup_sender_address();
+        $name = ( empty ( $settings['from_name'] ) ) ? $user->contact_name : $settings['from_email'];
+        $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
+
+        // Add sender address
+        $sendgrid->sender_address->add( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA' );
 
         $account->set_settings( array( 'sendgrid-username' => $username, 'sendgrid-password' => $password ) );
 

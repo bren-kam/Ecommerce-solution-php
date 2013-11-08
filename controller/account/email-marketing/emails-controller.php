@@ -251,9 +251,6 @@ class EmailsController extends BaseController {
 
         $response->add_response( 'email_message_id', $email_message->id );
 
-        if ( 0 == $email_message->ac_message_id )
-            return $response;
-
         // Get email lists
         $email_list = new EmailList();
         $email_lists = $email_list->get_by_message( $email_message->id, $this->user->account->id );
@@ -262,9 +259,6 @@ class EmailsController extends BaseController {
         foreach ( $email_lists as $el ) {
             $email_list_ids[] = $el->id;
         }
-
-        $email_message->update_ac_message( $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
-
         return $response;
     }
 
@@ -284,23 +278,14 @@ class EmailsController extends BaseController {
             return $response;
 
         // Test
-        $email_list = new EmailList();
         $email_message = new EmailMessage();
 
         // Get message
         $email_message->get( $_POST['emid'], $this->user->account->id );
 
-        // Get email lists
-        $email_lists = $email_list->get_by_message( $email_message->id, $this->user->account->id );
-        $email_list_ids = array();
-
-        foreach ( $email_lists as $el ) {
-            $email_list_ids[] = $el->id;
-        }
-
         // Test message
         try {
-            $email_message->test( $_POST['email'], $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
+            $email_message->test( $_POST['email'], $this->user->account );
         } catch ( ModelException $e ) {
             $response->check( false, $e->getMessage() );
         }
@@ -332,15 +317,10 @@ class EmailsController extends BaseController {
 
         // Get email lists
         $email_lists = $email_list->get_by_message( $email_message->id, $this->user->account->id );
-        $email_list_ids = array();
-
-        foreach ( $email_lists as $el ) {
-            $email_list_ids[] = $el->id;
-        }
 
         // Test message
         try {
-            $email_message->schedule( $this->user->account, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
+            $email_message->schedule( $this->user->account, $email_lists );
         } catch ( ModelException $e ) {
             $response->check( false, $e->getMessage() );
         }

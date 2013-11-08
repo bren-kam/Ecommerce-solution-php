@@ -62,6 +62,18 @@ class SendGridMarketingEmailAPI {
         return $this->sendgrid->success();
     }
 
+    /**
+     * Delete
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function delete( $name ) {
+        $this->api( 'delete', compact( 'name' ) );
+
+        return $this->sendgrid->success();
+    }
+
     /*********************************************/
     /* End: SendGrid Marketing Email API Methods */
     /*********************************************/
