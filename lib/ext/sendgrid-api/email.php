@@ -1,13 +1,13 @@
 <?php
 /**
- * SendGrid - List - API Library
+ * SendGrid - Email - API Library
  *
  * Library based on documentation available on 08/11/2013 from
- * @url http://sendgrid.com/docs/API_Reference/Marketing_Emails_API/lists.html
+ * @url http://sendgrid.com/docs/API_Reference/Marketing_Emails_API/emails.html
  *
  */
 
-class SendGridListAPI {
+class SendGridEmailAPI {
     const PREFIX = 'newsletter/lists/email/';
 
     /**
@@ -25,9 +25,9 @@ class SendGridListAPI {
         $this->sendgrid = $sendgrid;
 	}
 
-    /************************************/
-    /* Start: SendGrid List API Methods */
-    /************************************/
+    /*************************************/
+    /* Start: SendGrid Email API Methods */
+    /*************************************/
 
     /**
      * Add
@@ -63,24 +63,9 @@ class SendGridListAPI {
         return $this->sendgrid->success();
     }
 
-    /**
-     * Edit
-     *
-     * @return int
-     *
-     * @param string $list
-     * @param string $newlist
-     * @return bool
-     */
-    public function edit( $list, $newlist ) {
-        $this->api( 'edit', compact( 'list', 'newlist' ) );
-
-        return $this->sendgrid->success();
-    }
-
-    /**********************************/
-    /* End: SendGrid List API Methods */
-    /**********************************/
+    /***********************************/
+    /* End: SendGrid Email API Methods */
+    /***********************************/
 
     /**
      * API
