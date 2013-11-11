@@ -29,19 +29,33 @@ class TestController extends BaseController {
          * @var Account $account
          */
         foreach ( $accounts as $account ) {
-            $sendgrid = new SendGridAPI( $account );
-            $sendgrid->setup_subuser();
+            $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+            $sendgrid->setup_email();
+            $sendgrid->setup_list();
 
-            $username = format::slug( $account->title );
+            $email_list = new EmailList();
+            $email_lists = $email_list->get_by_account( $account->website_id );
 
-            $password = substr( $account->id . md5(microtime()), 0, 10 );
-            list( $first_name, $last_name ) = explode( ' ', $account->contact_name, 2 );
+            $email = new Email();
 
-            $settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
-            $phone = ( empty( $account->phone ) ) ? '8185551234' : $account->phone;
-            $sendgrid->subuser->add( $username, $password, $account->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
+            foreach ( $email_lists as $email_list ) {
+                echo $email_list->name;exit;
+                $sendgrid->list->add( $email_list->name );
 
-            $account->set_settings( array( 'sendgrid-username' => $username, 'sendgrid-password' => $password ) );
+                $emails_objects = $email->get_by_email_list( $email_list->id );
+                $emails = array();
+
+                foreach ( $emails_objects as $email ) {
+                    $emails[] = $email->email;
+                }
+
+                $email_chunks = array_chunk( $emails, 1000 );
+
+                foreach ( $email_chunks as $email_set ) {
+                    $sendgrid->email->add( $email_list->name, array( $email_set ) );
+                }
+            }
         }
 
         /*
