@@ -231,7 +231,7 @@ class SendGridAPI {
         $this->raw_request = http_build_query( $this->request );
 
         // Set URL
-        $url = $api_url . $method . '.' . self::API_OUTPUT . '?' . $this->raw_request;
+        $url = $api_url . $method . '.' . self::API_OUTPUT; // . '?' . $this->raw_request;
 
         // Initialize cURL and set options
         $ch = curl_init();
@@ -241,6 +241,7 @@ class SendGridAPI {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->raw_request );
         curl_setopt( $ch, CURLOPT_URL, $url );
 
         // Perform the request and get the response
