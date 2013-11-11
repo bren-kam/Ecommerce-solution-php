@@ -40,7 +40,7 @@ class SendGridEmailAPI {
         $data = array();
 
         foreach ( $emails as $email ) {
-            $data[] = compact( 'email' );
+            $data[] = array( 'email' => $email );
         }
 
         $data = json_encode( $data );
