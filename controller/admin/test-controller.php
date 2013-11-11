@@ -29,7 +29,7 @@ class TestController extends BaseController {
          * @var Account $account
          */
         foreach ( $accounts as $account ) {
-            $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
             $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_email();
             $sendgrid->setup_list();
