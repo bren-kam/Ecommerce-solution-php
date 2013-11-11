@@ -40,8 +40,7 @@ class TestController extends BaseController {
             $email = new Email();
 
             foreach ( $email_lists as $email_list ) {
-                echo $email_list->name;exit;
-                $sendgrid->list->add( $email_list->name );
+                //$sendgrid->list->add( $email_list->name );
 
                 $emails_objects = $email->get_by_email_list( $email_list->id );
                 $emails = array();
@@ -53,6 +52,7 @@ class TestController extends BaseController {
                 $email_chunks = array_chunk( $emails, 1000 );
 
                 foreach ( $email_chunks as $email_set ) {
+					fn::info( $email_set );exit;
                     $sendgrid->email->add( $email_list->name, array( $email_set ) );
                 }
             }

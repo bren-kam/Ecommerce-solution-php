@@ -66,13 +66,13 @@ class Email extends ActiveRecordBase {
      * @return Email[]
 \     */
     public function get_by_email_list( $email_list_id ) {
-		return $this->prepare( 'SELECT `email` FROM `emails` WHERE `email_list_id` = :email_list_id AND `status` = :status'
+		return $this->prepare( 'SELECT e.`email` FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE e.`status` = :status AND ea.`email_list_id` = :email_list_id'
             , 'ii'
             , array(
-                ':email_list_id' => $email_list_id
-                , ':status' => self::STATUS_SUBSCRIBED
+                ':status' => self::STATUS_SUBSCRIBED
+                , ':email_list_id' => $email_list_id
             )
-        )->get_results( PDO::FETCH_CLASS, 'Email' );
+        )->get_col();
     }
 
     /**
