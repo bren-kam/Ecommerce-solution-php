@@ -292,7 +292,8 @@ class SendGridAPI {
         if ( is_null( $this->$section ) ) {
             library( "sendgrid-api/$section" );
             $class_name = 'SendGrid' . str_replace( ' ', '', ucwords( str_replace( '-', ' ', $section ) ) ) . 'API';
-            $this->$section = new $class_name( $this );
+            $new_section = str_replace( '-', '_', $section );
+            $this->$new_section = new $class_name( $this );
         }
     }
 }
