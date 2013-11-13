@@ -1386,7 +1386,7 @@ class AccountsController extends BaseController {
 
         // Create identity
         $sendgrid->setup_sender_address();
-        $name = ( empty ( $settings['from_name'] ) ) ? $user->contact_name : $settings['from_email'];
+        $name = ( empty ( $settings['from_name'] ) ) ? $user->contact_name : $settings['from_name'];
         $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
 
         // Add sender address

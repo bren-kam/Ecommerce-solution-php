@@ -256,7 +256,7 @@ class SendGridAPI {
 
         // Set the response
         $this->success = 'error' != $this->response->message && !isset( $this->response->error );
-        $this->response_message = ( $this->success ) ? $this->response->message : implode( "\n", $this->response->errors );
+        $this->response_message = ( $this->success ) ? $this->response->message : $this->response->errors;
 
         $this->error = ( $this->success ) ? NULL : true;
 
