@@ -37,15 +37,13 @@ class SendGridEmailAPI {
      * @return bool
      */
     public function add( $list, array $emails ) {
-        $data = array();
+        $data = '';
 
         foreach ( $emails as $email ) {
-            $data[] = array( 'email' => $email );
+            $data .= '&data[]=' . json_encode( array( 'email' => $email, 'name' => '' ) );
         }
 
-        $data = json_encode( $data );
-
-        $this->api( 'add', compact( 'list', 'data' ) );
+        $this->api( 'add', compact( 'list' ), $data );
 
         return $this->sendgrid->success();
     }
@@ -72,9 +70,10 @@ class SendGridEmailAPI {
      *
      * @param string $method
      * @param $params [optional]
+	 * @param string $extra [optional]
      * @return stdClass object
      */
-    protected function api( $method, $params = array() ) {
-        return $this->sendgrid->execute( self::PREFIX . $method, $params );
+    protected function api( $method, $params = array(), $extra = '' ) {
+        return $this->sendgrid->execute( self::PREFIX . $method, $params, SendGridAPI::API_URL, $extra );
     }
 }

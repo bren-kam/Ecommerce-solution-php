@@ -217,18 +217,19 @@ class SendGridAPI {
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
-     * @param array $params an array of the parameters to be sent
-     * @param string $api_url
+     * @param array $params an array of the parameters to be sent [optional]
+     * @param string $api_url [optional]
+	 * @param string $extra [optional]
      * @return stdClass object
      */
-    public function execute( $method, $params = array(), $api_url = self::API_URL ) {
+    public function execute( $method, $params = array(), $api_url = self::API_URL, $extra = '' ) {
         // Set Request Parameters
         $this->request = array_merge( array(
             'api_user' => $this->api_user
             , 'api_key' => $this->api_key
         ), $params );
 
-        $this->raw_request = http_build_query( $this->request );
+        $this->raw_request = http_build_query( $this->request ) . $extra;
 
         // Set URL
         $url = $api_url . $method . '.' . self::API_OUTPUT; // . '?' . $this->raw_request;
