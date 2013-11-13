@@ -65,6 +65,7 @@ class EmailListsController extends BaseController {
 
             // Setup sendgrid
             $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            library('sendgrid-api');
             $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_list();
 
@@ -206,6 +207,7 @@ class EmailListsController extends BaseController {
 
         // Delete from Sendgrid
         $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
         $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
         $sendgrid->setup_list();
         $sendgrid->list->delete( $email_list->name );

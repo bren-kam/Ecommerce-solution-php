@@ -96,6 +96,7 @@ class SubscribersController extends BaseController {
 
             // Set Sendgrid
             $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            library('sendgrid-api');
             $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_email();
 
@@ -199,6 +200,7 @@ class SubscribersController extends BaseController {
 
             // Set Sendgrid
             $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            library('sendgrid-api');
             $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_email();
 
@@ -301,6 +303,7 @@ class SubscribersController extends BaseController {
 
         // Set Sendgrid
         $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
         $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
         $sendgrid->setup_email();
 

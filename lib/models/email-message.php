@@ -286,8 +286,9 @@ class EmailMessage extends ActiveRecordBase {
      * @param Account $account
      */
     public function test( $email, Account $account ) {
-        // Active Campaign
+        // Sendgrid
         $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
         $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
 
         $sendgrid->setup_marketing_email();
@@ -324,6 +325,7 @@ class EmailMessage extends ActiveRecordBase {
     public function schedule( Account $account, array $email_lists ) {
         // Active Campaign
         $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
         $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
         $sendgrid->setup_marketing_email();
         $sendgrid->setup_recipient();
