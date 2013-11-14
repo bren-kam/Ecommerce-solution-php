@@ -20,7 +20,7 @@ jQuery(function($) {
         swfobject.embedSWF('/media/flash/open-flash-chart.swf', 'dTrafficSources', '200', '200', '9.0.0', '', null, { wmode:'transparent' } );
 
     // Load the datepicker
-    head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
+    head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
         // Date Picker
         $('#tDateStart, #tDateEnd').datepicker({
             maxDate: -1

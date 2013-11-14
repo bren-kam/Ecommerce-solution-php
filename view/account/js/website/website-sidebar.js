@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.form', function() {
 	// On load put the dividers in
 	updateDividers();
 	

@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', '/resources/js_single/?f=jquery.form', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', '/resources/js_single/?f=jquery.form', function() {
 	// Date Picker
 	$('#tDate').datepicker({
 		minDate: 0,

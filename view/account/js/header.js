@@ -23,7 +23,7 @@ jQuery(function($) {
 			return;
 		}
 
-		head.js( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', '/resources/js_single/?f=fileuploader', function() {
+		head.load( '/resources/js_single/?f=jquery.boxy', '/resources/js_single/?f=jquery.form', '/resources/js_single/?f=fileuploader', function() {
 			a.addClass('loaded');
 
 			// If exists, and they want to cache it use it
