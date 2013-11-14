@@ -32,8 +32,6 @@ class SendGridListAPI {
     /**
      * Add
      *
-     * @return int
-     *
      * @param string $list
      * @return bool
      */
@@ -41,6 +39,18 @@ class SendGridListAPI {
         $this->api( 'add', compact( 'list' ) );
 
         return $this->sendgrid->success();
+    }
+
+    /**
+     * Get
+     *
+     * @param string $list
+     * @return bool
+     */
+    public function get( $list ) {
+        $this->api( 'get', compact( 'list' ) );
+
+        return $this->sendgrid->response()->list;
     }
 
     /**

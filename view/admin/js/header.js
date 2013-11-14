@@ -23,7 +23,7 @@ jQuery(function($) {
 		head.load( '/resources/js_single/?f=jquery.boxy', '//cdnjs.cloudflare.com/ajax/libs/jquery.form/3.45/jquery.form.min.js', function() {
             head.load( '/resources/js_single/?f=fileuploader', function() {
                 a.addClass('loaded');
-    
+
                 // If exists, and they want to cache it use it
                 new Boxy( $('#dTicketPopup'), {
                     title : a.attr('title')
