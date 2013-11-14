@@ -57,7 +57,7 @@ class SendGridEmailAPI {
     public function get( $list ) {
         $this->api( 'get', compact( 'list' ) );
 
-        return $this->sendgrid->success();
+        return $this->sendgrid->response();
     }
 
     /**

@@ -308,7 +308,8 @@ class EmailMessage extends ActiveRecordBase {
         $sendgrid->list->add( self::TEST_EMAIL_LIST );
         $sendgrid->email->add( self::TEST_EMAIL_LIST, array( $email ) );
         $sendgrid->email->get( self::TEST_EMAIL_LIST );
-        $sendgrid->recipient->add(  self::TEST_EMAIL_LIST, $test_email_name );
+        $sendgrid->list->get( self::TEST_EMAIL_LIST );
+        $sendgrid->recipient->add( self::TEST_EMAIL_LIST, $test_email_name );
         $sendgrid->schedule->add( $test_email_name );
 
         if ( $sendgrid->error() )
