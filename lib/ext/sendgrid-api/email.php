@@ -49,6 +49,18 @@ class SendGridEmailAPI {
     }
 
     /**
+     * Get
+     *
+     * @param string $list
+     * @return bool
+     */
+    public function get( $list ) {
+        $this->api( 'get', compact( 'list' ) );
+
+        return $this->sendgrid->success();
+    }
+
+    /**
      * Delete
      *
      * @param string $list
