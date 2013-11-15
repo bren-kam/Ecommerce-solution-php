@@ -23,7 +23,8 @@
                 <a href="/accounts/companies/add-edit/" title="<?php echo _('Add Company'); ?>" class="sub add last<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
                 <?php
             }
-        }
-        ?>
+            ?>
+            <a href="/accounts/customize/settings/" title="<?php echo _('Customize'); ?>" class="top<?php $template->select('customize'); ?>"><?php echo _('Customize'); ?></a>
+        <?php } ?>
     </div>
 </div>

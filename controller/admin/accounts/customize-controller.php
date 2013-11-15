@@ -48,9 +48,54 @@ class CustomizeController extends BaseController {
 
         return $this->get_template_response( 'css' )
             ->kb( 10 )
-            ->select( 'customize', 'css' )
+            ->select( 'customize', 'stylesheet' )
             ->set( compact( 'css', 'account' ) )
             ->add_title( _('CSS') );
+    }
+
+    /**
+     * Settings
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function settings() {
+        if ( !$this->user->has_permission( User::ROLE_ADMIN ) || !isset( $_GET['aid'] ) )
+            return new RedirectResponse('/accounts/');
+
+        // Initialize classes
+        $account = new Account;
+        $account->get( $_GET['aid'] );
+
+        // Setup objects
+        $ft = new FormTable( _('fCustomizeSettings') );
+
+        // Get variables
+        $settings = $account->get_settings(
+            'slideshow-fixed-width'
+        );
+
+        // Start adding fields
+        $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
+
+        if ( $ft->posted() ) {
+            // Update settings
+            $account->set_settings( array(
+                'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
+            ));
+
+            $this->notify( _('Settings have been updated!') );
+
+            return new RedirectResponse( url::add_query_arg( 'aid', $_GET['aid'], '/accounts/customize/settings/' ) );
+        }
+
+        // Create Form
+        $form = $ft->generate_form();
+
+        return $this->get_template_response('settings')
+            ->kb( 0 )
+            ->add_title( _('Settings') )
+            ->select('customize', 'settings')
+            ->set( compact( 'account', 'form' ) );
     }
 
      /**
@@ -70,8 +115,9 @@ class CustomizeController extends BaseController {
         $this->resources->javascript('fileuploader', 'accounts/customize/favicon');
 
         return $this->get_template_response('favicon')
-                        ->set('favicon', $favicon)
-                        ->add_title(_('Favicon'));
+            ->select('customize', 'favico')
+            ->set('favicon', $favicon)
+            ->add_title(_('Favicon'));
     }
 
     /***** AJAX *****/
