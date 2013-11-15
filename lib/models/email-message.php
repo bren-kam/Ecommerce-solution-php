@@ -287,6 +287,7 @@ class EmailMessage extends ActiveRecordBase {
      */
     public function test( $email, Account $account ) {
         // Sendgrid
+        /*
         $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
         library('sendgrid-api');
         $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
@@ -314,6 +315,8 @@ class EmailMessage extends ActiveRecordBase {
 
         if ( $sendgrid->error() )
             throw new ModelException( 'SendGrid failed to send test: ' . $sendgrid->message() );
+        */
+        fn::mail( $email, $this->subject, $this->message );
     }
 
     /**
