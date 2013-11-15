@@ -83,7 +83,7 @@ class CustomizeController extends BaseController {
             // Update settings
             $account->set_settings( array(
                 'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
-                , 'slideshow-fixed-width' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
+                , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
             ));
 
             $this->notify( _('Settings have been updated!') );
