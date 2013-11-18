@@ -11,7 +11,7 @@ class SendGridAPI {
     /**
      * Constant paths to include files
      */
-    const DEBUG = true;
+    const DEBUG = false;
     const API_OUTPUT = 'json';
     const API_USER = 'greysuitretail';
     const API_KEY = 'Wxk8UXfOkV';
