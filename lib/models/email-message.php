@@ -316,7 +316,7 @@ class EmailMessage extends ActiveRecordBase {
         if ( $sendgrid->error() )
             throw new ModelException( 'SendGrid failed to send test: ' . $sendgrid->message() );
         */
-        fn::mail( $email, $this->subject, $this->message );
+        fn::mail( $email, $this->subject, $this->message, '', '', false );
     }
 
     /**
