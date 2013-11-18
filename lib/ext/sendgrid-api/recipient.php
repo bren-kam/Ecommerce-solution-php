@@ -49,7 +49,7 @@ class SendGridRecipientAPI {
      * @return array
      */
     public function get( $name ) {
-        $this->api( 'add', compact( 'name' ) );
+        $this->api( 'get', compact( 'name' ) );
 
         return $this->sendgrid->response();
     }

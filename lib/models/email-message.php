@@ -325,7 +325,7 @@ class EmailMessage extends ActiveRecordBase {
      * @throws ModelException
      *
      * @param Account $account
-     * @param array $email_lists
+     * @param EmailList[] $email_lists
      */
     public function schedule( Account $account, array $email_lists ) {
         // Active Campaign
