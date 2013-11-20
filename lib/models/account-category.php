@@ -47,7 +47,7 @@ class AccountCategory extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'title' => strip_tags( $this->title )
-            , 'content' => strip_tags($this->content)
+            , 'content' => strip_tags( $this->content, '<p><br><strong><em><h1><h2><h3><h4><h5><h6><h7>' )
             , 'meta_title' => strip_tags($this->meta_title)
             , 'meta_description' => strip_tags($this->meta_description)
             , 'meta_keywords' => strip_tags($this->meta_keywords)
