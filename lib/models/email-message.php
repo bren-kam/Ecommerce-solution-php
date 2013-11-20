@@ -232,11 +232,12 @@ class EmailMessage extends ActiveRecordBase {
      * Get Dashboard Messages By Account
      *
      * @param int $account_id
+     * @param int $limit [optional]
      * @return EmailMessage[]
      */
-    public function get_dashboard_messages_by_account( $account_id ) {
+    public function get_dashboard_messages_by_account( $account_id, $limit = 5 ) {
         return $this->prepare(
-            'SELECT `email_message_id`, `ac_campaign_id`, `subject` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT 5'
+            'SELECT `email_message_id`, `subject`, `date_sent` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT ' . (int) $limit
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );

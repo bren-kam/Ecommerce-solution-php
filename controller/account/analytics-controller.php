@@ -532,20 +532,25 @@ class AnalyticsController extends BaseController {
      * @return TemplateResponse
      */
     protected function email_marketing() {
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $this->user->account );
+        $sendgrid->setup_subuser();
+        $username = $this->user->account->get_settings('sendgrid-username');
+
+        // Get last 10 messages
         $email_message = new EmailMessage();
-        $ac = EmailMarketing::setup_ac( $this->user->account );
-        $ac->setup_campaign();
+        $emails = $email_message->get_dashboard_messages_by_account( $this->user->account->id, 10 );
 
-        // Get the emails
-        $ac_campaign_ids = $email_message->get_sent_emails( $this->user->account->id );
+        $stats = array();
 
-        // Get sent
-        $emails = $ac->campaign->list_all( $ac_campaign_ids );
+        foreach ( $emails as $email ) {
+            $stats[$email->id] = $sendgrid->subuser->stats( $username, $email->id );
+        }
 
         return $this->get_template_response( 'email-marketing' )
             ->add_title( _('Email Marketing') )
             ->select( 'email-marketing' )
-            ->set( compact( 'emails' ) );
+            ->set( compact( 'emails', 'stats' ) );
     }
 
     /**
@@ -557,27 +562,21 @@ class AnalyticsController extends BaseController {
         if ( !$this->user->account->email_marketing )
         	return new RedirectResponse('/analytics/');
 
-        if ( !isset( $_GET['accid'] ) )
+        if ( !isset( $_GET['eid'] ) )
             return new RedirectResponse('/analytics/email-marketing/');
 
         $email_message = new EmailMessage();
-        $email_message->get_by_ac_campaign_id( $_GET['accid'], $this->user->account->id );
+        $email_message->get( $_GET['eid'], $this->user->account->id );
 
         if ( !$email_message->id )
             return new RedirectResponse('/analytics/email-marketing/');
 
         // Get report total
-        $ac = EmailMarketing::setup_ac( $this->user->account );
-        $ac->setup_campaign();
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $this->user->account );
+        $sendgrid->setup_subuser();
 
-        $email = $ac->campaign->report_totals( $email_message->ac_campaign_id );
-        $opens = $ac->campaign->report_open_totals( $email_message->ac_campaign_id, $email_message->ac_message_id );
-        $clicks = $ac->campaign->report_link_totals( $email_message->ac_campaign_id, $email_message->ac_message_id );
-        $forwards = $ac->campaign->report_forward_totals( $email_message->ac_campaign_id );
-
-        $email->opens = $opens->opens;
-        $email->linkclicks = $clicks->linkclicks;
-        $email->uniqueforwards = $forwards->uniqueforwards;
+        $email = $sendgrid->subuser->stats( $this->user->account->get_settings('sendgrid-username'), $email_message->id );
 
         // Get the bar chart
         $bar_chart = Analytics::bar_chart( $email );
