@@ -77,6 +77,13 @@ class SendGridAPI {
     public $sender_address;
 
     /**
+     * Hold Category
+     *
+     * @var SendGridCategoryAPI
+     */
+    public $category;
+
+    /**
      * A few variables that will determine the basic status
      */
     protected $response_message = NULL;
@@ -211,6 +218,13 @@ class SendGridAPI {
      */
     public function setup_sender_address() {
         $this->_setup( 'sender-address' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_category() {
+        $this->_setup( 'category' );
     }
 
     /**

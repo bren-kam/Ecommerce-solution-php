@@ -335,6 +335,7 @@ class EmailMessage extends ActiveRecordBase {
         $sendgrid->setup_marketing_email();
         $sendgrid->setup_recipient();
         $sendgrid->setup_schedule();
+        $sendgrid->setup_category();
 
         // Change any existing schedule
         $sendgrid->schedule->delete( $this->id );
@@ -357,6 +358,10 @@ class EmailMessage extends ActiveRecordBase {
 
         // Create message
         $sendgrid->marketing_email->add( $account->id, $this->id, $this->subject, $text_mail, $this->message );
+
+        // Assign Category
+        $sendgrid->category->create( $this->id );
+        $sendgrid->category->add( $this->id, $this->id );
 
         foreach ( $email_lists as $email_list ) {
             $sendgrid->recipient->add( $email_list->name, $this->id );
