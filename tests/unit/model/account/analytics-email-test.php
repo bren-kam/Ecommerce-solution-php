@@ -112,65 +112,6 @@ class AnalyticsEmailTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test Get Complete
-     *
-     * @depends testGet
-     * @depends testUpdateAnalytics
-     */
-    public function testGetComplete() {
-        // Declare variables
-        $mc_campaign_id = -5;
-        $website_id = -3;
-        $subject = 'Mountains or Erdu';
-        $campaign_advice = 'Layoff the moonshine';
-        $click_stats = array( -1, -2, -3 );
-        $campaign_array = array(
-            'syntax_errors' => 0
-            , 'hard_bounces' => 1
-            , 'soft_bounces' => 2
-            , 'unsubscribes' => 3
-            , 'abuse_reports' => 4
-            , 'forwards' => 5
-            , 'forwards_opens' => 6
-            , 'opens' => 7
-            , 'unique_opens' => 8
-            , 'last_open' => 9
-            , 'clicks' => 10
-            , 'unique_clicks' => 11
-            , 'last_click' => 12
-            , 'users_who_clicked' => 13
-            , 'emails_sent' => 14
-        );
-
-        // Create
-        $this->phactory->insert( 'email_messages', array(
-            'website_id' => $website_id
-            , 'mc_campaign_id' => $mc_campaign_id
-            , 'subject' => $subject
-        ), 'iii' );
-
-        // Get stub
-        library( 'MCAPI' );
-        $stub_mc = $this->getMock( 'MCAPI', array(), array(), '', false );
-        $stub_mc->expects($this->once())->method('campaignStats')->with( $mc_campaign_id )->will($this->returnValue( $campaign_array ) );
-        $stub_mc->expects($this->once())->method('campaignAdvice')->with( $mc_campaign_id )->will($this->returnValue( $campaign_advice ) );
-        $stub_mc->expects($this->once())->method('campaignClickStats')->with( $mc_campaign_id )->will($this->returnValue( $click_stats ) );
-
-        // This is the call
-        $this->analytics_email->get_complete( $mc_campaign_id, $website_id, $stub_mc );
-
-        // Assert
-        $this->assertEquals( $subject, $this->analytics_email->subject );
-        $this->assertEquals( $campaign_array['abuse_reports'], $this->analytics_email->abuse_reports );
-        $this->assertEquals( $click_stats, $this->analytics_email->click_overlay );
-        $this->assertEquals( $campaign_advice, $this->analytics_email->advice );
-
-        // Cleanup
-        $this->phactory->delete( 'email_messages', compact( 'mc_campaign_id' ), 'i' );
-        $this->phactory->delete( 'analytics_emails', compact( 'mc_campaign_id' ), 'i' );
-    }
-
-    /**
      * Get Emails Without Statistics
      */
     public function testGetEmailsWithoutStatistics() {

@@ -33,11 +33,8 @@ class Config {
         // Google Analytics
         , 'ga-username'             => 'web@imagineretailer.com'
         , 'ga-password'             => 'imagine1010'
-        // Active Campaign
-        , 'ac-api-key'              => 'd1b7dc478909f6fc34eab65d0fa4192054db2145edd43f0aa58ae2341307850ab095ff91'
-        , 'ac-api-url'              => 'https://www.activecampaign.com'
-        , 'ac-account-domain'       => '.activehosted.com'
-        , 'ac-timezone'             => 'America/Chicago'
+        // Sendgrid
+        , 'sendgrid-timezone'       => 'America/Chicago'
 	);
 
     /**

@@ -468,9 +468,6 @@ class AccountsController extends BaseController {
             , 'ashley-alternate-folder'
             , 'facebook-url'
             , 'advertising-url'
-            , 'ac-account'
-            , 'ac-username'
-            , 'ac-password'
             , 'trumpia-username'
             , 'trumpia-password'
             , 'facebook-pages'
@@ -496,9 +493,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
-        $ft->add_field( 'text', _('Active Campaign Account'), 'tACAccount', $settings['ac-account'] );
-        $ft->add_field( 'text', _('Active Campaign Username'), 'tACUsername', $settings['ac-username'] );
-        $ft->add_field( 'text', _('Active Campaign Password'), 'tACPassword', $settings['ac-password'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
@@ -524,9 +518,6 @@ class AccountsController extends BaseController {
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
-                , 'ac-account' => $_POST['tACAccount']
-                , 'ac-username' => $_POST['tACUsername']
-                , 'ac-password' => $_POST['tACPassword']
                 , 'trumpia-username' => $_POST['tTrumpiaUsername']
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
@@ -565,7 +556,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get trumpia api key
-        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id', 'ac-username' );
+        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id', 'sendgrid-username' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )

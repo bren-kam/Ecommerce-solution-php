@@ -201,10 +201,16 @@ class Email extends ActiveRecordBase {
             return;
 
         // Setup AC
-        $ac = EmailMarketing::setup_ac( $account );
-        if ( !$ac->error() ) {
-            $ac->setup_contact();
-            $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
+        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_email();
+
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_email( $this->id, $account->id );
+
+        foreach ( $email_lists as $email_list ) {
+            $sendgrid->email->delete( $email_list->name, $this->name );
         }
 
         // Assuming the above is successful, delete everything about this email

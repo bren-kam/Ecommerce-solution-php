@@ -254,7 +254,7 @@ class EmailMessage extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `email_message_id`, `ac_campaign_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `email_message_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
@@ -359,7 +359,7 @@ class EmailMessage extends ActiveRecordBase {
         $date_sent = new DateTime( $this->date_sent );
 
         // Get sendgrid date
-        $sendgrid_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
+        $sendgrid_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('sendgrid-timezone') );
 
         $template = new EmailTemplate();
         $message = $template->get_complete( $account, $this );

@@ -1,11 +1,6 @@
 <?php
 class EmailMarketing extends ActiveRecordBase {
     /**
-     * @var ActiveCampaignAPI
-     */
-    protected $ac;
-
-    /**
      * Setup the account initial data
      */
     public function __construct() {

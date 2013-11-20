@@ -33,7 +33,7 @@ if ( $email ) {
         if ( is_array( $messages ) ) {
             foreach ( $messages as $message ) {
             ?>
-                <p><a href="<?php echo url::add_query_arg( 'accid', $message->ac_campaign_id, '/analytics/email/' ); ?>" title="<?php echo $message->subject; ?>"><?php echo $message->subject; ?></a></p>
+                <p><a href="<?php echo url::add_query_arg( 'eid', $message->id, '/analytics/email/' ); ?>" title="<?php echo $message->subject; ?>"><?php echo $message->subject; ?></a></p>
             <?php } ?>
             <p align="right"><a href="/email-marketing/emails/" title="<?php echo _('View All'); ?>" class="big bold"><?php echo _('View'); ?> <span class="highlight"><?php echo _('All'); ?></span></a></p>
         <?php } else { ?>
