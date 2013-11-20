@@ -320,7 +320,11 @@ class EmailMessage extends ActiveRecordBase {
 
         $template = new EmailTemplate();
         $message = $template->get_complete( $account, $this );
-        fn::mail( $email, $this->subject, $message, '', '', false );
+        $settings = $account->get_settings( 'from_name', 'from_email' );
+        $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
+        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
+        $from = $from_name . ' <' . $from_email . '>';
+        fn::mail( $email, $this->subject, $message, $from, $from, false );
     }
 
     /**
@@ -359,6 +363,9 @@ class EmailMessage extends ActiveRecordBase {
 
         $template = new EmailTemplate();
         $message = $template->get_complete( $account, $this );
+
+        // Add unsubscribe link
+        $message .= '<p style="font-size:11px;margin:0px;text-align:left;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';
 
         // Text email
         $text_mail = strip_tags( str_replace( '<br>', "\n", $message ) );
