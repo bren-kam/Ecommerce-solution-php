@@ -316,7 +316,10 @@ class EmailMessage extends ActiveRecordBase {
         if ( $sendgrid->error() )
             throw new ModelException( 'SendGrid failed to send test: ' . $sendgrid->message() );
         */
-        fn::mail( $email, $this->subject, $this->message, '', '', false );
+
+        $template = new EmailTemplate();
+        $message = $template->get_complete( $account, $this );
+        fn::mail( $email, $this->subject, $message, '', '', false );
     }
 
     /**
@@ -353,11 +356,14 @@ class EmailMessage extends ActiveRecordBase {
         // Get sendgrid date
         $sendgrid_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
 
+        $template = new EmailTemplate();
+        $message = $template->get_complete( $account, $this );
+
         // Text email
-        $text_mail = strip_tags( str_replace( '<br>', "\n", $this->message ) );
+        $text_mail = strip_tags( str_replace( '<br>', "\n", $message ) );
 
         // Create message
-        $sendgrid->marketing_email->add( $account->id, $this->id, $this->subject, $text_mail, $this->message );
+        $sendgrid->marketing_email->add( $account->id, $this->id, $this->subject, $text_mail, $message );
 
         // Assign Category
         $sendgrid->category->create( $this->id );
