@@ -27,15 +27,15 @@ class EmailMarketingController extends BaseController {
         $email = new Email();
         $subscribers = $email->get_dashboard_subscribers_by_account( $this->user->account->id );
 
-        // Get report total
-        $ac = EmailMarketing::setup_ac( $this->user->account );
-        $ac->setup_campaign();
-
         $message = $messages[0];
-        $email = $ac->campaign->report_totals( $message->ac_campaign_id );
+
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $this->user->account );
+        $sendgrid->setup_subuser();
+        $email_stats = $sendgrid->subuser->stats( $this->user->account->get_settings('sendgrid-username'), $message->id );
 
         // Get the bar chart
-        $bar_chart = Analytics::bar_chart( $email );
+        $bar_chart = Analytics::bar_chart( $email_stats );
 
         $this->resources
             ->css( 'email-marketing/dashboard' )

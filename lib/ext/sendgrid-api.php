@@ -156,7 +156,7 @@ class SendGridAPI {
     /**
      * Get private response variable
      *
-     * @return stdClass Object
+     * @return stdClass|array
      */
     public function response() {
         return $this->response;
