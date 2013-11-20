@@ -1384,6 +1384,9 @@ class AccountsController extends BaseController {
 
         $sendgrid->subuser->add( $username, $password, $user->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
 
+        // Add IP Address
+        $sendgrid->subuser->send_ip( $username );
+
         // Create identity
         $sendgrid->setup_sender_address();
         $name = ( empty ( $settings['from_name'] ) ) ? $user->contact_name : $settings['from_name'];

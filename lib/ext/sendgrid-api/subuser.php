@@ -54,6 +54,20 @@ class SendGridSubuserAPI {
 
         return $this->sendgrid->success();
     }
+    /**
+     * Add IP address
+     *
+     * @param string $user
+     * @return bool
+     */
+    public function send_ip( $user ) {
+        $task = 'append';
+        $set = 'specify';
+        $ip = array( '198.37.157.92' );
+        $this->api( 'sendip', compact( 'task', 'user', 'set', 'ip' ) );
+
+        return $this->sendgrid->success();
+    }
 
     /**
      * Delete
