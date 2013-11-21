@@ -27,15 +27,15 @@ class EmailMarketingController extends BaseController {
         $email = new Email();
         $subscribers = $email->get_dashboard_subscribers_by_account( $this->user->account->id );
 
-        // Get report total
-        $ac = EmailMarketing::setup_ac( $this->user->account );
-        $ac->setup_campaign();
-
         $message = $messages[0];
-        $email = $ac->campaign->report_totals( $message->ac_campaign_id );
+
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $this->user->account );
+        $sendgrid->setup_subuser();
+        $email_stats = $sendgrid->subuser->stats( $this->user->account->get_settings('sendgrid-username'), $message->id );
 
         // Get the bar chart
-        $bar_chart = Analytics::bar_chart( $email );
+        $bar_chart = Analytics::bar_chart( $email_stats );
 
         $this->resources
             ->css( 'email-marketing/dashboard' )
@@ -82,6 +82,15 @@ class EmailMarketingController extends BaseController {
             }
 
             $this->user->account->set_settings( $new_settings );
+
+            // Edit sender address
+            $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password', 'address', 'city', 'state', 'zip' );
+            library('sendgrid-api');
+            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+            $sendgrid->setup_sender_address();
+            $name = ( empty ( $_POST['from_name'] ) ) ? $this->user->contact_name : $_POST['from_email'];
+            $email = ( empty( $_POST['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $_POST['from_email'];
+            $sendgrid->sender_address->edit( $this->user->account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'] );
 
             $this->notify( _('Your email settings have been successfully saved!') );
 

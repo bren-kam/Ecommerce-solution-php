@@ -182,7 +182,7 @@ foreach ( $attachments as $a ) {
 
             echo '
             <script type="text/javascript" language="javascript">
-                head.js( "/resources/js_single/?f=flowplayer", function() {
+                head.load( "/resources/js_single/?f=flowplayer", function() {
                         $f("player", "/media/flash/flowplayer.unlimited-3.1.5.swf", {
                         key: \'' . $key . '\',
                         playlist: [

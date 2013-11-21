@@ -25,11 +25,11 @@ class AllAccountsReport extends CustomReport {
         $where = '';
 
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) )
-            $where .= ' AND b.`company_id` = ' . (int) $this->user->company_id;
+            $where .= ' AND u.`company_id` = ' . (int) $this->user->company_id;
 
-        $report = $this->get_results( "SELECT a.`title`, b.`contact_name`, b.`billing_state`, CONCAT( 'http://', a.`domain`, '/' ) FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`status` = 1 $where ORDER BY b.`billing_state` ASC, a.`title` ASC", PDO::FETCH_ASSOC );
+        $report = $this->get_results( "SELECT w.`title`, u.`contact_name`, u.`work_phone`, u.`email`, u.`billing_state`, CONCAT( 'http://', w.`domain`, '/' ) FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) WHERE w.`status` = 1 $where ORDER BY u.`billing_state` ASC, w.`title` ASC", PDO::FETCH_ASSOC );
 
-        array_unshift( $report, array( 'Website Title', 'Store Owner', 'State', 'Link' ) );
+        array_unshift( $report, array( 'Website Title', 'Store Owner', 'Phone Number', 'Email Address', 'State', 'Link' ) );
 
         return $report;
     }

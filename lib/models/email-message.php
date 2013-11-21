@@ -1,10 +1,11 @@
 <?php
 class EmailMessage extends ActiveRecordBase {
+    const TEST_EMAIL_LIST = 'One-Time-Test';
     const STATUS_DRAFT = 0;
     const STATUS_SCHEDULED = 1;
     const STATUS_SENT = 2;
 
-    public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $ac_campaign_id, $ac_message_id, $subject, $message, $type, $status, $date_sent, $date_created;
+    public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $subject, $message, $type, $status, $date_sent, $date_created;
 
     // Artifical columns
     public $email_lists, $meta;
@@ -31,22 +32,6 @@ class EmailMessage extends ActiveRecordBase {
             'SELECT * FROM `email_messages` WHERE `email_message_id` = :email_message_id AND `website_id` = :account_id'
             , 'ii'
             , array( ':email_message_id' => $email_message_id, ':account_id' => $account_id )
-        )->get_row( PDO::FETCH_INTO, $this );
-
-        $this->id = $this->email_message_id;
-    }
-
-    /**
-     * Get
-     *
-     * @param int $ac_campaign_id
-     * @param int $account_id
-     */
-    public function get_by_ac_campaign_id( $ac_campaign_id, $account_id ) {
-        $this->prepare(
-            'SELECT * FROM `email_messages` WHERE `ac_campaign_id` = :ac_campaign_id AND `website_id` = :account_id'
-            , 'ii'
-            , array( ':ac_campaign_id' => $ac_campaign_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
 
         $this->id = $this->email_message_id;
@@ -112,20 +97,6 @@ class EmailMessage extends ActiveRecordBase {
             , 'i'
             , array( ':email_message_id' => $this->id )
         )->get_results( PDO::FETCH_ASSOC );
-    }
-
-    /**
-     * Get Sent emails for ac_campaign_list
-     *
-     * @param int $account_id
-     * @return array
-     */
-    public function get_sent_emails( $account_id ) {
-        return $this->prepare(
-            'SELECT `ac_campaign_id` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT 10'
-            , 'i'
-            , array( ':account_id' => $account_id )
-        )->get_col();
     }
 
     /**
@@ -197,8 +168,6 @@ class EmailMessage extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'email_template_id' => $this->email_template_id
-            , 'ac_message_id' => $this->ac_message_id
-            , 'ac_campaign_id' => $this->ac_campaign_id
             , 'subject' => strip_tags($this->subject)
             , 'message' => format::strip_only( $this->message, '<script>' )
             , 'type' => strip_tags($this->type)
@@ -207,36 +176,7 @@ class EmailMessage extends ActiveRecordBase {
         ), array(
             'email_message_id' => $this->id
             , 'website_id' => $this->website_id
-        ), 'iiisssis', 'ii' );
-    }
-
-    /**
-    * Update Active Campaign
-    *
-    * @throws ModelException
-    *
-    * @param Account $account
-    * @param array $ac_list_ids
-    */
-    public function update_ac_message( $account, $ac_list_ids ) {
-        $ac = EmailMarketing::setup_ac( $account );
-        $ac->setup_message();
-
-        $settings = $account->get_settings( 'from_email', 'from_name' );
-
-        // Determine from email
-        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $account->domain : $settings['from_email'];
-        $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
-
-        // Put the message in the template
-        $template = new EmailTemplate();
-        $message = $template->get_complete( $account, $this );
-
-        // Create message
-        $ac->message->edit( $this->ac_message_id, $this->subject, $from_email, $from_name, $from_email, $message, $this->message, $ac_list_ids );
-
-        if ( $ac->error() )
-            throw new ModelException( "Failed to update Active Campaign message:\n" . $ac->message() );
+        ), 'isssis', 'ii' );
     }
 
     /**
@@ -249,23 +189,6 @@ class EmailMessage extends ActiveRecordBase {
     public function remove_all( Account $account ) {
         if ( !$this->id )
             return;
-
-        // Delete from Active Campaign
-        if ( $this->ac_campaign_id ) {
-            $ac = EmailMarketing::setup_ac( $account );
-            $ac->setup_campaign();
-
-            // Delete the campaign
-            if ( $this->ac_message_id ) {
-                $ac->setup_message();
-
-                if ( !$ac->message->delete( $this->ac_message_id ) )
-                    throw new ModelException( $ac->message() );
-            }
-
-            if ( !$ac->campaign->delete( $this->ac_campaign_id ) )
-                throw new ModelException( $ac->message() );
-        }
 
         // Assuming the above is successful, delete everything about this email
         $this->remove_associations();
@@ -309,11 +232,12 @@ class EmailMessage extends ActiveRecordBase {
      * Get Dashboard Messages By Account
      *
      * @param int $account_id
+     * @param int $limit [optional]
      * @return EmailMessage[]
      */
-    public function get_dashboard_messages_by_account( $account_id ) {
+    public function get_dashboard_messages_by_account( $account_id, $limit = 5 ) {
         return $this->prepare(
-            'SELECT `email_message_id`, `ac_campaign_id`, `subject` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT 5'
+            'SELECT `email_message_id`, `subject`, `date_sent` FROM `email_messages` WHERE `website_id` = :account_id AND `status` = ' . self::STATUS_SENT . ' ORDER BY `date_sent` DESC LIMIT ' . (int) $limit
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
@@ -330,7 +254,7 @@ class EmailMessage extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `email_message_id`, `ac_campaign_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `email_message_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
@@ -361,21 +285,46 @@ class EmailMessage extends ActiveRecordBase {
      *
      * @param string $email
      * @param Account $account
-     * @param array $ac_list_ids
      */
-    public function test( $email, Account $account, array $ac_list_ids ) {
-        $ac = EmailMarketing::setup_ac( $account );
-        $ac->setup_campaign();
+    public function test( $email, Account $account ) {
+        // Sendgrid
+        /*
+        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
 
-        // Make sure it's created
-        if ( !$this->ac_campaign_id )
-            $this->create_ac_campaign( $ac, $account, $ac_list_ids );
+        $sendgrid->setup_marketing_email();
+        $sendgrid->setup_recipient();
+        $sendgrid->setup_schedule();
+        $sendgrid->setup_list();
+        $sendgrid->setup_email();
 
-        // Send test
-        $ac->campaign->send( $email, $this->ac_campaign_id, 'test' );
+        // Text email
+        $text_mail = strip_tags( str_replace( '<br>', "\n", $this->message ) );
 
-        if ( $ac->error() )
-            throw new ModelException( "Failed to send test ActiveCampaign message:\n" . $ac->message() );
+        $test_email_name = md5( $this->id );
+
+        // Create message
+        $sendgrid->marketing_email->add( $account->id, $test_email_name, $this->subject, $text_mail, $this->message );
+        $sendgrid->list->delete( self::TEST_EMAIL_LIST );
+        $sendgrid->list->add( self::TEST_EMAIL_LIST );
+        $sendgrid->email->add( self::TEST_EMAIL_LIST, array( $email ) );
+        $sendgrid->email->get( self::TEST_EMAIL_LIST );
+        $sendgrid->list->get( self::TEST_EMAIL_LIST );
+        $sendgrid->recipient->add( self::TEST_EMAIL_LIST, $test_email_name );
+        $sendgrid->schedule->add( $test_email_name );
+
+        if ( $sendgrid->error() )
+            throw new ModelException( 'SendGrid failed to send test: ' . $sendgrid->message() );
+        */
+
+        $template = new EmailTemplate();
+        $message = $template->get_complete( $account, $this );
+        $settings = $account->get_settings( 'from_name', 'from_email' );
+        $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
+        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
+        $from = $from_name . ' <' . $from_email . '>';
+        fn::mail( $email, $this->subject, $message, $from, $from, false );
     }
 
     /**
@@ -384,82 +333,73 @@ class EmailMessage extends ActiveRecordBase {
      * @throws ModelException
      *
      * @param Account $account
-     * @param array $ac_list_ids
+     * @param EmailList[] $email_lists
      */
-    public function schedule( Account $account, array $ac_list_ids ) {
+    public function schedule( Account $account, array $email_lists ) {
         // Active Campaign
-        $ac = EmailMarketing::setup_ac( $account );
-        $ac->setup_campaign();
+        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_marketing_email();
+        $sendgrid->setup_recipient();
+        $sendgrid->setup_schedule();
+        $sendgrid->setup_category();
 
-        // Make sure it's scheduled
-        if ( !$this->ac_campaign_id )
-            $this->create_ac_campaign( $ac, $account, $ac_list_ids );
+        // Change any existing schedule
+        $sendgrid->schedule->delete( $this->id );
+        $sendgrid->marketing_email->delete( $this->id );
+
+        $lists = $sendgrid->recipient->get( $this->id );
+
+        foreach ( $lists as $list ) {
+            $sendgrid->recipient->delete( $this->id, $list );
+        }
 
         $now = new DateTime();
         $date_sent = new DateTime( $this->date_sent );
 
-        // Get active campaign date
-        $ac_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
+        // Get sendgrid date
+        $sendgrid_datetime = new DateTime( $this->date_sent, new DateTimeZone( Config::setting('server-timezone') ) );
+        $sendgrid_date = $sendgrid_datetime->format('c');
+
+        $template = new EmailTemplate();
+        $message = $template->get_complete( $account, $this );
+
+        // Add unsubscribe link
+        $message .= '<p style="font-size:11px;margin:0px;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';
+
+        // Text email
+        $text_mail = strip_tags( str_replace( '<br>', "\n", $message ) );
+
+        // Create message
+        $sendgrid->marketing_email->add( $account->id, $this->id, $this->subject, $text_mail, $message );
+
+        // Assign Category
+        $sendgrid->category->create( $this->id );
+        $sendgrid->category->add( $this->id, $this->id );
+
+        foreach ( $email_lists as $email_list ) {
+            $sendgrid->recipient->add( $email_list->name, $this->id );
+        }
 
         if ( $date_sent > $now ) {
-            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED, $ac_date );
+            // Schedule for the future
+            $sendgrid->schedule->add( $this->id, $sendgrid_date );
 
-            if ( $ac->error() )
-                throw new ModelException( "Failed to schedule ActiveCampaign Campaign:\n" . $ac->message() );
+            if ( $sendgrid->error() )
+                throw new ModelException( "Failed to schedule Sendgrid marketing email:\n" . $sendgrid->message() );
 
             // Handle errors
             $this->status = self::STATUS_SCHEDULED;
             $this->save();
         } else {
-            $ac->campaign->update( $this->ac_campaign_id, ActiveCampaignCampaignAPI::STATUS_SCHEDULED, $ac_date );
+            $sendgrid->schedule->add( $this->id );
 
-            if ( $ac->error() )
-                throw new ModelException( "Failed to send ActiveCampaign Campaign:\n" . $ac->message() );
+            if ( $sendgrid->error() )
+                throw new ModelException( "Failed to send Sendgrid marketing email:\n" . $sendgrid->message() );
 
             $this->status = self::STATUS_SENT;
             $this->save();
         }
-    }
-
-    /**
-     * Create Active Campaign Campaign
-     *
-     * @throws ModelException
-     *
-     * @param ActiveCampaignAPI $ac
-     * @param Account $account
-     * @param array $ac_list_ids
-     */
-    public function create_ac_campaign( ActiveCampaignAPI $ac, Account $account, array $ac_list_ids ) {
-        // Creating a campaign/message
-        $ac->setup_campaign();
-        $ac->setup_message();
-
-        $settings = $account->get_settings( 'from_email', 'from_name' );
-
-        // Determine from email
-        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . $account->domain : $settings['from_email'];
-        $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
-
-        // Put the message in the template
-        $template = new EmailTemplate();
-        $message = $template->get_complete( $account, $this );
-
-        // Create message
-        $this->ac_message_id = $ac->message->add( $this->subject, $from_email, $from_name, $from_email, $message, strip_tags( $this->message ), $ac_list_ids );
-
-        if ( !is_int( $this->ac_message_id ) || $this->ac_message_id <= 0 )
-            throw new ModelException( "Active Campaign failed to create message:\n" . $ac->message() );
-
-        // Turn it into a date
-        $ac_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('ac-timezone') );
-
-        $this->ac_campaign_id = $ac->campaign->create( $this->ac_message_id, $this->subject, $ac_date, $ac_list_ids );
-
-        if ( !is_int( $this->ac_campaign_id ) || $this->ac_campaign_id <= 0 )
-            throw new ModelException( "Active Campaign failed to create campaign:\n" . $ac->message() );
-
-        // Save
-        $this->save();
     }
 }

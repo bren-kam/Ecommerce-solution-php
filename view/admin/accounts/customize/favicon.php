@@ -5,7 +5,7 @@
  *
 
  */
-echo $template->start(_('Favicon'), false);
+echo $template->start(_('Favicon') );
 ?>
 <form name="fTop" action="/accounts/customize/favicon/" method="post">
     <table class="width-auto">

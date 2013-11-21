@@ -87,15 +87,31 @@ class SubscribersController extends BaseController {
         if ( $form->posted() ) {
             $success = true;
 
+            $old_email = $email->email;
             $email->name = $_POST['tName'];
             $email->email = $_POST['tEmail'];
             $email->phone = $_POST['tPhone'];
 
             $email_list_ids = array_keys( $_POST['email-lists'] );
 
+            // Set Sendgrid
+            $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            library('sendgrid-api');
+            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+            $sendgrid->setup_email();
+
+            $email_list = new EmailList();
 
             if ( $email->id ) {
                 $email->save();
+
+                // Delete existing lists
+                $email_lists = $email_list->get_by_email( $email->id, $this->user->account->id );
+
+                // Delete frmo Sendgrid
+                foreach ( $email_lists as $email_list ) {
+                    $sendgrid->email->delete( $email_list->name, $old_email );
+                }
             } else {
                 $test_email = new Email();
                 $test_email->get_by_email( $this->user->account->id, $email->email );
@@ -111,18 +127,15 @@ class SubscribersController extends BaseController {
             }
 
             if ( $success ) {
-                // Setup AC
-                $ac = EmailMarketing::setup_ac( $this->user->account );
+                // Get the email lists
+                $email_lists = $email_list->get_by_ids( $email_list_ids, $this->user->account->id );
 
-                // Get the ac_list_ids
-                $email_list = new EmailList();
-
-
-                if ( !$ac->error() ) {
-                    $ac->setup_contact();
-                    $ac->contact->sync( $email->email, $email->name, $email_list->get_ac_list_ids( $email_list_ids, $this->user->account->id ) );
+                // Add to Sendgrid
+                foreach ( $email_lists as $email_list ) {
+                    $sendgrid->email->add( $email_list->name, array( $email->email ) );
                 }
 
+                // Add here
                 if ( isset( $_POST['email-lists'] ) )
                     $email->add_associations( $email_list_ids );
 
@@ -184,7 +197,14 @@ class SubscribersController extends BaseController {
 
         if ( $this->verified() ) {
             $email = new Email();
-            $email->complete_import( $this->user->account->id, explode( '|', $_POST['hEmailLists'] ) );
+
+            // Set Sendgrid
+            $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+            library('sendgrid-api');
+            $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+            $sendgrid->setup_email();
+
+            $email->complete_import( $this->user->account->id, $sendgrid, explode( '|', $_POST['hEmailLists'] ) );
 
             $this->notify( _('Your emails have been imported successfully!') );
             return new RedirectResponse( '/email-marketing/subscribers/' );
@@ -280,6 +300,19 @@ class SubscribersController extends BaseController {
         $email = new Email();
         $email->get( $_GET['eid'], $this->user->account->id );
         $email->remove_all( $this->user->account );
+
+        // Set Sendgrid
+        $settings = $this->user->account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $this->user->account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_email();
+
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_email( $email->id, $this->user->account->id );
+
+        foreach ( $email_lists as $email_list ) {
+            $sendgrid->email->delete( $email_list->name, $email->email );
+        }
 
         // Redraw the table
         jQuery('.dt:first')->dataTable()->fnDraw();

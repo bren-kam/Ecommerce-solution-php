@@ -418,12 +418,10 @@ class Analytics {
      */
     public static function bar_chart( $email ) {
         $max = max( array(
-            (int) $email->send_amt,
-            (int) $email->uniqueopens,
-            (int) $email->uniquelinkclicks,
-            (int) $email->forwards,
-            (int) $email->totalbounces,
-            (int) $email->unsubscribes
+            (int) $email->opens,
+            (int) $email->clicks,
+            (int) $email->bounces,
+            (int) $email->requests
         ) );
 
         // Create the bar chart
@@ -439,28 +437,20 @@ class Analytics {
                     ),
                     'values' => array(
                         array(
-                            'top' => (int) $email->send_amt,
+                            'top' => (int) $email->requests,
                             'tip' => '#val# Emails Sent'
                         ),
                         array(
-                              'top' => (int) $email->uniqueopens,
+                              'top' => (int) $email->opens,
                               'tip' => '#val# Opens'
                         ),
                         array(
-                              'top' => (int) $email->uniquelinkclicks,
+                              'top' => (int) $email->clicks,
                               'tip' => '#val# Clicks'
                         ),
                         array(
-                              'top' => (int) $email->forwards,
-                              'tip' => '#val# Forwards'
-                        ),
-                        array(
-                              'top' => $email->totalbounces,
+                              'top' => $email->bounces,
                               'tip' => '#val# Bounces'
-                        ),
-                        array(
-                              'top' => (int) $email->unsubscribes,
-                              'tip' => '#val# Unsubscribes'
                         )
                     ),
                     'tip' => '#val#'
@@ -472,9 +462,7 @@ class Analytics {
                         'Emails Sent',
                         'Opens',
                         'Clicks',
-                        'Forwards',
-                        'Bounces',
-                        'Unsubscribes'
+                        'Bounces'
                     ),
                     'colour' => '#545454'
                 ),

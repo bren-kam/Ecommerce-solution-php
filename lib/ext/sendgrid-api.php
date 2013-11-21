@@ -1,27 +1,26 @@
 <?php
 /**
- * Active Campaign - API Library
+ * SendGrid - API Library
  *
- * Library based on documentation available on 07/03/2013 from
- * @url http://www.activecampaign.com/api/overview.php
+ * Library based on documentation available on 11/07/2013 from
+ * @url http://sendgrid.com/docs/API_Reference/
  *
  */
 
-class ActiveCampaignAPI {
+class SendGridAPI {
     /**
      * Constant paths to include files
      */
     const DEBUG = false;
     const API_OUTPUT = 'json';
-    const REQUEST_TYPE_GET = 0;
-    const REQUEST_TYPE_POST = 1;
+    const API_USER = 'greysuitretail';
+    const API_KEY = 'Wxk8UXfOkV';
+    const API_URL = 'https://sendgrid.com/api/';
 
     /**
-   	 * Hold the api data
-   	 *
-   	 * @var string
-   	 */
-   	protected $api_url, $api_key;
+     * Hold API credentials
+     */
+    protected $api_user, $api_key;
 
     /**
      * @var Account
@@ -29,39 +28,60 @@ class ActiveCampaignAPI {
     protected $account;
 
     /**
-     * Hold list
+     * Hold Subuser
      *
-     * @var ActiveCampaignListAPI
+     * @var SendGridSubuserAPI
+     */
+    public $subuser;
+
+    /**
+     * Hold List
+     *
+     * @var SendGridListAPI
      */
     public $list;
 
     /**
-     * Hold contact
+     * Hold Email
      *
-     * @var ActiveCampaignContactAPI
+     * @var SendGridEmailAPI
      */
-    public $contact;
+    public $email;
 
     /**
-     * Hold webhook
+     * Hold Marketing Email
      *
-     * @var ActiveCampaignWebhookAPI
+     * @var SendGridMarketingEmailAPI
      */
-    public $webhook;
+    public $marketing_email;
 
     /**
-     * Hold campaign
+     * Hold Recipient
      *
-     * @var ActiveCampaignCampaignAPI
+     * @var SendGridRecipientAPI
      */
-    public $campaign;
+    public $recipient;
 
     /**
-     * Hold message
+     * Hold Schedule
      *
-     * @var ActiveCampaignMessageAPI
+     * @var SendGridScheduleAPI
      */
-    public $message;
+    public $schedule;
+
+    /**
+     * Hold Sender Address
+     *
+     * @var SendGridSenderAddressAPI
+     */
+    public $sender_address;
+
+    /**
+     * Hold Category
+     *
+     * @var SendGridCategoryAPI
+     */
+    public $category;
 
     /**
      * A few variables that will determine the basic status
@@ -79,16 +99,13 @@ class ActiveCampaignAPI {
 	 * Construct class will initiate and run everything
      *
      * @param Account $account This is for logging
-     * @param string $api_url
-     * @param string $api_key
+     * @param string $api_user [optional]
+     * @param string $api_key [optional]
 	 */
-	public function __construct( Account $account, $api_url, $api_key ) {
+	public function __construct( Account $account, $api_user = self::API_USER, $api_key = self::API_KEY ) {
         $this->account = $account;
-        $this->api_url = $api_url;
-		$this->api_key = $api_key;
-
-        if ( empty( $api_url ) || empty( $api_key ) )
-            $this->error = true;
+        $this->api_user = $api_user;
+        $this->api_key = $api_key;
 	}
 
     /**
@@ -139,7 +156,7 @@ class ActiveCampaignAPI {
     /**
      * Get private response variable
      *
-     * @return stdClass Object
+     * @return stdClass|array
      */
     public function response() {
         return $this->response;
@@ -157,6 +174,20 @@ class ActiveCampaignAPI {
     /**
      * Setup a sub section
      */
+    public function setup_subuser() {
+        $this->_setup( 'subuser' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_email() {
+        $this->_setup( 'email' );
+    }
+
+    /**
+     * Setup a sub section
+     */
     public function setup_list() {
         $this->_setup( 'list' );
     }
@@ -164,54 +195,58 @@ class ActiveCampaignAPI {
     /**
      * Setup a sub section
      */
-    public function setup_contact() {
-        $this->_setup( 'contact' );
+    public function setup_marketing_email() {
+        $this->_setup( 'marketing-email' );
     }
 
     /**
      * Setup a sub section
      */
-    public function setup_webhook() {
-        $this->_setup( 'webhook' );
+    public function setup_recipient() {
+        $this->_setup( 'recipient' );
     }
 
     /**
      * Setup a sub section
      */
-    public function setup_campaign() {
-        $this->_setup( 'campaign' );
+    public function setup_schedule() {
+        $this->_setup( 'schedule' );
     }
 
     /**
      * Setup a sub section
      */
-    public function setup_message() {
-        $this->_setup( 'message' );
+    public function setup_sender_address() {
+        $this->_setup( 'sender-address' );
+    }
+
+    /**
+     * Setup a sub section
+     */
+    public function setup_category() {
+        $this->_setup( 'category' );
     }
 
     /**
      * This sends sends the actual call to the API Server and parses the response
      *
      * @param string $method The method being called
-     * @param array $params an array of the parameters to be sent
-     * @param int $request_type [optional]
+     * @param array $params an array of the parameters to be sent [optional]
+     * @param string $api_url [optional]
+	 * @param string $extra [optional]
      * @return stdClass object
      */
-    public function execute( $method, $params = array(), $request_type = self::REQUEST_TYPE_GET ) {
+    public function execute( $method, $params = array(), $api_url = self::API_URL, $extra = '' ) {
         // Set Request Parameters
         $this->request = array_merge( array(
-            'api_key' => $this->api_key
-            , 'api_action' => $method
-            , 'api_output' => self::API_OUTPUT
-        ), $params);
+            'api_user' => $this->api_user
+            , 'api_key' => $this->api_key
+        ), $params );
 
-        $this->raw_request = http_build_query( $this->request );
+        $this->raw_request = http_build_query( $this->request ) . $extra;
 
         // Set URL
-        $url = $this->api_url . '/admin/api.php?';
-
-        if ( self::REQUEST_TYPE_GET == $request_type )
-            $url .=  $this->raw_request;
+        $url = $api_url . $method . '.' . self::API_OUTPUT; // . '?' . $this->raw_request;
 
         // Initialize cURL and set options
         $ch = curl_init();
@@ -221,10 +256,7 @@ class ActiveCampaignAPI {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-
-        if ( self::REQUEST_TYPE_POST == $request_type )
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->raw_request );
-
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $this->raw_request );
         curl_setopt( $ch, CURLOPT_URL, $url );
 
         // Perform the request and get the response
@@ -237,8 +269,8 @@ class ActiveCampaignAPI {
         curl_close($ch);
 
         // Set the response
-        $this->success = 1 == $this->response->result_code;
-        $this->response_message = $this->response->result_message;
+        $this->success = 'error' != $this->response->message && !isset( $this->response->error );
+        $this->response_message = ( $this->success ) ? $this->response->message : $this->response->errors;
 
         $this->error = ( $this->success ) ? NULL : true;
 
@@ -253,7 +285,7 @@ class ActiveCampaignAPI {
 
         $api_log = new ApiExtLog();
         $api_log->website_id = $this->account->id;
-        $api_log->api = 'Active Campaign API';
+        $api_log->api = 'SendGrid API';
         $api_log->method = $method;
         $api_log->url = $url;
         $api_log->request = json_encode( $this->request );
@@ -272,9 +304,10 @@ class ActiveCampaignAPI {
      */
     private function _setup( $section ) {
         if ( is_null( $this->$section ) ) {
-            library( "ac-api/$section" );
-            $class_name = 'ActiveCampaign' . ucwords( $section ) . 'API';
-            $this->$section = new $class_name( $this );
+            library( "sendgrid-api/$section" );
+            $class_name = 'SendGrid' . str_replace( ' ', '', ucwords( str_replace( '-', ' ', $section ) ) ) . 'API';
+            $new_section = str_replace( '-', '_', $section );
+            $this->$new_section = new $class_name( $this );
         }
     }
 }

@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 'http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js', function() {
 	// Cache
 	var cache = { sku : {}, product : {}, brand : {} };
 	
@@ -48,6 +48,11 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 	$('#aSearch').click( function() {
 		$('#tAddProducts').dataTable().fnDraw();
 	});
+
+    $('#fSearch').submit( function() {
+        $('#tAddProducts').dataTable().fnDraw();
+        return false;
+    });
 	
 	// @Fix skip sparrow
 	setTimeout( function() {

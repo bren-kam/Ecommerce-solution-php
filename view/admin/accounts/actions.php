@@ -45,7 +45,7 @@
 
 }
 
-if ( empty( $settings['ac-username'] ) ) { ?>
+if ( empty( $settings['sendgrid-username'] ) ) { ?>
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" rel="dialog" cache="0"><?php echo _('Create Email Marketing Account'); ?></a></p>
 <?php } ?>
 

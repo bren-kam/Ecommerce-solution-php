@@ -1,6 +1,6 @@
 <?php
 class EmailList extends ActiveRecordBase {
-    public $id, $email_list_id, $category_id, $website_id, $ac_list_id, $name, $description, $date_created;
+    public $id, $email_list_id, $category_id, $website_id, $name, $description, $date_created;
 
     // Artifical fields
     public $count;
@@ -55,9 +55,43 @@ class EmailList extends ActiveRecordBase {
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            'SELECT `email_list_id`, `category_id`, `ac_list_id`, `name` FROM `email_lists` WHERE `website_id` = :account_id'
+            'SELECT `email_list_id`, `category_id`, `name` FROM `email_lists` WHERE `website_id` = :account_id'
             , 'i'
             , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'EmailList' );
+    }
+
+    /**
+     * Get Email lists by account
+     *
+     * @param array $email_list_ids
+     * @param int $account_id
+     * @return EmailList[]
+     */
+    public function get_by_ids( array $email_list_ids, $account_id ) {
+        foreach ( $email_list_ids as &$email_list_id ) {
+            $email_list_id = (int) $email_list_id;
+        }
+
+        return $this->prepare(
+            'SELECT `email_list_id`, `category_id`, `name` FROM `email_lists` WHERE `website_id` = :account_id AND `email_list_id` IN ( ' . implode( ',', $email_list_ids ) . ')'
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'EmailList' );
+    }
+
+    /**
+     * Get Email lists by account
+     *
+     * @param int $email_id
+     * @param int $account_id
+     * @return EmailList[]
+     */
+    public function get_by_email( $email_id, $account_id ) {
+        return $this->prepare(
+            'SELECT el.`email_list_id`, el.`category_id`, el.`name` FROM `email_lists` AS el LEFT JOIN `email_associations` AS ea ON ( ea.`email_list_id` = el.`email_list_id` ) WHERE el.`website_id` = :account_id AND ea.`email_id` = :email_id'
+            , 'ii'
+            , array( ':account_id' => $account_id, ':email_id' => $email_id )
         )->get_results( PDO::FETCH_CLASS, 'EmailList' );
     }
 
@@ -91,25 +125,6 @@ class EmailList extends ActiveRecordBase {
     }
 
     /**
-     * Get AC List IDs
-     *
-     * @param array $email_list_ids
-     * @param int $account_id
-     * @return array
-     */
-    public function get_ac_list_ids( array $email_list_ids, $account_id ) {
-        foreach( $email_list_ids as &$email_list_id ) {
-            $email_list_id = (int) $email_list_id;
-        }
-
-        return $this->prepare(
-            'SELECT `ac_list_id` FROM `email_lists` WHERE `website_id` = :account_id AND `email_list_id` IN (' . implode( ',', $email_list_ids ) . ')'
-            , 'i'
-            , array( ':account_id' => $account_id )
-        )->get_col();
-    }
-
-    /**
      * Create Email List
      */
     public function create() {
@@ -117,11 +132,10 @@ class EmailList extends ActiveRecordBase {
 
         $this->insert( array(
             'website_id' => $this->website_id
-            , 'ac_list_id' => $this->ac_list_id
             , 'name' => strip_tags($this->name)
             , 'description' => strip_tags($this->description)
             , 'date_created' => $this->date_created
-        ), 'iisss' );
+        ), 'isss' );
 
         $this->id = $this->email_list_id = $this->get_insert_id();
     }
@@ -131,12 +145,11 @@ class EmailList extends ActiveRecordBase {
      */
     public function save() {
         $this->update( array(
-            'ac_list_id' => $this->ac_list_id
-            , 'name' => strip_tags($this->name)
+            'name' => strip_tags($this->name)
             , 'description' => strip_tags($this->description)
         ), array(
             'email_list_id' => $this->id
-        ), 'iss', 'i' );
+        ), 'ss', 'i' );
     }
     /**
      * Remove

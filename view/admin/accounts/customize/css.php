@@ -11,7 +11,7 @@
  * @var Account $account
  */
 
-echo $template->start( _('CSS for ') . $account->title, '../sidebar' );
+echo $template->start( _('CSS for ') . $account->title );
 nonce::field('save_css');
 ?>
 

@@ -2,9 +2,6 @@
 /**
  * Google GoogleMaps API
  *
- * Library based on documentation available on 10/09/2013 from
- * @url http://www.activecampaign.com/api/overview.php
- *
  */
 
 class GoogleMapsAPI {

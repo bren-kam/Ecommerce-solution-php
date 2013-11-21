@@ -30,8 +30,8 @@ $template->set( 'section_' . format::slug( $template->v('section') ), ' selected
     <title><?php echo $template->v('title') . ' | ' . TITLE; ?></title>
     <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
     <?php echo $resources->get_css_urls(); ?>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.2/head.load.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.min.js"></script>
     <link rel="icon" href="<?php echo '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
     <?php $template->get_head(); ?>
 </head>

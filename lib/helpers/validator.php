@@ -159,7 +159,7 @@ class Validator {
 	 */
 	 public function js_validation() {
 		if ( $this->js ) {
-			$start = '<script type="text/javascript" language="javascript">head.js( "/resources/js_single/?f=validator", function() {';
+			$start = '<script type="text/javascript" language="javascript">head.load( "/resources/js_single/?f=validator", function() {';
 			$trigger = ($this->trigger) ? ', true' : '';
 			$start .= ($this->form_name != 'document.forms[0].name') ? 'var fv' . $this->random . '=new Validator("' . $this->form_name . '"' . $trigger . ');document.' . $this->form_name . '.validator="fv' . $this->random . '";' : 'var fv' . $this->random . '=new Validator(' . $this->form_name . $trigger . ');document.forms[0].validator="fv' . $this->random . '";' ;
 			$end = "});</script>\n";

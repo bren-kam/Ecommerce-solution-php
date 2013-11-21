@@ -1,13 +1,13 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page List Website Pages
+ * @page Email Analytics
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var object $email
+ * @var stdClass $email
  * @var string $bar_chart
  * @var EmailMessage $email_message
  */
@@ -26,19 +26,10 @@ echo $template->start( _('Email') . ': ' . $email_message->subject );
                 <br />
                 <table id="emails" class="width-auto">
                     <tr>
-                        <td width="220"><span class="data"><?php echo $email->send_amt; ?></span> <span class="label"><?php echo _('Emails Sent'); ?></span></td>
-                        <td width="220"><span class="data"><?php echo $email->opens; ?></span> <span class="label"><?php echo _('Opens'); ?></span></td>
-                        <td width="220"><span class="data" id="sTotalClicks"><?php echo $email->linkclicks; ?></span> <span class="label"><?php echo _('Clicks'); ?></span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="data"><?php echo $email->forwards; ?></span> <span class="label"><?php echo _('Forwards'); ?></span></td>
-                        <td><span class="data"><?php echo $email->totalbounces; ?></span> <span class="label"><?php echo _('Bounces'); ?></span></td>
-                        <td><span class="data"><?php echo $email->unsubscribes; ?></span> <span class="label"><?php echo _('Unsubscribes'); ?></span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="data"><?php echo $email->uniqueopens; ?></span> <span class="label"><?php echo _('Unique Opens'); ?></span></td>
-                        <td><span class="data"><?php echo $email->uniquelinkclicks; ?></span> <span class="label"><?php echo _('Unique Clicks'); ?></span></td>
-                        <td><span class="data"><?php echo $email->uniqueforwards; ?></span> <span class="label"><?php echo _('Unique Forwards'); ?></span></td>
+                        <td width="165"><span class="data"><?php echo $email->requests; ?></span> <span class="label"><?php echo _('Emails Sent'); ?></span></td>
+                        <td width="165"><span class="data"><?php echo $email->opens; ?></span> <span class="label"><?php echo _('Opens'); ?></span></td>
+                        <td width="165"><span class="data"><?php echo $email->clicks; ?></span> <span class="label"><?php echo _('Clicks'); ?></span></td>
+                        <td width="165"><span class="data"><?php echo $email->bounces; ?></span> <span class="label"><?php echo _('Bounces'); ?></span></td>
                     </tr>
                 </table>
             </div>

@@ -49,7 +49,7 @@ if ( $errs ) {
     <?php /*<p class="center"><a href="/lost-your-password/" title="<?php echo _('Lost your password?'); ?>"><?php echo _('Lost your password?'); ?></a></p>*/ ?>
 </div>
 <!-- End: Footer -->
-<script type="text/javascript">head.js( 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
+<script type="text/javascript">head.load( 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
 <?php $template->get_footer(); ?>
 </body>
 </html>
