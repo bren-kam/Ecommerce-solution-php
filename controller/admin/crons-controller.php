@@ -76,6 +76,10 @@ class CronsController extends BaseController {
                 $social_media_posting_post->mark_errors( $sm_error_ids );
         }
 
+        // Mark emails as sent
+        $email_marketing = new EmailMarketing();
+        $email_marketing->mark_sent();
+
         return new HtmlResponse( 'Hourly Jobs Completed');
     }
 
