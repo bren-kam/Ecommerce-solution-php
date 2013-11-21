@@ -1360,6 +1360,8 @@ class AccountsController extends BaseController {
         // Get email plans
         library('sendgrid-api');
         $sendgrid = new SendGridAPI( $account );
+        $sendgrid->setup_subuser();
+
         $username = format::slug( $account->title );
 
         $user = new User();
@@ -1391,6 +1393,7 @@ class AccountsController extends BaseController {
         // Now add all email lists
         $sendgrid = new SendGridAPI( $account, $username, $password );
         $sendgrid->setup_list();
+        $sendgrid->setup_email();
         $email_list = new EmailList();
         $email_lists = $email_list->get_by_account( $account->id );
 
@@ -1398,7 +1401,6 @@ class AccountsController extends BaseController {
             $sendgrid->list->add( $email_list->name );
 
             // Now import subscribers
-            $sendgrid->setup_email();
 
             $email = new Email();
             $emails = $email->get_by_email_list( $email_list->id );
