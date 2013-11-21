@@ -359,7 +359,8 @@ class EmailMessage extends ActiveRecordBase {
         $date_sent = new DateTime( $this->date_sent );
 
         // Get sendgrid date
-        $sendgrid_date = dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('sendgrid-timezone') );
+        $sendgrid_datetime = new DateTime( dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('sendgrid-timezone') ) );
+        $sendgrid_date = $sendgrid_datetime->format('c');
 
         $template = new EmailTemplate();
         $message = $template->get_complete( $account, $this );
