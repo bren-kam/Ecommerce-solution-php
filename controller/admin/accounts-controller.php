@@ -1425,13 +1425,7 @@ class AccountsController extends BaseController {
         $response = new AjaxResponse(true);
 
         // Add notification
-        $this->notify( _('Email Marketing account successfully created') );
-
-        // Redirect to next page
-        jQuery('body')->redirect( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
-
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->notify( _('Email Marketing account successfully created') );
 
         return $response;
     }
