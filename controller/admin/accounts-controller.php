@@ -145,16 +145,13 @@ class AccountsController extends BaseController {
                 // We must cancel email marketing
                 if ( 1 == $account->email_marketing && 1 != (int) isset( $_POST['cbEmailMarketing'] ) ) {
                     // Get settings
-                    $ac_account = $account->get_settings( 'ac-account' );
+                    $sendgrid_username = $account->get_settings( 'sendgrid-username' );
 
-                    if ( !empty( $ac_account ) ) {
-                        library('ac/ActiveCampaign.class');
-                        $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
-
-                        $ac->api( 'account/cancel', array(
-                            'account' => $ac_account . '.activehosted.com'
-                            , 'reason' => _('Turned off email marketing')
-                        ));
+                    if ( !empty( $sendgrid_username ) ) {
+                        library('sendgrid-api');
+                        $sendgrid = new SendGridAPI( $account );
+                        $sendgrid->setup_subuser();
+                        $sendgrid->subuser->delete( $sendgrid_username );
                     }
                 }
 
@@ -471,9 +468,6 @@ class AccountsController extends BaseController {
             , 'ashley-alternate-folder'
             , 'facebook-url'
             , 'advertising-url'
-            , 'ac-account'
-            , 'ac-username'
-            , 'ac-password'
             , 'trumpia-username'
             , 'trumpia-password'
             , 'facebook-pages'
@@ -499,9 +493,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
-        $ft->add_field( 'text', _('Active Campaign Account'), 'tACAccount', $settings['ac-account'] );
-        $ft->add_field( 'text', _('Active Campaign Username'), 'tACUsername', $settings['ac-username'] );
-        $ft->add_field( 'text', _('Active Campaign Password'), 'tACPassword', $settings['ac-password'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
@@ -527,9 +518,6 @@ class AccountsController extends BaseController {
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
-                , 'ac-account' => $_POST['tACAccount']
-                , 'ac-username' => $_POST['tACUsername']
-                , 'ac-password' => $_POST['tACPassword']
                 , 'trumpia-username' => $_POST['tTrumpiaUsername']
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
@@ -568,7 +556,7 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get trumpia api key
-        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id', 'ac-username' );
+        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id', 'sendgrid-username' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -1146,18 +1134,14 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get settings
-        $ac_account = $account->get_settings( 'ac-account' );
+        $sendgrid_username = $account->get_settings( 'sendgrid-username' );
 
-        if ( !empty( $ac_account ) ) {
-            library('ac/ActiveCampaign.class');
-            $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
-
-            $ac->api('account/cancel', array(
-                'account' => $ac_account . '.activehosted.com'
-                , 'reason' => _('Canceled account with us')
-            ));
+        if ( !empty( $sendgrid_username ) ) {
+            library('sendgrid-api');
+            $sendgrid = new SendGridAPI( $account );
+            $sendgrid->setup_subuser();
+            $sendgrid->subuser->delete( $sendgrid_username );
         }
-
 
         // Deactivate account
         $account->status = 0;
@@ -1366,7 +1350,7 @@ class AccountsController extends BaseController {
     /**
      * Create email marketing account
      *
-     * @return CustomResponse|AjaxResponse
+     * @return AjaxResponse
      */
     protected function create_email_marketing_account() {
         // Get the account
@@ -1374,132 +1358,78 @@ class AccountsController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Get email plans
-        library('ac/ActiveCampaign.class');
-        $ac = new ActiveCampaign( Config::key('ac-api-url'), Config::key('ac-api-key') );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account );
+        $username = format::slug( $account->title );
 
-        $email_plans = $ac->api('account/plans');
-        $email_plan_options = array();
+        $user = new User();
+        $user->get( $account->user_id );
 
-        $email = new Email();
-        $count = $email->count_all( array( ' AND e.`status` = ' . Email::STATUS_SUBSCRIBED . ' AND e.`website_id` = ' . (int) $account->id ), array() );
-        $recommended_text = ' - ' . _('Recommended') . ' (' . number_format( $count ) . ' ' . _('Subscribers') .  ')';
-        $selected = false;
-        $last_id = NULL;
+        $password = substr( $account->id . md5(microtime()), 0, 10 );
+        list( $first_name, $last_name ) = explode( ' ', $user->contact_name, 2 );
 
-        /**
-         * @var object $email_plans
-         * @var object $ep
-         * @var object $result
-         */
-        foreach ( $email_plans->plans as $ep ) {
-            if ( $ep->term > 1 || 100 == $ep->id || $ep->limit_sub > 10000 || $ep->limit_sub <= 250 )
-                continue;
+        $settings = $account->get_settings( 'address', 'city', 'state', 'zip', 'from_email', 'from_name' );
+        $phone = ( empty( $user->work_phone ) ) ? $user->cell_phone : $user->work_phone;
+        if ( empty( $phone ) )
+            $phone = '8185551234';
 
-            $plan_name = _('Limit') . ': ' . $ep->limit_sub_formatted;
+        $sendgrid->subuser->add( $username, $password, $user->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
 
-            if ( !$selected ) {
-                if ( isset( $last_plan ) ) {
-                    if ( $last_plan->limit_sub < $count && $ep->limit_sub > $count ) {
-                        $plan_name .= $recommended_text;
-                        $selected = $ep->id;
-                    }
-                } else {
-                    if ( $ep->limit_sub > $count ) {
-                        $plan_name .= $recommended_text;
-                        $selected = $ep->id;
-                    }
+        // Add IP Address
+        $sendgrid->subuser->send_ip( $username );
+
+        // Create identity
+        $sendgrid->setup_sender_address();
+        $name = ( empty ( $settings['from_name'] ) ) ? $user->contact_name : $settings['from_name'];
+        $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
+
+        // Add sender address
+        $sendgrid->sender_address->add( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA' );
+
+        $account->set_settings( array( 'sendgrid-username' => $username, 'sendgrid-password' => $password ) );
+
+        // Now add all email lists
+        $sendgrid = new SendGridAPI( $account, $username, $password );
+        $sendgrid->setup_list();
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_account( $account->id );
+
+        foreach ( $email_lists as $email_list ) {
+            $sendgrid->list->add( $email_list->name );
+
+            // Now import subscribers
+            $sendgrid->setup_email();
+
+            $email = new Email();
+            $emails = $email->get_by_email_list( $email_list->id );
+
+            $email_chunks = array_chunk( $emails, 1000 );
+
+            foreach ( $email_chunks as $emails ) {
+                $email_array = array();
+
+                /**
+                 * @var Email $email
+                 */
+                foreach ( $emails as $email ) {
+                    $email_array[] = $email->email;
                 }
-            }
 
-            $email_plan_options[$ep->id] = $plan_name;
-
-            $last_plan = $ep;
-        }
-
-        if ( false === $selected ) {
-            if ( $ep->limit_sub > $count ) {
-                $email_plan_options[$ep->id] .= $recommended_text;
-            } else {
-                $form = '<p class="error">' . _('This account has enough subscribers to be placed on a custom plan') . ': ' . number_format( $count ) . '.' . _(' Please contact support.');
+                $sendgrid->email->add( $email_list->name, $email_array );
             }
         }
 
-        // Create new form table
-        $ft = new FormTable( 'fCreateEmailMarketingAccount' );
+        // Create response
+        $response = new AjaxResponse(true);
 
-        $ft->submit( _('Create') )
-            ->attribute( 'ajax', '1' )
-            ->set_action( url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ) );
+        // Add notification
+        $this->notify( _('Email Marketing account successfully created') );
 
-        $ft->add_field( 'select', _('Email Marketing Plan'), 'sEmailMarketPlanId', $selected )
-            ->add_validation( 'req', _('The "Email Marketing Plan" field is required') )
-            ->options( $email_plan_options );
+        // Redirect to next page
+        jQuery('body')->redirect( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
 
-        if ( !isset( $form ) )
-            $form = $ft->generate_form();
-
-        // Create the account
-        if ( $ft->posted() ) {
-            $response = new AjaxResponse(true);
-
-            // Get the user of the account
-            $user = new User();
-            $user->get( $account->user_id );
-
-            $technical_user = new User();
-            $technical_user->get( User::TECHNICAL );
-
-            // Figure out what the username would be
-            $username = format::slug( $account->title );
-
-            if ( !$ac->api( "account/name_check?account={$username}" ) ) {
-                $username .= '-2';
-
-                $response->check( $ac->api( "account/name_check?account={$username}" ), _('We are having trouble finding a username for you. A ticket has been created on your behalf for support.') );
-
-                // There might be something else wrong, create a ticket to invetsigate
-                if ( $response->has_error() ) {
-                    $ticket = new Ticket();
-                    $ticket->user_id = $this->user->id;
-                    $ticket->assigned_to = User::KERRY;
-                    $ticket->website_id = $account->id;
-                    $ticket->summary = _("Couldn't find Email Marketing Username");
-                    $ticket->message = _('Username') . ": $username";
-                    $ticket->status = Ticket::STATUS_OPEN;
-                    $ticket->priority = Ticket::PRIORITY_HIGH;
-                    $ticket->create();
-
-                    return $response;
-                }
-            }
-
-            // Alert them that there was a problem
-            $result = $ac->api('account/add', array(
-                'account' => $username
-                , 'name' => $account->title
-                , 'cname' => ''
-                , 'email' => $user->email
-                , 'notification' => $technical_user->email
-                , 'plan' => $_POST['sEmailMarketPlanId']
-            ) );
-
-            // Store the results
-            $account->set_settings( array( 'ac-account' => $username, 'ac-username' => $result->username, 'ac-password' => $result->password ) );
-
-            // Add notification
-            $this->notify( _('Email Marketing account successfully created') );
-
-            // Redirect to next page
-            jQuery('body')->redirect( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
-
-            // Add jquery
-            $response->add_response( 'jquery', jQuery::getResponse() );
-
-            return $response;
-        }
-
-        $response = new CustomResponse( $this->resources, 'accounts/create-email-marketing-account' );
-        $response->set( compact( 'form' ) );
+        // Add jquery
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

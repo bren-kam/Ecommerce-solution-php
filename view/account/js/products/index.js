@@ -1,4 +1,4 @@
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.boxy', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.boxy', function() {
 	// Cache
 	var cache = { sku : {}, product : {}, brand : {} };
 
@@ -46,6 +46,10 @@ head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js',
 
 	// Create the search functionality
 	$('#aSearch').click( loadProducts );
+    $('#fSearch').submit( function() {
+        loadProducts();
+        return false;
+    });
 
 	// Make the list sortable
 	$("#dProductList").sortable( {

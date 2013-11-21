@@ -20,7 +20,7 @@ echo $template->start( _('Craigslist Ads') );
             <th width="10%"><?php echo _('Product Name'); ?></th>
             <th width="10%"><?php echo _('SKU' ); ?></th>
             <th width="10%"><?php echo _('Status'); ?></th>
-            <th width="15%"><?php echo _('Created'); ?></th>
+            <th width="15%" sort="1 desc"><?php echo _('Created'); ?></th>
         </tr>
     </thead>
     <tbody>

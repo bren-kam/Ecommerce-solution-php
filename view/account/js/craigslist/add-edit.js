@@ -2,7 +2,7 @@
  * Craigslist - Add/Edit Page
  */
 
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
 	// Setup cache
 	cache = { sku : {}, product : {} };
 	
@@ -111,6 +111,9 @@ function loadProduct( productID ) {
  * Gets the next product in the lineup for sampling purposes
  */
 function refreshPreview() {
+    if ( 'undefined' == typeof CKEDITOR )
+        return setTimeout( refreshPreview, 500 );
+
 	var productName = $("#hProductName").val(), storeName = $("#hStoreName").val(), storeLogo = $("#hStoreLogo").val(), sku = $("#hProductSKU").val();
 	var storeURL = $('#hStoreURL').val(), category = $("#hProductCategoryName").val(), brand = $("#hProductBrandName").val(), productDescription = $("#hProductDescription").val(), productSpecifications = $("#hProductSpecifications").val();
 
@@ -143,4 +146,6 @@ function refreshPreview() {
 	
 	$("#dCraigslistCustomPreview").html( newContent );
     $('#hCraigslistPost').val( newContent );
+
+    return true;
 }

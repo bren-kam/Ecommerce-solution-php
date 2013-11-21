@@ -1,5 +1,5 @@
 // When the page has loaded
-head.js( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
     criteria = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'package' : {}, 'services' : {} };
 	cache = { 'brand' : {}, 'online_specialist' : {}, 'marketing_specialist' : {}, 'company' : {}, 'billing_state' : {}, 'package' : {} };
 

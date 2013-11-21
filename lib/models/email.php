@@ -60,8 +60,20 @@ class Email extends ActiveRecordBase {
     }
 
     /**
-     * Get By Account
-     */
+     * Get by email list
+     *
+     * @param int $email_list_id
+     * @return Email[]
+\     */
+    public function get_by_email_list( $email_list_id ) {
+		return $this->prepare( 'SELECT e.`email` FROM `emails` AS e LEFT JOIN `email_associations` AS ea ON ( ea.`email_id` = e.`email_id` ) WHERE e.`status` = :status AND ea.`email_list_id` = :email_list_id'
+            , 'ii'
+            , array(
+                ':status' => self::STATUS_SUBSCRIBED
+                , ':email_list_id' => $email_list_id
+            )
+        )->get_col();
+    }
 
     /**
      * Get Dashboard Subscribers By Account
@@ -189,10 +201,16 @@ class Email extends ActiveRecordBase {
             return;
 
         // Setup AC
-        $ac = EmailMarketing::setup_ac( $account );
-        if ( !$ac->error() ) {
-            $ac->setup_contact();
-            $ac->contact->sync( $this->email, $this->name, array(), ActiveCampaignContactAPI::STATUS_UNSUBSCRIBED );
+        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_email();
+
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_email( $this->id, $account->id );
+
+        foreach ( $email_lists as $email_list ) {
+            $sendgrid->email->delete( $email_list->name, $this->name );
         }
 
         // Assuming the above is successful, delete everything about this email
@@ -311,14 +329,27 @@ class Email extends ActiveRecordBase {
      * Complete import
      *
      * @param int $account_id
+     * @param SendGridAPI
      * @param array $email_list_ids
      */
-    public function complete_import( $account_id, array $email_list_ids ) {
+    public function complete_import( $account_id, SendGridAPI $sendgrid, array $email_list_ids ) {
         // Import the emails
         $this->import_emails( $account_id );
 
         // Add associations
         $this->add_associations_to_imported_emails( $account_id, $email_list_ids );
+
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_ids( $email_list_ids, $account_id );
+        $emails = $this->get_import_emails( $account_id );
+
+        foreach ( $email_lists as $email_list ) {
+            $email_chunks = array_chunk( $emails, 1000 );
+
+            foreach ( $email_chunks as $email_set ) {
+                $sendgrid->email->add( $email_list->name, array( $email_set ) );
+            }
+        }
 
         // Delete the imported emails
         $this->delete_imported( $account_id );
@@ -337,6 +368,19 @@ class Email extends ActiveRecordBase {
 		// @Fix need a way to remove these subscribers
 		// Transfer new emails to emails table
 		$this->query("INSERT INTO `emails` ( `website_id`, `email`, `name`, `date_created` ) SELECT `website_id`, `email`, `name`, NOW() FROM `email_import_emails` WHERE `website_id` = $account_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = $account_id )" );
+    }
+
+    /**
+     * Complete Import
+     *
+     * @param int $account_id
+     * @return array
+     */
+    protected function get_import_emails( $account_id ) {
+        // Type Juggling
+        $account_id = (int) $account_id;
+
+		return $this->get_col("SELECT `email` FROM `email_import_emails` WHERE `website_id` = $account_id AND `email` NOT IN ( SELECT `email` FROM `emails` WHERE `website_id` = $account_id )" );
     }
 
     /**
