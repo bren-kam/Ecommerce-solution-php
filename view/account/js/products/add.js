@@ -48,6 +48,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 	$('#aSearch').click( function() {
 		$('#tAddProducts').dataTable().fnDraw();
 	});
+
+    $('#fSearch').submit( function() {
+        $('#tAddProducts').dataTable().fnDraw();
+        return false;
+    });
 	
 	// @Fix skip sparrow
 	setTimeout( function() {
