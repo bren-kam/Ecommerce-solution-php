@@ -73,7 +73,7 @@ class Config {
 	 * Returns a setting
 	 *
 	 * @param string $setting
-	 * @return bool
+	 * @return mixed
 	 */
 	public static function setting( $setting ) {
 		return self::$settings[$setting];

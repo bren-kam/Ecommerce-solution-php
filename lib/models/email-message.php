@@ -359,14 +359,14 @@ class EmailMessage extends ActiveRecordBase {
         $date_sent = new DateTime( $this->date_sent );
 
         // Get sendgrid date
-        $sendgrid_datetime = new DateTime( dt::adjust_timezone( $this->date_sent, Config::setting('server-timezone'), Config::key('sendgrid-timezone') ) );
+        $sendgrid_datetime = new DateTime( $this->date_sent, Config::setting('server-timezone') );
         $sendgrid_date = $sendgrid_datetime->format('c');
 
         $template = new EmailTemplate();
         $message = $template->get_complete( $account, $this );
 
         // Add unsubscribe link
-        $message .= '<p style="font-size:11px;margin:0px;text-align:left;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';
+        $message .= '<p style="font-size:11px;margin:0px;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';
 
         // Text email
         $text_mail = strip_tags( str_replace( '<br>', "\n", $message ) );
