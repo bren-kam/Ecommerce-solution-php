@@ -138,7 +138,7 @@ class CronsController extends BaseController {
      *
      * @return bool
      */
-    protected function login() {
+    protected function get_logged_in_user() {
         if ( defined('CLI') && true == CLI )
             return true;
 
