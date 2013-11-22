@@ -786,6 +786,287 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
                     $category_id = 212;
                 break;
             }
+        } elseif ( 'B' == $first_character ) {
+            // Bedroom / Kid's Furniture
+            list( $series, $relevant_sku ) = explode( '-', $sku );
+
+            switch ( $relevant_sku ) {
+                /***** Kid's Furniture *****/
+
+                case '01': // Chairs
+                    $category_id = 279;
+                break;
+
+                case '13R':
+                case '13L';
+                case '68T':
+                case '68B': // Beds > Loft
+                    $category_id = 688;
+                break;
+
+                case '59B': // Beds > Beds
+                    $category_id = 273;
+                break;
+
+                case 83:
+                case 82:
+                case 86:
+                case '59S':
+                case '59R':
+                case '59P':
+                case '50T':
+                case '50D':
+                case '20R': // Beds > Bed Frame
+                    $category_id = 700;
+                break;
+
+                case 87:
+                case 53:
+                case 52: // Beds > Headboard
+                    $category_id = 698;
+                break;
+
+                case 84:
+                case 51: // Beds > Footboard
+                    $category_id = 699;
+                break;
+
+                case '20L';
+                case 22:
+                case 52: // Desks
+                    $category_id = 277;
+                break;
+
+                case 20;
+                case 17:
+                case 16: // Bookcase
+                    $category_id = 417;
+                break;
+
+                case 19:
+                case 18: // Chests
+                    $category_id = 272;
+                break;
+
+                case 21: // Dressers
+                    $category_id = 270;
+                break;
+
+                case 23: // Hutch
+                    $category_id = 278;
+                break;
+
+                case 26: // Mirrors
+                    $category_id = 269;
+                break;
+
+                case 38: // Media Chests
+                    $category_id = 624;
+                break;
+
+                case '68B':
+                case 60:
+                case 59:
+                case '58S':
+                case '57S':
+                case '57P':
+                case '058':
+                case '008': // Bunk Beds
+                    $category_id = 617;
+                break;
+
+                case 80: // Daybed
+                    $category_id = 282;
+                break;
+
+                /***** Bedroom *****/
+
+                case '09':
+                case '00': // Benches
+                    $category_id = 569;
+                break;
+
+                case 46:
+                case 35:
+                case 28: // Mirrors
+                    $category_id = 102;
+                break;
+
+                case 31: // Dressers
+                    $category_id = 101;
+                break;
+
+                case 39:
+                case 38:
+                case 41:
+                case 40: // Media Chests
+                    $category_id = 107;
+                break;
+
+                case 47:
+                case 46:
+                case 45:
+                case 43: // Chests
+                    $category_id = 103;
+                break;
+
+                case '50R':
+                case '50L': // Storage Cabinet
+                    $category_id = 626;
+                break;
+
+                case '91R':
+                case '91L':
+                case 193:
+                case 91:
+                case 92:
+                case 93: // Nightstand
+                    $category_id = 105;
+                break;
+
+                case '49T':
+                case '49B': // Armoire
+                    $category_id = 104;
+                break;
+
+                case 68:
+                case 58:
+                case 57:
+                case 82:
+                case 81:
+                case 55:
+                case 67:
+                case 394:
+                case 357:
+                case 357:
+                case 258:
+                case 257:
+                case 150:
+                case 158:
+                case 157:
+                case 78:
+                case 77:
+                case '71N': // Headboards
+                    $category_id = 125;
+                break;
+
+                case '166S':
+                case 166:
+                case '164S':
+                case 164:
+                case 151:
+                case 356:
+                case 354:
+                case 294:
+                case 256:
+                case 254:
+                case 194:
+                case 154:
+                case 156:
+                case '66N':
+                case '64N':
+                case '64S':
+                case 76:
+                case 74:
+                case 64:
+                case 54:
+                case 50:
+                case '66S':
+                case 66:
+                case 56:
+                case 70: // Footboards
+                    $category_id = 428;
+                break;
+
+                case '97S':
+                case '96S':
+                case 95:
+                case '94S':
+                case 94:
+                case 256:
+                case 254:
+                case 199:
+                case 197:
+                case 196:
+                case 195:
+                case 194:
+                case 97:
+                case '99N':
+                case '98N':
+                case 96:
+                case 98:
+                case 99: // Bed Frames
+                    $category_id = 126;
+                break;
+            }
+        } elseif ( 'H' == $first_character ) {
+            // Home Furniture
+            list( $series, $relevant_sku ) = explode( '-', $sku );
+
+            switch ( $relevant_sku ) {
+                case '19H':
+                case 49:
+                case 48: // Hutch
+                    $category_id = 583;
+                break;
+
+                case '23H':
+                case 47:
+                case 23:
+                case 24:
+                case 45:
+                case '27R':
+                case 46:
+                case 29:
+                case 27:
+                case 44:
+                case 26:
+                case 10:
+                case 19: // Home Office Desks
+                    $category_id = 329;
+                break;
+
+                case 25:
+                case 40:
+                case 42:
+                case 12: // Home Office File Cabinets and Carts
+                    $category_id = 330;
+                break;
+
+                case '01A': // Home Office Desk Chair
+                    $category_id = 437;
+                break;
+
+                case 47:
+                case 34:
+                case '70T':
+                case '70B':
+                case 18:
+                case 17:
+                case 16:
+                case 15: // Bookcases
+                    $category_id = 452;
+                break;
+            }
+        } elseif ( 'M' == $first_character ) {
+            // Mattresses
+
+            if ( stristr( $name, 'Pillowtop' ) ) {
+                // Pillowtop mattresses
+                $category_id = 167;
+            } elseif ( stristr( $name, 'Plush' ) ) {
+                // Plush Mattresses
+                $category_id = 166;
+            } elseif ( stristr( $name, 'Latex' ) ) {
+                // Latex Mattresses
+                $category_id = 169;
+            } elseif ( stristr( $name, 'Gel' ) ) {
+                // Gel mattresses
+                $category_id = 564;
+            } else {
+                // Memory Foam Mattresses
+                $category_id = 168;
+            }
         } elseif ( 'Q' == $first_character && 8 == $length && !is_numeric( $last_character ) ) {
             // Bedding > Bedding Ensembles
             $category_id = 179;
@@ -811,7 +1092,6 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Bedding > Pillows
             $category_id = 597;
         }
-
 
         return $category_id;
     }
