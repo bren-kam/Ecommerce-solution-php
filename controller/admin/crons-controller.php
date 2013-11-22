@@ -76,6 +76,10 @@ class CronsController extends BaseController {
                 $social_media_posting_post->mark_errors( $sm_error_ids );
         }
 
+        // Mark emails as sent
+        $email_marketing = new EmailMarketing();
+        $email_marketing->mark_sent();
+
         return new HtmlResponse( 'Hourly Jobs Completed');
     }
 
@@ -127,5 +131,19 @@ class CronsController extends BaseController {
         $api_ext_log->purge();
 
         return new HtmlResponse( 'Weekly Jobs Completed' );
+    }
+
+    /**
+     * Login
+     *
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        if ( defined('CLI') && true == CLI ) {
+            $this->user = new User();
+            return true;
+        }
+
+        return false;
     }
 }

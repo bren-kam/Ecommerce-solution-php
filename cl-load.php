@@ -19,6 +19,9 @@ define( 'ABS_PATH', '/gsr/systems/backend/' );
 // Hold the library path
 define( 'LIB_PATH', ABS_PATH . 'lib/' );
 
+// Set CLI
+define( 'CLI', true );
+
 function gsr_error_handler() {
     $error = error_get_last();
 

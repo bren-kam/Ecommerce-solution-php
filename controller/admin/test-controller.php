@@ -33,11 +33,8 @@ class TestController extends BaseController {
             $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_sender_address();
 
-            $name = ( empty ( $settings['from_name'] ) ) ? $account->contact_name : $settings['from_name'];
-            $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
-            $sendgrid->sender_address->edit( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'] );
-            /*$sendgrid->setup_email();
-            $sendgrid->setup_list();
+            $sendgrid->setup_email();
+            //$sendgrid->setup_list();
 
             $email_list = new EmailList();
             $email_lists = $email_list->get_by_account( $account->website_id );
@@ -45,7 +42,7 @@ class TestController extends BaseController {
             $email = new Email();
 
             foreach ( $email_lists as $email_list ) {
-                $sendgrid->list->add( $email_list->name );
+                //$sendgrid->list->add( $email_list->name );
 
                 $emails = $email->get_by_email_list( $email_list->id );
 
@@ -55,7 +52,6 @@ class TestController extends BaseController {
                     $sendgrid->email->add( $email_list->name, $email_set );
                 }
             }
-            break;*/
         }
 
         /*
