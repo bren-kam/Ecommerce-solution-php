@@ -132,4 +132,18 @@ class CronsController extends BaseController {
 
         return new HtmlResponse( 'Weekly Jobs Completed' );
     }
+
+    /**
+     * Login
+     *
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        if ( defined('CLI') && true == CLI ) {
+            $this->user = new User();
+            return true;
+        }
+
+        return false;
+    }
 }

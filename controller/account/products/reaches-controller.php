@@ -172,7 +172,7 @@ class ReachesController extends BaseController {
             $reach->waiting = 0;
             $reach->save();
 
-            fn::mail( $reach->email, $reach->get_friendly_type() . ' #' . $reach->id . $status, "******************* Reply Above This Line *******************\n\n{$comment}\n\n" . $reach->get_friendly_type() . "\n" . $reach->message, $this->user->account->title . ' <support@' . url::domain( $this->user->account->domain, false ) . '>' );
+            fn::mail( $reach->email, $reach->get_friendly_type() . ' #' . $reach->id . $status, "******************* Reply Above This Line *******************\n\n{$comment}\n\n" . $reach->get_friendly_type() . "\n" . $reach->message, $this->user->account->title . ' <support@' . url::domain( $this->user->company->domain, false ) . '>' );
         }
 
         // Send the assigned user an email if they are not submitting the comment
