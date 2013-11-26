@@ -64,4 +64,13 @@ class PipeController extends BaseController {
 
         return new HtmlResponse( '' );
     }
+
+    /**
+     * Override login function
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        $this->user = new User();
+        return true;
+    }
 }
