@@ -75,10 +75,12 @@ class SendGridSubuserAPI {
      *
      * @param string $user
      * @param string $category
+     * @param string $start_date
      * @return stdClass
      */
-    public function stats( $user, $category ) {
-        $this->api( 'stats', compact( 'user', 'category' ) );
+    public function stats( $user, $category, $start_date ) {
+        $aggregate = 1;
+        $this->api( 'stats', compact( 'user', 'category', 'start_date', 'aggregate' ) );
 
         return ( is_null( $this->sendgrid->response() ) ) ? new stdClass() : array_shift( $this->sendgrid->response() );
     }
