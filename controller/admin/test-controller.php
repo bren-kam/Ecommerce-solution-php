@@ -32,26 +32,29 @@ class TestController extends BaseController {
             $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password', 'from_email', 'from_name', 'address', 'city', 'state', 'zip' );
             $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
             $sendgrid->setup_sender_address();
-
-            $sendgrid->setup_email();
-            //$sendgrid->setup_list();
-
-            $email_list = new EmailList();
-            $email_lists = $email_list->get_by_account( $account->website_id );
-
-            $email = new Email();
-
-            foreach ( $email_lists as $email_list ) {
-                //$sendgrid->list->add( $email_list->name );
-
-                $emails = $email->get_by_email_list( $email_list->id );
-
-                $email_chunks = array_chunk( $emails, 1000 );
-
-                foreach ( $email_chunks as $email_set ) {
-                    $sendgrid->email->add( $email_list->name, $email_set );
-                }
-            }
+            $name = ( empty ( $settings['from_name'] ) ) ? $account->contact_name : $settings['from_name'];
+            $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
+            $sendgrid->sender_address->add( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA' );
+//
+//            $sendgrid->setup_email();
+//            //$sendgrid->setup_list();
+//
+//            $email_list = new EmailList();
+//            $email_lists = $email_list->get_by_account( $account->website_id );
+//
+//            $email = new Email();
+//
+//            foreach ( $email_lists as $email_list ) {
+//                //$sendgrid->list->add( $email_list->name );
+//
+//                $emails = $email->get_by_email_list( $email_list->id );
+//
+//                $email_chunks = array_chunk( $emails, 1000 );
+//
+//                foreach ( $email_chunks as $email_set ) {
+//                    $sendgrid->email->add( $email_list->name, $email_set );
+//                }
+//            }
         }
 
         /*
