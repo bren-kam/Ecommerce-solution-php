@@ -470,6 +470,7 @@ class AccountsController extends BaseController {
             , 'advertising-url'
             , 'trumpia-username'
             , 'trumpia-password'
+            , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
         );
@@ -495,6 +496,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
         $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
+        $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
 
         if ( $ft->posted() ) {
@@ -520,6 +522,7 @@ class AccountsController extends BaseController {
                 , 'advertising-url' => $_POST['tAdvertisingURL']
                 , 'trumpia-username' => $_POST['tTrumpiaUsername']
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
+                , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
             ));
 
