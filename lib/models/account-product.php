@@ -103,7 +103,15 @@ class AccountProduct extends ActiveRecordBase {
      * @param int $account_id
      */
     public function auto_price( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+        // Setup variables
         $set = array();
+        $run_2pc = false;
+
+        $double_categories = array(
+            132 // Dining Room > Side Chairs
+            , 131 // Dining Room > Arm Chairs
+            , 142 // Dining Room > Bar Stools
+        );
 
         // Round to the ending
         $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
@@ -124,11 +132,16 @@ class AccountProduct extends ActiveRecordBase {
         // Protect Category IDS from DB
         foreach ( $category_ids as &$category_id ) {
             $category_id = (int) $category_id;
+
+            // See if we have to run the categories
+            if ( in_array( $category_id, $double_categories ) )
+                $run_2pc = true;
         }
 
         $set = implode( ',', $set );
         $category_ids = implode( ',', $category_ids );
 
+        // Run once
         $this->prepare(
             "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)"
             , 'iiis'
@@ -139,8 +152,75 @@ class AccountProduct extends ActiveRecordBase {
                 , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
             )
         )->query();
+
+        if ( $run_2pc )
+            $this->auto_price_2pc( $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id );
     }
 
+    /**
+     * Auto Price 2PC Categories
+     *
+     * @param array $category_ids
+     * @param float $price
+     * @param float $sale_price
+     * @param float $alternate_price
+     * @param float $price_ending
+     * @param int $account_id
+     **/
+    protected function auto_price_2pc( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+        // These categories need to be doubled in price because the items are sold in couples
+        $double_categories = array(
+            132 // Dining Room > Side Chairs
+            , 131 // Dining Room > Arm Chairs
+            , 142 // Dining Room > Bar Stools
+        );
+
+        $set = array();
+
+        // Round to the ending
+        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
+        $price_ending = number_format( (float) $price_ending, 2 );
+
+        if ( $price > 0 )
+            $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
+
+        if ( $sale_price > 0 )
+            $set[] = 'wp.`sale_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $sale_price, strlen( $price_ending ), $price_ending ), $calculation );
+
+        if ( $alternate_price > 0 )
+            $set[] = 'wp.`alternate_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $alternate_price, strlen( $price_ending ), $price_ending ), $calculation );
+
+        if ( empty( $set ) )
+            return;
+
+        $new_category_ids = array();
+
+        // Protect Category IDS from DB
+        foreach ( $category_ids as &$category_id ) {
+            $category_id = (int) $category_id;
+
+            if ( in_array( $category_id, $double_categories ) )
+                $new_category_ids[] = $category_id;
+        }
+
+        if ( empty( $new_category_ids ) )
+            return;
+
+        $set = implode( ',', $set );
+        $new_category_ids = implode( ',', $new_category_ids );
+
+        // Run once
+        $this->prepare(
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids)"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->query();
+    }
     /**
      * Get Max price
      *
