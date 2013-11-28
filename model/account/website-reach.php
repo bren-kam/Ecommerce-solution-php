@@ -58,6 +58,7 @@ class WebsiteReach extends ActiveRecordBase {
                 $link = $this->meta['product-link'];
                 $this->info['Product'] = '<a href="' . $link . '" title="' . $this->meta['product-name'] . '" target="_blank">' . $this->meta['product-name'] . '</a>';
                 $this->info['SKU'] = '<a href="' . $link . '" title="' . $this->meta['product-sku'] . '" target="_blank">' . $this->meta['product-sku'] . '</a>';
+                $this->info['Brand'] = $this->meta['product-brand'];
 
                 if ( isset( $this->meta['location'] ) )
                     $this->info['Location'] = $this->meta['location'];
