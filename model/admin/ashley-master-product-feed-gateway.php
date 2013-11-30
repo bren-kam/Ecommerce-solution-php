@@ -489,6 +489,11 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
                     $category_id = 221;
                 break;
 
+                case 76:
+                case 70:
+                case 69:
+                case 04:
+                case 01:
                 case 49:
                 case 48:
                 case 77:
