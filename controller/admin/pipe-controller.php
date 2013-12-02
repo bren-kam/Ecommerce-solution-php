@@ -116,6 +116,9 @@ class PipeController extends BaseController {
         $reach_url = url::add_query_arg( 'wrid', $reach->id, 'http://account.' . $user->domain . '/products/reaches/reach/' );
         mail( $user->email, "New Response on Reach #{$reach_id}", "<p>A new response from the customer has been received. See message below:</p><p><strong>Original Message:</strong><br />" . $reach->message . "</p><p><strong>Client Response:</strong><br />{$body}</p><p><a href='{$reach_url}'>{$reach_url}</a></p>", $headers );
 
+        // We don't want any response -- including headers, to be sent out
+        exit;
+
         return new HtmlResponse( '' );
     }
 
