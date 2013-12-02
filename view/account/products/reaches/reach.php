@@ -42,14 +42,14 @@ $delete_comment_nonce = nonce::create( 'delete_comment' );
         <td rowspan="3">
             <strong><?php echo _('Information:'); ?></strong>
             <p>
-            <?php
-            if ( $reach->info )
-            foreach ( $reach->info as $key => $value ):
-                ?>
                 <ul>
-                    <li><?php echo $key; ?>: <?php echo $value; ?></li>
+                    <?php
+                    if ( $reach->info )
+                    foreach ( $reach->info as $key => $value ) {
+                        ?>
+                            <li><?php echo $key; ?>: <?php echo $value; ?></li>
+                    <?php } ?>
                 </ul>
-            <?php endforeach; ?>
             </p>
         </td>
         <td>

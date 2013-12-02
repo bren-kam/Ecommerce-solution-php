@@ -35,6 +35,21 @@ class WebsiteReach extends ActiveRecordBase {
     }
 
     /**
+     * Get
+     *
+     * @param int $website_reach_id
+     */
+    public function get_by_id( $website_reach_id ) {
+        $this->prepare(
+            "SELECT wr.`website_reach_id`, wr.`website_user_id`, wr.`assigned_to_user_id`, wr.`message`, wr.`priority`, wr.`status`, wr.`assigned_to_date`, wr.`date_created`, wr.`waiting`, CONCAT( wu.`billing_first_name`, ' ', IF( wu.`billing_last_name`,  wu.`billing_last_name`, '' ) ) AS name, wu.`email`, w.`website_id`, w.`title` AS website, w.`domain`, COALESCE( u.`role`, 7 ) AS role FROM `website_reaches` AS wr LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wr.`website_user_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wr.`website_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = wr.`assigned_to_user_id` ) WHERE wr.`website_reach_id` = :website_reach_id"
+            , 'i'
+            , array( ':website_reach_id' => $website_reach_id )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->website_reach_id;
+    }
+
+    /**
      * Get Meta
      */
     public function get_meta() {
@@ -58,6 +73,7 @@ class WebsiteReach extends ActiveRecordBase {
                 $link = $this->meta['product-link'];
                 $this->info['Product'] = '<a href="' . $link . '" title="' . $this->meta['product-name'] . '" target="_blank">' . $this->meta['product-name'] . '</a>';
                 $this->info['SKU'] = '<a href="' . $link . '" title="' . $this->meta['product-sku'] . '" target="_blank">' . $this->meta['product-sku'] . '</a>';
+                $this->info['Brand'] = $this->meta['product-brand'];
 
                 if ( isset( $this->meta['location'] ) )
                     $this->info['Location'] = $this->meta['location'];
