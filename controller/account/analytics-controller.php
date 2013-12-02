@@ -544,7 +544,7 @@ class AnalyticsController extends BaseController {
         $stats = array();
 
         foreach ( $emails as $email ) {
-            $stats[$email->id] = $sendgrid->subuser->stats( $username, $email->id );
+            $stats[$email->id] = $sendgrid->subuser->stats( $username, $email->id, $email->date_sent );
         }
 
         return $this->get_template_response( 'email-marketing' )
@@ -576,7 +576,7 @@ class AnalyticsController extends BaseController {
         $sendgrid = new SendGridAPI( $this->user->account );
         $sendgrid->setup_subuser();
 
-        $email = $sendgrid->subuser->stats( $this->user->account->get_settings('sendgrid-username'), $email_message->id );
+        $email = $sendgrid->subuser->stats( $this->user->account->get_settings('sendgrid-username'), $email_message->id, $email_message->date_sent );
 
         // Get the bar chart
         $bar_chart = Analytics::bar_chart( $email );

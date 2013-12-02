@@ -80,6 +80,9 @@ class CronsController extends BaseController {
         $email_marketing = new EmailMarketing();
         $email_marketing->mark_sent();
 
+        $ashley_package_gateway = new AshleyPackageProductFeedGateway();
+        $ashley_package_gateway->run();
+
         return new HtmlResponse( 'Hourly Jobs Completed');
     }
 
