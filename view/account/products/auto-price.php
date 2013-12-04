@@ -37,9 +37,9 @@ echo $template->start( _('Auto Price') );
     <thead>
         <tr>
             <th><?php echo _('Category'); ?></th>
+            <th><?php echo _('MSRP'); ?></th>
             <th><?php echo _('Price'); ?></th>
             <th><?php echo _('Sale Price'); ?></th>
-            <th><?php echo _('Alternate Price'); ?></th>
             <th><?php echo _('Ending'); ?></th>
             <th><?php echo _('Price New Items'); ?></th>
             <th><?php echo _('Action'); ?></th>
@@ -57,9 +57,9 @@ echo $template->start( _('Auto Price') );
             <td>
                 <?php echo $category->name; ?>
             </td>
+            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][alternate_price]" value="<?php echo (float) $auto_price->alternate_price; ?>"></td>
             <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][price]" value="<?php echo (float) $auto_price->price; ?>"></td>
             <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][sale_price]" value="<?php echo (float) $auto_price->sale_price; ?>"></td>
-            <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][alternate_price]" value="<?php echo (float) $auto_price->alternate_price; ?>"></td>
             <td><input type="text" class="tb" name="auto-price[<?php echo $category->id; ?>][ending]" value="<?php echo (float) $auto_price->ending; ?>"></td>
             <td><input type="checkbox" name="auto-price[<?php echo $category->id; ?>][future]" value="1"<?php if ( $auto_price->future ) echo ' checked="checked"'; ?>></td>
             <td>
