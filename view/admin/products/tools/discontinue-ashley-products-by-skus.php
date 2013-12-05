@@ -10,7 +10,7 @@
  * @var string $form
  */
 
-echo $template->start( $title, '../sidebar' );
+echo $template->start( _('Discontinue Ashley Products'), '../sidebar' );
 echo $form;
 echo $template->end();
 ?>
