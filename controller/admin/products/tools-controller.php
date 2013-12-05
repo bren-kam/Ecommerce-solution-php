@@ -45,7 +45,9 @@ class ToolsController extends BaseController {
             $account_product = new AccountProduct();
 
             $affected_skus = $product->discontinue_ashley_products_by_skus( $skus, $this->user->id );
-            $account_product->remove_all_discontinued();
+
+            if ( $affected_skus > 0 )
+                $account_product->remove_all_discontinued();
 
             $this->notify( $affected_skus . ' have been marked as discontinued and removed from all websites.' );
         }
