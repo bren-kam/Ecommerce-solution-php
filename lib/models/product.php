@@ -302,4 +302,26 @@ class Product extends ActiveRecordBase {
             , 's'
             , array( ':query' => $query . '%')
         )->get_results( PDO::FETCH_ASSOC );
-	}}
+	}
+
+    /**
+     * Discontinue Ashley Products By Skus
+     *
+     * @param array $skus
+     * @return int
+     */
+    public function discontinue_ashley_products_by_skus( array $skus ) {
+        if ( empty( $skus ) )
+            return 0;
+
+        $sku_count = count( $skus );
+
+        $this->prepare(
+            "UPDATE `products` SET `status` = 'discontinued' WHERE `user_id_created` = 353 AND `sku` IN(" . substr( str_repeat( ', ?', $sku_count ), 2 ) . ')'
+            , str_repeat( 's', $sku_count )
+            , $skus
+        )->query();
+
+        return $this->get_row_count();
+    }
+}
