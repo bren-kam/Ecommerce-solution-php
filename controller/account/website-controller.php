@@ -500,6 +500,26 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Navigation
+     *
+     * @return TemplateResponse
+     */
+    protected function navigation() {
+        $page = new AccountPage();
+        $pages = $page->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->css( 'website/navigation' )
+            ->javascript( 'website/navigation' );
+
+        return $this->get_template_response( 'navigation' )
+            ->kb( 0 )
+            ->select( 'navigation' )
+            ->add_title( _('Navigation') )
+            ->set( compact( 'pages' ) );
+    }
+
+    /**
      * Settings page
      *
      * @return TemplateResponse|RedirectResponse
