@@ -1,6 +1,7 @@
 jQuery(function() {
-    $('#save-css').click( function(e) {
+    $('#save-less').click( function(e) {
         e.preventDefault();
-        $.post( $(this).attr('href'), { _nonce : $('#_nonce').val(), css: editor.getValue() }, ajaxResponse, 'json' );
+        console.log(editor.getValue());
+        $.post( $(this).attr('href'), { _nonce : $('#_nonce').val(), less: editor.getValue() }, ajaxResponse, 'json' );
     });
 });

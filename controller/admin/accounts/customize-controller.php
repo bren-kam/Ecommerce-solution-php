@@ -36,11 +36,19 @@ class CustomizeController extends BaseController {
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) || !isset( $_GET['aid'] ) )
             return new RedirectResponse('/accounts/');
 
-        // Get Accoubt
+        // Get Account
         $account = new Account();
         $account->get( $_GET['aid'] );
 
-        $css = $account->get_settings('css');
+        if ( $_GET['aid'] != Account::TEMPLATE_UNLOCKED ) {
+            $unlocked = new Account();
+            $unlocked->get( Account::TEMPLATE_UNLOCKED );
+            $unlocked_less = $unlocked->get_settings('less');
+        } else {
+            $unlocked_less = false;
+        }
+
+        $less = $account->get_settings('less');
 
         $this->resources
             ->css('accounts/customize/css')
@@ -49,8 +57,8 @@ class CustomizeController extends BaseController {
         return $this->get_template_response( 'css' )
             ->kb( 10 )
             ->select( 'customize', 'stylesheet' )
-            ->set( compact( 'css', 'account' ) )
-            ->add_title( _('CSS') );
+            ->set( compact( 'less', 'account', 'unlocked_less' ) )
+            ->add_title( _('LESS CSS') );
     }
 
     /**
@@ -126,15 +134,24 @@ class CustomizeController extends BaseController {
     /***** AJAX *****/
 
     /**
-     * Save CSS
+     * Save LESS
      *
      * @return AjaxResponse
      */
-    protected function save_css() {
+    protected function save_less() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse($this->verified());
        
         // Get account
+        if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
+            $less_css = $_POST['less'];
+        } else {
+            $unlocked = new Account();
+            $unlocked->get( Account::TEMPLATE_UNLOCKED );
+            $unlocked_less = $unlocked->get_settings('less');
+            $less_css = $unlocked_less . $_POST['less'];
+        }
+
         $account = new Account();
         $account->get($_GET['aid']);
         
@@ -142,8 +159,39 @@ class CustomizeController extends BaseController {
         if ( $response->has_error() )
              return $response;
 
-        $account->set_settings( array( 'css' => $_POST['css'] ) );
-        $response->notify( 'CSS has been successfully updated!' );
+        library('lessc.inc');
+        $less = new lessc;
+        $less->setFormatter("compressed");
+
+        try {
+            $css = $less->compile( $less_css );
+        } catch (exception $e) {
+            $response->notify( 'Error: ' . $e->getMessage(), false );
+            return $response;
+        }
+
+        $account->set_settings( array( 'less' => $_POST['less'], 'css' => $css ) );
+
+        $response->notify( 'LESS/CSS has been successfully updated!' );
+
+        // Update all other LESS sites
+        if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
+            $less_accounts = $account->get_less_sites();
+
+            /**
+             * @var Account $less_account
+             * @var string $unlocked_less
+             */
+            if ( !empty( $less_accounts ) )
+            foreach ( $less_accounts as $less_account ) {
+                if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
+                    continue;
+
+                $less_account->set_settings( array(
+                    'css' => $less->compile( $unlocked_less . $less_account->get_settings('less') )
+                ));
+            }
+        }
 
         return $response;
     }
