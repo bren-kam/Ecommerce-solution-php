@@ -50,7 +50,7 @@ echo $template->start( _('Price Multiplier') );
         <td><input type="text" class="tb" style="width: 50px" id="sale-price" value="0" /></td>
     </tr>
     <tr>
-        <td><?php echo _('Alternate Price'); ?>:</td>
+        <td><?php echo _('MSRP'); ?>:</td>
         <td><input type="text" class="tb" style="width: 50px" id="alternate-price" value="0" /></td>
     </tr>
 </table>

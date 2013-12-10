@@ -1,5 +1,8 @@
 <?php
 class Account extends ActiveRecordBase {
+    // Template unlocked
+    const TEMPLATE_UNLOCKED = 1352;
+
     // The columns we will have access to
     public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
         , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog, $link_brands
@@ -77,6 +80,18 @@ class Account extends ActiveRecordBase {
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
+    }
+
+    /**
+     * Get Accounts by the setting LESS (CSS)
+     *
+     * @return array
+     */
+    public function get_less_sites() {
+        return $this->get_results(
+            "SELECT w.`website_id`, w.`title`, `domain` FROM `websites` AS w LEFT JOIN `website_settings` AS ws ON ( ws.`website_id` = w.`website_id` ) WHERE w.`status` = 1 AND ws.`key` = 'less' AND ws.`value` <> '' ORDER BY w.`title`"
+            , PDO::FETCH_CLASS, 'Account'
+        );
     }
 
     /**

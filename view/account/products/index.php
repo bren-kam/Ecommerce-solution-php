@@ -117,11 +117,11 @@ require VIEW_PATH . $this->variables['view_base'] . 'sidebar.php';
 				<td><input type="text" class="tb" name="tPriceNote" id="tPriceNote" maxlength="100" /></td>
 			</tr>
 			<tr>
-				<td><label for="tAlternatePrice"><?php echo _('Alternate Price'); ?>:</label></td>
+				<td><label for="tAlternatePrice"><?php echo _('MSRP'); ?>:</label></td>
 				<td><input type="text" class="tb" name="tAlternatePrice" id="tAlternatePrice" /></td>
 			</tr>
 			<tr>
-				<td><label for="tAlternatePriceName"><?php echo _('Alternate Price Name'); ?>:</label></td>
+				<td><label for="tAlternatePriceName"><?php echo _('MSRP Name'); ?>:</label></td>
 				<td><input type="text" class="tb" name="tAlternatePriceName" id="tAlternatePriceName" maxlength="20" /></td>
 			</tr>
 			<tr>
