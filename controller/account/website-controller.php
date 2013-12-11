@@ -80,6 +80,13 @@ class WebsiteController extends BaseController {
         if ( $this->verified() ) {
             $errs = $v->validate();
 
+            // Make sure another page doesn't have the same slug
+            $test_page = new AccountPage();
+            $test_page->get_by_slug( $this->user->account->id, $_POST['tPageSlug'] );
+
+            if ( $test_page->id && $test_page->id != $page->id )
+                $errs .= _('The page Link is already taken by another page. Please choose another link.');
+
             // if there are no errors
             if ( empty( $errs ) ) {
                 // Home page can't update their slug
