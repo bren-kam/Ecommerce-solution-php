@@ -16,11 +16,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
         var navigationBox = $('#dAddEditNavigation'), menuItemName = $('#menu-item-name'), clone = $('#dMenuItem').clone(), url = $('#' + navigationBox.find('input[name="menu-link"]:checked').val()).val();
 
-        url = ( -1 == url.indexOf('http') ) ? '/' + url + '/' : url;
+        displayUrl = ( -1 == url.indexOf('http') ) ? '/' + url + '/' : url;
 
         clone
             .find('h4:first').text( menuItemName.val() ).end()
-            .find('a.url:first').attr( 'href', url ).text( url).end()
+            .find('a.url:first').attr( 'href', displayUrl ).text( url).end()
             .removeAttr('id')
             .append('<input type="hidden" name="navigation[]" value="' + url + '|' + menuItemName.val() + '">')
             .appendTo( $('#navigation-menu-list') );
