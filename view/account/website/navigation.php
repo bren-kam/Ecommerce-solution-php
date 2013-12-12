@@ -8,6 +8,7 @@
  * @var Template $template
  * @var User $user
  * @var AccountPage[] $pages
+ * @var array $navigation
  */
 
 echo $template->start( _('Navigation') );
@@ -19,7 +20,23 @@ echo $template->start( _('Navigation') );
 <hr />
 <br />
 
-<div id="navigation-menu-list"></div>
+<form action="" name="fNavigation" method="post">
+    <div id="navigation-menu-list">
+        <?php foreach ( $navigation as $page ) { ?>
+        <div class="menu-item">
+            <h4 class="name"><?php echo $page->name; ?></h4>
+            <p class="menu-item-actions">
+                <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+            </p>
+
+            <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
+            <input type="hidden" name="navigation[]" value="<?php echo $page->url . '|' . $page->name; ?>">
+        </div>
+        <?php } ?>
+    </div>
+    <input type="submit" class="button" value="<?php echo _('Save'); ?>">
+    <?php nonce::field('navigation'); ?>
+</form>
 <br clear="all"><br>
 
 <div id="dAddEditNavigation" class="hidden">
@@ -43,8 +60,7 @@ echo $template->start( _('Navigation') );
 <div id="dMenuItem" class="menu-item">
     <h4 class="name"></h4>
     <p class="menu-item-actions">
-        <a href="#" class="edit-item" rel="dialog"><?php echo _('Edit'); ?></a>
-        | <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+        <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
     </p>
 
     <a href="#" class="url" target="_blank" ></a>

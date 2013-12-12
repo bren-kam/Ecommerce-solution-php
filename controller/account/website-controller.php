@@ -519,11 +519,26 @@ class WebsiteController extends BaseController {
             ->css( 'website/navigation' )
             ->javascript( 'website/navigation' );
 
+        if ( $this->verified() && !empty( $_POST['navigation'] ) ) {
+            $navigation = array();
+
+            foreach ( $_POST['navigation'] as $page ) {
+                list( $url, $name ) = explode( '|', $page );
+                $navigation[] = compact( 'url', 'name' );
+            }
+
+            $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
+            $this->notify('Your Navigation settings have been saved!');
+        }
+
+        $navigation = $this->user->account->get_settings('navigation');
+        $navigation = ( empty( $navigation ) ) ? array() : json_decode( $navigation );
+
         return $this->get_template_response( 'navigation' )
             ->kb( 0 )
             ->select( 'navigation' )
             ->add_title( _('Navigation') )
-            ->set( compact( 'pages' ) );
+            ->set( compact( 'pages', 'navigation' ) );
     }
 
     /**
