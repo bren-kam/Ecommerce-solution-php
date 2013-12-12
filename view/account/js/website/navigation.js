@@ -18,9 +18,12 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
         displayUrl = ( -1 == url.indexOf('http') ) ? '/' + url + '/' : url;
 
+        if ( '//' == displayUrl )
+            displayUrl = '/';
+
         clone
             .find('h4:first').text( menuItemName.val() ).end()
-            .find('a.url:first').attr( 'href', displayUrl ).text( url).end()
+            .find('a.url:first').text( displayUrl ).end()
             .removeAttr('id')
             .append('<input type="hidden" name="navigation[]" value="' + url + '|' + menuItemName.val() + '">')
             .appendTo( $('#navigation-menu-list') );
