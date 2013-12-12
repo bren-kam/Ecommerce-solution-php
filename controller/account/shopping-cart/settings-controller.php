@@ -18,7 +18,7 @@ class SettingsController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed' );
+        $settings = $this->user->account->get_settings( 'email-receipt', 'receipt-message', 'add-product-popup', 'google-feed', 'authorize-net-id' );
 
         $form = new FormTable( 'fSettings' );
 
@@ -35,12 +35,16 @@ class SettingsController extends BaseController {
         $url = 'http://' . $this->user->account->domain . '/google-feed/';
         $form->add_field( 'checkbox', _('Enable Google Feed') . ' (<a href="' . $url . '" target="_blank" title="Google Feed">' . $url . '</a>)', 'google-feed', $settings['google-feed'] );
 
+        $form->add_field( 'text', _('Authorize.net Logo ID'), 'authorize-net-id', $settings['authorize-net-id'] )
+            ->attribute( 'maxlength', 50 );
+
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'email-receipt' => $_POST['tReceipt']
                 , 'receipt-message' => $_POST['taReceiptMessage']
                 , 'add-product-popup' => $_POST['add-product-popup']
                 , 'google-feed' => $_POST['google-feed']
+                , 'authorize-net-id' => $_POST['authorize-net-id']
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );
