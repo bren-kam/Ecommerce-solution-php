@@ -21,12 +21,12 @@ $industries = $user->account->get_industries();
     <a href="/website/banners/" title="<?php echo _('Banners'); ?>" class="top<?php $template->select('banners'); ?>"><?php echo _('Banners'); ?></a>
     <a href="/website/sale/" title="<?php echo _('Sale'); ?>" class="top<?php $template->select('sale'); ?>"><?php echo _('Sale'); ?></a>
     <?php if ( in_array( Industry::FURNITURE, $industries ) && $user->account->product_catalog ) { ?>
-        <a href="/website/room-planner/" title="<?php echo _('Room Planner'); ?>" class="top<?php $template->select('room-planner'); ?>"><?php echo _('Room Planner'); ?></a>
-    <?php
-    }
+    <a href="/website/room-planner/" title="<?php echo _('Room Planner'); ?>" class="top<?php $template->select('room-planner'); ?>"><?php echo _('Room Planner'); ?></a>
+    <?php } ?>
 
-    if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) {
-        ?>
+    <a href="/website/navigation/" title="<?php echo _('Navigation'); ?>" class="top<?php $template->select('navigation'); ?>"><?php echo _('Navigation'); ?></a>
+
+    <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
         <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
     <?php } ?>
 </div>

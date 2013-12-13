@@ -80,6 +80,13 @@ class WebsiteController extends BaseController {
         if ( $this->verified() ) {
             $errs = $v->validate();
 
+            // Make sure another page doesn't have the same slug
+            $test_page = new AccountPage();
+            $test_page->get_by_slug( $this->user->account->id, $_POST['tPageSlug'] );
+
+            if ( $test_page->id && $test_page->id != $page->id )
+                $errs .= _('The page Link is already taken by another page. Please choose another link.');
+
             // if there are no errors
             if ( empty( $errs ) ) {
                 // Home page can't update their slug
@@ -497,6 +504,41 @@ class WebsiteController extends BaseController {
             ->add_title( _('Room Planner') )
             ->select( 'room-planner' )
             ->set( array( 'form' => $form->generate_form() ) );
+    }
+
+    /**
+     * Navigation
+     *
+     * @return TemplateResponse
+     */
+    protected function navigation() {
+        $page = new AccountPage();
+        $pages = $page->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->css( 'website/navigation' )
+            ->javascript( 'website/navigation' );
+
+        if ( $this->verified() && !empty( $_POST['navigation'] ) ) {
+            $navigation = array();
+
+            foreach ( $_POST['navigation'] as $page ) {
+                list( $url, $name ) = explode( '|', $page );
+                $navigation[] = compact( 'url', 'name' );
+            }
+
+            $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
+            $this->notify('Your Navigation settings have been saved!');
+        }
+
+        $navigation = $this->user->account->get_settings('navigation');
+        $navigation = ( empty( $navigation ) ) ? array() : json_decode( $navigation );
+
+        return $this->get_template_response( 'navigation' )
+            ->kb( 0 )
+            ->select( 'navigation' )
+            ->add_title( _('Navigation') )
+            ->set( compact( 'pages', 'navigation' ) );
     }
 
     /**

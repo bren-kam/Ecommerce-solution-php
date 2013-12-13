@@ -1,5 +1,6 @@
 <?php
-class ProductsController extends BaseController {
+class
+ProductsController extends BaseController {
     /**
      * Setup the base for creating template responses
      */
