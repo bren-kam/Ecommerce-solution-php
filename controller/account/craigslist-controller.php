@@ -86,7 +86,7 @@ class CraigslistController extends BaseController {
 
                 if ( '1' == $_POST['hPostAd'] ) {
                     try {
-                        $ad->post();
+                        $ad->post( $_POST['hCraigslistPost'] );
                     } catch ( ModelException $e ) {
                         $success = false;
                         $this->notify( _('There was a problem posting your Craiglist Ad. Please contact your online specialist!'), false );
