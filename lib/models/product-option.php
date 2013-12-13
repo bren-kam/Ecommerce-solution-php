@@ -1,5 +1,7 @@
 <?php
 class ProductOption extends ActiveRecordBase {
+    const MATTRESS_SIZES = 357;
+
     // The columns we will have access to
     public $id, $product_option_id, $type, $title, $name;
 
