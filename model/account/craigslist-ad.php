@@ -322,9 +322,10 @@ class CraigslistAd extends ActiveRecordBase {
     /**
      * Post Craigslist Ad
      *
+	 * @param string $text
      * @throws ModelException
      */
-    public function post() {
+    public function post( $text ) {
         $market = new CraigslistMarket();
 
         // Get craigslist markets
@@ -477,7 +478,7 @@ class CraigslistAd extends ActiveRecordBase {
             $i = 0;
 
             while ( 'RETRY' == $response->status && $i < 10 ) {
-                $response = $craigslist->add_ad_product( $market->market_id, $post_tags, $product_url, $product_image_url, $this->price, $this->headlines, $this->text );
+                $response = $craigslist->add_ad_product( $market->market_id, $post_tags, $product_url, $product_image_url, $this->price, $this->headlines, $text );
 
                 if ( 'SUCCESS' == $response->status ) {
                     $primus_product_ids[$market->id] = $response->product_id;
