@@ -507,6 +507,48 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Layout
+     *
+     * @return TemplateResponse
+     */
+    protected function layout() {
+        if ( $this->verified() && !empty( $_POST['layout'] ) ) {
+            $layout = array();
+
+            foreach ( $_POST['layout'] as $element ) {
+                list( $name, $disabled ) = explode( '|', $element );
+                $layout[] = compact( 'name', 'disabled' );
+            }
+
+            $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
+            $this->notify('Your Layout settings have been saved!');
+        }
+
+        $layout = $this->user->account->get_settings('layout');
+        if ( empty( $layout ) ) {
+            $layout = array(
+                (object) array( 'name' => 'slideshow', 'disabled' => 0 )
+                , (object) array( 'name' => 'categories', 'disabled' => 0 )
+                , (object) array( 'name' => 'content', 'disabled' => 0 )
+                , (object) array( 'name' => 'brands', 'disabled' => 0 )
+                , (object) array( 'name' => 'sidebar', 'disabled' => 0 )
+            );
+        } else {
+            $layout = json_decode( $layout );
+        }
+
+        $this->resources
+            ->css( 'website/layout' )
+            ->javascript( 'website/layout' );
+
+        return $this->get_template_response( 'layout' )
+            ->kb( 0 )
+            ->select( 'layout' )
+            ->add_title( _('Layout') )
+            ->set( compact( 'layout' ) );
+    }
+
+    /**
      * Navigation
      *
      * @return TemplateResponse
