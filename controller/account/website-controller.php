@@ -517,6 +517,7 @@ class WebsiteController extends BaseController {
 
             foreach ( $_POST['layout'] as $element ) {
                 list( $name, $disabled ) = explode( '|', $element );
+                $name = strtolower( $name );
                 $layout[] = compact( 'name', 'disabled' );
             }
 
@@ -530,7 +531,6 @@ class WebsiteController extends BaseController {
                 (object) array( 'name' => 'slideshow', 'disabled' => 0 )
                 , (object) array( 'name' => 'categories', 'disabled' => 0 )
                 , (object) array( 'name' => 'content', 'disabled' => 0 )
-                , (object) array( 'name' => 'brands', 'disabled' => 0 )
                 , (object) array( 'name' => 'sidebar', 'disabled' => 0 )
             );
         } else {
