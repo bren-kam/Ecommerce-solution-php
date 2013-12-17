@@ -24,10 +24,13 @@ $industries = $user->account->get_industries();
     <a href="/website/room-planner/" title="<?php echo _('Room Planner'); ?>" class="top<?php $template->select('room-planner'); ?>"><?php echo _('Room Planner'); ?></a>
     <?php } ?>
 
-    <a href="/website/layout/" title="<?php echo _('Layout'); ?>" class="top<?php $template->select('layout'); ?>"><?php echo _('Layout'); ?></a>
-    <a href="/website/navigation/" title="<?php echo _('Navigation'); ?>" class="top<?php $template->select('navigation'); ?>"><?php echo _('Navigation'); ?></a>
-
     <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
-        <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="top last<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
-    <?php } ?>
+        <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="top<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
+        <?php if ( $template->v('settings') ) { ?>
+            <a href="/website/home-page-layout/" title="<?php echo _('Home Page Layout'); ?>" class="sub<?php $template->select('home-page-layout'); ?>"><?php echo _('Home Page Layout'); ?></a>
+            <a href="/website/navigation/" title="<?php echo _('Navigation'); ?>" class="sub last<?php $template->select('sidebar-navigation'); ?>"><?php echo _('Navigation'); ?></a>
+    <?php
+        }
+    }
+    ?>
 </div>
