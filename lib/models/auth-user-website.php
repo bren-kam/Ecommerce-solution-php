@@ -121,7 +121,7 @@ class AuthUserWebsite extends ActiveRecordBase {
 
             // Create message for email
             $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain. ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
-            $message .= 'http://account.' .  $user->domain. "/login/activate/?t={$token->key}";
+            $message .= 'http://account.' .  $user->domain . '/login/activate/?t=' . $token->key;
             $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
             $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
     
@@ -260,7 +260,7 @@ class AuthUserWebsite extends ActiveRecordBase {
         $token->get_by_user( $user_id, "activate-account" );
         
         $message = '<br /><strong>' . $account->title . '</strong> is using ' .  $user->domain . ' to build and manage a website. You have been added as an Authorized User to their account.<br /><br />Please click this link to create your own password:<br /><br />';
-        $message .= '<a href="http://account.' .  $user->domain . '/login/activate/?t={$token->key}">http://account.' .  $user->domain . '/login/activate/?t={$token->key}</a>';
+        $message .= '<a href="http://account.' .  $user->domain . '/login/activate/?t=' . $token->key . '">http://account.' .  $user->domain . '/login/activate/?t=' . $token->key .'</a>';
         $message .= '<br /><br />Please contact ' .  $user->domain . ' if you have any questions. Thank you for your time.<br /><br />';
         $message .= '<strong>Email:</strong> info@' .  $user->domain . '<br /><strong>Phone:</strong> (800) 549-9206<br /><br />';
 
