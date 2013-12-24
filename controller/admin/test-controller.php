@@ -18,64 +18,31 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        $account = new Account();
+        $product = json_encode( array(
+            'auth_key' => 'abc123'
+            , 'method' => 'set-product'
+            , 'product' => array(
+                'sku' => 'A10200'
+                , 'category' => 'Dining Room > Chairs'
+                , 'industry' => 'furniture'
+                , 'name' => 'Regal Chair'
+                , 'description' => 'The Regal series offers furniture suitable for royalty. Rich gold and brown colours with the finest wood will give your room another feeling. This chair is part of the set and paired greated with the Regal Table.'
+                , 'price_wholesale' => '50'
+                , 'price_map' => '89.99'
+                , 'status' => 'in-stock'
+                , 'specifications' => array(
+                    'Height' => '36 in.'
+                    , 'Width' => '15 1/2 in.'
+                    , '52 pounds'
+                )
+                , 'images' => array(
+                    'http://mysite.com/images/regal-chair.png'
+                    , 'http://mysite.com/images/regal-chair-back.png'
+                )
+            )
+        ));
 
-        library('sendgrid-api');
-
-        // Get accounts with email marketing
-        $accounts = $account->get_results('SELECT w.*, u.`email`, u.`contact_name`, COALESCE( u.`work_phone`, u.`cell_phone` ) AS phone FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) WHERE w.`status` = 1 AND w.`email_marketing` = 1 AND `website_id` <> 96', PDO::FETCH_CLASS, 'Account' );
-
-        /**
-         * @var Account $account
-         */
-        foreach ( $accounts as $account ) {
-            $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password', 'from_email', 'from_name', 'address', 'city', 'state', 'zip' );
-            $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
-            $sendgrid->setup_sender_address();
-            $name = ( empty ( $settings['from_name'] ) ) ? $account->contact_name : $settings['from_name'];
-            $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
-            $sendgrid->sender_address->add( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA' );
-//
-//            $sendgrid->setup_email();
-//            //$sendgrid->setup_list();
-//
-//            $email_list = new EmailList();
-//            $email_lists = $email_list->get_by_account( $account->website_id );
-//
-//            $email = new Email();
-//
-//            foreach ( $email_lists as $email_list ) {
-//                //$sendgrid->list->add( $email_list->name );
-//
-//                $emails = $email->get_by_email_list( $email_list->id );
-//
-//                $email_chunks = array_chunk( $emails, 1000 );
-//
-//                foreach ( $email_chunks as $email_set ) {
-//                    $sendgrid->email->add( $email_list->name, $email_set );
-//                }
-//            }
-        }
-
-        /*
-        library('Excel_Reader/Excel_Reader');
-        $er = new Excel_Reader();
-        // Set the basics and then read in the rows
-        $er->setOutputEncoding('ASCII');
-        $er->read( ABS_PATH . 'temp/map-price-list.xls' );
-
-        $rows = array_slice( $er->sheets[0]['cells'], 3 );
-
-        foreach ( $rows as $row ) {
-            break;
-            $product = new Product();
-            $product->get_by_sku( $row[3] );
-            if ( $product->id ) {
-                $product->price = $row[15];
-                fn::info( $product );exit;
-                $product->save();
-            }
-        }*/
+        echo $product;
 
         return new HtmlResponse( 'heh' );
     }
