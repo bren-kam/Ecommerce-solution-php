@@ -507,6 +507,35 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Layout
+     *
+     * @return TemplateResponse
+     */
+    protected function home_page_layout() {
+        $layout = $this->user->account->get_settings('layout');
+        if ( empty( $layout ) ) {
+            $layout = array(
+                (object) array( 'name' => 'slideshow', 'disabled' => 0 )
+                , (object) array( 'name' => 'categories', 'disabled' => 0 )
+                , (object) array( 'name' => 'content', 'disabled' => 0 )
+                , (object) array( 'name' => 'sidebar', 'disabled' => 0 )
+            );
+        } else {
+            $layout = json_decode( $layout );
+        }
+
+        $this->resources
+            ->css( 'website/home-page-layout' )
+            ->javascript( 'website/home-page-layout' );
+
+        return $this->get_template_response( 'home-page-layout' )
+            ->kb( 0 )
+            ->select( 'settings', 'home-page-layout' )
+            ->add_title( _('Home Page Layout') )
+            ->set( compact( 'layout' ) );
+    }
+
+    /**
      * Navigation
      *
      * @return TemplateResponse
@@ -536,7 +565,7 @@ class WebsiteController extends BaseController {
 
         return $this->get_template_response( 'navigation' )
             ->kb( 0 )
-            ->select( 'navigation' )
+            ->select( 'settings', 'sidebar-navigation' )
             ->add_title( _('Navigation') )
             ->set( compact( 'pages', 'navigation' ) );
     }
@@ -1902,6 +1931,37 @@ class WebsiteController extends BaseController {
 
         $location = new WebsiteLocation();
         $location->update_sequence( $this->user->account->id, $sequence );
+
+        return $response;
+    }
+
+    /**
+     * Update Home Page Layout
+     *
+     * @return AjaxResponse
+     */
+    protected function save_layout() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['layout'] ), _('Unable to update Home Page Layout. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $layout_array = explode( '&layout[]=', urldecode( $_POST['layout'] ) );
+        $layout_array[0] = substr( $layout_array[0], 9 );
+        $layout = array();
+
+        foreach ( $layout_array as $element ) {
+            list( $name, $disabled ) = explode( '|', $element );
+            $name = strtolower( $name );
+            $layout[] = compact( 'name', 'disabled' );
+        }
+
+        $this->user->account->set_settings( array( 'layout' => json_encode( $layout ) ) );
+        $this->notify('Your Layout settings have been saved!');
 
         return $response;
     }

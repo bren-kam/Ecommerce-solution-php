@@ -57,6 +57,36 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * Get by brand
+     *
+     * @param int $brand_id
+     * @return Product[]
+     */
+    public function get_by_brand( $brand_id ) {
+        return $this->prepare(
+            'SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`price_min`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id` FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) WHERE p.`brand_id` = :brand_id GROUP BY p.`product_id`'
+            , 'is'
+            , array( ':brand_id' => $brand_id )
+        )->get_row( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Get by sku and brand
+     *
+     * @param string $sku
+     * @param int $brand_id
+     */
+    public function get_by_sku_by_brand( $sku, $brand_id ) {
+        $this->prepare(
+            "SELECT p.`product_id`, p.`brand_id`, p.`industry_id`, p.`website_id`, p.`name`, p.`slug`, p.`description`, p.`status`, p.`sku`, p.`price`, p.`price_min`, p.`weight`, p.`product_specifications`, p.`publish_visibility`, p.`publish_date`, i.`name` AS industry, u.`contact_name` AS created_user, u2.`contact_name` AS updated_user, w.`title` AS website, p.`category_id`, GROUP_CONCAT( pi.`image` SEPARATOR ',' ) AS images FROM `products` AS p LEFT JOIN `industries` AS i ON ( p.`industry_id` = i.`industry_id` ) LEFT JOIN `users` AS u ON ( p.`user_id_created` = u.`user_id` ) LEFT JOIN `users` AS u2 ON ( p.`user_id_modified` = u2.`user_id` ) LEFT JOIN `websites` AS w ON ( p.`website_id` = w.`website_id` ) WHERE p.`brand_id` = :brand_id AND p.`sku` = :sku GROUP BY p.`product_id`"
+            , 'is'
+            , array( ':brand_id' => $brand_id, ':sku' => $sku )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        $this->id = $this->product_id;
+    }
+
+    /**
      * Get by ids
      *
      * @param array $product_ids

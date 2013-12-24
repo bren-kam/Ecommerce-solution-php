@@ -1,7 +1,7 @@
 <?php
 class APIKey extends ActiveRecordBase {
     // The columns we will have access to
-    public $id, $api_key_id, $company_id, $key, $status, $date_created;
+    public $id, $api_key_id, $company_id, $brand_id, $user_id, $key, $status, $date_created;
 
     // Columns belong to other tables
     public $domain;
@@ -24,7 +24,7 @@ class APIKey extends ActiveRecordBase {
      */
     public function get_by_key( $key ) {
         $this->prepare(
-            'SELECT ak.`api_key_id`, ak.`company_id`, ak.`key`, c.`domain` FROM `api_keys` AS ak LEFT JOIN `companies` AS c ON ( c.`company_id` = ak.`company_id` ) WHERE ak.`status` = 1 AND ak.`key` = :key'
+            'SELECT ak.`api_key_id`, ak.`company_id`, ak.`brand_id`, ak.`user_id`, ak.`key`, c.`domain` FROM `api_keys` AS ak LEFT JOIN `companies` AS c ON ( c.`company_id` = ak.`company_id` ) WHERE ak.`status` = 1 AND ak.`key` = :key'
             , 's'
             , array( ':key' => $key )
         )->get_row( PDO::FETCH_INTO, $this );

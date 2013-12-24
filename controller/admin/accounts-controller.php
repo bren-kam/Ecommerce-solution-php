@@ -1411,16 +1411,7 @@ class AccountsController extends BaseController {
             $email_chunks = array_chunk( $emails, 1000 );
 
             foreach ( $email_chunks as $emails ) {
-                $email_array = array();
-
-                /**
-                 * @var Email $email
-                 */
-                foreach ( $emails as $email ) {
-                    $email_array[] = $email->email;
-                }
-
-                $sendgrid->email->add( $email_list->name, $email_array );
+                $sendgrid->email->add( $email_list->name, $emails );
             }
         }
 
