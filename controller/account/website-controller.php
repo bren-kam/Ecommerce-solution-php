@@ -529,7 +529,7 @@ class WebsiteController extends BaseController {
             ->javascript( 'website/home-page-layout' );
 
         return $this->get_template_response( 'home-page-layout' )
-            ->kb( 0 )
+            ->kb( 196 )
             ->select( 'settings', 'home-page-layout' )
             ->add_title( _('Home Page Layout') )
             ->set( compact( 'layout' ) );
@@ -564,7 +564,7 @@ class WebsiteController extends BaseController {
         $navigation = ( empty( $navigation ) ) ? array() : json_decode( $navigation );
 
         return $this->get_template_response( 'navigation' )
-            ->kb( 0 )
+            ->kb( 197 )
             ->select( 'settings', 'sidebar-navigation' )
             ->add_title( _('Navigation') )
             ->set( compact( 'pages', 'navigation' ) );

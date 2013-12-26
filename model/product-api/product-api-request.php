@@ -34,11 +34,18 @@ class ProductApiRequest {
 		, 'failed-set-product' => 'Failed to set the product. Please verify you have sent the correct parameters.'
 		, 'failed-get-product' => 'Failed to get the product. Please verify you have sent the correct parameters.'
 		, 'failed-list-products' => 'Failed to list products. Please verify you have sent the correct parameters.'
+		, 'failed-get-categories' => 'Failed to get categories. Please verify you have sent the correct parameters.'
+		, 'failed-get-industrues' => 'Failed to get industries. Please verify you have sent the correct parameters.'
+		, 'failed-delete-product' => 'Failed to delete product. Please verify you have sent the correct parameters.'
 		, 'no-authentication-key' => 'Authentication failed. No Authorization Key was sent.'
 		, 'ssl-required' => 'You must make the call to the secured version of our website.'
 		, 'success-set-product' => 'Set Product succeeded!'
+		, 'success-delete-product' => 'Delete Product succeeded!'
 		, 'success-get-product' => 'Get Product succeeded!'
+		, 'success-get-categories' => 'Get Categories succeeded!'
+		, 'success-get-industries' => 'Get Industries succeeded!'
 		, 'success-list-products' => 'List Products succeeded!'
+        , 'product-creation-requires-images' => 'Failed to set product. Images are required on product creation.'
 	);
 	
 	/**
@@ -46,11 +53,12 @@ class ProductApiRequest {
 	 * @var array $messages
 	 */
 	protected $methods = array(
-		'set_product'
-		, 'get_product'
-		, 'list_products'
-        , 'delete_product'
+        'get_product'
+        , 'list_products'
         , 'get_categories'
+        , 'get_industries'
+		, 'set_product'
+        , 'delete_product'
 	);
 	
 	/**
@@ -130,15 +138,25 @@ class ProductApiRequest {
         $set_product->description = $product->description;
         $set_product->price = $product->price_wholesale;
         $set_product->price_min = $product->price_map;
-        $set_product->status = $product->status;
+        $set_product->status = ( 'discontinued' == $product->status ) ? 'discontinued' : 'in-stock';
         $set_product->product_specifications = serialize( $product->specifications );
 
         if ( $set_product->id ) {
             $set_product->save();
         } else {
+            if ( empty( $product->images ) ) {
+                $this->add_response( array( 'success' => false, 'message' => 'product-creation-requires-images' ) );
+                $this->log( 'method', 'The method "' . $this->method . '" has incorrect parameters.', true );
+                return;
+            }
+
             $set_product->sku = $product->sku;
             $set_product->industry_id = $this->get_industry( $product->industry );
+            $set_product->user_id_created = $this->api_key->user_id;
+            $set_product->user_id_modified = $this->api_key->user_id;
+            $set_product->publish_visibility = Product::PUBLISH_VISIBILITY_PUBLIC;
             $set_product->create();
+            $set_product->save();
         }
 
         if ( !empty( $product->images ) ) {
@@ -228,6 +246,27 @@ class ProductApiRequest {
         $this->load_categories();
 
         $this->add_response( array( 'success' => true, 'categories' => $this->categories, 'message' => 'success-get-categories' ) );
+        $this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
+    }
+
+    /**
+	 * Get Industries
+	 */
+    protected function get_industries() {
+        // Get the industries
+        $industry = new Industry();
+        $industries = $industry->get_all();
+
+        $industry_array = array();
+
+        /**
+         * @var Industry $industry
+         */
+        foreach ( $industries as $industry ) {
+            $industry_array[] = format::slug( $industry->name );
+        }
+
+        $this->add_response( array( 'success' => true, 'industries' => $industry_array, 'message' => 'success-get-industries' ) );
         $this->log( 'method', 'The method "' . $this->method . '" has been successfully called.', true );
     }
 
