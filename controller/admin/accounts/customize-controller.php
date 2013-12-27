@@ -175,7 +175,7 @@ class CustomizeController extends BaseController {
         $response->notify( 'LESS/CSS has been successfully updated!' );
 
         // Update all other LESS sites
-        if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED && 1 == 2 ) {
+        if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_accounts = $account->get_less_sites();
 
             /**
