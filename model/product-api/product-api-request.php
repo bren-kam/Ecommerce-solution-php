@@ -26,6 +26,11 @@ class ProductApiRequest {
     protected $curl;
 
     /**
+     * @var object
+     */
+    protected $parameters;
+
+    /**
 	 * Set of messages used throughout the script for easy access
 	 * @var array $messages
 	 */
@@ -493,6 +498,7 @@ class ProductApiRequest {
 		if( in_array( $_POST['method'], $this->methods ) ) {
 			$this->method = $_POST['method'];
 			$this->statuses['method_called'] = true;
+            $this->parameters = json_decode( $_POST['data'] );
 			
 			call_user_func( array( 'ApiRequest', $_POST['method'] ) );
 
@@ -567,7 +573,7 @@ class ProductApiRequest {
 		// Go through each argument
 		foreach( $args as $a ) {
 			// Make sure the argument is set
-			if( !isset( $_POST[$a] ) ) {
+			if( !isset( $this->parameters->$a ) ) {
 				$message = 'Required parameter "' . $a . '" was not set for the method "' . $this->method . '".';
 				$this->add_response( array( 'success' => false, 'message' => $message ) );
 				
@@ -576,7 +582,7 @@ class ProductApiRequest {
 				return array();
 			}
 			
-			$parameters[$a] = $_POST[$a];
+			$parameters[$a] = $this->parameters->$a;
 		}
 		
 		// Return arguments
