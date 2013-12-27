@@ -440,18 +440,22 @@ class WebsiteController extends BaseController {
         $form = new FormTable( 'fSale' );
 
         // Get settings
-        $settings = $this->user->account->get_settings( 'page_sale-slug', 'page_sale-title' );
+        $settings = $this->user->account->get_settings( 'page_sale-slug', 'page_sale-title', 'page_sale-description' );
 
-        $form->add_field( 'text', _('Page Title'), 'tPageTitle', $settings['page_sale-title'] )
+        $form->add_field( 'text', _('Title'), 'tPageTitle', $settings['page_sale-title'] )
             ->attribute( 'maxlength', '50' );
 
-        $form->add_field( 'text', _('Page Slug'), 'tPageSlug', $settings['page_sale-slug'] )
+        $form->add_field( 'text', _('Slug'), 'tPageSlug', $settings['page_sale-slug'] )
             ->attribute( 'maxlength', '50' );
+
+        $form->add_field( 'text', _('Meta Description'), 'tPageDescription', $settings['page_sale-description'] )
+            ->attribute( 'maxlength', '250' );
 
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                     'page_sale-title' => $_POST['tPageTitle']
                     , 'page_sale-slug' => format::slug( $_POST['tPageSlug'] )
+                    , 'page_sale-description' => $_POST['tPageDescription']
                 )
             );
 
