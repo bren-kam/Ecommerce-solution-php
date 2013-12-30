@@ -103,6 +103,9 @@ class AccountProduct extends ActiveRecordBase {
      * @param int $account_id
      */
     public function auto_price( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+        if ( empty( $category_ids ) )
+            return;
+        
         // Setup variables
         $set = array();
         $run_2pc = false;
