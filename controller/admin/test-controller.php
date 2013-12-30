@@ -18,6 +18,16 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        library('product-api');
+        $product_api = new ProductAPI( '[32-character authorization key]' );
+
+        // Set variables
+        $sku = 'A102C00';
+
+        // Get the product
+        $product = $product_api->get_product( $sku );
+
+        /*
         $product = json_encode( array(
             'auth_key' => 'abc123'
             , 'method' => 'set-product'
@@ -40,7 +50,7 @@ class TestController extends BaseController {
                     , 'http://mysite.com/images/regal-chair-back.png'
                 )
             )
-        ));
+        ));*/
 
         echo $product;
 

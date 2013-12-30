@@ -8,9 +8,15 @@
  * @var Template $template
  * @var User $user
  */
-
-echo $template->start( _('Price Multiplier') );
 ?>
+
+<div id="tabs">
+    <div class="tab-link"><a href="/products/auto-price/" title="<?php echo _('Auto Price'); ?>"><?php echo _('Auto Price'); ?></a></div>
+    <div class="tab-link"><a href="/products/price-multiplier/" class="selected" title="<?php echo _('Price Multiplier'); ?>"><?php echo _('Price Multiplier'); ?></a></div>
+    <div class="tab-link"><a href="/products/product-prices/" title="<?php echo _('Product Prices'); ?>"><?php echo _('Product Prices'); ?></a></div>
+</div>
+
+<?php echo $template->start( _('Price Multiplier') ); ?>
 
 <p><?php echo _('On this page you can upload a list of prices indexed by SKU.'); ?></p>
 <p><?php echo _('Please make your spreadsheet layout match the example below.'); ?></p>

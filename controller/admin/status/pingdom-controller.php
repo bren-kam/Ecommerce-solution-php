@@ -81,4 +81,13 @@ class PingdomController extends BaseController {
         // Spit out XML
         return new XmlResponse( $xml->asXML() );
     }
+
+    /**
+     * Override login function
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        $this->user = new User();
+        return true;
+    }
 }

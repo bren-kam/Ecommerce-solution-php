@@ -10,9 +10,16 @@
  * @var Brand[] $brands
  * @var Category[] $categories
  */
-
-echo $template->start( _('Product Prices') );
 ?>
+
+<div id="tabs">
+    <div class="tab-link"><a href="/products/auto-price/" title="<?php echo _('Auto Price'); ?>"><?php echo _('Auto Price'); ?></a></div>
+    <div class="tab-link"><a href="/products/price-multiplier/" title="<?php echo _('Price Multiplier'); ?>"><?php echo _('Price Multiplier'); ?></a></div>
+    <div class="tab-link"><a href="/products/product-prices/" class="selected" title="<?php echo _('Product Prices'); ?>"><?php echo _('Product Prices'); ?></a></div>
+</div>
+
+<?php echo $template->start( _('Product Prices') ); ?>
+
 <h2><?php echo _('1. Select a brand and/or category'); ?></h2>
 <br />
 <select id="sBrand">

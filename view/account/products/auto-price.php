@@ -8,12 +8,19 @@
  * @var Template $template
  * @var User $user
  * @var Category[] $categories
+ * @var Brand[] $brands
  * @var WebsiteAutoPrice $auto_price
  * @var array $auto_price_candidates
  */
-
-echo $template->start( _('Auto Price') );
 ?>
+
+<div id="tabs">
+    <div class="tab-link"><a href="/products/auto-price/" class="selected" title="<?php echo _('Auto Price'); ?>"><?php echo _('Auto Price'); ?></a></div>
+    <div class="tab-link"><a href="/products/price-multiplier/" title="<?php echo _('Price Multiplier'); ?>"><?php echo _('Price Multiplier'); ?></a></div>
+    <div class="tab-link"><a href="/products/product-prices/" title="<?php echo _('Product Prices'); ?>"><?php echo _('Product Prices'); ?></a></div>
+</div>
+
+<?php echo $template->start( _('Auto Price') ); ?>
 
 <p><?php echo _('On this page you set all of your prices based on the wholesale price.'); ?></p>
 <p><?php echo _('Please enter in the percent increase in the fields below before clicking the "Auto Price" button. A "0" will be ignored.'); ?></p>
