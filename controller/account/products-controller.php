@@ -361,13 +361,13 @@ class ProductsController extends BaseController {
         $brands = $brand->get_by_account( $this->user->account->id );
 
         $this->resources
-            ->css( 'products/product-prices' )
+            ->css( 'products/price-tools', 'products/product-prices' )
             ->javascript( 'products/product-prices' );
 
         return $this->get_template_response( 'product-prices' )
             ->kb( 52 )
             ->add_title( _('Product Prices') )
-            ->select( 'sub-products', 'product-prices' )
+            ->select( 'sub-products', 'price-tools' )
             ->set( compact( 'brands', 'categories' ) );
     }
 
@@ -377,12 +377,14 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function price_multiplier() {
-        $this->resources->javascript( 'fileuploader', 'products/multiply-prices' );
+        $this->resources
+            ->css( 'products/price-tools' )
+            ->javascript( 'fileuploader', 'products/multiply-prices' );
 
         return $this->get_template_response( 'price-multiplier' )
             ->kb( 115 )
             ->add_title( _('Price Multiplier') )
-            ->select( 'sub-products', 'price-multiplier' );
+            ->select( 'sub-products', 'price-tools' );
     }
 
     /**
@@ -398,6 +400,10 @@ class ProductsController extends BaseController {
         // Get auto prices
         $website_auto_price = new WebsiteAutoPrice();
         $website_auto_price->load_all( $this->user->account->id );
+
+        // Get Brands
+        $brand = new Brand();
+        $brands = $brand->get_all();
 
         // Get categories
         $category = new Category();
@@ -426,7 +432,7 @@ class ProductsController extends BaseController {
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
 
-        $this->resources->css('products/auto-price');
+        $this->resources->css( 'products/price-tools', 'products/auto-price');
 
         return $this->get_template_response( 'auto-price' )
             ->kb( 134 )
@@ -434,8 +440,9 @@ class ProductsController extends BaseController {
             ->set( array(
                 'categories' => $categories
                 , 'auto_price_candidates' => $auto_price_candidates
+                , 'brands' => $brands
             ))
-            ->select( 'sub-products', 'auto-price' );
+            ->select( 'sub-products', 'price-tools' );
     }
 
     /**
