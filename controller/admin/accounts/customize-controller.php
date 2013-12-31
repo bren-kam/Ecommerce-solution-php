@@ -177,7 +177,7 @@ class CustomizeController extends BaseController {
         // Update all other LESS sites
         if ( $_GET['aid'] == Account::TEMPLATE_UNLOCKED ) {
             $less_accounts = $account->get_less_sites();
-
+			
             /**
              * @var Account $less_account
              * @var string $unlocked_less
@@ -186,9 +186,9 @@ class CustomizeController extends BaseController {
             foreach ( $less_accounts as $less_account ) {
                 if ( $less_account->id == Account::TEMPLATE_UNLOCKED )
                     continue;
-
+				
                 $less_account->set_settings( array(
-                    'css' => $less->compile( $unlocked_less . $less_account->get_settings('less') )
+                    'css' => $less->compile( $less_css . $less_account->get_settings('less') )
                 ));
             }
         }
