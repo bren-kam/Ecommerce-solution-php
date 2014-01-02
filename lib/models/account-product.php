@@ -132,17 +132,16 @@ class AccountProduct extends ActiveRecordBase {
         );
 
         // Round to the ending
-        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
         $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
-            $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`price` = ceilEnding( p.`price` * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
         if ( $sale_price > 0 )
-            $set[] = 'wp.`sale_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $sale_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
 
         if ( $alternate_price > 0 )
-            $set[] = 'wp.`alternate_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $alternate_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
 
         if ( empty( $set ) )
             return;
@@ -196,17 +195,16 @@ class AccountProduct extends ActiveRecordBase {
         $set = array();
 
         // Round to the ending
-        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
         $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
-            $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
         if ( $sale_price > 0 )
-            $set[] = 'wp.`sale_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $sale_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
 
         if ( $alternate_price > 0 )
-            $set[] = 'wp.`alternate_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $alternate_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
 
         if ( empty( $set ) )
             return;

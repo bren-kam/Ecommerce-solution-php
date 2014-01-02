@@ -36,12 +36,12 @@ jQuery(function(){
     });
 });
 
-// Roudn up to a decimal place or ending
+// Round up to a decimal place or ending
 Math.ceilEnding = function( number, ending ) {
-    var numberEnding = number.toFixed( 2 ).substr( -parseFloat( ending ).toFixed(2).length ), difference = numberEnding - ending;
+    var numberEnding = number.toFixed( 2 ).substr( -parseFloat( ending ).toFixed(2).length ), difference = numberEnding - ending, placeValue = Math.pow( 10, Math.floor( ending ).toString().length );
 
     if ( difference > 0 ) {
-        return Math.round( ( number + 10 - difference ) * 100 ) / 100;
+        return Math.round( ( number + placeValue - difference ) * 100 ) / 100;
     } else if ( difference < 0 ) {
         return Math.round( ( number - difference ) * 100 ) / 100;
     }
