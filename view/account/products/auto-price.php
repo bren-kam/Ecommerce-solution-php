@@ -157,7 +157,7 @@
     </p>
     <p>
         SKU: <?php echo $product->sku; ?><br>
-        Brand:<?php echo $product->brand; ?>
+        Brand: <?php echo $product->brand; ?>
     </p>
     <br clear="left"><br>
 </div>

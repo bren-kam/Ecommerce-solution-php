@@ -92,6 +92,25 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Get Auto Price Example
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_auto_priceable_brands( $account_id ) {
+        return $this->prepare(
+            "SELECT DISTINCT p.`brand_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->get_col();
+    }
+
+    /**
      * Get Non-Auto Price Candidates
      *
      * @param int $account_id

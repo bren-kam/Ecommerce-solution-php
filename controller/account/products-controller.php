@@ -396,6 +396,7 @@ class ProductsController extends BaseController {
         // Find out what products will be affected
         $product = new AccountProduct();
         $auto_price_candidates = $product->get_auto_price_count( $this->user->account->id );
+        $brand_ids = $product->get_auto_priceable_brands( $this->user->account->id );
 
         // Get auto prices
         $website_auto_price = new WebsiteAutoPrice();
@@ -403,7 +404,7 @@ class ProductsController extends BaseController {
 
         // Get Brands
         $brand = new Brand();
-        $brands_array = $brand->get_all();
+        $brands_array = $brand->get_by_ids( $brand_ids );
         $brands = array();
 
         foreach ( $brands_array as $brand ) {
