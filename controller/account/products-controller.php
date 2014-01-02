@@ -450,7 +450,10 @@ class ProductsController extends BaseController {
         $product->get( $account_product->product_id );
         $product->images = $product->get_images();
 
-        $this->resources->css( 'products/price-tools', 'products/auto-price');
+        $this->resources
+            ->css( 'products/price-tools', 'products/auto-price')
+            ->javascript( 'products/auto-price')
+        ;
 
         return $this->get_template_response( 'auto-price' )
             ->kb( 134 )

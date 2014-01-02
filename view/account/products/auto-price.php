@@ -111,7 +111,11 @@
 <br><br>
 
 <div id="example">
-    <h2><?php echo _('Example'); ?></h2>
+    <h2><?php echo _('Demo - Try Me!'); ?></h2>
+    <br>
+    <p>Here you can try out your calculations to see how they would work. We have randomly selected an auto-pricing-eligible product from your catalog.</p>
+    <p>The wholesale price is: <strong><span class="big">$<?php echo number_format( $product->price, 2 ); ?></span>.</strong></p>
+    <p>Please check the help article if you have any questions!</p>
     <br>
     <table>
         <thead>
@@ -133,9 +137,9 @@
         <td>
             <?php echo Category::$categories[$product->category_id]->name; ?>
         </td>
-        <td><input type="text" class="tb" id="example_alternate_price" value="3"></td>
-        <td><input type="text" class="tb" id="example_price" value="2"></td>
-        <td><input type="text" class="tb" id="example_sale_price" value="1.5"></td>
+        <td><input type="text" class="tb" id="example_alternate_price" value="2"></td>
+        <td><input type="text" class="tb" id="example_price" value="1"></td>
+        <td><input type="text" class="tb" id="example_sale_price" value="0.5"></td>
         <td><input type="text" class="tb" id="example_ending"></td>
         <td><a href="#" class="button" id="update" title="<?php echo _('Update'); ?>"><?php echo _('Update'); ?></a></td>
     </tr>
@@ -147,7 +151,7 @@
     <br><br>
     <p id="example-price">
         <span id="example-sale-price" class="sale-price" data-original-price="<?php echo $product->price; ?>">$<?php echo number_format( $product->price * 1.5, 2 ); ?></span>
-        <span class="strike-through" id="example-regular-price">$<?php echo number_format( $product->price * 2, 2 ); ?></span>
+        <span class="strikethrough" id="example-regular-price">$<?php echo number_format( $product->price * 2, 2 ); ?></span>
         <br>
         <span class="msrp" id="example-msrp">(MSRP $<?php echo str_replace( '.00', '', number_format( $product->price * 3, 2 ) ); ?>)</span>
     </p>
