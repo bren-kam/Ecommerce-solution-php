@@ -16,7 +16,7 @@ class AccountProduct extends ActiveRecordBase {
     public $link, $industry, $coupons, $product_options, $created_by, $count;
 
     // Columns from other tables
-    public $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
+    public $brand_id, $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
 
     /**
      * Setup the account initial data
@@ -71,6 +71,24 @@ class AccountProduct extends ActiveRecordBase {
                 , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
             )
         )->get_results( PDO::FETCH_ASSOC );
+    }
+
+    /**
+     * Get Auto Price Example
+     *
+     * @param int $account_id
+     */
+    public function get_auto_price_example( $account_id ) {
+        $this->prepare(
+            "SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL LIMIT 1"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->get_row( PDO::FETCH_INTO, $this );
     }
 
     /**
@@ -1048,8 +1066,9 @@ class AccountProduct extends ActiveRecordBase {
      *
      * @param array $category_ids
      * @param int $account_id
+     * @param int $brand_id [optional]
      */
-    public function reset_prices( array $category_ids, $account_id ) {
+    public function reset_prices( array $category_ids, $account_id, $brand_id = NULL ) {
         // DB proof category ids
         foreach ( $category_ids as &$category_id ) {
             $category_id = (int) $category_id;
@@ -1057,7 +1076,9 @@ class AccountProduct extends ActiveRecordBase {
 
         $category_ids = implode( ',', $category_ids );
 
-        $this->prepare( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET wp.`price` = 0, wp.`sale_price` = 0, wp.`alternate_price` = 0 WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)"
+        $where = ( $brand_id ) ? ' AND p.`brand_id` = ' . (int) $brand_id : '';
+
+        $this->prepare( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET wp.`price` = 0, wp.`sale_price` = 0, wp.`alternate_price` = 0 WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
