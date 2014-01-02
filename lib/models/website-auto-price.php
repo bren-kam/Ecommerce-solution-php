@@ -44,19 +44,29 @@ class WebsiteAutoPrice extends ActiveRecordBase {
     }
 
     /**
+     * Remove
+     */
+    public function remove() {
+        $this->delete( array(
+            'website_id' => $this->website_id
+            , 'brand_id' => $this->brand_id
+            , 'category_id' => $this->category_id
+        ), 'iii' );
+    }
+
+    /**
      * Get
      *
      * @param int $brand_id
      * @param int $category_id
      * @param int $website_id
-     * @return WebsiteAutoPrice[]
      */
     public function get( $brand_id, $category_id, $website_id ) {
-        return $this->prepare(
+        $this->prepare(
             'SELECT * FROM `website_auto_price` WHERE `website_id` = :website_id AND `brand_id` = :brand_id AND `category_id` = :category_id'
             , 'iii'
             , array( ':website_id' => $website_id, ':brand_id' => $brand_id, ':category_id' => $category_id )
-        )->get_results( PDO::FETCH_CLASS, 'WebsiteAutoPrice' );
+        )->get_row( PDO::FETCH_INTO, $this );
     }
 
     /**

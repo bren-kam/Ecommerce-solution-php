@@ -427,12 +427,7 @@ class ProductsController extends BaseController {
                         $auto_price->$key = $value;
                     }
 
-
-                    if ( $auto_price->brand_id ) {
-                        $auto_price->save();
-                    } else {
-                        $auto_price->create();
-                    }
+                    $auto_price->save();
                 }
             }
 
@@ -1770,13 +1765,9 @@ class ProductsController extends BaseController {
         $auto_price = new WebsiteAutoPrice();
         $auto_price->get( $_GET['bid'], $category->id, $this->user->account->id );
 
-        $price = ( empty( $auto_price->price ) ) ? 0 : ( $auto_price->price + 100 ) / 100;
-        $sale_price = ( empty( $auto_price->sale_price ) ) ? 0 : ( $auto_price->sale_price + 100 ) / 100;
-        $alternate_price = ( empty( $auto_price->alternate_price ) ) ? 0 : ( $auto_price->alternate_price + 100 ) / 100;
-
         // Now autoprice
         $account_product = new AccountProduct();
-        $account_product->auto_price( $category_ids, $price, $sale_price, $alternate_price, $auto_price->ending, $this->user->account->id );
+        $account_product->auto_price( $category_ids, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $this->user->account->id );
 
         // Set map pricing
         $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
@@ -1812,6 +1803,7 @@ class ProductsController extends BaseController {
         $category->get( $_GET['cid'] );
 
         $categories = $category->get_all_children( $category->id );
+
         $category_ids = array();
 
         foreach ( $categories as $cat ) {
@@ -1828,6 +1820,34 @@ class ProductsController extends BaseController {
 
         $brand = ( $brand->id ) ? $brand->name . ' ' : '';
         $response->notify( _('Prices have been removed for ') . $brand . $category->name . ' category.' );
+
+        return $response;
+    }
+
+    /**
+     * Delete Auto Price
+     *
+     * @return AjaxResponse
+     */
+    protected function delete_auto_price() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['bid'], $_GET['cid'] ), _('Unable to remove auto price. Please refresh the page and try again.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Delete from database
+        $auto_price = new WebsiteAutoPrice();
+        $auto_price->get( $_GET['bid'], $_GET['cid'], $this->user->account->id );
+        $auto_price->remove();
+        $response->notify( _('Auto Price have been deleted.') );
+
+        // Delete from page
+        jQuery('#ap_' . $_GET['bid'] . '_' . $_GET['cid'] )->remove();
+        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }

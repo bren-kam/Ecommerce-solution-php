@@ -56,13 +56,14 @@
     <tbody>
         <?php
         $remove_auto_price = nonce::create('remove_auto_price');
+        $delete_auto_price = nonce::create('delete_auto_price');
         $run_auto_prices = nonce::create('run_auto_prices');
 
         foreach ( $auto_prices as $auto_price ) {
             $brand_name = ( 0 == $auto_price->brand_id ) ? _('All') : $brands[$auto_price->brand_id]->name;
             $category = Category::$categories[$auto_price->category_id];
             ?>
-            <tr>
+            <tr id="ap_<?php echo $auto_price->brand_id; ?>_<?php echo $auto_price->category_id; ?>">
                 <td>
                     <?php echo $brand_name; ?>
                 </td>
@@ -74,9 +75,9 @@
                 <td><input type="text" class="tb" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][sale_price]" value="<?php echo (float) $auto_price->sale_price; ?>"></td>
                 <td><input type="text" class="tb" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][ending]" value="<?php echo (float) $auto_price->ending; ?>"></td>
                 <td>
-                    <a href="<?php echo url::add_query_arg( array( 'brand_id' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $run_auto_prices ), '/products/run-auto-prices/' ); ?>" ajax="1" confirm='<?php echo _('Make sure you have pressed "Save" before continuing.'); ?>'><?php echo _('Run'); ?></a> |
-                    <a href="<?php echo url::add_query_arg( array( 'brand_id' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove these prices? This cannot be undone.'); ?>"><?php echo _('Remove Prices From All Products'); ?></a> |
-                    <a href="<?php echo url::add_query_arg( array( 'brand_id' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $remove_auto_price ), '/products/delete-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to delete this row? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $run_auto_prices ), '/products/run-auto-prices/' ); ?>" ajax="1" confirm='<?php echo _('Make sure you have pressed "Save" before continuing.'); ?>'><?php echo _('Run'); ?></a> |
+                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove these prices? This cannot be undone.'); ?>"><?php echo _('Remove Prices From All Products'); ?></a> |
+                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $delete_auto_price ), '/products/delete-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to delete this row? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
                 </td>
             </tr>
             <?php } ?>

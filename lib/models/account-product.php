@@ -1086,6 +1086,9 @@ class AccountProduct extends ActiveRecordBase {
      * @param int $brand_id [optional]
      */
     public function reset_prices( array $category_ids, $account_id, $brand_id = NULL ) {
+        if ( empty( $category_ids ) )
+            return;
+
         // DB proof category ids
         foreach ( $category_ids as &$category_id ) {
             $category_id = (int) $category_id;
