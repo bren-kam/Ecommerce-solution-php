@@ -1,4 +1,40 @@
 jQuery(function(){
+    // Add Autoprice row
+    $('#add').click( function() {
+        var brand = $('#brand'), brandId = brand.val(), category = $('#category'), categoryId = category.val(), alternatePrice = $('#alternate_price'), alternatePriceValue = alternatePrice.val(), price = $('#price'), priceValue = price.val(), salePrice = $('#sale_price'), salePriceValue = salePrice.val(), ending = $('#ending'), endingValue = ending.val();
+
+        $.post('/products/add-auto-price/', { _nonce : $('#_add_auto_price').val(), bid : brandId, cid : categoryId, alternate_price : alternatePriceValue, price : priceValue, sale_price : salePriceValue, ending : endingValue }, function( response ) {
+            if ( response.success ) {
+                var html = '<tr id="ap_' + brandId + '_' + categoryId + '">';
+                html += '<td>' + brand.find('option:selected').text() + '</td>';
+                html += '<td>' + category.find('option:selected').text() + '</td>';
+                html += '<td><input type="text" class="tb" name="auto-price[' + brandId + '][' + categoryId + '][alternate_price]" value="' + alternatePriceValue + '"></td>';
+                html += '<td><input type="text" class="tb" name="auto-price[' + brandId + '][' + categoryId + '][price]" value="' + priceValue + '"></td>';
+                html += '<td><input type="text" class="tb" name="auto-price[' + brandId + '][' + categoryId + '][sale_price]" value="' + salePriceValue + '"></td>';
+                html += '<td><input type="text" class="tb" name="auto-price[' + brandId + '][' + categoryId + '][ending]" value="' + endingValue + '"></td>';
+                html += '<td>';
+                html += '<a href="/products/run-auto-prices/?bid=' + brandId + '&cid=' + categoryId + '&_nonce=' + $('#_run_auto_prices').val() + '" ajax="1" confirm=\'Make sure you have pressed "Save" before continuing.\'>Run</a> | ';
+                html +='<a href="/products/remove-auto-price/?bid=' + brandId + '&cid=' + categoryId + '&_nonce=' + $('#_remove_auto_price').val() + '" ajax="1" confirm="Are you sure you want to remove these prices? This cannot be undone.">Remove Prices From All Products</a> | ';
+                html +='<a href="/products/delete-auto-price/?bid=' + brandId + '&cid=' + categoryId + '&_nonce=' + $('#_delete_auto_price').val() + '" ajax="1" confirm="Are you sure you want to delete this row? This cannot be undone">Delete</a>';
+                html += '</td>';
+                html += '</tr>';
+
+                $('#auto-prices tr:last').before(html);
+                $('#ap_' + brandId + '_' + categoryId).sparrow();
+
+                brand.find('option:first').attr('selected', true);
+                category.find('option:first').attr('selected', true);
+                alternatePrice.val('');
+                price.val('');
+                salePrice.val('');
+                ending.val('');
+            } else {
+                alert(response.error);
+            }
+        }, 'json' );
+    });
+
+    // Update all rows
     $('#update').click( function() {
         // Get Values
         var exampleSalePrice = $("#example-sale-price")

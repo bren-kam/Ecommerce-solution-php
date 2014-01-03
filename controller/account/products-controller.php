@@ -1833,7 +1833,7 @@ class ProductsController extends BaseController {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['bid'], $_GET['cid'] ), _('Unable to remove auto price. Please refresh the page and try again.') );
+        $response->check( isset( $_GET['bid'], $_GET['cid'] ), _('Unable to delete auto price. Please refresh the page and try again.') );
 
         // Return if there is an error
         if ( $response->has_error() )
@@ -1848,6 +1848,61 @@ class ProductsController extends BaseController {
         // Delete from page
         jQuery('#ap_' . $_GET['bid'] . '_' . $_GET['cid'] )->remove();
         $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Delete Auto Price
+     *
+     * @return AjaxResponse
+     */
+    protected function add_auto_price() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['bid'], $_POST['cid'], $_POST['price'], $_POST['sale_price'], $_POST['alternate_price'], $_POST['ending'] ), _('Unable to add auto price. Please refresh the page and try again.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Delete from database
+        $auto_price = new WebsiteAutoPrice();
+        $auto_price->website_id = $this->user->account->id;
+        $auto_price->brand_id = $_POST['bid'];
+        $auto_price->category_id = $_POST['cid'];
+        $auto_price->price = $_POST['price'];
+        $auto_price->sale_price = $_POST['sale_price'];
+        $auto_price->alternate_price = $_POST['alternate_price'];
+        $auto_price->ending = $_POST['ending'];
+
+        try {
+            $auto_price->create();
+            $response->notify( _('Auto Price has been added successfully.') );
+        } catch ( ModelException $e ) {
+            switch ( $e->getCode() ) {
+                case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                    // Let them know what happened
+                    $this->notify( _('Ths brand/category already exists. Please modify the current row.' ), false );
+                break;
+
+                default:
+                    // Don't know what happened
+                    $this->notify( _('An error occurred while trying to add your auto price. If this problem continues, please contact your online specialist.'), false );
+
+                    // Create a ticket
+                    $ticket = new Ticket();
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to_user_id = User::TECHNICAL;
+                    $ticket->summary = 'Unknown error on Products > Price Tools > Auto Price';
+                    $ticket->message = 'Error code: ' . $e->getCode() . '<br>Error Message: ' . $e->getMessage();
+                    $ticket->priority = Ticket::PRIORITY_HIGH;
+                    $ticket->create();
+                break;
+            }
+        }
 
         return $response;
     }

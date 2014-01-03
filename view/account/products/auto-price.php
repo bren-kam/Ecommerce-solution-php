@@ -108,6 +108,12 @@
 <input type="submit" class="button" value="<?php echo _('Save'); ?>">
 <?php nonce::field('auto_price'); ?>
 </form>
+<?php
+nonce::field( 'add_auto_price', '_add_auto_price' );
+nonce::field( 'remove_auto_price', '_remove_auto_price' );
+nonce::field( 'delete_auto_price', '_delete_auto_price' );
+nonce::field( 'run_auto_prices', '_run_auto_prices' );
+?>
 <br><br>
 <br><br>
 
