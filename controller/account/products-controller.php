@@ -1767,7 +1767,7 @@ class ProductsController extends BaseController {
 
         // Now autoprice
         $account_product = new AccountProduct();
-        $account_product->auto_price( $category_ids, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $this->user->account->id );
+        $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $this->user->account->id );
 
         // Set map pricing
         $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );

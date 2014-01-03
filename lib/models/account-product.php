@@ -133,13 +133,14 @@ class AccountProduct extends ActiveRecordBase {
      * Get Auto Price Candidates
      *
      * @param array $category_ids
+     * @param int $brand_id
      * @param float $price
      * @param float $sale_price
      * @param float $alternate_price
      * @param float $price_ending
      * @param int $account_id
      */
-    public function auto_price( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+    public function auto_price( array $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
         // Setup variables
         $set = array();
         $run_2pc = false;
@@ -177,9 +178,12 @@ class AccountProduct extends ActiveRecordBase {
         $set = implode( ',', $set );
         $category_ids_string = implode( ',', $category_ids );
 
+        // Add the where
+        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)"
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -190,20 +194,21 @@ class AccountProduct extends ActiveRecordBase {
         )->query();
 
         if ( $run_2pc )
-            $this->auto_price_2pc( $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id );
+            $this->auto_price_2pc( $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id );
     }
 
     /**
      * Auto Price 2PC Categories
      *
      * @param array $category_ids
+     * @param int $brand_id
      * @param float $price
      * @param float $sale_price
      * @param float $alternate_price
      * @param float $price_ending
      * @param int $account_id
      **/
-    protected function auto_price_2pc( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+    protected function auto_price_2pc( array $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
         // These categories need to be doubled in price because the items are sold in couples
         $double_categories = array(
             132 // Dining Room > Side Chairs
@@ -244,9 +249,12 @@ class AccountProduct extends ActiveRecordBase {
         $set = implode( ',', $set );
         $new_category_ids_string = implode( ',', $new_category_ids );
 
+        // Add the where
+        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)"
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id

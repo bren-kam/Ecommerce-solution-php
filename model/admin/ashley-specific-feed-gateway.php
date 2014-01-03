@@ -282,7 +282,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             }
 
             // Auto price for these categories
-            $account_product->auto_price( $category_ids, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $account->id );
+            $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $account->id );
         }
 
         // Make sure they didn't go below a minimum price
