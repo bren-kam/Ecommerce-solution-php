@@ -10,7 +10,7 @@ class Product extends ActiveRecordBase {
         , $user_id_created, $user_id_modified, $date_created;
 
     // Artificial columns
-    public $images, $industry, $order, $created_by, $updated_by;
+    public $images, $industry, $order, $created_by, $updated_by, $specifications;
 
     // Columns from other tables
     public $brand, $category;
@@ -123,6 +123,21 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * Get specifications
+     *
+     * @return array
+     */
+    public function get_specifications() {
+        $this->specifications = $this->prepare(
+            "SELECT `key`, `value` FROM `product_specification` WHERE `product_id` = :product_id ORDER BY `sequence`"
+            , 's'
+            , array( ':product_id' => $this->id )
+        )->get_results( PDO::FETCH_OBJ );
+
+        return $this->specifications;
+    }
+
+    /**
      * Create
      */
     public function create() {
@@ -173,6 +188,46 @@ class Product extends ActiveRecordBase {
     }
 
     /**
+     * Add Specifications
+     *
+     * @param array $specifications
+     */
+    public function add_specifications( array $specifications ) {
+        // Determine how many images we have
+        $specification_count = count( $specifications );
+
+        // Don't want to add no tags
+        if ( 0 == $specification_count )
+            return;
+
+        // Declare variable
+        $values = '';
+        $product_id = (int) $this->id;
+
+        // Create the array for all the values
+        for( $sequence = 0; $sequence < $specification_count; $sequence++ ) {
+            if ( !empty( $values ) )
+                $values .= ',';
+
+            $values .= "( $product_id, ?, ?, $sequence )";
+        }
+
+        $specification_values = array();
+
+        foreach ( $specifications as $spec ) {
+            $specification_values[] = $spec[0];
+            $specification_values[] = $spec[1];
+        }
+
+        // Insert the values
+        $this->prepare(
+            "INSERT INTO `product_specification` ( `product_id`, `key`, `value`, `sequence` ) VALUES $values"
+            , str_repeat( 'ss', $specification_count )
+            , $specification_values
+        )->query();
+    }
+
+    /**
      * Update
      */
     public function save() {
@@ -190,13 +245,12 @@ class Product extends ActiveRecordBase {
 				, 'price_min' => $this->price_min
                 , 'status' => strip_tags($this->status)
                 , 'weight' => $this->weight
-                , 'product_specifications' => strip_tags($this->product_specifications)
                 , 'publish_date' => strip_tags($this->publish_date)
                 , 'publish_visibility' => strip_tags($this->publish_visibility)
                 , 'user_id_modified' => $this->user_id_modified
             )
             , array( 'product_id' => $this->id )
-            , 'iiiissssddsisssi'
+            , 'iiiissssddsissi'
             , 'i'
         );
     }
@@ -207,6 +261,17 @@ class Product extends ActiveRecordBase {
     public function delete_images() {
         $this->prepare(
             'DELETE FROM `product_images` WHERE `product_id` = :product_id'
+            , 'i'
+            , array( ':product_id' => $this->id )
+        )->query();
+    }
+
+    /**
+     * Delete specifications
+     */
+    public function delete_specifications() {
+        $this->prepare(
+            'DELETE FROM `product_specification` WHERE `product_id` = :product_id'
             , 'i'
             , array( ':product_id' => $this->id )
         )->query();
