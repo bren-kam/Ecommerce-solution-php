@@ -18,6 +18,9 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        if ( !$this->user->account->product_catalog )
+            return new RedirectResponse('/');
+
         // Initiate objects
         $category = new Category();
         $account_category = new AccountCategory();
