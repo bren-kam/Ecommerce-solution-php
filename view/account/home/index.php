@@ -31,8 +31,13 @@ $exceptions = array(
 $keys = array_keys( $links );
 
 foreach ( $links as $key => $link ) {
-    if ( 'email_marketing' != $key && !$user->account->$key )
-        continue;
+    if ( !$user->account->$key ) {
+        if ( !$user->has_permission( User::ROLE_STORE_OWNER ) )
+            continue;
+
+        if ( 'email_marketing' != $key )
+            continue;
+    }
 
     switch ( $key ) {
         case 'blog':
