@@ -86,23 +86,14 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                 <p><a href="#" class="button" id="add-product-spec" title="<?php echo _('Add'); ?>"><?php echo _('Add'); ?></a></p>
                 <div id="product-specs-list">
                     <?php
-                    if ( !empty( $product->product_specifications ) ) {
-                        $specifications = @unserialize( $product->product_specifications );
-
-                        if ( !$specifications )
-                            $specifications = @unserialize( html_entity_decode( $product->product_specifications, ENT_QUOTES, 'UTF-8' ) );
-
-                        if ( is_array( $specifications ) && count( $specifications ) > 0 )
-                        foreach ( $specifications as $ps ) {
-                            $specification_name = html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' );
-                            $specification_value = html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' );
+                    if ( !empty( $product->specifications ) ) {
+                        foreach ( $product->specifications as $spec ) {
                         ?>
-
                         <div class="specification item">
-                            <span class="specification-name"><?php echo $specification_name; ?></span>
-                            <span class="specification-value"><?php echo $specification_value; ?></span>
+                            <span class="specification-name"><?php echo $spec->key; ?></span>
+                            <span class="specification-value"><?php echo $spec->value; ?></span>
                             <a href="#" class="delete" title="<?php echo _('Delete'); ?>"><img src="/images/icons/x.png" width="15" height="17" alt="<?php echo _('Delete'); ?>" /></a>
-                            <input type="hidden" name="product-specs[]" value="<?php echo str_replace( '"', '&quot;', $specification_name ) . '|' . str_replace( '"', '&quot;', $specification_value ); ?>" />
+                            <input type="hidden" name="product-specs[]" value="<?php echo str_replace( '"', '&quot;', $spec->key ) . '|' . str_replace( '"', '&quot;', $spec->value ); ?>" />
                         </div>
                     <?php
                         }

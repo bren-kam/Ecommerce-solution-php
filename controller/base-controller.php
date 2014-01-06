@@ -179,10 +179,21 @@ abstract class BaseController {
 
             // If they have a specific account, get that
             if ( $account_id ) {
-                $account->get( $account_id );
+                // Grab from available accounts if possible
+                foreach ( $this->user->accounts as $account ) {
+                    if ( $account_id == $account->id ) {
+                        $this->user->account = $account;
+                        break;
+                    }
+                }
 
-                if ( $account->id )
-                    $this->user->account = $account;
+                // If not, then get it
+                if ( !$this->user->account ) {
+                    $account->get( $account_id );
+
+                    if ( $account->id )
+                        $this->user->account = $account;
+                }
 
                 /**
                  * @var Account $account

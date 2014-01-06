@@ -266,7 +266,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         // Set prices
         $auto_price = new WebsiteAutoPrice();
         $category = new Category();
-        $auto_prices = $auto_price->load_all( $account->id );
+        $auto_prices = $auto_price->get_all( $account->id );
 
         // Make sure we have something to work with
         if ( empty( Category::$categories ) )
@@ -274,14 +274,6 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         if ( is_array( $auto_prices ) )
         foreach ( $auto_prices as $auto_price ) {
-            // Make sure they want it
-            if ( !$auto_price->future )
-                continue;
-
-            $price = ( empty( $auto_price->price ) ) ? 0 : ( $auto_price->price + 100 ) / 100;
-            $sale_price = ( empty( $auto_price->sale_price ) ) ? 0 : ( $auto_price->sale_price + 100 ) / 100;
-            $alternate_price = ( empty( $auto_price->alternate_price ) ) ? 0 : ( $auto_price->alternate_price + 100 ) / 100;
-
             $child_categories = $category->get_all_children( $auto_price->category_id );
             $category_ids = array();
 
@@ -290,7 +282,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             }
 
             // Auto price for these categories
-            $account_product->auto_price( $category_ids, $price, $sale_price, $alternate_price, $auto_price->ending, $account->id );
+            $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $account->id );
         }
 
         // Make sure they didn't go below a minimum price
