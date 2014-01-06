@@ -18,41 +18,37 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        library('product-api');
-        $product_api = new ProductAPI( '[32-character authorization key]' );
+        set_time_limit(1200);
+        $product = new Product();
 
-        // Set variables
-        $sku = 'A102C00';
+        $products = $product->get_results(
+            "SELECT p.`product_id` AS id, p.`product_specifications` FROM `products` AS p LEFT JOIN `product_specification` AS ps ON ( ps.`product_id` = p.`product_id` ) WHERE p.`publish_visibility` <> 'deleted' AND ps.`product_id` IS NULL AND p.`product_specifications` <> '' AND p.`product_specifications` <> 'a:0:{}' LIMIT 10000"
+            , PDO::FETCH_CLASS, 'Product'
+        );
 
-        // Get the product
-        $product = $product_api->get_product( $sku );
+        /**
+         * @var Product $product
+         */
+        foreach ( $products as $product ) {
+            if ( empty( $product->specifications ) && !empty( $product->product_specifications ) ) {
+                $specifications = @unserialize( $product->product_specifications );
 
-        /*
-        $product = json_encode( array(
-            'auth_key' => 'abc123'
-            , 'method' => 'set-product'
-            , 'product' => array(
-                'sku' => 'A10200'
-                , 'category' => 'Dining Room > Chairs'
-                , 'industry' => 'furniture'
-                , 'name' => 'Regal Chair'
-                , 'description' => 'The Regal series offers furniture suitable for royalty. Rich gold and brown colours with the finest wood will give your room another feeling. This chair is part of the set and paired greated with the Regal Table.'
-                , 'price_wholesale' => '50'
-                , 'price_map' => '89.99'
-                , 'status' => 'in-stock'
-                , 'specifications' => array(
-                    'Height' => '36 in.'
-                    , 'Width' => '15 1/2 in.'
-                    , '52 pounds'
-                )
-                , 'images' => array(
-                    'http://mysite.com/images/regal-chair.png'
-                    , 'http://mysite.com/images/regal-chair-back.png'
-                )
-            )
-        ));*/
+                if ( !$specifications )
+                    $specifications = @unserialize( html_entity_decode( $product->product_specifications, ENT_QUOTES, 'UTF-8' ) );
 
-        echo $product;
+                $specs = array();
+
+                if ( is_array( $specifications ) && count( $specifications ) > 0 )
+                foreach ( $specifications as $ps ) {
+                    $specification_name = html_entity_decode( $ps[0], ENT_QUOTES, 'UTF-8' );
+                    $specification_value = html_entity_decode( $ps[1], ENT_QUOTES, 'UTF-8' );
+
+                    $specs[] = array ( $specification_name, $specification_value );
+                }
+
+                $product->add_specifications( $specs );
+            }
+        }
 
         return new HtmlResponse( 'heh' );
     }

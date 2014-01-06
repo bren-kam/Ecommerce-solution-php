@@ -56,6 +56,7 @@ class ProductBuilderController extends BaseController {
             if ( $product->website_id != $this->user->account->id )
                 return new RedirectResponse('/products/product-builder/');
 
+            $product->get_specifications();
             $product_images = $product->get_images();
             $product_attribute_items = $attribute_item->get_by_product( $product_id );
 
@@ -126,24 +127,12 @@ class ProductBuilderController extends BaseController {
             $product->publish_visibility = $_POST['sStatus'];
             $product->user_id_modified = $this->user->id;
 
-            $product_specs = array();
-            $sequence = 0;
-
-            if ( isset( $_POST['product-specs'] ) )
-            foreach( $_POST['product-specs'] as $ps ) {
-                list ( $spec_name, $spec_value ) = explode( '|', $ps );
-                $product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ), $sequence );
-
-                $sequence++;
-            }
-
-            $product->product_specifications = serialize( $product_specs );
-
             // Update the product
             $product->save();
 
             // Delete all the things
             $product->delete_images();
+            $product->delete_specifications();
             $tag->delete_by_type( 'product', $product->id );
             $attribute_item->delete_relations( $product->id );
 
@@ -160,6 +149,18 @@ class ProductBuilderController extends BaseController {
                 $remove_images = array_diff( $product_images, $_POST['images'] );
             } else {
                 $remove_images = $product_images;
+            }
+
+            // Add Specifications
+            if ( isset( $_POST['product-specs'] ) ) {
+                $product_specs = array();
+
+                foreach( $_POST['product-specs'] as $ps ) {
+                    list ( $spec_name, $spec_value ) = explode( '|', $ps );
+                    $product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ) );
+                }
+
+                $product->add_specifications( $product_specs );
             }
 
             // Need to remove images
