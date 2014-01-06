@@ -478,7 +478,7 @@ class ProductsController extends BaseController {
                 , 'auto_prices' => $auto_prices
                 , 'product' => $product
             ))
-            ->select( 'sub-products', 'price-tools' );
+            ->select( 'sub-products', 'pricing-tools' );
     }
 
     /**
@@ -1747,54 +1747,6 @@ class ProductsController extends BaseController {
 
         // Refresh
         $response->add_response( 'refresh', 1 );
-
-        return $response;
-    }
-
-    /**
-     * Run Auto Prices
-     *
-     * @return AjaxResponse
-     */
-    protected function run_auto_prices() {
-        // Make sure it's a valid ajax call
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_GET['bid'], $_GET['cid'] ), _('Unable to run auto pricing. Please refresh the page and try again.') );
-
-        // Return if there is an error
-        if ( $response->has_error() )
-            return $response;
-
-        // Get category
-        $category = new Category();
-        $category->get_all();
-        $category->get( $_GET['cid'] );
-
-        $categories = $category->get_all_children( $category->id );
-        $category_ids = array($category->id);
-
-        foreach ( $categories as $cat ) {
-            $category_ids[] = $cat->id;
-        }
-
-        // Get Autopricing
-        $auto_price = new WebsiteAutoPrice();
-        $auto_price->get( $_GET['bid'], $category->id, $this->user->account->id );
-
-        // Now autoprice
-        $account_product = new AccountProduct();
-        $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $this->user->account->id );
-
-        // Set map pricing
-        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
-
-        // Give notification
-        if ( $adjusted_products ) {
-            $response->notify( _('Auto Pricing has been run on ') . $category->name . '. Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
-        } else {
-            $response->notify( _('Auto Pricing has been run on ') . $category->name . '.' );
-        }
 
         return $response;
     }

@@ -74,7 +74,6 @@
                 <td><input type="text" class="tb" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][sale_price]" value="<?php echo (float) $auto_price->sale_price; ?>"></td>
                 <td><input type="text" class="tb" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][ending]" value="<?php echo (float) $auto_price->ending; ?>"></td>
                 <td>
-                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $run_auto_prices ), '/products/run-auto-prices/' ); ?>" ajax="1" confirm='<?php echo _('Make sure you have pressed "Save" before continuing.'); ?>'><?php echo _('Run'); ?></a> |
                     <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove these prices? This cannot be undone.'); ?>"><?php echo _('Remove Prices From Products'); ?></a> |
                     <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $delete_auto_price ), '/products/delete-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to delete this row? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
                 </td>
