@@ -421,6 +421,9 @@ class ProductsController extends BaseController {
         $categories = $category->filter_by_ids( $category->get_by_parent(0), $account_category->get_all_ids( $this->user->account->id ) );
 
         if ( $this->verified() ) {
+            $account_product = new AccountProduct();
+            $category->get_all();
+
             foreach ( $_POST['auto-price'] as $brand_id => $auto_price_array ) {
                 foreach ( $auto_price_array as $category_id => $values ) {
                     $auto_price = new WebsiteAutoPrice();
@@ -430,7 +433,18 @@ class ProductsController extends BaseController {
                         $auto_price->$key = $value;
                     }
 
+                    // Save
                     $auto_price->save();
+
+                    // & Run
+                    $child_categories = $category->get_all_children( $auto_price->category_id );
+                    $category_ids = array();
+
+                    foreach ( $child_categories as $child_cat ) {
+                        $category_ids[] = $child_cat->id;
+                    }
+
+                    $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $this->user->account->id );
                 }
             }
 

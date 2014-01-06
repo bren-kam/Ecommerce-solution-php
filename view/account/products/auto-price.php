@@ -23,14 +23,13 @@
 
 <?php echo $template->start( _('Auto Price') ); ?>
 
-<p><?php echo _('On this page you set all of your prices based on the wholesale price.'); ?></p>
-<p><?php echo _('Please enter in the percent increase in the fields below before clicking the "Auto Price" button. A "0" will be ignored.'); ?></p>
-<p><a href="/products/download-non-autoprice-products/" title="<?php echo _('Downloads Products'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to download a spreadsheet of all items that cannot be priced using the auto price.' ); ?></p>
-<br><br>
+<p><?php echo _('On this page, you can price out your items based on the wholesale price provided to us via the manufacturer feed.'); ?></p>
+<p><?php echo _('Please enter your markup in the fields below, click "Save &amp; Run". A "0" will be ignored.'); ?></p>
+<br>
 <?php if ( empty( $auto_price_candidates ) ) { ?>
-    <p><?php echo _('This would affect none of your current products.'); ?></p>
+    <p><?php echo _('Because your manufacturer has not provided us with the wholesale price, your markups will not affect any products in your catalog.'); ?></p>
 <?php } else { ?>
-    <p><?php echo _('This would affect the following products:'); ?></p>
+    <p><?php echo _('Your markups will affect the following products:'); ?></p>
     <ul>
         <?php foreach ( $auto_price_candidates as $candidate ) { ?>
         <li> * <?php echo $candidate['brand'] . ' - ' . $candidate['count'] . ' ' . _('product(s)'); ?></li>
@@ -38,7 +37,7 @@
     </ul>
 <?php } ?>
 <br>
-    <p><strong><?php echo _('NOTE'); ?>:</strong> <?php echo _('Please enter all prices as the percentage increase over the wholesale price.'); ?></p>
+<p><a href="/products/download-non-autoprice-products/" title="<?php echo _('Downloads Products'); ?>"><?php echo _('Click here'); ?></a> <?php echo _('to download a spreadsheet of all items that cannot be priced using the auto price.' ); ?></p>
 <br>
 <form name="fAutoPrice" method="post">
 <table id="auto-prices">
@@ -76,7 +75,7 @@
                 <td><input type="text" class="tb" name="auto-price[<?php echo $auto_price->brand_id; ?>][<?php echo $auto_price->category_id; ?>][ending]" value="<?php echo (float) $auto_price->ending; ?>"></td>
                 <td>
                     <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $run_auto_prices ), '/products/run-auto-prices/' ); ?>" ajax="1" confirm='<?php echo _('Make sure you have pressed "Save" before continuing.'); ?>'><?php echo _('Run'); ?></a> |
-                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove these prices? This cannot be undone.'); ?>"><?php echo _('Remove Prices From All Products'); ?></a> |
+                    <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $remove_auto_price ), '/products/remove-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to remove these prices? This cannot be undone.'); ?>"><?php echo _('Remove Prices From Products'); ?></a> |
                     <a href="<?php echo url::add_query_arg( array( 'bid' => $auto_price->brand_id, 'cid' => $category->id, '_nonce' => $delete_auto_price ), '/products/delete-auto-price/' ); ?>" ajax="1" confirm="<?php echo _('Are you sure you want to delete this row? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
                 </td>
             </tr>
@@ -105,7 +104,7 @@
         </tr>
     </tbody>
 </table>
-<input type="submit" class="button" value="<?php echo _('Save'); ?>">
+<input type="submit" class="button" value="<?php echo _('Save &amp; Run'); ?>">
 <?php nonce::field('auto_price'); ?>
 </form>
 <?php
@@ -120,9 +119,9 @@ nonce::field( 'run_auto_prices', '_run_auto_prices' );
 <div id="example">
     <h2><?php echo _('Demo - Try Me!'); ?></h2>
     <br>
-    <p>Here you can try out your calculations to see how they would work. We have randomly selected an auto-pricing-eligible product from your catalog.</p>
+    <p>Below you can test your markup to see how it will appear on your products (we have randomly selected an auto-pricing-eligible product from your catalog).</p>
     <p>The wholesale price is: <strong><span class="big">$<?php echo number_format( $product->price, 2 ); ?></span>.</strong></p>
-    <p>Please check the help article if you have any questions!</p>
+    <br>
     <br>
     <table>
         <thead>
