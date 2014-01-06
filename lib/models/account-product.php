@@ -16,7 +16,7 @@ class AccountProduct extends ActiveRecordBase {
     public $link, $industry, $coupons, $product_options, $created_by, $count;
 
     // Columns from other tables
-    public $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
+    public $brand_id, $category_id, $category, $parent_category, $brand, $slug, $sku, $name, $image, $price_min;
 
     /**
      * Setup the account initial data
@@ -74,6 +74,43 @@ class AccountProduct extends ActiveRecordBase {
     }
 
     /**
+     * Get Auto Price Example
+     *
+     * @param int $account_id
+     */
+    public function get_auto_price_example( $account_id ) {
+        $this->prepare(
+            "SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL LIMIT 1"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->get_row( PDO::FETCH_INTO, $this );
+    }
+
+    /**
+     * Get Auto Price Example
+     *
+     * @param int $account_id
+     * @return array
+     */
+    public function get_auto_priceable_brands( $account_id ) {
+        return $this->prepare(
+            "SELECT DISTINCT p.`brand_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL"
+            , 'iiis'
+            , array(
+                ':account_id' => $account_id
+                , ':blocked' => self::UNBLOCKED
+                , ':active' => self::ACTIVE
+                , ':publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC
+            )
+        )->get_col();
+    }
+
+    /**
      * Get Non-Auto Price Candidates
      *
      * @param int $account_id
@@ -96,16 +133,17 @@ class AccountProduct extends ActiveRecordBase {
      * Get Auto Price Candidates
      *
      * @param array $category_ids
+     * @param int $brand_id
      * @param float $price
      * @param float $sale_price
      * @param float $alternate_price
      * @param float $price_ending
      * @param int $account_id
      */
-    public function auto_price( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+    public function auto_price( array $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
         if ( empty( $category_ids ) )
             return;
-        
+
         // Setup variables
         $set = array();
         $run_2pc = false;
@@ -117,17 +155,16 @@ class AccountProduct extends ActiveRecordBase {
         );
 
         // Round to the ending
-        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
         $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
-            $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`price` = ceilEnding( p.`price` * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
         if ( $sale_price > 0 )
-            $set[] = 'wp.`sale_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $sale_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
 
         if ( $alternate_price > 0 )
-            $set[] = 'wp.`alternate_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * ' . (float) $alternate_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
 
         if ( empty( $set ) )
             return;
@@ -144,9 +181,12 @@ class AccountProduct extends ActiveRecordBase {
         $set = implode( ',', $set );
         $category_ids_string = implode( ',', $category_ids );
 
+        // Add the where
+        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)"
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -157,20 +197,21 @@ class AccountProduct extends ActiveRecordBase {
         )->query();
 
         if ( $run_2pc )
-            $this->auto_price_2pc( $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id );
+            $this->auto_price_2pc( $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id );
     }
 
     /**
      * Auto Price 2PC Categories
      *
      * @param array $category_ids
+     * @param int $brand_id
      * @param float $price
      * @param float $sale_price
      * @param float $alternate_price
      * @param float $price_ending
      * @param int $account_id
      **/
-    protected function auto_price_2pc( array $category_ids, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
+    protected function auto_price_2pc( array $category_ids, $brand_id, $price, $sale_price, $alternate_price, $price_ending, $account_id ) {
         // These categories need to be doubled in price because the items are sold in couples
         $double_categories = array(
             132 // Dining Room > Side Chairs
@@ -181,17 +222,16 @@ class AccountProduct extends ActiveRecordBase {
         $set = array();
 
         // Round to the ending
-        $calculation = "REPLACE( REPLACE( FORMAT( [price], 2 ), ',', '' ), SUBSTRING( REPLACE( FORMAT( [price], 2 ), ',', '' ), -[digits] ), REPLACE( FORMAT( [price_ending], 2 ), ',', '' ) )";
         $price_ending = number_format( (float) $price_ending, 2 );
 
         if ( $price > 0 )
-            $set[] = 'wp.`price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
         if ( $sale_price > 0 )
-            $set[] = 'wp.`sale_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $sale_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
 
         if ( $alternate_price > 0 )
-            $set[] = 'wp.`alternate_price` = ' . str_replace( array( '[price]', '[digits]', '[price_ending]' ), array( 'p.`price` * 2 * ' . (float) $alternate_price, strlen( $price_ending ), $price_ending ), $calculation );
+            $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * 2 * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
 
         if ( empty( $set ) )
             return;
@@ -212,9 +252,12 @@ class AccountProduct extends ActiveRecordBase {
         $set = implode( ',', $set );
         $new_category_ids_string = implode( ',', $new_category_ids );
 
+        // Add the where
+        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)"
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -1051,8 +1094,12 @@ class AccountProduct extends ActiveRecordBase {
      *
      * @param array $category_ids
      * @param int $account_id
+     * @param int $brand_id [optional]
      */
-    public function reset_prices( array $category_ids, $account_id ) {
+    public function reset_prices( array $category_ids, $account_id, $brand_id = NULL ) {
+        if ( empty( $category_ids ) )
+            return;
+
         // DB proof category ids
         foreach ( $category_ids as &$category_id ) {
             $category_id = (int) $category_id;
@@ -1060,7 +1107,9 @@ class AccountProduct extends ActiveRecordBase {
 
         $category_ids = implode( ',', $category_ids );
 
-        $this->prepare( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET wp.`price` = 0, wp.`sale_price` = 0, wp.`alternate_price` = 0 WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)"
+        $where = ( $brand_id ) ? ' AND p.`brand_id` = ' . (int) $brand_id : '';
+
+        $this->prepare( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET wp.`price` = 0, wp.`sale_price` = 0, wp.`alternate_price` = 0 WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id

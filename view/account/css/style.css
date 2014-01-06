@@ -122,6 +122,7 @@ input.button {
 .height-200 { height: 200px }
 .height-300 { height: 300px }
 .position-absolute { position: absolute }
+.strikethrough { text-decoration: line-through }
 
 #content p, .boxy-content p { line-height: 19px; padding-bottom: 7px }
 
