@@ -18,6 +18,9 @@ class ProductsController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        if ( !$this->user->account->product_catalog )
+            return new RedirectResponse('/');
+
         // Initiate objects
         $category = new Category();
         $account_category = new AccountCategory();
@@ -396,14 +399,20 @@ class ProductsController extends BaseController {
         // Find out what products will be affected
         $product = new AccountProduct();
         $auto_price_candidates = $product->get_auto_price_count( $this->user->account->id );
+        $brand_ids = $product->get_auto_priceable_brands( $this->user->account->id );
 
         // Get auto prices
         $website_auto_price = new WebsiteAutoPrice();
-        $website_auto_price->load_all( $this->user->account->id );
+        $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
         // Get Brands
         $brand = new Brand();
-        $brands = $brand->get_all();
+        $brands_array = $brand->get_by_ids( $brand_ids );
+        $brands = array();
+
+        foreach ( $brands_array as $brand ) {
+            $brands[$brand->id] = $brand;
+        }
 
         // Get categories
         $category = new Category();
@@ -412,27 +421,52 @@ class ProductsController extends BaseController {
         $categories = $category->filter_by_ids( $category->get_by_parent(0), $account_category->get_all_ids( $this->user->account->id ) );
 
         if ( $this->verified() ) {
-            foreach ( $_POST['auto-price'] as $category_id => $values ) {
-                $auto_price = new WebsiteAutoPrice();
-                $auto_price->get_by_category( $this->user->account->id, $category_id );
+            $account_product = new AccountProduct();
+            $category->get_all();
 
-                foreach( $values as $key => $value ) {
-                    $auto_price->$key = $value;
+            foreach ( $_POST['auto-price'] as $brand_id => $auto_price_array ) {
+                foreach ( $auto_price_array as $category_id => $values ) {
+                    $auto_price = new WebsiteAutoPrice();
+                    $auto_price->get( $brand_id, $category_id, $this->user->account->id );
+
+                    foreach( $values as $key => $value ) {
+                        $auto_price->$key = $value;
+                    }
+
+                    // Save
+                    $auto_price->save();
+
+                    // & Run
+                    $child_categories = $category->get_all_children( $auto_price->category_id );
+                    $category_ids = array();
+
+                    foreach ( $child_categories as $child_cat ) {
+                        $category_ids[] = $child_cat->id;
+                    }
+
+                    $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $this->user->account->id );
                 }
-
-                $auto_price->future = (int) isset( $values['future'] );
-
-                $auto_price->save();
             }
 
             // Reload auto prices
-            $website_auto_price->load_all( $this->user->account->id );
+            $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
 
-        $this->resources->css( 'products/price-tools', 'products/auto-price');
+        // Get example product
+        $account_product = new AccountProduct();
+        $account_product->get_auto_price_example( $this->user->account->id );
+
+        $product = new Product();
+        $product->get( $account_product->product_id );
+        $product->images = $product->get_images();
+
+        $this->resources
+            ->css( 'products/price-tools', 'products/auto-price')
+            ->javascript( 'products/auto-price')
+        ;
 
         return $this->get_template_response( 'auto-price' )
             ->kb( 134 )
@@ -441,8 +475,10 @@ class ProductsController extends BaseController {
                 'categories' => $categories
                 , 'auto_price_candidates' => $auto_price_candidates
                 , 'brands' => $brands
+                , 'auto_prices' => $auto_prices
+                , 'product' => $product
             ))
-            ->select( 'sub-products', 'price-tools' );
+            ->select( 'sub-products', 'pricing-tools' );
     }
 
     /**
@@ -1716,15 +1752,15 @@ class ProductsController extends BaseController {
     }
 
     /**
-     * Run Auto Prices
+     * Remove Auto Price
      *
      * @return AjaxResponse
      */
-    protected function run_auto_prices() {
+    protected function remove_auto_price() {
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
-        $response->check( isset( $_GET['cid'] ), _('Unable to run auto pricing. Please refresh the page and try again.') );
+        $response->check( isset( $_GET['bid'], $_GET['cid'] ), _('Unable to remove auto price. Please refresh the page and try again.') );
 
         // Return if there is an error
         if ( $response->has_error() )
@@ -1736,71 +1772,106 @@ class ProductsController extends BaseController {
         $category->get( $_GET['cid'] );
 
         $categories = $category->get_all_children( $category->id );
-        $category_ids = array($category->id);
 
-        foreach ( $categories as $cat ) {
-            $category_ids[] = $cat->id;
-        }
-
-        // Get Autopricing
-        $auto_price = new WebsiteAutoPrice();
-        $auto_price->load_all( $this->user->account->id ); // This populates categories
-        $auto_price->get_by_category( $this->user->account->id, $category->id );
-
-        $price = ( empty( $auto_price->price ) ) ? 0 : ( $auto_price->price + 100 ) / 100;
-        $sale_price = ( empty( $auto_price->sale_price ) ) ? 0 : ( $auto_price->sale_price + 100 ) / 100;
-        $alternate_price = ( empty( $auto_price->alternate_price ) ) ? 0 : ( $auto_price->alternate_price + 100 ) / 100;
-
-        // Now autoprice
-        $account_product = new AccountProduct();
-        $account_product->auto_price( $category_ids, $price, $sale_price, $alternate_price, $auto_price->ending, $this->user->account->id );
-
-        // Set map pricing
-        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
-
-        // Give notification
-        if ( $adjusted_products ) {
-            $response->notify( _('Auto Pricing has been run on ') . $category->name . '. Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
-        } else {
-            $response->notify( _('Auto Pricing has been run on ') . $category->name . '.' );
-        }
-
-        return $response;
-    }
-
-    /**
-     * Reset Auto Prices
-     *
-     * @return AjaxResponse
-     */
-    protected function reset_auto_prices() {
-        // Make sure it's a valid ajax call
-        $response = new AjaxResponse( $this->verified() );
-
-        $response->check( isset( $_GET['cid'] ), _('Unable to reset prices. Please refresh the page and try again.') );
-
-        // Return if there is an error
-        if ( $response->has_error() )
-            return $response;
-
-        // Get category
-        $category = new Category();
-        $category->get_all();
-        $category->get( $_GET['cid'] );
-
-        $categories = $category->get_all_children( $category->id );
         $category_ids = array();
 
         foreach ( $categories as $cat ) {
             $category_ids[] = $cat->id;
         }
 
+        // Get brand
+        $brand = new Brand();
+        $brand->get( $_GET['bid'] );
 
         // Now autoprice
         $account_product = new AccountProduct();
-        $account_product->reset_prices( $category_ids, $this->user->account->id );
+        $account_product->reset_prices( $category_ids, $this->user->account->id, $brand->id );
 
-        $response->notify( _('Prices have been reset for ') . $category->name . ' category.' );
+        $brand = ( $brand->id ) ? $brand->name . ' ' : '';
+        $response->notify( _('Prices have been removed for ') . $brand . $category->name . ' category.' );
+
+        return $response;
+    }
+
+    /**
+     * Delete Auto Price
+     *
+     * @return AjaxResponse
+     */
+    protected function delete_auto_price() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_GET['bid'], $_GET['cid'] ), _('Unable to delete auto price. Please refresh the page and try again.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Delete from database
+        $auto_price = new WebsiteAutoPrice();
+        $auto_price->get( $_GET['bid'], $_GET['cid'], $this->user->account->id );
+        $auto_price->remove();
+        $response->notify( _('Auto Price have been deleted.') );
+
+        // Delete from page
+        jQuery('#ap_' . $_GET['bid'] . '_' . $_GET['cid'] )->remove();
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    /**
+     * Delete Auto Price
+     *
+     * @return AjaxResponse
+     */
+    protected function add_auto_price() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['bid'], $_POST['cid'], $_POST['price'], $_POST['sale_price'], $_POST['alternate_price'], $_POST['ending'] ), _('Unable to add auto price. Please refresh the page and try again.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        // Delete from database
+        $auto_price = new WebsiteAutoPrice();
+        $auto_price->website_id = $this->user->account->id;
+        $auto_price->brand_id = $_POST['bid'];
+        $auto_price->category_id = $_POST['cid'];
+        $auto_price->price = $_POST['price'];
+        $auto_price->sale_price = $_POST['sale_price'];
+        $auto_price->alternate_price = $_POST['alternate_price'];
+        $auto_price->ending = $_POST['ending'];
+
+        try {
+            $auto_price->create();
+            $response->notify( _('Auto Price has been added successfully.') );
+        } catch ( ModelException $e ) {
+            switch ( $e->getCode() ) {
+                case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:
+                    // Let them know what happened
+                    $this->notify( _('Ths brand/category already exists. Please modify the current row.' ), false );
+                break;
+
+                default:
+                    // Don't know what happened
+                    $this->notify( _('An error occurred while trying to add your auto price. If this problem continues, please contact your online specialist.'), false );
+
+                    // Create a ticket
+                    $ticket = new Ticket();
+                    $ticket->website_id = $this->user->account->id;
+                    $ticket->user_id = $this->user->id;
+                    $ticket->assigned_to_user_id = User::TECHNICAL;
+                    $ticket->summary = 'Unknown error on Products > Price Tools > Auto Price';
+                    $ticket->message = 'Error code: ' . $e->getCode() . '<br>Error Message: ' . $e->getMessage();
+                    $ticket->priority = Ticket::PRIORITY_HIGH;
+                    $ticket->create();
+                break;
+            }
+        }
 
         return $response;
     }

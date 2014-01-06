@@ -18,8 +18,13 @@ class EmailMarketingController extends BaseController {
      * @return TemplateResponse|RedirectResponse
      */
     protected function index() {
-        if ( !$this->user->account->email_marketing )
-            return new RedirectResponse('/email-marketing/subscribers/');
+        if ( !$this->user->account->email_marketing ) {
+            if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) ) {
+                return new RedirectResponse('/email-marketing/subscribers/');
+            } else {
+                return new RedirectResponse('/');
+            }
+        }
 
         $email_message = new EmailMessage();
         $messages = $email_message->get_dashboard_messages_by_account( $this->user->account->id );

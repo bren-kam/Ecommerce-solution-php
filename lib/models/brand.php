@@ -38,6 +38,24 @@ class Brand extends ActiveRecordBase {
     }
 
     /**
+     * Get By Ids
+     *
+     * @param array $brand_ids
+     * @return Brand[]
+     */
+    public function get_by_ids( array $brand_ids ) {
+        foreach ( $brand_ids as &$brand_id ) {
+            $brand_id = (int) $brand_id;
+        }
+
+        return $this->get_results(
+            'SELECT * FROM `brands` WHERE `brand_id` IN ( ' . implode( ',', $brand_ids ) . ' )ORDER BY `name`'
+            , PDO::FETCH_CLASS
+            , 'Brand'
+        );
+    }
+
+    /**
      * Get By Account
      *
      * @param int $account_id
