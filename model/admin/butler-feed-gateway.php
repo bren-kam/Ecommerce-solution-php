@@ -370,44 +370,14 @@ class ButlerFeedGateway extends ProductFeedGateway {
             if ( !empty( $item[12] ) ) {
                 echo "http://admin.greysuitretail.com/products/add-edit/?pid={$product->id} - " . self::IMAGE_BASE . $item[12] . "\n";
             }
-
-            continue;
-
             /***** PREPARE PRODUCT DATA *****/
 
-            // Now get old specs
-            $product_specifications = unserialize( $product->product_specifications );
-            $product_specifications_string = '';
-
-            if( is_array( $product_specifications ) )
-            foreach( $product_specifications as $ps ) {
-                if( !empty( $product_specifications ) )
-                    $product_specifications_string .= '|';
-
-                $product_specifications_string .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
-            }
-
-            $count = isset( $ps[2] ) ? $ps[2] : 0;
+            $new_product_specifications = array();
 
             if ( !empty( $item[49] ) ) {
-                $new_product_specifications = 'Width`' . round( $item[49], 2 ) . ' inches`' . ( $count + 1 );
-                $new_product_specifications .= '|Depth`' . round( $item[50], 2 ) . ' inches`' . ( $count + 2 );
-                $new_product_specifications .= '|Height`' . round( $item[51], 2 ) . ' inches`' . ( $count + 3 );
-            } else {
-                $new_product_specifications_array = explode( ',' , $item[52] );
-                $i = 0;
-                $new_product_specifications = '';
-
-                foreach ( $new_product_specifications_array as $new_product_spec ) {
-                    $i++;
-
-                    if( !empty( $new_product_specifications ) )
-                        $new_product_specifications .= '|';
-
-                    $new_product_specifications .= '`' . trim( $new_product_spec ) . '`' . $i;
-                }
-				
-				$new_product_specifications = str_replace( array( '¼', '½', '¾' ), array( '&frac14;', '&frac12;', '&frac34;' ), $new_product_specifications );
+                $new_product_specifications[] = array( 'Width', round( $item[49], 2 ) . ' inches' );
+                $new_product_specifications[] = array( 'Depth', round( $item[50], 2 ) . ' inches' );
+                $new_product_specifications[] = array( 'Height', round( $item[51], 2 ) . ' inches' );
             }
 
             /***** ADD PRODUCT DATA *****/
@@ -430,15 +400,6 @@ class ButlerFeedGateway extends ProductFeedGateway {
             $product->brand_id = self::BRAND_ID;
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item[56] . '</p>' ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
 
-            /** Product Specs are special */
-            $product_specifications = explode( '|', $this->identical( $new_product_specifications, $product_specifications_string, 'product-specifications' ) );
-            $product_specifications_array = array();
-
-            foreach ( $product_specifications as $ps ) {
-                $product_specifications_array[] = explode( '`', $ps );
-            }
-
-            $product->product_specifications = serialize( $product_specifications_array );
 
             /***** ADD PRODUCT IMAGES *****/
 
@@ -508,6 +469,12 @@ class ButlerFeedGateway extends ProductFeedGateway {
             /***** UPDATE PRODUCT *****/
 
             $product->save();
+
+            // Add product specs
+            $product->delete_specifications();
+
+            if ( !empty( $new_product_specifications ) )
+                $product->add_specifications( $new_product_specifications );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;

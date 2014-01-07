@@ -234,21 +234,9 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             /***** PREPARE PRODUCT DATA *****/
 
             // Now get old specs
-            $product_specifications = unserialize( $product->product_specifications );
-            $new_product_specifications = '';
-
-            if ( is_array( $product_specifications ) )
-            foreach( $product_specifications as $ps ) {
-                if( !empty( $product_specifications ) )
-                    $new_product_specifications .= '|';
-
-                $new_product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
-            }
-
-
-            $item_specifications = 'Depth`' . $item[23] . '`0|';
-            $item_specifications .= 'Width`' . $item[24] . '`1|';
-            $item_specifications .= 'Height`' . $item[25] . '`2';
+            $item_specifications[] = array( 'Depth', $item[23] );
+            $item_specifications[] = array( 'Width', $item[24] );
+            $item_specifications[] = array( 'Height', $item[25] );
 
             /***** ADD PRODUCT DATA *****/
 
@@ -263,17 +251,6 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             $product->weight = $this->identical( $item[16], $product->weight, 'weight' );
             $product->brand_id = $this->identical( self::BRAND_ID, $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . trim( $item[15] ) . "</p>" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
-
-            /** Product Specs are special */
-            $product_specifications = explode( '|', $this->identical( $item_specifications, $new_product_specifications, 'product-specifications' ) );
-
-            $product_specifications_array = array();
-
-            foreach ( $product_specifications as $ps ) {
-                $product_specifications_array[] = explode( '`', $ps );
-            }
-
-            $product->product_specifications = serialize( $product_specifications_array );
 
             /***** ADD PRODUCT IMAGES *****/
 
@@ -338,6 +315,10 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
             /***** UPDATE PRODUCT *****/
 
 			$product->save();
+
+            // Add specs
+            $product->delete_specifications();
+            $product->add_specifications( $item_specifications );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
