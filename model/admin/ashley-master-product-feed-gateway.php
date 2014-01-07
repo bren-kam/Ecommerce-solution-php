@@ -195,19 +195,19 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 				// Specifications
 				case 'depth':
 					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] = 'Depth`' . trim( $xml_reader->getAttribute('value') );
+						$this->items[$j]['specs'][] = array( 'Depth', trim( $xml_reader->getAttribute('value') ) . ' Inches' ) ;
 				break;
 
 				// Specifications
 				case 'height':
 					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] .= ' Inches`0|Height`' . trim( $xml_reader->getAttribute('value') );
+                        $this->items[$j]['specs'][] = array( 'Height', trim( $xml_reader->getAttribute('value') ) . ' Inches' ) ;
 				break;
 
 				// Specifications
 				case 'length':
 					if ( isset( $dimensions ) && $dimensions && 'Inches' == trim( $xml_reader->getAttribute('unitOfMeasure') ) )
-						$this->items[$j]['specs'] .= ' Inches`1|Length`' . trim( $xml_reader->getAttribute('value') ) . ' Inches`2';
+                        $this->items[$j]['specs'][] = array( 'Length', trim( $xml_reader->getAttribute('value') ) . ' Inches' ) ;
 
 					$dimensions = 0;
 				break;
@@ -306,6 +306,8 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 				$product->user_id_modified = self::USER_ID;
 			}
 
+            $product->get_specifications();
+
             /***** PREPARE PRODUCT DATA *****/
 
             $group = $this->groups[$item['group']];
@@ -315,18 +317,6 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             $group_features = '<p>' . $group['features'] . '</p>';
 
 			$name = format::convert_characters( $group_name . $item['description'] );
-
-            // Now get old specs
-            $product_specifications = unserialize( $product->product_specifications );
-            $new_product_specifications = '';
-
-            if( is_array( $product_specifications ) )
-            foreach( $product_specifications as $ps ) {
-                if( !empty( $product_specifications ) )
-                    $new_product_specifications .= '|';
-
-                $new_product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
-            }
 
             /***** ADD PRODUCT DATA *****/
 
@@ -356,17 +346,6 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             $product->weight = $this->identical( $item['weight'], $product->weight, 'weight' );
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
-
-            /** Product Specs are special */
-            $product_specifications = explode( '|', $this->identical( $item['specs'], $new_product_specifications, 'product-specifications' ) );
-
-            $product_specifications_array = array();
-
-            foreach ( $product_specifications as $ps ) {
-                $product_specifications_array[] = explode( '`', $ps );
-            }
-
-            $product->product_specifications = serialize( $product_specifications_array );
 
             /***** ADD PRODUCT IMAGES *****/
 
@@ -413,6 +392,10 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             /***** UPDATE PRODUCT *****/
 
 			$product->save();
+
+            // Add specs
+            $product->delete_specifications();
+            $product->add_specifications( $item['specs'] );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;

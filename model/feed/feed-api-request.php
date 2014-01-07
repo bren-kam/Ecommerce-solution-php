@@ -184,11 +184,13 @@ class FeedApiRequest {
          */
         extract( $this->get_parameters( 'start_date', 'end_date', 'starting_point', 'limit' ) );
 
+        $product = new Product();
     	$products = $this->feed->get_products( $start_date, $end_date, $starting_point, $limit );
 
 		if ( is_array( $products ) )
         foreach ( $products as &$p ) {
-            $p['product_specifications'] = unserialize( html_entity_decode( $p['product_specifications'], ENT_QUOTES ) );
+            $product->id = $p['product_id'];
+            $p['product_specifications'] = $product->get_specifications();
 
             if ( empty( $p['categories'] ) ) {
                 unset( $p['categories'] );
