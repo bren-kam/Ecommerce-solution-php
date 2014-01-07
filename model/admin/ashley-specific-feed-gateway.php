@@ -275,7 +275,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         if ( is_array( $auto_prices ) )
         foreach ( $auto_prices as $auto_price ) {
             $child_categories = $category->get_all_children( $auto_price->category_id );
-            $category_ids = array();
+            $category_ids = array( $auto_price->category_id );
 
             foreach ( $child_categories as $child_cat ) {
                 $category_ids[] = $child_cat->id;
