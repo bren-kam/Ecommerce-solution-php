@@ -448,6 +448,9 @@ class ProductsController extends BaseController {
                 }
             }
 
+            // Adjust minimum prices
+            $account_product->adjust_to_minimum_price( $this->user->account->id );
+
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
