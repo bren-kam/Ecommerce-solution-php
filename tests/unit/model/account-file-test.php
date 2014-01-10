@@ -17,6 +17,7 @@ class AccountFileTest extends BaseDatabaseTest {
     public function setUp() {
         $this->account_file = new AccountFile();
 
+        // Define
         $this->phactory->define( 'website_files', array( 'website_id' => self::WEBSITE_ID, 'file_path' => self::FILE_PATH ) );
         $this->phactory->recall();
     }
