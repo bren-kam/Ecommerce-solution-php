@@ -38,10 +38,13 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
 
         if ( !$pdo ) {
             try {
-                // TravisCI MySQL Database
-                $pdo = new PDO( "mysql:host=127.0.0.1;dbname=myapp_test", 'travis' );
-            } catch (PDOException $e) {
-                $pdo = new PDO( "mysql:host=localhost;dbname=test" );
+                if ( !isset( $_SERVER['WERCKER_MYSQL_HOST'] ) )
+                    throw new Exception('Not on Wercker box');
+
+                $pdo = new PDO( "mysql:host=" . $_SERVER['WERCKER_MYSQL_HOST'] . ";dbname=" . $_SERVER['WERCKER_MYSQL_DATABASE'], $_SERVER['WERCKER_MYSQL_USERNAME'] );
+                $pdo->exec( file_get_contents('test/db-schema.sql') );
+            } catch ( Exception $e) {
+                $pdo = new PDO( "mysql:host=127.0.0.1;dbname=test" );
             }
 
             Registry::set( 'pdo', $pdo );
