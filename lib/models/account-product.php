@@ -157,6 +157,10 @@ class AccountProduct extends ActiveRecordBase {
         // Round to the ending
         $price_ending = number_format( (float) $price_ending, 2 );
 
+        // Won't do anything, has to be lower
+        if ( -1 == $price )
+            $price -= 1;
+
         if ( 0 != $price )
             $set[] = 'wp.`price` = ceilEnding( p.`price` * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
 
