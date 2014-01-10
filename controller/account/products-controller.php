@@ -1773,7 +1773,7 @@ class ProductsController extends BaseController {
 
         $categories = $category->get_all_children( $category->id );
 
-        $category_ids = array();
+        $category_ids = array( $category->id );
 
         foreach ( $categories as $cat ) {
             $category_ids[] = $cat->id;
