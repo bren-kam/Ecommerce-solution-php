@@ -197,7 +197,6 @@ class AccountProduct extends ActiveRecordBase {
         // Add the where
         $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
 
-		echo "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where;
         // Run once
         $this->prepare(
             "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
