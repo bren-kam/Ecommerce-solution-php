@@ -48,7 +48,7 @@ echo $template->start( _('Navigation') );
         <input type="radio" name="menu-link" id="menu-link-2" value="menu-page">
         <select id="menu-page">
             <?php foreach ( $pages as $page ) { ?>
-            <option value="<?php echo $page->slug; ?>"><?php echo $page->title; ?></option>
+            <option value="<?php echo $page->slug; ?>"><?php echo ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title; ?></option>
             <?php } ?>
         </select>
         <br><br>
