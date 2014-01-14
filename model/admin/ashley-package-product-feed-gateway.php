@@ -375,23 +375,10 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $description = format::convert_characters( format::autop( format::unautop( '<p>' . $package_series->Description . "</p>\n\n<p>" . $package_series->Features . "</p>\n\n<p>" . $package_series->SeriesColor . "</p>\n\n<p>" . $style_description . '</p>' ) ) );
 
             // Set product specs
-            if ( empty( $style_description ) ) {
-                $product_specs = '';
-            } else {
-                $product_specs = 'Style Description`' . $style_description . '`0';
-            }
+            $product_specs = array();
 
-            // Now get old specs
-            $product_specifications = unserialize( $product->product_specifications );
-            $new_product_specifications = '';
-
-            if( is_array( $product_specifications ) )
-            foreach( $product_specifications as $ps ) {
-                if( !empty( $product_specifications ) )
-                    $new_product_specifications .= '|';
-
-                $new_product_specifications .= $ps[0] . '`' . $ps[1] . '`' . $ps[2];
-            }
+            if ( !empty( $style_description ) )
+                $product_specs[] = array( 'Style Description', $style_description );
 
             // Get Category ID
             if ( isset( $this->category_by_template_description[(string)$template->Descr] ) ) {
@@ -490,17 +477,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $product->brand_id = $this->identical( $this->brands[(string)$package_series->Showroom], $product->brand_id, 'brand' );
             $product->description = $this->identical( $description, format::autop( format::unautop( $product->description ) ), 'description' );
 
-            /** Product Specs are special */
-            $product_specifications = explode( '|', $this->identical( $product_specs, $new_product_specifications, 'product-specifications' ) );
-
-            $product_specifications_array = array();
-
-            foreach ( $product_specifications as $ps ) {
-                $product_specifications_array[] = explode( '`', $ps );
-            }
-
-            $product->product_specifications = serialize( $product_specifications_array );
-
             /***** ADD PRODUCT IMAGES *****/
 
             // Let's hope it's big!
@@ -537,6 +513,10 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             /***** UPDATE PRODUCT *****/
 
 			$product->save();
+
+            // Add specs
+            $product->delete_specifications();
+            $product->add_specifications( $product_specs );
 
             // Increment product count
             if ( $new_product )

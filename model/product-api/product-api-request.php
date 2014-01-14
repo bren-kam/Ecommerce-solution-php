@@ -205,7 +205,7 @@ class ProductApiRequest {
             , 'description' => $product->description
             , 'price_wholesale' => $product->price
             , 'price_map' => $product->price_min
-            , 'specifications' => unserialize( $product->product_specifications )
+            , 'specifications' => $product->get_specifications()
             , 'status' => $product->status
             , 'category' => $this->get_category_by_id( $product->category_id )
             , 'industry' => $product->industry
@@ -232,7 +232,7 @@ class ProductApiRequest {
                 , 'description' => $product->description
                 , 'price_wholesale' => $product->price
                 , 'price_map' => $product->price_min
-                , 'specifications' => unserialize( $product->product_specifications )
+                , 'specifications' => $product->get_specifications()
                 , 'status' => $product->status
                 , 'category' => $this->get_category_by_id( $product->category_id )
                 , 'industry' => $product->industry
@@ -367,6 +367,8 @@ class ProductApiRequest {
             }
 
             $this->categories[$category_string] = $category->id;
+            ksort( $this->categories );
+
             $this->categories_by_id[$category->id] = $category_string;
         }
     }

@@ -156,15 +156,28 @@ class AccountProduct extends ActiveRecordBase {
 
         // Round to the ending
         $price_ending = number_format( (float) $price_ending, 2 );
-
-        if ( $price > 0 )
+		
+        // Won't do anything, has to be lower
+        if ( $price < 0 ) {
+            $set[] = 'wp.`price` = 0.01';
+        } elseif ( 0 != $price ) {
             $set[] = 'wp.`price` = ceilEnding( p.`price` * ( 1 + ' . (float) $price . ' ), ' . $price_ending . ')';
+        }
 
-        if ( $sale_price > 0 )
+        if ( $sale_price < 0 ) {
+            $set[] = 'wp.`sale_price` = 0.01';
+        } elseif ( 0 != $sale_price ) {
             $set[] = 'wp.`sale_price` = ceilEnding( p.`price` * ( 1 + ' . (float) $sale_price . ' ), ' . $price_ending . ')';
+        }
 
-        if ( $alternate_price > 0 )
+        if ( $alternate_price < 0 ) {
+            $set[] = 'wp.`alternate_price` = 0.01';
+        } elseif ( 0 != $alternate_price ) {
             $set[] = 'wp.`alternate_price` = ceilEnding( p.`price` * ( 1 + ' . (float) $alternate_price . ' ), ' . $price_ending . ')';
+        }
+
+        if ( $price_ending < 0 )
+            $price_ending = 0;
 
         if ( empty( $set ) )
             return;
