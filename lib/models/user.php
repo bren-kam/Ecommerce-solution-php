@@ -78,10 +78,11 @@ class User extends ActiveRecordBase {
             , 'billing_first_name' => strip_tags($this->billing_first_name)
             , 'billing_last_name' => strip_tags($this->billing_last_name)
             , 'billing_address1' => strip_tags($this->billing_address1)
+            , 'billing_city' => strip_tags($this->billing_city)
             , 'billing_state' => strip_tags($this->billing_state)
             , 'billing_zip' => strip_tags($this->billing_zip)
             , 'date_created' => $this->date_created
-        ), 'isssssiissssss' );
+        ), 'isssssiisssssss' );
 
         $this->user_id = $this->id = $this->get_insert_id();
     }
