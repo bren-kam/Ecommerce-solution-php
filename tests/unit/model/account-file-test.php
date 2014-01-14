@@ -3,6 +3,9 @@
 require_once 'base-database-test.php';
 
 class AccountFileTest extends BaseDatabaseTest {
+    const FILE_PATH = 'http://[domain]/testing.gif';
+    const DOMAIN = 'www.google.com';
+
     /**
      * @var AccountFile
      */
@@ -13,93 +16,73 @@ class AccountFileTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->account_file = new AccountFile();
+
+        // Define
+        $this->phactory->define( 'website_files', array( 'website_id' => self::WEBSITE_ID, 'file_path' => self::FILE_PATH ) );
+        $this->phactory->recall();
     }
     
     /**
      * Get
      */
     public function testGet() {
-        // Set variables
-        $website_id = -7;
-        $file_path = 'http://[domain]/testing.gif';
-        $domain = 'www.google.com';
-
         // Create
-        $website_file_id = $this->phactory->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
+        $ph_website_file = $this->phactory->create( 'website_files' );
 
         // Get
-        $this->account_file->get( $website_file_id, $domain, $website_id );
+        $this->account_file->get( $ph_website_file->website_file_id, self::DOMAIN, self::WEBSITE_ID );
 
         // Make sure we grabbed the right one
-        $this->assertEquals( str_replace( '[domain]', $domain, $file_path ), $this->account_file->file_path );
-
-        // Clean up
-        $this->phactory->delete( 'website_files', compact( 'website_id' ), 'i' );
+        $expected = str_replace( '[domain]', self::DOMAIN, self::FILE_PATH );
+        $this->assertEquals( $expected, $this->account_file->file_path );
     }
 
     /**
      * Get By File Path
      */
     public function testGetByFilePath() {
-        // Set variables
-        $website_id = -7;
-        $file_path = 'http://[domain]/testing.gif';
-        $domain = 'www.google.com';
-
         // Create
-        $this->phactory->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
+        $this->phactory->create( 'website_files' );
 
         // Get
-        $this->account_file->get_by_file_path( $file_path, $domain, $website_id );
+        $this->account_file->get_by_file_path( self::FILE_PATH, self::DOMAIN, self::WEBSITE_ID );
 
         // Make sure we grabbed the right one
-        $this->assertEquals( str_replace( '[domain]', $domain, $file_path ), $this->account_file->file_path );
-
-        // Clean up
-        $this->phactory->delete( 'website_files', compact( 'website_id' ), 'i' );
+        $expected = str_replace( '[domain]', self::DOMAIN, self::FILE_PATH );
+        $this->assertEquals( $expected, $this->account_file->file_path );
     }
 
     /**
      * Test creating the note
      */
     public function testCreate() {
-        $this->account_file->website_id = -5;
-        $this->account_file->file_path = 'gobbledy-gook.jpg';
+        // Create
+        $this->account_file->website_id = self::WEBSITE_ID;
+        $this->account_file->file_path = self::FILE_PATH;
         $this->account_file->create();
 
         $this->assertTrue( !is_null( $this->account_file->id ) );
 
         // Get the message
-        $file_path = $this->phactory->get_var( 'SELECT `file_path` FROM `website_files` WHERE `website_file_id` = ' . (int) $this->account_file->id );
+        $ph_account_file = $this->phactory->get( 'website_files', array( 'website_file_id' => $this->account_file->id ) );
 
-        $this->assertEquals( $file_path, $this->account_file->file_path );
-
-        // Delete
-        $this->phactory->delete( 'website_files', array( 'website_file_id' => $this->account_file->id ), 'i' );
+        $this->assertEquals( self::FILE_PATH, $ph_account_file->file_path );
     }
 
 
     /**
      * Test Get By Account
-     *
-     * @depends testCreate
      */
     public function testGetByAccount() {
-        // Declare variables
-        $account_id = -5;
-
-        // Create test file
-        $this->account_file->website_id = $account_id;
-        $this->account_file->file_path = 'gobbledy-gook.jpg';
-        $this->account_file->create();
+        // Create
+        $this->phactory->create( 'website_files' );
 
         // Get the files
-        $account_files = $this->account_file->get_by_account( $account_id );
+        $account_files = $this->account_file->get_by_account( self::WEBSITE_ID );
+        $account_file = current( $account_files );
 
-        $this->assertTrue( current( $account_files ) instanceof AccountFile );
-
-        // Delete
-        $this->phactory->delete( 'website_files', array( 'website_id' => $account_id ), 'i' );
+        $this->assertContainsOnlyInstancesOf( 'AccountFile', $account_files );
+        $this->assertEquals( self::FILE_PATH, $account_file->file_path );
     }
 
     /**
@@ -108,23 +91,17 @@ class AccountFileTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testRemove() {
-        // Set variables
-        $website_id = -7;
-        $file_path = 'http://[domain]/testing.gif';
-        $domain = 'www.google.com';
-
         // Create
-        $website_file_id = $this->phactory->insert( 'website_files', compact( 'website_id', 'file_path' ), 'is' );
-
-        // Get
-        $this->account_file->get( $website_file_id, $domain, $website_id );
+        $ph_website_file = $this->phactory->create( 'website_files' );
 
         // Remove/Delete
+        $this->account_file->id = $ph_website_file->website_file_id;
         $this->account_file->remove();
 
-        $retrieved_file_path = $this->phactory->get_var( "SELECT `file_path` FROM `website_files` WHERE `website_file_id` = $website_file_id" );
+        // Get
+        $ph_account_file = $this->phactory->get( 'website_files', array( 'website_file_id' => $ph_website_file->website_file_id ) );
 
-        $this->assertFalse( $retrieved_file_path );
+        $this->assertNull( $ph_account_file );
     }
 
     /**

@@ -50,17 +50,15 @@ class AccountNote extends ActiveRecordBase {
      * Get all account notes
      *
      * @param int $account_id
-     * @return array
+     * @return AccountNote[]
      */
     public function get_all( $account_id ) {
         // Get the account
-		$notes = $this->prepare(
+		return $this->prepare(
             "SELECT a.`website_note_id`, a.`user_id`, a.`message`, a.`date_created`, b.`email`, b.`contact_name`, b.`store_name`, c.`title` FROM `website_notes` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) WHERE a.`website_id` = :account_id ORDER BY date_created DESC"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_CLASS, 'AccountNote' );
-
-        return $notes;
     }
 
     /**

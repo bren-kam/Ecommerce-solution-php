@@ -3,6 +3,10 @@
 require_once 'base-database-test.php';
 
 class AccountPageAttachmentTest extends BaseDatabaseTest {
+    const KEY = 'Hungry';
+    const VALUE = 'Hippos';
+    const WEBSITE_PAGE_ID = 3;
+
     /**
      * @var AccountPageAttachment
      */
@@ -13,89 +17,68 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->account_page_attachment = new AccountPageAttachment();
+
+        // Define
+        $this->phactory->define( 'website_pages', array( 'website_id' => self::WEBSITE_ID ) );
+        $this->phactory->define( 'website_attachments', array( 'website_page_id' => self::WEBSITE_PAGE_ID, 'key' => self::KEY, 'value' => self::VALUE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare Variables
-        $website_id = -5;
-        $key = 'Hungry';
-
-        // Insert id
-        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id' ), 'i' );
-        $website_attachment_id = $this->phactory->insert( 'website_attachments', compact( 'website_page_id', 'key' ), 'is' );
+        // Create
+        $ph_website_page = $this->phactory->create( 'website_pages' );
+        $ph_website_attachment = $this->phactory->create( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id ) );
 
         // Get
-        $this->account_page_attachment->get( $website_attachment_id, $website_id );
+        $this->account_page_attachment->get( $ph_website_attachment->website_attachment_id, self::WEBSITE_ID );
 
-        $this->assertEquals( $key, $this->account_page_attachment->key );
-
-        // Cleanup
-        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->assertEquals( self::KEY, $this->account_page_attachment->key );
     }
 
     /**
      * Test Get By Key
      */
     public function testGetByKey() {
-        // Declare Variables
-        $website_page_id = -5;
-        $key = 'Hungry';
-        $value = 'Hippos';
-
-        // Insert id
-        $this->phactory->insert( 'website_attachments', compact( 'website_page_id', 'key', 'value' ), 'iss' );
+        // Create
+        $this->phactory->create( 'website_attachments' );
 
         // Get
-        $attachment = $this->account_page_attachment->get_by_key( $website_page_id, $key );
+        $attachment = $this->account_page_attachment->get_by_key( self::WEBSITE_PAGE_ID, self::KEY );
 
-        $this->assertEquals( $value, $attachment->value );
-
-        // Cleanup
-        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->assertEquals( self::VALUE, $attachment->value );
     }
 
     /**
      * Test Get by account page ids
      */
     public function testGetByAccountPageIds() {
-        // Declare variables
-        $account_page_ids = array( -5 );
-
-        // Insert attachment
-        $this->phactory->insert( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
+        // Create
+        $this->phactory->create( 'website_attachments' );
 
         // Get by account page ids
-        $attachments = $this->account_page_attachment->get_by_account_page_ids( $account_page_ids );
+        $attachments = $this->account_page_attachment->get_by_account_page_ids( array( self::WEBSITE_PAGE_ID ) );
+        $attachment = current( $attachments );
 
-        $this->assertTrue( current( $attachments ) instanceof AccountPageAttachment );
-
-        // Delete
-        $this->phactory->delete( 'website_attachments', array( 'website_page_id' => -5 ), 'i' );
+        $this->assertContainsOnlyInstancesOf( 'AccountPageAttachment', $attachments );
+        $this->assertEquals( self::KEY, $attachment->key );
     }
 
     /**
      * Test create
      */
     public function testCreate() {
-        $this->account_page_attachment->website_page_id = -3;
-        $this->account_page_attachment->key = 'banner';
-        $this->account_page_attachment->value = 'hedgehog.jpg';
-        $this->account_page_attachment->extra = '';
-        $this->account_page_attachment->meta = '';
-        $this->account_page_attachment->sequence = 0;
+        $this->account_page_attachment->website_page_id = self::WEBSITE_PAGE_ID;
+        $this->account_page_attachment->key = self::KEY;
+        $this->account_page_attachment->value = self::VALUE;
         $this->account_page_attachment->create();
 
         // Make sure it's in the database
-        $value = $this->phactory->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+        $ph_account_page_attachment = $this->phactory->get( 'website_attachments', array( 'website_attachment_id' => $this->account_page_attachment->id ) );
 
-        $this->assertEquals( $this->account_page_attachment->value, $value );
-
-        // Delete the attribute
-        $this->phactory->delete( 'website_attachments', array( 'website_attachment_id' => $this->account_page_attachment->id ), 'i' );
+        $this->assertEquals( self::VALUE, $ph_account_page_attachment->value );
     }
 
     /**

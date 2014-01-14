@@ -367,6 +367,8 @@ class ProductApiRequest {
             }
 
             $this->categories[$category_string] = $category->id;
+            ksort( $this->categories );
+
             $this->categories_by_id[$category->id] = $category_string;
         }
     }

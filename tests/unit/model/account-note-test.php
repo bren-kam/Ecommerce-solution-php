@@ -3,6 +3,9 @@
 require_once 'base-database-test.php';
 
 class AccountNoteTest extends BaseDatabaseTest {
+    const MESSAGE = 'This account is...';
+    const USER_ID = 1;
+
     /**
      * @var AccountNote
      */
@@ -13,26 +16,28 @@ class AccountNoteTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->account_note = new AccountNote();
+
+        // Define
+        $this->phactory->define( 'website_notes', array( 'website_id' => self::WEBSITE_ID, 'message' => self::MESSAGE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test creating the note
      */
     public function testCreate() {
-        $this->account_note->user_id = 1;
-        $this->account_note->website_id = 96;
-        $this->account_note->message = 'test';
+        // Create
+        $this->account_note->user_id = self::USER_ID;
+        $this->account_note->website_id = self::WEBSITE_ID;
+        $this->account_note->message = self::MESSAGE;
         $this->account_note->create();
 
         $this->assertTrue( !is_null( $this->account_note->id ) );
 
         // Get the message
-        $message = $this->phactory->get_var( 'SELECT `message` FROM `website_notes` WHERE `website_note_id` = ' . (int) $this->account_note->id );
+        $ph_account_file = $this->phactory->get( 'website_notes', array( 'website_note_id' => $this->account_note->id ) );
 
-        $this->assertEquals( $message, 'test' );
-
-        // Delete the note
-        $this->phactory->delete( 'website_notes', array( 'website_note_id' => $this->account_note->id ), 'i' );
+        $this->assertEquals( self::MESSAGE, $ph_account_file->message );
     }
 
     /**
@@ -40,16 +45,12 @@ class AccountNoteTest extends BaseDatabaseTest {
      */
     public function testGet() {
         // Insert a note
-        $this->phactory->insert( 'website_notes', array( 'website_id' => 96, 'user_id' => 1, 'message' => 'test' ), 'iis' );
-        $website_note_id = $this->phactory->get_insert_id();
+        $ph_website_note = $this->phactory->create( 'website_notes' );
 
         // Get it
-        $this->account_note->get($website_note_id);
+        $this->account_note->get( $ph_website_note->website_note_id );
 
-        $this->assertEquals( $this->account_note->message, 'test' );
-
-        // Delete the note
-        $this->phactory->delete( 'website_notes', array( 'website_note_id' => $website_note_id ), 'i' );
+        $this->assertEquals( self::MESSAGE, $this->account_note->message );
     }
 
     /**
@@ -58,33 +59,32 @@ class AccountNoteTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testDelete() {
-        // Insert a note
-        $this->phactory->insert( 'website_notes', array( 'website_id' => 96, 'user_id' => 1, 'message' => 'test' ), 'iis' );
-        $website_note_id = $this->phactory->get_insert_id();
-
-        // Make sure it exists
-        $this->account_note->get( $website_note_id );
+         // Insert a note
+        $ph_website_note = $this->phactory->create( 'website_notes' );
 
         // Delete it!
+        $this->account_note->id = $ph_website_note->website_note_id;
         $this->account_note->delete();
 
         // Shouldn't exist
-        $message = $this->phactory->get_var( 'SELECT `message` FROM `website_notes` WHERE `website_note_id` = ' . (int) $website_note_id );
+        $ph_website_note = $this->phactory->get( 'website_notes', array( 'website_note_id' => $ph_website_note->website_note_id ) );
 
-        $this->assertFalse( $message );
+        $this->assertNull( $ph_website_note );
     }
 
     /**
      * Test get all notes for an account
      */
     public function testGetAll() {
-        // Declare variables
-        $account_id = 160; // Connells
+         // Insert a note
+        $this->phactory->create( 'website_notes' );
 
         // Get the notes
-        $notes = $this->account_note->get_all( $account_id );
+        $notes = $this->account_note->get_all( self::WEBSITE_ID );
+        $note = current( $notes );
 
-        $this->assertTrue( current( $notes ) instanceof AccountNote );
+        $this->assertContainsOnlyInstancesOf( 'AccountNote', $notes );
+        $this->assertEquals( self::MESSAGE, $note->message );
     }
 
     /**
