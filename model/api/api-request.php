@@ -236,6 +236,7 @@ class ApiRequest {
             $user->billing_last_name = $billing_last_name;
             $user->billing_address1 = $billing_address1;
             $user->billing_city = $billing_city;
+            $user->billing_state = $billing_state;
             $user->billing_zip = $billing_zip;
             $user->role = User::ROLE_STORE_OWNER;
             $user->company_id = $this->company_id;
