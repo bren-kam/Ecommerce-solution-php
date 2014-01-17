@@ -80,7 +80,7 @@ class ReachesController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set variables
-        $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
+        $dt->order_by( 'name', 'wu.`email`', 'assigned_to', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
         $dt->add_where( " AND wr.`website_id` = " . $this->user->account->id );
 
         if ( !$this->user->has_permission( User::ROLE_STORE_OWNER ) )
