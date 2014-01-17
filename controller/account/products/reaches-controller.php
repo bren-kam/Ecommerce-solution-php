@@ -113,7 +113,7 @@ class ReachesController extends BaseController {
                 '<a href="' . url::add_query_arg( 'wrid', $reach->id, '/products/reaches/reach/' ) . '">' . $name . '</a>'
                 , $reach->email
                 , $reach->assigned_to
-                , ( $reach->waiting ) ? 'Waiting' : 'Ready'
+                , ( $reach->waiting ) ? 'Requires Response' : 'Waiting'
                 , $priorities[ (int) $reach->priority ]
                 , $date->format( 'F jS, Y g:ia' )
             );
