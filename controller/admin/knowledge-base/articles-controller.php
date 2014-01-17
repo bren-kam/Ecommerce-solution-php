@@ -84,7 +84,7 @@ ArticlesController extends BaseController {
             , KnowledgeBaseCategory::SECTION_ACCOUNT => ucwords( KnowledgeBaseCategory::SECTION_ACCOUNT )
         );
 
-        $ft->add_field( 'select', _('Section'), 'sSection', ucwords( $section ) )
+        $ft->add_field( 'select', _('Section'), 'sSection', $section )
             ->options( $sections );
 
         $categories = $kb_category->sort_by_hierarchy();

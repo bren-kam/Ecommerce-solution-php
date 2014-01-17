@@ -623,7 +623,7 @@ class ProductsController extends BaseController {
             ->css_url( Config::resource('jquery-ui') );
 
         return $this->get_template_response( 'top-categories' )
-            ->kb( 0 )
+            ->kb( 137 )
             ->add_title( _('Top Categories') )
             ->select( 'top-categories' )
             ->set( compact( 'categories', 'top_categories', 'category_images' ) );
