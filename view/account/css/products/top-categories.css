@@ -1,0 +1,14 @@
+#top-categories { position: relative }
+.top-category h4 { font-weight: bold; margin: 5px 0 5px 5px; }
+.top-category img { border: 1px solid #ccc }
+
+/* Rounded Corners */
+.top-category, .top-category-placeholder {
+	background-color: #FFFFFF; margin: 10px 15px 0 0; padding:5px 0 48px; display: block; float:left; width:220px; height: 240px; text-align:center; cursor:move; border: 1px solid #e2e2e2; position: relative;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.top-category-placeholder { height: 293px; margin: 10px 15px 0 0; padding:0; border-style: dashed; }
+.remove { position: absolute; bottom:5px; left: 75px; }

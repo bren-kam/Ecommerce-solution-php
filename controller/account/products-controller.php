@@ -576,8 +576,8 @@ class ProductsController extends BaseController {
      */
     protected function brands() {
         $this->resources->javascript( 'products/brands' )
-                    ->css( 'products/brands' )
-                    ->css_url( Config::resource('jquery-ui') );
+            ->css( 'products/brands' )
+            ->css_url( Config::resource('jquery-ui') );
 
         $website_top_brand = new WebsiteTopBrand();
 
@@ -586,6 +586,47 @@ class ProductsController extends BaseController {
             ->add_title( _('Brands') )
             ->select( 'products', 'brands' )
             ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );
+    }
+
+    /**
+     * Top Categories
+     *
+     * @return TemplateResponse
+     */
+    protected function top_categories() {
+        // Initiate objects
+        $category = new Category();
+        $account_category = new AccountCategory();
+
+        // Sort categories
+        $categories_array = $category->sort_by_hierarchy();
+        $website_category_ids = $account_category->get_all_ids( $this->user->account->id );
+        $top_categories_array = json_decode( $this->user->account->get_settings('top-categories') );
+        $category_images = ar::assign_key( $account_category->get_website_category_images( $this->user->account->id, $website_category_ids ), 'category_id', true );
+
+        $categories = $top_categories = array();
+
+        foreach ( $categories_array as $category ) {
+            if ( in_array( $category->id, $website_category_ids ) )
+                $categories[] = $category;
+        }
+
+        foreach ( $top_categories_array as $category_id ) {
+            if ( !in_array( $category_id, $website_category_ids ) )
+                continue;
+
+            $top_categories[] = Category::$categories[$category_id];
+        }
+
+        $this->resources->javascript( 'products/top-categories' )
+            ->css( 'products/top-categories' )
+            ->css_url( Config::resource('jquery-ui') );
+
+        return $this->get_template_response( 'top-categories' )
+            ->kb( 0 )
+            ->add_title( _('Top Categories') )
+            ->select( 'top-categories' )
+            ->set( compact( 'categories', 'top_categories', 'category_images' ) );
     }
 
     /**
@@ -1522,6 +1563,29 @@ class ProductsController extends BaseController {
 
         $website_top_brand = new WebsiteTopBrand();
         $website_top_brand->update_sequence( $this->user->account->id, $sequence );
+
+        return $response;
+    }
+
+    /**
+     * Update Top Brand Sequence
+     *
+     * @return AjaxResponse
+     */
+    protected function update_top_category_sequence() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $response->check( isset( $_POST['s'] ), _('Unable to update brand sequence. Please contact your Online Specialist.') );
+
+        // Return if there is an error
+        if ( $response->has_error() )
+            return $response;
+
+        $sequence = explode( '&dTopCategory[]=', $_POST['s'] );
+        $sequence[0] = substr( $sequence[0], 15 );
+
+        $this->user->account->set_settings( array( 'top-categories' => json_encode( $sequence ) ) );
 
         return $response;
     }
