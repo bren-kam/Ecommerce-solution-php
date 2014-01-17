@@ -291,7 +291,7 @@ class ReachesController extends BaseController {
         // Send out an email if their role is less than 8
         $message = 'Hello ' . $assigned_user->contact_name . ",\n\n";
         $message .= 'You have been assigned ' . $reach->get_friendly_type() . ' #' . $reach->id . ". To view it, follow the link below:\n\n";
-        $message .= url::add_query_arg( 'wrid', $reach->id, 'http://admin.' . url::domain( $assigned_user->domain, false ) . '/productes/reaches/reach/' ) . "\n\n";
+        $message .= url::add_query_arg( 'wrid', $reach->id, 'http://account.' . url::domain( $assigned_user->domain, false ) . '/productes/reaches/reach/' ) . "\n\n";
         $message .= 'Priority: ' . $priorities[$reach->priority] . "\n\n";
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
