@@ -552,7 +552,7 @@ class WebsiteController extends BaseController {
             ->css( 'website/navigation' )
             ->javascript( 'website/navigation' );
 
-        if ( $this->verified() && !empty( $_POST['navigation'] ) ) {
+        if ( $this->verified() ) {
             $navigation = array();
 
             foreach ( $_POST['navigation'] as $page ) {
