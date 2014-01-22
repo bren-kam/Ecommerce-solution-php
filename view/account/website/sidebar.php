@@ -27,6 +27,7 @@ $industries = $user->account->get_industries();
     <?php if ( $user->has_permission( User::ROLE_ONLINE_SPECIALIST ) ) { ?>
         <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="top<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>
         <?php if ( $template->v('settings') ) { ?>
+            <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('page-settings'); ?>"><?php echo _('Settings'); ?></a>
             <a href="/website/home-page-layout/" title="<?php echo _('Home Page Layout'); ?>" class="sub<?php $template->select('home-page-layout'); ?>"><?php echo _('Home Page Layout'); ?></a>
             <a href="/website/navigation/" title="<?php echo _('Navigation'); ?>" class="sub last<?php $template->select('sidebar-navigation'); ?>"><?php echo _('Navigation'); ?></a>
     <?php

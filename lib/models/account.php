@@ -32,7 +32,7 @@ class Account extends ActiveRecordBase {
     public function get( $account_id ) {
         // Get the account
 		$this->prepare(
-            "SELECT a.`website_id`, a.`company_package_id`, a.`user_id`, a.`os_user_id`, a.`domain`, a.`subdomain`, a.`title`, a.`plan_name`, a.`plan_description`, a.`theme`, a.`logo`, a.`phone`, a.`pages`, a.`products`, a.`product_catalog`, a.`link_brands`, a.`blog`, a.`email_marketing`, a.`mobile_marketing`, a.`shopping_cart`, a.`room_planner`, a.`craigslist`, a.`social_media`, a.`domain_registration`, a.`additional_email_addresses`, a.`ftp_username`, a.`ga_profile_id`, a.`ga_tracking_key`, a.`wordpress_username`, a.`wordpress_password`, a.`type`, a.`version`, a.`live`, a.`date_created`, a.`date_updated`, a.`status`, b.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `companies` AS c ON ( b.`company_id` = c.`company_id` ) WHERE a.`website_id` = :account_id"
+            "SELECT w.`website_id`, w.`company_package_id`, w.`user_id`, w.`os_user_id`, w.`domain`, w.`subdomain`, w.`title`, w.`plan_name`, w.`plan_description`, w.`theme`, w.`logo`, w.`phone`, w.`pages`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`blog`, w.`email_marketing`, w.`mobile_marketing`, w.`shopping_cart`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`domain_registration`, w.`additional_email_addresses`, w.`ftp_username`, w.`ga_profile_id`, w.`ga_tracking_key`, w.`wordpress_username`, w.`wordpress_password`, w.`type`, w.`version`, w.`live`, w.`date_created`, w.`date_updated`, w.`status`, u.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE w.`website_id` = :account_id"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -45,7 +45,7 @@ class Account extends ActiveRecordBase {
      * Get Accounts by User
      *
      * @param int $user_id
-     * @return array
+     * @return  Account[]
      */
     public function get_by_user( $user_id ) {
         return $this->prepare(
@@ -59,11 +59,11 @@ class Account extends ActiveRecordBase {
      * Get Accounts by Authorized User
      *
      * @param int $user_id
-     * @return array
+     * @return  Account[]
      */
     public function get_by_authorized_user( $user_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`os_user_id`, w.`domain`, w.`title`, w.`product_catalog`, w.`link_brands`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`wordpress_username`, w.`wordpress_password`, IF ( w.`live`, auw.`analytics`, 0 ) AS live, w.`pages`, ( auw.`products` * w.`products` * w.`product_catalog` ) AS product_catalog, w.`ga_profile_id`, IF ( 1 = w.`blog`, auw.`blog`, 0 ) AS blog, IF( 1 = w.`email_marketing`, auw.`email_marketing`, 0 ) AS email_marketing, IF( 1 = w.`shopping_cart`, auw.`shopping_cart`, 0 ) AS shopping_cart FROM `websites` AS w LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) WHERE auw.`user_id` = :user_id AND w.`status` = 1 ORDER BY w.`title` ASC'
+            'SELECT w.`website_id`, w.`os_user_id`, w.`domain`, w.`title`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`wordpress_username`, w.`wordpress_password`, IF ( w.`live`, auw.`analytics`, 0 ) AS live, w.`pages`, ( auw.`products` * w.`products` * w.`product_catalog` ) AS product_catalog, w.`ga_profile_id`, IF ( 1 = w.`blog`, auw.`blog`, 0 ) AS blog, IF( 1 = w.`email_marketing`, auw.`email_marketing`, 0 ) AS email_marketing, IF( 1 = w.`shopping_cart`, auw.`shopping_cart`, 0 ) AS shopping_cart FROM `websites` AS w LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) WHERE auw.`user_id` = :user_id AND w.`status` = 1 ORDER BY w.`title` ASC'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
@@ -73,13 +73,30 @@ class Account extends ActiveRecordBase {
      * Get Accounts by Product
      *
      * @param int $product_id
-     * @return array
+     * @return Account[]
      */
     public function get_by_product( $product_id ) {
         return $this->prepare( "SELECT w.`website_id`, w.`title`, `domain` FROM `websites` AS w LEFT JOIN `website_products` AS wp ON ( wp.`website_id` = w.`website_id` ) WHERE w.`status` = 1 AND wp.`product_id` = :product_id AND wp.`blocked` = 0 AND wp.`active` = 1 ORDER BY w.`title`"
             , 'i'
             , array( ':product_id' => $product_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
+    }
+
+    /**
+     * Get Account by domain
+     *
+     * @param string $domain
+     */
+    public function get_by_domain( $domain ) {
+        // Get the account
+        $this->prepare(
+            "SELECT w.`website_id`, w.`company_package_id`, w.`user_id`, w.`os_user_id`, w.`domain`, w.`subdomain`, w.`title`, w.`plan_name`, w.`plan_description`, w.`theme`, w.`logo`, w.`phone`, w.`pages`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`blog`, w.`email_marketing`, w.`mobile_marketing`, w.`shopping_cart`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`domain_registration`, w.`additional_email_addresses`, w.`ftp_username`, w.`ga_profile_id`, w.`ga_tracking_key`, w.`wordpress_username`, w.`wordpress_password`, w.`type`, w.`version`, w.`live`, w.`date_created`, w.`date_updated`, w.`status`, u.`status` AS user_status, c.`company_id`, c.`name` AS company  FROM `websites` AS w LEFT JOIN `users` AS u ON ( u.`user_id` = w.`user_id` ) LEFT JOIN `companies` AS c ON ( c.`company_id` = u.`company_id` ) WHERE w.`domain` LIKE :domain"
+            , 's'
+            , array( ':domain' => '%' . $domain . '%' )
+        )->get_row( PDO::FETCH_INTO, $this );
+
+        // Set the ID
+        $this->id = $this->website_id;
     }
 
     /**

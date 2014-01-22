@@ -80,17 +80,20 @@ class CustomizeController extends BaseController {
         // Get variables
         $settings = $account->get_settings(
             'slideshow-fixed-width'
+            , 'slideshow-categories'
             , 'sidebar-left'
         );
 
         // Start adding fields
         $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
+        $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
 
         if ( $ft->posted() ) {
             // Update settings
             $account->set_settings( array(
                 'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
+                , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
                 , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
             ));
 

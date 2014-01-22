@@ -18,7 +18,7 @@ echo $template->start( _('Reaches'), '../sidebar' );
             <th width="15%"><?php echo _('Name'); ?></th>
             <th width="22%"><?php echo _('Email'); ?></th>
             <th width="18%"><?php echo _('Assigned To'); ?></th>
-            <th width="10%"><?php echo _('Status'); ?></th>
+            <th width="10%"><?php echo _('Waiting'); ?></th>
             <th width="10%"><?php echo _('Priority'); ?></th>
             <th width="25%"><?php echo _('Created'); ?></th>
         </tr>

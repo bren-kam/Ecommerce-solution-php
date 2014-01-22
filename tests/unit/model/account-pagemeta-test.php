@@ -3,6 +3,11 @@
 require_once 'base-database-test.php';
 
 class AccountPagemetaTest extends BaseDatabaseTest {
+    const WEBSITE_PAGE_ID = 5;
+    const KEY = 'email';
+    const KEY_2 = 'display_coupon';
+    const VALUE = 'bobloblob@law.com';
+
     /**
      * @var AccountPagemeta
      */
@@ -13,107 +18,115 @@ class AccountPagemetaTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->account_pagemeta = new AccountPagemeta();
+
+        // Define
+        $this->phactory->define( 'website_pagemeta', array( 'website_page_id' => self::WEBSITE_PAGE_ID, 'key' => self::KEY, 'value' => self::VALUE ) );
+        $this->phactory->define( 'website_pages', array( 'website_id' => self::WEBSITE_ID, 'website_page_id' => self::WEBSITE_PAGE_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test get by keys
      */
     public function testGetByAccountAndKeys() {
-        // Declare variables
-        $account_id = 96;
-        $key_1 = 'display-coupon';
-        $key_2 = 'email';
+        // Create
+        $this->phactory->create( 'website_pages' );
+        $this->phactory->create( 'website_pagemeta' );
+        $this->phactory->create( 'website_pagemeta', array( 'key' => self::KEY_2 ) );
 
-        // Get
-        $pagemeta = $this->account_pagemeta->get_by_account_and_keys( $account_id, $key_1, $key_2 );
+        // Get 1
+        $pagemeta = $this->account_pagemeta->get_by_account_and_keys( self::WEBSITE_ID, self::KEY );
 
-        $this->assertEquals( 2, count( $pagemeta ) );
-    }
+        $this->assertEquals( self::VALUE, $pagemeta );
 
-    /**
-     * Test get by keys
-     */
-    public function testGetByKeys() {
-        // Declare variables
-        $account_page_id = 7;
+        // Get 2
+        $pagemeta = $this->account_pagemeta->get_by_account_and_keys( self::WEBSITE_ID, self::KEY, self::KEY_2 );
+        $expected_array = array( self::KEY => self::VALUE, self::KEY_2 => self::VALUE );
 
-        // Get
-        $pagemeta = $this->account_pagemeta->get_by_keys( $account_page_id, 'display-coupon', 'email' );
-
-        $this->assertTrue( is_array( $pagemeta ) );
-        $this->assertEquals( count( $pagemeta ), 2 );
+        $this->assertEquals( $expected_array, $pagemeta );
     }
 
     /**
      * Test get by keys
      */
     public function testGetForPagesByKeys() {
-        // Declare variables
-        $account_page_ids = array( 7, 8 );
-        $account_pagemeta_keys = array( 'display-coupon', 'apply-now' );
+        // Create
+        $this->phactory->create( 'website_pages' );
+        $this->phactory->create( 'website_pagemeta' );
+        $this->phactory->create( 'website_pagemeta', array( 'key' => self::KEY_2 ) );
 
         // Get
-        $pagemeta = $this->account_pagemeta->get_for_pages_by_keys( $account_page_ids, $account_pagemeta_keys );
+        $pagemeta = $this->account_pagemeta->get_for_pages_by_keys( array( self::WEBSITE_PAGE_ID ), array( self::KEY, self::KEY_2 ) );
+        $pagemeton = current( $pagemeta );
 
-        $this->assertTrue( current( $pagemeta ) instanceof AccountPagemeta );
-        $this->assertEquals( count( $pagemeta ), 2 );
+        $this->assertContainsOnlyInstancesOf( 'AccountPagemeta', $pagemeta );
+        $this->assertEquals( self::VALUE, $pagemeton->value );
+    }
+
+    /**
+     * Test get by keys
+     *
+     * @depends testGetForPagesByKeys
+     */
+    public function testGetByKeys() {
+        // Create
+        $this->phactory->create( 'website_pages' );
+        $this->phactory->create( 'website_pagemeta' );
+        $this->phactory->create( 'website_pagemeta', array( 'key' => self::KEY_2 ) );
+
+        // Get
+        $pagemeta = $this->account_pagemeta->get_by_keys( self::WEBSITE_PAGE_ID, self::KEY, self::KEY_2 );
+        $expected_array = array( self::KEY => self::VALUE, self::KEY_2 => self::VALUE );
+
+        $this->assertEquals( $expected_array, $pagemeta );
     }
 
     /**
      * Test Add Bulk
      */
     public function testAddBulk() {
+        // Reset everything
+        $this->phactory->recall();
+
         // Declare variable
         $pagemeta = array(
             array(
-                'website_page_id' => -1
-                , 'key' => 'beans'
-                , 'value' => 'black'
+                'website_page_id' => self::WEBSITE_PAGE_ID
+                , 'key' => self::KEY
+                , 'value' => self::VALUE
             )
             , array(
-                'website_page_id' => -2
-                , 'key' => 'skittles'
-                , 'value' => 'sour'
+                'website_page_id' => self::WEBSITE_PAGE_ID
+                , 'key' => self::KEY_2
+                , 'value' => self::VALUE
             )
         );
-
-        // Delete anything before hand
-        $this->phactory->query( 'DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( -1, -2 )' );
 
         // Add them
         $this->account_pagemeta->add_bulk( $pagemeta );
 
-        // Get them
-        $fetched_pagemeta = ar::assign_key( $this->phactory->get_results( 'SELECT * FROM `website_pagemeta` WHERE `website_page_id` IN( -1, -2 )', PDO::FETCH_ASSOC ), 'website_page_id' );
-
-        $this->assertEquals( count( $fetched_pagemeta ), 2 );
-        $this->assertEquals( $fetched_pagemeta[-2]['key'], 'skittles' );
-
-        // Delete
-        $this->phactory->query( 'DELETE FROM `website_pagemeta` WHERE `website_page_id` IN ( -1, -2 )' );
+        $ph_website_pagemeta = $this->phactory->get( 'website_pagemeta', array( 'website_page_id' => self::WEBSITE_PAGE_ID ) );
+        $this->assertEquals( self::VALUE, $ph_website_pagemeta->value );
     }
 
     /**
      * Test Add Bulk
      */
     public function testAddBulkByPage() {
+        // Reset
+        $this->phactory->recall();
+
         // Declare variables
-        $website_page_id = -3;
         $pagemeta = array(
-            'beans '=> 'pinto'
-            , 'skittles' => 'bitter'
+            self::KEY => self::VALUE
+            , self::KEY_2 => self::VALUE
         );
 
         // Add them
-        $this->account_pagemeta->add_bulk_by_page( $website_page_id, $pagemeta );
+        $this->account_pagemeta->add_bulk_by_page( self::WEBSITE_PAGE_ID, $pagemeta );
 
-        // Get them
-        $fetched_pagemeta = ar::assign_key( $this->phactory->get_results( "SELECT * FROM `website_pagemeta` WHERE `website_page_id` = $website_page_id", PDO::FETCH_ASSOC ), 'key', true );
-
-        $this->assertEquals( $fetched_pagemeta['skittles']['value'], 'bitter' );
-
-        // Delete
-        $this->phactory->delete( 'website_pagemeta', compact( 'website_page_id' ), 'i' );
+        $ph_website_pagemeta = $this->phactory->get( 'website_pagemeta', array( 'website_page_id' => self::WEBSITE_PAGE_ID ) );
+        $this->assertEquals( self::VALUE, $ph_website_pagemeta->value );
     }
 
     /**
