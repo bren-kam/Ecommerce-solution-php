@@ -21,11 +21,13 @@ class AccountNote extends ActiveRecordBase {
      * Create
      */
     public function create() {
+        $this->date_created = dt::now();
+
         $this->insert( array(
             'website_id' => $this->website_id
             , 'user_id' => $this->user_id
             , 'message' => strip_tags($this->message)
-            , 'date_created' => dt::date('Y-m-d H:i:s')
+            , 'date_created' => $this->date_created
         ), 'iiss' );
 
         $this->website_note_id = $this->id = $this->get_insert_id();
