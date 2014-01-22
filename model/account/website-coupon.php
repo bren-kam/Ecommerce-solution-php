@@ -192,8 +192,6 @@ class WebsiteCoupon extends ActiveRecordBase {
     /**
      * Delete Free Shipping Methods
      *
-     * @fix remove active column
-     *
      * @return array
      */
     public function delete_free_shipping_methods() {

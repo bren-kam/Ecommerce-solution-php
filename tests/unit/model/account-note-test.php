@@ -34,7 +34,7 @@ class AccountNoteTest extends BaseDatabaseTest {
 
         $this->assertTrue( !is_null( $this->account_note->id ) );
 
-        // Get the message
+        // Get
         $ph_account_file = $this->phactory->get( 'website_notes', array( 'website_note_id' => $this->account_note->id ) );
 
         $this->assertEquals( self::MESSAGE, $ph_account_file->message );
@@ -44,10 +44,10 @@ class AccountNoteTest extends BaseDatabaseTest {
      * Test getting a note
      */
     public function testGet() {
-        // Insert a note
+        // Insert
         $ph_website_note = $this->phactory->create( 'website_notes' );
 
-        // Get it
+        // Get
         $this->account_note->get( $ph_website_note->website_note_id );
 
         $this->assertEquals( self::MESSAGE, $this->account_note->message );
@@ -59,7 +59,7 @@ class AccountNoteTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testDelete() {
-         // Insert a note
+        // Insert
         $ph_website_note = $this->phactory->create( 'website_notes' );
 
         // Delete it!
@@ -76,7 +76,7 @@ class AccountNoteTest extends BaseDatabaseTest {
      * Test get all notes for an account
      */
     public function testGetAll() {
-         // Insert a note
+         // Insert
         $this->phactory->create( 'website_notes' );
 
         // Get the notes

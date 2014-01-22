@@ -25,7 +25,7 @@ class AccountPagemeta extends ActiveRecordBase {
 		$arguments = func_get_args();
 
 		// Needs to have at least two arguments
-		if ( count( $arguments ) <= 2 )
+		if ( count( $arguments ) < 2 )
 			return false;
 
 		// Typecast
@@ -102,7 +102,7 @@ class AccountPagemeta extends ActiveRecordBase {
      *
      * @param array $account_page_ids
      * @param array $pagemeta_keys
-     * @return array
+     * @return AccountPagemeta[]
      */
     public function get_for_pages_by_keys( $account_page_ids, $pagemeta_keys ) {
         foreach ( $account_page_ids as &$apid ) {

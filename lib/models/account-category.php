@@ -334,7 +334,7 @@ class AccountCategory extends ActiveRecordBase {
      * @param array $category_ids
      * @return array
      */
-    protected function get_website_category_images( $account_id, $category_ids ) {
+    public function get_website_category_images( $account_id, $category_ids ) {
         // Protection
         foreach ( $category_ids as &$cid ) {
             $cid = (int) $cid;

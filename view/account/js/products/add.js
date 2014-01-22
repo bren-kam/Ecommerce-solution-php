@@ -170,7 +170,7 @@ function addProductToList( productID, productName ) {
 	
 	// Check if they ran out of products
 	if ( currentProductCount >= allowedProducts ) {
-		alert( $('#pAdditionalProducts').text() );
+		alert( 'You have run out of your allowed products. Please contact your online specialist.' );
 		return;
 	}
 	

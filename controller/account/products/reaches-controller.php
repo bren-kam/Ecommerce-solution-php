@@ -80,13 +80,13 @@ class ReachesController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set variables
-        $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
+        $dt->order_by( 'name', 'wu.`email`', 'assigned_to', 'waiting', 'wr.`priority`', 'wr.`date_created`' );
         $dt->add_where( " AND wr.`website_id` = " . $this->user->account->id );
 
         if ( !$this->user->has_permission( User::ROLE_STORE_OWNER ) )
-            $dt->add_where( ' AND wr.`status` = 0 AND wr.`waiting` = 1' );
+            $dt->add_where( ' AND wr.`status` = 0' );
 
-        $dt->search( array( 'name' => false, 'wu.`email`' => false, 'wr.`assigned_to`' => false ) );
+        $dt->search( array( 'wu.`billing_first_name`' => false, 'wu.`billing_last_name`' => false, 'wu.`email`' => false, 'u.`contact_name`' => false ) );
 
         // Get Reaches
         $website_reach = new WebsiteReach();
@@ -100,11 +100,6 @@ class ReachesController extends BaseController {
             2 => _('Urgent')
         );
 
-        $statuses = array(
-            0 => _('Open'),
-            1 => _('Closed')
-        );
-
         $data = array();
 
         // Create output
@@ -112,11 +107,13 @@ class ReachesController extends BaseController {
         foreach ( $reaches as $reach ) {
             $date = new DateTime( $reach->date_created );
 
+            $name = ( empty( $reach->name ) ) ? 'Anonymous' : $reach->name;
+
             $data[] = array(
-                '<a href="' . url::add_query_arg( 'wrid', $reach->id, '/products/reaches/reach/' ) . '">' . $reach->name . '</a>'
+                '<a href="' . url::add_query_arg( 'wrid', $reach->id, '/products/reaches/reach/' ) . '">' . $name . '</a>'
                 , $reach->email
                 , $reach->assigned_to
-                , $statuses[ (int) $reach->status ]
+                , ( $reach->waiting ) ? 'Requires Response' : 'Waiting'
                 , $priorities[ (int) $reach->priority ]
                 , $date->format( 'F jS, Y g:ia' )
             );

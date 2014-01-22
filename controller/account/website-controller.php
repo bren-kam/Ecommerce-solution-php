@@ -681,7 +681,7 @@ class WebsiteController extends BaseController {
         return $this->get_template_response( 'settings' )
             ->kb( 44 )
             ->add_title( _('Settings') )
-            ->select( 'settings' )
+            ->select( 'settings', 'page-settings' )
             ->set( array( 'form' => $form->generate_form() ) );
     }
 

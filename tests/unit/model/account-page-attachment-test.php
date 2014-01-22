@@ -6,6 +6,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
     const KEY = 'Hungry';
     const VALUE = 'Hippos';
     const WEBSITE_PAGE_ID = 3;
+    const SEQUENCE = 5;
 
     /**
      * @var AccountPageAttachment
@@ -20,7 +21,7 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
 
         // Define
         $this->phactory->define( 'website_pages', array( 'website_id' => self::WEBSITE_ID ) );
-        $this->phactory->define( 'website_attachments', array( 'website_page_id' => self::WEBSITE_PAGE_ID, 'key' => self::KEY, 'value' => self::VALUE ) );
+        $this->phactory->define( 'website_attachments', array( 'website_page_id' => self::WEBSITE_PAGE_ID, 'key' => self::KEY, 'value' => self::VALUE, 'sequence' => self::SEQUENCE ) );
         $this->phactory->recall();
     }
 
@@ -83,98 +84,81 @@ class AccountPageAttachmentTest extends BaseDatabaseTest {
 
     /**
      * Test Save
-     *
-     * @depends testCreate
      */
     public function testSave() {
-        // Declare Variables
-        $this->account_page_attachment->website_page_id = $website_page_id = -3;
-        $this->account_page_attachment->key = 'banner';
-
         // Create
-        $this->account_page_attachment->create();
+        $ph_website_attachment = $this->phactory->create( 'website_attachments' );
 
         // Save
+        $this->account_page_attachment->id = $ph_website_attachment->website_attachment_id;
         $this->account_page_attachment->value = 'advertising';
         $this->account_page_attachment->save();
 
         // Make sure it's in the database
-        $value = $this->phactory->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+        $ph_website_attachment_after = $this->phactory->get( 'website_attachments', array( 'website_attachment_id' => $ph_website_attachment->website_attachment_id ) );
 
-        $this->assertEquals( $this->account_page_attachment->value, $value );
-
-        // Delete the attribute
-        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
+        $this->assertEquals( $this->account_page_attachment->value, $ph_website_attachment_after->value );
     }
 
    /**
-     * Test Update Sequence
-     */
+    * Test Update Sequence
+    */
     public function testUpdateSequence() {
-        // Declare Variables
-        $website_id = -5;
-        $sequence = 5;
-
-        // Insert id
-        $website_page_id = $this->phactory->insert( 'website_pages', compact( 'website_id' ), 'i' );
-        $website_attachment_id = $this->phactory->insert( 'website_attachments', compact( 'website_page_id' ), 'is' );
-
-        $sequence_array = array( $sequence => $website_attachment_id );
-
-        // Remove
-        $this->account_page_attachment->update_sequence( $website_id, $sequence_array );
-
-        // Make sure it's in the database
-        $fetched_sequence = $this->phactory->get_var( 'SELECT `sequence` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $website_attachment_id );
-
-        $this->assertEquals( $sequence, $fetched_sequence );
-
-        // Cleanup
-        $this->phactory->delete( 'website_pages', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'website_attachments', compact( 'website_page_id' ), 'i' );
-    }
-
-   /**
-     * Test Remove
-    *
-    * @depends testCreate
-     */
-    public function testRemove() {
-        // Declare Variables
-        $this->account_page_attachment->value = 'Hippos';
-        $this->account_page_attachment->website_page_id = $website_page_id = -3;
+        // Declare
+        $sequence = 2;
 
         // Create
-        $this->account_page_attachment->create();
+        $ph_website_page = $this->phactory->create( 'website_pages' );
+        $ph_website_attachment = $this->phactory->create( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id ) );
+
+        $sequence_array = array( $sequence => $ph_website_attachment->website_attachment_id );
 
         // Remove
+        $this->account_page_attachment->update_sequence( self::WEBSITE_ID, $sequence_array );
+
+        // Make sure it's in the database
+        $ph_website_attachment_after = $this->phactory->get( 'website_attachments', array( 'website_attachment_id' => $ph_website_attachment->website_attachment_id ) );
+
+        $this->assertEquals( $sequence, $ph_website_attachment_after->sequence );
+    }
+
+   /**
+    * Test Remove
+    *
+    * @depends testCreate
+    */
+    public function testRemove() {
+        // Create
+        $ph_website_attachment = $this->phactory->create( 'website_attachments' );
+
+        // Remove
+        $this->account_page_attachment->id = $ph_website_attachment->website_attachment_id;
         $this->account_page_attachment->remove();
 
         // Make sure it's in the database
-        $value = $this->phactory->get_var( 'SELECT `value` FROM `website_attachments` WHERE `website_attachment_id` = ' . (int) $this->account_page_attachment->id );
+        $ph_website_attachment_after = $this->phactory->get( 'website_attachments', array( 'website_attachment_id' => $ph_website_attachment->website_attachment_id ) );
 
-        $this->assertFalse( $value );
+        $this->assertNull( $ph_website_attachment_after );
     }
 
     /**
      * Test delete unique attachments -- attachments that you can't have more than once
-     *
-     * @depends testGetByAccountPageIds
      */
     public function testDeleteUniqueAttachments() {
-        // Declare variables
-        $account_page_ids = array( -1 );
-
-        // Insert a few
-        $this->phactory->query( "INSERT INTO `website_attachments` ( `website_page_id`, `key`, `value` ) VALUES (-1, 'video', 'google.mp4'), (-1, 'search', ''), (-1, 'email', '')" );
+        // Create
+        $ph_website_page = $this->phactory->create( 'website_pages' );
+        $this->phactory->create( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id ) ); // Not Unique
+        $this->phactory->create( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id, 'key' => 'email' ) ); // Unique
+        $this->phactory->create( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id, 'key' => 'video' ) ); // Unique
+        $this->phactory->create( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id, 'key' => 'search' ) ); // Unique
 
         // Yarr! Delete them!
-        $this->account_page_attachment->delete_unique_attachments( $account_page_ids );
+        $this->account_page_attachment->delete_unique_attachments( array( $ph_website_page->website_page_id ) );
 
         // Shouldn't have anything left
-        $attachments = $this->account_page_attachment->get_by_account_page_ids( $account_page_ids );
+        $ph_website_attachments = $this->phactory->getAll( 'website_attachments', array( 'website_page_id' => $ph_website_page->website_page_id ) );
 
-        $this->assertEquals( 0, count( $attachments ) );
+        $this->assertCount( 1, $ph_website_attachments );
     }
 
     /**

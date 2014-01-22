@@ -33,6 +33,7 @@
 	<?php } ?>
 
 	<a href="/products/brands/" title="<?php echo _('Top Brands'); ?>" class="top<?php $template->select('brands'); ?>"><?php echo _('Top Brands'); ?></a>
+	<a href="/products/top-categories/" title="<?php echo _('Top Categories'); ?>" class="top<?php $template->select('top-categories'); ?>"><?php echo _('Top Categories'); ?></a>
 
 	<a href="/products/related-products/" title="<?php echo _('Related Products'); ?>" class="top<?php $template->select('related-products'); ?>"><?php echo _('Related Products'); ?></a>
 	<?php if ( $template->v('related-products') ) { ?>
