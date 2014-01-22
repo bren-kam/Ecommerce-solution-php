@@ -3,6 +3,16 @@
 require_once 'base-database-test.php';
 
 class AccountProductGroupTest extends BaseDatabaseTest {
+    const WEBSITE_PRODUCT_GROUP_ID = 5;
+    const NAME = 'Long board';
+
+    // Products
+    const PRODUCT_ID = 15;
+    const SKU = '-B105';
+
+    // Website products
+    const ACTIVE = 1;
+
     /**
      * @var AccountProductGroup
      */
@@ -13,120 +23,105 @@ class AccountProductGroupTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->account_product_group = new AccountProductGroup();
+
+        // Define
+        $this->phactory->define( 'website_product_groups', array( 'website_id' => self::WEBSITE_ID, 'name' => self::NAME ) );
+        $this->phactory->define( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID, 'product_id' => self::PRODUCT_ID ) );
+        $this->phactory->define( 'products', array( 'sku' => self::SKU ) );
+        $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'active' => self::ACTIVE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get By Name
      */
     public function testGetByName() {
-        // Declare variables
-        $website_id = -3;
-        $name = 'Long board';
-
         // Create
-        $website_product_group_id = $this->phactory->insert( 'website_product_groups', compact( 'website_id', 'name' ), 'is' );
+        $ph_website_product_group = $this->phactory->create( 'website_product_groups' );
 
         // Get
-        $this->account_product_group->get_by_name( $website_id, $name );
+        $this->account_product_group->get_by_name( self::WEBSITE_ID, self::NAME );
 
-        $this->assertEquals( $website_product_group_id, $this->account_product_group->id );
-
-        // Delete the attribute
-        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->assertEquals( $ph_website_product_group->website_product_group_id, $this->account_product_group->id );
     }
 
     /**
      * Test Create
      */
     public function testCreate() {
-        // Declare variables
-        $website_id = -3;
-        $name = 'ABC 0123';
-
         // Create
-        $this->account_product_group->website_id = -3;
-        $this->account_product_group->name = $name;
+        $this->account_product_group->website_id = self::WEBSITE_ID;
+        $this->account_product_group->name = self::NAME;
         $this->account_product_group->create();
 
+        $this->assertTrue( !is_null( $this->account_product_group->id ) );
+
         // Make sure it's in the database
-        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        $ph_website_product_group = $this->phactory->get( 'website_product_groups', array( 'website_product_group_id' => $this->account_product_group->id ) );
 
-        $this->assertEquals( $name, $fetched_name );
-
-        // Delete the attribute
-        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
+        $this->assertEquals( self::NAME, $ph_website_product_group->name );
     }
 
     /**
      * Test Add Relations By Series
      */
     public function testAddRelationsBySeries() {
+        // Clear
+        $this->phactory->recall();
+
         // Declare variables
-        $website_product_group_id = $this->account_product_group->id = -3;
-        $website_id = $this->account_product_group->website_id = -5;
-        $sku = $series = '-B105';
-        $active = 1;
+        $series = self::SKU;
 
         // Insert products
-        $product_id = $this->phactory->insert( 'products', compact( 'sku' ), 's' );
-        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ) , 'iii' );
+        $ph_product = $this->phactory->create( 'products' );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
 
         // Add Relations
+        $this->account_product_group->id = self::WEBSITE_PRODUCT_GROUP_ID;
+        $this->account_product_group->website_id = self::WEBSITE_ID;
         $this->account_product_group->add_relations_by_series( $series );
 
         // Get
-        $fetched_product_id = $this->phactory->get_var( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
+        $ph_website_product_group_relation = $this->phactory->get( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID ) );
 
-        $this->assertEquals( $product_id, $fetched_product_id );
-
-        // Clean Up
-        $this->phactory->delete( 'website_product_group_relations', compact( 'product_id' ), 'i' );
-        $this->phactory->delete( 'products', compact( 'product_id' ), 'i' );
-        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
+        $this->assertEquals( $ph_product->product_id, $ph_website_product_group_relation->product_id );
     }
 
     /**
      * Test Add Relations
      */
     public function testAddRelations() {
+        // Clear
+        $this->phactory->recall();
+
         // Declare variables
-        $website_product_group_id = $this->account_product_group->id = -3;
-        $product_ids = array( -1, -2, -3 );
+        $product_ids = array( self::PRODUCT_ID );
 
         // Add Relations
+        $this->account_product_group->id = self::WEBSITE_PRODUCT_GROUP_ID;
         $this->account_product_group->add_relations( $product_ids );
 
         // Get
-        $fetched_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
+        $ph_website_product_group_relation = $this->phactory->get( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID ) );
 
-        $this->assertEquals( $product_ids, $fetched_product_ids );
-
-        // Clean Up
-        $this->phactory->delete( 'website_product_group_relations', compact( 'website_product_group_id' ), 'i' );
+        $this->assertEquals( self::PRODUCT_ID, $ph_website_product_group_relation->product_id );
     }
 
     /**
      * Test Remove
-     *
-     * @depends testCreate
      */
     public function testRemove() {
-        // Declare variables
-        $website_id = -3;
-        $name = 'ABC 0123';
-
-        // Create
-        $this->account_product_group->website_id = -3;
-        $this->account_product_group->name = $name;
-        $this->account_product_group->create();
+        // Insert
+        $ph_website_product_group = $this->phactory->create( 'website_product_groups' );
 
         // Remove
+        $this->account_product_group->id = $ph_website_product_group->website_product_group_id;
         $this->account_product_group->remove();
 
-        // Make sure it's in the database
-        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
+        // Shouldn't exist
+        $ph_website_product_group = $this->phactory->get( 'website_product_groups', array( 'website_product_group_id' => $ph_website_product_group->website_product_group_id ) );
 
-        $this->assertFalse( $fetched_name );
+        $this->assertNull( $ph_website_product_group );
     }
 
     /**
