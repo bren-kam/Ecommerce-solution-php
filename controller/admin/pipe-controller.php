@@ -123,6 +123,92 @@ class PipeController extends BaseController {
     }
 
     /**
+     * Pipe Note
+     *
+     * @return HtmlResponse
+     */
+    protected function note() {
+        library( 'email/rfc822-addresses' );
+        library( 'email/mime-parser-class' );
+
+        $email_content = file_get_contents( 'php://stdin' );
+
+        // Create mime
+        $mime = new mime_parser_class();
+        $mime->ignore_syntax_errors = 1;
+
+        $mime->Decode( array( 'Data' => $email_content ), $emails );
+        $email = $emails[0];
+
+        // Get data
+        $subject = $email['Headers']['subject:'];
+        $from = $email['ExtractedAddresses']['from:'][0];
+        $to = preg_replace( '/.+for ([^;]+).+/', '$1', $email['Headers']['received:'] );
+        list( $username, $domain ) = explode ( '@', $to );
+        list ( $username, $tag_domain ) = explode( '+', $username );
+
+        $body = ( empty( $email['Body'] ) ) ? $email['Parts'][0]['Body'] : $email['Body'];
+        $length = strpos( $body, '>> ' );
+        $body = ( $length ) ? substr( $body, 0, $length ) : substr( $body, 0 );
+        $body = nl2br( $body );
+
+        // Get the first website
+        $account = new Account();
+        $account->get_by_domain( $tag_domain );
+
+        if ( !$account->id ) {
+            // Try variation one
+            $tag_domain = str_replace( 'www.', '', $tag_domain );
+
+            $account->get_by_domain( $tag_domain );
+
+            if ( !$account->id ) {
+                // Try variation two
+                $tag_domain = preg_replace( '/(.+?)(?:\.[a-zA-Z]{2,4}){1,2}$/', '$1', $tag_domain );
+
+                $account->get_by_domain( $tag_domain );
+
+                if ( !$account->id )
+                    exit;
+            }
+        }
+
+        // Try to get the user that sent the email
+        $user = new User( 'admin' == SUBDOMAIN );
+        $user->get_by_email( $from['address'] );
+
+        // Determine the user id
+        if ( !$user->id ) {
+            $contact_name = $from['name'];
+
+            if ( empty( $contact_name ) )
+                $contact_name = $from['address'];
+
+            $user->contact_name = $contact_name;
+            $user->email = $from['address'];
+            $user->role = User::ROLE_AUTHORIZED_USER;
+
+            // Create
+            $user->create();
+
+            // Set password
+            $user->set_password( md5( microtime() ) );
+        }
+
+        // Create note
+        $account_note = new AccountNote();
+        $account_note->website_id = $account->id;
+        $account_note->user_id = $user->id;
+        $account_note->message = "<strong>Email:</strong> $subject<br /><br />$body";
+        $account_note->create();
+
+        // We don't want any response -- including headers, to be sent out
+        exit;
+
+        return new HtmlResponse( '' );
+    }
+
+    /**
      * Override login function
      * @return bool
      */
