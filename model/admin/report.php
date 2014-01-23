@@ -58,9 +58,9 @@ class Report extends ActiveRecordBase {
 	public function autocomplete_marketing_specialists( $query ) {
 		// Get results
 		return $this->prepare(
-            "SELECT `user_id` AS object_id, `contact_name` AS marketing_specialist FROM `users` WHERE `role` = 6 AND `contact_name` LIKE :query AND `status` = 1 ORDER BY `contact_name` LIMIT 10"
-            , 's'
-            , array( ':query' => $query . '%')
+            "SELECT `user_id` AS object_id, `contact_name` AS marketing_specialist FROM `users` WHERE `role` = :role AND `contact_name` LIKE :query AND `status` = :status ORDER BY `contact_name` LIMIT 10"
+            , 'isi'
+            , array( ':role' => User::ROLE_MARKETING_SPECIALIST, ':query' => $query . '%', ':status' => User::STATUS_ACTIVE )
         )->get_results( PDO::FETCH_ASSOC );
 	}
 
