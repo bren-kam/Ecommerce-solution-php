@@ -16,6 +16,12 @@ class AccountTest extends BaseDatabaseTest {
     // Website Industry
     const INDUSTRY_ID = 45;
 
+    // Users
+    const COMPANY_ID = 9;
+
+    // Website Top Brands
+    const BRAND_ID = 7;
+
     /**
      * @var Account
      */
@@ -28,12 +34,13 @@ class AccountTest extends BaseDatabaseTest {
         $this->account = new Account();
 
         // Define
-        $this->phactory->define( 'websites', array( 'user_id' => self::USER_ID, 'title' => self::TITLE, 'status' => Account::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'user_id' => self::USER_ID, 'title' => self::TITLE, 'status' => Account::STATUS_ACTIVE, 'live' => Account::LIVE ) );
         $this->phactory->define( 'auth_user_websites', array( 'website_id' => self::WEBSITE_ID, 'user_id' => self::USER_ID ) );
         $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
         $this->phactory->define( 'website_settings', array( 'website_id' => self::WEBSITE_ID, 'key' => self::WEBSITE_SETTINGS_KEY, 'value' => self::WEBSITE_SETTINGS_VALUE ) );
         $this->phactory->define( 'website_industries', array( 'website_id' => self::WEBSITE_ID, 'industry_id' => self::INDUSTRY_ID ) );
         $this->phactory->define( 'users', array( 'role' => User::ROLE_ADMIN, 'status' => User::STATUS_ACTIVE ) );
+        $this->phactory->define( 'website_top_brands', array( 'website_id' => self::WEBSITE_ID, 'brand_id' => self::BRAND_ID ) );
         $this->phactory->recall();
     }
 
@@ -304,28 +311,6 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
-     * Test copying industries
-     *
-     * @depends testGetIndustries
-     */
-    public function testCopyIndustriesByAccount() {
-        // Declare
-        $new_website_id = 55;
-
-        // Create
-        $this->phactory->create( 'website_industries' );
-
-        // Copy industries
-        $this->account->copy_industries_by_account( self::WEBSITE_ID, $new_website_id );
-
-        // Get industry
-        $ph_website_industry = $this->phactory->get( 'website_industries', array( 'website_id' => $new_website_id ) );
-
-        // Get industries and see if they match
-        $this->assertEquals( self::INDUSTRY_ID, $ph_website_industry->industry_id );
-    }
-
-    /**
      * Delete Industries
      */
     public function testDeleteIndustries() {
@@ -360,89 +345,108 @@ class AccountTest extends BaseDatabaseTest {
     }
 
     /**
+     * Test copying industries
+     *
+     * @depends testGetIndustries
+     */
+    public function testCopyIndustriesByAccount() {
+        // Declare
+        $new_website_id = 55;
+
+        // Create
+        $this->phactory->create( 'website_industries' );
+
+        // Copy industries
+        $this->account->copy_industries_by_account( self::WEBSITE_ID, $new_website_id );
+
+        // Get industry
+        $ph_website_industry = $this->phactory->get( 'website_industries', array( 'website_id' => $new_website_id ) );
+
+        // Get industries and see if they match
+        $this->assertEquals( self::INDUSTRY_ID, $ph_website_industry->industry_id );
+    }
+
+    /**
+     * Test Copy Top Brands by Account
+     */
+    public function testCopyTopBrandsByAccount() {
+        // Declare
+        $new_website_id = 55;
+
+        // Create
+        $this->phactory->create('website_top_brands');
+
+        // Do the copying
+        $this->account->copy_top_brands_by_account( self::WEBSITE_ID, $new_website_id );
+
+        // Get industry
+        $ph_website_top_brand = $this->phactory->get( 'website_top_brands', array( 'website_id' => $new_website_id ) );
+
+        // Get industries and see if they match
+        $this->assertEquals( self::BRAND_ID, $ph_website_top_brand->brand_id );
+    }
+
+    /**
+     * Test Copy settings by Account
+     */
+    public function testCopySettingsByAccount() {
+        // Reset
+        $this->phactory->recall();
+
+        // Declare
+        $new_website_id = 55;
+        $settings = array( self::WEBSITE_SETTINGS_KEY );
+
+        // Create
+        $this->phactory->create('website_settings');
+
+        // Do the copying
+        $this->account->copy_settings_by_account( self::WEBSITE_ID, $new_website_id, $settings );
+
+        // Get industry
+        $ph_website_setting = $this->phactory->get( 'website_settings', array( 'website_id' => $new_website_id ) );
+
+        // Get industries and see if they match
+        $this->assertEquals( self::WEBSITE_SETTINGS_VALUE, $ph_website_setting->value );
+    }
+
+    /**
      * Test Autocomplete as an Online Specialist
      */
-    public function testAutocompleteA() {
+    public function testAutocomplete() {
         // Declare
         $query = 'Phantom';
         $field = 'title';
         $stub_user = $this->getMock('User');
+        $stub_user->expects($this->exactly(3))
+                    ->method('has_permission')
+                    ->will($this->returnValue( TRUE ));
+        $stub_user->role = User::ROLE_ADMIN;
+        $stub_user->company_id = self::COMPANY_ID;
+
         // Create
         $ph_user = $this->phactory->create('users');
         $this->phactory->create('websites', array( 'user_id' => $ph_user->user_id ) );
 
-        $accounts = $this->account->autocomplete( $query, $field, $user );
+        // First autocomplete as Admin
+        $accounts = $this->account->autocomplete( $query, $field, $stub_user );
+        $expected_accounts = array( array( 'title' => self::TITLE ) );
 
-        $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
+        $this->assertEquals( $expected_accounts, $accounts );
+
+        // Second check for the status
+        $accounts = $this->account->autocomplete( $query, $field, $stub_user, Account::STATUS_ACTIVE );
+        $expected_accounts = array( array( 'title' => self::TITLE ) );
+        $this->assertEquals( $expected_accounts, $accounts );
+
+        // Third change role
+        $stub_user->role = User::ROLE_ONLINE_SPECIALIST;
+
+        $accounts = $this->account->autocomplete( $query, $field, $stub_user );
+        $expected_accounts = array( array( 'title' => self::TITLE ) );
+
+        $this->assertEquals( $expected_accounts, $accounts );
     }
-//
-//    /**
-//     * Test Autocomplete as a Reseller
-//     */
-//    public function testAutocompleteB() {
-//        $user = new User();
-//        $user->role = 7;
-//        $user->company_id = 2;
-//
-//        $accounts = $this->account->autocomplete( 'Connel', 'title', $user );
-//
-//        $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
-//    }
-//
-//    /**
-//     * Test Autocomplete with a change in status
-//     */
-//    public function testAutocompleteC() {
-//        $user = new User();
-//        $user->role = 8;
-//
-//        $accounts = $this->account->autocomplete( 'Connel', 'title', $user, 1 );
-//
-//        $this->assertTrue( stristr( $accounts[0]['title'], 'Connel' ) !== false );
-//    }
-//
-//    /**
-//     * Test Copy Top Brands by Account
-//     */
-//    public function testCopyTopBrandsByAccount() {
-//        // Declare variables
-//        $template_account_id = 96;
-//        $account_id = -5;
-//        $brand_id = 151;
-//
-//        // Do the copying
-//        $this->account->copy_top_brands_by_account( $template_account_id, $account_id );
-//
-//        // Get brand ids
-//        $brand_ids = $this->phactory->get_col( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $account_id" );
-//
-//        $this->assertGreaterThan( 1, count( $brand_ids ) );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_top_brands', array( 'website_id' => $account_id ) , 'i' );
-//    }
-//
-//    /**
-//     * Test Copy settings by Account
-//     */
-//    public function testCopySettingsByAccount() {
-//        // Declare variables
-//        $template_account_id = 96;
-//        $account_id = -5;
-//        $settings = array( 'banner-background-color', 'banner-effect', 'banner-height', 'banner-loading-color', 'banner-speed', 'banner-width' );
-//
-//        // Do the copying
-//        $this->account->copy_settings_by_account( $template_account_id, $account_id, $settings );
-//
-//        // Get brand ids
-//        $copied_settings = ar::assign_key( $this->phactory->get_results( "SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = $account_id ORDER BY `key`", PDO::FETCH_ASSOC ), 'key', true );
-//
-//        $this->assertEquals( array_keys( $copied_settings ), $settings );
-//        $this->assertEquals( '4C86B0', $copied_settings['banner-loading-color'] );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_settings', array( 'website_id' => $account_id ) , 'i' );
-//    }
 
     /**
      * Will be executed after every test

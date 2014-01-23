@@ -2,6 +2,8 @@
 class Account extends ActiveRecordBase {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const LIVE = 1;
+    const UNALIVE = 0;
 
     // Template unlocked
     const TEMPLATE_UNLOCKED = 1352;
