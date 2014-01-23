@@ -1,5 +1,8 @@
 <?php
 class Account extends ActiveRecordBase {
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     // Template unlocked
     const TEMPLATE_UNLOCKED = 1352;
 
@@ -49,9 +52,9 @@ class Account extends ActiveRecordBase {
      */
     public function get_by_user( $user_id ) {
         return $this->prepare(
-            'SELECT `website_id`, `os_user_id`, `domain`, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `ga_profile_id`, `live` FROM `websites` WHERE `user_id` = :user_id AND `status` = 1'
-            , 'i'
-            , array( ':user_id' => $user_id )
+            'SELECT `website_id`, `os_user_id`, `domain`, `phone`, `logo`, `title`, `pages`, `products`, `product_catalog`, `link_brands`, `blog`, `email_marketing`, `mobile_marketing`, `shopping_cart`, `room_planner`, `craigslist`, `social_media`, `wordpress_username`, `wordpress_password`, `ga_profile_id`, `live` FROM `websites` WHERE `user_id` = :user_id AND `status` = :status'
+            , 'ii'
+            , array( ':user_id' => $user_id, ':status' => self::STATUS_ACTIVE )
         )->get_results( PDO::FETCH_CLASS, 'Account' );
     }
 
@@ -292,7 +295,7 @@ class Account extends ActiveRecordBase {
      * @return array
      */
     protected function get_settings_array( array $keys ) {
-        $count = count ( $keys );
+        $count = count( $keys );
 
         // Getting multiple values, return them
         return $this->prepare( 'SELECT `key`, `value` FROM `website_settings` WHERE `website_id` = ? AND `key` IN( ?' . str_repeat( ', ?', $count - 1 ) . ')'
