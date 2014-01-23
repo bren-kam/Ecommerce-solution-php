@@ -4,6 +4,8 @@ class AccountProduct extends ActiveRecordBase {
     const UNBLOCKED = 0;
     const ACTIVE = 1;
     const INACTIVE = 0;
+    const ON_SALE = 1;
+    const OFF_SALE = 0;
 
     // Columns
     public $website_id, $product_id, $alternate_price, $price, $sale_price, $wholesale_price, $inventory
