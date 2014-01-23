@@ -8,6 +8,7 @@ class AccountProductTest extends BaseDatabaseTest {
     const PRICE = 5;
     const STATUS = 1;
     const SEQUENCE = 9;
+    const ALTERNATE_PRICE = 100;
 
     // Categories
     const CATEGORY_NAME = 'Swing Sets';
@@ -42,12 +43,13 @@ class AccountProductTest extends BaseDatabaseTest {
         $this->account_product = new AccountProduct();
 
         // Define
-        $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID, 'price' => self::PRICE, 'sequence' => self::SEQUENCE, 'blocked' => AccountProduct::UNBLOCKED, 'status' => self::STATUS, 'active' => AccountProduct::ACTIVE ) );
+        $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID, 'price' => self::PRICE, 'alternate_price' => self::ALTERNATE_PRICE, 'sequence' => self::SEQUENCE, 'blocked' => AccountProduct::UNBLOCKED, 'status' => self::STATUS, 'active' => AccountProduct::ACTIVE ) );
         $this->phactory->define( 'products', array( 'industry_id' => self::INDUSTRY_ID, 'brand_id' => self::BRAND_ID, 'category_id' => self::CATEGORY_ID, 'sku' => self::SKU, 'user_id_created' => self::USER_ID_CREATED, 'publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC, 'publish_date' => self::PUBLISH_DATE, 'date_created' => self::DATE_CREATED ) );
         $this->phactory->define( 'categories', array( 'name' => self::CATEGORY_NAME ) );
         $this->phactory->define( 'brands', array( 'name' => self::BRAND_NAME ) );
         $this->phactory->define( 'industries', array( 'name' => self::INDUSTRY_NAME ) );
         $this->phactory->define( 'product_images', array( 'image' => self::IMAGE ) );
+        $this->phactory->define( 'website_industries', array( 'website_id' => self::WEBSITE_ID, 'industry_id' => self::INDUSTRY_ID ) );
         $this->phactory->recall();
     }
 
@@ -539,322 +541,293 @@ class AccountProductTest extends BaseDatabaseTest {
         $this->assertCount( $expected_count, $website_products );
     }
 
-//    /**
-//     * Test Remove Discontinued
-//     */
-//    public function testRemoveDiscontinued() {
-//        // Declare Variables
-//        $website_id = -9;
-//        $industry_id = -3;
-//        $active = 1;
-//        $inactive = 0;
-//        $status = 'discontinued';
-//
-//        // Insert
-//        $product_id = $this->phactory->insert( 'products', compact( 'industry_id', 'status' ), 'is' );
-//        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ) , 'iii' );
-//
-//        // Unblocked
-//        $this->account_product->remove_discontinued( $website_id );
-//
-//        // Get product
-//        $fetched_active = $this->phactory->get_var( "SELECT `active` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-//
-//        $this->assertEquals( $inactive, $fetched_active );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'products', compact( 'industry_id' ), 'i' );
-//        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test AutocompleteAll
-//     */
-//    public function testAutocompleteAll() {
-//        // Declare Variables
-//        $website_id = -9;
-//        $industry_id = -3;
-//        $sku = 'Long Winded';
-//        $query = 'Long';
-//
-//        // Insert
-//        $this->phactory->insert( 'products', compact( 'industry_id', 'sku' ), 'is' );
-//        $this->phactory->insert( 'website_industries', compact( 'website_id', 'industry_id' ) , 'ii' );
-//
-//        // Unblocked
-//        $values = $this->account_product->autocomplete_all( $query, 'sku', $website_id );
-//
-//        // Get product
-//        $this->assertTrue( FALSE !== stristr( $values[0]['name'], $query ) );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'products', compact( 'industry_id' ), 'i' );
-//        $this->phactory->delete( 'website_industries', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test Autocomplete By Account
-//     */
-//    public function testAutocompleteByAccount() {
-//        // Declare Variables
-//        $website_id = -9;
-//        $industry_id = -3;
-//        $sku = 'Short Winded';
-//        $query = 'Short';
-//        $publish_visibility = 'public';
-//        $active = 1;
-//
-//        // Insert
-//        $product_id = $this->phactory->insert( 'products', compact( 'industry_id', 'sku', 'publish_visibility' ), 'iss' );
-//        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ), 'iii' );
-//        $this->phactory->insert( 'website_industries', compact( 'website_id', 'industry_id' ) , 'ii' );
-//
-//        // Unblocked
-//        $values = $this->account_product->autocomplete_by_account( $query, 'sku', $website_id );
-//
-//        // Get product
-//        $this->assertTrue( FALSE !== stristr( $values[0]['name'], $query ) );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'products', compact( 'industry_id' ), 'i' );
-//        $this->phactory->delete( 'website_industries', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * List Products
-//     */
-//    public function testListProducts() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
-//
-//        $products = $this->account_product->list_products( $dt->get_variables() );
-//
-//        // Make sure we have an array
-//        $this->assertTrue( current( $products ) instanceof Product );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $products );
-//    }
-//
-//    /**
-//     * Count Products
-//     */
-//    public function testCountProducts() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
-//
-//        $count = $this->account_product->count_products( $dt->get_count_variables() );
-//
-//        // Make sure they exist
-//        $this->assertGreaterThan( 0, $count );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $count );
-//    }
-//
-//    /**
-//     * List Product Prices
-//     */
-//    public function testListProductPrices() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
-//
-//        $products = $this->account_product->list_product_prices( $dt->get_variables() );
-//
-//        // Make sure we have an array
-//        $this->assertTrue( current( $products ) instanceof Product );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $products );
-//    }
-//
-//    /**
-//     * Count Product Prices
-//     */
-//    public function testCountProductPrices() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
-//
-//        $count = $this->account_product->count_product_prices( $dt->get_count_variables() );
-//
-//        // Make sure they exist
-//        $this->assertGreaterThan( 0, $count );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $count );
-//    }
-//
-//    /**
-//     * Test Set Product Prices
-//     */
-//    public function testSetProductPrices() {
-//        // Declare Variables
-//        $website_id = -9;
-//        $product_id = -3;
-//        $active = 1;
-//        $price = 2;
-//        $prices = array (
-//            $product_id => array(
-//                'alternate_price' => 1
-//                , 'price' => $price
-//                , 'sale_price' => 3
-//                , 'alternate_price_name' => 'Oboe'
-//                , 'price_note' => 'Flute'
-//            )
-//        );
-//
-//        // Insert
-//        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id', 'active' ), 'iii' );
-//
-//        // Unblocked
-//        $this->account_product->set_product_prices( $website_id, $prices );
-//
-//        // Get price
-//        $fetched_price = $this->phactory->get_var( "SELECT `price` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-//
-//        $this->assertEquals( $price, $fetched_price );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test Multiply Product Prices By SKU
-//     */
-//    public function testMultiplyProductPricesBySku() {
-//        // Declare Variables
-//        $website_id = -9;
-//        $industry_id = -3;
-//        $sku = 'GF321';
-//        $active = 1;
-//        $price = 2;
-//        $alternate_price = 100;
-//        $price_multiplier = 3;
-//        $sale_price_multiplier = 2;
-//        $alternate_price_multiplier = 0;
-//        $price_note = 'All inclusive';
-//        $prices_array = array(
-//            'price' => $price * $price_multiplier
-//            , 'sale_price' => $price * $sale_price_multiplier
-//            , 'alternate_price' => $alternate_price * $alternate_price_multiplier
-//            , 'price_note' => $price_note
-//        );
-//
-//        $prices = array (
-//            compact( 'sku', 'price', 'price_note' )
-//        );
-//
-//        // Insert
-//        $product_id = $this->phactory->insert( 'products', compact( 'industry_id', 'sku' ), 'is' );
-//        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id', 'alternate_price', 'active' ), 'iidi' );
-//
-//        // Unblocked
-//        $this->account_product->multiply_product_prices_by_sku( $website_id, $prices, $price_multiplier, $sale_price_multiplier, $alternate_price_multiplier );
-//
-//        // Get price
-//        $fetched_prices = $this->phactory->get_row( "SELECT `price`, `sale_price`, `alternate_price`, `price_note` FROM `website_products` WHERE `website_id` = $website_id AND `product_id` = $product_id", PDO::FETCH_ASSOC );
-//
-//        $this->assertEquals( $prices_array, $fetched_prices );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'products', compact( 'industry_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get discontinued website ids
-//     */
-//    public function testGetDiscontinuedWebsiteIds() {
-//        // Make it possible to call this function
-//        $class = new ReflectionClass('AccountProduct');
-//        $method = $class->getMethod( 'get_discontinued_website_ids' );
-//        $method->setAccessible(true);
-//
-//        // Declare variables
-//        $website_id = -5;
-//        $timestamp = '2012-01-01'; // needs to be 60 days prior
-//        $status = 'discontinued';
-//
-//        // Create a product
-//        $product_id = $this->phactory->insert( 'products', compact( 'website_id', 'status', 'timestamp' ), 'iss' );
-//        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id' ), 'ii' );
-//
-//        $website_ids = $method->invoke( $this->account_product );
-//
-//        // Assert
-//        $this->assertTrue( in_array( $website_id, $website_ids ) );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'products', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get discontinued website ids
-//     */
-//    public function testRemoveAllDiscontinuedProducts() {
-//        // Make it possible to call this function
-//        $class = new ReflectionClass('AccountProduct');
-//        $method = $class->getMethod( 'remove_all_discontinued_products' );
-//        $method->setAccessible(true);
-//
-//        // Declare variables
-//        $website_id = -5;
-//        $timestamp = '2012-01-01'; // needs to be 60 days prior
-//        $status = 'discontinued';
-//
-//        // Create a product
-//        $product_id = $this->phactory->insert( 'products', compact( 'website_id', 'status', 'timestamp' ), 'iss' );
-//        $this->phactory->insert( 'website_products', compact( 'website_id', 'product_id' ), 'ii' );
-//
-//        $method->invoke( $this->account_product );
-//
-//        // Assert
-//        $website_ids = $this->phactory->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued' AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )" );
-//
-//        $this->assertTrue( empty( $website_ids ) );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'products', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'website_products', compact( 'website_id' ), 'i' );
-//    }
+    /**
+     * Test Remove Discontinued
+     */
+    public function testRemoveDiscontinued() {
+        // Declare
+        $status = 'discontinued';
+
+        // Insert
+        $ph_product = $this->phactory->create( 'products', compact( 'status' ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // Unblocked
+        $this->account_product->remove_discontinued( self::WEBSITE_ID );
+
+        // Get product
+        $website_product = $this->phactory->get( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => $ph_product->product_id ) );
+
+        $this->assertEquals( AccountProduct::INACTIVE, $website_product->active );
+    }
+
+    /**
+     * Test AutocompleteAll
+     */
+    public function testAutocompleteAll() {
+        // Declare Variables
+        $sku = 'Long Winded';
+        $query = 'Long';
+
+        // Insert
+        $this->phactory->create( 'products', compact( 'sku' ) );
+        $this->phactory->create( 'website_industries' );
+
+        // Unblocked
+        $values = $this->account_product->autocomplete_all( $query, 'sku', self::WEBSITE_ID );
+
+        // Get product
+        $this->assertEquals( $sku, $values[0]['name'] );
+    }
+
+    /**
+     * Test Autocomplete By Account
+     */
+    public function testAutocompleteByAccount() {
+        // Declare Variables
+        $sku = 'Long Winded';
+        $query = 'Long';
+
+        // Insert
+        $ph_product = $this->phactory->create( 'products', compact( 'sku' ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+        $this->phactory->create( 'website_industries' );
+
+        // Unblocked
+        $values = $this->account_product->autocomplete_by_account( $query, 'sku', self::WEBSITE_ID );
+
+        // Get product
+        $this->assertEquals( $sku, $values[0]['name'] );
+    }
+
+    /**
+     * List Products
+     */
+    public function testListProducts() {
+        // Get mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_brand = $this->phactory->create('brands');
+        $ph_product = $this->phactory->create( 'products', array( 'brand_id' => $ph_brand->brand_id ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
+
+        $products = $this->account_product->list_products( $dt->get_variables() );
+        $product = current( $products );
+
+        // Make sure we have an array
+        $this->assertContainsOnlyInstancesOf( 'Product', $products );
+        $this->assertEquals( self::SKU, $product->sku );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $products );
+    }
+
+    /**
+     * Count Products
+     */
+    public function testCountProducts() {
+        // Get mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_brand = $this->phactory->create('brands');
+        $ph_product = $this->phactory->create( 'products', array( 'brand_id' => $ph_brand->brand_id ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'p.`status`', 'p.`name`' );
+
+        $count = $this->account_product->count_products( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * List Product Prices
+     */
+    public function testListProductPrices() {
+        // Get mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_product = $this->phactory->create( 'products' );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+
+        $products = $this->account_product->list_product_prices( $dt->get_variables() );
+        $product = current( $products );
+
+        // Make sure we have an array
+        $this->assertContainsOnlyInstancesOf( 'Product', $products );
+        $this->assertEquals( self::SKU, $product->sku );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $products );
+    }
+
+    /**
+     * Count Product Prices
+     */
+    public function testCountProductPrices() {
+        // Get mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_product = $this->phactory->create( 'products' );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( 'p.`sku`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+
+        $count = $this->account_product->count_product_prices( $dt->get_count_variables() );
+
+        // Make sure they exist
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * Test Set Product Prices
+     */
+    public function testSetProductPrices() {
+        // Reset
+        $this->phactory->recall();
+
+        // Declare Variables
+        $price = 2;
+        $prices = array (
+            self::PRODUCT_ID => array(
+                'alternate_price' => 1
+                , 'price' => $price
+                , 'sale_price' => 3
+                , 'alternate_price_name' => 'Oboe'
+                , 'price_note' => 'Flute'
+            )
+        );
+
+        // Create
+        $this->phactory->create( 'website_products' );
+
+        // Unblocked
+        $this->account_product->set_product_prices( self::WEBSITE_ID, $prices );
+
+        // Get price
+        $ph_website_product = $this->phactory->get( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
+
+        $this->assertEquals( $price, $ph_website_product->price );
+    }
+
+    /**
+     * Test Multiply Product Prices By SKU
+     */
+    public function testMultiplyProductPricesBySku() {
+        // Declare Variables
+        $sku = 'GF321';
+        $price = 2;
+        $price_multiplier = 3;
+        $sale_price_multiplier = 2;
+        $alternate_price_multiplier = 0;
+        $price_note = 'All inclusive';
+
+        $prices = array (
+            compact( 'sku', 'price', 'price_note' )
+        );
+
+        // Create
+        $ph_product = $this->phactory->create( 'products', compact( 'sku' ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // Multiply
+        $this->account_product->multiply_product_prices_by_sku( self::WEBSITE_ID, $prices, $price_multiplier, $sale_price_multiplier, $alternate_price_multiplier );
+
+        // Get price
+        $ph_website_product = $this->phactory->get( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => $ph_product->product_id ) );
+
+        $this->assertEquals( $price * $price_multiplier, $ph_website_product->price );
+    }
+
+    /**
+     * Get discontinued website ids
+     */
+    public function testGetDiscontinuedWebsiteIds() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('AccountProduct');
+        $method = $class->getMethod( 'get_discontinued_website_ids' );
+        $method->setAccessible(true);
+
+        // Declare
+        $status = 'discontinued';
+
+        // Create
+        $ph_product = $this->phactory->create( 'products', compact( 'status' ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        $website_ids = $method->invoke( $this->account_product );
+
+        // Assert
+        $this->assertEquals( array( self::WEBSITE_ID ), $website_ids );
+    }
+
+    /**
+     * Get discontinued website ids
+     */
+    public function testRemoveAllDiscontinuedProducts() {
+        // Make it possible to call this function
+        $class = new ReflectionClass('AccountProduct');
+        $method = $class->getMethod( 'remove_all_discontinued_products' );
+        $method->setAccessible(true);
+
+        // Declare variables
+        $status = 'discontinued';
+
+        // Create
+        $ph_product = $this->phactory->create( 'products', compact( 'status' ) );
+        $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id ) );
+
+        // remove all discontinued products
+        $method->invoke( $this->account_product );
+
+        // Assert
+        $website_product = $this->phactory->get( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => $ph_product->product_id ) );
+
+        $this->assertEquals( AccountProduct::INACTIVE, $website_product->active );
+    }
 
     /**
      * Will be executed after every test

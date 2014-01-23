@@ -1142,7 +1142,11 @@ class AccountProduct extends ActiveRecordBase {
      */
     protected function get_discontinued_website_ids() {
         //  AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )
-        return $this->get_col( "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = 1 AND p.`status` = 'discontinued'" );
+        return $this->prepare(
+            "SELECT wp.`website_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) WHERE wp.`active` = :active AND p.`status` = 'discontinued'"
+            , 'i'
+            , array( ':active' => AccountProduct::ACTIVE )
+        )->get_col();
     }
 
     /**
