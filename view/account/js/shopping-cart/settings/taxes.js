@@ -20,7 +20,7 @@ head.ready(function() {
 			tax = '0' + tax;
 		
 		// Validation
-		if ( !tax || '' == abbr ) {
+		if ( ( !tax && 0 !== tax ) || '' == abbr ) {
 			alert( $(this).attr('error') );
 			return;
 		}
