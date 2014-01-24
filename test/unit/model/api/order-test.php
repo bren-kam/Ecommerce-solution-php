@@ -27,7 +27,7 @@ class OrderTest extends BaseDatabaseTest {
         $this->order->status = 1;
         $this->order->create();
 
-        $this->assertTrue( !is_null( $this->order->id ) );
+        $this->assertNotNull( $this->order->id ) );
 
         // Make sure it's in the database
         $type = $this->phactory->get_var( 'SELECT `type` FROM `orders` WHERE `order_id` = ' . (int) $this->order->id );

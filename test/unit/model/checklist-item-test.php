@@ -60,7 +60,7 @@ class ChecklistItemTest extends BaseDatabaseTest {
         $this->checklist_item->checklist_section_id = -3;
         $this->checklist_item->create();
 
-        $this->assertTrue( !is_null( $this->checklist_item->id ) );
+        $this->assertNotNull( $this->checklist_item->id ) );
 
         // Make sure it's in the database
         $this->checklist_item->get( $this->checklist_item->id );
@@ -88,7 +88,7 @@ class ChecklistItemTest extends BaseDatabaseTest {
         $this->checklist_item->save();
 
         // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->checklist_item->id ) );
+        $this->assertNotNull( $this->checklist_item->id ) );
 
         // Now check it!
         $this->checklist_item->get( $this->checklist_item->id );

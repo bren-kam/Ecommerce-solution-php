@@ -69,7 +69,7 @@ class UserAccountTest extends BaseDatabaseTest {
         $this->user->email = $new_email;
         $this->user->create();
 
-        $this->assertTrue( !is_null( $this->user->id ) );
+        $this->assertNotNull( $this->user->id ) );
 
         // Make sure it's in the database
         $this->user->get( $this->user->id );
@@ -97,7 +97,7 @@ class UserAccountTest extends BaseDatabaseTest {
         $this->user->save();
 
         // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->user->id ) );
+        $this->assertNotNull( $this->user->id ) );
 
         // Now check it!
         $this->user->get( $this->user->id );

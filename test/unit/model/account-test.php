@@ -115,7 +115,7 @@ class AccountTest extends BaseDatabaseTest {
         $this->account->title = self::TITLE;
         $this->account->create();
 
-        $this->assertTrue( !is_null( $this->account->id ) );
+        $this->assertNotNull( $this->account->id );
 
         // Make sure it's in the database
         $ph_website = $this->phactory->get( 'websites', array( 'website_id' => $this->account->id ) );

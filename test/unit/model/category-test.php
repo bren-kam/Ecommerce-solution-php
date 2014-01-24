@@ -211,7 +211,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->category->parent_category_id = 0;
         $this->category->create();
 
-        $this->assertTrue( !is_null( $this->category->id ) );
+        $this->assertNotNull( $this->category->id ) );
 
         // Make sure it's in the database
         $this->category->get( $this->category->id );
@@ -239,7 +239,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->category->save();
 
         // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->category->id ) );
+        $this->assertNotNull( $this->category->id ) );
 
         // Now check it!
         $this->category->get( $this->category->id );

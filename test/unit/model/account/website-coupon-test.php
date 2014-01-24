@@ -114,7 +114,7 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->website_coupon->name = $original_name;
         $this->website_coupon->create();
 
-        $this->assertTrue( !is_null( $this->website_coupon->id ) );
+        $this->assertNotNull( $this->website_coupon->id ) );
 
         // Get the message
         $name = $this->phactory->get_var( 'SELECT `name` FROM `website_coupons` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );

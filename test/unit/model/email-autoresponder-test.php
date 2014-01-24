@@ -49,7 +49,7 @@ class EmailAutoresponderTest extends BaseDatabaseTest {
         $this->email_autoresponder->default = 0;
         $this->email_autoresponder->create();
 
-        $this->assertTrue( !is_null( $this->email_autoresponder->id ) );
+        $this->assertNotNull( $this->email_autoresponder->id ) );
 
         // Make sure it's in the database
         $subject = $this->phactory->get_var( 'SELECT `subject` FROM `email_autoresponders` WHERE `email_autoresponder_id` = ' . (int) $this->email_autoresponder->id );

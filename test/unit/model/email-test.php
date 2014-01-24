@@ -94,7 +94,7 @@ class EmailTest extends BaseDatabaseTest {
         $this->email->status = 1;
         $this->email->create();
 
-        $this->assertTrue( !is_null( $this->email->id ) );
+        $this->assertNotNull( $this->email->id ) );
 
         // Make sure it's in the database
         $email = $this->phactory->get_var( 'SELECT `email` FROM `emails` WHERE `email_id` = ' . (int) $this->email->id );

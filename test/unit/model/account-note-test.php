@@ -32,7 +32,7 @@ class AccountNoteTest extends BaseDatabaseTest {
         $this->account_note->message = self::MESSAGE;
         $this->account_note->create();
 
-        $this->assertTrue( !is_null( $this->account_note->id ) );
+        $this->assertNotNull( $this->account_note->id );
 
         // Get
         $ph_account_file = $this->phactory->get( 'website_notes', array( 'website_note_id' => $this->account_note->id ) );

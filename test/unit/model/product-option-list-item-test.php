@@ -46,7 +46,7 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
         $this->product_option_list_item->sequence = 0;
         $this->product_option_list_item->create();
 
-        $this->assertTrue( !is_null( $this->product_option_list_item->id ) );
+        $this->assertNotNull( $this->product_option_list_item->id ) );
 
         // Make sure it's in the database
         $this->product_option_list_item->get( $this->product_option_list_item->id );
@@ -74,7 +74,7 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
         $this->product_option_list_item->save();
 
         // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->product_option_list_item->id ) );
+        $this->assertNotNull( $this->product_option_list_item->id ) );
 
         // Now check it!
         $this->product_option_list_item->get( $this->product_option_list_item->id );

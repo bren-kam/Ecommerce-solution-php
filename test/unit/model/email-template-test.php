@@ -94,7 +94,7 @@ class EmailTemplateTest extends BaseDatabaseTest {
         $this->email_template->type = 'default';
         $this->email_template->create();
 
-        $this->assertTrue( !is_null( $this->email_template->id ) );
+        $this->assertNotNull( $this->email_template->id ) );
 
         // Make sure it's in the database
         $template = $this->phactory->get_var( 'SELECT `template` FROM `email_templates` WHERE `email_template_id` = ' . (int) $this->email_template->id );

@@ -54,7 +54,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->account_product_group->name = self::NAME;
         $this->account_product_group->create();
 
-        $this->assertTrue( !is_null( $this->account_product_group->id ) );
+        $this->assertNotNull( $this->account_product_group->id );
 
         // Make sure it's in the database
         $ph_website_product_group = $this->phactory->get( 'website_product_groups', array( 'website_product_group_id' => $this->account_product_group->id ) );

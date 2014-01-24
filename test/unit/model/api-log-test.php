@@ -30,7 +30,7 @@ class ApiLogTest extends BaseDatabaseTest {
         $this->api_log->type = self::TYPE;
         $this->api_log->create();
 
-        $this->assertTrue( !is_null( $this->api_log->id ) );
+        $this->assertNotNull( $this->api_log->id );
 
         // Make sure it's in the database
         $ph_api_log = $this->phactory->get( 'api_log', array( 'api_log_id' => (int) $this->api_log->id ) );

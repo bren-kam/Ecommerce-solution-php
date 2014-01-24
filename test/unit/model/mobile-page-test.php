@@ -45,7 +45,7 @@ class MobilePageTest extends BaseDatabaseTest {
         $this->mobile_page->title = "Ender's Game";
         $this->mobile_page->create();
 
-        $this->assertTrue( !is_null( $this->mobile_page->id ) );
+        $this->assertNotNull( $this->mobile_page->id ) );
 
         // Make sure it's in the database
         $slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );

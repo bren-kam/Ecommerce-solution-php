@@ -64,7 +64,7 @@ class AttributeTest extends BaseDatabaseTest {
         $this->attribute->name = self::NAME;
         $this->attribute->create();
 
-        $this->assertTrue( !is_null( $this->attribute->id ) );
+        $this->assertNotNull( $this->attribute->id );
 
         // Make sure it's in the database
         $ph_attribute = $this->phactory->get( 'attributes', array( 'attribute_id' => $this->attribute->id ) );

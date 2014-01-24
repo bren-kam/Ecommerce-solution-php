@@ -71,7 +71,7 @@ class ProductOptionTest extends BaseDatabaseTest {
         $this->product_option->name = 'Extra Info';
         $this->product_option->create();
 
-        $this->assertTrue( !is_null( $this->product_option->id ) );
+        $this->assertNotNull( $this->product_option->id ) );
 
         // Make sure it's in the database
         $this->product_option->get( $this->product_option->id );
@@ -98,7 +98,7 @@ class ProductOptionTest extends BaseDatabaseTest {
         $this->product_option->save();
 
         // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->product_option->id ) );
+        $this->assertNotNull( $this->product_option->id ) );
 
         // Now check it!
         $this->product_option->get( $this->product_option->id );

@@ -27,7 +27,7 @@ class OrderItemTest extends BaseDatabaseTest {
         $this->order_item->monthly = 199;
         $this->order_item->create();
 
-        $this->assertTrue( !is_null( $this->order_item->id ) );
+        $this->assertNotNull( $this->order_item->id ) );
 
         // Make sure it's in the database
         $item = $this->phactory->get_var( 'SELECT `item` FROM `order_items` WHERE `order_item_id` = ' . (int) $this->order_item->id );

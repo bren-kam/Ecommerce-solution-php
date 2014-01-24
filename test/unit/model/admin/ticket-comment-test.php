@@ -53,7 +53,7 @@ class TicketCommentTest extends BaseDatabaseTest {
         $this->ticket_comment->private = 0;
         $this->ticket_comment->create();
 
-        $this->assertTrue( !is_null( $this->ticket_comment->id ) );
+        $this->assertNotNull( $this->ticket_comment->id ) );
 
         // Make sure it's in the database
         $this->ticket_comment->get( $this->ticket_comment->id );

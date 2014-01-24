@@ -102,7 +102,7 @@ class TicketUploadTest extends BaseDatabaseTest {
         $this->ticket_upload->key = $key;
         $this->ticket_upload->create();
 
-        $this->assertTrue( !is_null( $this->ticket_upload->id ) );
+        $this->assertNotNull( $this->ticket_upload->id ) );
 
         // Make sure it's in the database
         $this->ticket_upload->get( $this->ticket_upload->id );

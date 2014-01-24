@@ -54,7 +54,7 @@ class CompanyTest extends BaseDatabaseTest {
         $this->company->name = 'Master Hoppers';
         $this->company->create();
 
-        $this->assertTrue( !is_null( $this->company->id ) );
+        $this->assertNotNull( $this->company->id ) );
 
         // Make sure it's in the database
         $this->company->get( $this->company->id );
@@ -81,7 +81,7 @@ class CompanyTest extends BaseDatabaseTest {
         $this->company->save();
 
         // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->company->id ) );
+        $this->assertNotNull( $this->company->id ) );
 
         // Now check it!
         $this->company->get( $this->company->id );

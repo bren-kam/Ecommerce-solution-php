@@ -116,7 +116,7 @@ class AttributeItemTest extends BaseDatabaseTest {
         $this->attribute_item->name = self::ATTRIBUTE_ITEM_NAME;
         $this->attribute_item->create();
 
-        $this->assertTrue( !is_null( $this->attribute_item->id ) );
+        $this->assertNotNull( $this->attribute_item->id );
 
         // Make sure it's in the database
         $ph_attribute_item = $this->phactory->get( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ) );

@@ -40,12 +40,12 @@ class ChecklistTest extends BaseDatabaseTest {
         $this->checklist->type = 'Website Setup';
         $this->checklist->create();
 
-        $this->assertTrue( !is_null( $this->checklist->id ) );
+        $this->assertNotNull( $this->checklist->id ) );
 
         // Make sure it's in the database
         $this->checklist->get( $this->checklist->id );
 
-        $this->assertTrue( !is_null( $this->checklist->website_id ) );
+        $this->assertNotNull( $this->checklist->website_id ) );
 
         // Delete the account
         $this->phactory->delete( 'checklists', array( 'checklist_id' => $this->checklist->id ), 'i' );

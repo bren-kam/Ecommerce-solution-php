@@ -112,7 +112,7 @@ class CraigslistAdTest extends BaseDatabaseTest {
         $this->craigslist_ad->text = $original_text;
         $this->craigslist_ad->create();
 
-        $this->assertTrue( !is_null( $this->craigslist_ad->id ) );
+        $this->assertNotNull( $this->craigslist_ad->id ) );
 
         // Get the message
         $text = $this->phactory->get_var( 'SELECT `text` FROM `craigslist_ads` WHERE `craigslist_ad_id` = ' . (int) $this->craigslist_ad->id );

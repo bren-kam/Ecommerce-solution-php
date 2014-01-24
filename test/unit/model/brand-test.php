@@ -2,6 +2,12 @@
 require_once 'test/base-database-test.php';
 
 class BrandTest extends BaseDatabaseTest {
+    const NAME = 'Smurfy Tools';
+
+    // Product option relations
+    const BRAND_ID = 13;
+    const PRODUCT_OPTION_ID = 15;
+
     /**
      * @var Brand
      */
@@ -12,27 +18,41 @@ class BrandTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->brand = new Brand();
+
+        // Define
+        $this->phactory->define( 'brands', array( 'name' => self::NAME ) );
+        $this->phactory->define( 'product_option_relations', array( 'brand_id' => self::BRAND_ID, 'product_option_id' => self::PRODUCT_OPTION_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Getting a Brand
      */
     public function testGet() {
-        // Declare variables
-        $brand_id = 8;
+        // Create
+        $ph_brand = $this->phactory->create('brands');
 
-        $this->brand->get( $brand_id );
+        // Get
+        $this->brand->get( $ph_brand->brand_id );
 
-        $this->assertEquals( $this->brand->name, 'Ashley Furniture' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->brand->name );
     }
 
     /**
      * Test Getting all of some brands
      */
     public function testGetAll() {
-        $brands = $this->brand->get_all();
+        // Create
+        $this->phactory->create('brands');
 
-        $this->assertTrue( current( $brands ) instanceof Brand );
+        // Get
+        $brands = $this->brand->get_all();
+        $brand = current( $brands );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Brand', $brands );
+        $this->assertEquals( self::NAME, $brand->name );
     }
 
     /**
@@ -41,101 +61,67 @@ class BrandTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGetProductOptionRelations() {
-        // Setup variables
-        $brand_id = -8;
-        $product_option_id = -7;
-
         // Create
-        $this->phactory->insert( 'brands', compact( 'brand_id' ), 'i' );
-        $this->phactory->insert( 'product_option_relations', compact( 'brand_id', 'product_option_id' ), 'ii' );
+        $this->phactory->create('product_option_relations');
 
         // Get
-        $this->brand->get( $brand_id );
-
+        $this->brand->id = self::BRAND_ID;
         $product_option_ids = $this->brand->get_product_option_relations();
+        $expected_product_option_ids = array( self::PRODUCT_OPTION_ID );
 
-        $this->assertTrue( is_array( $product_option_ids ) );
-
-        // Delete
-        $this->phactory->delete( 'brands', compact( 'brand_id' ), 'i' );
-        $this->phactory->delete( 'product_option_relations', compact( 'brand_id' ), 'i' );
+        $this->assertEquals( $expected_product_option_ids, $product_option_ids );
     }
 
     /**
      * Test creating
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        $this->brand->name = 'Test Brand';
-        $this->brand->slug = 'test-brand';
-        $this->brand->link = 'www.testbrand.com';
-        $this->brand->image = '';
+        // Create
+        $this->brand->name = self::NAME;
         $this->brand->create();
 
-        $this->assertTrue( !is_null( $this->brand->id ) );
+        $this->assertNotNull( $this->brand->id );
 
         // Make sure it's in the database
-        $this->brand->get( $this->brand->id );
+        $ph_brand = $this->phactory->get( 'brands', array( 'brand_id' => $this->brand->id ) );
 
-        $this->assertEquals( 'www.testbrand.com', $this->brand->link );
-
-        // Delete the brand
-        $this->phactory->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
+        $this->assertEquals( self::NAME, $ph_brand->name );
     }
 
     /**
      * Test Adding Product Option Relations
-     *
-     * @depends testGetProductOptionRelations
      */
     public function testAddProductOptionRelations() {
-        // Declare variables
-        $brand_id = 612;
-        $product_option_ids = array( '-2', '-1' );
-
-        // Delete any previous relations
-        $this->phactory->delete( 'product_option_relations', array( 'brand_id' => 612 ), 'i' );
-
-        // Get brand
-        $this->brand->get( $brand_id );
+        // Reset
+        $this->phactory->recall();
 
         // Add them
-        $this->brand->add_product_option_relations( $product_option_ids );
+        $this->brand->id = self::BRAND_ID;
+        $this->brand->add_product_option_relations( array( self::PRODUCT_OPTION_ID ) );
 
         // Now check it
-        $fetched_product_option_ids = $this->brand->get_product_option_relations( $brand_id );
+        $ph_product_option_relation = $this->phactory->get( 'product_option_relations', array( 'brand_id' => self::BRAND_ID ) );
 
-        $this->assertEquals( $product_option_ids, $fetched_product_option_ids );
+        $this->assertEquals( self::PRODUCT_OPTION_ID, $ph_product_option_relation->product_option_id );
     }
 
     /**
      * Test updating an attribute
-     *
-     * @depends testCreate
      */
     public function testUpdate() {
-        // Create test
-        $this->brand->name = 'Test Brand';
-        $this->brand->slug = 'test-brand';
-        $this->brand->link = 'www.testbrand.com';
-        $this->brand->image = '';
-        $this->brand->create();
+        // Create
+        $ph_brand = $this->phactory->create('brands');
 
         // Update test
+        $this->brand->id = $ph_brand->brand_id;
         $this->brand->slug = 'dnarb-tset';
         $this->brand->save();
 
-        // Make sure we have an ID still
-        $this->assertTrue( !is_null( $this->brand->id ) );
-
         // Now check it!
-        $this->brand->get( $this->brand->id );
+        $ph_brand = $this->phactory->get( 'brands', array( 'brand_id' => $ph_brand->brand_id ) );
 
-        $this->assertEquals( 'dnarb-tset', $this->brand->slug );
-
-        // Delete the brand
-        $this->phactory->delete( 'brands', array( 'brand_id' => $this->brand->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->brand->slug, $ph_brand->slug );
     }
 
     /**
@@ -144,21 +130,18 @@ class BrandTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testDelete() {
-        // Create Brand
-        $this->phactory->insert( 'brands', array( 'name' => 'Test Brand', 'slug' => 'test-brand', 'link' => '', 'image' => '' ), 'ssss' );
-
-        $brand_id = $this->phactory->get_insert_id();
-
-        // Get it
-        $this->brand->get( $brand_id );
+        // Create
+        $ph_brand = $this->phactory->create('brands');
 
         // Delete
+        $this->brand->id = $ph_brand->brand_id;
         $this->brand->delete();
 
-        // Make sure it doesn't exist
-        $name = $this->phactory->get_var( "SELECT `name` FROM `brands` WHERE `brand_id` = $brand_id" );
+        // Now check it!
+        $ph_brand = $this->phactory->get( 'brands', array( 'brand_id' => $ph_brand->brand_id ) );
 
-        $this->assertFalse( $name );
+        // Assert
+        $this->assertNull( $ph_brand );
     }
 
     /**
@@ -167,32 +150,29 @@ class BrandTest extends BaseDatabaseTest {
      * @depends testAddProductOptionRelations
      */
     public function testDeleteProductOptionRelations() {
-        // Declare variables
-        $brand_id = 612;
-        $product_option_ids = array( '-1', '-2' );
-
-        // Get the brand
-        $this->brand->get( $brand_id );
-
-        // Add relations
-        $this->brand->add_product_option_relations( $product_option_ids );
+        // Create
+        $this->phactory->create('product_option_relations');
 
         // Delete relations
+        $this->brand->id = self::BRAND_ID;
         $this->brand->delete_product_option_relations();
 
-        // Get relations
-        $fetched_product_option_ids = $this->brand->get_product_option_relations();
+        // Now check it!
+        $ph_product_option_relation = $this->phactory->get( 'product_option_relations', array( 'brand_id' => self::BRAND_ID ) );
 
-        $this->assertTrue( is_array( $fetched_product_option_ids ) );
-        $this->assertEquals( count( $fetched_product_option_ids ), 0 );
+        // Assert
+        $this->assertNull( $ph_product_option_relation );
     }
 
     /**
      * Test Listing all the attributes
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('brands');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -200,14 +180,16 @@ class BrandTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 0;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( '`name`', '`link`' );
         $dt->search( array( '`name`' => true, '`link`' => true ) );
 
         $brands = $this->brand->list_all( $dt->get_variables() );
+        $brand = current( $brands );
 
         // Make sure they exist
-        $this->assertTrue( $brands[0] instanceof Brand );
+        $this->assertContainsOnlyInstancesOf( 'Brand', $brands );
+        $this->assertEquals( self::NAME, $brand->name );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $brands );
@@ -217,8 +199,11 @@ class BrandTest extends BaseDatabaseTest {
      * Test counting all the attributes
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('brands');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -226,14 +211,14 @@ class BrandTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 0;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( '`name`', '`link`' );
         $dt->search( array( '`name`' => true, '`link`' => true ) );
 
         $count = $this->brand->count_all( $dt->get_count_variables() );
 
         // Make sure they exist
-        $this->assertGreaterThan( 1, $count );
+        $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );

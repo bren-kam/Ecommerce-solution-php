@@ -51,7 +51,7 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
         $this->checklist_website_item_note->note = 'with a love that was more than love';
         $this->checklist_website_item_note->create();
 
-        $this->assertTrue( !is_null( $this->checklist_website_item_note->id ) );
+        $this->assertNotNull( $this->checklist_website_item_note->id ) );
 
         // Make sure it's in the database
         $this->checklist_website_item_note->get( $this->checklist_website_item_note->id );

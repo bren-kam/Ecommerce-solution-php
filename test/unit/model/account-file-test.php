@@ -61,7 +61,7 @@ class AccountFileTest extends BaseDatabaseTest {
         $this->account_file->file_path = self::FILE_PATH;
         $this->account_file->create();
 
-        $this->assertTrue( !is_null( $this->account_file->id ) );
+        $this->assertNotNull( $this->account_file->id );
 
         // Get the message
         $ph_account_file = $this->phactory->get( 'website_files', array( 'website_file_id' => $this->account_file->id ) );
