@@ -2,6 +2,17 @@
 require_once 'test/base-database-test.php';
 
 class AttributeItemTest extends BaseDatabaseTest {
+    const ATTRIBUTE_ID = 7;
+    const ATTRIBUTE_ITEM_NAME = 'Horse Hair';
+
+    // Attribute item relations
+    const ATTRIBUTE_ITEM_ID = 15;
+    const PRODUCT_ID = 13;
+
+    // Attributes
+    const TITLE = 'Colours';
+    const CATEGORY_ID = 43;
+
     /**
      * @var AttributeItem
      */
@@ -12,162 +23,141 @@ class AttributeItemTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->attribute_item = new AttributeItem();
+
+        // Define
+        $this->phactory->define( 'attribute_items', array( 'attribute_id' => self::ATTRIBUTE_ID, 'attribute_item_name' => self::ATTRIBUTE_ITEM_NAME ) );
+        $this->phactory->define( 'attribute_item_relations', array( 'attribute_item_id' => self::ATTRIBUTE_ITEM_ID, 'product_id' => self::PRODUCT_ID ) );
+        $this->phactory->define( 'attributes', array( 'title' => self::TITLE ) );
+        $this->phactory->define( 'attribute_relations', array( 'attribute_id' => self::ATTRIBUTE_ID, 'category_id' => self::CATEGORY_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test add relations
      */
     public function testAddRelations() {
-        // Declare variables
-        $product_id = 0;
-        $attribute_item_ids = array( '-1', '-2', '-3', '-4', '-5' );
-
-        // Delete any that may have been created before the test
-        $this->phactory->query( "DELETE FROM `attribute_item_relations` WHERE `product_id` = $product_id" );
-
         // Add the relations
-        $this->attribute_item->add_relations( $product_id, $attribute_item_ids );
+        $this->attribute_item->add_relations( self::PRODUCT_ID, array( self::ATTRIBUTE_ITEM_ID ) );
 
         // Get them for testing
-        $fetched_attribute_item_ids = $this->phactory->get_col( "SELECT `attribute_item_id` FROM `attribute_item_relations` WHERE `product_id` = $product_id ORDER BY `attribute_item_id` DESC" );
+        $ph_attribute_item_relation = $this->phactory->get( 'attribute_item_relations', array( 'product_id' => self::PRODUCT_ID ) );
 
         // Should be the same
-        $this->assertEquals( $attribute_item_ids, $fetched_attribute_item_ids );
-
-        // Delete them
-        $this->phactory->query( "DELETE FROM `attribute_item_relations` WHERE `product_id` = $product_id" );
+        $this->assertEquals( self::ATTRIBUTE_ITEM_ID, $ph_attribute_item_relation->attribute_item_id );
     }
 
     /**
      * Test Getting an attribute item
      */
     public function testGet() {
-        // Black Attribute Item
-        $attribute_item_id = 6;
-        $this->attribute_item->get($attribute_item_id);
+        // Create
+        $ph_attribute_item = $this->phactory->create( 'attribute_items' );
 
-        $this->assertEquals( $this->attribute_item->name, 'Black' );
+        // Black Attribute Item
+        $this->attribute_item->get( $ph_attribute_item->attribute_item_id );
+
+        $this->assertEquals( self::ATTRIBUTE_ID, $this->attribute_item->attribute_id );
     }
 
     /**
      * Test Getting all attribute items for an attribute
      */
     public function testGetByAttribute() {
-        $attribute_id = 2;
-        $attribute_items = $this->attribute_item->get_by_attribute( $attribute_id );
+        // Create
+        $this->phactory->create( 'attribute_items' );
 
-        $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
-        $this->assertEquals( count( $attribute_items ), 13 );
+        // Get
+        $attribute_items = $this->attribute_item->get_by_attribute( self::ATTRIBUTE_ID );
+        $attribute_item = current( $attribute_items );
+
+        $this->assertContainsOnlyInstancesOf( 'AttributeItem', $attribute_items );
+        $this->assertEquals( self::ATTRIBUTE_ITEM_NAME, $attribute_item->name );
     }
 
     /**
      * Test Getting all attribute items for a category
      */
     public function testGetByCategory() {
-        // Initialize variables
-        $attribute_id = -2;
-        $attribute_item_id = -3;
-        $category_id = -4;
+        // Create
+        $ph_attribute = $this->phactory->create('attributes');
+        $this->phactory->create( 'attribute_items', array( 'attribute_id' => $ph_attribute->attribute_id ) );
+        $this->phactory->create( 'attribute_relations', array( 'attribute_id' => $ph_attribute->attribute_id ) );
 
-        // Create attribute
-        $this->phactory->insert( 'attributes', array( 'attribute_id' => $attribute_id ), 'i' );
-        $this->phactory->insert( 'attribute_items', array( 'attribute_item_id' => $attribute_item_id, 'attribute_id' => $attribute_id ), 'ii' );
-        $this->phactory->insert( 'attribute_relations', array( 'attribute_id' => $attribute_id, 'category_id' => $category_id ), 'ii' );
+        // Get
+        $attribute_items = $this->attribute_item->get_by_category( self::CATEGORY_ID );
+        $attribute_item = current( $attribute_items );
 
-        $attribute_items = $this->attribute_item->get_by_category( $category_id );
-
-        $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
-
-        // Delete
-        $this->phactory->delete( 'attributes', array( 'attribute_id' => $attribute_id ), 'i' );
-        $this->phactory->delete( 'attribute_items', array( 'attribute_id' => $attribute_id ), 'i' );
-        $this->phactory->delete( 'attribute_relations', array( 'attribute_id' => $attribute_id ), 'i' );
+        $this->assertContainsOnlyInstancesOf( 'AttributeItem', $attribute_items );
+        $this->assertEquals( self::ATTRIBUTE_ITEM_NAME, $attribute_item->name );
     }
 
     /**
      * Test Getting all attribute items for a product
      */
     public function testGetByProduct() {
-        $product_id = 147;
-        $attribute_items = $this->attribute_item->get_by_product( $product_id );
+        // Create
+        $ph_attribute = $this->phactory->create('attributes');
+        $ph_attribute_item = $this->phactory->create( 'attribute_items', array( 'attribute_id' => $ph_attribute->attribute_id ) );
+        $this->phactory->create( 'attribute_item_relations', array( 'attribute_item_id' => $ph_attribute_item->attribute_item_id ) );
 
-        $this->assertTrue( current( $attribute_items ) instanceof AttributeItem );
-        $this->assertEquals( count( $attribute_items ), 4 );
+        // Get
+        $attribute_items = $this->attribute_item->get_by_product( self::PRODUCT_ID );
+        $attribute_item = current( $attribute_items );
+
+        $this->assertContainsOnlyInstancesOf( 'AttributeItem', $attribute_items );
+        $this->assertEquals( self::ATTRIBUTE_ITEM_NAME, $attribute_item->name );
     }
 
     /**
      * Test creating an attribute item
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        $this->attribute_item->attribute_id = 0;
-        $this->attribute_item->name = 'Testee';
-        $this->attribute_item->sequence = 0;
+        // Create
+        $this->attribute_item->name = self::ATTRIBUTE_ITEM_NAME;
         $this->attribute_item->create();
 
         $this->assertTrue( !is_null( $this->attribute_item->id ) );
 
         // Make sure it's in the database
-        $this->attribute_item->get( $this->attribute_item->id );
+        $ph_attribute_item = $this->phactory->get( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ) );
 
-        $this->assertEquals( 'Testee', $this->attribute_item->name );
-
-        // Delete the attribute item
-        $this->phactory->delete( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ), 'i' );
+        $this->assertEquals( self::ATTRIBUTE_ITEM_NAME, $ph_attribute_item->attribute_item_name );
     }
 
     /**
      * Test updating the attribute item
-     *
-     * @depends testCreate
      */
     public function testUpdate() {
-        // Create test
-        $this->attribute_item->attribute_id = 0;
-        $this->attribute_item->name = 'Testee';
-        $this->attribute_item->sequence = 0;
-        $this->attribute_item->create();
+        // Create
+        $ph_attribute_item = $this->phactory->create('attribute_items');
 
         // Update test
+        $this->attribute_item->id = $ph_attribute_item->attribute_item_id;
         $this->attribute_item->name = 'eetseT';
         $this->attribute_item->save();
 
-        // Now check it!
-        $this->attribute_item->get( $this->attribute_item->id );
+        // Make sure it's in the database
+        $ph_attribute_item = $this->phactory->get( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ) );
 
-        $this->assertEquals( 'eetseT', $this->attribute_item->name );
-
-        // Delete the attribute item
-        $this->phactory->delete( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ), 'i' );
+        $this->assertEquals( $this->attribute_item->name, $ph_attribute_item->attribute_item_name );
     }
 
     /**
      * Test Deleting an attribute
-     *
-     * @depends testCreate
-     * @depends testGet
      */
     public function testDelete() {
-        // Create test
-        $this->attribute_item->attribute_id = 0;
-        $this->attribute_item->name = 'Testee';
-        $this->attribute_item->sequence = 0;
-        $this->attribute_item->create();
-
-        // Get it
-        $this->attribute_item->get( $this->attribute_item->id );
+        // Create
+        $ph_attribute_item = $this->phactory->create('attribute_items');
 
         // Delete
+        $this->attribute_item->id = $ph_attribute_item->attribute_item_id;
         $this->attribute_item->delete();
 
-        // Make sure it doesn't exist
-        $name = $this->phactory->get_var( "SELECT `name` FROM `attribute_items` WHERE `attribute_item_id` = " . (int) $this->attribute_item->id );
+        // Should not be there
+        $ph_attribute_item = $this->phactory->get( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ) );
 
-        $this->assertFalse( $name );
+        $this->assertNull( $ph_attribute_item );
     }
-
-
 
     /**
      * Delete Relations
@@ -175,20 +165,16 @@ class AttributeItemTest extends BaseDatabaseTest {
      * @depends testAddRelations
      */
     public function testDeleteRelations() {
-        // Declare variables
-        $product_id = 0;
-        $attribute_item_ids = array( '-1', '-2', '-3', '-4', '-5' );
-
-         // Add the relations
-        $this->attribute_item->add_relations( $product_id, $attribute_item_ids );
+        // Create
+        $this->phactory->create('attribute_item_relations');
 
         // Delete the relations
-        $this->attribute_item->delete_relations( $product_id );
+        $this->attribute_item->delete_relations( self::PRODUCT_ID );
 
-        // See if we can get it
-        $attribute_item_id = $this->phactory->get_var( "SELECT `attribute_item_id` FROM `attribute_item_relations` WHERE `product_id` = $product_id" );
+        // Make sure it's in the database
+        $ph_attribute_item = $this->phactory->get( 'attribute_item_relations', array( 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertFalse( $attribute_item_id );
+        $this->assertNull( $ph_attribute_item );
     }
 
     /**
