@@ -1,5 +1,8 @@
 <?php
 class ApiLog extends ActiveRecordBase {
+    const SUCCESS_TRUE = 1;
+    const SUCCESS_FALSE = 0;
+
     // The columns we will have access to
     public $id, $api_log_id, $company_id, $type, $method, $message, $success, $date_created;
 

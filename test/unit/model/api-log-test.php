@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class ApiLogTest extends BaseDatabaseTest {
+    const COMPANY_ID = 3;
+    const TYPE = 'API';
     /**
      * @var ApiLog
      */
@@ -13,28 +15,27 @@ class ApiLogTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->api_log = new ApiLog();
+
+        // Define
+        $this->phactory->define( 'api_log', array( 'company_id' => self::COMPANY_ID, 'type' => self::TYPE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test create
      */
     public function testCreate() {
-        $this->api_log->company_id = -3;
-        $this->api_log->type = 'API';
-        $this->api_log->method = 'Create Account';
-        $this->api_log->message = 'Hedgehogs rock';
-        $this->api_log->success = 1;
+        // Create
+        $this->api_log->company_id = self::COMPANY_ID;
+        $this->api_log->type = self::TYPE;
         $this->api_log->create();
 
         $this->assertTrue( !is_null( $this->api_log->id ) );
 
         // Make sure it's in the database
-        $method = $this->phactory->get_var( 'SELECT `method` FROM `api_log` WHERE `api_log_id` = ' . (int) $this->api_log->id );
+        $ph_api_log = $this->phactory->get( 'api_log', array( 'api_log_id' => (int) $this->api_log->id ) );
 
-        $this->assertEquals( $this->api_log->method, $method );
-
-        // Delete the attribute
-        $this->phactory->delete( 'api_log', array( 'api_log_id' => $this->api_log->id ), 'i' );
+        $this->assertEquals( self::TYPE, $ph_api_log->type );
     }
 
     /**
