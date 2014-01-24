@@ -3,6 +3,10 @@
 require_once 'test/base-database-test.php';
 
 class ApiKeyTest extends BaseDatabaseTest {
+    const COMPANY_ID = 3;
+    const KEY = '39ae2599688ecf10fdd9bd036ed7e73d';
+    const STATUS = 1;
+
     /**
      * @var ApiKey
      */
@@ -13,26 +17,24 @@ class ApiKeyTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->api_key = new ApiKey();
+
+        // Define
+        $this->phactory->define( 'api_keys', array( 'company_id' => self::COMPANY_ID, 'key' => self::KEY, 'status' => ApiKey::STATUS_ACTIVE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Getting all attributes
      */
     public function testGetByKey() {
-        // Declare variables
-        $key = md5('googoo dolls');
-
-        // Insert a key
-        $this->phactory->insert( 'api_keys', array( 'key' => $key, 'status' => 1 ), 's' );
+        // Create
+        $this->phactory->create('api_keys');
 
         // Get the API Key
-        $this->api_key->get_by_key( $key );
+        $this->api_key->get_by_key( self::KEY );
 
         // Should have found it
-        $this->assertEquals( $this->api_key->key, $key );
-
-        // Now delete it
-        $this->phactory->delete( 'api_keys', array( 'key' => $key ), 's' );
+        $this->assertEquals( self::COMPANY_ID, $this->api_key->company_id );
     }
 
     /**
