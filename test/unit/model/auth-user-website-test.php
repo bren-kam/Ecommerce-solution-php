@@ -3,6 +3,14 @@
 require_once 'test/base-database-test.php';
 
 class AuthUserWebsiteTest extends BaseDatabaseTest {
+    const USER_ID = 1;
+    const WEBSITE_ID = 3;
+    const PAGES = 1;
+
+    // Users
+    const CONTACT_NAME = 'Billy Young';
+    const EMAIL = 'billy@young.com';
+
     /**
      * @var AuthUserWebsite
      */
@@ -13,72 +21,58 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->auth_user_website = new AuthUserWebsite();
+
+        // Define
+        $this->phactory->define( 'auth_user_websites', array( 'website_id' => self::WEBSITE_ID, 'user_id' => self::USER_ID, 'pages' => self::PAGES ) );
+        $this->phactory->define( 'users', array( 'email' => self::EMAIL, 'contact_name' => self::CONTACT_NAME, 'status' => User::STATUS_ACTIVE ) );
+        $this->phactory->recall();
     }
     
     /**
      * Test Getting by account
      */
     public function testGetByAccount() {
-        // Declare variables
-        $website_id = -5;
-        $contact_name = 'Enjoy us';
-        $email = md5(microtime()) . '@cash.com';
-        $status = 1;
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $this->phactory->create( 'auth_user_websites', array( 'user_id' => $ph_user->user_id ) );
 
-        // Insert
-        $user_id = $this->phactory->insert( 'users', compact( 'email', 'contact_name', 'status' ), 'ssi' );
-        $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
+        // Get
+        $users = $this->auth_user_website->get_by_account( self::WEBSITE_ID );
+        $user = current( $users );
 
-        $users = $this->auth_user_website->get_by_account( $website_id );
-
-        $this->assertTrue( current( $users ) instanceof User );
-
-        // Delete
-        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'users', compact( 'user_id' ), 'i' );
+        $this->assertContainsOnlyInstancesOf( 'User', $users );
+        $this->assertEquals( self::EMAIL, $user->email );
     }
-    
+
     /**
      * Test Getting the Default
      */
     public function testGet() {
-        // Declare variables
-        $website_id = -5;
-        $user_id = -7;
-        $pages = -11;
-
-        // Insert
-        $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id', 'pages' ), 'iii' );
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $this->phactory->create( 'auth_user_websites', array( 'user_id' => $ph_user->user_id ) );
 
         // Get
-        $this->auth_user_website->get( $user_id, $website_id );
+        $this->auth_user_website->get( $ph_user->user_id, self::WEBSITE_ID );
 
-        $this->assertEquals( $pages, $this->auth_user_website->pages );
-
-        // Delete
-        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->assertEquals( self::EMAIL, $this->auth_user_website->email );
     }
-    
+
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $website_id = -3;
-        $user_id = -5;
-
         // Create
-        $this->auth_user_website->website_id = $website_id;
-        $this->auth_user_website->user_id = $user_id;
+        $this->auth_user_website->website_id = self::WEBSITE_ID;
+        $this->auth_user_website->user_id = self::USER_ID;
         $this->auth_user_website->create();
 
+        $this->assertNotNull( $this->auth_user_website->id );
+
         // Make sure it's in the database
-        $fetched_user_id = $this->phactory->get_var( 'SELECT `user_id` FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $this->auth_user_website->id );
+        $ph_auth_user_website = $this->phactory->get( 'auth_user_websites', array( 'website_id' => self::WEBSITE_ID ) );
 
-        $this->assertEquals( $user_id, $fetched_user_id );
-
-        // Delete
-        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->assertEquals( self::USER_ID, $ph_auth_user_website->user_id );
     }
 
     /**
@@ -87,80 +81,62 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $website_id = -3;
-        $user_id = -7;
-        $pages = -5;
-
         // Create
-        $this->auth_user_website->website_id = $website_id;
-        $this->auth_user_website->user_id = $user_id;
-        $this->auth_user_website->create();
+        $ph_auth_user_website = $this->phactory->create( 'auth_user_websites' );
 
         // Save
-        $this->auth_user_website->pages = $pages;
+        $this->auth_user_website->website_id = $ph_auth_user_website->website_id;
+        $this->auth_user_website->user_id = $ph_auth_user_website->user_id;
+        $this->auth_user_website->pages = 0;
         $this->auth_user_website->save();
 
         // Make sure it's in the database
-        $fetched_pages = $this->phactory->get_var( 'SELECT `pages` FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $this->auth_user_website->id );
+        $ph_auth_user_website = $this->phactory->get( 'auth_user_websites', array( 'website_id' => self::WEBSITE_ID, 'user_id' => self::USER_ID ) );
 
-        $this->assertEquals( $pages, $fetched_pages );
-
-        // Delete
-        $this->phactory->delete( 'auth_user_websites', compact( 'website_id' ), 'i' );
+        $this->assertEquals( $this->auth_user_website->pages, $ph_auth_user_website->pages );
     }
-    
+
     /**
      * Remove
-     *
-     * @depends testGet
      */
     public function testRemove() {
-        // Declare variables
-        $website_id = -5;
-        $user_id = -7;
-
-        // Insert
-        $auth_user_website_id = $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
-
-        // Get
-        $this->auth_user_website->get( $user_id, $website_id );
+        // Create
+        $ph_auth_user_website = $this->phactory->create( 'auth_user_websites' );
 
         // Remove
+        $this->auth_user_website->website_id = $ph_auth_user_website->website_id;
+        $this->auth_user_website->user_id = $ph_auth_user_website->user_id;
         $this->auth_user_website->remove();
 
-        $auth_user_website = $this->phactory->get_row( 'SELECT * FROM `auth_user_websites` WHERE `auth_user_website_id` = ' . (int) $auth_user_website_id );
+        // Make sure it's gone
+        $ph_auth_user_website = $this->phactory->get( 'auth_user_websites', array( 'website_id' => self::WEBSITE_ID, 'user_id' => self::USER_ID ) );
 
-        // Make sure we grabbed the right one
-        $this->assertFalse( $auth_user_website );
+        $this->assertNull( $ph_auth_user_website );
     }
 
     /**
      * Test Is Authorized
      */
     public function testIsAuthorized() {
-        // Declare variables
-        $website_id = -5;
-        $user_id = -7;
-
-        // Insert
-        $this->phactory->insert( 'auth_user_websites', compact( 'website_id', 'user_id' ), 'ii' );
+        // Create
+        $this->phactory->create( 'auth_user_websites' );
 
         // Get
-        $fetched_authorize_user_id = $this->auth_user_website->is_authorized( $user_id, $website_id );
+        $user_id = $this->auth_user_website->is_authorized( self::USER_ID, self::WEBSITE_ID);
 
-        $this->assertEquals( $fetched_authorize_user_id, $user_id );
-
-        // Delete
-        $this->phactory->delete( 'auth_user_websites',compact( 'website_id' ), 'i' );
+        $this->assertEquals( self::USER_ID, $user_id );
     }
 
     /**
      * List All
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $this->phactory->create( 'auth_user_websites', array( 'user_id' => $ph_user->user_id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -168,13 +144,15 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'u.`email`', 'auw.`pages`', 'auw.`products`', 'auw.`analytics`', 'auw.`blog`', 'auw.`email_marketing`', 'auw.`shopping_cart`' );
 
-        $auth_users = $this->auth_user_website->list_all( $dt->get_variables() );
+        $auth_user_websites = $this->auth_user_website->list_all( $dt->get_variables() );
+        $auth_user_website = current( $auth_user_websites );
 
         // Make sure we have an array
-        $this->assertTrue( current( $auth_users ) instanceof AuthUserWebsite );
+        $this->assertContainsOnlyInstancesOf( 'AuthUserWebsite', $auth_user_websites );
+        $this->assertEquals( self::EMAIL, $auth_user_website->email );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $auth_users );
@@ -184,8 +162,12 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
      * Count All
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $this->phactory->create( 'auth_user_websites', array( 'user_id' => $ph_user->user_id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -193,7 +175,7 @@ class AuthUserWebsiteTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'u.`email`', 'auw.`pages`', 'auw.`products`', 'auw.`analytics`', 'auw.`blog`', 'auw.`email_marketing`', 'auw.`shopping_cart`' );
 
         $count = $this->auth_user_website->count_all( $dt->get_count_variables() );

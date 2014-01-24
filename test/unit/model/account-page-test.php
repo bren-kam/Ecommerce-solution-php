@@ -90,7 +90,7 @@ class AccountPageTest extends BaseDatabaseTest {
         $this->account_page->title = self::TITLE;
         $this->account_page->create();
 
-        $this->assertTrue( !is_null( $this->account_page->id ) );
+        $this->assertNotNull( $this->account_page->id );
 
         // Make sure it's in the database
         $ph_website_page = $this->phactory->get( 'website_pages', array( 'website_page_id' => $this->account_page->id ) );
