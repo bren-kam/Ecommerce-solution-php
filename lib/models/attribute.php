@@ -83,7 +83,7 @@ class Attribute extends ActiveRecordBase {
     /**
      * Get All
      *
-     * @return array
+     * @return Attribute[]
      */
     public function get_all() {
         return $this->get_results( 'SELECT * FROM `attributes` ORDER BY `title`', PDO::FETCH_CLASS, 'Attribute' );
@@ -128,7 +128,7 @@ class Attribute extends ActiveRecordBase {
 	 * Get listing information
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return Attribute[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables
