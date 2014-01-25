@@ -4,6 +4,9 @@ require_once 'test/base-database-test.php';
 
 class CategoryTest extends BaseDatabaseTest {
     const NAME = 'Ovens';
+    const SLUG = 'ovens';
+    const SEQUENCE = 1;
+    const PARENT_CATEGORY_ID = 0;
 
     /**
      * @var Category
@@ -17,7 +20,7 @@ class CategoryTest extends BaseDatabaseTest {
         $this->category = new Category();
 
         // Define
-        $this->phactory->define( 'categories', array( 'name' => self::NAME ) );
+        $this->phactory->define( 'categories', array( 'name' => self::NAME, 'slug' => self::SLUG, 'sequence' => self::SEQUENCE, 'parent_category_id' => self::PARENT_CATEGORY_ID ) );
         $this->phactory->recall();
     }
 
@@ -164,221 +167,182 @@ class CategoryTest extends BaseDatabaseTest {
         $this->assertEquals( $ph_category->category_id, $category->parent_category_id );
     }
 
-//    /**
-//     * Test getting all the parents
-//     */
-//    public function testGetAllParents() {
-//        // Setup Variables
-//        $category_id = -59;
-//        $sub_category_id = -80;
-//
-//        // Create Categories
-//        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
-//
-//        // Get all categories
-//        $categories = $this->category->get_all_parents( $sub_category_id );
-//
-//        $this->assertEquals( $category_id, $categories[0]->id );
-//
-//        // Delete
-//        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
-//    }
-//
-//    /**
-//     * Test getting top categories
-//     *
-//     * @depends testGet
-//     */
-//    public function testGetTop() {
-//        // Setup Variables
-//        $category_id = -59;
-//        $sub_category_id = -80;
-//
-//        // Create Categories
-//        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
-//
-//        // Get all categories
-//        $this->category->get_top( $sub_category_id );
-//
-//        $this->assertEquals( $category_id, $this->category->id );
-//
-//        // Delete
-//        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
-//    }
-//
-//    /**
-//     * Test getting all the parnets
-//     */
-//    public function testGetAllParentCategoryIds() {
-//        // Setup Variables
-//        $category_id = -59;
-//        $sub_category_id = -80;
-//
-//        // Create Categories
-//        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
-//
-//        // Get all categories
-//        $category_ids = $this->category->get_all_parent_category_ids( $sub_category_id );
-//
-//        $this->assertTrue( in_array( $category_id, $category_ids ) );
-//
-//        // Delete
-//        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
-//    }
-//
-//
-//
-//    /**
-//     * Test getting url
-//     *
-//     * @depends testGetAll
-//     * @depends testGetAllParents
-//     */
-//    public function testGetUrl() {
-//        // Setup Variables
-//        $category_id = -59;
-//        $slug = 'parent';
-//        $sub_category_id = -80;
-//        $sub_slug = 'sub-name';
-//        $url = '/parent/sub-name/';
-//
-//        // Create Categories
-//        $this->phactory->insert( 'categories', compact( 'category_id', 'slug' ), 'is' );
-//        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id, 'slug' => $sub_slug ), 'iis' );
-//
-//        // Get the categories
-//        $this->category->id = $sub_category_id;
-//        $fetched_url = $this->category->get_url();
-//
-//        $this->assertEquals( $url, $fetched_url );
-//
-//        // Delete
-//        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->delete( 'categories', array( 'category_id' => $sub_category_id ), 'i' );
-//    }
-//
+    /**
+     * Test getting all the parents
+     */
+    public function testGetAllParents() {
+        // Declare
+        $childs_name = 'Speakeasy Ovens';
 
-//
-//    /**
-//     * Create a category
-//     *
-//     * @depends testGet
-//     */
-//    public function testCreate() {
-//        $this->category->name = 'Test Cat';
-//        $this->category->slug = 'test-cat';
-//        $this->category->parent_category_id = 0;
-//        $this->category->create();
-//
-//        $this->assertNotNull( $this->category->id ) );
-//
-//        // Make sure it's in the database
-//        $this->category->get( $this->category->id );
-//
-//        $this->assertEquals( 'Test Cat', $this->category->name );
-//
-//        // Delete the category
-//        $this->phactory->delete( 'categories', array( 'category_id' => $this->category->id ), 'i' );
-//    }
-//
-//    /**
-//     * Update a category
-//     *
-//     * @depends testCreate
-//     */
-//    public function testUpdate() {
-//        $this->category->name = 'Test Cat';
-//        $this->category->slug = 'test-cat';
-//        $this->category->parent_category_id = 0;
-//        $this->category->create();
-//
-//        // Update test
-//        $this->category->name = 'Cat Test';
-//        $this->category->slug = 'cat-test';
-//        $this->category->save();
-//
-//        // Make sure we have an ID still
-//        $this->assertNotNull( $this->category->id ) );
-//
-//        // Now check it!
-//        $this->category->get( $this->category->id );
-//
-//        $this->assertEquals( 'cat-test', $this->category->slug );
-//
-//        // Delete the category
-//        $this->phactory->delete( 'categories', array( 'category_id' => $this->category->id ), 'i' );
-//    }
-//
-//    /**
-//     * Update the sequence of categories
-//     */
-//    public function testUpdateSequence() {
-//        // Setup Variables
-//        $category_id = -59;
-//        $sub_category_id = -80;
-//        $sub_category_id2 = -90;
-//
-//        // Create Categories
-//        $this->phactory->insert( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id, 'parent_category_id' => $category_id ), 'ii' );
-//        $this->phactory->insert( 'categories', array( 'category_id' => $sub_category_id2, 'parent_category_id' => $category_id ), 'ii' );
-//
-//        // Update the sequence
-//        $this->phactory->update( 'categories', array( 'sequence' => -5 ), array( 'category_id' => $category_id ), 'i', 'i' );
-//
-//        // Adjust it properly
-//        $this->category->update_sequence( $category_id, array( $sub_category_id2, $sub_category_id ) );
-//
-//        // Let's get the sequence and check
-//        $sequence = $this->phactory->get_var( 'SELECT `sequence` FROM `categories` WHERE `category_id` = ' . (int) $sub_category_id2 );
-//
-//        // Should be 0;
-//        $this->assertEquals( 0, $sequence );
-//
-//        // Delete
-//        $this->phactory->delete( 'categories', compact( 'category_id' ), 'i' );
-//        $this->phactory->delete( 'categories', array( 'parent_category_id' => $category_id ), 'i' );
-//    }
-//
-//    /**
-//     * Test Delete
-//     *
-//     * @depends testCreate
-//     * @depends testGet
-//     */
-//    public function testDelete() {
-//        $this->category->name = 'Test Cat';
-//        $this->category->slug = 'test-cat';
-//        $this->category->parent_category_id = 0;
-//        $this->category->create();
-//
-//        // Get it
-//        $this->category->get( $this->category->id );
-//
-//        // Delete
-//        $this->category->delete();
-//
-//        // Make sure it doesn't exist
-//        $name = $this->phactory->get_var( "SELECT `name` FROM `categories` WHERE `category_id` = " .(int) $this->category->id );
-//
-//        $this->assertFalse( $name );
-//    }
-//
-//    /**
-//     * Test getting all the categories by a parent category ID
-//     */
-//    public function testSortByHierarchy() {
-//        $this->category->get_all();
-//        $categories = $this->category->sort_by_hierarchy();
-//
-//        $this->assertTrue( reset( $categories ) instanceof Category );
-//    }
+        // Create
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_child_category = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id, 'name' => $childs_name ) );
+
+        // Get all categories
+        $categories = $this->category->get_all_parents( $ph_child_category->category_id );
+        $category = current( $categories );
+
+       $this->assertContainsOnlyInstancesOf( 'Category', $categories );
+       $this->assertEquals( $ph_category->category_id, $category->category_id );
+    }
+
+    /**
+     * Test getting top categories
+     *
+     * @depends testGet
+     */
+    public function testGetTop() {
+        // Declare
+        $childs_name = 'Speakeasy Ovens';
+
+        // Create
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_child_category = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id, 'name' => $childs_name ) );
+
+        // Get all categories
+        $this->category->get_top( $ph_child_category->category_id );
+
+        // Assert
+        $this->assertEquals( $ph_category->category_id, $this->category->id );
+    }
+
+    /**
+     * Test getting all the parents
+     *
+     * @depends testGetAllParents
+     */
+    public function testGetAllParentCategoryIds() {
+        // Declare
+        $childs_name = 'Speakeasy Ovens';
+
+        // Create
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_child_category = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id, 'name' => $childs_name ) );
+
+        // Get all categories
+        $category_ids = $this->category->get_all_parent_category_ids( $ph_child_category->category_id );
+        $expected_category_ids = array( $ph_category->category_id );
+
+        // Assert
+        $this->assertEquals( $expected_category_ids, $category_ids );
+    }
+
+    /**
+     * Test getting url
+     *
+     * @depends testGetAll
+     * @depends testGetAllParents
+     */
+    public function testGetUrl() {
+        // Declare
+        $childs_slug = 'speakeasy-ovens';
+
+        // Create
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_child_category = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id, 'slug' => $childs_slug ) );
+
+        // Get the categories
+        $this->category->id = $ph_child_category->category_id;
+        $category_url = $this->category->get_url();
+        $expected_url = '/' . self::SLUG . '/' . $childs_slug . '/';
+
+        $this->assertEquals( $expected_url, $category_url );
+    }
+
+    /**
+     * Create a category
+     */
+    public function testCreate() {
+        // Create
+        $this->category->name = self::NAME;
+        $this->category->create();
+
+        // Assert
+        $this->assertNotNull( $this->category->id );
+
+        // Make sure it's in the database
+        $ph_category = $this->phactory->get( 'categories', array( 'category_id' => $this->category->id ) );
+
+        // Assert
+        $this->assertEquals( self::NAME, $ph_category->name );
+    }
+
+    /**
+     * Update a category
+     */
+    public function testUpdate() {
+        // Create
+        $ph_category = $this->phactory->create('categories');
+
+        // Update test
+        $this->category->id = $ph_category->category_id;
+        $this->category->name = 'Cat Test';
+        $this->category->save();
+
+        // Now check it!
+        $ph_category = $this->phactory->get( 'categories', array( 'category_id' => $ph_category->category_id ) );
+
+        $this->assertEquals( $this->category->name, $ph_category->name );
+    }
+
+    /**
+     * Update the sequence of categories
+     */
+    public function testUpdateSequence() {
+        // Create
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_child_category = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id ) );
+        $ph_child_category_2 = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id ) );
+
+        // Adjust it properly
+        $this->category->update_sequence( $ph_category->category_id, array( $ph_child_category->category_id, $ph_child_category_2->category_id ) );
+
+        // Let's get the sequence and check
+        $ph_category = $this->phactory->get( 'categories', array( 'category_id' => $ph_child_category->category_id ) );
+        $expected_sequence = 0;
+
+        // Assert
+        $this->assertEquals( $expected_sequence, $ph_category->sequence );
+    }
+
+    /**
+     * Test Delete
+     */
+    public function testDelete() {
+        // Create
+        $ph_category = $this->phactory->create('categories');
+
+        // Delete
+        $this->category->id = $ph_category->category_id;
+        $this->category->delete();
+
+        // Get
+        $ph_category = $this->phactory->get( 'categories', array( 'category_id' => $ph_category->category_id ) );
+
+        $this->assertNull( $ph_category );
+    }
+
+    /**
+     * Test getting all the categories by a parent category ID
+     *
+     * depends testGetByParent
+     */
+    public function testSortByHierarchy() {
+        // Declare
+        $childs_slug = 'speakeasy-ovens';
+
+        // Create
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_child_category = $this->phactory->create( 'categories', array( 'parent_category_id' => $ph_category->category_id, 'slug' => $childs_slug ) );
+
+        // Get
+        $categories = $this->category->sort_by_hierarchy();
+        $category = current( $categories );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Category', $categories );
+        $this->assertNotNull( $category->depth );
+    }
 
     /**
      * Will be executed after every test
