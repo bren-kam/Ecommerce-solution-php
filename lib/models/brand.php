@@ -157,7 +157,7 @@ class Brand extends ActiveRecordBase {
 	 * Get listing information
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return Brand[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables
