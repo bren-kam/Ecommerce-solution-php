@@ -82,7 +82,7 @@ class SettingsController extends BaseController {
             $this->user->account->phone = $_POST['tPhone'];
             $this->user->account->save();
 
-            $this->notify(_('The "Logo and Phone" section has been updated successfully!' ) );
+            $this->notify( _('The "Logo and Phone" section has been updated successfully!' ) );
         }
 
         $this->resources->javascript( 'fileuploader', 'settings/logo-and-phone' );
@@ -150,6 +150,8 @@ class SettingsController extends BaseController {
         $this->user->account->save();
 
         jQuery('#dLogoContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Logo') . '" /><br />' );
+
+        $response->notify( 'Your logo has been successfully updated!' );
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );

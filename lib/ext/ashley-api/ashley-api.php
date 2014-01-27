@@ -140,7 +140,6 @@ class Ashley_API {
      * @return object
      */
     public function get_series() {
-        ini_set( 'memory_limit', '512M' );
         // Setup the package request
         $package_request = new PackageRequest();
         $package_request->ExecuteOptions = array( 'SeriesExecuteOption' => 'LoadAllSeries' );

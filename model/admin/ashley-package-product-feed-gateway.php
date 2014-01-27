@@ -227,10 +227,10 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * Do the setup to get anything we need
      */
     protected function setup() {
-        ini_set( 'max_execution_time', 600 ); // 10 minutes
-		ini_set( 'memory_limit', '512M' );
-		set_time_limit( 600 );
-
+		ini_set( 'max_execution_time', 1200 ); // 20 minutes
+		ini_set( 'memory_limit', '1024M' );
+		set_time_limit( 1200 );
+		
 		// Setup the Ashley VPN
 		$ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
@@ -256,9 +256,13 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Get Templates
         $package_template_array = $this->ashley->get_package_templates();
 
-        // Arrange templates
+		// Arrange templates
         foreach ( $package_template_array as $pta ) {
-            $this->package_templates[(string)$pta->TemplateId] = $pta;
+			$template_id = (string)$pta->TemplateId;
+			if ( empty( $template_id ) )
+				continue;
+
+			$this->package_templates[$template_id] = $pta;
         }
 
         // Get packages
@@ -284,7 +288,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      */
     protected function process() {
         $grouped_packages = array();
-
+		
         // Generate array of our items
 		foreach ( $this->packages as $item ) {
 			/***** SETUP OF PRODUCT *****/
