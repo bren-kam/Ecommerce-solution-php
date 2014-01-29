@@ -18,9 +18,12 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        set_time_limit(1200);
-        $ashley = new AshleyMasterProductFeedGateway();
-        $ashley->run();
+        //echo security::encrypt( 'myfurniturediscounters@blinkyblinky.me', ENCRYPTION_KEY, true );
+        $usernames = $this->user->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'ga-username'", PDO::FETCH_ASSOC );
+
+        foreach ( $usernames as $username ) {
+            echo $username['website_id'] . ' - ' . security::decrypt( base64_decode( $username['value'] ), ENCRYPTION_KEY ) . "\n<br>";
+        }
 
 
         return new HtmlResponse( 'heh' );

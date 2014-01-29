@@ -3,6 +3,16 @@
 require_once 'test/base-database-test.php';
 
 class ChecklistItemTest extends BaseDatabaseTest {
+    const CHECKLIST_SECTION_ID = 7;
+    const NAME = '1st Contact';
+    const STATUS = 1;
+
+    // Checklist Website Item
+    const CHECKLIST_ID = 15;
+
+    // Checklist Section
+    const CHECKLIST_SECTION_STATUS = 1;
+
     /**
      * @var ChecklistItem
      */
@@ -13,40 +23,60 @@ class ChecklistItemTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->checklist_item = new ChecklistItem();
+
+        // Define
+        $this->phactory->define( 'checklist_items', array( 'checklist_section_id' => self::CHECKLIST_SECTION_ID, 'name' => self::NAME, 'status' => self::STATUS ) );
+        $this->phactory->define( 'checklist_website_items', array( 'checklist_id' => self::CHECKLIST_ID ) );
+        $this->phactory->define( 'checklist_sections', array( 'status' => self::CHECKLIST_SECTION_STATUS ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $checklist_item_id = 1;
+        // Create
+        $ph_checklist_item = $this->phactory->create( 'checklist_items' );
 
-        $this->checklist_item->get( $checklist_item_id );
+        // Get
+        $this->checklist_item->get( $ph_checklist_item->checklist_item_id );
 
-        $this->assertEquals( $this->checklist_item->name, '1st Contact' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->checklist_item->name );
     }
 
     /**
      * Test Get All
      */
     public function testGetAll() {
-        $checklist_items = $this->checklist_item->get_all();
+        // Create
+        $this->phactory->create( 'checklist_items' );
 
-        $this->assertTrue( current( $checklist_items ) instanceof ChecklistItem );
+        // Get
+        $checklist_items = $this->checklist_item->get_all();
+        $checklist_item = current( $checklist_items );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'ChecklistItem', $checklist_items );
+        $this->assertEquals( self::NAME, $checklist_item->name );
     }
 
     /**
      * Tests getting incomplete checklists
      */
     public function testGetByChecklist() {
-        // Declare variables
-        $checklist_id = 1;
+        // Create
+        $ph_checklist_section = $this->phactory->create( 'checklist_sections' );
+        $ph_checklist_item = $this->phactory->create( 'checklist_items', array( 'checklist_section_id' => $ph_checklist_section->checklist_section_id ) );
+        $this->phactory->create( 'checklist_website_items', array( 'checklist_item_id' => $ph_checklist_item->checklist_item_id ) );
 
-        $checklist_items = $this->checklist_item->get_by_checklist( $checklist_id );
+        // Get
+        $checklist_items = $this->checklist_item->get_by_checklist( self::CHECKLIST_ID );
+        $checklist_item = current( $checklist_items );
 
-        $this->assertTrue( $checklist_items[0] instanceof ChecklistItem );
-        $this->assertEquals( count( $checklist_items ), 35 );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'ChecklistItem', $checklist_items );
+        $this->assertEquals( self::NAME, $checklist_item->name );
     }
 
     /**
@@ -56,47 +86,36 @@ class ChecklistItemTest extends BaseDatabaseTest {
      */
     public function testCreate() {
         // Create
-        $this->checklist_item->status = 0;
-        $this->checklist_item->checklist_section_id = -3;
+        $this->checklist_item->checklist_section_id = self::CHECKLIST_SECTION_ID;
         $this->checklist_item->create();
 
-        $this->assertNotNull( $this->checklist_item->id ) );
+        // Assert
+        $this->assertNotNull( $this->checklist_item->id );
 
         // Make sure it's in the database
-        $this->checklist_item->get( $this->checklist_item->id );
+        $ph_checklist_item = $this->phactory->get( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ) );
 
-        $this->assertEquals( -3, $this->checklist_item->checklist_section_id );
-
-        // Delete
-        $this->phactory->delete( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::CHECKLIST_SECTION_ID, $ph_checklist_item->checklist_section_id );
     }
 
     /**
      * Test updating
-     *
-     * @depends testCreate
      */
     public function testUpdate() {
-        // Create test
-        $this->checklist_item->status = 0;
-        $this->checklist_item->checklist_section_id = -3;
-        $this->checklist_item->create();
+        // Create
+        $ph_checklist_item = $this->phactory->create( 'checklist_items' );
 
         // Update test
+        $this->checklist_item->id = $ph_checklist_item->checklist_item_id;
         $this->checklist_item->name = 'Bloom';
-        $this->checklist_item->assigned_to = 'Morning Glory';
         $this->checklist_item->save();
 
-        // Make sure we have an ID still
-        $this->assertNotNull( $this->checklist_item->id ) );
+        // Make sure it's in the database
+        $ph_checklist_item = $this->phactory->get( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ) );
 
-        // Now check it!
-        $this->checklist_item->get( $this->checklist_item->id );
-
-        $this->assertEquals( 'Morning Glory', $this->checklist_item->assigned_to );
-
-        // Delete
-        $this->phactory->delete( 'checklist_items', array( 'checklist_item_id' => $this->checklist_item->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->checklist_item->name, $ph_checklist_item->name );
     }
 
     /**
