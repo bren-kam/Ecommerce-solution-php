@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class ChecklistSectionTest extends BaseDatabaseTest {
+    const NAME = 'Initial Setup';
+
     /**
      * @var ChecklistSection
      */
@@ -13,74 +15,76 @@ class ChecklistSectionTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->checklist_section = new ChecklistSection();
+
+        // Define
+        $this->phactory->define( 'checklist_sections', array( 'name' => self::NAME ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $checklist_section_id = 1;
+        // Create
+        $ph_checklist_section = $this->phactory->create('checklist_sections');
 
-        $this->checklist_section->get( $checklist_section_id );
+        // Get
+        $this->checklist_section->get( $ph_checklist_section->checklist_section_id );
 
-        $this->assertEquals( $this->checklist_section->name, 'Initial Setup' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->checklist_section->name );
     }
 
     /**
      * Test Get All
      */
     public function testGetAll() {
-        $checklist_sections = $this->checklist_section->get_all();
+        // Create
+        $this->phactory->create('checklist_sections');
 
-        $this->assertTrue( current( $checklist_sections ) instanceof ChecklistSection );
+        // Get
+        $checklist_sections = $this->checklist_section->get_all();
+        $checklist_section = current( $checklist_sections );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'ChecklistSection', $checklist_sections );
+        $this->assertEquals( self::NAME, $checklist_section->name );
     }
 
     /**
      * Test creating
-     *
-     * @depends testGet
      */
     public function testCreate() {
         // Create
-        $this->checklist_section->status = 5;
+        $this->checklist_section->status = ChecklistSection::STATUS_ACTIVE;
         $this->checklist_section->create();
 
-        $this->assertNotNull( $this->checklist_section->id ) );
+        // Assert
+        $this->assertNotNull( $this->checklist_section->id );
 
         // Make sure it's in the database
-        $this->checklist_section->get( $this->checklist_section->id );
+        $ph_checklist_section = $this->phactory->get( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ) );
 
-        $this->assertEquals( 5, $this->checklist_section->status );
-
-        // Delete
-        $this->phactory->delete( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ), 'i' );
+        // Assert
+        $this->assertEquals( ChecklistSection::STATUS_ACTIVE, $ph_checklist_section->status );
     }
 
     /**
      * Test updating
-     *
-     * @depends testCreate
      */
     public function testUpdate() {
-        // Create test
-        $this->checklist_section->status = 0;
-        $this->checklist_section->create();
+        // Create
+        $ph_checklist_section = $this->phactory->create('checklist_sections');
 
         // Update test
+        $this->checklist_section->id = $ph_checklist_section->checklist_section_id;
         $this->checklist_section->name = "Sweet jumpin' jambalaya";
         $this->checklist_section->save();
 
-        // Make sure we have an ID still
-        $this->assertNotNull( $this->checklist_section->id ) );
+        // Get
+        $ph_checklist_section = $this->phactory->get( 'checklist_sections', array( 'checklist_section_id' => $ph_checklist_section->checklist_section_id ) );
 
-        // Now check it!
-        $this->checklist_section->get( $this->checklist_section->id );
-
-        $this->assertEquals( "Sweet jumpin' jambalaya", $this->checklist_section->name );
-
-        // Delete
-        $this->phactory->delete( 'checklist_sections', array( 'checklist_section_id' => $this->checklist_section->id ), 'i' );
+        $this->assertEquals( $this->checklist_section->name, $ph_checklist_section->name );
     }
 
     /**

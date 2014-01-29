@@ -34,7 +34,7 @@ class ChecklistSection extends ActiveRecordBase {
     /**
      * Get all
      *
-     * @return array
+     * @return ChecklistSection[]
      */
     public function get_all() {
         return $this->prepare(
