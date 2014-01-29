@@ -18,13 +18,9 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        //echo security::encrypt( 'myfurniturediscounters@blinkyblinky.me', ENCRYPTION_KEY, true );
-        $usernames = $this->user->get_results( "SELECT `website_id`, `value` FROM `website_settings` WHERE `key` = 'ga-username'", PDO::FETCH_ASSOC );
-
-        foreach ( $usernames as $username ) {
-            echo $username['website_id'] . ' - ' . security::decrypt( base64_decode( $username['value'] ), ENCRYPTION_KEY ) . "\n<br>";
-        }
-
+        // Package feed
+        $ashley_package_gateway = new AshleyPackageProductFeedGateway();
+        $ashley_package_gateway->run();
 
         return new HtmlResponse( 'heh' );
     }
