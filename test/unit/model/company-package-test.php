@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class CompanyPackageTest extends BaseDatabaseTest {
+    const COMPANY_ID = 3;
+    const NAME = 'Refined Jewlery';
+
     /**
      * @var CompanyPackage
      */
@@ -13,42 +16,44 @@ class CompanyPackageTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->company_package = new CompanyPackage();
+
+        // Define
+        $this->phactory->define( 'company_packages', array( 'website_id' => self::WEBSITE_ID, 'company_id' => self::COMPANY_ID, 'name' => self::NAME ) );
+        $this->phactory->define( 'users', array( 'company_id' => self::COMPANY_ID ) );
+        $this->phactory->define( 'websites' );
+        $this->phactory->recall();
     }
 
     /**
      * Test getting the company packages
      */
     public function testGet() {
-        // Declare variables
-        $company_package_id = 1;
+        // Create
+        $ph_company_package = $this->phactory->create('company_packages');
 
-        $this->company_package->get( $company_package_id );
+        // Get
+        $this->company_package->get( $ph_company_package->company_package_id );
 
-        $this->assertEquals( $this->company_package->name, 'Furnish123 Gallery' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->company_package->name );
     }
 
     /**
      * Test getting the company packages
      */
     public function testGetAll() {
-        // Declare Variables
-        $website_id = -7;
-        $email = md5(time()) . '@weet.com';
-        $company_id = -1; // Imagine Retailer
-
-        // Create website/user
-        $user_id = $this->phactory->insert( 'users', compact( 'company_id', 'email' ), 'is' );
-        $website_id = $this->phactory->insert( 'websites', compact( 'user_id' ), 'ii' );
-        $this->phactory->insert( 'company_packages', compact( 'company_id', 'website_id' ), 'ii' );
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $ph_website = $this->phactory->create( 'websites', array( 'user_id' => $ph_user->user_id ) );
+        $this->phactory->create( 'company_packages', array( 'website_id' => $ph_website->website_id ) );
 
         // Get all packages
-        $packages = $this->company_package->get_all( $website_id );
+        $packages = $this->company_package->get_all( $ph_website->website_id );
+        $package = current( $packages );
 
-        $this->assertTrue( current( $packages ) instanceof CompanyPackage );
-
-        $this->phactory->delete( 'company_packages', compact( 'company_id' ), 'i' );
-        $this->phactory->delete( 'websites', compact( 'user_id' ), 'i' );
-        $this->phactory->delete( 'users', compact( 'company_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'CompanyPackage', $packages );
+        $this->assertEquals( self::NAME, $package->name );
     }
 
     /**
