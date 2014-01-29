@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
+    const CHECKLIST_WEBSITE_ITEM_ID = 3;
+    const NOTE = 'Pistachios';
+
     /**
      * @var ChecklistWebsiteItemNote
      */
@@ -13,80 +16,78 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->checklist_website_item_note = new ChecklistWebsiteItemNote();
+
+        // Define
+        $this->phactory->define( 'checklist_website_item_notes', array( 'checklist_website_item_id' => self::CHECKLIST_WEBSITE_ITEM_ID, 'note' => self::NOTE ) );
+        $this->phactory->define('users');
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $checklist_website_item_note_id = 16;
+        // Create
+        $ph_checklist_website_item_note = $this->phactory->create('checklist_website_item_notes');
 
-        $this->checklist_website_item_note->get( $checklist_website_item_note_id );
+        // Get
+        $this->checklist_website_item_note->get( $ph_checklist_website_item_note->checklist_website_item_note_id );
 
-        $this->assertEquals( $this->checklist_website_item_note->id, 16 );
+        // Assert
+        $this->assertEquals( $ph_checklist_website_item_note->checklist_website_item_note_id, $this->checklist_website_item_note->checklist_website_item_note_id );
     }
 
     /**
      * Tests getting notes by a website item
      */
     public function testGetByChecklist() {
-        // Declare variables
-        $checklist_website_item_id = 123;
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $this->phactory->create( 'checklist_website_item_notes', array( 'user_id' => $ph_user->user_id ) );
 
-        $checklist_website_item_notes = $this->checklist_website_item_note->get_by_checklist_website_item( $checklist_website_item_id );
+        // Get
+        $checklist_website_item_notes = $this->checklist_website_item_note->get_by_checklist_website_item( self::CHECKLIST_WEBSITE_ITEM_ID );
+        $checklist_website_item_note = current( $checklist_website_item_notes );
 
-        $this->assertTrue( $checklist_website_item_notes[0] instanceof ChecklistWebsiteItemNote );
-        $this->assertEquals( count( $checklist_website_item_notes ), 2 );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'ChecklistWebsiteItemNote', $checklist_website_item_notes );
+        $this->assertEquals( self::NOTE, $checklist_website_item_note->note );
     }
 
     /**
      * Test creating
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        $this->checklist_website_item_note->checklist_website_item_id = 0;
-        $this->checklist_website_item_note->user_id = 514;
-        $this->checklist_website_item_note->note = 'with a love that was more than love';
+        // Create
+        $this->checklist_website_item_note->note = self::NOTE;
         $this->checklist_website_item_note->create();
 
-        $this->assertNotNull( $this->checklist_website_item_note->id ) );
+        // Assert
+        $this->assertNotNull( $this->checklist_website_item_note->id );
 
         // Make sure it's in the database
-        $this->checklist_website_item_note->get( $this->checklist_website_item_note->id );
+        $ph_checklist_website_item_note = $this->phactory->get( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $this->checklist_website_item_note->id ) );
 
-        $this->assertEquals( 'with a love that was more than love', $this->checklist_website_item_note->note );
-
-        // Delete
-        $this->phactory->delete( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $this->checklist_website_item_note->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::NOTE, $ph_checklist_website_item_note->note );
     }
 
     /**
-     * Test Deleting an attribute
-     *
-     * @depends testCreate
-     * @depends testGet
+     * Test Deleting
      */
     public function testDelete() {
         // Create
-        $this->checklist_website_item_note->checklist_website_item_id = 0;
-        $this->checklist_website_item_note->user_id = 514;
-        $this->checklist_website_item_note->note = 'two paths diverged';
-        $this->checklist_website_item_note->create();
-
-        $checklist_website_item_note_id = $this->phactory->get_insert_id();
-
-        // Get it
-        $this->checklist_website_item_note->get( $checklist_website_item_note_id );
+        $ph_checklist_website_item_note = $this->phactory->create('checklist_website_item_notes');
 
         // Delete
+        $this->checklist_website_item_note->id = $ph_checklist_website_item_note->checklist_website_item_note_id;
         $this->checklist_website_item_note->delete();
 
-        // Make sure it doesn't exist
-        $note = $this->phactory->get_var( "SELECT `note` FROM `checklist_website_item_notes` WHERE `checklist_website_item_note_id` = $checklist_website_item_note_id" );
+        // Make sure it's in the database
+        $ph_checklist_website_item_note = $this->phactory->get( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $ph_checklist_website_item_note->checklist_website_item_note_id ) );
 
-        $this->assertFalse( $note );
+        // Assert
+        $this->assertNull( $ph_checklist_website_item_note );
     }
 
     /**
