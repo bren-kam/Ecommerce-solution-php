@@ -3,6 +3,13 @@
 require_once 'test/base-database-test.php';
 
 class CraigslistMarketLinkTest extends BaseDatabaseTest {
+    const MARKET_ID = 3;
+    const CL_CATEGORY_ID = 5;
+    const CRAIGSLIST_MARKET_ID = 7;
+
+    // Craigslist Markets
+    const CL_MARKET_ID = 19;
+
     /**
      * @var CraigslistMarketLink
      */
@@ -13,50 +20,45 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->craigslist_market_link = new CraigslistMarketLink();
+
+        // Define
+        $this->phactory->define( 'craigslist_market_links', array( 'website_id' => self::WEBSITE_ID, 'craigslist_market_id' => self::CRAIGSLIST_MARKET_ID, 'market_id' => self::MARKET_ID, 'cl_category_id' => self::CL_CATEGORY_ID ) );
+        $this->phactory->define( 'craigslist_markets', array( 'craigslist_market_id' => self::CRAIGSLIST_MARKET_ID, 'cl_market_id' => self::CL_MARKET_ID, 'status' => CraigslistMarket::STATUS_ACTIVE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Delete before
-        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => -1 ), 'i' );
-
         // Create
-        $this->craigslist_market_link->website_id = -1;
-        $this->craigslist_market_link->craigslist_market_id = -2;
-        $this->craigslist_market_link->market_id = -3;
-        $this->craigslist_market_link->cl_category_id = -4;
+        $this->craigslist_market_link->website_id = self::WEBSITE_ID;
+        $this->craigslist_market_link->craigslist_market_id = self::CRAIGSLIST_MARKET_ID;
         $this->craigslist_market_link->create();
 
         // Try to get something
-        $cl_category_id = $this->phactory->get_var( "SELECT `cl_category_id` FROM `craigslist_market_links` WHERE `website_id` = -1 AND `craigslist_market_id` = -2 AND `market_id` = -3" );
+        $ph_craigslist_market_link = $this->phactory->get( 'craigslist_market_links', array( 'website_id' => self::WEBSITE_ID ) );
 
-        $this->assertEquals( '-4', $cl_category_id );
-
-        // Now delete it
-        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => -1 ), 'i' );
+        $this->assertEquals( self::CRAIGSLIST_MARKET_ID, $ph_craigslist_market_link->craigslist_market_id );
     }
+
     /**
      * Test Getting all
      *
      * @depends testCreate
      */
     public function testGetByAccount() {
-        // Declare variables
-        $craigslist_market_id = 1;
-        $account_id = -16;
+        // Create
+        $this->phactory->create('craigslist_market_links');
+        $this->phactory->create('craigslist_markets');
 
-        // Create market link
-        $this->phactory->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id ), 'ii' );
+        // Get
+        $craigslist_markets = $this->craigslist_market_link->get_by_account( self::WEBSITE_ID );
+        $craigslist_market = current( $craigslist_markets );
 
-        // Now get them
-        $craigslist_markets = $this->craigslist_market_link->get_by_account( $account_id );
-
-        $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarketLink );
-
-        // Delete
-        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'CraigslistMarketLink', $craigslist_markets );
+        $this->assertEquals( self::MARKET_ID, $craigslist_market->market_id );
     }
 
     /**
@@ -65,22 +67,16 @@ class CraigslistMarketLinkTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testGetClCategoryIdsByAccount() {
-        // Declare variables
-        $craigslist_market_id = 1;
-        $cl_category_id = 2086;
-        $account_id = -16;
-        $cl_market_id = 222;
-
-        // Create market link
-        $this->phactory->insert( 'craigslist_market_links', array( 'website_id' => $account_id, 'craigslist_market_id' => $craigslist_market_id, 'cl_category_id' => $cl_category_id ), 'ii' );
+        // Create
+        $this->phactory->create('craigslist_market_links');
+        $this->phactory->create('craigslist_markets');
 
         // Get the IDs
-        $cl_category_ids = $this->craigslist_market_link->get_cl_category_ids_by_account( $account_id, $cl_market_id );
+        $cl_category_ids = $this->craigslist_market_link->get_cl_category_ids_by_account( self::WEBSITE_ID, self::CL_MARKET_ID );
+        $expected_array = array ( self::CL_CATEGORY_ID );
 
-        $this->assertEquals( array( '2086' ), $cl_category_ids );
-
-        // Delete
-        $this->phactory->delete( 'craigslist_market_links', array( 'website_id' => $account_id ), 'i' );
+        // Assert
+        $this->assertEquals( $expected_array, $cl_category_ids );
     }
 
     /**
