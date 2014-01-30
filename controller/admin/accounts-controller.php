@@ -144,6 +144,7 @@ class AccountsController extends BaseController {
             if ( empty( $errs ) ) {
                 // Get the username
                 $sendgrid_username = $account->get_settings('sendgrid-username');
+                $continue = true;
 
                 // We must cancel email marketing
                 if ( 1 == $account->email_marketing && 1 != (int) isset( $_POST['cbEmailMarketing'] ) ) {
@@ -155,56 +156,59 @@ class AccountsController extends BaseController {
                     }
                 } elseif ( 0 == $account->email_marketing && 0 != (int) isset( $_POST['cbEmailMarketing'] ) && empty( $sendgrid_username ) ) {
                     // Not allowed!
-                    $this->notify( 'Please contact Technical to create an email marketing account', false );
+                    $this->notify( 'Please contact Technical to create an email marketing account.', false );
                     unset( $_POST['cbEmailMarketing'] );
+                    $continue = false;
                 }
 
-                $account->title = $_POST['tTitle'];
-                $account->user_id = $_POST['sUserID'];
-                $account->os_user_id = $_POST['sOSUserID'];
-                $account->phone = $_POST['tPhone'];
-                $account->products = $_POST['tProducts'];
-                $account->plan_name = $_POST['tPlan'];
-                $account->plan_description = $_POST['taPlanDescription'];
-                $account->pages = (int) isset( $_POST['cbPages'] );
-                $account->shopping_cart = (int) isset( $_POST['cbShoppingCart'] );
-                $account->product_catalog = (int) isset( $_POST['cbProductCatalog'] );
-                $account->room_planner = (int) isset( $_POST['cbRoomPlanner'] );
-                $account->blog = (int) isset( $_POST['cbBlog'] );
-                $account->craigslist = (int) isset( $_POST['cbCraigslist'] );
-                $account->email_marketing = (int) isset( $_POST['cbEmailMarketing'] );
-                $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
-                $account->mobile_marketing = (int) isset( $_POST['cbMobileMarketing'] );
-                $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
-                $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+                if ( $continue ) {
+                    $account->title = $_POST['tTitle'];
+                    $account->user_id = $_POST['sUserID'];
+                    $account->os_user_id = $_POST['sOSUserID'];
+                    $account->phone = $_POST['tPhone'];
+                    $account->products = $_POST['tProducts'];
+                    $account->plan_name = $_POST['tPlan'];
+                    $account->plan_description = $_POST['taPlanDescription'];
+                    $account->pages = (int) isset( $_POST['cbPages'] );
+                    $account->shopping_cart = (int) isset( $_POST['cbShoppingCart'] );
+                    $account->product_catalog = (int) isset( $_POST['cbProductCatalog'] );
+                    $account->room_planner = (int) isset( $_POST['cbRoomPlanner'] );
+                    $account->blog = (int) isset( $_POST['cbBlog'] );
+                    $account->craigslist = (int) isset( $_POST['cbCraigslist'] );
+                    $account->email_marketing = (int) isset( $_POST['cbEmailMarketing'] );
+                    $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
+                    $account->mobile_marketing = (int) isset( $_POST['cbMobileMarketing'] );
+                    $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
+                    $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
 
-                $account->save();
+                    $account->save();
 
-                if ( 1 == $account->social_media )
-                $account->set_settings( array(
-                    'social-media-add-ons' => serialize( array(
-                        'email-sign-up'
-                        , 'fan-offer'
-                        , 'sweepstakes'
-                        , 'share-and-save'
-                        , 'facebook-site'
-                        , 'contact-us'
-                        , 'about-us'
-                        , 'products'
-                        , 'current-ad'
-                        , 'posting'
-                    ) )
-                ) );
+                    if ( 1 == $account->social_media )
+                    $account->set_settings( array(
+                        'social-media-add-ons' => serialize( array(
+                            'email-sign-up'
+                            , 'fan-offer'
+                            , 'sweepstakes'
+                            , 'share-and-save'
+                            , 'facebook-site'
+                            , 'contact-us'
+                            , 'about-us'
+                            , 'products'
+                            , 'current-ad'
+                            , 'posting'
+                        ) )
+                    ) );
 
-                // Set the account's official address
-                $account->set_settings( array(
-                    'address' => $_POST['tAddress']
-                    , 'city' => $_POST['tCity']
-                    , 'state' => $_POST['sState']
-                    , 'zip' => $_POST['tZip']
-                ) );
+                    // Set the account's official address
+                    $account->set_settings( array(
+                        'address' => $_POST['tAddress']
+                        , 'city' => $_POST['tCity']
+                        , 'state' => $_POST['sState']
+                        , 'zip' => $_POST['tZip']
+                    ) );
 
-                $this->notify( _('This account has been successfully updated!') );
+                    $this->notify( _('This account has been successfully updated!') );
+                }
             }
         }
 
