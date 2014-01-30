@@ -142,17 +142,21 @@ class AccountsController extends BaseController {
             $errs = $v->validate();
 
             if ( empty( $errs ) ) {
+                // Get the username
+                $sendgrid_username = $account->get_settings('sendgrid-username');
+
                 // We must cancel email marketing
                 if ( 1 == $account->email_marketing && 1 != (int) isset( $_POST['cbEmailMarketing'] ) ) {
-                    // Get settings
-                    $sendgrid_username = $account->get_settings( 'sendgrid-username' );
-
                     if ( !empty( $sendgrid_username ) ) {
                         library('sendgrid-api');
                         $sendgrid = new SendGridAPI( $account );
                         $sendgrid->setup_subuser();
                         $sendgrid->subuser->delete( $sendgrid_username );
                     }
+                } elseif ( 0 == $account->email_marketing && 0 != (int) isset( $_POST['cbEmailMarketing'] ) && empty( $sendgrid_username ) ) {
+                    // Not allowed!
+                    $this->notify( 'Please contact Technical to create an email marketing account', false );
+                    unset( $_POST['cbEmailMarketing'] );
                 }
 
                 $account->title = $_POST['tTitle'];

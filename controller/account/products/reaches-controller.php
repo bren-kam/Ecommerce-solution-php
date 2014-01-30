@@ -148,6 +148,7 @@ class ReachesController extends BaseController {
 
         // Get ticket
         $reach->get( $_POST['hReachId'], $this->user->account->id );
+        $reach->get_meta();
 
         // Set variables
         $status = ( 0 == $reach->status ) ? ' (Open)' : ' (Closed)';
