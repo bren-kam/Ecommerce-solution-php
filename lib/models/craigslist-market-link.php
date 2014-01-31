@@ -19,13 +19,13 @@ class CraigslistMarketLink extends ActiveRecordBase {
      * Get Links by account
      *
      * @param int $account_id
-     * @return array
+     * @return CraigslistMarketLink[]
      */
     public function get_by_account( $account_id ) {
         return $this->prepare(
-            "SELECT cml.`craigslist_market_id`, CONCAT( cm.`city`, ', ', IF( '' <> cm.`area`, CONCAT( cm.`state`, ' - ', cm.`area` ), cm.`state` ) ) AS market, cml.`market_id`, cml.`cl_category_id`, cm.`cl_market_id` FROM `craigslist_market_links` AS cml LEFT JOIN `craigslist_markets` AS cm ON ( cml.`craigslist_market_id` = cm.`craigslist_market_id` ) WHERE cml.`website_id` = :account_id AND cm.`status` = 1"
-            , 'i'
-            , array( ':account_id' => $account_id )
+            "SELECT cml.`craigslist_market_id`, CONCAT( cm.`city`, ', ', IF( '' <> cm.`area`, CONCAT( cm.`state`, ' - ', cm.`area` ), cm.`state` ) ) AS market, cml.`market_id`, cml.`cl_category_id`, cm.`cl_market_id` FROM `craigslist_market_links` AS cml LEFT JOIN `craigslist_markets` AS cm ON ( cml.`craigslist_market_id` = cm.`craigslist_market_id` ) WHERE cml.`website_id` = :account_id AND cm.`status` = :status"
+            , 'ii'
+            , array( ':account_id' => $account_id, ':status' => CraigslistMarket::STATUS_ACTIVE )
         )->get_results( PDO::FETCH_CLASS, 'CraigslistMarketLink' );
     }
 
@@ -40,7 +40,7 @@ class CraigslistMarketLink extends ActiveRecordBase {
         return $this->prepare(
             'SELECT a.`cl_category_id` FROM `craigslist_market_links` AS a LEFT JOIN `craigslist_markets` AS b ON ( a.`craigslist_market_id` = b.`craigslist_market_id` ) WHERE a.`website_id` = :account_id AND b.`cl_market_id` = :cl_market_id'
             , 'ii'
-            , array( ':account_id' => $account_id, 'cl_market_id' => $cl_market_id )
+            , array( ':account_id' => $account_id, ':cl_market_id' => $cl_market_id )
         )->get_col();
     }
 

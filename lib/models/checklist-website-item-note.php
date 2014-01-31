@@ -35,7 +35,7 @@ class ChecklistWebsiteItemNote extends ActiveRecordBase {
      * Get by checklist website item
      *
      * @param int $checklist_website_item_id
-     * @return array
+     * @return ChecklistWebsiteItemNote[]
      */
     public function get_by_checklist_website_item( $checklist_website_item_id ) {
 		return $this->prepare(

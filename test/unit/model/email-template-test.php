@@ -3,6 +3,13 @@
 require_once 'test/base-database-test.php';
 
 class EmailTemplateTest extends BaseDatabaseTest {
+    const NAME = 'Brand New Day';
+    const TYPE = 'default';
+    const TEMPLATE = '|[subject]|[message]|';
+
+    // Email Template Associations
+    const EMAIL_TEMPLATE_ID = 15;
+
     /**
      * @var EmailTemplate
      */
@@ -13,181 +20,155 @@ class EmailTemplateTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->email_template = new EmailTemplate();
+
+        // Define
+        $this->phactory->define( 'email_templates', array( 'name' => self::NAME, 'type' => self::TYPE, 'template' => self::TEMPLATE ) );
+        $this->phactory->define( 'email_template_associations', array( 'email_template_id' => self::EMAIL_TEMPLATE_ID, 'website_id' => self::WEBSITE_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Get
      */
     public function testGet() {
-        // Set variables
-        $name = 'Brand New Template';
-        $website_id = -3;
-
         // Create
-        $email_template_id = $this->phactory->insert( 'email_templates', compact( 'name' ), 's' );
-        $this->phactory->insert( 'email_template_associations', compact( 'email_template_id', 'website_id' ), 'ii' );
+        $ph_email_template = $this->phactory->create('email_templates');
+        $this->phactory->create( 'email_template_associations', array( 'email_template_id' => $ph_email_template->email_template_id ) );
 
         // Get
-        $this->email_template->get( $email_template_id, $website_id );
+        $this->email_template->get( $ph_email_template->email_template_id, self::WEBSITE_ID );
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $name, $this->email_template->name );
-
-        // Cleanup
-        $this->phactory->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'email_template_associations', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->email_template->name );
     }
 
     /**
      * Get Default
      */
     public function testGetDefault() {
-        // Set variables
-        $name = 'Brand New Template';
-        $email_template_type = 'default';
-        $website_id = -3;
+        // Reset
+        $this->phactory->recall();
 
         // Create
-        $email_template_id = $this->phactory->insert( 'email_templates', array( 'name' => $name, 'type' => $email_template_type ), 'ss' );
-        $this->phactory->insert( 'email_template_associations', compact( 'email_template_id', 'website_id' ), 'ii' );
+        $ph_email_template = $this->phactory->create('email_templates');
+        $this->phactory->create( 'email_template_associations', array( 'email_template_id' => $ph_email_template->email_template_id ) );
 
         // Get
-        $this->email_template->get_default( $website_id );
+        $this->email_template->get_default( self::WEBSITE_ID );
 
         // Make sure we grabbed the right one
-        $this->assertEquals( $name, $this->email_template->name );
-
-        // Cleanup
-        $this->phactory->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'email_template_associations', compact( 'website_id' ), 'i' );
+        $this->assertEquals( self::NAME, $this->email_template->name );
     }
 
     /**
      * Get By Account
      */
     public function testGetByAccount() {
-        // Set variables
-        $name = 'Brand New Template';
-        $email_template_type = 'default';
-        $website_id = -3;
-
         // Create
-        $email_template_id = $this->phactory->insert( 'email_templates', array( 'name' => $name, 'type' => $email_template_type ), 'ss' );
-        $this->phactory->insert( 'email_template_associations', compact( 'email_template_id', 'website_id' ), 'ii' );
+        $ph_email_template = $this->phactory->create('email_templates');
+        $this->phactory->create( 'email_template_associations', array( 'email_template_id' => $ph_email_template->email_template_id ) );
 
         // Get
-        $email_templates = $this->email_template->get_by_account( $website_id );
+        $email_templates = $this->email_template->get_by_account( self::WEBSITE_ID );
+        $email_template = current( $email_templates );
 
-        // Make sure we grabbed the right one
-        $this->assertTrue( current( $email_templates ) instanceof EmailTemplate );
-
-        // Cleanup
-        $this->phactory->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'email_template_associations', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'EmailTemplate', $email_templates );
+        $this->assertEquals( self::NAME, $email_template->name );
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        $this->email_template->template = 'purple people eaters';
-        $this->email_template->type = 'default';
+        // Create
+        $this->email_template->name = self::NAME;
         $this->email_template->create();
 
-        $this->assertNotNull( $this->email_template->id ) );
+        // Assert
+        $this->assertNotNull( $this->email_template->id );
 
-        // Make sure it's in the database
-        $template = $this->phactory->get_var( 'SELECT `template` FROM `email_templates` WHERE `email_template_id` = ' . (int) $this->email_template->id );
+        // Get
+        $ph_email_template = $this->phactory->get( 'email_templates', array( 'email_template_id' => $this->email_template->id ) );
 
-        $this->assertEquals( 'purple people eaters', $template );
-
-        // Delete
-        $this->phactory->delete( 'email_templates', array( 'email_template_id' => $this->email_template->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $ph_email_template->name );
     }
 
     /**
      * Test Save
-     *
-     * @depends testCreate
      */
     public function testSave() {
-        // Create test
-        $this->email_template->type = 'default';
-        $this->email_template->create();
+        // Create
+        $ph_email_template = $this->phactory->create('email_templates');
 
-        // Update test
+        // Save
+        $this->email_template->id = $ph_email_template->email_template_id;
         $this->email_template->type = 'custom';
         $this->email_template->save();
 
-        // Now check it!
-        $type = $this->phactory->get_var( 'SELECT `type` FROM `email_templates` WHERE `email_template_id` = ' . (int) $this->email_template->id );
+        // Get
+        $ph_email_template = $this->phactory->get( 'email_templates', array( 'email_template_id' => $ph_email_template->email_template_id ) );
 
-        $this->assertEquals( $type, $this->email_template->type );
-
-        // Delete the email
-        $this->phactory->delete( 'email_templates', array( 'email_template_id' => $this->email_template->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->email_template->type, $ph_email_template->type );
     }
 
     /**
      * Test Add Association
      */
     public function testAddAssociation() {
-        // Declare variables
-        $this->email_template->id = -3;
-        $account_id = '-5';
-
-        // Delete any associations before hand
-        $this->phactory->delete( 'email_template_associations', array( 'email_template_id' => $this->email_template->id ) , 'i' );
+        // Reset
+        $this->phactory->recall();
 
         // Add association
-        $this->email_template->add_association( $account_id );
+        $this->email_template->id = self::EMAIL_TEMPLATE_ID;
+        $this->email_template->add_association( self::WEBSITE_ID );
 
-        // Make sure it's in the database
-        $fetched_website_id = $this->phactory->get_var( 'SELECT `website_id` FROM `email_template_associations` WHERE `email_template_id` = ' . (int) $this->email_template->id );
+        // Get
+        $ph_email_template_association = $this->phactory->get( 'email_template_associations', array( 'website_id' => self::WEBSITE_ID ) );
 
-        $this->assertEquals( $fetched_website_id, $account_id );
-
-        // Delete any associations after
-        $this->phactory->delete( 'email_template_associations', array( 'email_template_id' => $this->email_template->id ) , 'i' );
+        // Assert
+        $this->assertEquals( self::EMAIL_TEMPLATE_ID, $ph_email_template_association->email_template_id );
     }
 
     /**
-     * Test Get Complete - A
+     * Test Get Complete
+     *
+     * @depends testGet
+     * @depends testGetDefault
      */
     public function testGetCompleteA() {
-        // Declare Variables
-        $website_id = -7;
-        $type = 'website';
-        $account_title = "Jim's Hoops";
+        // Declare
+        $settings = 'remove-header-footer';
         $message = 'Take a look at our upcoming specials!';
         $subject = '[website_title] Specials!';
-        $template = '|[subject]|[message]|';
-        $settings = 'remove-header-footer';
+        $account_title = "Jim's Hoops";
+        $this->email_template->template = self::TEMPLATE;
 
-        // Create Account Stub
-        $stub_account = $this->getMock( 'Account' );
+        // Stubs
+        $stub_account = $this->getMock('Account');
+        $stub_account->title = $account_title;
         $stub_account->expects($this->once())->method('get_settings')->with( $settings )->will($this->returnValue(false));
-        $stub_account->title = $account_title; // Just to get more code coverage -- it should continue going
 
-        // Email Message Stub
         $stub_email_message = $this->getMock( 'EmailMessage' );
         $stub_email_message->message = $message;
         $stub_email_message->subject = $subject;
 
         // Create
-        $stub_email_message->email_template_id = $email_template_id = $this->phactory->insert( 'email_templates', compact( 'template' ), 's' );
-        $this->email_template->template = $template;
-        $this->phactory->insert( 'email_template_associations', array( 'email_template_id' => $email_template_id, 'object_id' => $website_id, 'type' => $type ), 'iis' );
+        $ph_email_template = $this->phactory->create('email_templates');
+        $this->phactory->create( 'email_template_associations', array( 'email_template_id' => $ph_email_template->email_template_id ) );
+
+        // Assign
+        $stub_email_message->email_template_id = $ph_email_template->email_template_id;
 
         // Get HTML Message
         $html_message = $this->email_template->get_complete( $stub_account, $stub_email_message );
         $generated_subject = str_replace( '[website_title]', $account_title, $subject );
-        $generated_template = str_replace( array( '[subject]', '[message]' ), array( $generated_subject, '<p>' . $message . '</p>' ), $template );
+        $generated_template = str_replace( array( '[subject]', '[message]' ), array( $generated_subject, '<p>' . $message . '</p>' ), self::TEMPLATE );
 
         $this->assertEquals( $html_message, $generated_template );
-
-        $this->phactory->delete( 'email_templates', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'email_template_associations', array( 'object_id' => $website_id ), 'i' );
     }
 
     /**

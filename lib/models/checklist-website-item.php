@@ -35,9 +35,9 @@ class ChecklistWebsiteItem extends ActiveRecordBase {
      */
     public function add_all_to_checklist( $checklist_id ) {
         $this->prepare(
-            'INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT :checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = 1'
-            , 'i'
-            , array( ':checklist_id' => $checklist_id )
+            'INSERT INTO `checklist_website_items` ( `checklist_id`, `checklist_item_id` ) SELECT :checklist_id, `checklist_item_id` FROM `checklist_items` WHERE `status` = :status'
+            , 'ii'
+            , array( ':checklist_id' => $checklist_id, ':status' => ChecklistItem::STATUS_ACTIVE )
         )->query();
     }
 

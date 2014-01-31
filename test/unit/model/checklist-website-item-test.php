@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class ChecklistWebsiteItemTest extends BaseDatabaseTest {
+    const CHECKLIST_ID = 3;
+    const CHECKLIST_ITEM_ID = 7;
+
     /**
      * @var ChecklistWebsiteItem
      */
@@ -13,61 +16,64 @@ class ChecklistWebsiteItemTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->checklist_website_item = new ChecklistWebsiteItem();
+
+        // Define
+        $this->phactory->define( 'checklist_website_items', array( 'checklist_id' => self::CHECKLIST_ID, 'checklist_item_id' => self::CHECKLIST_ITEM_ID ) );
+        $this->phactory->define( 'checklist_items', array( 'status' => ChecklistItem::STATUS_ACTIVE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $checklist_website_item_id = 3;
+        // Create
+        $ph_checklist_website_item = $this->phactory->create('checklist_website_items');
 
-        $this->checklist_website_item->get( $checklist_website_item_id );
+        // Get
+        $this->checklist_website_item->get( $ph_checklist_website_item->checklist_website_item_id );
 
-        $this->assertEquals( $this->checklist_website_item->checklist_item_id, 2 );
+        // Assert
+        $this->assertEquals( self::CHECKLIST_ITEM_ID, $this->checklist_website_item->checklist_item_id );
     }
 
     /**
      * Test adding all the checklist items to a checklist
      */
     public function testAddAllToChecklist() {
-        // Declare variables
-        $checklist_id = -5;
+        // Reset
+        $this->phactory->recall();
 
-        // Should insert over 30 items
-        $this->checklist_website_item->add_all_to_checklist( $checklist_id );
+        // Create
+        $ph_checklist_item = $this->phactory->create('checklist_items');
 
-        // Get items
-        $checklist_website_items = $this->phactory->get_results( "SELECT FROM `checklist_website_items` WHERE `checklist_id` = $checklist_id" );
+        // Add to a checklist
+        $this->checklist_website_item->add_all_to_checklist( self::CHECKLIST_ID );
 
-        // Make sure that there are many of them
-        $this->assertGreaterThan( count( $checklist_website_items ), 20 );
+        // Get item
+        $checklist_website_item = $this->phactory->get( 'checklist_website_items', array( 'checklist_id' => self::CHECKLIST_ID ) );
 
-        // Delete
-        $this->phactory->delete( 'checklist_website_items', array( 'checklist_id' => $checklist_id ), 'i' );
+        // Assert
+        $this->assertEquals( $ph_checklist_item->checklist_item_id, $checklist_website_item->checklist_item_id );
     }
 
     /**
      * Test update
-     *
-     * @depends testGet
      */
     public function testUpdate() {
-        // Declare variables
-        $checklist_website_item_id = 4;
-        $now = dt::now();
-
-        // Get
-        $this->checklist_website_item->get( $checklist_website_item_id );
+        // Create
+        $ph_checklist_website_item = $this->phactory->create('checklist_website_items');
 
         // Update
-        $this->checklist_website_item->date_checked = $now;
+        $this->checklist_website_item->id = $ph_checklist_website_item->checklist_website_item_id;
+        $this->checklist_website_item->date_checked = '2014-01-08 00:00:00';
         $this->checklist_website_item->save();
 
-        // Now check it!
-        $date_checked = $this->phactory->get_var( 'SELECT `date_checked` FROM `checklist_website_items` WHERE `checklist_website_item_id` = ' . (int) $this->checklist_website_item->id );
+        // Get item
+        $checklist_website_item = $this->phactory->get( 'checklist_website_items', array( 'checklist_website_item_id' => $ph_checklist_website_item->checklist_website_item_id ) );
 
-        $this->assertEquals( $now, $date_checked );
+        // Assert
+        $this->assertEquals( $this->checklist_website_item->date_checked, $checklist_website_item->date_checked );
     }
 
     /**

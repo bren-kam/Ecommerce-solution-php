@@ -18,11 +18,24 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        set_time_limit(1200);
-        $ashley = new AshleyMasterProductFeedGateway();
-        $ashley->run();
-
+        // Package feed
+        $ashley_package_gateway = new AshleyPackageProductFeedGateway();
+        $ashley_package_gateway->run();
 
         return new HtmlResponse( 'heh' );
+    }
+
+    /**
+     * Login
+     *
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        if ( defined('CLI') && true == CLI ) {
+            $this->user = new User();
+            return true;
+        }
+
+        return false;
     }
 }
