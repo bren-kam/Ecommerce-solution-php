@@ -4,7 +4,7 @@ class WebsiteOrder extends ActiveRecordBase {
     public $id, $website_order_id, $website_id, $website_user_id, $website_cart_id, $website_shipping_method_id
         , $website_coupon_id, $shipping_price, $tax_price, $coupon_discount, $total_cost, $email, $phone
         , $billing_first_name, $billing_last_name, $billing_address1, $billing_address2, $billing_city
-        , $billing_state, $billing_zip, $billing_phone, $billing_alt_phone, $shipping_first_name
+        , $billing_state, $billing_zip, $billing_phone, $billing_alt_phone, $shipping_name, $shipping_first_name
         , $shipping_last_name, $shipping_address1, $shipping_address2, $shipping_city, $shipping_state
         , $shipping_zip, $status, $date_created;
 
@@ -37,7 +37,7 @@ class WebsiteOrder extends ActiveRecordBase {
      */
     public function get( $website_order_id, $account_id ) {
         $this->prepare(
-            'SELECT wo.*, wsm.`name` AS shipping_method FROM `website_orders` AS wo LEFT JOIN `website_shipping_methods` AS wsm ON ( wsm.`website_shipping_method_id` = wo.`website_shipping_method_id` ) WHERE wo.`website_order_id` = :website_order_id AND wo.`website_id` = :account_id'
+            "SELECT wo.*, IF( '' = wo.`shipping_name`, CONCAT( wo.`shipping_first_name`, ' ', wo.`shipping_last_name` ), wo.`shipping_name` ) AS shipping_name, wsm.`name` AS shipping_method FROM `website_orders` AS wo LEFT JOIN `website_shipping_methods` AS wsm ON ( wsm.`website_shipping_method_id` = wo.`website_shipping_method_id` ) WHERE wo.`website_order_id` = :website_order_id AND wo.`website_id` = :account_id"
             , 'ii'
             , array( ':website_order_id' => $website_order_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
