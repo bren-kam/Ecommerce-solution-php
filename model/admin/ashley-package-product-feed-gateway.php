@@ -232,11 +232,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 		set_time_limit( 1200 );
 		
 		// Setup the Ashley VPN
-		$ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
-        ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
+		//$ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
+        //ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
-        // Copy files
-        ssh2_exec( $ssh_connection, "sh /gsr/scripts/ashley_vpn.sh" );    
+        // Execute
+        //ssh2_exec( $ssh_connection, "sh /gsr/scripts/ashley_vpn.sh" );
+        exec('/gsr/scripts/ashley_vpn.sh');
         
 		// Get libraries
         library('ashley-api/ashley-api');
@@ -250,7 +251,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Get Ashley Products by SKU
         $this->ashley_products = $this->get_ashley_products_by_sku();
 
-        echo str_repeat( ' ', 1000 );
+        echo "get_ashley_products_by_sku() completed\n";
 		flush();
 
         // Get Templates
@@ -268,13 +269,13 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Get packages
         $this->packages = $this->ashley->get_packages();
 
-		echo str_repeat( ' ', 1000 );
+        echo "get_packages() completed\n";
 		flush();
 
         // Get series
         $series_array = $this->ashley->get_series();
 
-		echo str_repeat( ' ', 1000 );
+        echo "get_series() completed\n";
 		flush();
 
         // Arrange series
@@ -288,14 +289,16 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      */
     protected function process() {
         $grouped_packages = array();
+		$i = 0;
 		
         // Generate array of our items
 		foreach ( $this->packages as $item ) {
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
-            echo str_repeat( ' ', 50 );
+            echo "Package Item #$i\n";
             set_time_limit(30);
+			$i++;
 			flush();
 
             // Reset errors
@@ -357,9 +360,11 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
 				foreach ( $sku_pieces as $sp ) {
 					if ( isset( $this->ashley_products[$series . $sp] ) ) {
-						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . $sp] );
+						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . $sp]['name'] );
+                        $product->price += $this->ashley_products[$series . $sp]['price'];
 					} elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
-						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . '-' . $sp] );
+						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . '-' . $sp]['name'] );
+                        $product->price += $this->ashley_products[$series . '-' . $sp]['price'];
 					} else {
 						continue;
 					}
@@ -566,6 +571,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * @return array
      */
     protected function get_ashley_products_by_sku() {
-        return ar::assign_key( $this->get_results( "SELECT `sku`, `name` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
+        return ar::assign_key( $this->get_results( "SELECT `sku`, `name`, `price` FROM `products` WHERE `user_id_created` = 353 AND `publish_visibility` = 'public'", PDO::FETCH_ASSOC ), 'sku', true );
     }
 }
