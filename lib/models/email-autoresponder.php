@@ -60,7 +60,7 @@ class EmailAutoresponder extends ActiveRecordBase {
             , 'message' => format::strip_only( $this->message, '<script>' )
             , 'current_offer' => $this->current_offer
         ), array(
-            'email_autoresponder_id' => $this->email_autoresponder_id
+            'email_autoresponder_id' => $this->id
         ), 'isssi', 'i' );
     }
 
@@ -69,7 +69,7 @@ class EmailAutoresponder extends ActiveRecordBase {
      */
     public function remove() {
         $this->delete( array(
-            'email_autoresponder_id' => $this->email_autoresponder_id
+            'email_autoresponder_id' => $this->id
         ), 'i' );
     }
 

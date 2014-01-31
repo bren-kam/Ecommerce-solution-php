@@ -3,6 +3,12 @@
 require_once 'test/base-database-test.php';
 
 class CraigslistMarketTest extends BaseDatabaseTest {
+    const CRAIGSLIST_MARKET_ID = 7;
+    const CL_MARKET_ID = 9;
+
+    // Craigslist Ad Markets
+    const CRAIGSLIST_AD_ID = 15;
+
     /**
      * @var CraigslistMarket
      */
@@ -13,69 +19,77 @@ class CraigslistMarketTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->craigslist_market = new CraigslistMarket();
+
+        // Define
+        $this->phactory->define( 'craigslist_markets', array( 'craigslist_market_id' => self::CRAIGSLIST_MARKET_ID, 'cl_market_id' => self::CL_MARKET_ID, 'status' => CraigslistMarket::STATUS_ACTIVE ) );
+        $this->phactory->define( 'craigslist_ad_markets', array( 'craigslist_ad_id' => self::CRAIGSLIST_AD_ID, 'craigslist_market_id' => self::CRAIGSLIST_MARKET_ID ) );
+        $this->phactory->define( 'craigslist_market_links', array( 'website_id' => self::WEBSITE_ID, 'craigslist_market_id' => self::CRAIGSLIST_MARKET_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test getting the company
      */
     public function testGet() {
-        // Declare variables
-        $craigslist_market_id = 1;
+        // Create
+        $this->phactory->create('craigslist_markets');
 
         // Get company
-        $this->craigslist_market->get( $craigslist_market_id );
+        $this->craigslist_market->get( self::CRAIGSLIST_MARKET_ID );
 
-        $this->assertEquals( 'Lexington', $this->craigslist_market->city );
+        // Assert
+        $this->assertEquals( self::CL_MARKET_ID, $this->craigslist_market->cl_market_id );
     }
 
     /**
      * Test Getting all
      */
     public function testGetAll() {
-        $craigslist_markets = $this->craigslist_market->get_all();
+        // Create
+        $this->phactory->create('craigslist_markets');
 
-        $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
+        // Get
+        $craigslist_markets = $this->craigslist_market->get_all();
+        $craigslist_market = current( $craigslist_markets );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'CraigslistMarket', $craigslist_markets );
+        $this->assertEquals( self::CRAIGSLIST_MARKET_ID, $craigslist_market->craigslist_market_id );
     }
 
     /**
      * Test Get By Ad
      */
     public function testGetByAd() {
-        // Declare variables
-        $website_id = -5;
-        $craigslist_ad_id = -3;
-        $craigslist_market_id = 1;
+        // Create
+        $this->phactory->create('craigslist_markets');
+        $this->phactory->create('craigslist_ad_markets');
+        $this->phactory->create('craigslist_market_links');
 
-        // Insert
-        $this->phactory->insert( 'craigslist_ad_markets', compact( 'craigslist_ad_id', 'craigslist_market_id' ), 'ii' );
-        $this->phactory->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
+        // Get
+        $craigslist_markets = $this->craigslist_market->get_by_ad( self::CRAIGSLIST_AD_ID, self::WEBSITE_ID );
+        $craigslist_market = current( $craigslist_markets );
 
-        $craigslist_markets = $this->craigslist_market->get_by_ad( $craigslist_ad_id, $website_id );
-
-        $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
-
-        // Cleanup
-        $this->phactory->delete( 'craigslist_ad_markets', compact( 'craigslist_ad_id' ), 'i' );
-        $this->phactory->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'CraigslistMarket', $craigslist_markets );
+        $this->assertEquals( self::CRAIGSLIST_MARKET_ID, $craigslist_market->craigslist_market_id );
     }
 
     /**
      * Test Get By Ad
      */
     public function testGetByAccount() {
-        // Declare variables
-        $website_id = -5;
-        $craigslist_market_id = 1;
+        // Create
+        $this->phactory->create('craigslist_markets');
+        $this->phactory->create('craigslist_market_links');
 
-        // Insert
-        $this->phactory->insert( 'craigslist_market_links', compact( 'craigslist_market_id', 'website_id' ), 'ii' );
+        // Get
+        $craigslist_markets = $this->craigslist_market->get_by_account( self::WEBSITE_ID );
+        $craigslist_market = current( $craigslist_markets );
 
-        $craigslist_markets = $this->craigslist_market->get_by_account( $website_id );
-
-        $this->assertTrue( current( $craigslist_markets ) instanceof CraigslistMarket );
-
-        // Cleanup
-        $this->phactory->delete( 'craigslist_market_links', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'CraigslistMarket', $craigslist_markets );
+        $this->assertEquals( self::CRAIGSLIST_MARKET_ID, $craigslist_market->craigslist_market_id );
     }
 
     /**

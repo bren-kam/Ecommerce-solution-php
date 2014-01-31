@@ -55,6 +55,10 @@ class EmailMessage extends ActiveRecordBase {
             foreach ( $meta_data as $md ) {
                 // Get variables
                 $product_array = unserialize( html_entity_decode( $md['value'], ENT_QUOTES, 'UTF-8' ) );
+
+                if ( is_null( $product_array['product_id'] ) )
+                    continue;
+
                 $this->meta[$product_array['product_id']]->price = $product_array['price'];
                 $this->meta[$product_array['product_id']]->order = $product_array['order'];
 
@@ -181,12 +185,8 @@ class EmailMessage extends ActiveRecordBase {
 
     /**
      * Remove All
-     *
-     * @throws ModelException
-     *
-     * @param Account $account
      */
-    public function remove_all( Account $account ) {
+    public function remove_all() {
         if ( !$this->id )
             return;
 

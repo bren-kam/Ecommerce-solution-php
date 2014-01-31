@@ -1,5 +1,7 @@
 <?php
 class EmailList extends ActiveRecordBase {
+    const DEFAULT_CATEGORY_ID = 0;
+
     public $id, $email_list_id, $category_id, $website_id, $name, $description, $date_created;
 
     // Artifical fields
@@ -39,9 +41,9 @@ class EmailList extends ActiveRecordBase {
      */
     public function get_default_email_list( $account_id ) {
         $this->prepare(
-            'SELECT `email_list_id` FROM `email_lists` WHERE `website_id` = :account_id AND `category_id` = 0'
-            , 'i'
-            , array( ':account_id' => $account_id )
+            'SELECT `email_list_id` FROM `email_lists` WHERE `website_id` = :account_id AND `category_id` = :category_id'
+            , 'ii'
+            , array( ':account_id' => $account_id, ':category_id' => self::DEFAULT_CATEGORY_ID )
         )->get_row( PDO::FETCH_INTO, $this );
 
 		$this->id = $this->email_list_id;

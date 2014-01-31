@@ -61,7 +61,7 @@ class Checklist extends ActiveRecordBase {
 	 * Get all information of the checklists
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return Checklist[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables

@@ -1,5 +1,8 @@
 <?php
 class CraigslistMarket extends ActiveRecordBase {
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     public $id, $craigslist_market_id, $cl_market_id, $parent_market_id, $state, $city, $area, $submarket, $status, $date_created;
 
     // For artificial field
@@ -40,11 +43,11 @@ class CraigslistMarket extends ActiveRecordBase {
      * @return CraigslistMarket[]
      */
     public function get_all() {
-        return $this->get_results(
-            "SELECT `craigslist_market_id`, `cl_market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = 1 ORDER BY market ASC"
-            , PDO::FETCH_CLASS
-            , 'CraigslistMarket'
-        );
+        return $this->prepare(
+            "SELECT `craigslist_market_id`, `cl_market_id`, `parent_market_id`, CONCAT( `city`, ', ', IF( '' <> `area`, CONCAT( `state`, ' - ', `area` ), `state` ) ) AS market, `submarket` FROM `craigslist_markets` WHERE `status` = :status ORDER BY market ASC"
+            , 'i'
+            , array( ':status' => self::STATUS_ACTIVE )
+        )->get_results( PDO::FETCH_CLASS, 'CraigslistMarket' );
     }
 
     /**

@@ -24,13 +24,14 @@ if ( !empty( $order->phone ) ) {
 <?php } ?>
 <p id="pShipping">
     <strong><?php echo _('Shipping Information:'); ?></strong><br />
-    <?php echo $order->shipping_first_name, ' ', $order->shipping_last_name; ?><br />
+    <?php echo $order->shipping_name; ?><br />
     <?php echo $order->shipping_address1; ?><br />
     <?php echo $order->shipping_city, ', ', $order->shipping_state, ' ', $order->shipping_zip; ?><br />
     <br />
     <?php if ( isset( $order->billing_phone ) ) { ?>
     <strong><?php echo _('Contact Info'); ?>:</strong><br />
-    <?php echo _('Main Phone'), ': ', $order->billing_phone; ?><br />
+    <?php if ( !empty( $order->phone ) ) echo 'Main Phone: ' . $order->phone . '<br>'; ?>
+    <?php if ( !empty( $order->billing_phone ) ) echo 'Billing Phone: ' . $order->billing_phone . '<br>'; ?>
     <?php
     if ( isset( $order->billing_alt_phone ) )
         echo _('Alternate Phone'), ': ', $order->billing_alt_phone;

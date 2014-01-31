@@ -73,6 +73,7 @@ class SettingsController extends BaseController {
             , 'paypal-express-password'
             , 'paypal-express-signature'
             , 'bill-me-later'
+            , 'crest-financial-dealer-id'
         );
 
         // Create Form
@@ -111,6 +112,12 @@ class SettingsController extends BaseController {
 
         $form->add_field( 'checkbox', _('Bill Me Later'), 'cbBillMeLater', $settings['bill-me-later'] );
 
+        $form->add_field( 'blank', '' );
+        $form->add_field( 'row', '', _('Crest Financial') );
+
+        $form->add_field( 'text', _('Dealer ID'), 'tCrestFinancialDealerId', security::decrypt( base64_decode( $settings['crest-financial-dealer-id'] ), PAYMENT_DECRYPTION_KEY ) )
+            ->attribute( 'maxlength', 10 );
+
         if ( $form->posted() ) {
             $this->user->account->set_settings( array(
                 'payment-gateway-status' => $_POST['sStatus']
@@ -120,6 +127,7 @@ class SettingsController extends BaseController {
                 , 'paypal-express-password' => base64_encode( security::encrypt( $_POST['tPaypalExpressPassword'], PAYMENT_DECRYPTION_KEY ) )
                 , 'paypal-express-signature' => base64_encode( security::encrypt( $_POST['tPaypalExpressSignature'], PAYMENT_DECRYPTION_KEY ) )
                 , 'bill-me-later' => $_POST['cbBillMeLater']
+                , 'crest-financial-dealer-id' => base64_encode( security::encrypt( $_POST['tCrestFinancialDealerId'], PAYMENT_DECRYPTION_KEY ) )
             ) );
 
             $this->notify( _('Your settings have been successfully saved.') );

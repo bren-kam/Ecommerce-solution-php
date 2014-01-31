@@ -3,6 +3,17 @@
 require_once 'test/base-database-test.php';
 
 class ChecklistTest extends BaseDatabaseTest {
+    const TYPE = 'Website Setup';
+
+    // Checklist Website Item
+    const CHECKLIST_WEBSITE_ITEM_CHECKED = 0;
+
+    // Checklist items
+    const CHECKLIST_ITEM_STATUS = 1;
+
+    // Website
+    const WEBSITE_STATUS = 1;
+
     /**
      * @var Checklist
      */
@@ -13,59 +24,78 @@ class ChecklistTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->checklist = new Checklist();
+
+        // Define
+        $this->phactory->define( 'checklists', array( 'website_id' => self::WEBSITE_ID, 'type' => self::TYPE ) );
+        $this->phactory->define( 'checklist_website_items', array( 'checked' => self::CHECKLIST_WEBSITE_ITEM_CHECKED ) );
+        $this->phactory->define( 'checklist_items', array( 'status' => self::CHECKLIST_ITEM_STATUS ) );
+        $this->phactory->define( 'websites', array( 'status' => self::WEBSITE_STATUS ) );
+        $this->phactory->define( 'users' );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $checklist_id = 1;
+        // Create
+        $ph_checklist = $this->phactory->create('checklists');
 
-        $this->checklist->get( $checklist_id );
+        // Get
+        $this->checklist->get( $ph_checklist->checklist_id );
 
-        $this->assertEquals( $this->checklist->website_id, 57 );
+        // Assert
+        $this->assertEquals( self::TYPE, $this->checklist->type );
     }
 
     /**
      * Test Create
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        // Declare variables
-        $account_id = -5;
-
-        $this->checklist->website_id = $account_id;
-        $this->checklist->type = 'Website Setup';
+        // Create
+        $this->checklist->type = self::TYPE;
         $this->checklist->create();
 
-        $this->assertNotNull( $this->checklist->id ) );
+        // Assert
+        $this->assertNotNull( $this->checklist->id );
 
         // Make sure it's in the database
-        $this->checklist->get( $this->checklist->id );
+        $ph_checklist = $this->phactory->get( 'checklists', array( 'checklist_id' => $this->checklist->id ) );
 
-        $this->assertNotNull( $this->checklist->website_id ) );
-
-        // Delete the account
-        $this->phactory->delete( 'checklists', array( 'checklist_id' => $this->checklist->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TYPE, $ph_checklist->type );
     }
 
     /**
      * Tests getting incomplete checklists
      */
     public function testGetIncomplete() {
-        $incomplete_checklists = $this->checklist->get_incomplete();
+        // Reset
+        $this->phactory->recall();
 
-        $this->assertTrue( is_array( $incomplete_checklists ) );
+        // Create
+        $ph_checklist = $this->phactory->create('checklists');
+        $ph_checklist_item = $this->phactory->create('checklist_items');
+        $this->phactory->create( 'checklist_website_items', array( 'checklist_id' => $ph_checklist->checklist_id, 'checklist_item_id' => $ph_checklist_item->checklist_item_id ) );
+
+        // Get
+        $incomplete_checklists = $this->checklist->get_incomplete();
+        $expected_array = array( self::WEBSITE_ID => $ph_checklist->checklist_id );
+
+        $this->assertEquals( $expected_array, $incomplete_checklists );
     }
 
     /**
      * Test listing all companies
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Mock User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $ph_website = $this->phactory->create( 'websites', array( 'user_id' => $ph_user->user_id ) );
+        $this->phactory->create( 'checklists', array( 'website_id' => $ph_website->website_id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -73,14 +103,17 @@ class ChecklistTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'days_left', 'w.`title`', 'u2.`contact_name`', 'c.`type`', 'c.`date_created`' );
         $dt->search( array( 'w.`title`' => false ) );
 
+        // Get
         $checklists = $this->checklist->list_all( $dt->get_variables() );
+        $checklist = current( $checklists );
 
-        // Make sure we have an array
-        $this->assertTrue( $checklists[0] instanceof Checklist );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Checklist', $checklists );
+        $this->assertEquals( self::TYPE, $checklist->type );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $checklists );
@@ -90,8 +123,13 @@ class ChecklistTest extends BaseDatabaseTest {
      * Test counting the companies
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Mock User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_user = $this->phactory->create('users');
+        $ph_website = $this->phactory->create( 'websites', array( 'user_id' => $ph_user->user_id ) );
+        $this->phactory->create( 'checklists', array( 'website_id' => $ph_website->website_id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -99,14 +137,14 @@ class ChecklistTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'days_left', 'w.`title`', 'u2.`contact_name`', 'c.`type`', 'c.`date_created`' );
         $dt->search( array( 'w.`title`' => false ) );
 
         $count = $this->checklist->count_all( $dt->get_count_variables() );
 
         // Make sure they exist
-        $this->assertGreaterThan( 1, $count );
+        $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );

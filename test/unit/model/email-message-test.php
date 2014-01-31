@@ -3,6 +3,25 @@
 require_once 'test/base-database-test.php';
 
 class EmailMessageTest extends BaseDatabaseTest {
+    const SUBJECT = 'Right from the start';
+
+    // Email Message Meta
+    const EMAIL_MESSAGE_ID = 13;
+    const EMAIL_MESSAGE_TYPE = 'product';
+
+    // Email Message Associations
+    const EMAIL_LIST_ID = 23;
+
+    /**
+     * Email Message Value
+     * @var string
+     */
+    protected $email_message_value = array(
+        'product_id' => 12
+        , 'price' => 14
+        , 'order' => 1
+    );
+
     /**
      * @var EmailMessage
      */
@@ -13,55 +32,42 @@ class EmailMessageTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->email_message = new EmailMessage();
+
+        // Define
+        $this->phactory->define( 'email_messages', array( 'website_id' => self::WEBSITE_ID, 'subject' => self::SUBJECT, 'status' => EmailMessage::STATUS_SENT ) );
+        $this->phactory->define( 'email_message_meta', array( 'email_message_id' => self::EMAIL_MESSAGE_ID, 'type' => self::EMAIL_MESSAGE_TYPE, 'value' => serialize( $this->email_message_value ) ) );
+        $this->phactory->define( 'email_message_associations', array( 'email_message_id' => self::EMAIL_MESSAGE_ID, 'email_list_id' => self::EMAIL_LIST_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Set variables
-        $website_id = -7;
-        $subject = 'Right from the start';
-
         // Create
-        $email_message_id = $this->phactory->insert( 'email_messages', compact( 'website_id', 'subject' ), 'is' );
+        $ph_email_message = $this->phactory->create('email_messages');
 
         // Get
-        $this->email_message->get( $email_message_id, $website_id );
+        $this->email_message->get( $ph_email_message->email_message_id, self::WEBSITE_ID );
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $subject, $this->email_message->subject );
-
-        // Clean up
-        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::SUBJECT, $this->email_message->subject );
     }
 
     /**
      * Test Get Meta
      */
     public function testGetMeta() {
-        // Set variables
-        $email_message_id = -5;
-        $type = 'product';
-        $value = serialize( array(
-            'product_id' => -3
-            , 'price' => 30
-            , 'order' => 1
-        ) );
-
-        $this->email_message->id = $email_message_id;
-
         // Create
-        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->create('email_message_meta');
 
         // Get
+        $this->email_message->id = self::EMAIL_MESSAGE_ID;
         $meta = $this->email_message->get_meta();
+        $expected_meta = serialize( $this->email_message_value );
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $meta[0]['value'], $value );
-
-        // Clean up
-        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        // Assert
+        $this->assertEquals( $expected_meta, $meta[0]['value'] );
     }
 
     /**
@@ -69,310 +75,208 @@ class EmailMessageTest extends BaseDatabaseTest {
      *
      * @depends testGetMeta
      */
-    public function testGetSmartMetaA() {
-        // Set variables
-        $email_message_id = -5;
-        $type = 'product';
-        $product_id = -3;
-        $price = 30;
-        $value = serialize( array(
-            'product_id' => $product_id
-            , 'price' => $price
-            , 'order' => 1
-        ) );
+    public function testGetSmartMeta() {
+        // Create
+        $this->phactory->create('email_message_meta');
 
-        $this->email_message->id = $email_message_id;
-        $this->email_message->type = $type;
+        // Get
+        $this->email_message->id = self::EMAIL_MESSAGE_ID;
+        $this->email_message->type = self::EMAIL_MESSAGE_TYPE;
+        $this->email_message->get_smart_meta();
+
+        // Assert
+        $this->assertEquals( $this->email_message_value['price'], $this->email_message->meta[$this->email_message_value['product_id']]->price );
+
+        // Try scenario two
+        $this->phactory->recall();
 
         // Create
-        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->create( 'email_message_meta', array( 'value' => '' ) );
 
         // Get
         $this->email_message->get_smart_meta();
+        $expected_meta = array();
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $this->email_message->meta[$product_id]->price, $price );
+        // Assert
+        $this->assertEquals( $expected_meta, $this->email_message->meta );
 
-        // Clean up
-        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
-    }
+        // Try secnario three
+        $this->email_message->type = null;
+        $this->phactory->recall();
 
-    /**
-     * Get Smart Meta - B
-     *
-     * @depends testGetMeta
-     */
-    public function testGetSmartMetaB() {
-        // Set variables
-        $email_message_id = -5;
-        $type = 'product';
-
-        $this->email_message->id = $email_message_id;
-        $this->email_message->type = $type;
-
-        // Get
-        $this->email_message->get_smart_meta();
-
-        // Make sure we grabbed the right one
-        $this->assertEquals( $this->email_message->meta, array() );
-    }
-
-    /**
-     * Get Smart Meta - C
-     *
-     * @depends testGetMeta
-     */
-    public function testGetSmartMetaC() {
-        // Set variables
-        $email_message_id = -5;
+        // Declare
         $type = 'view-button-color';
-        $value = 'ff0000';
-
-        $this->email_message->id = $email_message_id;
+        $value = 'FF0000';
 
         // Create
-        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->create( 'email_message_meta', compact( 'type', 'value' ) );
 
         // Get
         $this->email_message->get_smart_meta();
+        $expected_meta = array( $type => $value );
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $this->email_message->meta[$type], $value );
-
-        // Clean up
-        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        // Assert
+        $this->assertEquals( $expected_meta, $this->email_message->meta );
     }
 
     /**
      * Create
      */
     public function testCreate() {
-        // Declare variables
-        $website_id = -3;
-        $subject = "I don't believe you";
-
         // Create
-        $this->email_message->website_id = $website_id;
-        $this->email_message->subject = $subject;
+        $this->email_message->website_id = self::WEBSITE_ID;
+        $this->email_message->subject = self::SUBJECT;
         $this->email_message->create();
 
+        // Assert
+        $this->assertNotNull( $this->email_message->id );
+
         // Make sure it's in the database
-        $fetched_subject = $this->phactory->get_var( 'SELECT `subject` FROM `email_messages` WHERE `email_message_id` = ' . (int) $this->email_message->id );
+        $ph_email_message = $this->phactory->get( 'email_messages', array( 'email_message_id' => $this->email_message->id ) );
 
-        $this->assertEquals( $subject, $fetched_subject );
-
-        // Delete
-        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::SUBJECT, $ph_email_message->subject );
     }
 
     /**
      * Add Associations
      */
     public function testAddAssociations() {
-        // Declare variables
-        $email_message_id = -3;
-        $email_list_ids = array( -2, -4, -6 );
-
-        $this->email_message->id = $email_message_id;
-
         // Add
-        $this->email_message->add_associations( $email_list_ids );
+        $this->email_message->id = self::EMAIL_MESSAGE_ID;
+        $this->email_message->add_associations( array( self::EMAIL_LIST_ID ) );
 
-        $fetched_email_list_ids = $this->phactory->get_col( "SELECT `email_list_id` FROM `email_message_associations` WHERE `email_message_id` = $email_message_id ORDER BY `email_list_id` DESC");
+        // Get
+        $ph_email_message_association = $this->phactory->get( 'email_message_associations', array( 'email_message_id' => self::EMAIL_MESSAGE_ID ) );
 
-        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
-
-        // Clean up
-        $this->phactory->delete( 'email_message_associations', compact( 'email_message_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::EMAIL_LIST_ID, $ph_email_message_association->email_list_id );
     }
+
 
     /**
      * Add Meta
      */
     public function testAddMeta() {
-        // Declare variables
-        $email_message_id = -3;
-        $meta = array( array( 'view-button-color', 'FF0000' ) );
-
-        $this->email_message->id = $email_message_id;
+        // Declare
+        $type = 'view-button-color';
+        $value = 'FF0000';
 
         // Add
-        $this->email_message->add_meta( $meta );
+        $this->email_message->id = self::EMAIL_MESSAGE_ID;
+        $this->email_message->add_meta( array( array( $type, $value ) ) );
 
-        $fetched_meta_color = $this->phactory->get_var( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id AND `type` = " . $this->phactory->quote( $meta[0][0] ) );
+        // Get
+        $ph_email_message_meta = $this->phactory->get( 'email_message_meta', array( 'email_message_id' => self::EMAIL_MESSAGE_ID ) );
 
-        $this->assertEquals( $meta[0][1], $fetched_meta_color );
-
-        // Clean up
-        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
+        // Assert
+        $this->assertEquals( $value, $ph_email_message_meta->value );
     }
 
     /**
      * Save
-     *
-     * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $website_id = -3;
-        $subject = "I don't believe you";
-
         // Create
-        $this->email_message->website_id = $website_id;
-        $this->email_message->create();
+        $ph_email_message = $this->phactory->create('email_messages');
 
         // Save
-        $this->email_message->subject = $subject;
+        $this->email_message->id = $ph_email_message->email_message_id;
+        $this->email_message->website_id = self::WEBSITE_ID;
+        $this->email_message->subject = "Bon Bon";
         $this->email_message->save();
 
-        // Make sure it's in the database
-        $fetched_subject = $this->phactory->get_var( 'SELECT `subject` FROM `email_messages` WHERE `email_message_id` = ' . (int) $this->email_message->id );
+        // Get
+        $ph_email_message = $this->phactory->get( 'email_messages', array( 'email_message_id' => $ph_email_message->email_message_id ) );
 
-        $this->assertEquals( $subject, $fetched_subject );
-
-        // Delete
-        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( $this->email_message->subject, $ph_email_message->subject );
     }
 
     /**
      * Remove
-     *
-     * @depends testGet
      */
     public function testRemove() {
-        // Make it possible to call this function
+        // Reflection
         $class = new ReflectionClass('EmailMessage');
-        $method = $class->getMethod( 'remove' );
+        $method = $class->getMethod('remove');
         $method->setAccessible(true);
 
-        // Set variables
-        $website_id = -7;
-        $subject = 'Right from the start';
-
         // Create
-        $email_message_id = $this->phactory->insert( 'email_messages', compact( 'website_id', 'subject' ), 'is' );
-
-        // Get
-        $this->email_message->get( $email_message_id, $website_id );
+        $ph_email_message = $this->phactory->create('email_messages');
 
         // Remove
+        $this->email_message->id = $ph_email_message->email_message_id;
         $method->invoke( $this->email_message );
 
-        $email_message = $this->phactory->get_row( "SELECT * FROM `email_messages` WHERE `email_message_id` = $email_message_id" );
+        // Get
+        $ph_email_message = $this->phactory->get( 'email_messages', array( 'email_message_id' => $ph_email_message->email_message_id ) );
 
-        // Make sure we grabbed the right one
-        $this->assertFalse( $email_message );
+        // Assert
+        $this->assertNull( $ph_email_message );
     }
 
     /**
      * Remove Associations
      */
     public function testRemoveAssociations() {
-        // Set variables
-        $email_message_id = -7;
-        $email_list_id = -5;
-
-        // Insert
-        $this->phactory->insert( 'email_message_associations', compact( 'email_message_id', 'email_list_id' ), 'ii' );
+        // Craete
+        $this->phactory->create('email_message_associations');
 
         // Remove
-        $this->email_message->id = $email_message_id;
+        $this->email_message->id = self::EMAIL_MESSAGE_ID;
         $this->email_message->remove_associations();
 
-        // Get/check
-        $email_list_id = $this->phactory->get_var( "SELECT `email_list_id` FROM `email_message_associations` WHERE `email_message_id` = $email_message_id" );
+        // Get
+        $ph_email_message_association = $this->phactory->get( 'email_message_associations', array( 'email_message_id' => self::EMAIL_MESSAGE_ID ) );
 
-        $this->assertFalse( $email_list_id );
-
-        // Clean up
-        $this->phactory->delete( 'email_message_associations', compact( 'email_message_id' ), 'i' );
+        // Assert
+        $this->assertNull( $ph_email_message_association );
     }
 
     /**
      * Remove Meta
      */
     public function testRemoveMeta() {
-        // Set variables
-        $email_message_id = -7;
-        $type = 'view-button-color';
-        $value = 'ff0000';
-
         // Create
-        $this->phactory->insert( 'email_message_meta', compact( 'email_message_id', 'type', 'value' ), 'ss' );
+        $this->phactory->create('email_message_meta');
 
         // Remove
-        $this->email_message->id = $email_message_id;
+        $this->email_message->id = self::EMAIL_MESSAGE_ID;
         $this->email_message->remove_meta();
 
-        // Get/check
-        $fetched_value = $this->phactory->get_var( "SELECT `value` FROM `email_message_meta` WHERE `email_message_id` = $email_message_id AND `type` = " . $this->phactory->quote( $type ) );
+        // Get
+        $ph_email_message_meta = $this->phactory->get( 'email_message_meta', array( 'email_message_id' => self::EMAIL_MESSAGE_ID ) );
 
-        $this->assertFalse( $fetched_value );
-
-        // Clean up
-        $this->phactory->delete( 'email_message_meta', compact( 'email_message_id' ), 'i' );
-    }
-
-    /**
-     * Test Update all email messages to "scheduled"
-     */
-    public function testUpdateScheduledEmails() {
-        // Declare variables
-        $account_id = -5;
-        $scheuled_status = 2;
-
-        // Create an email message
-        $this->phactory->insert( 'email_messages', array(
-            'website_id' => $account_id
-            , 'email_template_id' => -3
-            , 'subject' => 'George of the Jungle'
-            , 'message' => 'George, George, George of the Jungle!'
-            , 'type' => 'product'
-            , 'status' => 1 // scheduled
-            , 'date_created' => '2012-10-10 00:00:00'
-            , 'date_sent' => '2012-10-10 00:00:00'
-        ), 'iisssis' );
-
-        $email_message_id = $this->phactory->get_insert_id();
-
-        // Update it to scheduled
-        $this->email_message->update_scheduled_emails();
-
-        // Get status to make sure it's scheduled
-        $status = $this->phactory->get_var( "SELECT `status` FROM `email_messages` WHERE `email_message_id` = $email_message_id" );
-
-        $this->assertEquals( $scheuled_status, $status );
-
-        // Delete email
-        $this->phactory->delete( 'email_messages', array( 'email_message_id' => $email_message_id ), 'i' );
+        // Assert
+        $this->assertNull( $ph_email_message_meta );
     }
 
     /**
      * Get Dashboard Messages By Account
      */
     public function testGetDashboardMessagesByAccount() {
-        // Set variables
-        $website_id = -7;
-        $status = EmailMessage::STATUS_SENT;
-        $subject = "You just threw it away";
+        // Create
+        $this->phactory->create('email_messages');
 
-        // Insert
-        $this->phactory->insert( 'email_messages', compact( 'website_id', 'subject', 'status' ), 'isi' );
+        // Get
+        $email_messages = $this->email_message->get_dashboard_messages_by_account( self::WEBSITE_ID );
+        $email_message = current( $email_messages );
 
-        $email_messages = $this->email_message->get_dashboard_messages_by_account( $website_id );
-
-        $this->assertTrue( current( $email_messages ) instanceof EmailMessage );
-
-        // Clean up
-        $this->phactory->delete( 'email_messages', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'EmailMessage', $email_messages );
+        $this->assertEquals( self::SUBJECT, $email_message->subject );
     }
 
     /**
      * List All
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('email_messages');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -380,13 +284,16 @@ class EmailMessageTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( '`subject`', '`status`', 'date_sent' );
 
+        // Get
         $email_messages = $this->email_message->list_all( $dt->get_variables() );
+        $email_message = current( $email_messages );
 
-        // Make sure we have an array
-        $this->assertTrue( current( $email_messages ) instanceof EmailMessage );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'EmailMessage', $email_messages );
+        $this->assertEquals( self::SUBJECT, $email_message->subject );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $email_messages );
@@ -396,8 +303,11 @@ class EmailMessageTest extends BaseDatabaseTest {
      * Count All
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('email_messages');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -405,9 +315,10 @@ class EmailMessageTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( '`subject`', '`status`', 'date_sent' );
 
+        // Get
         $count = $this->email_message->count_all( $dt->get_count_variables() );
 
         // Make sure they exist
