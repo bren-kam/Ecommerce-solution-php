@@ -280,129 +280,68 @@ class EmailTest extends BaseDatabaseTest {
         $this->assertNull( $ph_email_import_email );
     }
 
-//    /**
-//     * Test Import All
-//     *
-//     * @depends testDeleteImported
-//     * @depends testImport
-//     */
-//    public function testImportAll() {
-//        // Declare Variables
-//        $website_id = -5;
-//        $email = 'test@googoo.com';
-//        $name = 'Lee';
-//        $unsubscribed_email = 'test@gaga.com';
-//        $unsubscribed_name = 'Eel';
-//        $emails = array(
-//            array(
-//                'email' => $email
-//                , 'name' => $name
-//            )
-//            , array(
-//                'email' => $unsubscribed_email
-//                , 'name' => $unsubscribed_name
-//            )
-//        );
-//
-//        // Insert
-//        $this->phactory->insert( 'emails', array( 'website_id' => $website_id, 'email' => $unsubscribed_email, 'name' => $unsubscribed_name, 'status' => 0 ), 'issi' );
-//
-//        // Import all
-//        $this->email->import_all( $website_id, $emails );
-//
-//        // Get emails
-//        $fetched_email = $this->phactory->get_var( "SELECT `email` FROM `email_import_emails` WHERE `website_id` = $website_id AND `name` = '$name'" );
-//
-//        $this->assertEquals( $fetched_email, $email );
-//
-//        // Cleanup
-//        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test Complete Import
-//     *
-//     * @depends testImportEmails
-//     * @depends testAddAssociationsToImportedEmails
-//     * @depends testDeleteImported
-//     */
-//    public function testCompleteImport() {
-//        // Declare variables
-//        $website_id = -25;
-//        $email = 'test@flock.com';
-//        $email_list_ids = array( -2, -4, -6 );
-//
-//        // Insert
-//        $this->phactory->insert( 'email_import_emails', compact( 'website_id', 'email' ), 'is' );
-//
-//        // Complete the import
-//        $this->email->complete_import( $website_id, $email_list_ids );
-//
-//        $email_id = $this->phactory->get_var( "SELECT `email_id` FROM `emails` WHERE `website_id` = $website_id AND `email` = " . $this->phactory->quote( $email ) );
-//
-//        // Make sure it's there
-//        $this->assertGreaterThan( 0, $email_id );
-//
-//        // Make sure it has the emails it should
-//        $fetched_email_list_ids = $this->phactory->get_col( "SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = $email_id ORDER BY `email_list_id` DESC" );
-//
-//        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
-//
-//        // Clean Up
-//        $this->phactory->delete( 'email_import_emails', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'emails', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'email_associations', compact( 'email_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test Get Associations
-//     */
-//    public function testGetAssociations() {
-//        // Declare variables
-//        $this->email->id = $email_id = -5;
-//        $email_list_ids = array( '-2', '-3', '-4' );
-//
-//        // Delete any associations from before hand
-//        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
-//
-//        // Insert
-//        $this->phactory->query( "INSERT INTO `email_associations` ( `email_id`, `email_list_id` ) VALUES ( $email_id, " . implode( "), ( $email_id, ", $email_list_ids ) . ")" );
-//
-//        // Get associations
-//        $fetched_email_list_ids = $this->email->get_associations();
-//
-//        // Don't care about the order, but it reverses it.
-//        $email_list_ids = array_reverse( $email_list_ids );
-//
-//        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
-//
-//        // Delete any images from before hand
-//        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
-//    }
-//
-//    /**
-//     * Test Adding Associations
-//     */
-//    public function testAddAssociations() {
-//        // Declare variables
-//        $this->email->id = -5;
-//        $email_list_ids = array( '-2', '-3', '-4' );
-//
-//        // Delete any associations from before hand
-//        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
-//
-//        // Add
-//        $this->email->add_associations( $email_list_ids );
-//
-//        // See if they are there
-//        $fetched_email_list_ids = $this->phactory->get_col( 'SELECT `email_list_id` FROM `email_associations` WHERE `email_id` = ' . $this->email->id . ' ORDER BY `email_list_id` DESC' );
-//
-//        $this->assertEquals( $email_list_ids, $fetched_email_list_ids );
-//
-//        // Delete any images from before hand
-//        $this->phactory->delete( 'email_associations', array( 'email_id' => $this->email->id ) , 'i' );
-//    }
+    /**
+     * Test Import All
+     *
+     * @depends testDeleteImported
+     * @depends testImport
+     */
+    public function testImportAll() {
+        // Reset
+        $this->phactory->recall();
+
+        // Declare
+        $emails = array(
+            array(
+                'email' => self::EMAIL
+                , 'name' => self::NAME
+            )
+        );
+
+        // Import all
+        $this->email->import_all( self::WEBSITE_ID, $emails );
+
+        // Get emails
+        $ph_email_import_email = $this->phactory->get( 'email_import_emails', array( 'website_id' => self::WEBSITE_ID ) );
+
+        // Assert
+        $this->assertEquals( self::EMAIL, $ph_email_import_email->email );
+    }
+
+
+    /**
+     * Test Get Associations
+     */
+    public function testGetAssociations() {
+        // Create
+        $this->phactory->create('email_associations');
+
+        // Get associations
+        $this->email->id = self::EMAIL_ID;
+        $email_list_ids = $this->email->get_associations();
+        $expected_email_list_ids = array( self::EMAIL_LIST_ID );
+
+        // Assert
+        $this->assertEquals( $expected_email_list_ids, $email_list_ids );
+    }
+
+    /**
+     * Test Adding Associations
+     */
+    public function testAddAssociations() {
+        // Reset
+        $this->phactory->recall();
+
+        // Add
+        $this->email->id = self::EMAIL_ID;
+        $this->email->add_associations( array( self::EMAIL_LIST_ID ) );
+
+        // Get
+        $ph_email_association = $this->phactory->get( 'email_associations', array( 'email_id' => self::EMAIL_ID ) );
+
+        // Assert
+        $this->assertEquals( self::EMAIL_LIST_ID, $ph_email_association->email_list_id );
+    }
 
     /**
      * Will be executed after every test
