@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class IndustryTest extends BaseDatabaseTest {
+    const NAME = 'furniture';
+
     /**
      * @var Industry
      */
@@ -13,26 +15,40 @@ class IndustryTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->industry = new Industry();
+
+        // Define
+        $this->phactory->define( 'industries', array( 'name' => self::NAME ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        $industry_id = 1;
+        // Create
+        $ph_industry = $this->phactory->create('industries');
 
-        $this->industry->get( $industry_id );
+        // Get
+        $this->industry->get( $ph_industry->industry_id );
 
-        $this->assertEquals( $this->industry->name, 'furniture' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->industry->name );
     }
 
     /**
      * Test getting all the industries
      */
     public function testGetAll() {
-        $industries = $this->industry->get_all();
+        // Create
+        $this->phactory->create('industries');
 
-        $this->assertTrue( $industries[0] instanceof Industry );
+        // Get
+        $industries = $this->industry->get_all();
+        $industry = current( $industries );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Industry', $industries );
+        $this->assertEquals( self::NAME, $industry->name );
     }
 
     /**
