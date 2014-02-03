@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class KnowledgeBaseArticleRatingTest extends BaseDatabaseTest {
+    const KB_ARTICLE_ID = 3;
+    const RATING = 1;
+
     /**
      * @var KnowledgeBaseArticleRating
      */
@@ -13,28 +16,26 @@ class KnowledgeBaseArticleRatingTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->kb_article_rating = new KnowledgeBaseArticleRating();
+
+        // Define
+        $this->phactory->define( 'kb_article_rating', array( 'kb_article_id' => self::KB_ARTICLE_ID, 'rating' => self::RATING ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Create
      */
     public function testCreate() {
-        // Declare variables
-        $kb_article_id = -3;
-        $rating = 1;
-
         // Create
-        $this->kb_article_rating->kb_article_id = $kb_article_id;
-        $this->kb_article_rating->rating = $rating;
+        $this->kb_article_rating->kb_article_id = self::KB_ARTICLE_ID;
+        $this->kb_article_rating->rating = self::RATING;
         $this->kb_article_rating->create();
 
-        // Make sure it's in the database
-        $fetched_rating = $this->phactory->get_var( "SELECT `rating` FROM `kb_article_rating` WHERE `kb_article_id` = $kb_article_id" );
+        // Get
+        $ph_kb_article_rating = $this->phactory->get( 'kb_article_rating', array( 'kb_article_id' => self::KB_ARTICLE_ID ) );
 
-        $this->assertEquals( $rating, $fetched_rating );
-
-        // Delete the comment
-        $this->phactory->delete( 'kb_article_rating', compact( 'kb_article_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::RATING, $ph_kb_article_rating->rating );
     }
 
     /**
