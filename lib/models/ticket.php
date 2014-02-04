@@ -5,6 +5,7 @@ class Ticket extends ActiveRecordBase {
     const PRIORITY_URGENT = 2;
     const STATUS_OPEN = 0;
     const STATUS_CLOSED = 1;
+    const STATUS_UNCREATED = -1;
 
     // The columns we will have access to
     public $id, $ticket_id, $user_id, $assigned_to_user_id, $summary, $message, $name, $website, $assigned_to
@@ -118,6 +119,10 @@ class Ticket extends ActiveRecordBase {
      */
     public function deleted_uncreated_tickets() {
         // Delete ticket uploads, ticket links and tickets themselves (this is awesome!)
-		$this->query( 'DELETE tu.*, t.* FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )');
+		$this->prepare(
+            'DELETE t.*, tu.* FROM `tickets` AS t LEFT JOIN `ticket_uploads` AS tu ON ( tu.`ticket_id` = t.`ticket_id` ) WHERE t.`status` = :status AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )'
+            , 'i'
+            , array( ':status' => self::STATUS_UNCREATED )
+        )->query();
     }
 }
