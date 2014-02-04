@@ -81,7 +81,7 @@ class ChecklistWebsiteItemNoteTest extends BaseDatabaseTest {
 
         // Delete
         $this->checklist_website_item_note->id = $ph_checklist_website_item_note->checklist_website_item_note_id;
-        $this->checklist_website_item_note->delete();
+        $this->checklist_website_item_note->remove();
 
         // Make sure it's in the database
         $ph_checklist_website_item_note = $this->phactory->get( 'checklist_website_item_notes', array( 'checklist_website_item_note_id' => $ph_checklist_website_item_note->checklist_website_item_note_id ) );

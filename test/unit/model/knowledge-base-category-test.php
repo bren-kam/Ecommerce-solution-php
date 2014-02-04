@@ -161,7 +161,7 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
 
         // Delete
         $this->kb_category->id = $ph_kb_category->id;
-        $this->kb_category->delete();
+        $this->kb_category->remove();
 
         // Get
         $ph_kb_category = $this->phactory->get( 'kb_category', array( 'id' => $ph_kb_category->id ) );
