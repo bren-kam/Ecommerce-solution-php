@@ -32,7 +32,7 @@ class ProductOptionListItem extends ActiveRecordBase {
      * Get all product option list items for a product option
      *
      * @param int $product_option_id
-     * @return array
+     * @return ProductOptionListItem[]
      */
     public function get_all( $product_option_id ) {
         return $this->prepare(
