@@ -3,6 +3,12 @@
 require_once 'test/base-database-test.php';
 
 class KnowledgeBasePageTest extends BaseDatabaseTest {
+    const NAME = 'Import Subscribers';
+    const KB_CATEGORY_ID = 3;
+
+    // KB Category
+    const CATEGORY_NAME = 'Subscribers';
+
     /**
      * @var KnowledgeBasePage
      */
@@ -13,92 +19,78 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->kb_page = new KnowledgeBasePage();
+
+        // Define
+        $this->phactory->define( 'kb_page', array( 'kb_category_id' => self::KB_CATEGORY_ID, 'name' => self::NAME ) );
+        $this->phactory->define( 'kb_category', array( 'name' => self::CATEGORY_NAME, 'section' => KnowledgeBaseCategory::SECTION_ADMIN ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $name = 'Import Subscribers';
-
         // Create
-        $id = $this->phactory->insert( 'kb_page', compact( 'name' ), 's' );
+        $ph_kb_page = $this->phactory->create('kb_page');
 
-        $this->kb_page->get( $id );
+        // Get
+        $this->kb_page->get( $ph_kb_page->id );
 
-        $this->assertEquals( $this->kb_page->name, $name );
-
-        // Clean up
-        $this->phactory->delete( 'kb_page', compact( 'id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->kb_page->name );
     }
 
     /**
      * Test Get by Category
      */
     public function testGetByCategory() {
-        // Declare variables
-        $kb_category_id = -3;
-        $name = 'Import Subscribers';
-
         // Create
-        $this->phactory->insert( 'kb_page', compact( 'kb_category_id', 'name' ), 'is' );
+        $this->phactory->create('kb_page');
 
-        $pages = $this->kb_page->get_by_category( $kb_category_id );
+        // Get
+        $pages = $this->kb_page->get_by_category( self::KB_CATEGORY_ID );
+        $page = current( $pages );
 
-        $this->assertTrue( current( $pages ) instanceof KnowledgeBasePage );
-
-        // Clean up
-        $this->phactory->delete( 'kb_page', compact( 'kb_category_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBasePage', $pages );
+        $this->assertEquals( self::NAME, $page->name );
     }
 
     /**
      * Test Create
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        // Declare variables
-        $name = 'Import Subscribers';
-
         // Create
-        $this->kb_page->name = $name;
+        $this->kb_page->name = self::NAME;
         $this->kb_page->create();
 
-        // Make sure it's in the database
-        $this->kb_page->get( $this->kb_page->id );
+        // Assert
+        $this->assertNotNull( $this->kb_page->id );
 
-        $this->assertEquals( $name, $this->kb_page->name );
+        // Get
+        $ph_kb_page = $this->phactory->get( 'kb_page', array( 'id' => $this->kb_page->id ) );
 
-        // Delete the comment
-        $this->phactory->delete( 'kb_page', array( 'id' => $this->kb_page->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $ph_kb_page->name );
     }
 
     /**
      * Test Save
-     *
-     * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $first_name = 'Import Subscribers';
-        $second_name = 'Export Subscribers';
-
         // Create
-        $this->kb_page->name = $first_name;
-        $this->kb_page->create();
+        $ph_kb_page = $this->phactory->create('kb_page');
 
         // Save
-        $this->kb_page->name = $second_name;
+        $this->kb_page->id = $ph_kb_page->id;
+        $this->kb_page->name = 'Export Lists';
         $this->kb_page->save();
 
-        // Make sure it's in the database
-        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `kb_page` WHERE `id` = " . (int) $this->kb_page->id );
+        // Get
+        $ph_kb_page = $this->phactory->get( 'kb_page', array( 'id' => $ph_kb_page->id ) );
 
-        $this->assertEquals( $fetched_name, $second_name );
-
-        // Delete the comment
-        $this->phactory->delete( 'kb_page', array( 'id' => $this->kb_page->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->kb_page->name, $ph_kb_page->name );
     }
 
     /**
@@ -107,30 +99,30 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testRemove() {
-        // Declare variables
-        $name = 'Import Subscribers';
-
         // Create
-        $this->kb_page->name = $name;
-        $this->kb_page->create();
+        $ph_kb_page = $this->phactory->create('kb_page');
 
-        $id = (int) $this->kb_page->id;
-
-        // Delete ticket comment
+        // Delete
+        $this->kb_page->id = $ph_kb_page->id;
         $this->kb_page->remove();
 
-        // Check
-        $fetched_kb_page_id = $this->phactory->get_var( "SELECT `kb_page_id` FROM `kb_page` WHERE `id` = $id" );
+        // Get
+        $ph_kb_page = $this->phactory->get( 'kb_page', array( 'id' => $ph_kb_page->id ) );
 
-        $this->assertFalse( $fetched_kb_page_id );
+        // Assert
+        $this->assertNull( $ph_kb_page );
     }
 
     /**
      * Test List All
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $this->phactory->create( 'kb_page', array( 'kb_category_id' => $ph_kb_category->id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -139,16 +131,19 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
         $_GET['section'] = 'admin';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'kbp.`name`', 'category' );
         $dt->add_where( ' AND kbc.`section` = ' . $this->kb_page->quote( $_GET['section'] ) );
         $dt->add_where( ' AND ( kbc2.`section` = ' . $this->kb_page->quote( $_GET['section'] ) . ' OR kbc2.`section` IS NULL )' );
         $dt->search( array( 'kbp.`name`' => false, 'kbc.`name`' => false, 'kbc2.`name`' => false ) );
 
+        // Assert
         $pages = $this->kb_page->list_all( $dt->get_variables() );
+        $page = current( $pages );
 
-        // Make sure they exist
-        $this->assertTrue( current( $pages ) instanceof KnowledgeBasePage );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBasePage', $pages );
+        $this->assertEquals( self::NAME, $page->name );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $pages );
@@ -158,8 +153,12 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
      * Test Count All
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $this->phactory->create( 'kb_page', array( 'kb_category_id' => $ph_kb_category->id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -168,16 +167,17 @@ class KnowledgeBasePageTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
         $_GET['section'] = 'admin';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'kbp.`name`', 'category' );
         $dt->add_where( ' AND kbc.`section` = ' . $this->kb_page->quote( $_GET['section'] ) );
         $dt->add_where( ' AND ( kbc2.`section` = ' . $this->kb_page->quote( $_GET['section'] ) . ' OR kbc2.`section` IS NULL )' );
         $dt->search( array( 'kbp.`name`' => false, 'kbc.`name`' => false, 'kbc2.`name`' => false ) );
 
+        // Get
         $count = $this->kb_page->count_all( $dt->get_count_variables() );
 
-        // Make sure they exist
-        $this->assertEquals( (int) $count, $count );
+        // Assert
+        $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
