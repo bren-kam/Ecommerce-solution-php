@@ -3,6 +3,7 @@
 require_once 'test/base-database-test.php';
 
 class WebsiteReachCommentTest extends BaseDatabaseTest {
+    const COMMENT = 'I like this product';
     /**
      * @var WebsiteReachComment
      */
@@ -13,102 +14,81 @@ class WebsiteReachCommentTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->website_reach_comment = new WebsiteReachComment();
+
+        // Define
+        $this->phactory->define( 'website_reach_comments', array( 'comment' => self::COMMENT ) );
+        $this->phactory->define( 'website_reaches', array( 'website_id' => self::WEBSITE_ID ) );
+        $this->phactory->recall();
     }
+
+
     /**
-     * Test Get
+     * Test create
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testCreate() {
+        // Create
+        $this->website_reach_comment->comment = self::COMMENT;
+        $this->website_reach_comment->create();
+
+        // Assert
+        $this->assertNotNull( $this->website_reach_comment->id );
+
+        // Get
+        $ph_website_reach_comment = $this->phactory->get( 'website_reach_comments', array( 'website_reach_comment_id' => $this->website_reach_comment->id ) );
+
+        // Assert
+        $this->assertEquals( self::COMMENT, $ph_website_reach_comment->comment );
     }
-//
-//    /**
-//     * Test create
-//     */
-//    public function testCreate() {
-//        // Declare variables
-//        $website_reach_id = -9;
-//        $comment = 'I like this product';
-//
-//        // Create
-//        $this->website_reach_comment->website_reach_id = $website_reach_id;
-//        $this->website_reach_comment->comment = $comment;
-//        $this->website_reach_comment->create();
-//
-//        // Make sure it's in the database
-//        $retrieved_comment = $this->phactory->get_var( "SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_id` = $website_reach_id" );
-//
-//        $this->assertEquals( $comment, $retrieved_comment );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get
-//     */
-//    public function testGet() {
-//        // Set variables
-//        $website_id = -7;
-//
-//        // Create
-//        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id' ), 'i' );
-//        $website_reach_comment_id = $this->phactory->insert( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
-//
-//        // Get
-//        $this->website_reach_comment->get( $website_reach_comment_id, $website_id );
-//
-//        // Make sure we grabbed the right one
-//        $this->assertEquals( $website_reach_comment_id, $this->website_reach_comment->id );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
-//        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get By Reach
-//     */
-//    public function testGetByReach() {
-//        // Declare Variables
-//        $website_id = -5;
-//        $user_id = 1; // Kerry Jones
-//
-//        // Create
-//        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id' ), 'i' );
-//        $this->phactory->insert( 'website_reach_comments', compact( 'website_reach_id', 'user_id' ), 'ii' );
-//
-//        // Get all
-//        $website_reach_comments = $this->website_reach_comment->get_by_reach( $website_reach_id, $website_id );
-//
-//        $this->assertTrue( current( $website_reach_comments ) instanceof WebsiteReachComment );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'website_reach_comments', compact( 'website_reach_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Remove
-//     *
-//     * @depends testCreate
-//     */
-//    public function testRemove() {
-//        // Declare variables
-//        $website_reach_id = -9;
-//        $comment = 'I like this product';
-//
-//        // Create
-//        $this->website_reach_comment->website_reach_id = $website_reach_id;
-//        $this->website_reach_comment->comment = $comment;
-//        $this->website_reach_comment->create();
-//
-//        // Remove/Delete
-//        $this->website_reach_comment->remove();
-//
-//        $retrieved_comment = $this->phactory->get_var( 'SELECT `comment` FROM `website_reach_comments` WHERE `website_reach_comment_id` = ' . (int) $this->website_reach_comment->id );
-//
-//        $this->assertFalse( $retrieved_comment );
-//    }
+
+    /**
+     * Get
+     */
+    public function testGet() {
+        // Create
+        $ph_website_reach = $this->phactory->create('website_reaches');
+        $ph_website_reach_comment = $this->phactory->create( 'website_reach_comments', array( 'website_reach_id' => $ph_website_reach->website_reach_id ) );
+
+        // Get
+        $this->website_reach_comment->get( $ph_website_reach_comment->website_reach_comment_id, self::WEBSITE_ID );
+
+        // Assert
+        $this->assertEquals( $ph_website_reach_comment->website_reach_comment_id, $this->website_reach_comment->id );
+    }
+
+    /**
+     * Get By Reach
+     */
+    public function testGetByReach() {
+        // Create
+        $ph_website_reach = $this->phactory->create('website_reaches');
+        $this->phactory->create( 'website_reach_comments', array( 'website_reach_id' => $ph_website_reach->website_reach_id ) );
+
+        // Get
+        $website_reach_comments = $this->website_reach_comment->get_by_reach( $ph_website_reach->website_reach_id, self::WEBSITE_ID );
+        $website_reach_comment = current( $website_reach_comments );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'WebsiteReachComment', $website_reach_comments );
+        $this->assertEquals( self::COMMENT, $website_reach_comment->comment );
+    }
+
+    /**
+     * Remove
+     */
+    public function testRemove() {
+        // Create
+        $ph_website_reach_comment = $this->phactory->create('website_reach_comments');
+
+        // Remove
+        $this->website_reach_comment->id = $ph_website_reach_comment->website_reach_comment_id;
+        $this->website_reach_comment->remove();
+
+        // Get
+        $ph_website_reach_comment = $this->phactory->get( 'website_reach_comments', array( 'website_reach_comment_id' => $ph_website_reach_comment->website_reach_comment_id ) );
+
+        // Assert
+        $this->assertNull( $ph_website_reach_comment );
+    }
 
     /**
      * Will be executed after every test
