@@ -1570,7 +1570,7 @@ class AccountsController extends BaseController {
             jQuery('#dNotes .note.first')->removeClass('first');
             jquery('#dNotes .note:first')->addClass('first');
 
-            $account_note->delete();
+            $account_note->remove();
 
             // Add the response
             $response->add_response( 'jquery', jQuery::getResponse() );

@@ -513,7 +513,7 @@ class TicketsController extends BaseController {
         jQuery('#comment-' . $ticket_comment->id)->remove();
 
         // Then delete ticket
-        $ticket_comment->delete();
+        $ticket_comment->remove();
 
         // Add jquery
         $response->add_response( 'jquery', jQuery::getResponse() );

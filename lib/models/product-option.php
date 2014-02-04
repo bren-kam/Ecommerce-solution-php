@@ -89,7 +89,7 @@ class ProductOption extends ActiveRecordBase {
     /**
      * Delete Product Option
      */
-    public function delete() {
+    public function remove() {
         if ( isset( $this->id ) ) {
             $this->delete_relations();
             $this->delete_list_items();

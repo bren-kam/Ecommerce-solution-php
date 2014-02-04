@@ -70,7 +70,7 @@ class ProductOptionListItem extends ActiveRecordBase {
     /**
      * Delete attribute item
      */
-    public function delete() {
+    public function remove() {
         parent::delete( array( 'product_option_list_item_id' => $this->id ), 'i' );
     }
 }

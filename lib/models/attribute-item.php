@@ -131,7 +131,7 @@ class AttributeItem extends ActiveRecordBase {
     /**
      * Delete attribute item
      */
-    public function delete() {
+    public function remove() {
         parent::delete( array( 'attribute_item_id' => $this->id ), 'i' );
     }
 

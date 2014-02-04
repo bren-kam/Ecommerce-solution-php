@@ -106,7 +106,7 @@ class Attribute extends ActiveRecordBase {
     /**
      * Delete Attribute
      */
-    public function delete() {
+    public function remove() {
         if ( isset( $this->id ) )
             parent::delete( array( 'attribute_id' => $this->id ), 'i' );
     }

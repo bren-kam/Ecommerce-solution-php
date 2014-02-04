@@ -197,7 +197,7 @@ class KnowledgeBaseCategory extends ActiveRecordBase {
     /**
      * Delete a category and dependents
      */
-    public function delete() {
+    public function remove() {
         if ( is_null( $this->id ) )
             return;
 

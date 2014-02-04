@@ -70,7 +70,7 @@ class TicketComment extends ActiveRecordBase {
     /**
      * Delete the ticket comment
      */
-    public function delete() {
+    public function remove() {
         parent::delete( array( 'ticket_comment_id' => $this->id ), 'i' );
     }
 }
