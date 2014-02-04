@@ -15,33 +15,39 @@ class WebsiteOrderItemOptionTest extends BaseDatabaseTest {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->website_order_item_option = new WebsiteOrderItemOption();
     }
-
     /**
-     * Get By Order
+     * Test Get
      */
-    public function testGetByOrder() {
-        // Set variables
-        $website_order_id = -3;
-
-        // Insert website order item
-        $website_order_item_id = $this->phactory->insert( 'website_order_items', array(
-            'website_order_id' => $website_order_id
-        ), 'i' );
-
-        // Create option
-        $this->phactory->insert( 'website_order_item_options', array(
-            'website_order_item_id' => $website_order_item_id
-        ), 'i' );
-
-        // Get options
-        $options = $this->website_order_item_option->get_by_order( $website_order_id );
-
-        $this->assertTrue( current( $options ) instanceof WebsiteOrderItemOption );
-
-        // Clean up
-        $this->phactory->delete( 'website_order_items', array( 'website_order_id' => $website_order_id ), 'i' );
-        $this->phactory->delete( 'website_order_item_options', array( 'website_order_item_id' => $website_order_item_id ), 'i' );
+    public function testReplace() {
+        // Do Stuff
     }
+//
+//    /**
+//     * Get By Order
+//     */
+//    public function testGetByOrder() {
+//        // Set variables
+//        $website_order_id = -3;
+//
+//        // Insert website order item
+//        $website_order_item_id = $this->phactory->insert( 'website_order_items', array(
+//            'website_order_id' => $website_order_id
+//        ), 'i' );
+//
+//        // Create option
+//        $this->phactory->insert( 'website_order_item_options', array(
+//            'website_order_item_id' => $website_order_item_id
+//        ), 'i' );
+//
+//        // Get options
+//        $options = $this->website_order_item_option->get_by_order( $website_order_id );
+//
+//        $this->assertTrue( current( $options ) instanceof WebsiteOrderItemOption );
+//
+//        // Clean up
+//        $this->phactory->delete( 'website_order_items', array( 'website_order_id' => $website_order_id ), 'i' );
+//        $this->phactory->delete( 'website_order_item_options', array( 'website_order_item_id' => $website_order_item_id ), 'i' );
+//    }
 
     /**
      * Will be executed after every test
