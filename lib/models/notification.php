@@ -19,7 +19,7 @@ class Notification extends ActiveRecordBase {
         if ( is_null( $this->user_id ) || is_null( $this->message ) )
             throw new InvalidParametersException( 'Both user_id and message parameters must be filled' );
 
-        $this->insert( array(
+        $this->id = $this->insert( array(
             'user_id' => $this->user_id
             , 'message' => strip_tags( $this->message, '<a><p><strong>' )
             , 'success' => $this->success
@@ -30,7 +30,7 @@ class Notification extends ActiveRecordBase {
      * Gets all the notifications
      *
      * @param int $user_id
-     * @return array
+     * @return Notification[]
      */
     public function get_by_user( $user_id ) {
         return $this->prepare(
