@@ -177,9 +177,6 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      * @depends testGetAll
      */
     public function testSortByHierarchy() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $this->phactory->create('kb_category');
 

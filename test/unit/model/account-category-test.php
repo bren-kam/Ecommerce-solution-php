@@ -71,8 +71,6 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
         // Make sure we grabbed the right one
         $this->assertContains( self::CATEGORY_ID, $blocked_website_category_ids );
-
-        $this->phactory->recall();
     }
 
     /**
@@ -112,9 +110,6 @@ class AccountCategoryTest extends BaseDatabaseTest {
         $ph_website_blocked_category = $this->phactory->get( 'website_blocked_category', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID ) );
 
         $this->assertEquals( self::CATEGORY_ID, $ph_website_blocked_category->category_id );
-
-        // Clean up
-        $this->phactory->recall();
     }
 
     /**
@@ -159,7 +154,6 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
     public function testReorganizeCategories() {
         // Create
-        $this->phactory->recall();
         $this->phactory->create( 'website_categories' );
 
         // Reorganize

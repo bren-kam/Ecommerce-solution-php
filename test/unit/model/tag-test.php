@@ -27,9 +27,6 @@ class TagTest extends BaseDatabaseTest {
      * Test Adding several tags
      */
     public function testAddBulk() {
-        // Reset
-        $this->phactory->recall();
-
         // Add tags
         $this->tag->add_bulk( self::TYPE, self::OBJECT_ID, array( self::VALUE ) );
 
@@ -44,9 +41,6 @@ class TagTest extends BaseDatabaseTest {
      * Get values by a type
      */
     public function testGetValueByType() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $this->phactory->create('tags');
 

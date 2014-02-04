@@ -197,9 +197,6 @@ class EmailTest extends BaseDatabaseTest {
         $method = $class->getMethod( 'import' );
         $method->setAccessible(true);
 
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $values = array(
              self::EMAIL => self::NAME
@@ -223,9 +220,6 @@ class EmailTest extends BaseDatabaseTest {
         $class = new ReflectionClass('Email');
         $method = $class->getMethod( 'import_emails' );
         $method->setAccessible(true);
-
-        // Reset
-        $this->phactory->recall();
 
         // Create
         $this->phactory->create('email_import_emails');
@@ -287,9 +281,6 @@ class EmailTest extends BaseDatabaseTest {
      * @depends testImport
      */
     public function testImportAll() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $emails = array(
             array(
@@ -329,9 +320,6 @@ class EmailTest extends BaseDatabaseTest {
      * Test Adding Associations
      */
     public function testAddAssociations() {
-        // Reset
-        $this->phactory->recall();
-
         // Add
         $this->email->id = self::EMAIL_ID;
         $this->email->add_associations( array( self::EMAIL_LIST_ID ) );

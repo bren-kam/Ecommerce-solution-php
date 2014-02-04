@@ -85,9 +85,6 @@ class AccountPagemetaTest extends BaseDatabaseTest {
      * Test Add Bulk
      */
     public function testAddBulk() {
-        // Reset everything
-        $this->phactory->recall();
-
         // Declare variable
         $pagemeta = array(
             array(
@@ -113,9 +110,6 @@ class AccountPagemetaTest extends BaseDatabaseTest {
      * Test Add Bulk
      */
     public function testAddBulkByPage() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare variables
         $pagemeta = array(
             self::KEY => self::VALUE

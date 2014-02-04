@@ -116,9 +116,6 @@ class ProductTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testAddImages() {
-        // Reset
-        $this->phactory->recall();
-
         // Add images
         $this->product->id = self::PRODUCT_ID;
         $this->product->add_images( array( self::IMAGE ) );

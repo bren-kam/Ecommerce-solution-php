@@ -76,9 +76,6 @@ class AccountTest extends BaseDatabaseTest {
      * Test getting accounts by a user
      */
     public function testGetByAuthorizedUser() {
-        // Reset
-        $this->phactory->recall();
-
         // Create website/product
         $ph_website = $this->phactory->create('websites');
         $this->phactory->create( 'auth_user_websites', array( 'website_id' => $ph_website->website_id ) );
@@ -271,9 +268,6 @@ class AccountTest extends BaseDatabaseTest {
      * Test setting a setting
      */
     public function testSetSettings() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $new_value = '3.14159265';
 
@@ -331,9 +325,6 @@ class AccountTest extends BaseDatabaseTest {
      * Test Adding industries
      */
     public function testAddIndustries() {
-        // Reset
-        $this->phactory->recall();
-
         // Add
         $this->account->id = self::WEBSITE_ID;
         $this->account->add_industries( array( self::INDUSTRY_ID ) );
@@ -390,9 +381,6 @@ class AccountTest extends BaseDatabaseTest {
      * Test Copy settings by Account
      */
     public function testCopySettingsByAccount() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $new_website_id = 55;
         $settings = array( self::WEBSITE_SETTINGS_KEY );

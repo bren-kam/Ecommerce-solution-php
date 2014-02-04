@@ -67,9 +67,6 @@ class CategoryTest extends BaseDatabaseTest {
      * @depends testGetAll
      */
     public function testSortByParent() {
-        // Reset
-        $this->phactory->recall();
-
          // Declare
         $childs_name = 'Speakeasy Ovens';
 

@@ -29,7 +29,6 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->phactory->define( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID, 'product_id' => self::PRODUCT_ID ) );
         $this->phactory->define( 'products', array( 'sku' => self::SKU ) );
         $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'active' => self::ACTIVE ) );
-        $this->phactory->recall();
     }
 
     /**
@@ -66,10 +65,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
      * Test Add Relations By Series
      */
     public function testAddRelationsBySeries() {
-        // Clear
-        $this->phactory->recall();
-
-        // Declare variables
+        // Declare
         $series = self::SKU;
 
         // Insert products
@@ -84,6 +80,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         // Get
         $ph_website_product_group_relation = $this->phactory->get( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID ) );
 
+        // Assert
         $this->assertEquals( $ph_product->product_id, $ph_website_product_group_relation->product_id );
     }
 
@@ -91,9 +88,6 @@ class AccountProductGroupTest extends BaseDatabaseTest {
      * Test Add Relations
      */
     public function testAddRelations() {
-        // Clear
-        $this->phactory->recall();
-
         // Declare variables
         $product_ids = array( self::PRODUCT_ID );
 
@@ -104,6 +98,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         // Get
         $ph_website_product_group_relation = $this->phactory->get( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID ) );
 
+        // Assert
         $this->assertEquals( self::PRODUCT_ID, $ph_website_product_group_relation->product_id );
     }
 
