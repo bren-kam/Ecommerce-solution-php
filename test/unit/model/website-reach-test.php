@@ -8,6 +8,13 @@ function _( $string ) {
 }
 
 class WebsiteReachTest extends BaseDatabaseTest {
+    const MESSAGE = 'What is the price on this one?';
+
+    // Website Reach meta
+    const WEBSITE_REACH_ID = 13;
+    const KEY = 'type';
+    const VALUE = 'quote';
+
     /**
      * @var WebsiteReach
      */
@@ -18,192 +25,166 @@ class WebsiteReachTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->website_reach = new WebsiteReach();
+
+        // Define
+        $this->phactory->define( 'website_reaches', array( 'website_id' => self::WEBSITE_ID, 'message' => self::MESSAGE ) );
+        $this->phactory->define( 'website_reach_meta', array( 'website_reach_id' => self::WEBSITE_REACH_ID, 'key' => self::KEY, 'value' => self::VALUE ) );
+        $this->phactory->recall();
     }
+
+
     /**
-     * Test Get
+     * Get
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testGet() {
+        // Create
+        $ph_website_reach = $this->phactory->create('website_reaches');
+
+        // Get
+        $this->website_reach->get( $ph_website_reach->website_reach_id, self::WEBSITE_ID );
+
+        // Assert
+        $this->assertEquals( self::MESSAGE, $this->website_reach->message );
     }
-//
-//    /**
-//     * Get
-//     */
-//    public function testGet() {
-//        // Set variables
-//        $website_id = -7;
-//        $message = 'Grandma Shipping';
-//
-//        // Create
-//        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id', 'message' ), 'is' );
-//
-//        // Get
-//        $this->website_reach->get( $website_reach_id, $website_id );
-//
-//        // Make sure we grabbed the right one
-//        $this->assertEquals( $message, $this->website_reach->message );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get Meta
-//     */
-//    public function testGetMeta() {
-//        // Set variables
-//        $website_reach_id = -7;
-//        $key = 'test';
-//        $value = 'value';
-//
-//        // Set ID
-//        $this->website_reach->id = $website_reach_id;
-//
-//        // Create
-//        $this->phactory->insert( 'website_reach_meta', compact( 'website_reach_id', 'key', 'value' ), 'iss' );
-//
-//        // Get
-//        $this->website_reach->get_meta();
-//
-//        // Make sure we grabbed the right one
-//        $this->assertEquals( $value, $this->website_reach->meta[$key] );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get Info
-//     *
-//     * @depends testGetMeta
-//     */
-//    public function testGetInfo() {
-//        // Set variables
-//        $website_reach_id = -7;
-//        $product_sku = 'ga ga';
-//
-//        // Set ID
-//        $this->website_reach->id = $website_reach_id;
-//
-//        // Create the meta necessary
-//        $this->phactory->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ), ( $website_reach_id, 'product-link', 'http://test.com/' ), ( $website_reach_id, 'product-name', 'goo goo' ), ( $website_reach_id, 'product-sku', '$product_sku' )" );
-//
-//        // Get
-//        $this->website_reach->get_info();
-//
-//        // Make sure we grabbed the right one
-//        $this->assertTrue( (bool) stristr( $this->website_reach->info['SKU'], $product_sku ) );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get Friendly Type
-//     *
-//     * @depends testGetMeta
-//     */
-//    public function testGetFriendlyType() {
-//        // Set variables
-//        $website_reach_id = -9;
-//        $friendly_type = 'Quote';
-//
-//        // Set ID
-//        $this->website_reach->id = $website_reach_id;
-//
-//        // Create the meta necessary
-//        $this->phactory->query( "INSERT INTO `website_reach_meta` ( `website_reach_id`, `key`, `value` ) VALUES ( $website_reach_id, 'type', 'quote' ) " );
-//
-//        // Get meta
-//        $this->website_reach->get_meta();
-//
-//        // Get friendly type
-//        $type = $this->website_reach->get_friendly_type();
-//
-//        $this->assertEquals( $friendly_type, $type );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reach_meta', compact( 'website_reach_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Save
-//     *
-//     * @depends testGet
-//     */
-//    public function testSave() {
-//        // Declare variables
-//        $website_id = -5;
-//        $priority = 5;
-//
-//        // Create
-//        $website_reach_id = $this->phactory->insert( 'website_reaches', compact( 'website_id' ), 'i' );
-//
-//        // Get
-//        $this->website_reach->get( $website_reach_id, $website_id );
-//
-//        // Save
-//        $this->website_reach->priority = $priority;
-//        $this->website_reach->save();
-//
-//        // Make sure it's in the database
-//        $retrieved_priority = $this->phactory->get_var( "SELECT `priority` FROM `website_reaches` WHERE `website_id` = $website_id" );
-//
-//        $this->assertEquals( $priority, $retrieved_priority );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_reaches', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * List All
-//     */
-//    public function testListAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
-//
-//        $website_reaches = $this->website_reach->list_all( $dt->get_variables() );
-//
-//        // Make sure we have an array
-//        $this->assertTrue( current( $website_reaches ) instanceof WebsiteReach );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $emails );
-//    }
-//
-//    /**
-//     * Count All
-//     */
-//    public function testCountAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
-//
-//        $count = $this->website_reach->count_all( $dt->get_count_variables() );
-//
-//        // Make sure they exist
-//        $this->assertGreaterThan( 0, $count );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $count );
-//    }
+
+    /**
+     * Get Meta
+     */
+    public function testGetMeta() {
+        // Create
+        $this->phactory->create('website_reach_meta');
+
+        // Get
+        $this->website_reach->id = self::WEBSITE_REACH_ID;
+        $this->website_reach->get_meta();
+
+        // Assert
+        $this->assertEquals( self::VALUE, $this->website_reach->meta[self::KEY] );
+    }
+
+    /**
+     * Get Info
+     *
+     * @depends testGetMeta
+     */
+    public function testGetInfo() {
+        // Declare
+        $brand = 'Astlow Signo';
+
+        // Create
+        $this->phactory->create( 'website_reach_meta' );
+        $this->phactory->create( 'website_reach_meta', array( 'key' => 'product-link', 'value' => 'http://unlocked.blinkyblinky.me/product/asdasd' ) );
+        $this->phactory->create( 'website_reach_meta', array( 'key' => 'product-name', 'value' => 'googoo' ) );
+        $this->phactory->create( 'website_reach_meta', array( 'key' => 'product-sku', 'value' => 'Y123-B6' ) );
+        $this->phactory->create( 'website_reach_meta', array( 'key' => 'product-brand', 'value' => $brand ) );
+        $this->phactory->create( 'website_reach_meta', array( 'key' => 'location', 'value' => 'New York City' ) );
+
+        // Get
+        $this->website_reach->id = self::WEBSITE_REACH_ID;
+        $this->website_reach->get_info();
+
+        // Assert
+        $this->assertEquals( $brand, $this->website_reach->info['Brand'] );
+    }
+
+    /**
+     * Get Friendly Type
+     */
+    public function testGetFriendlyType() {
+        // Get friendly type
+        $type = $this->website_reach->get_friendly_type();
+        $expected_type = 'Reach';
+
+        // Assert
+        $this->assertEquals( $expected_type, $type );
+
+        // Get friendly type
+        $this->website_reach->meta['type'] = self::VALUE;
+        $type = $this->website_reach->get_friendly_type();
+        $expected_type = 'Quote';
+
+        // Assert
+        $this->assertEquals( $expected_type, $type );
+    }
+
+    /**
+     * Save
+\     */
+    public function testSave() {
+        // Create
+        $ph_website_reach = $this->phactory->create('website_reaches');
+
+        // Save
+        $this->website_reach->id = $ph_website_reach->website_reach_id;
+        $this->website_reach->priority = WebsiteReach::PRIORITY_URGENT;
+        $this->website_reach->save();
+
+        // Get
+        $ph_website_reach = $this->phactory->get( 'website_reaches', array( 'website_reach_id' => $ph_website_reach->website_reach_id ) );
+
+        // Assert
+        $this->assertEquals( $this->website_reach->priority, $ph_website_reach->priority );
+    }
+
+    /**
+     * List All
+     */
+    public function testListAll() {
+        // Get User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_website_reach = $this->phactory->create('website_reaches');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
+
+        // Website Reaches
+        $website_reaches = $this->website_reach->list_all( $dt->get_variables() );
+        $website_reach = current( $website_reaches );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'WebsiteReach', $website_reaches );
+        $this->assertEquals( $ph_website_reach->website_reach_id, $website_reach->website_reach_id );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $emails );
+    }
+
+    /**
+     * Count All
+     */
+    public function testCountAll() {
+        // Get User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_reaches');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( 'name', 'wu.`email`', 'wr.`assigned_to`', 'wr.`status`', 'wr.`priority`', 'wr.`date_created`' );
+
+        // Get
+        $count = $this->website_reach->count_all( $dt->get_count_variables() );
+
+        // Assert
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
 
     /**
      * Will be executed after every test

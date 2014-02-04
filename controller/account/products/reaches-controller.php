@@ -95,9 +95,9 @@ class ReachesController extends BaseController {
 
         // Setup data
         $priorities = array(
-            0 => _('Normal'),
-            1 => _('High'),
-            2 => _('Urgent')
+            WebsiteReach::PRIORITY_NORMAL => 'Normal',
+            WebsiteReach::PRIORITY_HIGH => 'High',
+            WebsiteReach::PRIORITY_URGENT => 'Urgent'
         );
 
         $data = array();
@@ -278,9 +278,9 @@ class ReachesController extends BaseController {
 
         // Send out email
         $priorities = array(
-            0 => 'Normal',
-            1 => 'High',
-            2 => 'Urgent'
+            WebsiteReach::PRIORITY_NORMAL => 'Normal',
+            WebsiteReach::PRIORITY_HIGH => 'High',
+            WebsiteReach::PRIORITY_URGENT => 'Urgent'
         );
 
         $assigned_user = new User();
