@@ -29,6 +29,7 @@ class AccountProductGroupTest extends BaseDatabaseTest {
         $this->phactory->define( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID, 'product_id' => self::PRODUCT_ID ) );
         $this->phactory->define( 'products', array( 'sku' => self::SKU ) );
         $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'active' => self::ACTIVE ) );
+        $this->phactory->recall();
     }
 
     /**
