@@ -35,6 +35,10 @@ class Category extends ActiveRecordBase {
             )->get_row( PDO::FETCH_INTO, $this );
 
             $this->id = $this->category_id;
+
+            if ( !isset( Category::$categories[$this->id] ) )
+                Category::$categories[$this->id] = new Category();
+
             Category::$categories[$this->id]->id = Category::$categories[$this->id]->category_id = $this->category_id;
             Category::$categories[$this->id]->parent_category_id = $this->parent_category_id;
             Category::$categories[$this->id]->name = $this->name;
