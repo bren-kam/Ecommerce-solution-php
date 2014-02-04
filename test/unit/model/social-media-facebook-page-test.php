@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaFacebookPageTest extends BaseDatabaseTest {
+    const NAME = 'WhoBalloo Facebook Furniture';
+
     /**
      * @var SocialMediaFacebookPage
      */
@@ -13,133 +15,123 @@ class SocialMediaFacebookPageTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->sm_facebook_page = new SocialMediaFacebookPage();
+
+        // Define
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'name' => self::NAME, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
     }
+
+
     /**
-     * Test Get
+     * Get
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testGet() {
+        // Create
+        $ph_facebook_page = $this->phactory->create('sm_facebook_page');
+
+        // Get
+        $this->sm_facebook_page->get( $ph_facebook_page->id, self::WEBSITE_ID );
+
+        // Assert
+        $this->assertEquals( self::NAME, $this->sm_facebook_page->name );
     }
-//
-//    /**
-//     * Get
-//     */
-//    public function testGet() {
-//        // Declare variables
-//        $id = -5;
-//        $website_id = -7;
-//        $name = 'Gertrude';
-//
-//        // Insert
-//        $this->phactory->insert( 'sm_facebook_page', compact( 'id', 'website_id', 'name' ), 'iis' );
-//
-//        // Get
-//        $this->sm_facebook_page->get( $id, $website_id );
-//
-//        $this->assertEquals( $name, $this->sm_facebook_page->name );
-//
-//        // Clean up
-//        $this->phactory->delete( 'sm_facebook_page', compact( 'id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test create
-//     */
-//    public function testCreate() {
-//        // Declare variables
-//        $website_id = -7;
-//        $name = 'Gertrude';
-//
-//        // Create
-//        $this->sm_facebook_page->website_id = $website_id;
-//        $this->sm_facebook_page->name = $name;
-//        $this->sm_facebook_page->create();
-//
-//        // Get
-//        $retrieved_name = $this->phactory->get_var( 'SELECT `name` FROM `sm_facebook_page` WHERE `id` = ' . (int) $this->sm_facebook_page->id );
-//
-//        $this->assertEquals( $retrieved_name, $this->sm_facebook_page->name );
-//
-//        // Clean up
-//        $this->phactory->delete( 'sm_facebook_page', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Save
-//     *
-//     * @depends testCreate
-//     */
-//    public function testSave() {
-//        // Declare variables
-//        $website_id = -7;
-//        $name = 'Gertrude';
-//
-//        // Create
-//        $this->sm_facebook_page->$website_id = $website_id;
-//        $this->sm_facebook_page->create();
-//
-//        // Update test
-//        $this->sm_facebook_page->name = $name;
-//        $this->sm_facebook_page->save();
-//
-//        // Check it
-//        $retrieved_name = $this->phactory->get_var( 'SELECT `name` FROM `sm_facebook_page` WHERE `id` = ' . (int) $this->sm_facebook_page->id );
-//
-//        $this->assertEquals( $retrieved_name, $this->sm_facebook_page->name );
-//
-//        // Clean up
-//        $this->phactory->delete( 'sm_facebook_page', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * List All
-//     */
-//    public function testListAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( '`name`', '`date_created`' );
-//
-//        $sm_facebook_pages = $this->sm_facebook_page->list_all( $dt->get_variables() );
-//
-//        // Make sure we have an array
-//        $this->assertTrue( current( $sm_facebook_pages ) instanceof SocialMediaFacebookPage );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $emails );
-//    }
-//
-//    /**
-//     * Count All
-//     */
-//    public function testCountAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( '`name`', '`date_created`' );
-//
-//        $count = $this->sm_facebook_page->count_all( $dt->get_count_variables() );
-//
-//        // Make sure they exist
-//        $this->assertGreaterThan( 0, $count );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $count );
-//    }
+
+    /**
+     * Test create
+     */
+    public function testCreate() {
+        // Create
+        $this->sm_facebook_page->website_id = self::WEBSITE_ID;
+        $this->sm_facebook_page->name = self::NAME;
+        $this->sm_facebook_page->create();
+
+        // Assert
+        $this->assertNotNull( $this->sm_facebook_page->id );
+
+        // Get
+        $ph_sm_facebook_page = $this->phactory->get( 'sm_facebook_page', array( 'id' => $this->sm_facebook_page->id ) );
+
+        // Assert
+        $this->assertEquals( self::NAME, $ph_sm_facebook_page->name );
+    }
+
+    /**
+     * Save
+     */
+    public function testSave() {
+        // Create
+        $ph_facebook_page = $this->phactory->create('sm_facebook_page');
+
+        // Save
+        $this->sm_facebook_page->id = $ph_facebook_page->id;
+        $this->sm_facebook_page->name = 'Wycolu Mattresses';
+        $this->sm_facebook_page->save();
+
+        // Get
+        $ph_sm_facebook_page = $this->phactory->get( 'sm_facebook_page', array( 'id' => $ph_facebook_page->id ) );
+
+        // Assert
+        $this->assertEquals( $this->sm_facebook_page->name, $ph_sm_facebook_page->name );
+    }
+
+    /**
+     * List All
+     */
+    public function testListAll() {
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('sm_facebook_page');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( '`name`', '`date_created`' );
+
+        // Get
+        $sm_facebook_pages = $this->sm_facebook_page->list_all( $dt->get_variables() );
+        $sm_facebook_page = current( $sm_facebook_pages );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'SocialMediaFacebookPage', $sm_facebook_pages );
+        $this->assertEquals( self::NAME, $sm_facebook_page->name );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $emails );
+    }
+
+    /**
+     * Count All
+     */
+    public function testCountAll() {
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('sm_facebook_page');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( '`name`', '`date_created`' );
+
+        // Get
+        $count = $this->sm_facebook_page->count_all( $dt->get_count_variables() );
+
+        // Assert
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
 
     /**
      * Will be executed after every test

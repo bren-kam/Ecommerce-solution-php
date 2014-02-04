@@ -141,7 +141,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
      * List All
      */
     public function testListAll() {
-        // Get stub
+        // Get stub user
         $stub_user = $this->getMock('User');
 
         // Create
@@ -172,7 +172,7 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
      * Count All
      */
     public function testCountAll() {
-        // Get stub
+        // Get stub user
         $stub_user = $this->getMock('User');
 
         // Create
