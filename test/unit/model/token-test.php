@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class TokenTest extends BaseDatabaseTest {
+    const TYPE = 'user-creation';
+
     /**
      * @var Token
      */
@@ -13,33 +15,29 @@ class TokenTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->token = new Token();
+
+        // Define
+        $this->phactory->define( 'tokens', array( 'token_type' => self::TYPE ) );
+        $this->phactory->recall();
     }
+
     /**
-     * Test Get
+     * Test create
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testCreate() {
+        // Create
+        $this->token->type = self::TYPE;
+        $this->token->create();
+
+        // Assert
+        $this->assertNotNull( $this->token->id );
+
+        // Get
+        $ph_token = $this->phactory->get( 'tokens', array( 'token_id' => $this->token->id ) );
+
+        // Assert
+        $this->assertEquals( self::TYPE, $ph_token->token_type );
     }
-//
-//    /**
-//     * Test create
-//     */
-//    public function testCreate() {
-//        // Declare variables
-//        $type = 'user-creation';
-//
-//        // Create
-//        $this->token->type = $type;
-//        $this->token->create();
-//
-//        // Make sure it's in the database
-//        $retrieved_type = $this->phactory->get_var( 'SELECT `token_type` FROM `tokens` WHERE `token_id` = ' . (int) $this->token->id );
-//
-//        $this->assertEquals( $type, $retrieved_type );
-//
-//        // Delete
-//        $this->phactory->delete( 'tokens', array( 'token_id' => $this->token->id ), 'i' );
-//    }
 
     /**
      * Will be executed after every test
