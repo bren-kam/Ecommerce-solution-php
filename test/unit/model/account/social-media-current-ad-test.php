@@ -3,6 +3,10 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaCurrentAdTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 5;
+    const FB_PAGE_ID = 3;
+    const WEBSITE_PAGE_ID = 9;
+    
     /**
      * @var SocialMediaCurrentAd
      */
@@ -14,82 +18,60 @@ class SocialMediaCurrentAdTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->sm_current_ad = new SocialMediaCurrentAd();
+
+        // Define
+        $this->phactory->define( 'sm_current_ad', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'website_page_id' => self::WEBSITE_PAGE_ID ) );
+        $this->phactory->recall();
     }
+
     /**
-     * Test Get
+     * Get
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testGet() {
+        // Create
+        $this->phactory->create('sm_current_ad');
+
+        // Get
+        $this->sm_current_ad->get( self::SM_FACEBOOK_PAGE_ID );
+
+        // Assert
+        $this->assertEquals( self::FB_PAGE_ID, $this->sm_current_ad->fb_page_id );
     }
-//
-//    /**
-//     * Get
-//     */
-//    public function testGet() {
-//        // Declare variables
-//        $sm_facebook_page_id = -5;
-//        $fb_page_id = -7;
-//
-//        // Insert
-//        $this->phactory->insert( 'sm_current_ad', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
-//
-//        // Get
-//        $this->sm_current_ad->get( $sm_facebook_page_id );
-//
-//        $this->assertEquals( $fb_page_id, $this->sm_current_ad->fb_page_id );
-//
-//        // Clean up
-//        $this->phactory->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test create
-//     */
-//    public function testCreate() {
-//        // Declare variables
-//        $sm_facebook_page_id = -5;
-//        $website_page_id = -7;
-//
-//        // Create
-//        $this->sm_current_ad->sm_facebook_page_id = $sm_facebook_page_id;
-//        $this->sm_current_ad->website_page_id = $website_page_id;
-//        $this->sm_current_ad->create();
-//
-//        // Get
-//        $retrieved_website_page_id = $this->phactory->get_var( "SELECT `website_page_id` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
-//
-//        $this->assertEquals( $retrieved_website_page_id, $this->sm_current_ad->website_page_id );
-//
-//        // Clean up
-//        $this->phactory->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Save
-//     *
-//     * @depends testCreate
-//     */
-//    public function testSave() {
-//        // Declare variables
-//        $sm_facebook_page_id = -5;
-//        $content = 'Poke';
-//
-//        // Create
-//        $this->sm_current_ad->sm_facebook_page_id = $sm_facebook_page_id;
-//        $this->sm_current_ad->create();
-//
-//        // Update test
-//        $this->sm_current_ad->content = $content;
-//        $this->sm_current_ad->save();
-//
-//        // Now check it!
-//        $retrieved_content = $this->phactory->get_var( "SELECT `content` FROM `sm_current_ad` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
-//
-//        $this->assertEquals( $retrieved_content, $content );
-//
-//        // Clean up
-//        $this->phactory->delete( 'sm_current_ad', compact( 'sm_facebook_page_id' ), 'i' );
-//    }
+
+    /**
+     * Test create
+     */
+    public function testCreate() {
+        // Create
+        $this->sm_current_ad->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_current_ad->website_page_id = self::WEBSITE_PAGE_ID;
+        $this->sm_current_ad->create();
+
+        // Get
+        $ph_sm_current_ad = $this->phactory->get( 'sm_current_ad', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
+
+        // Get
+        $this->assertEquals( self::WEBSITE_PAGE_ID, $ph_sm_current_ad->website_page_id );
+    }
+
+    /**
+     * Save
+     */
+    public function testSave() {
+        // Create
+        $this->phactory->create('sm_current_ad');
+
+        // Save
+        $this->sm_current_ad->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_current_ad->content = 'Help us help you!';
+        $this->sm_current_ad->save();
+
+        // Get
+        $ph_sm_current_ad = $this->phactory->get( 'sm_current_ad', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
+
+        // Get
+        $this->assertEquals( $this->sm_current_ad->content, $ph_sm_current_ad->content );
+    }
 
     /**
      * Will be executed after every test
