@@ -64,6 +64,9 @@ class AccountProductOption extends ActiveRecordBase {
          * @var AccountProductOption $product_option
          */
         foreach ( $product_options_array as $product_option ) {
+            if ( empty( $product_option->product_option_list_item_id ) )
+                continue;
+
             $product_options[$product_option->product_option_id]['price'] = $product_option->price;
             $product_options[$product_option->product_option_id]['required'] = $product_option->required;
 
