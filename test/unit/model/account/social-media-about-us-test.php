@@ -24,7 +24,6 @@ class SocialMediaAboutUsTest extends BaseDatabaseTest {
         $this->phactory->recall();
     }
 
-
     /**
      * Get
      */
