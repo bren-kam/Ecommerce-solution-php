@@ -118,7 +118,7 @@ class WebsiteCoupon extends ActiveRecordBase {
             , 'date_start' => strip_tags($this->date_start)
             , 'date_end' => strip_tags($this->date_end)
         ), array(
-            'website_coupon_id' => $this->website_coupon_id )
+            'website_coupon_id' => $this->id )
         , 'sssddiiiss', 'i' );
     }
 

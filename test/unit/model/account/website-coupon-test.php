@@ -3,6 +3,15 @@
 require_once 'test/base-database-test.php';
 
 class WebsiteCouponTest extends BaseDatabaseTest {
+    const NAME = 'Gumdrops';
+
+    // Website Coupon Relations
+    const WEBSITE_COUPON_ID = 13;
+    const PRODUCT_ID = 15;
+
+    // Website Coupon Shipping Methods
+    const WEBSITE_SHIPPING_METHOD_ID = 27;
+
     /**
      * @var WebsiteCoupon
      */
@@ -14,326 +23,239 @@ class WebsiteCouponTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->website_coupon = new WebsiteCoupon();
+
+        // Define
+        $this->phactory->define( 'website_coupons', array( 'website_id' => self::WEBSITE_ID, 'name' => self::NAME ) );
+        $this->phactory->define( 'website_coupon_relations', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID, 'product_id' => self::PRODUCT_ID ) );
+        $this->phactory->define( 'website_coupon_shipping_methods', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID, 'website_shipping_method_id' => self::WEBSITE_SHIPPING_METHOD_ID ) );
+        $this->phactory->recall();
     }
+
+
     /**
      * Test Get
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testGet() {
+        // Create
+        $ph_website_coupon = $this->phactory->create('website_coupons');
+
+        // Get
+        $this->website_coupon->get( $ph_website_coupon->website_coupon_id, self::WEBSITE_ID );
+
+        // Assert
+        $this->assertEquals( self::NAME, $this->website_coupon->name );
     }
-//
-//    /**
-//     * Test Get
-//     */
-//    public function testGet() {
-//        // Declare variables
-//        $website_id = -5;
-//        $name = 'Gumdrops';
-//
-//        // Create
-//        $website_coupon_id = $this->phactory->insert( 'website_coupons', compact( 'website_id', 'name' ), 'is' );
-//
-//        // Get
-//        $this->website_coupon->get( $website_coupon_id, $website_id );
-//
-//        $this->assertEquals( $name, $this->website_coupon->name );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_coupons', compact( 'website_coupon_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test Get By Product
-//     */
-//    public function testGetByProduct() {
-//        // Declare variables
-//        $website_id = -7;
-//        $name = 'Gumdrops';
-//        $product_id = -9;
-//
-//        // Create
-//        $website_coupon_id = $this->phactory->insert( 'website_coupons', compact( 'website_id', 'name' ), 'is' );
-//        $this->phactory->insert( 'website_coupon_relations', compact( 'website_coupon_id', 'product_id' ), 'ii' );
-//
-//        // Get by products
-//        $website_coupons = $this->website_coupon->get_by_product( $website_id, $product_id );
-//        $current_website_coupon = current( $website_coupons );
-//
-//        $this->assertEquals( $name, $current_website_coupon );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
-//        $this->phactory->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test Get By Account
-//     */
-//    public function testGetByAccount() {
-//        // Declare variables
-//        $website_id = -7;
-//
-//        // Create
-//        $this->phactory->insert( 'website_coupons', compact( 'website_id' ), 'i' );
-//
-//        // Get
-//        $website_coupons = $this->website_coupon->get_by_account( $website_id );
-//
-//        $this->assertTrue( current( $website_coupons ) instanceof WebsiteCoupon );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Getting Free Shipping Methods
-//     */
-//    public function testGetFreeShippingMethods() {
-//        // Declare variables
-//        $website_coupon_id = -7;
-//
-//        // Setup id
-//        $this->website_coupon->id = $website_coupon_id;
-//
-//        // Create
-//        $website_shipping_method_id = $this->phactory->insert( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
-//
-//        // Get
-//        $website_shipping_method_ids = $this->website_coupon->get_free_shipping_methods( );
-//
-//        $this->assertEquals( array( $website_shipping_method_id ), $website_shipping_method_ids );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Create
-//     */
-//    public function testCreate() {
-//        // Declare variables
-//        $original_name = 'Gumdrop';
-//        $website_id = -3;
-//
-//        // Create test
-//        $this->website_coupon->website_id = $website_id;
-//        $this->website_coupon->name = $original_name;
-//        $this->website_coupon->create();
-//
-//        $this->assertNotNull( $this->website_coupon->id ) );
-//
-//        // Get the message
-//        $name = $this->phactory->get_var( 'SELECT `name` FROM `website_coupons` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );
-//
-//        $this->assertEquals( $original_name, $name );
-//
-//        // Delete the note
-//        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Save
-//     *
-//     * @depends testCreate
-//     * @depends testGet
-//     */
-//    public function testSave() {
-//        // Declare variables
-//        $website_id = -3;
-//        $original_name = 'Gumdrop';
-//        $new_name = 'pordmuG';
-//
-//        // Create test
-//        $this->website_coupon->website_id = $website_id;
-//        $this->website_coupon->name = $original_name;
-//        $this->website_coupon->create();
-//
-//        // Update test
-//        $this->website_coupon->name = $new_name;
-//        $this->website_coupon->save();
-//
-//        // Now check it!
-//        $this->website_coupon->get( $this->website_coupon->id, $website_id );
-//
-//        $this->assertEquals( $new_name, $this->website_coupon->name );
-//
-//        // Delete the attribute item
-//        $this->phactory->delete( 'website_coupons', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Add Relations
-//     */
-//    public function testAddRelations() {
-//        // Declare variables
-//        $product_id = -5;
-//        $website_coupon_ids = array( -2, -4, -6 );
-//
-//        // Clear it just in case
-//        $this->phactory->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
-//
-//        // Add relations
-//        $this->website_coupon->add_relations( $product_id, $website_coupon_ids );
-//
-//        // See if they are still there
-//        $retrieved_website_coupon_ids = $this->phactory->get_col( 'SELECT `website_coupon_id` FROM `website_coupon_relations` WHERE `product_id` = ' . (int) $product_id . ' ORDER BY `website_coupon_id` DESC' );
-//
-//        // Make sure they are equal
-//        $this->assertEquals( $website_coupon_ids, $retrieved_website_coupon_ids );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_coupon_relations', compact( 'product_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Add Free Shipping Methods
-//     */
-//    public function testAddFreeShippingMethods() {
-//        // Declare variables
-//        $website_coupon_id = -5;
-//        $website_shipping_method_ids = array( -12, -14, -16 );
-//
-//        // Add relations
-//        $this->website_coupon->id = $website_coupon_id;
-//        $this->website_coupon->add_free_shipping_methods( $website_shipping_method_ids );
-//
-//        // See if they are still there
-//        $retrieved_website_shipping_method_ids = $this->phactory->get_col( 'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = ' . (int) $website_coupon_id . ' ORDER BY `website_shipping_method_id` DESC' );
-//
-//        // Make sure they are equal
-//        $this->assertEquals( $website_shipping_method_ids, $retrieved_website_shipping_method_ids );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_coupon_shipping_methods', compact( 'website_coupon_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Remove
-//     *
-//     * @depends testCreate
-//     */
-//    public function testRemove() {
-//        // Declare variables
-//        $website_id = -3;
-//
-//        // Create test
-//        $this->website_coupon->website_id = $website_id;
-//        $this->website_coupon->create();
-//
-//        // Get variables
-//        $website_coupon_id = (int) $this->website_coupon->id;
-//
-//        // Remove
-//        $this->website_coupon->remove();
-//
-//        // Make sure it's not there
-//        $website_id = $this->phactory->get_var( "SELECT `website_id` FROM `website_coupons` WHERE `website_coupon_id` = $website_coupon_id" );
-//
-//        $this->assertFalse( $website_id );
-//    }
-//
-//    /**
-//     * Delete Relations by product
-//     *
-//     * @depends testCreate
-//     * @depends testAddRelations
-//     */
-//    public function testDeleteRelationsByProduct() {
-//        // Declare variables
-//        $website_id = -3;
-//        $product_id = -15;
-//        $website_coupon_ids = array();
-//
-//        // Create test
-//        $this->website_coupon->website_id = $website_id;
-//        $this->website_coupon->create();
-//
-//        $website_coupon_ids[] = $this->website_coupon->id;
-//
-//        // Add relations
-//        $this->website_coupon->add_relations( $product_id, $website_coupon_ids );
-//
-//        // Delete relations
-//        $this->website_coupon->delete_relations_by_product( $website_id, $product_id );
-//
-//        $retrieved_website_coupon_ids = $this->phactory->get_col( 'SELECT `website_coupon_id` FROM `website_coupon_relations` WHERE `product_id` = ' . (int) $product_id );
-//
-//        $this->assertTrue( empty( $retrieved_website_coupon_ids ) );
-//
-//        $this->phactory->delete( 'website_coupons', array( 'website_coupon_id' => $this->website_coupon->id ), 'i' );
-//    }
-//
-//    /**
-//     * Delete Free Shipping Methods
-//     *
-//     * @depends testAddFreeShippingMethods
-//     */
-//    public function testDeleteFreeShippingMethods() {
-//       // Declare variables
-//       $website_coupon_id = -15;
-//       $website_shipping_method_ids = array( -12, -14, -16 );
-//
-//       // Add relations
-//       $this->website_coupon->id = $website_coupon_id;
-//       $this->website_coupon->add_free_shipping_methods( $website_shipping_method_ids );
-//
-//        // Delete relations
-//        $this->website_coupon->delete_free_shipping_methods();
-//
-//        $retrieved_website_shipping_methods = $this->phactory->get_col( 'SELECT `website_shipping_method_id` FROM `website_coupon_shipping_methods` WHERE `website_coupon_id` = ' . (int) $this->website_coupon->id );
-//
-//        $this->assertTrue( empty( $retrieved_website_shipping_methods ) );
-//    }
-//
-//    /**
-//     * List All
-//     */
-//    public function testListAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( '`name`', '`amount`', '`type`', '`item_limit`', '`date_created`' );
-//
-//        $website_coupons = $this->website_coupon->list_all( $dt->get_variables() );
-//
-//        // Make sure we have an array
-//        $this->assertTrue( current( $website_coupons ) instanceof WebsiteCoupon );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $emails );
-//    }
-//
-//    /**
-//     * Count All
-//     */
-//    public function testCountAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 1;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( '`name`', '`amount`', '`type`', '`item_limit`', '`date_created`' );
-//
-//        $count = $this->website_coupon->count_all( $dt->get_count_variables() );
-//
-//        // Make sure they exist
-//        $this->assertGreaterThan( 0, $count );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $count );
-//    }
+
+    /**
+     * Test Get By Product
+     */
+    public function testGetByProduct() {
+        // Create
+        $ph_website_coupon = $this->phactory->create('website_coupons');
+        $this->phactory->create( 'website_coupon_relations', array( 'website_coupon_id' => $ph_website_coupon->website_coupon_id ) );
+
+        // Get
+        $website_coupons = $this->website_coupon->get_by_product( self::WEBSITE_ID, self::PRODUCT_ID );
+        $expected_coupons = array( $ph_website_coupon->website_coupon_id => self::NAME );
+
+        // Assert
+        $this->assertEquals( $expected_coupons, $website_coupons );
+    }
+
+    /**
+     * Test Get By Account
+     */
+    public function testGetByAccount() {
+        // Create
+        $this->phactory->create('website_coupons');
+
+        // Get
+        $website_coupons = $this->website_coupon->get_by_account( self::WEBSITE_ID );
+        $website_coupon = current( $website_coupons );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'WebsiteCoupon', $website_coupons );
+        $this->assertEquals( self::NAME, $website_coupon->name );
+    }
+
+    /**
+     * Getting Free Shipping Methods
+     */
+    public function testGetFreeShippingMethods() {
+        // Create
+        $this->phactory->create('website_coupon_shipping_methods');
+
+        // Get
+        $this->website_coupon->id = self::WEBSITE_COUPON_ID;
+        $website_shipping_method_ids = $this->website_coupon->get_free_shipping_methods();
+        $expected_shipping_method_ids = array( self::WEBSITE_SHIPPING_METHOD_ID );
+
+        // Assert
+        $this->assertEquals( $expected_shipping_method_ids, $website_shipping_method_ids );
+    }
+
+    /**
+     * Create
+     */
+    public function testCreate() {
+        // Create
+        $this->website_coupon->name = self::NAME;
+        $this->website_coupon->create();
+
+        // Assert
+        $this->assertNotNull( $this->website_coupon->id );
+
+        // Get
+        $ph_website_coupon = $this->phactory->get( 'website_coupons', array( 'website_coupon_id' => $this->website_coupon->id ) );
+
+        // Assert
+        $this->assertEquals( self::NAME, $ph_website_coupon->name );
+    }
+
+    /**
+     * Save
+     */
+    public function testSave() {
+        // Assert
+        $ph_website_coupon = $this->phactory->create('website_coupons');
+
+        // Save
+        $this->website_coupon->id = $ph_website_coupon->website_coupon_id;
+        $this->website_coupon->name = 'Savings Howl';
+        $this->website_coupon->save();
+
+        // Get
+        $ph_website_coupon = $this->phactory->get( 'website_coupons', array( 'website_coupon_id' => $this->website_coupon->id ) );
+
+        // Assert
+        $this->assertEquals( $this->website_coupon->name, $ph_website_coupon->name );
+    }
+
+    /**
+     * Add Relations
+     */
+    public function testAddRelations() {
+        // Add relations
+        $this->website_coupon->add_relations( self::PRODUCT_ID, array( self::WEBSITE_COUPON_ID ) );
+
+        // Get
+        $ph_website_coupon_relation = $this->phactory->get( 'website_coupon_relations', array( 'product_id' => self::PRODUCT_ID ) );
+
+        // Assert
+        $this->assertEquals( self::WEBSITE_COUPON_ID, $ph_website_coupon_relation->website_coupon_id );
+    }
+
+    /**
+     * Add Free Shipping Methods
+     */
+    public function testAddFreeShippingMethods() {
+        // Add relations
+        $this->website_coupon->id = self::WEBSITE_COUPON_ID;
+        $this->website_coupon->add_free_shipping_methods( array( self::WEBSITE_SHIPPING_METHOD_ID ) );
+
+        // Get
+        $ph_website_coupon_shipping_method = $this->phactory->get( 'website_coupon_shipping_methods', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID ) );
+
+        // Assert
+        $this->assertEquals( self::WEBSITE_SHIPPING_METHOD_ID, $ph_website_coupon_shipping_method->website_shipping_method_id );
+    }
+
+    /**
+     * Delete Relations by product
+     */
+    public function testDeleteRelationsByProduct() {
+        // Create
+        $ph_website_coupon = $this->phactory->create('website_coupons');
+        $this->phactory->create( 'website_coupon_relations', array( 'website_coupon_id' => $ph_website_coupon->website_coupon_id ) );
+
+        // Delete relations
+        $this->website_coupon->delete_relations_by_product( self::WEBSITE_ID, self::PRODUCT_ID );
+
+        // Get
+        $ph_website_coupon_relation = $this->phactory->get( 'website_coupon_relations', array( 'product_id' => self::PRODUCT_ID ) );
+
+        // Assert
+        $this->assertNull( $ph_website_coupon_relation );
+    }
+
+    /**
+     * Delete Free Shipping Methods
+     */
+    public function testDeleteFreeShippingMethods() {
+        // Create
+        $this->phactory->create('website_coupon_shipping_methods');
+
+        // Delete relations
+        $this->website_coupon->id = self::WEBSITE_COUPON_ID;
+        $this->website_coupon->delete_free_shipping_methods();
+
+        // Get
+        $ph_website_coupon_relation = $this->phactory->get( 'website_coupon_shipping_methods', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID ) );
+
+        // Assert
+        $this->assertNull( $ph_website_coupon_relation );
+    }
+
+
+    /**
+     * List All
+     */
+    public function testListAll() {
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_coupons');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( '`name`', '`amount`', '`type`', '`item_limit`', '`date_created`' );
+
+        // Get
+        $website_coupons = $this->website_coupon->list_all( $dt->get_variables() );
+        $website_coupon = current( $website_coupons );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'WebsiteCoupon', $website_coupons );
+        $this->assertEquals( self::NAME, $website_coupon->name );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $emails );
+    }
+
+    /**
+     * Count All
+     */
+    public function testCountAll() {
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_coupons');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 1;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( '`name`', '`amount`', '`type`', '`item_limit`', '`date_created`' );
+
+        // Get
+        $count = $this->website_coupon->count_all( $dt->get_count_variables() );
+
+        // Assert
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
 
     /**
      * Will be executed after every test
