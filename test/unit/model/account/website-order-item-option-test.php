@@ -43,7 +43,6 @@ class WebsiteOrderItemOptionTest extends BaseDatabaseTest {
         // Assert
         $this->assertContainsOnlyInstancesOf( 'WebsiteOrderItemOption', $website_order_item_options );
         $this->assertEquals( self::OPTION_NAME, $website_order_item_option->option_name );
-
     }
 
     /**
