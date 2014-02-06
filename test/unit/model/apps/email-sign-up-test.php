@@ -48,7 +48,6 @@ class EmailSignUpTest extends BaseDatabaseTest {
         $this->assertEquals( self::TAB, $tab );
     }
 
-
     /**
      * Test Get Connected Website
      */

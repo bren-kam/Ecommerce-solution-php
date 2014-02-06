@@ -66,7 +66,6 @@ class ContactUsTest extends BaseDatabaseTest {
         $this->assertEquals( $expected_tab, $tab );
     }
 
-
     /**
      * Test Get Connected Website
      */
