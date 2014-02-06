@@ -49,7 +49,7 @@ class WebsiteShippingMethod extends ActiveRecordBase {
     public function create() {
         $this->date_created = dt::now();
 
-        $this->insert( array(
+        $this->id = $this->website_shipping_method_id = $this->insert( array(
             'website_id' => $this->website_id
             , 'type' => strip_tags($this->type)
             , 'name' => strip_tags($this->name)
@@ -58,8 +58,6 @@ class WebsiteShippingMethod extends ActiveRecordBase {
             , 'zip_codes' => strip_tags($this->zip_codes)
             , 'date_created' => $this->date_created
         ), 'isssiss' );
-
-        $this->id = $this->website_shipping_method_id = $this->get_insert_id();
     }
 
     /**

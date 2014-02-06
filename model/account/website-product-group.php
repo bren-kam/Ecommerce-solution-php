@@ -34,12 +34,10 @@ class WebsiteProductGroup extends ActiveRecordBase {
      * Create
      */
     public function create() {
-        $this->insert( array(
+        $this->id = $this->website_product_group_id = $this->insert( array(
             'website_id' => $this->website_id
             , 'name' => strip_tags($this->name)
         ), 'is' );
-
-        $this->id = $this->website_product_group_id = $this->get_insert_id();
     }
 
     /**
