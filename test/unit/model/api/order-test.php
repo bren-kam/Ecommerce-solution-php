@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class OrderTest extends BaseDatabaseTest {
+    const TOTAL_AMOUNT = 499;
+    const TYPE = 'GSR Website';
+
     /**
      * @var Order
      */
@@ -14,35 +17,30 @@ class OrderTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->order = new Order();
+
+        // Define
+        $this->phactory->define( 'orders', array( 'total_amount' => self::TOTAL_AMOUNT, 'type' => self::TYPE ) );
+        $this->phactory->recall();
     }
+
+
     /**
-     * Test Get
+     * Test create
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testCreate() {
+        // Create
+        $this->order->type = self::TYPE;
+        $this->order->create();
+
+        // Assert
+        $this->assertNotNull( $this->order->id );
+
+        // Get
+        $ph_order = $this->phactory->get( 'orders', array( 'order_id' => $this->order->id ) );
+
+        // Assert
+        $this->assertEquals( self::TYPE, $ph_order->type );
     }
-//
-//    /**
-//     * Test create
-//     */
-//    public function testCreate() {
-//        $this->order->user_id = -5;
-//        $this->order->total_amount = 449;
-//        $this->order->total_monthly = 449;
-//        $this->order->type = 'GSR Website';
-//        $this->order->status = 1;
-//        $this->order->create();
-//
-//        $this->assertNotNull( $this->order->id ) );
-//
-//        // Make sure it's in the database
-//        $type = $this->phactory->get_var( 'SELECT `type` FROM `orders` WHERE `order_id` = ' . (int) $this->order->id );
-//
-//        $this->assertEquals( $this->order->type, $type );
-//
-//        // Delete the attribute
-//        $this->phactory->delete( 'orders', array( 'order_id' => $this->order->id ), 'i' );
-//    }
 
     /**
      * Will be executed after every test
