@@ -1,5 +1,8 @@
 <?php
 class WebsiteReach extends ActiveRecordBase {
+    const STATUS_OPEN = 0;
+    const STATUS_CLOSED = 1;
+
     // The columns we will have access to
     public $id, $website_reach_id, $website_id, $website_user_id, $assigned_to_user_id, $message, $waiting, $status
         , $assigned_to_date, $date_created, $priority;
@@ -26,7 +29,7 @@ class WebsiteReach extends ActiveRecordBase {
      */
     public function get( $website_reach_id, $account_id ) {
         $this->prepare(
-            "SELECT wr.`website_reach_id`, wr.`website_user_id`, wr.`assigned_to_user_id`, wr.`message`, wr.`priority`, wr.`status`, wr.`assigned_to_date`, wr.`date_created`, wr.`waiting`, IF( '' = wu.`billing_name`, CONCAT( wu.`billing_first_name`, ' ', IF( wu.`billing_last_name`,  wu.`billing_last_name`, '' ) ), wu.`billing_name` ) AS name, wu.`email`, w.`website_id`, w.`title` AS website, w.`domain`, COALESCE( u.`role`, 7 ) AS role FROM `website_reaches` AS wr LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wr.`website_user_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wr.`website_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = wr.`assigned_to_user_id` ) WHERE wr.`website_reach_id` = :website_reach_id AND wr.`website_id` = :account_id"
+            "SELECT wr.`website_reach_id`, wr.`website_user_id`, wr.`assigned_to_user_id`, wr.`message`, wr.`priority`, wr.`status`, wr.`assigned_to_date`, wr.`date_created`, wr.`waiting`, IF( '' = wu.`billing_name` OR wu.`billing_name` IS NULL, CONCAT( wu.`billing_first_name`, ' ', IF( wu.`billing_last_name`,  wu.`billing_last_name`, '' ) ), wu.`billing_name` ) AS name, wu.`email`, w.`website_id`, w.`title` AS website, w.`domain`, COALESCE( u.`role`, 7 ) AS role FROM `website_reaches` AS wr LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wr.`website_user_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wr.`website_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = wr.`assigned_to_user_id` ) WHERE wr.`website_reach_id` = :website_reach_id AND wr.`website_id` = :account_id"
             , 'ii'
             , array( ':website_reach_id' => $website_reach_id, ':account_id' => $account_id )
         )->get_row( PDO::FETCH_INTO, $this );
@@ -41,7 +44,7 @@ class WebsiteReach extends ActiveRecordBase {
      */
     public function get_by_id( $website_reach_id ) {
         $this->prepare(
-            "SELECT wr.`website_reach_id`, wr.`website_user_id`, wr.`assigned_to_user_id`, wr.`message`, wr.`priority`, wr.`status`, wr.`assigned_to_date`, wr.`date_created`, wr.`waiting`, IF( '' = wu.`billing_name`, CONCAT( wu.`billing_first_name`, ' ', IF( wu.`billing_last_name`,  wu.`billing_last_name`, '' ) ), wu.`billing_name` ) AS name, wu.`email`, w.`website_id`, w.`title` AS website, w.`domain`, COALESCE( u.`role`, 7 ) AS role FROM `website_reaches` AS wr LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wr.`website_user_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wr.`website_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = wr.`assigned_to_user_id` ) WHERE wr.`website_reach_id` = :website_reach_id"
+            "SELECT wr.`website_reach_id`, wr.`website_user_id`, wr.`assigned_to_user_id`, wr.`message`, wr.`priority`, wr.`status`, wr.`assigned_to_date`, wr.`date_created`, wr.`waiting`, IF( '' = wu.`billing_name` OR wu.`billing_name` IS NULL, CONCAT( wu.`billing_first_name`, ' ', IF( wu.`billing_last_name`,  wu.`billing_last_name`, '' ) ), wu.`billing_name` ) AS name, wu.`email`, w.`website_id`, w.`title` AS website, w.`domain`, COALESCE( u.`role`, 7 ) AS role FROM `website_reaches` AS wr LEFT JOIN `website_users` AS wu ON ( wu.`website_user_id` = wr.`website_user_id` ) LEFT JOIN `websites` AS w ON ( w.`website_id` = wr.`website_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = wr.`assigned_to_user_id` ) WHERE wr.`website_reach_id` = :website_reach_id"
             , 'i'
             , array( ':website_reach_id' => $website_reach_id )
         )->get_row( PDO::FETCH_INTO, $this );
