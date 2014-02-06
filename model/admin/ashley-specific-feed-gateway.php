@@ -429,18 +429,18 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
         if ( empty( $group_items ) )
             return;
 
-        $account_product_group = new AccountProductGroup();
-        $account_product_group->website_id = $account_id;
+        $website_product_group = new WebsiteProductGroup();
+        $website_product_group->website_id = $account_id;
 
         foreach ( $group_items as $series ) {
-            $account_product_group->name = "Ashley Feed ($series)";
-            $account_product_group->create();
+            $website_product_group->name = "Ashley Feed ($series)";
+            $website_product_group->create();
 
-            $account_product_group->add_relations_by_series( $series );
+            $website_product_group->add_relations_by_series( $series );
 
             // If it didn't add anything, that means they were blocked products or belonged to hidden categories -- let's remove the group
-            if ( $account_product_group->get_row_count() <= 0 )
-                $account_product_group->remove();
+            if ( $website_product_group->get_row_count() <= 0 )
+                $website_product_group->remove();
         }
     }
 
