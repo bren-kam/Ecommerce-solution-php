@@ -21,11 +21,7 @@ class AccountCategoryTest extends BaseDatabaseTest {
         // Define
         $this->phactory->define( 'categories', array( 'name' => self::CATEGORY_NAME ) );
         $this->phactory->define( 'website_blocked_category', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID ) );
-        $this->phactory->define( 'website_categories', array(
-            'website_id' => self::WEBSITE_ID
-            , 'category_id' => self::CATEGORY_ID
-            , 'title' => self::TITLE
-        ) );
+        $this->phactory->define( 'website_categories', array( 'website_id' => self::WEBSITE_ID, 'category_id' => self::CATEGORY_ID, 'title' => self::TITLE ) );
         $this->phactory->recall();
     }
     
@@ -151,26 +147,39 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
     /**
      * Test reorganizing categories
-
+     *
+     * @todo This needs to be more thorough
+     */
     public function testReorganizeCategories() {
+        // Stub
+        $category = $this->getMock('Category');
+        $category->expects($this->once())
+            ->method('get_all');
+        $category->expects($this->once())
+            ->method('get_all');
+
         // Create
         $this->phactory->create( 'website_categories' );
 
         // Reorganize
-        $this->account_category->reorganize_categories( self::WEBSITE_ID, new Category() );
+        $this->account_category->reorganize_categories( self::WEBSITE_ID, $category );
 
-        // check again
+        // Get
         $ph_website_category = $this->phactory->get( 'website_categories', array( 'website_id' => self::WEBSITE_ID ) );
-        fn::info( $ph_website_category );exit;
+
+        // Assert
         $this->assertEmpty( $ph_website_category );
     }
 
     /**
      * List All
-     /
+     */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_categories');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -178,13 +187,16 @@ class AccountCategoryTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'title', 'wc.`date_updated`' );
 
+        // Get
         $website_categories = $this->account_category->list_all( $dt->get_variables() );
+        $website_category = current( $website_categories );
 
-        // Make sure we have an array
-        $this->assertTrue( current( $website_categories ) instanceof AccountCategory );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'AccountCategory', $website_categories );
+        $this->assertEquals( self::TITLE, $website_category->title );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $emails );
@@ -192,10 +204,13 @@ class AccountCategoryTest extends BaseDatabaseTest {
 
     /**
      * Count All
-
+     */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_categories');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -203,17 +218,18 @@ class AccountCategoryTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'title', 'wc.`date_updated`' );
 
+        // Get
         $count = $this->account_category->count_all( $dt->get_count_variables() );
 
-        // Make sure they exist
+        // Assert
         $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
-    }*/
+    }
 
     /**
      * Will be executed after every test
