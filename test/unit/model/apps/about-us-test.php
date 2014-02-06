@@ -34,7 +34,6 @@ class AboutUsTest extends BaseDatabaseTest {
         $this->phactory->recall();
     }
 
-
     /**
      * Test Getting Tab
      */

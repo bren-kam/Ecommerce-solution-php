@@ -3,6 +3,17 @@
 require_once 'test/base-database-test.php';
 
 class ContactUsTest extends BaseDatabaseTest {
+    const FB_PAGE_ID = 5;
+    const CONTENT = 'Here lies earth';
+    const KEY = 'Red Baron';
+
+    // Website Pages
+    const WEBSITE_PAGE_TITLE = 'Rumpelstiltskin';
+    const WEBSITE_PAGE_CONTENT = 'Fairy Tales';
+
+    // Websites
+    const TITLE = 'Grimm Brothers';
+
     /**
      * @var ContactUs
      */
@@ -14,109 +25,83 @@ class ContactUsTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->contact_us = new ContactUs();
+
+        // Define
+        $this->phactory->define( 'sm_contact_us', array( 'fb_page_id' => self::FB_PAGE_ID, 'content' => self::CONTENT, 'key' => self::KEY ) );
+        $this->phactory->define( 'website_pages', array( 'website_id' => self::WEBSITE_ID, 'title' => self::WEBSITE_PAGE_TITLE, 'content' => self::WEBSITE_PAGE_CONTENT ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
+        $this->phactory->define( 'website_pagemeta' );
+        $this->phactory->recall();
     }
+
     /**
-     * Test Get
+     * Test Getting Tab
      */
-    public function testReplace() {
-        // Do Stuff
+    public function testGetTab() {
+        // Create
+        $this->phactory->create( 'sm_contact_us' );
+
+        // Get
+        $tab = $this->contact_us->get_tab( self::FB_PAGE_ID );
+
+        // Assert
+        $this->assertEquals( self::CONTENT, $tab );
+
+        // Reset
+        $this->phactory->recall();
+
+        // Create
+        $ph_website_page = $this->phactory->create('website_pages');
+        $this->phactory->create( 'website_pagemeta', array( 'website_page_id' => $ph_website_page->website_page_id, 'key' => 'addresses', 'value' => serialize( array() ) ), 'iss' );
+        $this->phactory->create( 'website_pagemeta', array( 'website_page_id' => $ph_website_page->website_page_id, 'key' => 'multiple-location-map', 'value' => '' ), 'iss' );
+        $ph_sm_facebook_page = $this->phactory->create('sm_facebook_page');
+        $this->phactory->create( 'sm_contact_us', array( 'website_page_id' => $ph_website_page->website_page_id, 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
+
+        // Get
+        $tab = $this->contact_us->get_tab( self::FB_PAGE_ID );
+        $expected_tab = '<h1>' . self::WEBSITE_PAGE_TITLE . '</h1>' . self::WEBSITE_PAGE_CONTENT;
+
+        // Assert
+        $this->assertEquals( $expected_tab, $tab );
     }
-//
-//    /**
-//     * Test Getting Tab - A
-//     */
-//    public function testGetTabA() {
-//        // Declare variables
-//        $fb_page_id = -5;
-//
-//        // Insert About Us
-//        $this->phactory->insert( 'sm_contact_us', array( 'website_page_id' => 0, 'fb_page_id' => $fb_page_id, 'content' => 'Hip, Hip, Hurray!' ), 'iis' );
-//
-//        // Get it
-//        $tab = $this->contact_us->get_tab( $fb_page_id );
-//
-//        $this->assertTrue( is_string( $tab ) );
-//
-//        // Delete it
-//        $this->phactory->delete( 'sm_contact_us', array( 'fb_page_id' => $fb_page_id ), 'i' );
-//    }
-//
-//    /**
-//     * Test Getting Tab - B
-//     */
-//    public function testGetTabB() {
-//        // Declare variables
-//        $sm_facebook_page_id = -7;
-//        $fb_page_id = -5;
-//        $website_page_id = -3;
-//        $account_id = -9;
-//
-//        // Insert Website Page/FB Page/About Us
-//        $this->phactory->insert( 'website_pages', array( 'website_page_id' => $website_page_id, 'website_id' => $account_id, 'title' => 'Moose Lumps!', 'content' => 'Mooses are cool!' ), 'iiss' );
-//        $this->phactory->insert( 'website_pagemeta', array( 'website_page_id' => $website_page_id, 'key' => 'addresses', 'value' => serialize( array() ) ), 'iss' );
-//        $this->phactory->insert( 'website_pagemeta', array( 'website_page_id' => $website_page_id, 'key' => 'multiple-location-map', 'value' => '' ), 'iss' );
-//        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => 1 ), 'iii' );
-//        $this->phactory->insert( 'sm_contact_us', array( 'website_page_id' => $website_page_id, 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id ), 'iii' );
-//
-//        // Get it
-//        $tab = $this->contact_us->get_tab( $fb_page_id );
-//
-//        $this->assertTrue( is_string( $tab ) );
-//
-//        // Delete it
-//        $this->phactory->delete( 'website_pages', array( 'website_page_id' => $website_page_id ), 'i' );
-//        $this->phactory->delete( 'website_pagemeta', array( 'website_page_id' => $website_page_id ), 'i' );
-//        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-//        $this->phactory->delete( 'sm_contact_us', array( 'fb_page_id' => $fb_page_id ), 'i' );
-//    }
-//
-//    /**
-//     * Test Get Connected Website
-//     */
-//    public function testGetConnectedWebsite() {
-//        // Declare variables
-//        $account_id = -9;
-//        $sm_facebook_page_id = -7;
-//        $fb_page_id = -5;
-//        $key = 'Sirius Black';
-//
-//        // Insert Website Page/FB Page/About Us
-//        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
-//        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
-//        $this->phactory->insert( 'sm_contact_us', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
-//
-//        $account = $this->contact_us->get_connected_website( $fb_page_id );
-//
-//        $this->assertEquals( $account->key, $key );
-//
-//        // Delete it
-//        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-//        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-//        $this->phactory->delete( 'sm_contact_us', array( 'fb_page_id' => $fb_page_id ), 'i' );
-//    }
-//
-//    /**
-//     * Test Connect
-//     */
-//    public function testConnect() {
-//        // Declare variables
-//        $fb_page_id = -5;
-//        $key = 'Red Baron';
-//
-//        // Insert About Us
-//        $this->phactory->insert( 'sm_contact_us', array( 'key' => $key,  ), 's' );
-//
-//        // Get it
-//        $this->contact_us->connect( $fb_page_id, $key );
-//
-//        // Get the key
-//        $fetched_fb_page_id = $this->phactory->get_var( "SELECT `fb_page_id` FROM `sm_contact_us` WHERE `key` = '$key'" );
-//
-//        $this->assertEquals( $fb_page_id, $fetched_fb_page_id );
-//
-//        // Delete it
-//        $this->phactory->delete( 'sm_contact_us', array( 'key' => $key ), 'i' );
-//    }
+
+
+    /**
+     * Test Get Connected Website
+     */
+    public function testGetConnectedWebsite() {
+        // Create
+        $ph_website = $this->phactory->create('websites');
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_contact_us', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
+
+        // Get
+        $account = $this->contact_us->get_connected_website( self::FB_PAGE_ID );
+
+        // Assert
+        $this->assertEquals( self::TITLE, $account->title );
+    }
+
+    /**
+     * Test Connect
+     */
+    public function testConnect() {
+        // Declare
+        $fb_page_id = 8;
+
+        // Create
+        $this->phactory->create('sm_contact_us');
+
+        // Connect
+        $this->contact_us->connect( $fb_page_id, self::KEY );
+
+        // Get
+        $ph_sm_contact_us = $this->phactory->get( 'sm_contact_us', array( 'key' => self::KEY ) );
+
+        // Assert
+        $this->assertEquals( $fb_page_id, $ph_sm_contact_us->fb_page_id );
+    }
 
     /**
      * Will be executed after every test
