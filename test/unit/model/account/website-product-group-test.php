@@ -3,6 +3,12 @@
 require_once 'test/base-database-test.php';
 
 class WebsiteProductGroupTest extends BaseDatabaseTest {
+    const NAME = 'Ceiling Collection';
+
+    // Website Product Group Relations
+    const WEBSITE_PRODUCT_GROUP_ID = 11;
+    const PRODUCT_ID = 13;
+
     /**
      * @var WebsiteProductGroup
      */
@@ -14,231 +20,194 @@ class WebsiteProductGroupTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->website_product_group = new WebsiteProductGroup();
-    }
-    /**
-     * Test Get
-     */
-    public function testReplace() {
-        // Do Stuff
+
+        // Define
+        $this->phactory->define( 'website_product_groups', array( 'website_id' => self::WEBSITE_ID, 'name' => self::NAME ) );
+        $this->phactory->define( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID, 'product_id' => self::PRODUCT_ID ) );
+        $this->phactory->recall();
     }
 
-//    /**
-//     * Get
-//     */
-//    public function testGet() {
-//        // Set variables
-//        $website_id = -7;
-//        $name = 'Ceiling Collection';
-//
-//        // Create
-//        $website_product_group_id = $this->phactory->insert( 'website_product_groups', compact( 'website_id', 'name' ), 'is' );
-//
-//        // Get
-//        $this->website_product_group->get( $website_product_group_id, $website_id );
-//
-//        // Make sure we grabbed the right one
-//        $this->assertEquals( $name, $this->website_product_group->name );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Test create
-//     */
-//    public function testCreate() {
-//        // Declare variables
-//        $website_id = -9;
-//        $name = 'Ceiling Collection';
-//
-//        // Create
-//        $this->website_product_group->website_id = $website_id;
-//        $this->website_product_group->name = $name;
-//        $this->website_product_group->create();
-//
-//        // Make sure it's in the database
-//        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
-//
-//        $this->assertEquals( $name, $retrieved_name );
-//
-//        // Delete
-//        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Add Relations
-//     */
-//    public function testAddRelations() {
-//        // Declare variables
-//        $website_product_group_id = -5;
-//        $product_ids = array( -2, -4, -6 );
-//
-//        // Set ID
-//        $this->website_product_group->id = $website_product_group_id;
-//
-//        // Add relations
-//        $this->website_product_group->add_relations( $product_ids );
-//
-//        // See if they are still there
-//        $retrieved_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = $website_product_group_id ORDER BY `product_id` DESC" );
-//
-//        // Make sure they are equal
-//        $this->assertEquals( $product_ids, $retrieved_product_ids );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_product_group_relations', compact( 'website_product_group_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Save
-//     *
-//     * @depends testGet
-//     */
-//    public function testSave() {
-//        // Declare variables
-//        $website_id = -5;
-//        $name = 'Ceiling Collection';
-//
-//        // Create
-//        $website_product_group_id = $this->phactory->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
-//
-//        // Get
-//        $this->website_product_group->get( $website_product_group_id, $website_id );
-//
-//        // Save
-//        $this->website_product_group->name = $name;
-//        $this->website_product_group->save();
-//
-//        // Make sure it's in the database
-//        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
-//
-//        $this->assertEquals( $name, $retrieved_name );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Get Product Relation IDs
-//     *
-//     * @depends testAddRelations
-//     */
-//    public function testGetProductRelationIds() {
-//        // Declare variables
-//        $website_id = -3;
-//        $product_ids = array( -2, -4, -6 );
-//
-//        // Create
-//        $this->website_product_group->id = $this->phactory->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
-//        $this->website_product_group->add_relations( $product_ids );
-//
-//        // See if they are still there
-//        $retrieved_product_ids = $this->website_product_group->get_product_relation_ids();
-//
-//        // Make sure they are equal
-//        $this->assertEquals( $product_ids, $retrieved_product_ids );
-//
-//        // Clean up
-//        $this->phactory->delete( 'website_product_group_relations', array( 'website_product_group_id' => $this->website_product_group->id ), 'i' );
-//        $this->phactory->delete( 'website_product_groups', compact( 'website_id' ), 'i' );
-//    }
-//
-//    /**
-//     * Remove
-//     *
-//     * @depends testCreate
-//     */
-//    public function testRemove() {
-//        // Declare variables
-//        $website_id = -7;
-//        $name = 'Ceiling Collection';
-//
-//        // Create
-//        $this->website_product_group->website_id = $website_id;
-//        $this->website_product_group->name = $name;
-//        $this->website_product_group->create();
-//
-//        // Remove/Delete
-//        $this->website_product_group->remove();
-//
-//        $retrieved_name = $this->phactory->get_var( "SELECT `name` FROM `website_product_groups` WHERE `website_id` = $website_id" );
-//
-//        $this->assertFalse( $retrieved_name );
-//    }
-//
-//    /**
-//     * Remove Relations
-//     *
-//     * @depends testAddRelations
-//     */
-//    public function testRemoveRelations() {
-//        // Declare variables
-//        $website_id = -3;
-//        $product_ids = array( -2, -4, -6 );
-//
-//        // Create
-//        $this->website_product_group->id = $this->phactory->insert( 'website_product_groups', compact( 'website_id' ), 'i' );
-//        $this->website_product_group->add_relations( $product_ids );
-//
-//        // See if they are still there
-//        $this->website_product_group->remove_relations();
-//
-//        // See if they are still there
-//        $retrieved_product_ids = $this->phactory->get_col( "SELECT `product_id` FROM `website_product_group_relations` WHERE `website_product_group_id` = " . (int) $this->website_product_group->id );
-//
-//        // Make sure they are equal
-//        $this->assertEquals( array(), $retrieved_product_ids );
-//    }
-//
-//    /**
-//     * List All
-//     */
-//    public function testListAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 0;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( '`name`' );
-//
-//        $website_product_groups = $this->website_product_group->list_all( $dt->get_variables() );
-//
-//        // Make sure we have an array
-//        $this->assertTrue( current( $website_product_groups ) instanceof WebsiteProductGroup );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $emails );
-//    }
-//
-//    /**
-//     * Count All
-//     */
-//    public function testCountAll() {
-//        $user = new User();
-//        $user->get_by_email('test@greysuitretail.com');
-//
-//        // Determine length
-//        $_GET['iDisplayLength'] = 30;
-//        $_GET['iSortingCols'] = 0;
-//        $_GET['iSortCol_0'] = 1;
-//        $_GET['sSortDir_0'] = 'asc';
-//
-//        $dt = new DataTableResponse( $user );
-//        $dt->order_by( '`name`' );
-//
-//        $count = $this->website_product_group->count_all( $dt->get_count_variables() );
-//
-//        // Make sure they exist
-//        $this->assertGreaterThan( 0, $count );
-//
-//        // Get rid of everything
-//        unset( $user, $_GET, $dt, $count );
-//    }
+    /**
+     * Get
+     */
+    public function testGet() {
+        // Create
+        $ph_website_product_group = $this->phactory->create('website_product_groups');
+
+        // Get
+        $this->website_product_group->get( $ph_website_product_group->website_product_group_id, self::WEBSITE_ID );
+
+        // Assert
+        $this->assertEquals( self::NAME, $this->website_product_group->name );
+    }
+
+    /**
+     * Test create
+     */
+    public function testCreate() {
+        // Create
+        $this->website_product_group->website_id = self::WEBSITE_ID;
+        $this->website_product_group->name = self::NAME;
+        $this->website_product_group->create();
+
+        // Assert
+        $this->assertNotNull( $this->website_product_group->id );
+
+        // Get
+        $ph_website_product_group = $this->phactory->get( 'website_product_groups', array( 'website_id' => self::WEBSITE_ID ) );
+
+        // Assert
+        $this->assertEquals( self::NAME, $ph_website_product_group->name );
+    }
+
+    /**
+     * Add Relations
+     */
+    public function testAddRelations() {
+        // Add relations
+        $this->website_product_group->id = self::WEBSITE_PRODUCT_GROUP_ID;
+        $this->website_product_group->add_relations( array( self::PRODUCT_ID ) );
+
+        // Get
+        $ph_website_product_group_relation = $this->phactory->get( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID ) );
+
+        // Assert
+        $this->assertEquals( self::PRODUCT_ID, $ph_website_product_group_relation->product_id );
+    }
+
+    /**
+     * Save
+     */
+    public function testSave() {
+        // Create
+        $ph_website_product_group = $this->phactory->create('website_product_groups');
+
+        // Save
+        $this->website_product_group->id = $ph_website_product_group->website_product_group_id;
+        $this->website_product_group->name = 'Bedroom Group';
+        $this->website_product_group->save();
+
+        // Get
+        $ph_website_product_group = $this->phactory->get( 'website_product_groups', array( 'website_product_group_id' => $ph_website_product_group->website_product_group_id ) );
+
+        // Assert
+        $this->assertEquals( $this->website_product_group->name, $ph_website_product_group->name );
+    }
+
+    /**
+     * Get Product Relation IDs
+     *
+     * @depends testAddRelations
+     */
+    public function testGetProductRelationIds() {
+        // Create
+        $ph_website_product_group = $this->phactory->create('website_product_groups');
+        $this->phactory->create( 'website_product_group_relations', array( 'website_product_group_id' => $ph_website_product_group->website_product_group_id ) );
+
+        // Get
+        $this->website_product_group->id = $ph_website_product_group->website_product_group_id;
+        $retrieved_product_ids = $this->website_product_group->get_product_relation_ids();
+        $expected_product_ids = array( self::PRODUCT_ID );
+
+        // Assert
+        $this->assertEquals( $expected_product_ids, $retrieved_product_ids );
+    }
+
+    /**
+     * Remove
+     */
+    public function testRemove() {
+        // Create
+        $ph_website_product_group = $this->phactory->create('website_product_groups');
+
+        // Delete
+        $this->website_product_group->id = $ph_website_product_group->website_product_group_id;
+        $this->website_product_group->remove();
+
+        // Get
+        $ph_website_product_group = $this->phactory->get( 'website_product_groups', array( 'website_product_group_id' => $ph_website_product_group->website_product_group_id ) );
+
+        // Assert
+        $this->assertNull( $ph_website_product_group );
+    }
+
+    /**
+     * Remove Relations
+     */
+    public function testRemoveRelations() {
+        // Create
+        $this->phactory->create('website_product_group_relations');
+
+        // Remove
+        $this->website_product_group->id = self::WEBSITE_PRODUCT_GROUP_ID;
+        $this->website_product_group->remove_relations();
+
+        // Get
+        $ph_website_product_group_relation = $this->phactory->get( 'website_product_group_relations', array( 'website_product_group_id' => self::WEBSITE_PRODUCT_GROUP_ID ) );
+
+        // Assert
+        $this->assertNull( $ph_website_product_group_relation );
+    }
+
+    /**
+     * List All
+     */
+    public function testListAll() {
+        // Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_product_groups');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 0;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( '`name`' );
+
+        // Get
+        $website_product_groups = $this->website_product_group->list_all( $dt->get_variables() );
+        $website_product_group = current( $website_product_groups );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'WebsiteProductGroup', $website_product_groups );
+        $this->assertEquals( self::NAME, $website_product_group->name );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $emails );
+    }
+
+    /**
+     * Count All
+     */
+    public function testCountAll() {
+        // Stub
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('website_product_groups');
+
+        // Determine length
+        $_GET['iDisplayLength'] = 30;
+        $_GET['iSortingCols'] = 0;
+        $_GET['iSortCol_0'] = 1;
+        $_GET['sSortDir_0'] = 'asc';
+
+        $dt = new DataTableResponse( $stub_user );
+        $dt->order_by( '`name`' );
+
+        // Get
+        $count = $this->website_product_group->count_all( $dt->get_count_variables() );
+
+        // Assert
+        $this->assertGreaterThan( 0, $count );
+
+        // Get rid of everything
+        unset( $user, $_GET, $dt, $count );
+    }
 
     /**
      * Will be executed after every test
