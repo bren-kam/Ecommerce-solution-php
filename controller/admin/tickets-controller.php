@@ -505,7 +505,7 @@ class TicketsController extends BaseController {
                 $file->delete_file( $upload->key, 'attachments/' );
 
                 // Delete the upload entry
-                $upload->delete_upload();
+                $upload->remove();
             }
         }
 
@@ -513,7 +513,7 @@ class TicketsController extends BaseController {
         jQuery('#comment-' . $ticket_comment->id)->remove();
 
         // Then delete ticket
-        $ticket_comment->delete();
+        $ticket_comment->remove();
 
         // Add jquery
         $response->add_response( 'jquery', jQuery::getResponse() );
@@ -550,7 +550,7 @@ class TicketsController extends BaseController {
         jQuery('#upload-' . $ticket_upload->id)->remove();
 
         // Delete upload
-        $ticket_upload->delete_upload();
+        $ticket_upload->remove();
 
         // Add response
         $response->add_response( 'jquery', jQuery::getResponse() );

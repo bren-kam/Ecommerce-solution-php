@@ -3,6 +3,13 @@
 require_once 'test/base-database-test.php';
 
 class FacebookSiteTest extends BaseDatabaseTest {
+    const FB_PAGE_ID = 5;
+    const CONTENT = 'Here lies earth';
+    const KEY = 'Red Baron';
+
+    // Websites
+    const TITLE = 'Grimm Brothers';
+    
     /**
      * @var FacebookSite
      */
@@ -14,74 +21,62 @@ class FacebookSiteTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->facebook_site = new FacebookSite();
+        
+        // Define
+        $this->phactory->define( 'sm_facebook_site', array( 'fb_page_id' => self::FB_PAGE_ID, 'content' => self::CONTENT, 'key' => self::KEY ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
+        $this->phactory->recall();
     }
-
+    
     /**
      * Test Getting Tab
      */
     public function testGetTab() {
-        // Declare variables
-        $fb_page_id = -5;
-        $content = 'Hip, Hip, Hurray!';
+        // Create
+        $this->phactory->create( 'sm_facebook_site' );
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_facebook_site', array( 'fb_page_id' => $fb_page_id, 'content' => $content ), 'is' );
+        // Get
+        $tab = $this->facebook_site->get_tab( self::FB_PAGE_ID );
 
-        // Get it
-        $tab = $this->facebook_site->get_tab( $fb_page_id );
-
-        $this->assertEquals( $content, $tab );
-
-        // Delete it
-        $this->phactory->delete( 'sm_facebook_site', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( self::CONTENT, $tab );
     }
 
     /**
      * Test Get Connected Website
      */
     public function testGetConnectedWebsite() {
-        // Declare variables
-        $account_id = -9;
-        $sm_facebook_page_id = -7;
-        $fb_page_id = -5;
-        $key = 'Sirius Black';
+        // Create
+        $ph_website = $this->phactory->create('websites');
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_facebook_site', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
-        $this->phactory->insert( 'sm_facebook_site', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
+        // Get
+        $account = $this->facebook_site->get_connected_website( self::FB_PAGE_ID );
 
-        $account = $this->facebook_site->get_connected_website( $fb_page_id );
-
-        $this->assertEquals( $account->key, $key );
-
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_site', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TITLE, $account->title );
     }
 
     /**
      * Test Connect
      */
     public function testConnect() {
-        // Declare variables
-        $fb_page_id = -5;
-        $key = 'Red Baron';
+        // Declare
+        $fb_page_id = 8;
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_facebook_site', array( 'key' => $key,  ), 's' );
+        // Create
+        $this->phactory->create('sm_facebook_site');
 
-        // Get it
-        $this->facebook_site->connect( $fb_page_id, $key );
+        // Connect
+        $this->facebook_site->connect( $fb_page_id, self::KEY );
 
-        // Get the key
-        $fetched_fb_page_id = $this->phactory->get_var( "SELECT `fb_page_id` FROM `sm_facebook_site` WHERE `key` = '$key'" );
+        // Get
+        $ph_sm_facebook_site = $this->phactory->get( 'sm_facebook_site', array( 'key' => self::KEY ) );
 
-        $this->assertEquals( $fb_page_id, $fetched_fb_page_id );
-
-        // Delete it
-        $this->phactory->delete( 'sm_facebook_site', array( 'key' => $key ), 'i' );
+        // Assert
+        $this->assertEquals( $fb_page_id, $ph_sm_facebook_site->fb_page_id );
     }
 
     /**

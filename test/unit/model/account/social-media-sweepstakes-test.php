@@ -3,6 +3,11 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaSweepstakesTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 5;
+    const FB_PAGE_ID = 3;
+    const KEY = 'beal';
+    const BEFORE = 'Misty Mountains';
+    
     /**
      * @var SocialMediaSweepstakes
      */
@@ -14,48 +19,41 @@ class SocialMediaSweepstakesTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->sm_sweepstakes = new SocialMediaSweepstakes();
+        
+        // Define
+        $this->phactory->define( 'sm_sweepstakes', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'key' => self::KEY, 'before' => self::BEFORE ) );
+        $this->phactory->recall();
     }
-
+    
     /**
      * Get
      */
     public function testGet() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $fb_page_id = -7;
-
-        // Insert
-        $this->phactory->insert( 'sm_sweepstakes', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        // Create
+        $this->phactory->create('sm_sweepstakes');
 
         // Get
-        $this->sm_sweepstakes->get( $sm_facebook_page_id );
+        $this->sm_sweepstakes->get( self::SM_FACEBOOK_PAGE_ID );
 
-        $this->assertEquals( $fb_page_id, $this->sm_sweepstakes->fb_page_id );
-
-        // Clean up
-        $this->phactory->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::FB_PAGE_ID, $this->sm_sweepstakes->fb_page_id );
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $key = 'Poke';
-
         // Create
-        $this->sm_sweepstakes->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_sweepstakes->key = $key;
+        $this->sm_sweepstakes->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_sweepstakes->key = self::KEY;
         $this->sm_sweepstakes->create();
 
         // Get
-        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $ph_sm_sweepstakes = $this->phactory->get( 'sm_sweepstakes', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_key, $this->sm_sweepstakes->key );
-
-        // Clean up
-        $this->phactory->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::KEY, $ph_sm_sweepstakes->key );
     }
 
     /**
@@ -64,27 +62,21 @@ class SocialMediaSweepstakesTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $before = 'Poke';
-
         // Create
-        $this->sm_sweepstakes->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_sweepstakes->create();
+        $this->phactory->create('sm_sweepstakes');
 
-        // Update test
-        $this->sm_sweepstakes->before = $before;
+        // Save
+        $this->sm_sweepstakes->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_sweepstakes->before = self::BEFORE;
         $this->sm_sweepstakes->save();
 
-        // Now check it!
-        $retrieved_before = $this->phactory->get_var( "SELECT `before` FROM `sm_sweepstakes` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        // Get
+        $ph_sm_sweepstakes = $this->phactory->get( 'sm_sweepstakes', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_before, $before );
-
-        // Clean up
-        $this->phactory->delete( 'sm_sweepstakes', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::BEFORE, $ph_sm_sweepstakes->before );
     }
-
+    
     /**
      * Will be executed after every test
      */

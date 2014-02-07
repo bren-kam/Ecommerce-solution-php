@@ -170,7 +170,7 @@ class ProductOptionsController extends BaseController {
                     if ( !in_array( $poli->id, $product_option_list_item_ids ) ) {
                         $product_option_list_item = new ProductOptionListItem();
                         $product_option_list_item->get( $poli->id );
-                        $product_option_list_item->delete();
+                        $product_option_list_item->remove();
                     }
                 }
 
@@ -259,7 +259,7 @@ class ProductOptionsController extends BaseController {
 
         // Delete attribute
         if ( $product_option->id ) {
-            $product_option->delete();
+            $product_option->remove();
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();

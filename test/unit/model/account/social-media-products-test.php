@@ -3,6 +3,11 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaProductsTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 5;
+    const FB_PAGE_ID = 3;
+    const KEY = 'beal';
+    const CONTENT = 'Misty Mountains';
+    
     /**
      * @var SocialMediaProducts
      */
@@ -14,48 +19,41 @@ class SocialMediaProductsTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->sm_products = new SocialMediaProducts();
+        
+        // Define
+        $this->phactory->define( 'sm_products', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'key' => self::KEY, 'content' => self::CONTENT ) );
+        $this->phactory->recall();
     }
-
+    
     /**
      * Get
      */
     public function testGet() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $fb_page_id = -7;
-
-        // Insert
-        $this->phactory->insert( 'sm_products', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        // Create
+        $this->phactory->create('sm_products');
 
         // Get
-        $this->sm_products->get( $sm_facebook_page_id );
+        $this->sm_products->get( self::SM_FACEBOOK_PAGE_ID );
 
-        $this->assertEquals( $fb_page_id, $this->sm_products->fb_page_id );
-
-        // Clean up
-        $this->phactory->delete( 'sm_products', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::FB_PAGE_ID, $this->sm_products->fb_page_id );
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $key = 'Poke';
-
         // Create
-        $this->sm_products->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_products->key = $key;
+        $this->sm_products->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_products->key = self::KEY;
         $this->sm_products->create();
 
         // Get
-        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_products` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $ph_sm_products = $this->phactory->get( 'sm_products', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_key, $this->sm_products->key );
-
-        // Clean up
-        $this->phactory->delete( 'sm_products', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::KEY, $ph_sm_products->key );
     }
 
     /**
@@ -64,25 +62,19 @@ class SocialMediaProductsTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $content = 'Poke';
-
         // Create
-        $this->sm_products->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_products->create();
+        $this->phactory->create('sm_products');
 
-        // Update test
-        $this->sm_products->content = $content;
+        // Save
+        $this->sm_products->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_products->content = self::CONTENT;
         $this->sm_products->save();
 
-        // Now check it!
-        $retrieved_content = $this->phactory->get_var( "SELECT `content` FROM `sm_products` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        // Get
+        $ph_sm_products = $this->phactory->get( 'sm_products', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_content, $content );
-
-        // Clean up
-        $this->phactory->delete( 'sm_products', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::CONTENT, $ph_sm_products->content );
     }
 
     /**

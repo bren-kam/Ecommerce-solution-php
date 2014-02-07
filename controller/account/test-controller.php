@@ -14,17 +14,36 @@ class TestController extends BaseController {
     /**
      * List Accounts
      *
+     *
      * @return TemplateResponse
      */
     protected function index() {
-        if ( isset( $_SESSION['sm_facebook_page_id'] ) ) {
-            $response = 'It is already set';
-        } else {
-            $_SESSION['sm_facebook_page_id'] = 5;
-            $response = 'It is now set';
+        // Package feed
+        //$ashley_package_gateway = new AshleyPackageProductFeedGateway();
+        //$ashley_package_gateway->run();
+
+        $website_ids = array(1355,1371,1375,1382,1393,1395,1401,1407,1330);
+
+        $account_category = new AccountCategory();
+        $category = new Category;
+
+        foreach ( $website_ids as $website_id ) {
+            $account_category->reorganize_categories( $website_id, $category );
+        }
+        return new HtmlResponse( 'heh' );
+    }
+	
+	/**
+     * Login
+     *
+     * @return bool
+     */
+    protected function get_logged_in_user() {
+        if ( defined('CLI') && true == CLI ) {
+            $this->user = new User();
+            return true;
         }
 
-
-        return new HtmlResponse( $response . fn::info( $_SESSION, false ) );
+        return false;
     }
 }

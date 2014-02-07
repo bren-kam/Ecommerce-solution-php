@@ -38,7 +38,7 @@ class TicketComment extends ActiveRecordBase {
 	 * Get Comments
 	 *
 	 * @param int $ticket_id
-	 * @return array
+	 * @return TicketComment[]
 	 */
 	public function get_by_ticket( $ticket_id ) {
 		return $this->prepare( 'SELECT a.`ticket_comment_id`, a.`user_id`, a.`comment`, a.`private`, a.`date_created`, b.`contact_name` AS name FROM `ticket_comments` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) WHERE a.`ticket_id` = :ticket_id ORDER BY a.`date_created` DESC'
@@ -70,7 +70,7 @@ class TicketComment extends ActiveRecordBase {
     /**
      * Delete the ticket comment
      */
-    public function delete() {
+    public function remove() {
         parent::delete( array( 'ticket_comment_id' => $this->id ), 'i' );
     }
 }

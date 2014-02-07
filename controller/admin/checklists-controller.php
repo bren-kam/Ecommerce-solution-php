@@ -300,7 +300,7 @@ class ChecklistsController extends BaseController {
         jQuery('#note-' . $checklist_website_item_note->id )->remove();
 
         // Delete note
-        $checklist_website_item_note->delete();
+        $checklist_website_item_note->remove();
 
         // Add jquery
         $response->add_response( 'jquery', jQuery::getResponse() );

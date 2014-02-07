@@ -46,9 +46,6 @@ class EmailTemplateTest extends BaseDatabaseTest {
      * Get Default
      */
     public function testGetDefault() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_email_template = $this->phactory->create('email_templates');
         $this->phactory->create( 'email_template_associations', array( 'email_template_id' => $ph_email_template->email_template_id ) );
@@ -119,9 +116,6 @@ class EmailTemplateTest extends BaseDatabaseTest {
      * Test Add Association
      */
     public function testAddAssociation() {
-        // Reset
-        $this->phactory->recall();
-
         // Add association
         $this->email_template->id = self::EMAIL_TEMPLATE_ID;
         $this->email_template->add_association( self::WEBSITE_ID );

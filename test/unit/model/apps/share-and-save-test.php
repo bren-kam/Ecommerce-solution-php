@@ -3,6 +3,14 @@
 require_once 'test/base-database-test.php';
 
 class ShareAndSaveTest extends BaseDatabaseTest {
+    const FB_PAGE_ID = 5;
+    const BEFORE = 'Like us and receive 10% off!';
+    const AFTER = 'Here is your coupon!';
+    const KEY = 'Red Baron';
+
+    // Websites
+    const TITLE = 'Grimm Brothers';
+
     /**
      * @var ShareAndSave
      */
@@ -14,96 +22,70 @@ class ShareAndSaveTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->share_and_save = new ShareAndSave();
+
+        // Define
+        $this->phactory->define( 'sm_share_and_save', array( 'fb_page_id' => self::FB_PAGE_ID, 'before' => self::BEFORE, 'after' => self::AFTER, 'key' => self::KEY ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Getting Tab
      */
-    public function testGetTabA() {
-        // Declare variables
-        $fb_page_id = -5;
+    public function testGetTab() {
+        // Create
+        $this->phactory->create( 'sm_share_and_save' );
+
+        // Get
         $liked = false;
-        $before = 'What do you need to like me?';
+        $share_and_save = $this->share_and_save->get_tab( self::FB_PAGE_ID, $liked );
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_share_and_save', array( 'fb_page_id' => $fb_page_id, 'before' => $before ), 'is' );
+        // Assert
+        $this->assertEquals( self::BEFORE, $share_and_save->content );
 
-        // Get it
-        $tab = $this->share_and_save->get_tab( $fb_page_id, $liked );
-
-        $this->assertEquals( $tab->content, $before );
-
-        // Delete it
-        $this->phactory->delete( 'sm_share_and_save', array( 'fb_page_id' => $fb_page_id ), 'i' );
-    }
-
-    /**
-     * Test Getting Tab - B
-     */
-    public function testGetTabB() {
-        // Declare variables
-        $fb_page_id = -5;
+        // Get
         $liked = true;
-        $after = 'Yay! You liked me!';
+        $share_and_save = $this->share_and_save->get_tab( self::FB_PAGE_ID, $liked );
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_share_and_save', array( 'fb_page_id' => $fb_page_id, 'after' => $after ), 'is' );
-
-        // Get it
-        $tab = $this->share_and_save->get_tab( $fb_page_id, $liked );
-
-        $this->assertEquals( $after, $tab->content );
-
-        // Delete it
-        $this->phactory->delete( 'sm_share_and_save', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( self::AFTER, $share_and_save->content );
     }
 
     /**
      * Test Get Connected Website
      */
     public function testGetConnectedWebsite() {
-        // Declare variables
-        $account_id = -9;
-        $sm_facebook_page_id = -7;
-        $fb_page_id = -5;
-        $key = 'Sirius Black';
+        // Create
+        $ph_website = $this->phactory->create('websites');
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_share_and_save', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
-        $this->phactory->insert( 'sm_share_and_save', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
+        // Get
+        $account = $this->share_and_save->get_connected_website( self::FB_PAGE_ID );
 
-        $account = $this->share_and_save->get_connected_website( $fb_page_id );
-
-        $this->assertEquals( $account->key, $key );
-
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_share_and_save', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TITLE, $account->title );
     }
 
     /**
      * Test Connect
      */
     public function testConnect() {
-        // Declare variables
-        $fb_page_id = -5;
-        $key = 'Red Baron';
+        // Declare
+        $fb_page_id = 8;
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_share_and_save', array( 'key' => $key,  ), 's' );
+        // Create
+        $this->phactory->create('sm_share_and_save');
 
-        // Get it
-        $this->share_and_save->connect( $fb_page_id, $key );
+        // Connect
+        $this->share_and_save->connect( $fb_page_id, self::KEY );
 
-        // Get the key
-        $fetched_fb_page_id = $this->phactory->get_var( "SELECT `fb_page_id` FROM `sm_share_and_save` WHERE `key` = '$key'" );
+        // Get
+        $ph_sm_share_and_save = $this->phactory->get( 'sm_share_and_save', array( 'key' => self::KEY ) );
 
-        $this->assertEquals( $fb_page_id, $fetched_fb_page_id );
-
-        // Delete it
-        $this->phactory->delete( 'sm_share_and_save', array( 'key' => $key ), 'i' );
+        // Assert
+        $this->assertEquals( $fb_page_id, $ph_sm_share_and_save->fb_page_id );
     }
 
     /**

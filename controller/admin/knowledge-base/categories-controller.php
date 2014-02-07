@@ -235,7 +235,7 @@ class CategoriesController extends BaseController {
         // Deactivate user
         if ( $category->id ) {
             try {
-                $category->delete();
+                $category->remove();
             } catch ( ModelException $e ) {
                 switch( $e->getCode() ) {
                       case ActiveRecordBase::EXCEPTION_DUPLICATE_ENTRY:

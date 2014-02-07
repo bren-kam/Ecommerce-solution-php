@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class MobilePageTest extends BaseDatabaseTest {
+    const SLUG = 'current-offer';
+
     /**
      * @var MobilePage
      */
@@ -13,99 +15,93 @@ class MobilePageTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->mobile_page = new MobilePage();
+
+        // Define
+        $this->phactory->define( 'mobile_pages', array( 'website_id' => self::WEBSITE_ID, 'slug' => self::SLUG ) );
+        $this->phactory->recall();
     }
     
     /**
      * Test Get
      */
     public function testGet() {
-        // Set variables
-        $website_id = -7;
-        $slug = 'something-unique';
-
         // Create
-        $mobile_page_id = $this->phactory->insert( 'mobile_pages', compact( 'website_id', 'slug' ), 'is' );
+        $ph_mobile_page = $this->phactory->create('mobile_pages');
 
         // Get
-        $this->mobile_page->get( $mobile_page_id, $website_id );
+        $this->mobile_page->get( $ph_mobile_page->mobile_page_id, self::WEBSITE_ID );
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $slug, $this->mobile_page->slug );
-
-        // Clean up
-        $this->phactory->delete( 'mobile_pages', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::SLUG, $this->mobile_page->slug );
     }
 
     /**
      * Test create
      */
     public function testCreate() {
-        $this->mobile_page->website_id = -3;
-        $this->mobile_page->slug = 'enders-game';
-        $this->mobile_page->title = "Ender's Game";
+        // Create
+        $this->mobile_page->website_id = self::WEBSITE_ID;
+        $this->mobile_page->slug = self::SLUG;
         $this->mobile_page->create();
 
-        $this->assertNotNull( $this->mobile_page->id ) );
+        // Assert
+        $this->assertNotNull( $this->mobile_page->id );
 
-        // Make sure it's in the database
-        $slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
+        // Get
+        $ph_mobile_page = $this->phactory->get( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ) );
 
-        $this->assertEquals( 'enders-game', $slug );
-
-        // Delete
-        $this->phactory->delete( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::SLUG, $ph_mobile_page->slug );
     }
-    
+
     /**
      * Save
      */
     public function testSave() {
-        // Declare variables
-        $slug = 'originla-slug';
-        $new_slug = 'original-slug';
+        // Create
+        $ph_mobile_page = $this->phactory->create('mobile_pages');
 
-        // Create posting post
-        $this->mobile_page->id = $this->phactory->insert( 'mobile_pages', compact( 'slug' ), 's' );
-    
-        // Update test
-        $this->mobile_page->slug = $new_slug;
+        // Save
+        $this->mobile_page->id = $ph_mobile_page->mobile_page_id;
+        $this->mobile_page->slug = 'about-us';
         $this->mobile_page->save();
-    
-        $retrieved_slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
-    
-        $this->assertEquals( $retrieved_slug, $new_slug );
-    
-        // Delete
-        $this->phactory->delete( 'mobile_pages', array( 'mobile_page_id' => $this->mobile_page->id ), 'i' );
+
+        // Get
+        $ph_mobile_page = $this->phactory->get( 'mobile_pages', array( 'mobile_page_id' => $ph_mobile_page->mobile_page_id ) );
+
+        // Assert
+        $this->assertEquals( $this->mobile_page->slug, $ph_mobile_page->slug );
     }
-    
+
     /**
      * Remove
      *
      * @depends testCreate
      */
     public function testRemove() {
-        // Declare variables
-        $slug = 'special-offer';
-
         // Create
-        $this->mobile_page->slug = $slug;
-        $this->mobile_page->create();
+        $ph_mobile_page = $this->phactory->create('mobile_pages');
 
-        // Remove/Delete
+        // Remove
+        $this->mobile_page->id = $ph_mobile_page->mobile_page_id;
         $this->mobile_page->remove();
 
-        $retrieved_slug = $this->phactory->get_var( 'SELECT `slug` FROM `mobile_pages` WHERE `mobile_page_id` = ' . (int) $this->mobile_page->id );
+        // Get
+        $ph_mobile_page = $this->phactory->get( 'mobile_pages', array( 'mobile_page_id' => $ph_mobile_page->mobile_page_id ) );
 
-        $this->assertFalse( $retrieved_slug );
+        // Assert
+        $this->assertNull( $ph_mobile_page );
     }
 
     /**
      * List All
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub
+        $user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('mobile_pages');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -116,10 +112,13 @@ class MobilePageTest extends BaseDatabaseTest {
         $dt = new DataTableResponse( $user );
         $dt->order_by( '`title`', '`status`', '`date_updated`' );
 
+        // Get
         $mobile_pages = $this->mobile_page->list_all( $dt->get_variables() );
+        $mobile_page = current( $mobile_pages );
 
-        // Make sure we have an array
-        $this->assertTrue( current( $mobile_pages ) instanceof MobilePage );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'MobilePage', $mobile_pages );
+        $this->assertEquals( self::SLUG, $mobile_page->slug );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $emails );
@@ -129,8 +128,11 @@ class MobilePageTest extends BaseDatabaseTest {
      * Count All
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub
+        $user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('mobile_pages');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -141,9 +143,10 @@ class MobilePageTest extends BaseDatabaseTest {
         $dt = new DataTableResponse( $user );
         $dt->order_by( '`title`', '`status`', '`date_updated`' );
 
+        // Get
         $count = $this->mobile_page->count_all( $dt->get_count_variables() );
 
-        // Make sure they exist
+        // Assert
         $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything

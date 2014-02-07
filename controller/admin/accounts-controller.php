@@ -1386,7 +1386,7 @@ class AccountsController extends BaseController {
         if ( empty( $phone ) )
             $phone = '8185551234';
 
-        $sendgrid->subuser->add( $username, $password, $user->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA', $phone, $account->domain, $account->title );
+        $sendgrid->subuser->add( $username, $password, $user->email, $first_name, $last_name, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'US', $phone, $account->domain, $account->title );
 
         // Add IP Address
         $sendgrid->subuser->send_ip( $username );
@@ -1397,7 +1397,7 @@ class AccountsController extends BaseController {
         $email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
 
         // Add sender address
-        $sendgrid->sender_address->add( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'USA' );
+        $sendgrid->sender_address->add( $account->id, $name, $email, $settings['address'], $settings['city'], $settings['state'], $settings['zip'], 'US' );
 
         $account->set_settings( array( 'sendgrid-username' => $username, 'sendgrid-password' => $password ) );
 
@@ -1570,7 +1570,7 @@ class AccountsController extends BaseController {
             jQuery('#dNotes .note.first')->removeClass('first');
             jquery('#dNotes .note:first')->addClass('first');
 
-            $account_note->delete();
+            $account_note->remove();
 
             // Add the response
             $response->add_response( 'jquery', jQuery::getResponse() );

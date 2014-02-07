@@ -3,6 +3,17 @@
 require_once 'test/base-database-test.php';
 
 class CurrentAdTest extends BaseDatabaseTest {
+    const FB_PAGE_ID = 5;
+    const CONTENT = 'Here lies earth';
+    const KEY = 'Red Baron';
+
+    // Website Pages
+    const WEBSITE_PAGE_TITLE = 'Rumpelstiltskin';
+    const WEBSITE_PAGE_CONTENT = 'Fairy Tales';
+
+    // Websites
+    const TITLE = 'Grimm Brothers';
+
     /**
      * @var CurrentAd
      */
@@ -14,111 +25,80 @@ class CurrentAdTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->current_ad = new CurrentAd();
+
+        // Define
+        $this->phactory->define( 'sm_current_ad', array( 'fb_page_id' => self::FB_PAGE_ID, 'content' => self::CONTENT, 'key' => self::KEY ) );
+        $this->phactory->define( 'website_pages', array( 'website_id' => self::WEBSITE_ID, 'title' => self::WEBSITE_PAGE_TITLE, 'content' => self::WEBSITE_PAGE_CONTENT ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
+        $this->phactory->recall();
     }
 
     /**
-     * Test Getting Tab - A
+     * Test Getting Tab
      */
-    public function testGetTabA() {
-        // Declare variables
-        $fb_page_id = -5;
-        $content = 'Hip, Hip, Hurray!';
-        $success = false;
+    public function testGetTab() {
+        // Create
+        $this->phactory->create( 'sm_current_ad' );
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_current_ad', array( 'website_page_id' => 0, 'fb_page_id' => $fb_page_id, 'content' => $content ), 'iis' );
+        // Get
+        $submit_success = false;
+        $tab = $this->current_ad->get_tab( self::FB_PAGE_ID, $submit_success );
 
-        // Get it
-        $tab = $this->current_ad->get_tab( $fb_page_id, $success );
+        // Assert
+        $this->assertEquals( self::CONTENT, $tab );
 
-        $this->assertEquals( $tab, $content );
+        // Reset
+        $this->phactory->recall();
 
-        // Delete it
-        $this->phactory->delete( 'sm_current_ad', array( 'fb_page_id' => $fb_page_id ), 'i' );
-    }
+        // Create
+        $ph_website_page = $this->phactory->create('website_pages');
+        $ph_sm_facebook_page = $this->phactory->create('sm_facebook_page');
+        $this->phactory->create( 'sm_current_ad', array( 'website_page_id' => $ph_website_page->website_page_id, 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-    /**
-     * Test Getting Tab - B
-     */
-    public function testGetTabB() {
-        // Declare variables
-        $sm_facebook_page_id = -7;
-        $fb_page_id = -5;
-        $website_page_id = -3;
-        $account_id = -9;
-        $success = true;
+        // Get
+        $submit_success = true;
+        $tab = $this->current_ad->get_tab( self::FB_PAGE_ID, $submit_success );
+        $expected_tab = '<h1>Current Ad</h1>';
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'domain' => 'wit.ty', 'title' => 'Wag wag' ), 'iss' );
-        $this->phactory->insert( 'website_pages', array( 'website_page_id' => $website_page_id, 'website_id' => $account_id, 'title' => 'Moose Lumps!', 'content' => 'Mooses are cool!' ), 'iiss' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => 1 ), 'iii' );
-        $this->phactory->insert( 'sm_current_ad', array( 'website_page_id' => $website_page_id, 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id ), 'iii' );
-
-        // Get it
-        $tab = $this->current_ad->get_tab( $fb_page_id, $success );
-
-        $this->assertTrue( is_string( $tab ) );
-
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'website_pages', array( 'website_page_id' => $website_page_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_current_ad', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( $expected_tab, $tab );
     }
 
     /**
      * Test Get Connected Website
      */
     public function testGetConnectedWebsite() {
-        // Declare variables
-        $account_id = -9;
-        $sm_facebook_page_id = -7;
-        $fb_page_id = -5;
-        $key = 'Sirius Black';
+        // Create
+        $ph_website = $this->phactory->create('websites');
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_current_ad', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
-        $this->phactory->insert( 'sm_current_ad', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
+        // Get
+        $account = $this->current_ad->get_connected_website( self::FB_PAGE_ID );
 
-        $account = $this->current_ad->get_connected_website( $fb_page_id );
-
-        $this->assertEquals( $account->key, $key );
-
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_current_ad', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TITLE, $account->title );
     }
 
     /**
      * Test Connect
      */
     public function testConnect() {
-        // Declare variables
-        $fb_page_id = -5;
-        $key = 'Red Baron';
+        // Declare
+        $fb_page_id = 8;
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_current_ad', array( 'key' => $key,  ), 's' );
+        // Create
+        $this->phactory->create('sm_current_ad');
 
-        // Get it
-        $this->current_ad->connect( $fb_page_id, $key );
+        // Connect
+        $this->current_ad->connect( $fb_page_id, self::KEY );
 
-        // Get the key
-        $fetched_fb_page_id = $this->phactory->get_var( "SELECT `fb_page_id` FROM `sm_current_ad` WHERE `key` = '$key'" );
+        // Get
+        $ph_sm_current_ad = $this->phactory->get( 'sm_current_ad', array( 'key' => self::KEY ) );
 
-        $this->assertEquals( $fb_page_id, $fetched_fb_page_id );
-
-        // Delete it
-        $this->phactory->delete( 'sm_current_ad', array( 'key' => $key ), 'i' );
-    }
-
-    /**
-     * Add Email
-     */
-    public function testAddEmail() {
-
+        // Assert
+        $this->assertEquals( $fb_page_id, $ph_sm_current_ad->fb_page_id );
     }
 
     /**

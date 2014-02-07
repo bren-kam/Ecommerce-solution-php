@@ -3,6 +3,13 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaPostingPostTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 9;
+    const POST = 'LIKE us and receive 10% off!';
+    const DATE_POSTED = '2014-01-01 00:00:00';
+
+    // SM Facebook Page
+    const FACEBOOK_PAGE_NAME = 'Hurdee Facebook Furniture';
+
     /**
      * @var SocialMediaPostingPost
      */
@@ -13,153 +20,132 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->post = new SocialMediaPostingPost();
+
+        // Define
+        $this->phactory->define( 'sm_posting_posts', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'post' => self::POST, 'status' => SocialMediaPostingPost::STATUS_UNPOSTED, 'date_posted' => self::DATE_POSTED ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'name' => self::FACEBOOK_PAGE_NAME, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'sm_posting', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID ) );
+        $this->phactory->recall();
     }
-    
+
     /**
      * Test Get
      */
     public function testGet() {
-        // Set variables
-        $status = 1;
-        $sm_facebook_page_id = -5;
-
         // Create
-        $sm_posting_post_id = $this->phactory->insert( 'sm_posting_posts', compact( 'status', 'sm_facebook_page_id' ), 'ii' );
+        $ph_post = $this->phactory->create( 'sm_posting_posts', array( 'status' => SocialMediaPostingPost::STATUS_POSTED ) );
 
         // Get
-        $this->post->get( $sm_posting_post_id, $sm_facebook_page_id );
+        $this->post->get( $ph_post->sm_posting_post_id, self::SM_FACEBOOK_PAGE_ID );
 
-        // Make sure we grabbed the right one
-        $this->assertEquals( $status, $this->post->status );
-
-        // Clean up
-        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( SocialMediaPostingPost::STATUS_POSTED, $this->post->status );
     }
-    
+
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $post = 'random content';
-        
         // Create
-        $this->post->post = $post;
+        $this->post->post = self::POST;
         $this->post->create();
 
-        // Make sure it's in the database
-        $retrieved_post = $this->phactory->get_var( 'SELECT `post` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
+        // Assert
+        $this->assertNotNull( $this->post->id );
 
-        $this->assertEquals( $post, $retrieved_post );
+        // get
+        $ph_post = $this->phactory->get( 'sm_posting_posts', array( 'sm_posting_post_id' => $this->post->id ) );
 
-        // Delete
-        $this->phactory->delete( 'sm_posting_posts', array( 'sm_posting_post_id' => $this->post->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::POST, $ph_post->post );
     }
 
     /**
      * Test Get all unposted posts (the ones needing to besent to facebook)
      */
     public function testGetUnpostedPosts() {
-        // Declare variables
-        $sm_facebook_page_id = -6;
-
-        // Create the post
-        $sm_posting_post_id = $this->phactory->insert( 'sm_posting_posts', array(
-            'sm_facebook_page_id' => $sm_facebook_page_id
-            , 'access_post' => 'AAAD0VdBxxPMBAJGsPbZASGsqinooBUU2PVosdm1JQZBi9OOWTdiJPwidaSaODEIUwnmzZBKkqiWBuSiCRcV7oTw6OYZAHrLR4l5jUOzs2wZDZD'
-            , 'post' => 'test post'
-            , 'status' => 0
-            , 'date_posted' => '2010-10-09 00:00:00'
-            , 'date_created' => '2010-10-10 00:00:00'
-        ), 'ississ' );
+        // Create
+        $ph_fb_page = $this->phactory->create('sm_facebook_page');
+        $this->phactory->create( 'sm_posting', array( 'sm_facebook_page_id' => $ph_fb_page->id ) );
+        $this->phactory->create( 'sm_posting_posts', array( 'sm_facebook_page_id' => $ph_fb_page->id ) );
 
         // Now get them
-        $test_posts = $this->post->get_unposted_posts();
+        $posts = $this->post->get_unposted_posts();
+        $post = current( $posts );
 
-        $this->assertTrue( current( $test_posts ) instanceof SocialMediaPostingPost );
-
-        // Delete post
-        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_posting_post_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'SocialMediaPostingPost', $posts );
+        $this->assertEquals( self::POST, $post->post );
     }
 
     /**
      * Test marking errors
      */
     public function testMarkErrors() {
-        // Declare variables
+        // Declare
         $error_message = 'This is a test error';
-        $status = -1;
 
-        // Create the post
-        $sm_posting_post_id = $this->phactory->insert( 'sm_posting_posts', compact( 'status' ), 'i' );
+        // Create
+        $ph_post = $this->phactory->create('sm_posting_posts');
 
         // Mark posts
-        $errors[$sm_posting_post_id] = $error_message;
+        $errors = array( $ph_post->sm_posting_post_id => $error_message );
         $this->post->mark_errors( $errors );
 
-        // Test to make sure that's the error
-        $message = $this->phactory->get_var( "SELECT `error` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = $sm_posting_post_id" );
+        // Get
+        $ph_post = $this->phactory->get( 'sm_posting_posts', array( 'sm_posting_post_id' => $ph_post->sm_posting_post_id ) );
 
-        // Make sure they are the same
-        $this->assertEquals( $error_message, $message );
-
-        // Delete post
-        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_posting_post_id' ), 'i' );
+        // Assert
+        $this->assertEquals( $error_message, $ph_post->error );
     }
 
     /**
      * Test updating a product
      */
     public function testSave() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $status = 0;
-        $new_status = 1;
+        // Create
+        $ph_post = $this->phactory->create('sm_posting_posts');
 
-        // Create posting post
-        $this->post->id = $this->phactory->insert( 'sm_posting_posts', compact( 'status' ), 'i' );
-
-        // Update test
-        $this->post->status = $new_status;
+        // Save
+        $this->post->id = $ph_post->sm_posting_post_id;
+        $this->post->status = SocialMediaPostingPost::STATUS_POSTED;
         $this->post->save();
 
-        $retrieved_status = $this->phactory->get_var( 'SELECT `status` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
+        // Get
+        $ph_post = $this->phactory->get( 'sm_posting_posts', array( 'sm_posting_post_id' => $ph_post->sm_posting_post_id ) );
 
-        $this->assertEquals( $retrieved_status, $new_status );
-
-        // Delete
-        $this->phactory->delete( 'sm_posting_posts', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( SocialMediaPostingPost::STATUS_POSTED, $ph_post->status );
     }
 
     /**
      * Remove
-     *
-     * @depends testCreate
      */
     public function testRemove() {
-        // Declare variables
-        $post = 'random content';
-        $sm_facebook_page_id = -5;
-
         // Create
-        $this->post->post = $post;
-        $this->post->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->post->create();
+        $ph_post = $this->phactory->create('sm_posting_posts');
 
         // Remove/Delete
+        $this->post->id = $ph_post->sm_posting_post_id;
+        $this->post->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
         $this->post->remove();
 
-        $retrieved_post = $this->phactory->get_var( 'SELECT `post` FROM `sm_posting_posts` WHERE `sm_posting_post_id` = ' . (int) $this->post->id );
+        // Get
+        $ph_post = $this->phactory->get( 'sm_posting_posts', array( 'sm_posting_post_id' => $ph_post->sm_posting_post_id ) );
 
-        $this->assertFalse( $retrieved_post );
+        // Assert
+        $this->assertNull( $ph_post );
     }
 
     /**
      * List All
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get stub user
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('sm_posting_posts');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -167,13 +153,16 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( '`post`', '`status`', '`date_posted`' );
 
+        // Get
         $posts = $this->post->list_all( $dt->get_variables() );
+        $post = current( $posts );
 
-        // Make sure we have an array
-        $this->assertTrue( current( $posts ) instanceof SocialMediaPostingPost );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'SocialMediaPostingPost', $posts );
+        $this->assertEquals( self::POST, $post->post );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $emails );
@@ -183,8 +172,11 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
      * Count All
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get stub user
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('sm_posting_posts');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -192,12 +184,13 @@ class SocialMediaPostingPostTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( '`post`', '`status`', '`date_posted`' );
 
+        // Get
         $count = $this->post->count_all( $dt->get_count_variables() );
 
-        // Make sure they exist
+        // Assert
         $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything

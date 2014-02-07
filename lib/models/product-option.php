@@ -89,40 +89,7 @@ class ProductOption extends ActiveRecordBase {
     /**
      * Delete Product Option
      */
-    public function delete() {
-        if ( isset( $this->id ) ) {
-            $this->delete_relations();
-            $this->delete_list_items();
-            $this->delete_self();
-        }
-    }
-
-    /**
-     * Delete the relations of product options with brands
-     */
-    protected function delete_relations() {
-        $this->prepare(
-            'DELETE FROM `product_option_relations` WHERE `product_option_id` = :product_option_id'
-            , 'i'
-            , array( 'product_option_id' => $this->id )
-        )->query();
-    }
-
-    /**
-     * Delete all list items relating to product options
-     */
-    protected function delete_list_items() {
-        $this->prepare(
-            'DELETE FROM `product_option_list_items` WHERE `product_option_id` = :product_option_id'
-            , 'i'
-            , array( 'product_option_id' => $this->id )
-        )->query();
-    }
-
-    /**
-     * Delete the Product Option itself
-     */
-    protected function delete_self() {
+    public function remove() {
         parent::delete( array( 'product_option_id' => $this->id ), 'i' );
     }
 
@@ -147,7 +114,7 @@ class ProductOption extends ActiveRecordBase {
 	 * Get listing information
 	 *
      * @param array $variables ( string $where, array $values, string $order_by, int $limit )
-	 * @return array
+	 * @return ProductOption[]
 	 */
 	public function list_all( $variables ) {
 		// Get the variables

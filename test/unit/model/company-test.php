@@ -38,9 +38,6 @@ class CompanyTest extends BaseDatabaseTest {
      * Test getting the companies as a class
      */
     public function testGetAll() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_company = $this->phactory->create('companies');
 

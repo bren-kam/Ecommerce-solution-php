@@ -9,6 +9,14 @@ class security {
 }
 
 class ProductsTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 3;
+    const FB_PAGE_ID = 5;
+    const CONTENT = 'Here lies earth';
+    const KEY = 'Red Baron';
+
+    // Websites
+    const TITLE = 'Grimm Brothers';
+
     /**
      * @var Products
      */
@@ -20,108 +28,84 @@ class ProductsTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->products = new Products();
+
+        // Define
+        $this->phactory->define( 'sm_products', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'content' => self::CONTENT, 'key' => self::KEY ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Getting Tab - A
      */
-    public function testGetTabA() {
-        // Declare variables
-        $fb_page_id = -5;
-        $sm_facebook_page_id = -7;
-        $account_id = -9;
+    public function testGetTab() {
+        // Declare
         $product_catalog = 0;
-        $content = 'Hip, Hip, Hurray!';
 
-        // Insert About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams', 'product_catalog' => $product_catalog ), 'isi' );
-        $this->phactory->insert( 'sm_products', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'content' => $content ), 'iis' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'ii' );
+        // Create
+        $ph_website = $this->phactory->create( 'websites', array( 'product_catalog' => $product_catalog ) );
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_products', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Get it
-        $tab = $this->products->get_tab( $fb_page_id );
+        // Get
+        $tab = $this->products->get_tab( self::FB_PAGE_ID );
 
-        $this->assertTrue( is_string( $tab ) );
+        // Assert
+        $this->assertEquals( self::CONTENT, $tab );
 
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_products', array( 'fb_page_id' => $fb_page_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-    }
+        // Reset
+        $this->phactory->recall();
 
-    /**
-     * Test Getting Tab - B
-     */
-    public function testGetTabB() {
-        // Declare variables
-        $fb_page_id = -5;
-        $sm_facebook_page_id = -7;
-        $account_id = -9;
+        // Declare
         $product_catalog = 1;
-        $content = 'Hip, Hip, Hurray!';
 
-        // Insert About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams', 'product_catalog' => $product_catalog ), 'isi' );
-        $this->phactory->insert( 'sm_products', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'content' => $content ), 'iis' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
+        // Create
+        $ph_website = $this->phactory->create( 'websites', array( 'product_catalog' => $product_catalog ) );
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_products', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Get it
-        $tab = $this->products->get_tab( $fb_page_id );
+        // Get
+        $tab = $this->products->get_tab( self::FB_PAGE_ID );
 
+        // Assert
         $this->assertTrue( is_string( $tab ) );
-
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_products', array( 'fb_page_id' => $fb_page_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
     }
-
+    
     /**
      * Test Get Connected Website
      */
     public function testGetConnectedWebsite() {
-        // Declare variables
-        $account_id = -9;
-        $sm_facebook_page_id = -7;
-        $fb_page_id = -5;
-        $key = 'Sirius Black';
+        // Create
+        $ph_website = $this->phactory->create('websites');
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'website_id' => $ph_website->website_id ) );
+        $this->phactory->create( 'sm_products', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'websites', array( 'website_id' => $account_id, 'title' => 'Banagrams' ), 'is' );
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id ), 'iii' );
-        $this->phactory->insert( 'sm_products', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_page_id' => $fb_page_id, 'key' => $key ), 'iis' );
+        // Get
+        $account = $this->products->get_connected_website( self::FB_PAGE_ID );
 
-        $account = $this->products->get_connected_website( $fb_page_id );
-
-        $this->assertEquals( $account->key, $key );
-
-        // Delete it
-        $this->phactory->delete( 'websites', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_products', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TITLE, $account->title );
     }
 
     /**
      * Test Connect
      */
     public function testConnect() {
-        // Declare variables
-        $fb_page_id = -5;
-        $key = 'Red Baron';
+        // Declare
+        $fb_page_id = 8;
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_products', array( 'key' => $key,  ), 's' );
+        // Create
+        $this->phactory->create('sm_products');
 
-        // Get it
-        $this->products->connect( $fb_page_id, $key );
+        // Connect
+        $this->products->connect( $fb_page_id, self::KEY );
 
-        // Get the key
-        $fetched_fb_page_id = $this->phactory->get_var( "SELECT `fb_page_id` FROM `sm_products` WHERE `key` = '$key'" );
+        // Get
+        $ph_sm_products = $this->phactory->get( 'sm_products', array( 'key' => self::KEY ) );
 
-        $this->assertEquals( $fb_page_id, $fetched_fb_page_id );
-
-        // Delete it
-        $this->phactory->delete( 'sm_products', array( 'key' => $key ), 'i' );
+        // Assert
+        $this->assertEquals( $fb_page_id, $ph_sm_products->fb_page_id );
     }
 
     /**

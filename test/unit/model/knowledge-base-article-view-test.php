@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class KnowledgeBaseArticleViewTest extends BaseDatabaseTest {
+    const KB_ARTICLE_ID = 3;
+    const USER_ID = 5;
+
     /**
      * @var KnowledgeBaseArticleView
      */
@@ -13,28 +16,26 @@ class KnowledgeBaseArticleViewTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->kb_article_view = new KnowledgeBaseArticleView();
+
+        // Define
+        $this->phactory->define( 'kb_article_view', array( 'kb_article_id' => self::KB_ARTICLE_ID, 'user_id' => self::USER_ID ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Create
      */
     public function testCreate() {
-        // Declare variables
-        $kb_article_id = -3;
-        $user_id = -5;
-
         // Create
-        $this->kb_article_view->kb_article_id = $kb_article_id;
-        $this->kb_article_view->user_id = $user_id;
+        $this->kb_article_view->kb_article_id = self::KB_ARTICLE_ID;
+        $this->kb_article_view->user_id = self::USER_ID;
         $this->kb_article_view->create();
 
         // Make sure it's in the database
-        $fetched_user_id = $this->phactory->get_var( "SELECT `user_id` FROM `kb_article_view` WHERE `kb_article_id` = $kb_article_id" );
+        $ph_kb_article_view = $this->phactory->get( 'kb_article_view', array( 'kb_article_id' => self::KB_ARTICLE_ID ) );
 
-        $this->assertEquals( $user_id, $fetched_user_id );
-
-        // Delete the comment
-        $this->phactory->delete( 'kb_article_view', compact( 'kb_article_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::USER_ID, $ph_kb_article_view->user_id );
     }
 
     /**

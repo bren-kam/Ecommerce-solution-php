@@ -66,7 +66,7 @@ class AccountNote extends ActiveRecordBase {
     /**
      * Delete note
      */
-    public function delete() {
+    public function remove() {
         parent::delete( array( 'website_note_id' => $this->id ), 'i' );
     }
 }

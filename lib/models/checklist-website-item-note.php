@@ -65,7 +65,7 @@ class ChecklistWebsiteItemNote extends ActiveRecordBase {
     /**
      * Delete
      */
-    public function delete() {
+    public function remove() {
         parent::delete( array( 'checklist_website_item_note_id' => $this->id ), 'i' );
     }
 }

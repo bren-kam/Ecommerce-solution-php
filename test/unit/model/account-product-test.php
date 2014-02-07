@@ -175,9 +175,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Adding bulk products
      */
     public function testAddBulk() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $skus = array( 'AA2010', 'AA2470' ); // 2470 has two products -- we should only get one
 
@@ -202,9 +199,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Adding bulk products
      */
     public function testAddBulkCount() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $skus = array( 'AA2010', 'AA2470' ); // 2470 has two products -- we should only get one
 
@@ -225,9 +219,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test copy by account
      */
     public function testCopyByAccount() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $new_website_id = 55;
 
@@ -247,9 +238,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Getting an attribute item
      */
     public function testDeactivateByAccount() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $this->phactory->create( 'website_products' );
 
@@ -303,9 +291,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * @depends testAddBulk
      */
     public function testAddBulkAll() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $sku_1 = '4010';
         $sku_2 = '4470';
@@ -340,9 +325,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * @depends testAddBulk
      */
     public function testRemoveBulk() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $sku_1 = '4010';
         $sku_2 = '4470';
@@ -375,9 +357,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Adding bulk products by IDs
      */
     public function testAddBulkByIds() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_product = $this->phactory->create( 'products' );
         $product_ids[] = $ph_product->product_id;
@@ -402,9 +381,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Adding bulk products by brand
      */
     public function testAddBulkByBrand() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $this->phactory->create( 'products' );
         $this->phactory->create( 'products' );
@@ -421,9 +397,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Adding bulk products by brand count
      */
     public function testAddBulkByBrandCount() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $this->phactory->create( 'products' );
         $this->phactory->create( 'products' );
@@ -440,9 +413,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Block By SKU
      */
     public function testBlockBySKU() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare
         $sku_1 = '4010';
         $sku_2 = '4470';
@@ -468,9 +438,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Unblocking Products
      */
     public function testUnblock() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $this->phactory->create( 'website_products', array( 'blocked' => AccountProduct::BLOCKED ) );
 
@@ -488,9 +455,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Get Blocked
      */
     public function testGetBlocked() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_product = $this->phactory->create( 'products' );
         $this->phactory->create( 'website_products', array( 'product_id' => $ph_product->product_id, 'blocked' => AccountProduct::BLOCKED ) );
@@ -726,9 +690,6 @@ class AccountProductTest extends BaseDatabaseTest {
      * Test Set Product Prices
      */
     public function testSetProductPrices() {
-        // Reset
-        $this->phactory->recall();
-
         // Declare Variables
         $price = 2;
         $prices = array (

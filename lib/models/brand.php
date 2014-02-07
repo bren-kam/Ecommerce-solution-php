@@ -137,7 +137,7 @@ class Brand extends ActiveRecordBase {
     /**
      * Delete Brand
      */
-    public function delete() {
+    public function remove() {
         if ( isset( $this->id ) )
             parent::delete( array( 'brand_id' => $this->id ), 'i' );
     }

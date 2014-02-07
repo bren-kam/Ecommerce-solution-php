@@ -103,7 +103,7 @@ class WebsiteUser extends ActiveRecordBase {
 	 * List Users
 	 *
 	 * @param $variables array( $where, $order_by, $limit )
-	 * @return array
+	 * @return WebsiteUser[]
 	 */
 	public function list_all( $variables ) {
         // Get the variables

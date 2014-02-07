@@ -3,6 +3,15 @@
 require_once 'test/base-database-test.php';
 
 class ProductTest extends BaseDatabaseTest {
+    const CATEGORY_ID = 3;
+    const NAME = 'Owlean Reclining Sofa';
+    const SKU = 'RJ123-SOFA';
+
+    // Product Images
+    const PRODUCT_ID = 17;
+    const IMAGE = 'reclining-large.png';
+    const SEQUENCE = 0;
+
     /**
      * @var Product
      */
@@ -13,60 +22,56 @@ class ProductTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->product = new Product();
+
+        // Define
+        $this->phactory->define( 'products', array( 'category_id' => self::CATEGORY_ID, 'name' => self::NAME, 'sku' => self::SKU, 'publish_visibility' => Product::PUBLISH_VISIBILITY_DELETED ) );
+        $this->phactory->define( 'product_images', array( 'product_id' => self::PRODUCT_ID, 'image' => self::IMAGE, 'sequence' => self::SEQUENCE ) );
+        $this->phactory->recall();
     }
 
+
     /**
-     * Test Getting a ticket
+     * Get
      */
     public function testGet() {
-        // Declare Variables
-        $product_id = 36385;
-        $name = 'ZZZZZZZZZ Test';
+        // Create
+        $ph_product = $this->phactory->create('products');
 
         // Get
-        $this->product->get( $product_id );
+        $this->product->get( $ph_product->product_id );
 
-        $this->assertEquals( $this->product->name, $name );
+        // Assert
+        $this->assertEquals( self::NAME, $this->product->name );
     }
 
     /**
      * Get By Sku
      */
     public function testGetBySku() {
-        // Declare Variables
-        $sku = 'mess-with-me';
-
         // Create
-        $product_id = $this->phactory->insert( 'products', compact( 'sku' ), 's' );
+        $this->phactory->create('products');
 
         // Get
-        $this->product->get_by_sku( $sku );
+        $this->product->get_by_sku( self::SKU );
 
-        $this->assertEquals( $this->product->sku, $sku );
-
-        // Clean Up
-        $this->phactory->delete( 'products', compact( 'product_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->product->name );
     }
 
     /**
      * Get By Ids
      */
     public function testGetByIds() {
-        // Declare Variables
-        $website_id = -1;
-
         // Create
-        $product_id = $this->phactory->insert( 'products', compact( 'website_id' ), 'i' );
-        $product_id2 = $this->phactory->insert( 'products', compact( 'website_id' ), 'i' );
-        $product_ids = array( $product_id, $product_id2 );
+        $ph_product = $this->phactory->create('products');
 
         // Get
-        $products = $this->product->get_by_ids( $product_ids );
+        $products = $this->product->get_by_ids( array( $ph_product->product_id ) );
+        $product = current( $products );
 
-        $this->assertTrue( current( $products ) instanceof Product );
-
-        // Clean Up
-        $this->phactory->delete( 'products', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Product', $products );
+        $this->assertEquals( self::NAME, $product->name );
     }
 
     /**
@@ -75,42 +80,34 @@ class ProductTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testGetImages() {
-        // Declare variables
-        $product_id = 4;
-
-        // Load Product
-        $this->product->get( $product_id );
+        // Create
+        $this->phactory->create('product_images');
 
         // Get images
+        $this->product->id = self::PRODUCT_ID;
         $images = $this->product->get_images();
+        $expected_images = array( self::IMAGE );
 
-        $this->assertEquals( count( $images ), 3 );
-        $this->assertTrue( is_string( $images[0] ) );
+        // Assert
+        $this->assertEquals( $expected_images, $images );
     }
 
     /**
-     * Test creating a company
-     *
-     * @depends testGet
+     * Create
      */
     public function testCreate() {
-        // Declare variables
-        $website_id = 0;
-        $user_id_created = 1;
-        $publish_visibility = 'deleted';
-
         // Create
-        $this->product->website_id = $website_id;
-        $this->product->user_id_created = $user_id_created;
+        $this->product->category_id = self::CATEGORY_ID;
         $this->product->create();
 
-        // Make sure it's in the database
-        $this->product->get( $this->product->id );
+        // Assert
+        $this->assertNotNull( $this->product->id );
 
-        $this->assertEquals( $publish_visibility, $this->product->publish_visibility );
+        // Get
+        $ph_product = $this->phactory->get( 'products', array( 'product_id' => $this->product->id ) );
 
-        // Delete the company
-        $this->phactory->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::CATEGORY_ID, $ph_product->category_id );
     }
 
     /**
@@ -119,95 +116,85 @@ class ProductTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testAddImages() {
-        // Declare variables
-        $product_id = 1;
-        $images = array( 'test.png', 'test1.gif' );
-
-        // Delete any images from before hand
-        $this->phactory->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
-
-        // Get product
-        $this->product->get( $product_id );
-
         // Add images
-        $this->product->add_images( $images );
+        $this->product->id = self::PRODUCT_ID;
+        $this->product->add_images( array( self::IMAGE ) );
 
-        // See if they are there
-        $fetched_images = $this->phactory->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id ORDER BY `image` ASC" );
+        // Get
+        $ph_product_image = $this->phactory->get( 'product_images', array( 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertEquals( $images, $fetched_images );
-
-        // Delete any images from before hand
-        $this->phactory->delete( 'product_images', array( 'product_id' => $product_id ) , 'i' );
+        // Assert
+        $this->assertEquals( self::IMAGE, $ph_product_image->image );
     }
 
     /**
      * Test updating a product
-     *
-     * @depends testGet
      */
     public function testSave() {
-        // Declare variables
-        $product_id = 36385;
+        // Create
+        $ph_product = $this->phactory->create('products');
 
-        $this->phactory->update( 'products', array( 'publish_visibility' => 'deleted' ), array( 'product_id' => $product_id ), 's', 'i' );
-
-        $this->product->get( $product_id );
-
-        // Update test
+        // Save
+        $this->product->id = $ph_product->product_id;
         $this->product->publish_visibility = 'public';
         $this->product->save();
 
-        $publish_visibility = $this->phactory->get_var( "SELECT `publish_visibility` FROM `products` WHERE `product_id` = $product_id" );
+        // Get
+        $ph_product = $this->phactory->get( 'products', array( 'product_id' => $ph_product->product_id ) );
 
-        $this->assertEquals( $publish_visibility, 'public' );
+        // Assert
+        $this->assertEquals( $this->product->publish_visibility, $ph_product->publish_visibility );
     }
 
     /**
      * Test Delete Images
-     *
-     * @depends testGet
-     * @depends testAddImages
      */
     public function testDeleteImages() {
-        // Declare Variables
-        $product_id = 1;
-        $images = array( 'no.jpg', 'yes.png' );
+        // Create
+        $this->phactory->create('product_images');
 
-        // Get product
-        $this->product->get( $product_id );
-
-        // Add category
-        $this->product->add_images( $images );
-
-        // Delete images
+        // Delete
+        $this->product->id = self::PRODUCT_ID;
         $this->product->delete_images();
 
-        // Make sure there are no images
-        $images = $this->phactory->get_col( "SELECT `image` FROM `product_images` WHERE `product_id` = $product_id" );
+        // Get
+        $ph_product_image = $this->phactory->get( 'product_images', array( 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertTrue( 0 == count( $images ) );
+        // Assert
+        $this->assertNull( $ph_product_image );
     }
 
     /**
      * Test Cloning a product
      */
     public function testCloneProduct() {
-        $this->product->clone_product( 36385, 1 );
+        // Declare
+        $user_id = 6;
 
-        $name = $this->phactory->get_var( 'SELECT `name` FROM `products` WHERE `product_id` = ' . (int) $this->product->id );
+        // Create
+        $ph_product = $this->phactory->create('products');
 
-        $this->assertEquals( $name, 'ZZZZZZZZZ Test (Clone)' );
+        // Clone
+        $this->product->clone_product( $ph_product->product_id, $user_id );
 
-        $this->phactory->delete( 'products', array( 'product_id' => $this->product->id ), 'i' );
+        // Get
+        $ph_product = $this->phactory->get( 'products', array( 'product_id' => $this->product->id ) );
+        $expected_name = self::NAME . ' (Clone)';
+
+        // Assert
+        $this->assertEquals( $user_id, $ph_product->user_id_created );
+        $this->assertEquals( $expected_name, $ph_product->name );
     }
 
     /**
      * Test listing all products
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('products');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -215,13 +202,16 @@ class ProductTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'p.`name`', 'u.`contact_name`', 'u2.`contact_name`', 'b.`name`', 'p.`sku`', 'c.`name`' );
 
+        // Get
         $products = $this->product->list_all( $dt->get_variables() );
+        $product = current( $products );
 
-        // Make sure we have an array
-        $this->assertTrue( $products[0] instanceof Product );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Product', $products );
+        $this->assertEquals( self::NAME, $product->name );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $products );
@@ -231,8 +221,11 @@ class ProductTest extends BaseDatabaseTest {
      * Test counting the products
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('products');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -240,12 +233,13 @@ class ProductTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'a.`name`', 'e.`contact_name`', 'f.`contact_name`', 'd.`name`', 'a.`sku`', 'a.`status`' );
 
+        // Get
         $count = $this->product->count_all( $dt->get_count_variables() );
 
-        // Make sure they exist
+        // Assert
         $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
@@ -256,8 +250,11 @@ class ProductTest extends BaseDatabaseTest {
      * List Custom Products
      */
     public function testListCustomProducts() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create( 'products', array( 'website_id' => self::WEBSITE_ID, 'publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -265,13 +262,17 @@ class ProductTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
+        $dt->add_where( " AND p.`website_id` = " . (int) self::WEBSITE_ID );
         $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'c.`name`', 'p.`status`', 'p.`publish_date`' );
 
+        // Get
         $products = $this->product->list_custom_products( $dt->get_variables() );
+        $product = current( $products );
 
-        // Make sure we have an array
-        $this->assertTrue( $products[0] instanceof Product );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Product', $products );
+        $this->assertEquals( self::NAME, $product->name );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $products );
@@ -281,8 +282,11 @@ class ProductTest extends BaseDatabaseTest {
      * Count Custom Products
      */
     public function testCountCustomProducts() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Stub User
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create( 'products', array( 'website_id' => self::WEBSITE_ID, 'publish_visibility' => Product::PUBLISH_VISIBILITY_PUBLIC ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -290,12 +294,13 @@ class ProductTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'p.`name`', 'b.`name`', 'p.`sku`', 'c.`name`', 'p.`status`', 'p.`publish_date`' );
 
+        // Get
         $count = $this->product->count_custom_products( $dt->get_count_variables() );
 
-        // Make sure they exist
+        // Assert
         $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
@@ -306,9 +311,16 @@ class ProductTest extends BaseDatabaseTest {
      * Test Autocomplete
      */
     public function testAutocomplete() {
-        $products = $this->product->autocomplete( '1111', 'p.`sku`', 'sku', '' );
+        // Create
+        $ph_product = $this->phactory->create('products');
+        $this->phactory->create( 'product_images', array( 'product_id' => $ph_product->product_id ) );
 
-        $this->assertTrue( isset( $products[0]['sku'] ) );
+        // Get
+        $results = $this->product->autocomplete( substr( self::SKU, 0, 3 ), 'p.`sku`', 'sku', '' );
+        $expected_results = array( array( 'sku' => self::SKU ) );
+
+        // Assert
+        $this->assertEquals( $expected_results, $results );
     }
 
     /**

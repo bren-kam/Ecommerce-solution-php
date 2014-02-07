@@ -82,9 +82,7 @@ class ReachesController extends BaseController {
         // Set variables
         $dt->order_by( 'name', 'wu.`email`', 'assigned_to', 'waiting', 'wr.`priority`', 'wr.`date_created`' );
         $dt->add_where( " AND wr.`website_id` = " . $this->user->account->id );
-
-        if ( !$this->user->has_permission( User::ROLE_STORE_OWNER ) )
-            $dt->add_where( ' AND wr.`status` = 0' );
+        $dt->add_where( ' AND wr.`status` = ' . WebsiteReach::STATUS_OPEN );
 
         $dt->search( array( 'wu.`billing_first_name`' => false, 'wu.`billing_last_name`' => false, 'wu.`email`' => false, 'u.`contact_name`' => false ) );
 
@@ -95,9 +93,9 @@ class ReachesController extends BaseController {
 
         // Setup data
         $priorities = array(
-            0 => _('Normal'),
-            1 => _('High'),
-            2 => _('Urgent')
+            WebsiteReach::PRIORITY_NORMAL => 'Normal',
+            WebsiteReach::PRIORITY_HIGH => 'High',
+            WebsiteReach::PRIORITY_URGENT => 'Urgent'
         );
 
         $data = array();
@@ -278,9 +276,9 @@ class ReachesController extends BaseController {
 
         // Send out email
         $priorities = array(
-            0 => 'Normal',
-            1 => 'High',
-            2 => 'Urgent'
+            WebsiteReach::PRIORITY_NORMAL => 'Normal',
+            WebsiteReach::PRIORITY_HIGH => 'High',
+            WebsiteReach::PRIORITY_URGENT => 'Urgent'
         );
 
         $assigned_user = new User();

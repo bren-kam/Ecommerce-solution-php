@@ -94,9 +94,6 @@ class AttributeTest extends BaseDatabaseTest {
      * Add Category relations
      */
     public function testAddCategoryRelations() {
-        // Reset
-        $this->phactory->recall();
-
         // Add the relations
         $this->attribute->add_category_relations( self::CATEGORY_ID, array( self::ATTRIBUTE_ID ) );
 
@@ -128,9 +125,6 @@ class AttributeTest extends BaseDatabaseTest {
      * Get Category Attribute IDs
      */
     public function testGetCategoryAttributeIds() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_attribute = $this->phactory->create('attributes');
         $this->phactory->create( 'attribute_relations', array( 'attribute_id' => $ph_attribute->attribute_id ) );
@@ -152,7 +146,7 @@ class AttributeTest extends BaseDatabaseTest {
 
         // Delete
         $this->attribute->id = $ph_attribute->attribute_id;
-        $this->attribute->delete();
+        $this->attribute->remove();
 
         // Make sure it doesn't exist
         $ph_attribute = $this->phactory->get( 'attributes', array( 'attribute_id' => $ph_attribute->attribute_id ) );

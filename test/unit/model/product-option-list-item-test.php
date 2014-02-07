@@ -2,6 +2,9 @@
 require_once 'test/base-database-test.php';
 
 class ProductOptionListItemTest extends BaseDatabaseTest {
+    const PRODUCT_OPTION_ID = 5;
+    const VALUE = 'Brown';
+
     /**
      * @var ProductOptionListItem
      */
@@ -12,77 +15,78 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->product_option_list_item = new ProductOptionListItem();
+
+        // Define
+        $this->phactory->define( 'product_option_list_items', array( 'product_option_id' => self::PRODUCT_OPTION_ID, 'value' => self::VALUE ) );
+        $this->phactory->recall();
     }
+
 
     /**
      * Test Getting an product option list item
      */
     public function testGet() {
-        // Black Attribute Item
-        $product_option_list_item_id = 1;
-        $this->product_option_list_item->get($product_option_list_item_id);
+        // Create
+        $ph_product_option_list_item = $this->phactory->create('product_option_list_items');
 
-        $this->assertEquals( $this->product_option_list_item->value, 'Brown' );
+        // Get
+        $this->product_option_list_item->get( $ph_product_option_list_item->product_option_list_item_id );
+
+        // Assert
+        $this->assertEquals( self::VALUE, $this->product_option_list_item->value );
     }
 
     /**
      * Test Getting all product option list items for a product option
      */
     public function testGetAll() {
-        $product_option_id = 1;
-        $product_option_list_items = $this->product_option_list_item->get_all( $product_option_id );
+        // Create
+        $this->phactory->create('product_option_list_items');
 
-        $this->assertTrue( current( $product_option_list_items ) instanceof ProductOptionListItem );
+        // Get
+        $product_option_list_items = $this->product_option_list_item->get_all( self::PRODUCT_OPTION_ID );
+        $product_option_list_item = current( $product_option_list_items );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'ProductOptionListItem', $product_option_list_items );
+        $this->assertEquals( self::VALUE, $product_option_list_item->value );
     }
 
     /**
      * Test create
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        $this->product_option_list_item->product_option_id = 0;
-        $this->product_option_list_item->value = 'Testee';
-        $this->product_option_list_item->sequence = 0;
+        // Create
+        $this->product_option_list_item->value = self::VALUE;
         $this->product_option_list_item->create();
 
-        $this->assertNotNull( $this->product_option_list_item->id ) );
+        // Assert
+        $this->assertNotNull( $this->product_option_list_item->id );
 
-        // Make sure it's in the database
-        $this->product_option_list_item->get( $this->product_option_list_item->id );
+        // Get
+        $ph_product_option_list_item = $this->phactory->get( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ) );
 
-        $this->assertEquals( 'Testee', $this->product_option_list_item->value );
-
-        // Delete the product option list item
-        $this->phactory->delete( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::VALUE, $ph_product_option_list_item->value );
     }
 
     /**
      * Test updating the product option list item
-     *
-     * @depends testCreate
      */
     public function testUpdate() {
-        // Create test
-        $this->product_option_list_item->product_option_id = 0;
-        $this->product_option_list_item->value = 'Testee';
-        $this->product_option_list_item->sequence = 0;
-        $this->product_option_list_item->create();
+        // Create
+        $ph_product_option_list_item = $this->phactory->create('product_option_list_items');
 
         // Update test
-        $this->product_option_list_item->value = 'eetseT';
+        $this->product_option_list_item->id = $ph_product_option_list_item->product_option_list_item_id;
+        $this->product_option_list_item->value = 'Blue';
         $this->product_option_list_item->save();
 
-        // Make sure we have an ID still
-        $this->assertNotNull( $this->product_option_list_item->id ) );
+        // Get
+        $ph_product_option_list_item = $this->phactory->get( 'product_option_list_items', array( 'product_option_list_item_id' => $ph_product_option_list_item->product_option_list_item_id ) );
 
-        // Now check it!
-        $this->product_option_list_item->get( $this->product_option_list_item->id );
-
-        $this->assertEquals( 'eetseT', $this->product_option_list_item->value );
-
-        // Delete the product option list item
-        $this->phactory->delete( 'product_option_list_items', array( 'product_option_list_item_id' => $this->product_option_list_item->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->product_option_list_item->value, $ph_product_option_list_item->value );
     }
 
     /**
@@ -92,22 +96,18 @@ class ProductOptionListItemTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testDelete() {
-        // Create test
-        $this->product_option_list_item->product_option_id = 0;
-        $this->product_option_list_item->value = 'Testee';
-        $this->product_option_list_item->sequence = 0;
-        $this->product_option_list_item->create();
-
-        // Get it
-        $this->product_option_list_item->get( $this->product_option_list_item->id );
+        // Create
+        $ph_product_option_list_item = $this->phactory->create('product_option_list_items');
 
         // Delete
-        $this->product_option_list_item->delete();
+        $this->product_option_list_item->id = $ph_product_option_list_item->product_option_list_item_id;
+        $this->product_option_list_item->remove();
 
-        // Make sure it doesn't exist
-        $name = $this->phactory->get_var( "SELECT `name` FROM `product_option_list_items` WHERE `product_option_list_item_id` = " . (int) $this->product_option_list_item->id );
+        // Get
+        $ph_product_option_list_item = $this->phactory->get( 'product_option_list_items', array( 'product_option_list_item_id' => $ph_product_option_list_item->product_option_list_item_id ) );
 
-        $this->assertFalse( $name );
+        // Assert
+        $this->assertNull( $ph_product_option_list_item );
     }
 
     /**

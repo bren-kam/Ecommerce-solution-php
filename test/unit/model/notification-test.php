@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class NotificationTest extends BaseDatabaseTest {
+    const USER_ID = 7;
+    const MESSAGE = 'Hello World!';
+
     /**
      * @var Notification
      */
@@ -13,6 +16,10 @@ class NotificationTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->notification = new Notification();
+
+        // Define
+        $this->phactory->define( 'notification', array( 'user_id' => self::USER_ID, 'message' => self::MESSAGE ) );
+        $this->phactory->recall();
     }
 
     /**
@@ -20,61 +27,51 @@ class NotificationTest extends BaseDatabaseTest {
      */
     public function testCreate() {
         // Create notfication
-        $this->notification->user_id = 513;
-        $this->notification->message = 'Hello World!';
+        $this->notification->user_id = self::USER_ID;
+        $this->notification->message = self::MESSAGE;
         $this->notification->create();
 
-        // Get the message
-        $message = $this->phactory->get_var( 'SELECT `message` FROM `notification` WHERE `user_id` = 513' );
+        // Assert
+        $this->assertNotNull( $this->notification->id );
 
-        // Assert it
-        $this->assertEquals( $this->notification->message, $message );
+        // Get
+        $ph_notification = $this->phactory->get( 'notification', array( 'id' => $this->notification->id ) );
 
-        // Delete the message
-        $this->phactory->query( 'DELETE FROM `notification` WHERE `user_id` = 513' );
+        // Assert
+        $this->assertEquals( self::MESSAGE, $ph_notification->message );
     }
 
     /**
      * Test getting notifications by user
-     *
-     * @depends testCreate
      */
     public function testGetByUser() {
-        // Create notification
-        $this->notification->user_id = 513;
-        $this->notification->message = 'Hiphop';
-        $this->notification->create();
+        // Create
+        $this->phactory->create('notification');
 
-        // Get notifications
-        $notifications = $this->notification->get_by_user( 513 );
+        // Get
+        $notifications = $this->notification->get_by_user( self::USER_ID );
+        $notification = current( $notifications );
 
-        // Make sure all is good in the world
-        $this->assertTrue( $notifications[0] instanceof Notification );
-        $this->assertEquals( $notifications[0]->message, 'Hiphop' );
-
-        // Delete the message
-        $this->phactory->query( 'DELETE FROM `notification` WHERE `user_id` = 513' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Notification', $notifications );
+        $this->assertEquals( self::MESSAGE, $notification->message );
     }
 
     /**
      * Test Delete by user
-     *
-     * @depends testCreate
      */
     public function testDeleteByUser() {
-        // Create notification
-        $this->notification->user_id = 513;
-        $this->notification->message = 'Hiphop';
-        $this->notification->create();
+        // Create
+        $this->phactory->create('notification');
 
-        // Delete all the notifications
-        $this->notification->delete_by_user( 513 );
+        // Delete
+        $this->notification->delete_by_user( self::USER_ID );
 
-        // Count how many notifications there are
-        $count = $this->phactory->get_var( 'SELECT COUNT( `id` ) FROM `notification` WHERE `user_id` = 513' );
+        // Get
+        $ph_notification = $this->phactory->get( 'notification', array( 'user_id' => self::USER_ID ) );
 
-        // Should be nothing left
-        $this->assertEquals( $count, 0 );
+        // Assert
+        $this->assertNull( $ph_notification );
     }
 
     /**

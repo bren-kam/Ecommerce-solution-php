@@ -80,24 +80,24 @@ class OrdersController extends BaseController {
         if ( is_array( $website_orders ) )
         foreach ( $website_orders as $order ) {
             switch ( $order->status ) {
-                case -1:
-                    $status = _('Declined');
+                case WebsiteOrder::STATUS_DECLINED:
+                    $status = 'Declined';
                 break;
 
-                case 0:
-                    $status = _('Purchased');
+                case WebsiteOrder::STATUS_PURCHASED:
+                    $status = 'Purchased';
                 break;
 
-                case 1:
-                    $status = _('Pending');
+                case WebsiteOrder::STATUS_PENDING:
+                    $status = 'Pending';
                 break;
 
-                case 2:
-                    $status = _('Delivered');
+                case WebsiteOrder::STATUS_DELIVERED:
+                    $status = 'Delivered';
                 break;
 
                 default:
-                    $status = _('Error');
+                    $status = 'Error';
                 break;
             }
 

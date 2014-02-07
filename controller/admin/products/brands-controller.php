@@ -198,7 +198,7 @@ class BrandsController extends BaseController {
             }
 
             // Now delete the brand
-            $brand->delete();
+            $brand->remove();
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();

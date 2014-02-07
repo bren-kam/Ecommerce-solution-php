@@ -63,7 +63,7 @@ class MobilePage extends ActiveRecordBase {
 	 * List Pages
 	 *
 	 * @param $variables array( $where, $order_by, $limit )
-	 * @return array
+	 * @return MobilePage[]
 	 */
 	public function list_all( $variables ) {
         // Get the variables

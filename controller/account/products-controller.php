@@ -1445,7 +1445,7 @@ class ProductsController extends BaseController {
             $_GET['sSortDir_0'] = 'ASC';
             $dt->order_by( 'wp.`sequence`' );
         } else {
-            $dt->order_by( 'p.`sku`', 'p.`name`', 'wp.`price`', 'wp.`price_note`', 'wp.`alternate_price_name`', 'wp.`sale_price`' );
+            $dt->order_by( 'p.`sku`', 'p.`name`', 'wp.`alternate_price`', 'wp.`price`', 'wp.`sale_price`', 'wp.`price_note`' );
         }
 
         // Get account pages
@@ -1461,11 +1461,10 @@ class ProductsController extends BaseController {
             $data[] = array(
                 $product->sku
                 , $product->name
-                , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
-                , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
-                , '<input type="text" class="alternate_price_name" id="tAlternatePriceName' . $product->id . '" value="' . $product->alternate_price_name . '" />'
                 , '<input type="text" class="alternate_price" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
+                , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
                 , '<input type="text" class="sale_price" id="tSalePrice' . $product->id . '" value="' . $product->sale_price . '" />'
+                , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'
             );
         }
 

@@ -1,5 +1,10 @@
 <?php
 class WebsiteOrder extends ActiveRecordBase {
+    const STATUS_DECLINED = -1;
+    const STATUS_PURCHASED = 0;
+    const STATUS_PENDING = 1;
+    const STATUS_DELIVERED = 2;
+
     // The columns we will have access to
     public $id, $website_order_id, $website_id, $website_user_id, $website_cart_id, $website_shipping_method_id
         , $website_coupon_id, $shipping_price, $tax_price, $coupon_discount, $total_cost, $email, $phone

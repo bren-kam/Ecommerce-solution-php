@@ -3,6 +3,19 @@
 require_once 'test/base-database-test.php';
 
 class AccountProductOptionTest extends BaseDatabaseTest {
+    const PRODUCT_ID = 3;
+    const PRODUCT_OPTION_ID = 7;
+    const PRICE = 50;
+
+    // Product Options
+    const OPTION_TYPE = 'checkbox';
+
+    // Product Option List Item
+    const VALUE = 'Extra Help';
+
+    // Website Product Option List Item
+    const WEBSITE_PRODUCT_OPTION_LIST_ITEM_PRICE = 20;
+
     /**
      * @var AccountProductOption
      */
@@ -14,57 +27,49 @@ class AccountProductOptionTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->account_product_option = new AccountProductOption();
+
+        // Define
+        $this->phactory->define( 'website_product_options', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID, 'product_option_id' => self::PRODUCT_OPTION_ID, 'price' => self::PRICE ) );
+        $this->phactory->define( 'product_options', array( 'option_type' => self::OPTION_TYPE ) );
+        $this->phactory->define( 'product_option_list_items', array( 'product_option_id' => self::PRODUCT_OPTION_ID, 'value' => self::VALUE ) );
+        $this->phactory->define( 'website_product_option_list_items', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID, 'product_option_id' => self::PRODUCT_OPTION_ID, 'price' => self::WEBSITE_PRODUCT_OPTION_LIST_ITEM_PRICE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Get With List Items
      */
     public function testGetWithListItems() {
-        // Declare variables
-        $website_id = -5;
-        $product_id = -3;
-        $option_type = 'checkbox';
-        $value = 'Extra Help';
+        // Create
+        $ph_product_option = $this->phactory->create('product_options');
+        $ph_product_option_list_item = $this->phactory->create('product_option_list_items', array( 'product_option_id' => $ph_product_option->product_option_id ) );
+        $this->phactory->create( 'website_product_options', array( 'product_option_id' => $ph_product_option->product_option_id ) );
+        $this->phactory->create( 'website_product_option_list_items', array( 'product_option_id' => $ph_product_option->product_option_id, 'product_option_list_item_id' => $ph_product_option_list_item->product_option_list_item_id ) );
 
-        // Create everything
-        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
-        $product_option_list_item_id = $this->phactory->insert( 'product_option_list_items', compact( 'product_option_id', 'value' ), 'is' );
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id' ), 'iii' );
-        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'product_option_list_item_id' ), 'iiii' );
+        // Get
+        $account_product_options = $this->account_product_option->get_with_list_items( self::WEBSITE_ID, self::PRODUCT_ID );
+        $account_product_option = current( $account_product_options );
 
-        // Get the notes
-        $account_product_options = $this->account_product_option->get_with_list_items( $website_id, $product_id );
-
-        $this->assertTrue( current( $account_product_options ) instanceof AccountProductOption );
-
-        // Clean up
-        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'product_option_list_items', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'website_product_option_list_items', compact( 'product_option_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'AccountProductOption', $account_product_options );
+        $this->assertEquals( self::VALUE, $account_product_option->value );
     }
 
     /**
      * Get Without List Items
      */
     public function testGetWithoutListItems() {
-        // Declare variables
-        $website_id = -5;
-        $product_id = -3;
-        $option_type = 'text';
+        // Create
+        $ph_product_option = $this->phactory->create('product_options');
+        $this->phactory->create( 'website_product_options', array( 'product_option_id' => $ph_product_option->product_option_id ) );
 
-        // Create everything
-        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id' ), 'iii' );
+        // Get
+        $account_product_options = $this->account_product_option->get_without_list_items( self::WEBSITE_ID, self::PRODUCT_ID );
+        $account_product_option = current( $account_product_options );
 
-        // Get the notes
-        $account_product_options = $this->account_product_option->get_without_list_items( $website_id, $product_id );
-
-        $this->assertTrue( current( $account_product_options ) instanceof AccountProductOption );
-
-        // Clean up
-        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'AccountProductOption', $account_product_options );
+        $this->assertEquals( self::PRICE, $account_product_option->price );
     }
 
     /**
@@ -74,172 +79,111 @@ class AccountProductOptionTest extends BaseDatabaseTest {
      * @depends testGetWithoutListItems
      */
     public function testGetAll() {
-        // Declare variables
-        $website_id = -5;
-        $product_id = -3;
-        $option_type = 'checkbox';
-        $value = 'Extra Help';
-        $price = -5;
+        // Create
+        $ph_product_option = $this->phactory->create('product_options');
+        $ph_product_option_list_item = $this->phactory->create('product_option_list_items', array( 'product_option_id' => $ph_product_option->product_option_id ) );
+        $this->phactory->create( 'website_product_options', array( 'product_option_id' => $ph_product_option->product_option_id ) );
+        $this->phactory->create( 'website_product_option_list_items', array( 'product_option_id' => $ph_product_option->product_option_id, 'product_option_list_item_id' => $ph_product_option_list_item->product_option_list_item_id ) );
 
-        // Create everything
-        $product_option_id = $this->phactory->insert( 'product_options', compact( 'option_type' ), 's' );
-        $product_option_list_item_id = $this->phactory->insert( 'product_option_list_items', compact( 'product_option_id', 'value' ), 'is' );
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'iiii' );
-        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'product_option_list_item_id' ), 'iiii' );
-
-        // Get the notes
-        $account_product_options = $this->account_product_option->get_all( $website_id, $product_id );
+        // Get
+        $account_product_options = $this->account_product_option->get_all( self::WEBSITE_ID, self::PRODUCT_ID );
         $account_product_option = current( $account_product_options );
 
-        $this->assertEquals( $price, $account_product_option['price'] );
-
-        // Clean up
-        $this->phactory->delete( 'product_options', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'product_option_list_items', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'website_product_options', compact( 'product_option_id' ), 'i' );
-        $this->phactory->delete( 'website_product_option_list_items', compact( 'product_option_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::PRICE, $account_product_option['price'] );
+        $this->assertEquals( self::WEBSITE_PRODUCT_OPTION_LIST_ITEM_PRICE, $account_product_option['list_items'][$ph_product_option_list_item->product_option_list_item_id] );
     }
 
     /**
      * Add Bulk
      */
     public function testAddBulk() {
-        // Declare Variables
-        $website_id = -5;
-        $product_id = -3;
+        // Declare
         $product_options = array(
             array(
-                'product_option_id' => -2
-                , 'price' => -10
-                , 'required' => 0
-            ), array(
-                'product_option_id' => -4
-                , 'price' => -12
-                , 'required' => 1
-            ), array(
-                'product_option_id' => -6
-                , 'price' => -14
+                'product_option_id' => self::PRODUCT_OPTION_ID
+                , 'price' => self::PRICE
                 , 'required' => 0
             )
         );
 
-        $product_option_ids = array( -2, -4, -6 );
-
         // Insert
-        $this->account_product_option->add_bulk( $website_id, $product_id, $product_options );
+        $this->account_product_option->add_bulk( self::WEBSITE_ID, self::PRODUCT_ID, $product_options );
 
-        // Check if it's there
-        $retrieved_product_option_ids = $this->phactory->get_col( "SELECT `product_option_id` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id ORDER BY `product_option_id` DESC" );
+        // Get
+        $ph_website_product_option = $this->phactory->get( 'website_product_options', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertEquals( $product_option_ids, $retrieved_product_option_ids );
-
-        // Clean Up
-        $this->phactory->delete( 'website_product_options', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::PRICE, $ph_website_product_option->price );
     }
 
     /**
      * Add Bulk List Items
      */
     public function testAddBulkListItems() {
-        // Declare Variables
-        $website_id = -5;
-        $product_id = -3;
+        // Declare
         $product_option_list_items = array(
             array(
-                'product_option_id' => -2
-                , 'product_option_list_item_id' => -10
-                , 'price' => -20
-                , 'alt_price' => -30
-                , 'alt_price2' => -40
-            ), array(
-                'product_option_id' => -4
-                , 'product_option_list_item_id' => -12
-                , 'price' => -22
-                , 'alt_price' => -32
-                , 'alt_price2' => -42
-            ), array(
-                'product_option_id' => -6
-                , 'product_option_list_item_id' => -14
-                , 'price' => -24
-                , 'alt_price' => -34
-                , 'alt_price2' => -44
+                'product_option_id' => self::PRODUCT_OPTION_ID
+                , 'product_option_list_item_id' => 2
+                , 'price' => self::WEBSITE_PRODUCT_OPTION_LIST_ITEM_PRICE
+                , 'alt_price' => 30
+                , 'alt_price2' => 40
             )
         );
 
-        $product_option_list_item_ids = array( -10, -12, -14 );
-
         // Insert
-        $this->account_product_option->add_bulk_list_items( $website_id, $product_id, $product_option_list_items );
+        $this->account_product_option->add_bulk_list_items( self::WEBSITE_ID, self::PRODUCT_ID, $product_option_list_items );
 
-        // Check if it's there
-        $retrieved_product_option_list_item_ids = $this->phactory->get_col( "SELECT `product_option_list_item_id` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id ORDER BY `product_option_list_item_id` DESC" );
+        // Get
+        $ph_website_product_option = $this->phactory->get( 'website_product_option_list_items', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertEquals( $product_option_list_item_ids, $retrieved_product_option_list_item_ids );
-
-        // Clean Up
-        $this->phactory->delete( 'website_product_option_list_items', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::WEBSITE_PRODUCT_OPTION_LIST_ITEM_PRICE, $ph_website_product_option->price );
     }
 
     /**
      * Delete Website Product Options
      */
     public function testDeleteWebsiteProductOptions() {
-        // Declare Variables
-        $website_id = -5;
-        $product_id = -3;
-        $product_option_id = -7;
-        $price = -10;
-
-        // Insert
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-
-        // One more
-        $product_option_id = -9;
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-
         // Access refactory
         $class = new ReflectionClass('AccountProductOption');
         $method = $class->getMethod('delete_website_product_options');
         $method->setAccessible(true);
 
+        // Create
+        $this->phactory->create('website_product_options');
+
         // Delete them
-        $method->invokeArgs( $this->account_product_option, array( $website_id, $product_id ) );
+        $method->invokeArgs( $this->account_product_option, array( self::WEBSITE_ID, self::PRODUCT_ID ) );
 
-        // Check
-        $price = $this->phactory->get_var( "SELECT `price` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+        // Get
+        $ph_website_product_option = $this->phactory->get( 'website_product_option_list_items', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertFalse( $price );
+        // Assert
+        $this->assertNull( $ph_website_product_option );
     }
 
     /**
      * Delete Website Product Option List Items
      */
     public function testDeleteWebsiteProductOptionListItems() {
-        // Declare Variables
-        $website_id = -5;
-        $product_id = -3;
-        $product_option_id = -7;
-        $price = -10;
-
-        // Insert
-        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-
-        // One more
-        $product_option_id = -9;
-        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-
         // Access refactory
         $class = new ReflectionClass('AccountProductOption');
         $method = $class->getMethod('delete_website_product_option_list_items');
         $method->setAccessible(true);
 
+        // Create
+        $this->phactory->create('website_product_option_list_items');
+
         // Delete them
-        $method->invokeArgs( $this->account_product_option, array( $website_id, $product_id ) );
+        $method->invokeArgs( $this->account_product_option, array( self::WEBSITE_ID, self::PRODUCT_ID ) );
 
-        // Check
-        $price = $this->phactory->get_var( "SELECT `price` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
+        // Get
+        $ph_website_product_option_list_item = $this->phactory->get( 'website_product_option_list_items', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
 
-        $this->assertFalse( $price );
+        // Assert
+        $this->assertNull( $ph_website_product_option_list_item );
     }
 
     /**
@@ -249,30 +193,20 @@ class AccountProductOptionTest extends BaseDatabaseTest {
      * @depends testDeleteWebsiteProductOptionListItems
      */
     public function testDeleteByProduct() {
-        // Declare Variables
-        $website_id = -5;
-        $product_id = -3;
-        $product_option_id = -7;
-        $price = -10;
+        // Create
+        $this->phactory->create('website_product_options');
+        $this->phactory->create('website_product_option_list_items');
 
-        // Insert
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        // Delete
+        $this->account_product_option->delete_by_product( self::WEBSITE_ID, self::PRODUCT_ID );
 
-        // One more
-        $product_option_id = -9;
-        $this->phactory->insert( 'website_product_options', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
-        $this->phactory->insert( 'website_product_option_list_items', compact( 'website_id', 'product_id', 'product_option_id', 'price' ), 'i' );
+        // Assert
+        $ph_website_product_option = $this->phactory->get( 'website_product_option_list_items', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
+        $ph_website_product_option_list_item = $this->phactory->get( 'website_product_option_list_items', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
 
-        // Delete everything!
-        $this->account_product_option->delete_by_product( $website_id, $product_id );
-
-        // Check both
-        $website_product_option_list_items_price = $this->phactory->get_var( "SELECT `price` FROM `website_product_option_list_items` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-        $website_product_options_price = $this->phactory->get_var( "SELECT `price` FROM `website_product_options` WHERE `website_id` = $website_id AND `product_id` = $product_id" );
-
-        $this->assertFalse( $website_product_option_list_items_price );
-        $this->assertFalse( $website_product_options_price );
+        // Assert
+        $this->assertNull( $ph_website_product_option );
+        $this->assertNull( $ph_website_product_option_list_item );
     }
 
     /**

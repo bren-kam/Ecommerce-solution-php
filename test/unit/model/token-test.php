@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class TokenTest extends BaseDatabaseTest {
+    const TYPE = 'user-creation';
+
     /**
      * @var Token
      */
@@ -13,26 +15,28 @@ class TokenTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->token = new Token();
+
+        // Define
+        $this->phactory->define( 'tokens', array( 'token_type' => self::TYPE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $type = 'user-creation';
-        
         // Create
-        $this->token->type = $type;
+        $this->token->type = self::TYPE;
         $this->token->create();
 
-        // Make sure it's in the database
-        $retrieved_type = $this->phactory->get_var( 'SELECT `token_type` FROM `tokens` WHERE `token_id` = ' . (int) $this->token->id );
+        // Assert
+        $this->assertNotNull( $this->token->id );
 
-        $this->assertEquals( $type, $retrieved_type );
+        // Get
+        $ph_token = $this->phactory->get( 'tokens', array( 'token_id' => $this->token->id ) );
 
-        // Delete
-        $this->phactory->delete( 'tokens', array( 'token_id' => $this->token->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TYPE, $ph_token->token_type );
     }
 
     /**
