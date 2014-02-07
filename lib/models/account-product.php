@@ -1003,12 +1003,11 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function set_product_prices( $account_id, array $values ) {
          // Prepare statement
-        $statement = $this->prepare_raw( "UPDATE `website_products` SET `alternate_price` = :alternate_price, `price` = :price, `sale_price` = :sale_price, `alternate_price_name` = :alternate_price_name, `price_note` = :price_note WHERE `website_id` = :account_id AND `blocked` = 0 AND `active` = 1 AND `product_id` = :product_id" );
+        $statement = $this->prepare_raw( "UPDATE `website_products` SET `alternate_price` = :alternate_price, `price` = :price, `sale_price` = :sale_price, `price_note` = :price_note WHERE `website_id` = :account_id AND `blocked` = 0 AND `active` = 1 AND `product_id` = :product_id" );
         $statement
             ->bind_param( ':alternate_price', $alternate_price, PDO::PARAM_INT )
             ->bind_param( ':price', $price, PDO::PARAM_INT )
             ->bind_param( ':sale_price', $sale_price, PDO::PARAM_INT )
-            ->bind_param( ':alternate_price_name', $alternate_price_name, PDO::PARAM_STR )
             ->bind_param( ':price_note', $price_note, PDO::PARAM_STR )
             ->bind_value( ':account_id', $account_id, PDO::PARAM_INT )
             ->bind_param( ':product_id', $product_id, PDO::PARAM_INT );
@@ -1016,12 +1015,11 @@ class AccountProduct extends ActiveRecordBase {
         foreach ( $values as $product_id => $array ) {
             // Make sure all values have a value
             $alternate_price = $price = $sale_price = 0;
-            $alternate_price_name = $price_note = '';
+            $price_note = '';
 
             // Get the values
             extract( $array );
 
-            $alternate_price_name = strip_tags($alternate_price_name);
             $price_note = strip_tags($price_note);
 
             $statement->query();

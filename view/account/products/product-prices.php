@@ -48,11 +48,10 @@
         <tr>
             <th class="text-left"><?php echo _('SKU'); ?></th>
             <th class="text-left"><?php echo _('Name'); ?></th>
-            <th class="text-left"><?php echo _('Price'); ?></th>
+            <th class="text-left" width="120"><?php echo _('MSRP'); ?></th>
+            <th class="text-left" width="120"><?php echo _('Everyday Price'); ?></th>
+            <th class="text-left" width="120"><?php echo _('Sale Price'); ?></th>
             <th class="text-left"><?php echo _('Price Notes'); ?></th>
-            <th class="text-left"><?php echo _('MSRP Name'); ?></th>
-            <th class="text-left"><?php echo _('MSRP'); ?></th>
-            <th><?php echo _('Sale Price'); ?></th>
         </tr>
     </thead>
 </table>
