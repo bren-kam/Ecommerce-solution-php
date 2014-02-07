@@ -23,8 +23,12 @@
                 <a href="/accounts/companies/add-edit/" title="<?php echo _('Add Company'); ?>" class="sub add last<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
                 <?php
             }
+
+            if ( isset( $_GET['aid'] ) ) {
             ?>
-            <a href="/accounts/customize/settings/" title="<?php echo _('Customize'); ?>" class="top<?php $template->select('customize'); ?>"><?php echo _('Customize'); ?></a>
-        <?php } ?>
+            <a href="<?php echo url::add_query_arg( 'aid', $_GET['aid'], '/accounts/customize/settings/' ); ?>" title="<?php echo _('Customize'); ?>" class="top<?php $template->select('customize'); ?>"><?php echo _('Customize'); ?></a>
+        <?php }
+        }
+        ?>
     </div>
 </div>
