@@ -41,9 +41,6 @@ class ChecklistWebsiteItemTest extends BaseDatabaseTest {
      * Test adding all the checklist items to a checklist
      */
     public function testAddAllToChecklist() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_checklist_item = $this->phactory->create('checklist_items');
 

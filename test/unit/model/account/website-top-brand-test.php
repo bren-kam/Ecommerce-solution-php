@@ -3,6 +3,12 @@
 require_once 'test/base-database-test.php';
 
 class WebsiteTopBrandTest extends BaseDatabaseTest {
+    const BRAND_ID = 9;
+    const SEQUENCE = 3;
+
+    // Brands
+    const NAME = 'Constantine Imperial Furniture';
+
     /**
      * @var WebsiteTopBrand
      */
@@ -14,96 +20,80 @@ class WebsiteTopBrandTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->website_top_brand = new WebsiteTopBrand();
+
+        // Define
+        $this->phactory->define( 'website_top_brands', array( 'website_id' => self::WEBSITE_ID, 'brand_id' => self::BRAND_ID, 'sequence' => self::SEQUENCE ) );
+        $this->phactory->define( 'brands', array( 'name' => self::NAME ) );
+        $this->phactory->recall();
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $website_id = -5;
-        $brand_id = -3;
-
         // Create
-        $this->website_top_brand->website_id = $website_id;
-        $this->website_top_brand->brand_id = $brand_id;
+        $this->website_top_brand->website_id = self::WEBSITE_ID;
+        $this->website_top_brand->brand_id = self::BRAND_ID;
         $this->website_top_brand->create();
 
-        // Make sure it's in the database
-        $retrieved_brand_id = $this->phactory->get_var( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $website_id" );
+        // Get
+        $ph_website_top_brand = $this->phactory->get( 'website_top_brands', array( 'website_id' => self::WEBSITE_ID ) );
 
-        $this->assertEquals( $brand_id, $retrieved_brand_id );
-
-        // Delete
-        $this->phactory->delete( 'website_top_brand', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::BRAND_ID, $ph_website_top_brand->brand_id );
     }
 
     /**
      * Get By Account
      */
     public function testGetByAccount() {
-        // Declare Variables
-        $website_id = -5;
-        $brand_id = -3;
-        $name = 'Ooh, la la!';
-
         // Create
-        $this->phactory->insert( 'brands', compact( 'brand_id', 'name' ), 'is' );
-        $this->phactory->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
+        $ph_brand = $this->phactory->create('brands');
+        $this->phactory->create( 'website_top_brands', array( 'brand_id' => $ph_brand->brand_id ) );
 
-        // Get all
-        $brands = $this->website_top_brand->get_by_account( $website_id );
+        // Get
+        $brands = $this->website_top_brand->get_by_account( self::WEBSITE_ID );
+        $brand = current( $brands );
 
-        $this->assertTrue( current( $brands ) instanceof Brand );
-
-        // Clean up
-        $this->phactory->delete( 'brands', compact( 'website_id' ), 'i' );
-        $this->phactory->delete( 'website_top_brands', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Brand', $brands );
+        $this->assertEquals( self::NAME, $brand->name );
     }
 
     /**
      * Update the sequence of categories
      */
     public function testUpdateSequence() {
-        // Setup Variables
-        $website_id = -9;
-        $brand_id = -5;
-        $brand_id2 = -7;
+        // Create
+        $this->phactory->create('website_top_brands');
 
-        // Create Categories
-        $this->phactory->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
-        $this->phactory->insert( 'website_top_brands', array( 'website_id' => $website_id, 'brand_id' => $brand_id2 ), 'ii' );
+        // Update Sequence
+        $this->website_top_brand->update_sequence( self::WEBSITE_ID, array( self::BRAND_ID ) );
 
-        // Adjust it properly
-        $this->website_top_brand->update_sequence( $website_id, array( $brand_id, $brand_id2 ) );
+        // Get
+        $ph_website_top_brand = $this->phactory->get( 'website_top_brands', array( 'website_id' => self::WEBSITE_ID ) );
+        $expected_sequence = 0;
 
-        // Let's get the sequence and check
-        $sequence = $this->phactory->get_var( "SELECT `sequence` FROM `website_top_brands` WHERE `website_id` = $website_id AND `sequence` > 0" );
-
-        // Should be 0;
-        $this->assertEquals( 1, $sequence );
-
-        // Delete
-        $this->phactory->delete( 'website_top_brands', compact( 'website_id' ), 'i' );
+        // Assert
+        $this->assertEquals( $expected_sequence, $ph_website_top_brand->sequence );
     }
 
     /**
      * Remove
      */
     public function testRemove() {
-        // Set variables
-        $website_id = -9;
-        $brand_id = -7;
-
         // Create
-        $this->phactory->insert( 'website_top_brands', compact( 'website_id', 'brand_id' ), 'ii' );
+        $this->phactory->create('website_top_brands');
+
+        // Remove
+        $this->website_top_brand->remove( self::WEBSITE_ID, self::BRAND_ID );
 
         // Get
-        $this->website_top_brand->remove( $website_id, $brand_id );
+        $ph_website_top_brand = $this->phactory->get( 'website_top_brands', array( 'website_id' => self::WEBSITE_ID ) );
 
-        $retrieved_brand_id = $this->phactory->get_var( "SELECT `brand_id` FROM `website_top_brands` WHERE `website_id` = $website_id" );
-
-        $this->assertFalse( $retrieved_brand_id );
+        // Assert
+        $this->assertNull( $ph_website_top_brand );
     }
 
     /**

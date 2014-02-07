@@ -111,7 +111,7 @@ class AttributesController extends BaseController {
                     if ( !in_array( $ai->id, $attribute_item_ids ) ) {
                         $attribute_item = new AttributeItem();
                         $attribute_item->get( $ai->id );
-                        $attribute_item->delete();
+                        $attribute_item->remove();
                     }
                 }
 
@@ -195,7 +195,7 @@ class AttributesController extends BaseController {
 
         // Delete attribute
         if ( $attribute->id ) {
-            $attribute->delete();
+            $attribute->remove();
 
             // Redraw the table
             jQuery('.dt:first')->dataTable()->fnDraw();

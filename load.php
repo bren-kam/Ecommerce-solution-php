@@ -12,9 +12,11 @@ define( 'PROFILE', isset( $_GET['profile'] ) && '1' == $_GET['profile'] );
 // Should change to imagineretailer.com before deploy
 define( 'DEFAULT_DOMAIN', 'imagineretailer.com' );
 
+// Set default timezone
+date_default_timezone_set('America/Chicago');
+
 /** Define LIVE if the website is live */
 define( 'LIVE', false );
-
 
 /** Error Handler */
 //if ( extension_loaded('newrelic') )

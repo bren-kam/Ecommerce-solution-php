@@ -3,6 +3,11 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaEmailSignUpTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 5;
+    const FB_PAGE_ID = 3;
+    const KEY = 'beal';
+    const TAB = 'Misty Mountains';
+    
     /**
      * @var SocialMediaEmailSignUp
      */
@@ -14,48 +19,41 @@ class SocialMediaEmailSignUpTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->sm_email_sign_up = new SocialMediaEmailSignUp();
+        
+        // Define
+        $this->phactory->define( 'sm_email_sign_up', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'key' => self::KEY, 'tab' => self::TAB ) );
+        $this->phactory->recall();
     }
-
+    
     /**
      * Get
      */
     public function testGet() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $fb_page_id = -7;
-
-        // Insert
-        $this->phactory->insert( 'sm_email_sign_up', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        // Create
+        $this->phactory->create('sm_email_sign_up');
 
         // Get
-        $this->sm_email_sign_up->get( $sm_facebook_page_id );
+        $this->sm_email_sign_up->get( self::SM_FACEBOOK_PAGE_ID );
 
-        $this->assertEquals( $fb_page_id, $this->sm_email_sign_up->fb_page_id );
-
-        // Clean up
-        $this->phactory->delete( 'sm_email_sign_up', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::FB_PAGE_ID, $this->sm_email_sign_up->fb_page_id );
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $key = 'Poke';
-
         // Create
-        $this->sm_email_sign_up->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_email_sign_up->key = $key;
+        $this->sm_email_sign_up->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_email_sign_up->key = self::KEY;
         $this->sm_email_sign_up->create();
 
         // Get
-        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_email_sign_up` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $ph_sm_email_sign_up = $this->phactory->get( 'sm_email_sign_up', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_key, $this->sm_email_sign_up->key );
-
-        // Clean up
-        $this->phactory->delete( 'sm_email_sign_up', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::KEY, $ph_sm_email_sign_up->key );
     }
 
     /**
@@ -64,25 +62,19 @@ class SocialMediaEmailSignUpTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $tab = 'Fogger';
-
         // Create
-        $this->sm_email_sign_up->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_email_sign_up->create();
+        $this->phactory->create('sm_email_sign_up');
 
-        // Update test
-        $this->sm_email_sign_up->tab = $tab;
+        // Save
+        $this->sm_email_sign_up->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_email_sign_up->tab = self::TAB;
         $this->sm_email_sign_up->save();
 
-        // Now check it!
-        $retrieved_tab = $this->phactory->get_var( "SELECT `tab` FROM `sm_email_sign_up` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        // Get
+        $ph_sm_email_sign_up = $this->phactory->get( 'sm_email_sign_up', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_tab, $tab );
-
-        // Clean up
-        $this->phactory->delete( 'sm_email_sign_up', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::TAB, $ph_sm_email_sign_up->tab );
     }
 
     /**

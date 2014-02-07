@@ -1,5 +1,8 @@
 <?php
 class SocialMediaFacebookPage extends ActiveRecordBase {
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     // The columns we will have access to
     public $id, $website_id, $name, $status, $date_created;
 
@@ -64,7 +67,7 @@ class SocialMediaFacebookPage extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `id`, `name`, `date_created` FROM `sm_facebook_page` WHERE `status` = 1 $where $order_by LIMIT $limit"
+            "SELECT `id`, `name`, `date_created` FROM `sm_facebook_page` WHERE `status` = " . self::STATUS_ACTIVE . " $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'SocialMediaFacebookPage' );
@@ -82,7 +85,7 @@ class SocialMediaFacebookPage extends ActiveRecordBase {
 
         // Get the website count
         return $this->prepare(
-            "SELECT COUNT( `id` ) FROM `sm_facebook_page` WHERE `status` = 1 $where"
+            "SELECT COUNT( `id` ) FROM `sm_facebook_page` WHERE `status` = " . self::STATUS_ACTIVE . " $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();

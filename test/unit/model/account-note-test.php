@@ -64,7 +64,7 @@ class AccountNoteTest extends BaseDatabaseTest {
 
         // Delete it!
         $this->account_note->id = $ph_website_note->website_note_id;
-        $this->account_note->delete();
+        $this->account_note->remove();
 
         // Shouldn't exist
         $ph_website_note = $this->phactory->get( 'website_notes', array( 'website_note_id' => $ph_website_note->website_note_id ) );

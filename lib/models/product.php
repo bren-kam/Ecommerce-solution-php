@@ -388,7 +388,7 @@ class Product extends ActiveRecordBase {
 	 * @param string $field
      * @param string $as
 	 * @param string $where
-	 * @return bool
+	 * @return array
 	 */
 	public function autocomplete( $query, $field, $as, $where ) {
 		// Get results

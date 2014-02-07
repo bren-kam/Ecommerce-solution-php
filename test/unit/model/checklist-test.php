@@ -70,9 +70,6 @@ class ChecklistTest extends BaseDatabaseTest {
      * Tests getting incomplete checklists
      */
     public function testGetIncomplete() {
-        // Reset
-        $this->phactory->recall();
-
         // Create
         $ph_checklist = $this->phactory->create('checklists');
         $ph_checklist_item = $this->phactory->create('checklist_items');

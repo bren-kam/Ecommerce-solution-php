@@ -25,7 +25,7 @@ class WebsiteReachComment extends ActiveRecordBase {
         // Set the time it was created
         $this->date_created = dt::now();
 
-        $this->insert( array(
+        $this->id = $this->website_reach_comment_id = $this->insert( array(
             'website_reach_id' => $this->website_reach_id
             , 'user_id' => $this->user_id
             , 'website_user_id' => $this->website_user_id
@@ -33,8 +33,6 @@ class WebsiteReachComment extends ActiveRecordBase {
             , 'private' => $this->private
             , 'date_created' => $this->date_created
         ), 'iiisis' );
-
-        $this->id = $this->website_reach_comment_id = $this->get_insert_id();
     }
 
     /**
@@ -42,7 +40,6 @@ class WebsiteReachComment extends ActiveRecordBase {
      *
      * @param int $website_reach_comment_id
      * @param int $account_id
-     * @return WebsiteReachComment
      */
     public function get( $website_reach_comment_id, $account_id ) {
         $this->prepare(

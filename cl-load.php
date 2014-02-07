@@ -10,6 +10,9 @@
 // Should change to imagineretailer.com before deploy
 define( 'DEFAULT_DOMAIN', 'greysuitretail.com' );
 
+// Set default timezone
+date_default_timezone_set('America/Chicago');
+
 /** Define LIVE if the website is live */
 define( 'LIVE', false );
 

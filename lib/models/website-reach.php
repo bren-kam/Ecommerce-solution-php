@@ -1,5 +1,8 @@
 <?php
 class WebsiteReach extends ActiveRecordBase {
+    const PRIORITY_NORMAL = 0;
+    const PRIORITY_HIGH = 1;
+    const PRIORITY_URGENT = 2;
     const STATUS_OPEN = 0;
     const STATUS_CLOSED = 1;
 
@@ -54,6 +57,8 @@ class WebsiteReach extends ActiveRecordBase {
 
     /**
      * Get Meta
+     *
+     * @return array
      */
     public function get_meta() {
         // This will be expanded in the future as the meta is further developed
@@ -70,7 +75,7 @@ class WebsiteReach extends ActiveRecordBase {
     public function get_info() {
         if ( !isset( $this->meta ) )
             $this->get_meta();
-        
+
         switch ( $this->meta['type'] ) {
             case 'quote':
                 $link = $this->meta['product-link'];
@@ -90,11 +95,11 @@ class WebsiteReach extends ActiveRecordBase {
      * @return string
      */
     public function get_friendly_type() {
-        $type = _('Reach');
+        $type = 'Reach';
 
         switch( $this->meta['type'] ) {
             case 'quote':
-                $type = _('Quote');
+                $type = 'Quote';
             break;
         }
 

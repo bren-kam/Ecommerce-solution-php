@@ -3,6 +3,14 @@
 require_once 'test/base-database-test.php';
 
 class PostingTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 3;
+    const FB_PAGE_ID = 5;
+    const FB_USER_ID = 9;
+    const KEY = 'Red Baron';
+
+    // Websites
+    const TITLE = 'Grimm Brothers';
+    
     /**
      * @var Posting
      */
@@ -14,121 +22,96 @@ class PostingTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->posting = new Posting();
+        
+        // Define
+        $this->phactory->define( 'sm_posting', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'fb_user_id' => self::FB_USER_ID, 'key' => self::KEY ) );
+        $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
+        $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
+        $this->phactory->recall();
     }
-
+    
     /**
-     * Test Connected - A
+     * Test Connected
      */
-    public function testConnectedA() {
-        // Declare variables
-        $account_id = -9;
-        $sm_facebook_page_id = -7;
-        $fb_user_id = -3;
-        $status = 1;
+    public function testConnected() {
+        // Create
+        $ph_sm_facebook_page = $this->phactory->create('sm_facebook_page');
+        $this->phactory->create( 'sm_posting', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => $status ), 'iii' );
-        $this->phactory->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+        // Get
+        $connected = $this->posting->connected( self::FB_USER_ID );
 
-        $connected = $this->posting->connected( $fb_user_id );
-
+        // Assert
         $this->assertTrue( $connected );
 
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
-    }
+        // Reset
+        $this->phactory->recall();
 
-    /**
-     * Test Connected - B
-     */
-    public function testConnectedB() {
-        // Declare variables
-        $account_id = -9;
-        $sm_facebook_page_id = -7;
-        $fb_user_id = -3;
-        $status = 0;
+        // Create
+        $ph_sm_facebook_page = $this->phactory->create( 'sm_facebook_page', array( 'status' => SocialMediaFacebookPage::STATUS_INACTIVE ) );
+        $this->phactory->create( 'sm_posting', array( 'sm_facebook_page_id' => $ph_sm_facebook_page->id ) );
 
-        // Insert Website Page/FB Page/About Us
-        $this->phactory->insert( 'sm_facebook_page', array( 'id' => $sm_facebook_page_id, 'website_id' => $account_id, 'status' => $status ), 'iii' );
-        $this->phactory->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+        // Get
+        $connected = $this->posting->connected( self::FB_USER_ID );
 
-        $connected = $this->posting->connected( $fb_user_id );
-
+        // Assert
         $this->assertFalse( $connected );
-
-        $this->phactory->delete( 'sm_facebook_page', array( 'website_id' => $account_id ), 'i' );
-        $this->phactory->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
     }
+
 
     /**
      * Test Getting Connected Pages
      */
     public function testGetConnectedPages() {
-        // Declare variables
-        $sm_facebook_page_id = -7;
-        $fb_user_id = -3;
+        // Craete
+        $this->phactory->create('sm_posting');
 
-        // Add posting
-        $this->phactory->insert( 'sm_posting', array( 'sm_facebook_page_id' => $sm_facebook_page_id, 'fb_user_id' => $fb_user_id ), 'ii' );
+        // Get
+        $fb_page_ids = $this->posting->get_connected_pages( self::FB_USER_ID );
+        $expected_fb_page_ids = array( self::FB_PAGE_ID );
 
-        $fb_page_id = $this->phactory->get_insert_id();
-
-        // Get the IDS
-        $fb_page_ids = $this->posting->get_connected_pages( $fb_user_id );
-
-        $this->assertTrue( in_array( $fb_page_id, $fb_page_ids ) );
-
-        // Delete
-        $this->phactory->delete( 'sm_posting', array( 'fb_user_id' => $fb_user_id ), 'i' );
+        // Assert
+        $this->assertEquals( $expected_fb_page_ids, $fb_page_ids );
     }
 
     /**
      * Test Connect
      */
     public function testConnect() {
-        // Declare variables
-        $fb_user_id = -1;
-        $fb_page_id = -5;
+        // Declare
         $access_token = 'Sweet wheels on cheese!';
-        $key = 'Red Baron';
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_posting', array( 'fb_user_id' => $fb_user_id, 'key' => $key ), 's' );
+        // Create
+        $this->phactory->create('sm_posting');
 
-        // Get it
-        $this->posting->connect( $fb_user_id, $fb_page_id, $access_token, $key );
+        // Connect
+        $this->posting->connect( self::FB_USER_ID, self::FB_PAGE_ID, $access_token, self::KEY );
 
-        // Get the key
-        $fetched_access_token = $this->phactory->get_var( "SELECT `access_token` FROM `sm_posting` WHERE `key` = '$key'" );
+        // Get
+        $ph_sm_posting = $this->phactory->get( 'sm_posting', array( 'key' => self::KEY ) );
 
-        $this->assertEquals( $access_token, $fetched_access_token );
-
-        // Delete it
-        $this->phactory->delete( 'sm_posting', array( 'key' => $key ), 's' );
+        // Assert
+        $this->assertEquals( $access_token, $ph_sm_posting->access_token );
     }
 
     /**
      * Test Update Access Token
      */
     public function testUpdateAccessToken() {
-        // Declare variables
-        $fb_user_id = -3;
-        $fb_page_id = -5;
-        $access_token = 'Ring around the rosey';
+        // Declare
+        $access_token = 'Sweet wheels on cheese!';
 
-        // Insert About Us
-        $this->phactory->insert( 'sm_posting', array( 'fb_page_id' => $fb_page_id, 'fb_user_id' => $fb_user_id ), 'ss' );
+        // Create
+        $this->phactory->create('sm_posting');
 
-        // Get it
-        $this->posting->update_access_token( $access_token, $fb_page_id );
+        // Update
+        $this->posting->update_access_token( $access_token, self::FB_PAGE_ID );
 
-        // Get the key
-        $fetched_access_token = $this->phactory->get_var( 'SELECT `access_token` FROM `sm_posting` WHERE `fb_page_id` = ' . (int) $fb_page_id );
+        // Get
+        $ph_sm_posting = $this->phactory->get( 'sm_posting', array( 'key' => self::KEY ) );
 
-        $this->assertEquals( $fetched_access_token, $access_token );
-
-        // Delete it
-        $this->phactory->delete( 'sm_posting', array( 'fb_page_id' => $fb_page_id ), 'i' );
+        // Assert
+        $this->assertEquals( $access_token, $ph_sm_posting->access_token );
     }
 
     /**

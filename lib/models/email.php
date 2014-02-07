@@ -83,9 +83,9 @@ class Email extends ActiveRecordBase {
      */
     public function get_dashboard_subscribers_by_account( $account_id ) {
         return $this->prepare(
-            'SELECT `email_id`, `email` FROM `emails` WHERE `website_id` = :account_id AND `status` = 1 ORDER BY `date_created` DESC LIMIT 5'
-            , 'i'
-            , array( ':account_id' => $account_id )
+            'SELECT `email_id`, `email` FROM `emails` WHERE `website_id` = :account_id AND `status` = :status ORDER BY `date_created` DESC LIMIT 5'
+            , 'ii'
+            , array( ':account_id' => $account_id, ':status' => self::STATUS_SUBSCRIBED )
         )->get_results( PDO::FETCH_CLASS, 'Email' );
     }
 
@@ -122,62 +122,6 @@ class Email extends ActiveRecordBase {
             , array( 'email_id' => $this->id )
             , 'sssi', 'i'
         );
-    }
-
-    /**
-     * Unsubscribe Bulk
-     *
-     * @param array $emails
-     * @param int $account_id
-     */
-    public function unsubscribe_bulk( array $emails, $account_id ) {
-        if ( empty( $emails ) )
-            return;
-
-        //Type Juggling
-        $account_id = (int) $account_id;
-        $email_count = count( $emails );
-
-        $this->prepare(
-            "UPDATE `emails` SET `status` = 0 WHERE `website_id` = $account_id AND `email` IN (" . substr( str_repeat( ',?', $email_count ), 1 ) . ')'
-            , str_repeat( 's', $email_count )
-            , $emails
-        )->query();
-    }
-
-    /**
-     * Clean Bulk
-     *
-     * @param array $emails
-     * @param int $account_id
-     */
-    public function clean_bulk( array $emails, $account_id ) {
-        if ( empty( $emails ) )
-            return;
-
-        //Type Juggling
-        $account_id = (int) $account_id;
-        $email_count = count( $emails );
-
-        $this->prepare(
-            "UPDATE `emails` SET `status` = 2 WHERE `website_id` = $account_id AND `email` IN (" . substr( str_repeat( ',?', $email_count ), 1 ) . ')'
-            , str_repeat( 's', $email_count )
-            , $emails
-        )->query();
-    }
-
-    /**
-     * Sync Bulk
-     *
-     * @param array $email_ids
-     */
-    public function sync_bulk( $email_ids ) {
-        foreach ( $email_ids as &$id ) {
-            $id = (int) $id;
-        }
-
-        // Update emails to make them synced
-        $this->query( 'UPDATE `emails` SET `date_synced` = NOW() WHERE `email_id` IN (' . implode( ',', $email_ids ) . ')' );
     }
 
     /**
@@ -264,6 +208,7 @@ class Email extends ActiveRecordBase {
     public function import_all( $account_id, array $emails ) {
         // Type Juggling
         $account_id = (int) $account_id;
+
         // Delete already imported emails
         $this->delete_imported( $account_id );
 

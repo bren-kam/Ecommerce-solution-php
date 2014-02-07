@@ -34,12 +34,10 @@ class WebsiteProductGroup extends ActiveRecordBase {
      * Create
      */
     public function create() {
-        $this->insert( array(
+        $this->id = $this->website_product_group_id = $this->insert( array(
             'website_id' => $this->website_id
             , 'name' => strip_tags($this->name)
         ), 'is' );
-
-        $this->id = $this->website_product_group_id = $this->get_insert_id();
     }
 
     /**
@@ -64,6 +62,25 @@ class WebsiteProductGroup extends ActiveRecordBase {
         // Create new product group relations
         $this->query( "INSERT INTO `website_product_group_relations` ( `website_product_group_id`, `product_id` ) VALUES $values" );
     }
+
+    /**
+     * Add relational items by series
+     *
+     * @param string $series
+     */
+    public function add_relations_by_series( $series ) {
+        // Insert the values
+        $this->prepare(
+            "INSERT INTO `website_product_group_relations` ( `website_product_group_id`, `product_id` ) SELECT :website_product_group_id, wp.`product_id` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) WHERE wp.`website_id` = :account_id AND wp.`active` = 1 AND wp.`blocked` = 0 AND p.`sku` LIKE :series AND wbc.`category_id` IS NULL GROUP BY wp.`product_id`"
+            , 'iis'
+            , array(
+                ':website_product_group_id' => $this->id
+                , ':account_id' => $this->website_id
+                , ':series' => $series . '%'
+            )
+        )->query();
+    }
+
 
     /**
      * Update

@@ -92,9 +92,6 @@ class BrandTest extends BaseDatabaseTest {
      * Test Adding Product Option Relations
      */
     public function testAddProductOptionRelations() {
-        // Reset
-        $this->phactory->recall();
-
         // Add them
         $this->brand->id = self::BRAND_ID;
         $this->brand->add_product_option_relations( array( self::PRODUCT_OPTION_ID ) );
@@ -135,7 +132,7 @@ class BrandTest extends BaseDatabaseTest {
 
         // Delete
         $this->brand->id = $ph_brand->brand_id;
-        $this->brand->delete();
+        $this->brand->remove();
 
         // Now check it!
         $ph_brand = $this->phactory->get( 'brands', array( 'brand_id' => $ph_brand->brand_id ) );

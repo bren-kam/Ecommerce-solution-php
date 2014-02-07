@@ -59,6 +59,10 @@ class EmailMessage extends ActiveRecordBase {
                 if ( is_null( $product_array['product_id'] ) )
                     continue;
 
+                // Initialize
+                if ( !isset( $this->meta[$product_array['product_id']] ) )
+                    $this->meta[$product_array['product_id']] = new stdClass();
+
                 $this->meta[$product_array['product_id']]->price = $product_array['price'];
                 $this->meta[$product_array['product_id']]->order = $product_array['order'];
 

@@ -3,6 +3,11 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaShareAndSaveTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 5;
+    const FB_PAGE_ID = 3;
+    const KEY = 'beal';
+    const BEFORE = 'Misty Mountains';
+    
     /**
      * @var SocialMediaShareAndSave
      */
@@ -14,48 +19,41 @@ class SocialMediaShareAndSaveTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->sm_share_and_save = new SocialMediaShareAndSave();
+        
+        // Define
+        $this->phactory->define( 'sm_share_and_save', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'key' => self::KEY, 'before' => self::BEFORE ) );
+        $this->phactory->recall();
     }
-
+    
     /**
      * Get
      */
     public function testGet() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $fb_page_id = -7;
-
-        // Insert
-        $this->phactory->insert( 'sm_share_and_save', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        // Create
+        $this->phactory->create('sm_share_and_save');
 
         // Get
-        $this->sm_share_and_save->get( $sm_facebook_page_id );
+        $this->sm_share_and_save->get( self::SM_FACEBOOK_PAGE_ID );
 
-        $this->assertEquals( $fb_page_id, $this->sm_share_and_save->fb_page_id );
-
-        // Clean up
-        $this->phactory->delete( 'sm_share_and_save', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::FB_PAGE_ID, $this->sm_share_and_save->fb_page_id );
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $key = 'Poke';
-
         // Create
-        $this->sm_share_and_save->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_share_and_save->key = $key;
+        $this->sm_share_and_save->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_share_and_save->key = self::KEY;
         $this->sm_share_and_save->create();
 
         // Get
-        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_share_and_save` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $ph_sm_share_and_save = $this->phactory->get( 'sm_share_and_save', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_key, $this->sm_share_and_save->key );
-
-        // Clean up
-        $this->phactory->delete( 'sm_share_and_save', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::KEY, $ph_sm_share_and_save->key );
     }
 
     /**
@@ -64,25 +62,19 @@ class SocialMediaShareAndSaveTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $before = 'Poke';
-
         // Create
-        $this->sm_share_and_save->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_share_and_save->create();
+        $this->phactory->create('sm_share_and_save');
 
-        // Update test
-        $this->sm_share_and_save->before = $before;
+        // Save
+        $this->sm_share_and_save->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_share_and_save->before = self::BEFORE;
         $this->sm_share_and_save->save();
 
-        // Now check it!
-        $retrieved_before = $this->phactory->get_var( "SELECT `before` FROM `sm_share_and_save` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        // Get
+        $ph_sm_share_and_save = $this->phactory->get( 'sm_share_and_save', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_before, $before );
-
-        // Clean up
-        $this->phactory->delete( 'sm_share_and_save', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::BEFORE, $ph_sm_share_and_save->before );
     }
 
     /**

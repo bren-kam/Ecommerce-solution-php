@@ -74,9 +74,9 @@ $delete_comment_nonce = nonce::create( 'delete_comment' );
             <select id="sPriority">
             <?php
                 $priorities = array(
-                    0 => _('Normal'),
-                    1 => _('High'),
-                    2 => _('Urgent')
+                    WebsiteReach::PRIORITY_NORMAL => _('Normal'),
+                    WebsiteReach::PRIORITY_HIGH => _('High'),
+                    WebsiteReach::PRIORITY_URGENT => _('Urgent')
                 );
 
                 foreach ( $priorities as $pn => $p ) {
@@ -95,8 +95,8 @@ $delete_comment_nonce = nonce::create( 'delete_comment' );
             <select id="sStatus" class="dd">
             <?php
                 $statuses = array(
-                    0 => _('Open'),
-                    1 => _('Closed')
+                    WebsiteReach::STATUS_OPEN => _('Open'),
+                    WebsiteReach::STATUS_CLOSED => _('Closed')
                 );
 
                 foreach ( $statuses as $sn => $s ) {

@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class MobilePlanTest extends BaseDatabaseTest {
+    const NAME = 'Level 1';
+
     /**
      * @var MobilePlan
      */
@@ -13,27 +15,40 @@ class MobilePlanTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->mobile_plan = new MobilePlan();
+
+        // Define
+        $this->phactory->define( 'mobile_plans', array( 'name' => self::NAME ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test get
      */
     public function testGet() {
-        // Declare variables
-        $mobile_plan_id = 1;
+        // Create
+        $ph_mobile_plan = $this->phactory->create('mobile_plans');
 
-        $this->mobile_plan->get( $mobile_plan_id );
+        // Get
+        $this->mobile_plan->get( $ph_mobile_plan->mobile_plan_id );
 
-        $this->assertEquals( $this->mobile_plan->name, 'Level 1' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->mobile_plan->name );
     }
 
     /**
      * Test get all
      */
     public function testGetAll() {
-        $mobile_plans = $this->mobile_plan->get_all();
+        // Create
+        $this->phactory->create('mobile_plans');
 
-        $this->assertTrue( current( $mobile_plans ) instanceof MobilePlan );
+        // Get
+        $mobile_plans = $this->mobile_plan->get_all();
+        $mobile_plan = current( $mobile_plans );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'MobilePlan', $mobile_plans );
+        $this->assertEquals( self::NAME, $mobile_plan->name );
     }
 
     /**

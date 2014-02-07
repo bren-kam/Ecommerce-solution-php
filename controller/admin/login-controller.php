@@ -32,7 +32,7 @@ class LoginController extends BaseController {
 
             if ( empty( $errs ) ) {
                 // Try to login
-                if ( $this->user->login( $_POST['email'], $_POST['password'] ) ) {
+                if ( $this->user->login( $_POST['email'], $_POST['password'], true ) ) {
                     // Record the login
                     $this->user->record_login();
 

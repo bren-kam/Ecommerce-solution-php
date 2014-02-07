@@ -50,7 +50,7 @@ class TicketUpload extends ActiveRecordBase {
      * Get ticket uploads for comments
      *
      * @param int $ticket_id
-     * @return array
+     * @return TicketUpload[]
      */
     public function get_by_comments( $ticket_id ) {
         return $this->prepare(
@@ -64,7 +64,7 @@ class TicketUpload extends ActiveRecordBase {
      * Get uploads for a comment
      *
      * @param int $ticket_comment_id
-     * @return array
+     * @return TicketUpload[]
      */
     public function get_by_comment( $ticket_comment_id ) {
         return $this->prepare(
@@ -80,7 +80,11 @@ class TicketUpload extends ActiveRecordBase {
      * @return array
      */
     public function get_keys_by_uncreated_tickets() {
-        return $this->get_col( 'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+        return $this->prepare(
+            'SELECT tu.`key` FROM `ticket_uploads` AS tu LEFT JOIN `tickets` AS t ON ( t.`ticket_id` = tu.`ticket_id` ) WHERE t.`status` = :status AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )'
+            , 'i'
+            , array( ':status' => Ticket::STATUS_UNCREATED )
+        )->get_col();
     }
 
     /**
@@ -135,7 +139,7 @@ class TicketUpload extends ActiveRecordBase {
     /**
      * Delete
      */
-    public function delete_upload() {
+    public function remove() {
         parent::delete( array( 'ticket_upload_id' => $this->id ), 'i' );
     }
 }

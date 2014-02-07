@@ -3,6 +3,11 @@
 require_once 'test/base-database-test.php';
 
 class SocialMediaPostingTest extends BaseDatabaseTest {
+    const SM_FACEBOOK_PAGE_ID = 5;
+    const FB_PAGE_ID = 3;
+    const KEY = 'beal';
+    const ACCESS_TOKEN = 'Misty Mountains';
+    
     /**
      * @var SocialMediaPosting
      */
@@ -14,48 +19,41 @@ class SocialMediaPostingTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->sm_posting = new SocialMediaPosting();
+        
+        // Define
+        $this->phactory->define( 'sm_posting', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID, 'fb_page_id' => self::FB_PAGE_ID, 'key' => self::KEY, 'access_token' => self::ACCESS_TOKEN ) );
+        $this->phactory->recall();
     }
-
+    
     /**
      * Get
      */
     public function testGet() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $fb_page_id = -7;
-
-        // Insert
-        $this->phactory->insert( 'sm_posting', compact( 'sm_facebook_page_id', 'fb_page_id' ), 'ii' );
+        // Create
+        $this->phactory->create('sm_posting');
 
         // Get
-        $this->sm_posting->get( $sm_facebook_page_id );
+        $this->sm_posting->get( self::SM_FACEBOOK_PAGE_ID );
 
-        $this->assertEquals( $fb_page_id, $this->sm_posting->fb_page_id );
-
-        // Clean up
-        $this->phactory->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::FB_PAGE_ID, $this->sm_posting->fb_page_id );
     }
+
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $key = 'Poke';
-
         // Create
-        $this->sm_posting->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_posting->key = $key;
+        $this->sm_posting->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_posting->key = self::KEY;
         $this->sm_posting->create();
 
         // Get
-        $retrieved_key = $this->phactory->get_var( "SELECT `key` FROM `sm_posting` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        $ph_sm_posting = $this->phactory->get( 'sm_posting', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_key, $this->sm_posting->key );
-
-        // Clean up
-        $this->phactory->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::KEY, $ph_sm_posting->key );
     }
 
     /**
@@ -64,26 +62,19 @@ class SocialMediaPostingTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $sm_facebook_page_id = -5;
-        $access_token = 'gobbledy-gook';
-
         // Create
-        $this->sm_posting->sm_facebook_page_id = $sm_facebook_page_id;
-        $this->sm_posting->create();
+        $this->phactory->create('sm_posting');
 
-        // Update test
-        $this->sm_posting->fb_page_id = 0;
-        $this->sm_posting->access_token = $access_token;
+        // Save
+        $this->sm_posting->sm_facebook_page_id = self::SM_FACEBOOK_PAGE_ID;
+        $this->sm_posting->access_token = self::ACCESS_TOKEN;
         $this->sm_posting->save();
 
-        // Now check it!
-        $retrieved_access_token = $this->phactory->get_var( "SELECT `access_token` FROM `sm_posting` WHERE `sm_facebook_page_id` = $sm_facebook_page_id" );
+        // Get
+        $ph_sm_posting = $this->phactory->get( 'sm_posting', array( 'sm_facebook_page_id' => self::SM_FACEBOOK_PAGE_ID) );
 
-        $this->assertEquals( $retrieved_access_token, $access_token );
-
-        // Clean up
-        $this->phactory->delete( 'sm_posting', compact( 'sm_facebook_page_id' ), 'i' );
+        // Get
+        $this->assertEquals( self::ACCESS_TOKEN, $ph_sm_posting->access_token );
     }
 
     /**

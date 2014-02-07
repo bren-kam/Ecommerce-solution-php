@@ -3,6 +3,10 @@
 require_once 'test/base-database-test.php';
 
 class CraigslistTagTest extends BaseDatabaseTest {
+    const CRAIGSLIST_TAG_ID = 7;
+    const OBJECT_ID = 3;
+    const TYPE = 'category';
+
     /**
      * @var CraigslistTag
      */
@@ -14,68 +18,42 @@ class CraigslistTagTest extends BaseDatabaseTest {
     public function setUp() {
         $_SERVER['MODEL_PATH'] = basename( __DIR__ );
         $this->craigslist_tag = new CraigslistTag();
+
+        // Define
+        $this->phactory->define( 'craigslist_tags', array( 'craigslist_tag_id' => self::CRAIGSLIST_TAG_ID, 'object_id' => self::OBJECT_ID, 'type' => self::TYPE ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test create
      */
     public function testCreate() {
-        // Declare variables
-        $craigslist_tag_id = -9;
-        $object_id = -5;
-        $type = 'category';
-
         // Create
-        $this->craigslist_tag->craigslist_tag_id = $craigslist_tag_id;
-        $this->craigslist_tag->object_id = $object_id;
-        $this->craigslist_tag->type = $type;
+        $this->craigslist_tag->craigslist_tag_id = self::CRAIGSLIST_TAG_ID;
+        $this->craigslist_tag->type = self::TYPE;
         $this->craigslist_tag->create();
 
-        // Make sure it's in the database
-        $craigslist_tag = $this->phactory->get_row( 'SELECT * FROM `craigslist_tags` WHERE `craigslist_tag_id` = ' . (int) $this->craigslist_tag->id );
+        // Get
+        $ph_craigslist_tag = $this->phactory->get( 'craigslist_tags', array( 'craigslist_tag_id' => self::CRAIGSLIST_TAG_ID ) );
 
-        $this->assertEquals( $craigslist_tag->object_id, $this->craigslist_tag->object_id );
-
-        // Clean Up
-        $this->phactory->delete( 'craigslist_tags', compact( 'object_id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::TYPE, $ph_craigslist_tag->type );
     }
 
     /**
      * Test Get by All
-     *
-     * @depends testCreate
      */
     public function testGetByAll() {
-        // Declare variables
-        $craigslist_tag_id = -11;
-        $craigslist_tag_id2 = -19;
-        $object_id = -7;
-        $type = 'category';
-        $type2 = 'product';
-
         // Create
-        $this->craigslist_tag->craigslist_tag_id = $craigslist_tag_id;
-        $this->craigslist_tag->object_id = $object_id;
-        $this->craigslist_tag->type = $type;
-        $this->craigslist_tag->create();
+        $this->phactory->create('craigslist_tags');
 
-        // Create one more
-        $this->craigslist_tag->craigslist_tag_id = $craigslist_tag_id2;
-        $this->craigslist_tag->type = $type2;
-        $this->craigslist_tag->create();
+        // Get
+        $craigslist_tags = $this->craigslist_tag->get_by_all( self::OBJECT_ID, self::OBJECT_ID, self::OBJECT_ID );
+        $craigslist_tag = current( $craigslist_tags );
 
-        // Get by all
-        $craigslist_tags = $this->craigslist_tag->get_by_all( $object_id, $object_id, $object_id );
-
-        // We should have grabbed two
-        $craigslist_tag_count = count( $craigslist_tags );
-        $this->assertEquals( 2, $craigslist_tag_count );
-
-        // Make sure it grabbed the right type
-        $this->assertTrue( current( $craigslist_tags ) instanceof CraigslistTag );
-
-        // Clean Up
-        $this->phactory->delete( 'craigslist_tags', compact( 'object_id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'CraigslistTag', $craigslist_tags );
+        $this->assertEquals( self::TYPE, $craigslist_tag->type );
     }
 
     /**

@@ -3,6 +3,9 @@
 require_once 'test/base-database-test.php';
 
 class TicketTest extends BaseDatabaseTest {
+    const SUMMARY = 'Problem with Lift Wedges';
+    const DATE_CREATED = '2014-01-01 00:00:00';
+
     /**
      * @var Ticket
      */
@@ -13,34 +16,42 @@ class TicketTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->ticket = new Ticket();
+
+        // Define
+        $this->phactory->define( 'tickets', array( 'summary' => self::SUMMARY, 'priority' => Ticket::PRIORITY_NORMAL, 'status' => Ticket::STATUS_OPEN, 'date_created' => self::DATE_CREATED ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Getting a ticket
      */
     public function testGet() {
-        // Declare variable
-        $ticket_id = 1;
+        // Create
+        $ph_ticket = $this->phactory->create('tickets');
 
-        $this->ticket->get( $ticket_id );
+        // Get
+        $this->ticket->get( $ph_ticket->ticket_id );
 
-        $this->assertEquals( $this->ticket->message, 'message' );
+        // Get
+        $this->assertEquals( self::SUMMARY, $this->ticket->summary );
     }
 
     /**
      * Test Create
      */
     public function testCreate() {
-        $this->ticket->status = -5;
+        // Create
+        $this->ticket->summary = self::SUMMARY;
         $this->ticket->create();
 
-        // Make sure it's in the database
-        $status = $this->phactory->get_var( 'SELECT `status` FROM `tickets` WHERE `ticket_id` = ' . (int) $this->ticket->id );
+        // Assert
+        $this->assertNotNull( $this->ticket->id );
 
-        $this->assertEquals( $this->ticket->status, $status );
+        // Get
+        $ph_ticket = $this->phactory->get( 'tickets', array( 'ticket_id' => $this->ticket->id ) );
 
-        // Delete the attribute
-        $this->phactory->delete( 'tickets', array( 'ticket_id' => $this->ticket->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::SUMMARY, $ph_ticket->summary );
     }
 
     /**
@@ -49,30 +60,30 @@ class TicketTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testUpdate() {
-        // Declare variable
-        $ticket_id = 1;
-
-        // Update ticket to something wrong
-        $this->phactory->update( 'tickets', array( 'priority' => 2 ), array( 'ticket_id' => $ticket_id ), 'i', 'i' );
-
-        $this->ticket->get( $ticket_id );
+        // Create
+        $ph_ticket = $this->phactory->create('tickets');
 
         // Update test
-        $this->ticket->priority = 1;
+        $this->ticket->id = $ph_ticket->ticket_id;
+        $this->ticket->summary = 'Mumkins Go Jumping At Night';
         $this->ticket->save();
 
-        // Get priority
-        $priority = $this->phactory->get_var( "SELECT `priority` FROM `tickets` WHERE `ticket_id` = $ticket_id" );
+        // Get
+        $ph_ticket = $this->phactory->get( 'tickets', array( 'ticket_id' => $this->ticket->id ) );
 
-        $this->assertEquals( '1', $priority );
+        // Assert
+        $this->assertEquals( $this->ticket->summary, $ph_ticket->summary );
     }
 
     /**
      * Test listing all companies
      */
     public function testListAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('tickets');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -80,14 +91,17 @@ class TicketTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'a.`summary`', 'name', 'd.`title`', 'a.`priority`', 'assigned_to', 'a.`date_created`' );
         $dt->search( array( 'b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true ) );
 
+        // Get
         $tickets = $this->ticket->list_all( $dt->get_variables() );
+        $ticket = current( $tickets );
 
         // Make sure we have an array
-        $this->assertTrue( $tickets[0] instanceof Ticket );
+        $this->assertContainsOnlyInstancesOf( 'Ticket', $tickets );
+        $this->assertEquals( self::SUMMARY, $ticket->summary );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $tickets );
@@ -97,8 +111,11 @@ class TicketTest extends BaseDatabaseTest {
      * Test counting the companies
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $this->phactory->create('tickets');
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -106,14 +123,15 @@ class TicketTest extends BaseDatabaseTest {
         $_GET['iSortCol_0'] = 1;
         $_GET['sSortDir_0'] = 'asc';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'a.`summary`', 'name', 'd.`title`', 'a.`priority`', 'assigned_to', 'a.`date_created`' );
         $dt->search( array( 'b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true ) );
 
+        // Get
         $count = $this->ticket->count_all( $dt->get_count_variables() );
 
         // Make sure they exist
-        $this->assertGreaterThan( 1, $count );
+        $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
@@ -121,27 +139,19 @@ class TicketTest extends BaseDatabaseTest {
 
     /**
      * Test deleting all uncreated tickets
-     *
-     * @depends testCreate
      */
     public function testDeleteUncreatedTickets() {
-        // An uncreated ticket has status of -1
-        $this->ticket->status = -1;
-        $this->ticket->create();
+        // Create
+        $this->phactory->create( 'tickets', array( 'status' => Ticket::STATUS_UNCREATED ) );
 
-        // Set the update time to something in the past
-        $this->phactory->update( 'tickets', array( 'date_created' => '2012-10-09 00:00:00' ), array( 'ticket_id' => $this->ticket->id ), 's', 'i' );
-
-        // Create a fake ticket upload
-        $this->phactory->insert( 'ticket_uploads', array( 'ticket_id' => $this->ticket->id, 'key' => 'url/path/file.jpg', 'date_created' => dt::now() ), 'iss' );
-
-        // Now -- delete it, it's uncreated, everything should be gone
+        // Delete
         $this->ticket->deleted_uncreated_tickets();
 
-        // Makes ure they are deleted
-        $tickets = $this->phactory->get_results( 'SELECT t.`ticket_id`, tu.`ticket_upload_id` FROM `tickets` AS t JOIN `ticket_uploads` AS tu ON ( tu.`ticket_id` = t.`ticket_id` ) WHERE t.`status` = -1 AND t.`date_created` < DATE_SUB( CURRENT_TIMESTAMP, INTERVAL 1 HOUR )' );
+        // Get
+        $ph_ticket = $this->phactory->get( 'tickets', array( 'status' => Ticket::STATUS_UNCREATED ) );
 
-        $this->assertTrue( empty( $tickets ) );
+        // Assert
+        $this->assertNull( $ph_ticket );
     }
 
     /**

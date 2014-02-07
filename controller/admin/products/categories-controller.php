@@ -241,7 +241,7 @@ class CategoriesController extends BaseController {
 
         // Deactivate user
         if ( $category->id ) {
-            $category->delete();
+            $category->remove();
 
             // Load Parent Category
             $_POST['cid'] = $parent_category_id;

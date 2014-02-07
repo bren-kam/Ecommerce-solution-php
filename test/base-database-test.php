@@ -5,6 +5,7 @@ require_once 'PHPUnit/Extensions/Database/DataSet/QueryDataSet.php';
 
 define( 'ABS_PATH', realpath( $_SERVER['DOCUMENT_ROOT'] ) . '/' );
 define( 'LIB_PATH', ABS_PATH . 'lib/' );
+date_default_timezone_set('America/Chicago');
 
 // Need registry for Database
 require LIB_PATH . 'helpers/registry.php';

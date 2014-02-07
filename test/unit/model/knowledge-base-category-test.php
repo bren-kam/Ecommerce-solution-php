@@ -3,6 +3,8 @@
 require_once 'test/base-database-test.php';
 
 class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
+    const NAME = 'Products';
+
     /**
      * @var KnowledgeBaseCategory
      */
@@ -13,114 +15,100 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->kb_category = new KnowledgeBaseCategory( KnowledgeBaseCategory::SECTION_ADMIN );
+
+        // Define
+        $this->phactory->define( 'kb_category', array( 'section' => KnowledgeBaseCategory::SECTION_ADMIN, 'name' => self::NAME ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $name = 'Test Get';
-        $section = KnowledgeBaseCategory::SECTION_ADMIN;
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
 
-        // Create Category
-        $id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        // Get
+        $this->kb_category->get( $ph_kb_category->id );
 
-        // Get category
-        $this->kb_category->get( $id );
-
-        // Should be a category
-        $this->assertEquals( $this->kb_category->name, $name );
-
-        // Delete Category
-        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $this->kb_category->name );
     }
 
     /**
      * Test getting all the children
      */
     public function testGetAllChildren() {
-        // Declare variables
-        $name = 'Test Parent';
-        $child_name = 'Test Child';
-        $section = KnowledgeBaseCategory::SECTION_ADMIN;
+        // Declare
+        $name = 'Pricing Tools (Child)';
 
-        // Create Category
-        $parent_id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-        $id = $this->phactory->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $this->phactory->create( 'kb_category', array( 'parent_id' => $ph_kb_category->id, 'name' => $name ) );
 
-        $categories = $this->kb_category->get_all_children( $parent_id );
+        // Get
+        $categories = $this->kb_category->get_all_children( $ph_kb_category->id );
+        $category = current( $categories );
 
-        $this->assertEquals( $id, $categories[0]->id );
-
-        // Clean Up
-        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
-        $this->phactory->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBaseCategory', $categories );
+        $this->assertEquals( $name, $category->name );
     }
 
     /**
      * Test getting all the parents
      */
     public function testGetAllParents() {
-        // Declare variables
-        $name = 'Test Parentt';
-        $child_name = 'Test Childd';
-        $section = KnowledgeBaseCategory::SECTION_ADMIN;
+        // Declare
+        $name = 'Pricing Tools (Child)';
 
-        // Create Category
-        $parent_id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-        $id = $this->phactory->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $ph_kb_category_child = $this->phactory->create( 'kb_category', array( 'parent_id' => $ph_kb_category->id, 'name' => $name ) );
 
         // Get all categories
-        $categories = $this->kb_category->get_all_parents( $id );
+        $categories = $this->kb_category->get_all_parents( $ph_kb_category_child->id );
+        $category = current( $categories );
 
-        $this->assertEquals( $parent_id, $categories[0]->id );
-
-        // Delete
-        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
-        $this->phactory->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBaseCategory', $categories );
+        $this->assertEquals( self::NAME, $category->name );
     }
 
     /**
      * Test getting all the categories by a parent category ID
      */
     public function testGetByParent() {
-        // Declare variables
-        $name = 'Test Parentt';
-        $child_name = 'Test Childd';
-        $section = KnowledgeBaseCategory::SECTION_ADMIN;
+        // Declare
+        $name = 'Pricing Tools (Child)';
 
-        // Create Category
-        $parent_id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-        $id = $this->phactory->insert( 'kb_category', array( 'parent_id' => $parent_id, 'section' => $section, 'name' => $child_name ), 'iss' );
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $this->phactory->create( 'kb_category', array( 'parent_id' => $ph_kb_category->id, 'name' => $name ) );
 
         // Get the categories
-        $categories = $this->kb_category->get_by_parent( $parent_id );
+        $categories = $this->kb_category->get_by_parent( $ph_kb_category->id );
+        $category = current( $categories );
 
-        $this->assertEquals( $id, $categories[0]->id );
-
-        // Clean Up
-        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
-        $this->phactory->delete( 'kb_category', array( 'id' => $parent_id ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBaseCategory', $categories );
+        $this->assertEquals( $name, $category->name );
     }
 
     /**
      * Test getting all the categories
      */
     public function testGetAll() {
-        // Declare variable
-        $name = 'Website';
-        $section = KnowledgeBaseCategory::SECTION_ADMIN;
-
         // Create
-        $id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
+        $this->phactory->create('kb_category');
 
+        // Get
         $categories = $this->kb_category->get_all();
+        $category = current( $categories );
 
-        $this->assertTrue( current( $categories ) instanceof KnowledgeBaseCategory );
-
-        // Clean up
-        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBaseCategory', $categories );
+        $this->assertEquals( self::NAME, $category->name );
     }
 
     /**
@@ -129,47 +117,37 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      * @depends testGet
      */
     public function testCreate() {
-        // Declare variables
-        $name = 'Test Cat';
-
         // Create
-        $this->kb_category->name = $name;
+        $this->kb_category->name = self::NAME;
         $this->kb_category->create();
 
-        // Make sure it's in the database
-        $this->kb_category->get( $this->kb_category->id );
+        // Assert
+        $this->assertNotNull( $this->kb_category->id );
 
-        $this->assertEquals( $name, $this->kb_category->name );
+        // Get
+        $ph_kb_category = $this->phactory->get( 'kb_category', array( 'id' => $this->kb_category->id ) );
 
-        // Delete the category
-        $this->phactory->delete( 'kb_category', array( 'id' => $this->kb_category->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::NAME, $ph_kb_category->name );
     }
 
     /**
      * Save
-     *
-     * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $name = 'Test Cat';
-        $new_name = 'Cat Test';
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
 
         // Save
-        $this->kb_category->name = $name;
-        $this->kb_category->create();
-
-        // Update test
-        $this->kb_category->name = $new_name;
+        $this->kb_category->id = $ph_kb_category->id;
+        $this->kb_category->name = 'Reaches';
         $this->kb_category->save();
 
-        // Get the name
-        $fetched_name = $this->phactory->get_var( "SELECT `name` FROM `kb_category` WHERE `id` = " . (int) $this->kb_category->id );
+        // Get
+        $ph_kb_category = $this->phactory->get( 'kb_category', array( 'id' => $ph_kb_category->id ) );
 
-        $this->assertEquals( $fetched_name, $new_name );
-
-        // Delete the category
-        $this->phactory->delete( 'kb_category', array( 'id' => $this->kb_category->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->kb_category->name, $ph_kb_category->name );
     }
 
     /**
@@ -178,47 +156,37 @@ class KnowledgeBaseCategoryTest extends BaseDatabaseTest {
      * @depends testCreate
      */
     public function testDelete() {
-        // Declare variables
-        $name = 'Test Cat';
-
         // Create
-        $this->kb_category->name = $name;
-        $this->kb_category->create();
+        $ph_kb_category = $this->phactory->create('kb_category');
 
         // Delete
-        $this->kb_category->delete();
+        $this->kb_category->id = $ph_kb_category->id;
+        $this->kb_category->remove();
 
-        // Make sure it doesn't exist
-        $name = $this->phactory->get_var( "SELECT `name` FROM `kb_category` WHERE `id` = " . (int) $this->kb_category->id );
+        // Get
+        $ph_kb_category = $this->phactory->get( 'kb_category', array( 'id' => $ph_kb_category->id ) );
 
-        $this->assertFalse( $name );
+        // Assert
+        $this->assertNull( $ph_kb_category );
     }
 
     /**
      * Test getting all the categories by a parent category ID
      *
+     * @depends testGetByParent
      * @depends testGetAll
      */
     public function testSortByHierarchy() {
-        // Declare variables
-        $name = 'Test Get';
-        $section = KnowledgeBaseCategory::SECTION_ADMIN;
-        $greater_than = -1;
-
-        // Create Category
-        $id = $this->phactory->insert( 'kb_category', compact( 'section', 'name' ), 'ss' );
-
-        // Get them
-        $this->kb_category->get_all();
+        // Create
+        $this->phactory->create('kb_category');
 
         // Sort them
         $categories = $this->kb_category->sort_by_hierarchy();
+        $category = current( $categories );
 
-        $this->assertTrue( current( $categories ) instanceof KnowledgeBaseCategory );
-        $this->assertGreaterThan( $greater_than, $categories[0]->depth );
-
-        // Clean up
-        $this->phactory->delete( 'kb_category', compact( 'id' ), 'i' );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBaseCategory', $categories );
+        $this->assertNotNull( $category->depth );
     }
 
     /**

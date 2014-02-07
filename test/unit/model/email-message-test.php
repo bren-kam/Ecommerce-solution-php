@@ -100,7 +100,7 @@ class EmailMessageTest extends BaseDatabaseTest {
         // Assert
         $this->assertEquals( $expected_meta, $this->email_message->meta );
 
-        // Try secnario three
+        // Try scenario three
         $this->email_message->type = null;
         $this->phactory->recall();
 

@@ -151,7 +151,7 @@ class AttributeItemTest extends BaseDatabaseTest {
 
         // Delete
         $this->attribute_item->id = $ph_attribute_item->attribute_item_id;
-        $this->attribute_item->delete();
+        $this->attribute_item->remove();
 
         // Should not be there
         $ph_attribute_item = $this->phactory->get( 'attribute_items', array( 'attribute_item_id' => $this->attribute_item->id ) );

@@ -3,6 +3,11 @@
 require_once 'test/base-database-test.php';
 
 class KnowledgeBaseArticleTest extends BaseDatabaseTest {
+    const TITLE = 'How to Import Subscribers';
+
+    // KB Category
+    const SECTION = 'admin';
+
     /**
      * @var KnowledgeBaseArticle
      */
@@ -13,95 +18,74 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
      */
     public function setUp() {
         $this->kb_article = new KnowledgeBaseArticle();
+
+        // Define
+        $this->phactory->define( 'kb_article', array( 'title' => self::TITLE, 'status' => KnowledgeBaseArticle::STATUS_PUBLISHED ) );
+        $this->phactory->define( 'kb_category', array( 'section' => self::SECTION ) );
+        $this->phactory->recall();
     }
 
     /**
      * Test Get
      */
     public function testGet() {
-        // Declare variables
-        $title = 'How to Import Subscribers';
-
         // Create
-        $id = $this->phactory->insert( 'kb_article', compact( 'title' ), 's' );
+        $ph_kb_article = $this->phactory->create('kb_article');
 
-        $this->kb_article->get( $id );
+        // Get
+        $this->kb_article->get( $ph_kb_article->id );
 
-        $this->assertEquals( $title, $this->kb_article->title );
-
-        // Clean up
-        $this->phactory->delete( 'kb_article', compact( 'id' ), 'i' );
+        // Assert
+        $this->assertEquals( self::TITLE, $this->kb_article->title );
     }
 
     /**
      * Test Create
-     *
-     * @depends testGet
      */
     public function testCreate() {
-        // Declare variables
-        $title = 'How to Import Subscribers';
-
         // Create
-        $this->kb_article->title = $title;
+        $this->kb_article->title = self::TITLE;
         $this->kb_article->create();
 
-        // Make sure it's in the database
-        $this->kb_article->get( $this->kb_article->id );
+        // Assert
+        $this->assertNotNull( $this->kb_article->id );
 
-        $this->assertEquals( $title, $this->kb_article->title );
+        // Get
+        $ph_kb_article = $this->phactory->get( 'kb_article', array( 'id' => $this->kb_article->id ) );
 
-        // Delete the comment
-        $this->phactory->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
+        // Assert
+        $this->assertEquals( self::TITLE, $ph_kb_article->title );
     }
 
     /**
      * Test Save
-     *
-     * @depends testCreate
      */
     public function testSave() {
-        // Declare variables
-        $first_title = 'How to Import Subscribers';
-        $second_title = 'How to Export Subscribers';
-
         // Create
-        $this->kb_article->title = $first_title;
-        $this->kb_article->create();
+        $ph_kb_article = $this->phactory->create('kb_article');
 
         // Save
-        $this->kb_article->title = $second_title;
+        $this->kb_article->id = $ph_kb_article->id;
+        $this->kb_article->title = 'How to Export Subscribers';
         $this->kb_article->save();
 
-        // Make sure it's in the database
-        $fetched_title = $this->phactory->get_var( "SELECT `title` FROM `kb_article` WHERE `id` = " . (int) $this->kb_article->id );
+        // Get
+        $ph_kb_article = $this->phactory->get( 'kb_article', array( 'id' => $this->kb_article->id ) );
 
-        $this->assertEquals( $second_title, $fetched_title );
-
-        // Delete the comment
-        $this->phactory->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
+        // Assert
+        $this->assertEquals( $this->kb_article->title, $ph_kb_article->title );
     }
 
     /**
      * Test Listing All
-     *
-     * @depends testCreate
      */
     public function testListAll() {
-        // Declare variables
-        $title = 'How to Import Subscribers';
-        $section = 'admin';
-
-        // Insert
-        $kb_category_id = $this->phactory->insert( 'kb_category', compact('section'), 's' );
+        // Get Mock
+        $stub_user = $this->getMock('User');
 
         // Create
-        $this->kb_article->kb_category_id = $kb_category_id;
-        $this->kb_article->title = $title;
-        $this->kb_article->create();
-
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $this->phactory->create( 'kb_article', array( 'kb_category_id' => $ph_kb_category->id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -110,31 +94,34 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
         $_GET['section'] = 'admin';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'kba.`title`', 'category', 'page' );
         $dt->add_where( ' AND kbc.`section` = ' . $this->kb_article->quote( $_GET['section'] ) );
         $dt->add_where( ' AND ( kbc2.`section` = ' . $this->kb_article->quote( $_GET['section'] ) . ' OR kbc2.`section` IS NULL )' );
         $dt->search( array( 'kba.`title`' => false, 'kbc.`name`' => false, 'kbc2.`name`' => false, 'kbp.`name`' => false ) );
 
+        // Get
         $articles = $this->kb_article->list_all( $dt->get_variables() );
+        $article = current( $articles );
 
-        // Make sure they exist
-        $this->assertTrue( current( $articles ) instanceof KnowledgeBaseArticle );
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'KnowledgeBaseArticle', $articles );
+        $this->assertEquals( self::TITLE, $article->title );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $articles );
-
-        // Delete the comment
-        $this->phactory->delete( 'kb_article', array( 'id' => $this->kb_article->id ), 'i' );
-        $this->phactory->delete( 'kb_category', array( 'id' => $kb_category_id ), 'i' );
     }
 
     /**
      * Test Count All
      */
     public function testCountAll() {
-        $user = new User();
-        $user->get_by_email('test@greysuitretail.com');
+        // Get Mock
+        $stub_user = $this->getMock('User');
+
+        // Create
+        $ph_kb_category = $this->phactory->create('kb_category');
+        $this->phactory->create( 'kb_article', array( 'kb_category_id' => $ph_kb_category->id ) );
 
         // Determine length
         $_GET['iDisplayLength'] = 30;
@@ -143,16 +130,17 @@ class KnowledgeBaseArticleTest extends BaseDatabaseTest {
         $_GET['sSortDir_0'] = 'asc';
         $_GET['section'] = 'admin';
 
-        $dt = new DataTableResponse( $user );
+        $dt = new DataTableResponse( $stub_user );
         $dt->order_by( 'kba.`title`', 'category', 'page' );
         $dt->add_where( ' AND kbc.`section` = ' . $this->kb_article->quote( $_GET['section'] ) );
         $dt->add_where( ' AND ( kbc2.`section` = ' . $this->kb_article->quote( $_GET['section'] ) . ' OR kbc2.`section` IS NULL )' );
         $dt->search( array( 'kba.`title`' => false, 'kbc.`name`' => false, 'kbc2.`name`' => false, 'kbp.`name`' => false ) );
 
+        // Get
         $count = $this->kb_article->count_all( $dt->get_count_variables() );
 
-        // Make sure they exist
-        $this->assertEquals( (int) $count, $count );
+        // Assert
+        $this->assertGreaterThan( 0, $count );
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
