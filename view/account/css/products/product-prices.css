@@ -12,3 +12,5 @@ input.price_note {
    	padding: 6px 8px 7px;
    	width: 368px;
 }
+
+#bSave { position: relative; bottom: 6px; }

@@ -1461,7 +1461,7 @@ class ProductsController extends BaseController {
             $data[] = array(
                 $product->sku
                 , $product->name
-                , '<input type="text" class="alternate_price tb" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
+                , '<input type="text" class="alternate_price" id="tAlternatePrice' . $product->id . '" value="' . $product->alternate_price . '" />'
                 , '<input type="text" class="price" id="tPrice' . $product->id . '" value="' . $product->price . '" />'
                 , '<input type="text" class="sale_price" id="tSalePrice' . $product->id . '" value="' . $product->sale_price . '" />'
                 , '<input type="text" class="price_note" id="tPriceNote' . $product->id . '" value="' . $product->price_note . '" />'

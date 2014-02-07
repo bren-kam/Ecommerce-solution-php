@@ -32,7 +32,7 @@ class ButlerFeedGateway extends ProductFeedGateway {
      * Hold the category code translation
      */
     protected $categories = array(
-        'CORNER BAKER\'S RACK' => 135 // Dining Room > Bakers Racks
+        'CORNER BAKER\'S RACK' => 1187 // Dining Room > Bakers Racks
         , 'OVAL MIRROR' => 202 // Accessories > Mirrors
         , 'SIDE TABLE' => 233 // Occasional > End Tables
         , 'ROUND END TABLE' => 233 // Occasional > End Tables
