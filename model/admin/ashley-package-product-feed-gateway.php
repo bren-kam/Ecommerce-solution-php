@@ -321,7 +321,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             // Get Product
 			$product = $this->get_existing_product( (string) $item->PackageName );
-		
+
             // Now we have the product
             if ( !$product instanceof Product ) {
 				/*echo '|' . (string) $item->PackageName . '|';
@@ -344,6 +344,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             } else {
 				continue;
 			}
+
+            $product->industry_id = 1;
 
             /***** PREPARE PRODUCT DATA *****/
 
