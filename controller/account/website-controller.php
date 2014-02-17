@@ -575,6 +575,41 @@ class WebsiteController extends BaseController {
     }
 
     /**
+     * Footer Navigation
+     *
+     * @return TemplateResponse
+     */
+    protected function footer_navigation() {
+        if ( $this->verified() ) {
+            $footer_navigation = array();
+
+            foreach ( $_POST['footer-navigation'] as $page ) {
+                list( $url, $name ) = explode( '|', $page );
+                $footer_navigation[] = compact( 'url', 'name' );
+            }
+
+            $this->user->account->set_settings( array( 'footer-navigation' => json_encode( $footer_navigation ) ) );
+            $this->notify('Your Footer Navigation settings have been saved!');
+        }
+
+        $page = new AccountPage();
+        $pages = $page->get_by_account( $this->user->account->id );
+
+        $footer_navigation = $this->user->account->get_settings('footer-navigation');
+        $footer_navigation = ( empty( $footer_navigation ) ) ? array() : json_decode( $footer_navigation );
+
+        $this->resources
+            ->css( 'website/footer-navigation' )
+            ->javascript( 'website/footer-navigation' );
+
+        return $this->get_template_response( 'footer-navigation' )
+            ->kb( 0 )
+            ->select( 'settings', 'footer-navigation' )
+            ->add_title( _('Footer Navigation') )
+            ->set( compact( 'pages', 'footer_navigation' ) );
+    }
+
+    /**
      * Settings page
      *
      * @return TemplateResponse|RedirectResponse
