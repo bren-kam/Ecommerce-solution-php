@@ -17,6 +17,9 @@ class ReachesController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
+        $this->resources->css( 'products/reaches/list' )
+            ->javascript( 'products/reaches/list' );
+
         return $this->get_template_response( 'index' )
             ->kb( 54 )
             ->select( 'reaches' );
@@ -80,9 +83,10 @@ class ReachesController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set variables
+        $status = ( isset( $_SESSION['reaches']['status'] ) ) ? (int) $_SESSION['reaches']['status'] : WebsiteReach::STATUS_OPEN;
         $dt->order_by( 'name', 'wu.`email`', 'assigned_to', 'waiting', 'wr.`priority`', 'wr.`date_created`' );
         $dt->add_where( " AND wr.`website_id` = " . $this->user->account->id );
-        $dt->add_where( ' AND wr.`status` = ' . WebsiteReach::STATUS_OPEN );
+        $dt->add_where( ' AND wr.`status` = ' . $status );
 
         $dt->search( array( 'wu.`billing_first_name`' => false, 'wu.`billing_last_name`' => false, 'wu.`email`' => false, 'u.`contact_name`' => false ) );
 
