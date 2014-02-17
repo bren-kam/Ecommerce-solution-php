@@ -414,9 +414,14 @@ ArticlesController extends BaseController {
         return $response;
     }
 
+    /**
+     * AJAX Call, returns a list of files, based on a pattern and pagination parameters
+     *
+     * @return AjaxResponse
+     */
     protected function get_files() {
         // Make sure it's a valid ajax call
-        $response = new AjaxResponse( true /*$this->verified()*/ );
+        $response = new AjaxResponse( $this->verified() );
 
         $pattern = isset( $_GET['pattern'] ) ? $_GET['pattern'] : null;
         $page = isset( $_GET['page'] ) ? (int) $_GET['page'] : 0;
@@ -448,7 +453,7 @@ ArticlesController extends BaseController {
         }
 
         // Add the response
-        $response->add_response( 'images', $html );
+        $response->add_response( 'files', $html );
 
         return $response;
 

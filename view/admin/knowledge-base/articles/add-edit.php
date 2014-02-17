@@ -46,6 +46,7 @@ echo $form;
     </div>
 </div>
 <?php
+nonce::field('get_files', '_get_files');
 nonce::field( 'upload_file', '_upload_file' );
 nonce::field( 'get_categories', '_get_categories' );
 nonce::field( 'get_pages', '_get_pages' );

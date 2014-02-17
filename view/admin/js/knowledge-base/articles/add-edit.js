@@ -126,10 +126,14 @@ jQuery(function($) {
     // Prevent another scroll event to call get_files() unwanted times
     var prevent_scroll = true;
 
+    /**
+     * Handles getting file list doing the AJAX call.
+     */
     function get_files() {
         var parameters = {
             page: page_number,
-            pattern: search_pattern
+            pattern: search_pattern,
+            _nonce: $("#_get_files").val()
         };
 
         $.get(
@@ -139,17 +143,17 @@ jQuery(function($) {
                 ajaxResponse( response );
 
                 // Did we get new files?
-                if (typeof(response.images) == "string" && response.images.length > 0) {
+                if (typeof(response.files) == "string" && response.files.length > 0) {
                     // Now we have files, we don't need this message
                     jQuery('#file-list p.no-files').remove();
 
                     // Replace content first page (start or new search pattern)
                     if ( page_number == 0 ) {
-                        $( '#file-list' ).html( response.images )
+                        $( '#file-list' ).html( response.files )
                             .scrollTop( 0 );
 
                     } else {
-                        $( '#file-list' ).append( response.images );
+                        $( '#file-list' ).append( response.files );
                     }
 
                     $( '#file-list' ).sparrow();
@@ -166,6 +170,9 @@ jQuery(function($) {
         );
     }
 
+    /**
+     * Function triggered when the file list is scrolled, fires get_files when reach the bottom
+     */
     function handle_scroll() {
         if( prevent_scroll )
             return;
