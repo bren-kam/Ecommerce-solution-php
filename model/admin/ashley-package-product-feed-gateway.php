@@ -321,7 +321,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
             // Get Product
 			$product = $this->get_existing_product( (string) $item->PackageName );
-		
+
             // Now we have the product
             if ( !$product instanceof Product ) {
 				/*echo '|' . (string) $item->PackageName . '|';
@@ -344,6 +344,8 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             } else {
 				continue;
 			}
+
+            $product->industry_id = 1;
 
             /***** PREPARE PRODUCT DATA *****/
 
@@ -489,19 +491,26 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             /***** ADD PRODUCT IMAGES *****/
 
             // Let's hope it's big!
-			$image_url = self::IMAGE_URL . $image;
+			// $image_url = self::IMAGE_URL . $image;
+            $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
+            $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
+            $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
 
             // Setup images array
             $images = explode( '|', $product->images );
 
-            if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image_url ) ) {
-                $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+            foreach ( $image_urls as $image_url ) {
+                if ( ( 0 == count( $images ) || empty( $images[0] ) ) && !empty( $image ) && curl::check_file( $image_url ) ) {
+                    $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
 
-                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                    $this->not_identical[] = 'images';
-                    $images[] = $image_name;
+                    if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+                        $this->not_identical[] = 'images';
+                        $images[] = $image_name;
 
-                    $product->add_images( $images );
+                        $product->add_images( $images );
+                    }
+
+                    break;
                 }
             }
 
