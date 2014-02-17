@@ -796,4 +796,26 @@ class AccountProductTest extends BaseDatabaseTest {
     public function tearDown() {
         $this->account_product = null;
     }
+
+    /**
+     * Test Reset Price By Account
+     */
+    public function testResetPriceByAccount() {
+        // Create
+        $this->phactory->create( 'website_products' );
+
+        // Now, deactivate them all
+        $this->account_product->reset_price_by_account( self::WEBSITE_ID );
+
+        // Get
+        $ph_website_product = $this->phactory->get( 'website_products', array( 'website_id' => self::WEBSITE_ID ) );
+
+        $expected_price = 0;
+
+        // Check price
+        $this->assertEquals( $expected_price, $ph_website_product->price );
+        $this->assertEquals( $expected_price, $ph_website_product->alternate_price );
+        $this->assertEquals( $expected_price, $ph_website_product->sale_price );
+    }
+
 }

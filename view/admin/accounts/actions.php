@@ -55,5 +55,6 @@ if ( empty( $settings['sendgrid-username'] ) ) { ?>
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reorganize-categories/' ); ?>" title="<?php echo _('Reorganize Categories'); ?>"><?php echo _('Reorganize Categories'); ?></a></p>
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/add-email-template/' ); ?>" title="<?php echo _('Add'); ?>"><?php echo _('Add Email Template'); ?></a></p>
 
+<p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/reset-product-prices/' ); ?>" title="<?php echo _('Set all product prices to zero.'); ?>"><?php echo _('Reset all product prices'); ?></a></p>
 
 <?php echo $template->end(); ?>

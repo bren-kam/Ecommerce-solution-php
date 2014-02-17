@@ -1154,4 +1154,18 @@ class AccountProduct extends ActiveRecordBase {
         //  AND p.`timestamp` < DATE_SUB( NOW(), INTERVAL 60 DAY )
         $this->query( "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) SET wp.`active` = 0 WHERE wp.`active` = 1 AND p.`status` = 'discontinued'" );
     }
+
+    /**
+     * Reset price by account
+     *
+     * @param int $account_id
+     */
+    public function reset_price_by_account( $account_id ) {
+        parent::update( array(
+            'alternate_price' => 0
+            , 'price' => 0
+            , 'sale_price' => 0
+        ), array( 'website_id' => $account_id ), 'i', 'i' );
+    }
+
 }
