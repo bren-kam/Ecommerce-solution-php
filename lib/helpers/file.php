@@ -148,7 +148,30 @@ class File {
      * @return array
      */
     public function list_files() {
-		// Delete the object
 		return $this->s3->getBucket( $this->bucket );
+    }
+
+    /**
+     * Search for files in S3
+     *
+     * @param null $pattern
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function search_files( $pattern = null, $offset = 0, $limit = 50 ) {
+        // we might want to add a cache layer here!
+        $files = $this->list_files();
+
+        // will be much better if we search in S3 directly!
+        if ( $pattern ) {
+            foreach ( $files as $k => &$v ) {
+                if( stripos( $k, $pattern ) === FALSE) {
+                    unset( $files[$k] );
+                }
+            }
+        }
+
+        return array_slice( $files, $offset, $limit, true );
     }
 }

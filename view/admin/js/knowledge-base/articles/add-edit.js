@@ -118,6 +118,77 @@ jQuery(function($) {
             alert( $('#err-support-cors').text() );
         }
     });
+
+    // Current "page" we in the file-list scroll
+    var page_number = 0;
+    // Current search pattern
+    var search_pattern = "";
+    // Prevent another scroll event to call get_files() unwanted times
+    var prevent_scroll = true;
+
+    function get_files() {
+        var parameters = {
+            page: page_number,
+            pattern: search_pattern
+        };
+
+        $.get(
+            '/knowledge-base/articles/get-files',
+            parameters,
+            function( response ) {
+                ajaxResponse( response );
+
+                // Did we get new files?
+                if (typeof(response.images) == "string" && response.images.length > 0) {
+                    // Now we have files, we don't need this message
+                    jQuery('#file-list p.no-files').remove();
+
+                    // Replace content first page (start or new search pattern)
+                    if ( page_number == 0 ) {
+                        $( '#file-list' ).html( response.images )
+                            .scrollTop( 0 );
+
+                    } else {
+                        $( '#file-list' ).append( response.images );
+                    }
+
+                    $( '#file-list' ).sparrow();
+
+                    // Next page
+                    page_number++;
+
+                    // Enable scroll event
+                    prevent_scroll = false;
+                }
+
+            },
+            'json'
+        );
+    }
+
+    function handle_scroll() {
+        if( prevent_scroll )
+            return;
+
+        if( $(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight ) {
+            // Prevent future handle_scroll until we know we have more elements.
+            // Unbinding scroll causes get_files to get called unwanted times.
+            prevent_scroll = true;
+            get_files();
+        }
+    }
+
+    $( '#file-list' ).bind( 'scroll' , handle_scroll );
+
+    $( '#file-pattern' ).keyup( function(){
+        page_number = 0;
+        search_pattern = $(this).val();
+        get_files();
+    });
+
+    // Trigger the first page!
+    get_files();
+
 });
 
 // Turns text into a slug
