@@ -80,11 +80,6 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
 						$xml_reader->next();
 						continue;
 					}
-					
-					$image = trim( $xml_reader->getAttribute('image') );
-					
-					if ( empty( $image ) )
-						continue;
 
 					// Increment the item
 					$j++;
@@ -98,7 +93,6 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
 						'status' => ( 'Discontinued' == trim( $xml_reader->getAttribute('itemStatus') ) ) ? 'discontinued' : 'in-stock'
 						, 'nodeType' => trim( $xml_reader->nodeType )
 						, 'group' => trim( $xml_reader->getAttribute('itemGroupCode') )
-						, 'image' => $image
 						, 'brand_id' => self::BRAND_ID
 						, 'specs' => ''
 						, 'weight' => 0
@@ -114,8 +108,13 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
 				break;
 
 				// Description
-				case 'itemDescription':
-					$this->items[$j]['description'] = trim( $xml_reader->getAttribute('itemFriendlyDescription') );
+				case 'itemUnitDescription':
+					if ( !isset( $this->items[$j]['description'] ) )
+						$this->items[$j]['description'] = ucwords( strtolower( (string) trim( $xml_reader->readString() ) ) );
+				break;
+
+				case 'image':
+					$this->items[$j]['image'] = trim( $xml_reader->getAttribute('url') );
 				break;
 
 				// We're in the item dimensions section
@@ -186,9 +185,12 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
      * Now process everything with the data we have
      */
     protected function process() {
-		fn::info( $this->items );exit;
         // Generate array of our items
+		
 		foreach( $this->items as $item_key => $item ) {
+			if ( 'NOIMAGEAVAILABLE_BIG.jpg' == $item['image'] )
+				continue;
+				
 			/***** SETUP OF PRODUCT *****/
 
             // Trick to make sure the page doesn't timeout or segfault
@@ -239,6 +241,7 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
                 // Increment product count
                 $this->new_product( format::convert_characters( $this->groups[$item['group']]['name'] . ' - ' . $item['description'] ) . "\nhttp://admin.greysuitretail.com/products/add-edit/?pid={$product->id}\n" );
             } else {
+				continue;
                 $new_product = false;
 				$product->user_id_modified = self::USER_ID;
 			}
@@ -268,11 +271,6 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
 				$product->slug = str_replace( '---', '-', format::slug( $name ) );
 			}
 
-            // Handle categories
-			if ( $new_product || empty( $product->category_id ) ) {
-                // Get category
-                $product->category_id = $this->get_category( $product->sku, $product->name );
-			}
 
             // $product->name = $this->identical( $name, $product->name, 'name' );
             // $product->slug = $this->identical( str_replace( '---', '-', format::slug( $name ) ), $product->slug, 'slug' );
@@ -284,30 +282,44 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
             $product->brand_id = $this->identical( $item['brand_id'], $product->brand_id, 'brand' );
             $product->description = $this->identical( format::convert_characters( format::autop( format::unautop( '<p>' . $item['description'] . "</p>{$group_description}{$group_features}" ) ) ), format::autop( format::unautop( $product->description ) ), 'description' );
 
+
+            // Handle categories
+			if ( $new_product || empty( $product->category_id ) ) {
+                // Get category
+                $product->category_id = $this->get_category( $product->sku, $product->name );
+			}
+
             /***** ADD PRODUCT IMAGES *****/
 
             // Let's hope it's big!
 			$image = $item['image'];
-            $image_url = 'https://www.ashleydirect.com/graphics/' . $image;
-            
+			
+            $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
+            $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
+            $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
+
             // Setup images array
             $images = explode( '|', $product->images );
 			$last_character = substr( $images[0], -1 );
-			
-            if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
-				try {
-					$image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
-				} catch( InvalidParametersException $e ) {
-					fn::info( $product );
-					echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
-					exit;
-				}
-				
-                if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
-                    $this->not_identical[] = 'images';
-                    $images[] = $image_name;
-				
-					$product->add_images( $images );
+
+            foreach ( $image_urls as $image_url ) {
+                if ( ( 0 == count( $images ) || empty( $images[0] ) || '.' == $last_character ) && !empty( $image ) && !in_array( $image, array( 'Blank.gif', 'NOIMAGEAVAILABLE_BIG.jpg' ) ) && curl::check_file( $image_url ) ) {
+                    try {
+                        $image_name = $this->upload_image( $image_url, $product->slug, $product->id, 'furniture' );
+                    } catch( InvalidParametersException $e ) {
+                        fn::info( $product );
+                        echo $product->slug . ' | ' . $image_url . ' | ' . $new_product;
+                        exit;
+                    }
+
+                    if ( !is_array( $images ) || !in_array( $image_name, $images ) ) {
+                        $this->not_identical[] = 'images';
+                        $images[] = $image_name;
+
+                        $product->add_images( $images );
+                    }
+
+                    break;
                 }
             }
 
@@ -384,8 +396,12 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
         $length = strlen( $sku );
         $first_character = $sku[0];
         $last_character = substr( $sku, -1 );
+        $last_two_characters = substr( $sku, -2 );
 
-        if ( 7 == $length && is_numeric( $first_character ) ) {
+        if ( '99' == $last_two_characters ) {
+            // Bedroom > Bed Frames
+            $category_id = 126;
+        } elseif ( 7 == $length && is_numeric( $first_character ) ) {
             // Living Room & Leather
             $relevant_sku = substr( $sku, 5, 2 );
 
@@ -616,6 +632,7 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
                 case '13T':
                 case '13B':
                 case '15T':
+
                 case '15B':
                 case 32:
                 case 325:
@@ -1007,7 +1024,7 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
             // Bedding > Pillows
             $category_id = 597;
         }
-
+		
         return $category_id;
     }
 }
