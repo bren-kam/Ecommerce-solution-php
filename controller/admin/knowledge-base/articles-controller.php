@@ -415,6 +415,8 @@ ArticlesController extends BaseController {
     }
 
     /**
+     * Get Files
+     *
      * AJAX Call, returns a list of files, based on a pattern and pagination parameters
      *
      * @return AjaxResponse

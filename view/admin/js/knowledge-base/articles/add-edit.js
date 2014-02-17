@@ -127,19 +127,21 @@ jQuery(function($) {
     var prevent_scroll = true;
 
     /**
+     * Get Files
+     *
      * Handles getting file list doing the AJAX call.
      */
     function get_files() {
         var parameters = {
-            page: page_number,
-            pattern: search_pattern,
-            _nonce: $("#_get_files").val()
+            page: page_number
+            , pattern: search_pattern
+            , _nonce: $("#_get_files").val()
         };
 
         $.get(
-            '/knowledge-base/articles/get-files',
-            parameters,
-            function( response ) {
+            '/knowledge-base/articles/get-files'
+            , parameters
+            , function( response ) {
                 ajaxResponse( response );
 
                 // Did we get new files?
@@ -165,12 +167,14 @@ jQuery(function($) {
                     prevent_scroll = false;
                 }
 
-            },
-            'json'
+            }
+            , 'json'
         );
     }
 
     /**
+     * Handle Scroll
+     *
      * Function triggered when the file list is scrolled, fires get_files when reach the bottom
      */
     function handle_scroll() {
