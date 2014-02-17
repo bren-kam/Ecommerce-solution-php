@@ -67,27 +67,9 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
      * Get Data from Ashley
      */
     protected function get_data() {
-        // Get al ist of the files
-        $files = $this->ftp->dir_list();
-
-        $count = count( $files );
-		
-        while ( !isset( $file ) && 0 != $count ) {
-            $last_file = array_pop( $files );
-
-            if ( 'xml' == f::extension( $last_file ) )
-                $file = $last_file;
-			
-            $count = count( $files );
-        }
-
+        $file = '888-3800-0-20140129152749-EN-US.xml';
         $xml_reader = new XMLReader();
-
-		// Grab the latest file
-		if( !file_exists( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file ) )
-			$this->ftp->get( $file, '', '/gsr/systems/backend/admin/media/downloads/ashley/' );
-		
-		$xml_reader->open( '/gsr/systems/backend/admin/media/downloads/ashley/' . $file );
+		$xml_reader->open( '/gsr/systems/backend-testing/' . $file );
 		$j = -1;
 		
 		while( $xml_reader->read() ) {
@@ -204,6 +186,7 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
      * Now process everything with the data we have
      */
     protected function process() {
+		fn::info( $this->items );exit;
         // Generate array of our items
 		foreach( $this->items as $item_key => $item ) {
 			/***** SETUP OF PRODUCT *****/

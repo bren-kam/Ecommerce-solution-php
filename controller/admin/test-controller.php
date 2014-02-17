@@ -19,8 +19,10 @@ class TestController extends BaseController {
      */
     protected function index() {
         // Package feed
-        $ashley_package_gateway = new AshleyPackageProductFeedGateway();
-        $ashley_package_gateway->run();
+        //$ashley_package_gateway = new AshleyPackageProductFeedGateway();
+        //$ashley_package_gateway->run();
+        $kingswere = new KingswereProductFeedGateway();
+        $kingswere->run();
 
         return new HtmlResponse( 'heh' );
     }
@@ -30,12 +32,12 @@ class TestController extends BaseController {
      *
      * @return bool
      */
-    protected function get_logged_in_user() {
-        if ( defined('CLI') && true == CLI ) {
-            $this->user = new User();
-            return true;
-        }
-
-        return false;
-    }
+//    protected function get_logged_in_user() {
+//        if ( defined('CLI') && true == CLI ) {
+//            $this->user = new User();
+//            return true;
+//        }
+//
+//        return false;
+//    }
 }
