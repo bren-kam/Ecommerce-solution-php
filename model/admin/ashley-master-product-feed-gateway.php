@@ -352,6 +352,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Let's hope it's big!
 			$image = $item['image'];
 
+            $image_urls = array();
             $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
             $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
             $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
