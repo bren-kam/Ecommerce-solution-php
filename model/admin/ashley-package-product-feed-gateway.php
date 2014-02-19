@@ -60,27 +60,27 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * Hold the ashley categories
      */
     protected $categories = array(
-        'Accents' => 360
-        , 'Stationary Upholstery' => 218
-        , 'Motion Upholstery' => 348
-        , 'Sectionals' => 226
-        , 'Chairs' => 221
-        , 'Stationary Leather' => 255
-        , 'Recliners' => 222
-        , 'Motion Leather' => 255
-        , 'Dining' => 347
+        'Accents' => 360 // Accessories > Accessory Item
+        , 'Stationary Upholstery' => 218 // Living Room > Living Room Groups
+        , 'Motion Upholstery' => 348 // Reclining Furniture > Reclining Living Room Groups
+        , 'Sectionals' => 226 // Living Room > Sectionals
+        , 'Chairs' => 221 // Living Room > Chairs
+        , 'Stationary Leather' => 255 // Leather > Leather Living Room Groups
+        , 'Recliners' => 222 // Living Room > Recliners
+        , 'Motion Leather' => 255 // Leather > Leather Living Room Groups
+        , 'Dining' => 347 // Dining Room > Dining Room Groups
         , 'Master Bedroom' => 228 // Bedroom > Bedroom Groups
-        , 'Metal Beds' => 685
-        , 'Youth Bedroom' => 267
-        , 'Top of Bed' => 463
-        , 'Curios' => 434
-        , 'Home Office' => 328
-        , 'Lamps' => 194
-        , 'Mattresses' => 0
-        , 'Rugs' => 338
-        , 'Occasional' => 382
-        , 'Walls' => 336
-        , 'Entertainment' => 335
+        , 'Metal Beds' => 685 // Beds > Metal Beds
+        , 'Youth Bedroom' => 267 // Kids Furniture > Bedroom Groups
+        , 'Top of Bed' => 463 // Bedding > Bedding
+        , 'Curios' => 434 // Accessories > Curio
+        , 'Home Office' => 328 // Home Office > Home Office Groups
+        , 'Lamps' => 194 // Accessories > Lamps
+        , 'Mattresses' => 0 //
+        , 'Rugs' => 338 // Accessories > Rugs
+        , 'Occasional' => 382 // Occasional > Occasional Groups
+        , 'Walls' => 336 // Home Entertainment > Wall Systems
+        , 'Entertainment' => 335 // Home Entertainment > Entertainment Centers
     );
 
     /**
@@ -213,7 +213,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
      * @var array
      */
     protected $category_by_template_description = array(
-        'Dresser, Mirror' => 696
+        'Dresser, Mirror' => 696 // Bedroom > Dresser & Mirror
     );
 
     /**
@@ -398,6 +398,11 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $category_id = $this->categories[(string)$package_series->Grouping];
             }
 
+            $category_counts[$category_id] = ( isset( $category_counts[$category_id] ) ) ? $category_counts[$category_id] + 1 : 1;
+            $category_descriptions[(string)$template->Descr] = ( isset( $category_counts[(string)$template->Descr] ) ) ? $category_counts[(string)$template->Descr] + 1 : 1;
+            $category_grouping[(string)$package_series->Grouping] = ( isset( $category_counts[(string)$package_series->Grouping] ) ) ? (string)$package_series->Grouping[$category_id] + 1 : 1;
+            continue;
+
             // If we have to group products
             switch ( $category_id ) {
                 // Sectionals
@@ -543,6 +548,10 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
 		}
+
+        fn::info ( $category_counts );
+        fn::info ( $category_descriptions );
+        fn::info ( $category_grouping );
     }
 
     /**
