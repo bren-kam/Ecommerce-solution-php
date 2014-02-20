@@ -490,10 +490,7 @@ class Product extends ActiveRecordBase {
             $industry = format::slug( $p['industry_name'] );
 
             $image_name = $product->upload_image( $p['image'], $slug, $industry );
-            $product->add_images( array( array(
-                'image' => $image_name,
-                'sequence' => 0
-            ) ) );
+            $product->add_images( array( $image_name ) );
         }
 
         // clean up
