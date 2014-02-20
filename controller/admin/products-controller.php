@@ -767,12 +767,6 @@ ProductsController extends BaseController {
                 }
             }
 
-            $r['price_wholesale'] = (float) $r['price_wholesale'];
-            if ( !$r['price_wholesale'] )  {
-                $r['reason'] = "Required field 'price_wholesale'. ";
-                $valid = false;
-            }
-
             $r['status'] = strtolower( $r['status'] );
             if ( empty( $r['status'] ) )
                 $r['status'] = 'in-stock';
@@ -833,6 +827,8 @@ ProductsController extends BaseController {
             $product = array_slice($r, 0, 9);
             $product['price_map'] = (float)$r['price_map'];
             $product['price_map'] = $r['price_map'] ? $r['price_map'] : 0;
+            $product['price_wholesale'] = (float)$r['price_wholesale'];
+            $product['price_wholesale'] = $r['price_wholesale'] ? $r['price_wholesale'] : 0;
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
