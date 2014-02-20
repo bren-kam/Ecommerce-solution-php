@@ -477,8 +477,12 @@ class Product extends ActiveRecordBase {
             $product->price = $p['price'];
             $product->price_min = $p['price_min'];
 
-            if ( $product->id === null )
+            if ( $product->id === null ) {
                 $product->create();
+
+                $product->publish_visibility = 'public';
+                $product->publish_date = date( 'Y-m-d H:i:s' );
+            }
             $product->save();
 
             $product_specifications = json_decode( $p['product_specifications'], true );
