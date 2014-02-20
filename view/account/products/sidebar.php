@@ -22,7 +22,6 @@
         <a href="/products/block-products/" title="<?php echo _('Block Products'); ?>" class="sub<?php $template->select('block-products'); ?>"><?php echo _('Block Products'); ?></a>
         <a href="/products/hide-categories/" title="<?php echo _('Hide Categories'); ?>" class="sub<?php $template->select('hide-categories'); ?>"><?php echo _('Hide Categories'); ?></a>
         <a href="/products/auto-price/" title="<?php echo _('Pricing Tools'); ?>" class="sub<?php $template->select('pricing-tools'); ?>"><?php echo _('Pricing Tools'); ?></a>
-        <a href="/products/import/" title="<?php echo _('Import'); ?>" class="sub<?php $template->select('import'); ?>""><?php echo _('Import'); ?></a>
         <a href="/products/export/" title="<?php echo _('Export'); ?>" class="sub"><?php echo _('Export'); ?></a>
     <?php } ?>
 

@@ -423,23 +423,23 @@ class Product extends ActiveRecordBase {
         return $this->get_row_count();
     }
 
-    public function prepare_import( $website_id, array $products ) {
+    public function prepare_import( array $products ) {
 
         // Delete previous non-confirmed imports
-        $this->prepare('DELETE FROM products_import WHERE `website_id` = :website_id', 'i', array( ':website_id' => $website_id ))
+        $this->prepare('DELETE FROM product_import', '', array())
             ->query();
 
         // Prepare import
         foreach ( $products as $product ) {
             $this->prepare(
-                'INSERT INTO products_import(`category_id`, `brand_id`, `industry_id`, `website_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `price_min`, `product_specifications`, `image`)
+                'INSERT INTO product_import(`category_id`, `brand_id`, `industry_id`, `website_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `price_min`, `product_specifications`, `image`)
                  VALUES (:category_id, :brand_id, :industry_id, :website_id, :name, :slug, :description, :status, :sku, :price, :price_min, :product_specifications, :image)'
                 , 'iiiisssssdds'
                 , array(
                     ':category_id' => $product['category_id']
                     ,':brand_id' => $product['brand_id']
                     ,':industry_id' => $product['industry_id']
-                    ,':website_id' => $website_id
+                    ,':website_id' => 0
                     ,':name' => $product['name']
                     ,':slug' => format::slug( $product['name'] )
                     ,':description' => $product['description']
@@ -454,12 +454,12 @@ class Product extends ActiveRecordBase {
         }
     }
 
-    public function confirm_import( $website_id ) {
+    public function confirm_import() {
         $curl = new curl();
         $products = $this->prepare(
-            'SELECT p.*, i.name as industry_name FROM products_import p INNER JOIN industries i ON p.industry_id = i.industry_id WHERE `website_id` = :website_id'
-            , 'i'
-            , array( ':website_id' => $website_id )
+            'SELECT p.*, i.name as industry_name FROM product_import p INNER JOIN industries i ON p.industry_id = i.industry_id'
+            , ''
+            , array()
         )->get_results( PDO::FETCH_ASSOC );
 
         foreach ($products as $p) {
@@ -468,7 +468,7 @@ class Product extends ActiveRecordBase {
             $product->category_id = $p['category_id'];
             $product->brand_id = $p['brand_id'];
             $product->industry_id = $p['industry_id'];
-            $product->website_id = $p['website_id'];
+            $product->website_id = 0;
             $product->name = $p['name'];
             $product->slug = $p['slug'];
             $product->status = $p['status'];
@@ -498,7 +498,7 @@ class Product extends ActiveRecordBase {
         }
 
         // clean up
-        $this->prepare('DELETE FROM products_import WHERE `website_id` = :website_id', 'i', array( ':website_id' => $website_id ))
+        $this->prepare('DELETE FROM product_import', '', array())
             ->query();
     }
 

@@ -638,4 +638,257 @@ ProductsController extends BaseController {
 
         return $ajax_response;
     }
+
+
+    /**
+     * Import
+     *
+     * @return TemplateResponse
+     */
+    protected function import() {
+        $this->resources
+            ->css( 'products/import' )
+            ->javascript( 'fileuploader', 'products/import' );
+
+        $brand = new Brand();
+        $brands = $brand->get_all();
+
+        return $this->get_template_response( 'import' )
+            ->kb( 0 )
+            ->select( 'sub-products', 'import' )
+            ->add_title( _('Import') )
+            ->set( compact( 'brands' ) );
+    }
+
+    /**
+     * Import Products
+     *
+     * @return AjaxResponse
+     */
+    protected function prepare_import() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        // If there is an error, return
+        if ( $response->has_error() )
+            return $response;
+
+        // All imported products are of the following brand
+        $brand_id = (int) $_GET['brand_id'];
+
+        // Get file uploader
+        library('file-uploader');
+
+        // Upload file
+        $uploader = new qqFileUploader( array( 'csv', 'xls' ), 26214400 );
+        $result = $uploader->handleUpload( 'gsrs_' );
+
+        // Setup variables
+        $file_extension = strtolower( f::extension( $_GET['qqfile'] ) );
+
+        // get data regarding file extension
+        switch ( $file_extension ) {
+            case 'xls':
+                // Load excel reader
+                library('Excel_Reader/Excel_Reader');
+                $er = new Excel_Reader();
+                // Set the basics and then read in the rows
+                $er->setOutputEncoding('ASCII');
+                $er->read( $result['file_path'] );
+
+                $rows = $er->sheets[0]['cells'];
+
+                break;
+
+            case 'csv':
+                // Make sure it's opened properly
+                $response->check( $handle = fopen( $result['file_path'], "r"), _('An error occurred while trying to read your file.') );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+
+                // Loop through the rows
+                while( $row = fgetcsv( $handle ) ) {
+                    $rows[] = $row;
+                }
+
+                // Close the file
+                fclose( $handle );
+                break;
+
+            default:
+                // Display an error
+                $response->check( false, _('Only CSV and Excel file types are accepted. File type: ') . $file_extension );
+
+                // If there is an error or now user id, return
+                if ( $response->has_error() )
+                    return $response;
+                break;
+        }
+
+        $response->check( is_array( $rows ), _('There were no emails to import') );
+
+        // If there is an error or now user id, return
+        if ( $response->has_error() )
+            return $response;
+
+        $headers = array_shift( $rows );
+
+        // Industries
+        $industry = new Industry();
+        $industries = $industry->get_all();
+
+        // Categories
+        $category = new Category();
+        $categories = $category->get_all();
+
+        // Our products to import
+        $products = array();
+        // Products that won't be imported
+        $skipped_products = array();
+
+        foreach ( $rows as &$values ) {
+            if ( count($headers) == count($values) )
+                $r = array_combine( $headers, $values );
+            else
+                continue;
+
+            // basic input validation
+            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image', 'price_wholesale', 'price_map', 'status' );
+            $valid = true;
+            foreach ($required_keys as $k) {
+                if ( empty( $r[$k] ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "$k invalid. ";
+                    $valid = false;
+                }
+            }
+
+            $r['price_wholesale'] = (float) $r['price_wholesale'];
+            $r['price_map'] = (float) $r['price_map'];
+            if ( !$r['price_wholesale'] || !$r['price_wholesale'] ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "value of $k invalid. ";
+                $valid = false;
+            }
+
+            $r['status'] = strtolower( $r['status'] );
+            $available_status = array( 'in-stock', 'out-of-stock', 'discontinued' );
+            if ( !in_array( $r['status'], $available_status ) ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong status {$r['status']}. ";
+                $valid = false;
+            }
+
+            $category_id = null;
+            foreach ( $categories as $c ) {
+                if ( strcasecmp($c->name, $r['category']) === 0) {
+                    $category_id = $c->category_id;
+                    break;
+                }
+            }
+            if ( !$category_id ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong category {$r['category']}. ";
+                $valid = false;
+            }
+
+            $industry_id = null;
+            foreach ( $industries as $i ) {
+                if ( strcasecmp($i->name, $r['industry']) === 0) {
+                    $industry_id = $i->industry_id;
+                    break;
+                }
+            }
+            if ( !$industry_id ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong industry {$r['industry']}. ";
+                $valid = false;
+            }
+
+            if ( filter_var( $r['image'], FILTER_VALIDATE_URL ) === FALSE ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong industry {$r['industry']}. ";
+                $valid = false;
+            }
+
+            if ( !$valid ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+                $skipped_products[] = $r;
+                continue;
+            }
+
+            // check if remote file exists
+            $ch = curl_init( $r['image'] );
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_exec($ch);
+            $ret_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ( $ret_code >= 400 ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+                $skipped_products[] = $r;
+                continue;
+            }
+
+            $product = array_slice($r, 0, 9);
+            $product['category_id'] = $category_id;
+            $product['industry_id'] = $industry_id;
+            $product['brand_id'] = $brand_id;
+            $product['product_specifications'] = array();
+
+            // Set product specifications
+            $product_specifications = array_slice($r, 9);
+            foreach ( $product_specifications as $spec_name => $spec_value ) {
+                $product['
+                product_specifications'][] = array( $spec_name, $spec_value );
+            }
+
+            // Append product
+            $products[] = $product;
+        }
+
+        $product = new Product();
+        $product->prepare_import($products );
+
+        // Add operation overview report
+        $html =  '<tr><td>Total rows read:</td><td>' . count($rows) . '</td></tr>';
+        $html .= '<tr><td>Errors found:</td><td>' . count($skipped_products) . '</td></tr>';
+        $html .= '<tr><td>Total products to insert/update:</td><td>' . count($products) . '</td></tr>';
+        jQuery('#tUploadOverview')->append( $html );
+
+        // Add skipped rows report
+        if ( !empty( $skipped_products ) ) {
+            $html = '';
+            foreach ( $skipped_products as $p ) {
+                $p['image'] = "<a href=\"{$p['image']}\">Image</a>";
+                $html .= '<tr><td>' . implode('</td><td>', $p) . '</td></tr>';
+            }
+            jQuery('#tSkippedProducts')->append( $html );
+            jQuery('#dSkippedProducts')->show();
+        }
+
+        // Hide the main view
+        jQuery('#dDefault')->hide();
+
+        if ( empty( $products ) ) {
+            jQuery('[type=submit]')->hide();
+        }
+
+        // Show the next table
+        jQuery('#dConfirm')->show();
+
+        // Add the response
+        $response->add_response( 'jquery', jQuery::getResponse() );
+
+        return $response;
+    }
+
+    protected function confirm_import() {
+        if ( !$this->verified() ) {
+            return new RedirectResponse( '/products/' );
+        }
+
+        $product = new Product();
+        $product->confirm_import();
+
+        $this->notify( _( 'Your products has been imported successfully!' ) );
+        return new RedirectResponse( '/products/import/' );
+    }
+
 }
