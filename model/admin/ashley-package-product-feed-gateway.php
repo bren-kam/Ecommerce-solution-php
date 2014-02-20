@@ -398,11 +398,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 $category_id = $this->categories[(string)$package_series->Grouping];
             }
 
-            $category_counts[$category_id] = ( isset( $category_counts[$category_id] ) ) ? $category_counts[$category_id] + 1 : 1;
-            $category_descriptions[(string)$template->Descr] = ( isset( $category_counts[(string)$template->Descr] ) ) ? $category_counts[(string)$template->Descr] + 1 : 1;
-            $category_grouping[(string)$package_series->Grouping] = ( isset( $category_counts[(string)$package_series->Grouping] ) ) ? (string)$package_series->Grouping[$category_id] + 1 : 1;
-            continue;
-
             // If we have to group products
             switch ( $category_id ) {
                 // Sectionals
@@ -549,10 +544,6 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
 		}
-
-        fn::info ( $category_counts );
-        fn::info ( $category_descriptions );
-        fn::info ( $category_grouping );
     }
 
     /**
