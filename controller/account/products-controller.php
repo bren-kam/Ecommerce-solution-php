@@ -2081,7 +2081,7 @@ class ProductsController extends BaseController {
                 }
             }
             if ( !$category_id ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong category {$r['category']}. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong category {$r['category']}. ";
                 $valid = false;
             }
 
@@ -2093,11 +2093,17 @@ class ProductsController extends BaseController {
                 }
             }
             if ( !$industry_id ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong industry {$r['industry']}. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong industry {$r['industry']}. ";
+                $valid = false;
+            }
+
+            if ( filter_var( $r['image'], FILTER_VALIDATE_URL ) === FALSE ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong industry {$r['industry']}. ";
                 $valid = false;
             }
 
             if ( !$valid ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
                 $skipped_products[] = $r;
                 continue;
             }
@@ -2110,7 +2116,7 @@ class ProductsController extends BaseController {
             curl_close($ch);
 
             if ( $ret_code >= 400 ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "image {$r['image']} not found. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
                 $skipped_products[] = $r;
                 continue;
             }
@@ -2123,7 +2129,8 @@ class ProductsController extends BaseController {
             // Set product specifications
             $product_specifications = array_slice($r, 9);
             foreach ( $product_specifications as $spec_name => $spec_value ) {
-                $product['product_specifications'][] = array( $spec_name, $spec_value );
+                $product['
+                product_specifications'][] = array( $spec_name, $spec_value );
             }
 
             // Append product
@@ -2159,8 +2166,10 @@ class ProductsController extends BaseController {
         // Hide the main view
         jQuery('#dDefault')->hide();
 
-        // Show the next table
-        jQuery('#dConfirm')->show();
+        if ( count( $products ) > 0 ) {
+            // Show the next table
+            jQuery('#dConfirm')->show();
+        }
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
