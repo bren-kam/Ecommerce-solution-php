@@ -2166,10 +2166,12 @@ class ProductsController extends BaseController {
         // Hide the main view
         jQuery('#dDefault')->hide();
 
-        if ( count( $products ) > 0 ) {
-            // Show the next table
-            jQuery('#dConfirm')->show();
+        if ( empty( $products ) ) {
+            jQuery("[type=submit]").hide();
         }
+
+        // Show the next table
+        jQuery('#dConfirm')->show();
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
