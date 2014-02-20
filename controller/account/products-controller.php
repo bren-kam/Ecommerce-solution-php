@@ -2054,18 +2054,24 @@ class ProductsController extends BaseController {
             $valid = true;
             foreach ($required_keys as $k) {
                 if ( empty( $r[$k] ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "$k invalid. ";
                     $valid = false;
                 }
             }
 
             $r['price_wholesale'] = (float) $r['price_wholesale'];
             $r['price_map'] = (float) $r['price_map'];
-            if ( !$r['price_wholesale'] || !$r['price_wholesale'] )
+            if ( !$r['price_wholesale'] || !$r['price_wholesale'] ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "value of $k invalid. ";
                 $valid = false;
+            }
 
+            $r['status'] = strtolower( $r['status'] );
             $available_status = array( 'in-stock', 'out-of-stock', 'discontinued' );
-            if ( !in_array( $r['status'], $available_status ) )
+            if ( !in_array( $r['status'], $available_status ) ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong status {$r['status']}. ";
                 $valid = false;
+            }
 
             $category_id = null;
             foreach ( $categories as $c ) {
@@ -2074,8 +2080,10 @@ class ProductsController extends BaseController {
                     break;
                 }
             }
-            if ( !$category_id )
+            if ( !$category_id ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong category {$r['category']}. ";
                 $valid = false;
+            }
 
             $industry_id = null;
             foreach ( $industries as $i ) {
@@ -2084,8 +2092,10 @@ class ProductsController extends BaseController {
                     break;
                 }
             }
-            if ( !$industry_id )
+            if ( !$industry_id ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong industry {$r['industry']}. ";
                 $valid = false;
+            }
 
             if ( !$valid ) {
                 $skipped_products[] = $r;
@@ -2099,7 +2109,8 @@ class ProductsController extends BaseController {
             $ret_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            if ( $ret_code != 200 ) {
+            if ( $ret_code >= 400 ) {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "image {$r['image']} not found. ";
                 $skipped_products[] = $r;
                 continue;
             }
@@ -2131,7 +2142,7 @@ class ProductsController extends BaseController {
         // Add operation overview report
         $html =  '<tr><td>Total rows read:</td><td>' . count($rows) . '</td></tr>';
         $html .= '<tr><td>Errors found:</td><td>' . count($skipped_products) . '</td></tr>';
-        $html .= '<tr><td>Duplicated products (will be updated):</td><td>' . $duplicated_skus . '</td></tr>';
+        //$html .= '<tr><td>Duplicated products (will be updated):</td><td>' . $duplicated_skus . '</td></tr>';
         $html .= '<tr><td>Total products to insert/update</td><td>' . count($products) . '</td></tr>';
         jQuery('#tUploadOverview')->append( $html );
 
