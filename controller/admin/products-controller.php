@@ -749,13 +749,16 @@ ProductsController extends BaseController {
         $skipped_products = array();
 
         foreach ( $rows as &$values ) {
-            if ( count($headers) == count($values) )
+            if ( count($headers) == count($values) ) {
                 $r = array_combine( $headers, $values );
-            else
+            } else {
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Incomplete row. ";
+                $skipped_products[] = $r;
                 continue;
+            }
 
             // basic input validation
-            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image', 'status' );
+            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image' );
             $valid = true;
             foreach ($required_keys as $k) {
                 if ( empty( $r[$k] ) ) {
@@ -765,13 +768,14 @@ ProductsController extends BaseController {
             }
 
             $r['price_wholesale'] = (float) $r['price_wholesale'];
-            $r['price_map'] = (float) $r['price_map'];
-            if ( !$r['price_wholesale'] || !$r['price_wholesale'] ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Required field '$k'. ";
+            if ( !$r['price_wholesale'] )  {
+                $r['reason'] = "Required field 'price_wholesale'. ";
                 $valid = false;
             }
 
             $r['status'] = strtolower( $r['status'] );
+            if ( empty( $r['status'] ) )
+                $r['status'] = 'in-stock';
             $available_status = array( 'in-stock', 'out-of-stock', 'discontinued' );
             if ( !in_array( $r['status'], $available_status ) ) {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Invalid status '{$r['status']}'. ";
@@ -827,6 +831,8 @@ ProductsController extends BaseController {
             }
 
             $product = array_slice($r, 0, 9);
+            $product['price_map'] = (float)$r['price_map'];
+            $product['price_map'] = $r['price_map'] ? $r['price_map'] : 0;
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
