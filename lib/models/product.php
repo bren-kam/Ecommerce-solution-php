@@ -471,6 +471,7 @@ class Product extends ActiveRecordBase {
             $product->website_id = $p['website_id'];
             $product->name = $p['name'];
             $product->slug = $p['slug'];
+            $product->status = $p['status'];
             $product->description = $p['description'];
             $product->sku = $p['sku'];
             $product->price = $p['price'];
