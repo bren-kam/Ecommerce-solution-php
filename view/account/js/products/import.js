@@ -8,6 +8,7 @@ jQuery(function(){
         , onSubmit: function( id, fileName ) {
             uploader.setParams({
                 _nonce : $('#_prepare_import').val()
+                , brand_id: $('#brand').val()
             })
         }
         , onComplete: function( id, fileName, responseJSON ) {

@@ -1,4 +1,5 @@
-.generic { width: auto !important }
-.generic th, .generic td { border: 1px solid #BCBCBC; border-bottom: 0 !important;  padding: 3px 5px }
-.generic th { font-weight: bold }
-.generic tr.last td { border-bottom: 1px solid #BCBCBC !important }
+.overview-report { width: auto !important }
+.overview-report td:nth-child(1) { font-weight: bold; }
+.overview-report td, .error-table td { border: 1px solid #BCBCBC; padding: 3px 5px }
+.error-table td:last-child { color: #F00; }
+

@@ -6,6 +6,7 @@
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
+ * @var Brand[] $brands
  */
 
 echo $template->start( _('Import products') );
@@ -13,13 +14,15 @@ echo $template->start( _('Import products') );
 
     <div id="dConfirm" class="hidden">
         <p><?php echo _('Please verify the following information is correct and confirm:'); ?></p>
-        <table cellpadding="0" cellspacing="1" id="tUploadOverview" class="generic">
+        <br />
+        <table id="tUploadOverview" class="overview-report">
         </table>
 
         <br />
         <div id="dSkippedProducts" class="hidden">
-            <p>The following products WILL NOT BE IMPORTED due to validation errors:</p>
-            <table cellpadding="0" cellspacing="1" id="tSkippedProducts" class="generic">
+            <p>The following products <span class="error">WILL NOT BE IMPORTED</span> due to validation errors:</p>
+            <br/ >
+            <table id="tSkippedProducts" class="error-table">
             </table>
         </div>
 
@@ -32,8 +35,18 @@ echo $template->start( _('Import products') );
 
     <div id="dDefault">
         <p><?php echo _('On this page you can import a list of products.'); ?></p>
+        <br/ >
 
-        <a href="#" id="aImportProducts" class="button" title="<?php echo _('Import'); ?>"><?php echo _('Import'); ?></a>
+        <label for="brand">Brand:</label>
+        <select id="brand">
+            <?php foreach ( $brands as $brand ): ?>
+                <option value="<?php echo $brand->brand_id ?>"><?php echo $brand->name ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <br /><br />
+
+        <a href="#" id="aImportProducts" class="button" title="<?php echo _('Import'); ?>"><?php echo _('Select file...'); ?></a>
         <div class="hidden" id="import-products"></div>
         <?php nonce::field( 'prepare_import', '_prepare_import' ); ?>
         <br /><br />

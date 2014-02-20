@@ -437,7 +437,7 @@ class Product extends ActiveRecordBase {
                 , 'iiiisssssdds'
                 , array(
                     ':category_id' => $product['category_id']
-                    ,':brand_id' => null
+                    ,':brand_id' => $product['brand_id']
                     ,':industry_id' => $product['industry_id']
                     ,':website_id' => $website_id
                     ,':name' => $product['name']
@@ -466,7 +466,7 @@ class Product extends ActiveRecordBase {
             $product = new Product();
             $product->get_by_sku( $p['sku'] );
             $product->category_id = $p['category_id'];
-            //$product->brand_id = $p['brand_id'];
+            $product->brand_id = $p['brand_id'];
             $product->industry_id = $p['industry_id'];
             $product->website_id = $p['website_id'];
             $product->name = $p['name'];

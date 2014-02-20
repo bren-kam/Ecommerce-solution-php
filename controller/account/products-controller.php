@@ -1952,10 +1952,14 @@ class ProductsController extends BaseController {
             ->css( 'products/import' )
             ->javascript( 'fileuploader', 'products/import' );
 
+        $brand = new Brand();
+        $brands = $brand->get_all();
+
         return $this->get_template_response( 'import' )
             ->kb( 0 )
             ->select( 'sub-products', 'import' )
-            ->add_title( _('Import') );
+            ->add_title( _('Import') )
+            ->set( compact( 'brands' ) );
     }
 
     /**
@@ -1970,6 +1974,9 @@ class ProductsController extends BaseController {
         // If there is an error, return
         if ( $response->has_error() )
             return $response;
+
+        // All imported products are of the following brand
+        $brand_id = (int) $_GET['brand_id'];
 
         // Get file uploader
         library('file-uploader');
@@ -2124,6 +2131,7 @@ class ProductsController extends BaseController {
             $product = array_slice($r, 0, 9);
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
+            $product['brand_id'] = $brand_id;
             $product['product_specifications'] = array();
 
             // Set product specifications
@@ -2137,26 +2145,20 @@ class ProductsController extends BaseController {
             $products[] = $product;
         }
 
-        $skus = array();
-        foreach ( $products as $p )
-            $skus[] = $p['sku'];
-
         $product = new Product();
         $product->prepare_import( $this->user->account->id, $products );
-
-        $duplicated_skus = $product->count_all( array( "AND sku IN ('" . implode("','", $skus) . "')", array() ) );
 
         // Add operation overview report
         $html =  '<tr><td>Total rows read:</td><td>' . count($rows) . '</td></tr>';
         $html .= '<tr><td>Errors found:</td><td>' . count($skipped_products) . '</td></tr>';
-        //$html .= '<tr><td>Duplicated products (will be updated):</td><td>' . $duplicated_skus . '</td></tr>';
-        $html .= '<tr><td>Total products to insert/update</td><td>' . count($products) . '</td></tr>';
+        $html .= '<tr><td>Total products to insert/update:</td><td>' . count($products) . '</td></tr>';
         jQuery('#tUploadOverview')->append( $html );
 
         // Add skipped rows report
         if ( !empty( $skipped_products ) ) {
             $html = '';
             foreach ( $skipped_products as $p ) {
+                $p['image'] = "<a href=\"{$p['image']}\">Image</a>";
                 $html .= '<tr><td>' . implode('</td><td>', $p) . '</td></tr>';
             }
             jQuery('#tSkippedProducts')->append( $html );
