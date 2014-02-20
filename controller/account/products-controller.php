@@ -2167,7 +2167,7 @@ class ProductsController extends BaseController {
         jQuery('#dDefault')->hide();
 
         if ( empty( $products ) ) {
-            jQuery("[type=submit]").hide();
+            jQuery('[type=submit]')->hide();
         }
 
         // Show the next table
