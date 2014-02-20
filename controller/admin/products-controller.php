@@ -755,11 +755,11 @@ ProductsController extends BaseController {
                 continue;
 
             // basic input validation
-            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image', 'price_wholesale', 'price_map', 'status' );
+            $required_keys = array( 'sku', 'name', 'description', 'industry', 'category', 'image', 'status' );
             $valid = true;
             foreach ($required_keys as $k) {
                 if ( empty( $r[$k] ) ) {
-                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "$k invalid. ";
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Required field '$k'. ";
                     $valid = false;
                 }
             }
@@ -767,14 +767,14 @@ ProductsController extends BaseController {
             $r['price_wholesale'] = (float) $r['price_wholesale'];
             $r['price_map'] = (float) $r['price_map'];
             if ( !$r['price_wholesale'] || !$r['price_wholesale'] ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "value of $k invalid. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Required field '$k'. ";
                 $valid = false;
             }
 
             $r['status'] = strtolower( $r['status'] );
             $available_status = array( 'in-stock', 'out-of-stock', 'discontinued' );
             if ( !in_array( $r['status'], $available_status ) ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "wrong status {$r['status']}. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Invalid status '{$r['status']}'. ";
                 $valid = false;
             }
 
@@ -786,7 +786,7 @@ ProductsController extends BaseController {
                 }
             }
             if ( !$category_id ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong category {$r['category']}. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Category not found '{$r['category']}'. ";
                 $valid = false;
             }
 
@@ -797,18 +797,18 @@ ProductsController extends BaseController {
                     break;
                 }
             }
+
             if ( !$industry_id ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong industry {$r['industry']}. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Industry not found '{$r['industry']}'. ";
                 $valid = false;
             }
 
             if ( filter_var( $r['image'], FILTER_VALIDATE_URL ) === FALSE ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Wrong industry {$r['industry']}. ";
+                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
                 $valid = false;
             }
 
             if ( !$valid ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
                 $skipped_products[] = $r;
                 continue;
             }
