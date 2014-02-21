@@ -448,8 +448,9 @@ class ProductsController extends BaseController {
                 }
             }
 
-            // Adjust minimum prices
-            $account_product->adjust_to_minimum_price( $this->user->account->id );
+            // Adjust minimum prices if they haven't disabled it
+            if ( '1' != $this->user->account->get_settings('disable-map-pricing') )
+                $account_product->adjust_to_minimum_price( $this->user->account->id );
 
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
@@ -1104,13 +1105,16 @@ class ProductsController extends BaseController {
         // Update product
         $account_product->save();
 
-        // See if he had set prices too lower
-        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+        // If they haven't disabled it
+        if ( '1' != $this->user->account->get_settings('disable-map-pricing') ) {
+            // See if he had set prices too lower
+            $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
 
-        // Give a notification
-        if ( $adjusted_products ) {
-            $response->notify( 'Your price was too low and has been adjusted to the MAP price of $' . number_format( $account_product->price_min, 2 ), false );
-            $account_product->get( $account_product->product_id, $account_product->website_id );
+            // Give a notification
+            if ( $adjusted_products ) {
+                $response->notify( 'Your price was too low and has been adjusted to the MAP price of $' . number_format( $account_product->price_min, 2 ), false );
+                $account_product->get( $account_product->product_id, $account_product->website_id );
+            }
         }
 
         /***** UPDATE COUPONS *****/
@@ -1492,12 +1496,15 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->set_product_prices( $this->user->account->id, $_POST['v'] );
 
-        // See if he had set prices too lower
-        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+        // Make sure they haven't disabled it
+        if ( '1' != $this->user->account->get_settings('disable-map-pricing') ) {
+            // See if he had set prices too lower
+            $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
 
-        // Give a notification
-        if ( $adjusted_products )
-            $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+            // Give a notification
+            if ( $adjusted_products )
+                $response->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+        }
 
         jQuery('span.success')->show()->delay(5000)->hide();
 
@@ -1801,12 +1808,17 @@ class ProductsController extends BaseController {
         $account_product = new AccountProduct();
         $account_product->multiply_product_prices_by_sku( $this->user->account->id, $prices, $_GET['price'], $_GET['sale_price'], $_GET['alternate_price'] );
 
-        // See if he had set prices too lower
-        $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
+        // Make sure they haven't disabled it
+        if ( '1' != $this->user->account->get_settings('disable-map-pricing') ) {
+            // See if he had set prices too lower
+            $adjusted_products = $account_product->adjust_to_minimum_price( $this->user->account->id );
 
-        // Give a notification
-        if ( $adjusted_products ) {
-            $this->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+            // Give a notification
+            if ( $adjusted_products ) {
+                $this->notify( 'Your price on ' . $adjusted_products . ' of your product(s) was too low and has been adjusted to the MAP price of that product.', false );
+            } else {
+                $this->notify( _('Your prices have been successfully updated!') );
+            }
         } else {
             $this->notify( _('Your prices have been successfully updated!') );
         }
