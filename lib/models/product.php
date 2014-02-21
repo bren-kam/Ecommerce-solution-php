@@ -422,4 +422,127 @@ class Product extends ActiveRecordBase {
 
         return $this->get_row_count();
     }
+
+    public function prepare_import( array $products ) {
+
+        // Delete previous non-confirmed imports
+        $this->prepare('DELETE FROM product_import', '', array())
+            ->query();
+
+        // Prepare import
+        foreach ( $products as $product ) {
+            $this->prepare(
+                'INSERT INTO product_import(`category_id`, `brand_id`, `industry_id`, `website_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `price_min`, `product_specifications`, `image`)
+                 VALUES (:category_id, :brand_id, :industry_id, :website_id, :name, :slug, :description, :status, :sku, :price, :price_min, :product_specifications, :image)'
+                , 'iiiisssssdds'
+                , array(
+                    ':category_id' => $product['category_id']
+                    ,':brand_id' => $product['brand_id']
+                    ,':industry_id' => $product['industry_id']
+                    ,':website_id' => 0
+                    ,':name' => $product['name']
+                    ,':slug' => format::slug( $product['name'] )
+                    ,':description' => $product['description']
+                    ,':status' => $product['status']
+                    ,':sku' => $product['sku']
+                    ,':price' => $product['price_map']
+                    ,':price_min' => $product['price_wholesale']
+                    ,':product_specifications' => json_encode( $product['product_specifications'] )
+                    ,':image' => $product['image']
+                )
+            )->query();
+        }
+    }
+
+    public function confirm_import() {
+        $curl = new curl();
+        $products = $this->prepare(
+            'SELECT p.*, i.name as industry_name FROM product_import p INNER JOIN industries i ON p.industry_id = i.industry_id'
+            , ''
+            , array()
+        )->get_results( PDO::FETCH_ASSOC );
+
+        foreach ($products as $p) {
+            $product = new Product();
+            $product->get_by_sku( $p['sku'] );
+            $product->category_id = $p['category_id'];
+            $product->brand_id = $p['brand_id'];
+            $product->industry_id = $p['industry_id'];
+            $product->website_id = 0;
+            $product->name = $p['name'];
+            $product->slug = $p['slug'];
+            $product->status = $p['status'];
+            $product->description = $p['description'];
+            $product->sku = $p['sku'];
+            $product->price = $p['price'];
+            $product->price_min = $p['price_min'];
+
+            if ( $product->id === null ) {
+                $product->create();
+
+                $product->publish_visibility = 'public';
+                $product->publish_date = date( 'Y-m-d H:i:s' );
+            }
+            $product->save();
+
+            $product_specifications = json_decode( $p['product_specifications'], true );
+            $product->delete_specifications(); // should I ?
+            if ( $product_specifications )
+                $product->add_specifications($product_specifications);
+
+            $slug = f::strip_extension( f::name( $p['image'] ) );
+            $industry = format::slug( $p['industry_name'] );
+
+            $image_name = $product->upload_image( $p['image'], $slug, $industry );
+            $product->add_images( array( $image_name ) );
+        }
+
+        // clean up
+        $this->prepare('DELETE FROM product_import', '', array())
+            ->query();
+    }
+
+    /**
+     * Upload image
+     *
+     * @throws InvalidParametersException
+     *
+     * @param string $image_url
+     * @param string $slug
+     * @param string $industry
+     * @return string
+     */
+    protected function upload_image( $image_url, $slug, $industry ) {
+        $curl = new curl;
+        $file = new File;
+
+        if ( is_null( $industry ) )
+            throw new InvalidParametersException( _('Industry must not be null') );
+
+        $new_image_name = $slug;
+        $image_extension = strtolower( f::extension( $image_url ) );
+        $full_image_name = "{$new_image_name}.{$image_extension}";
+        $image_path = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $full_image_name;
+        //$image_path = '/tmp/' . $full_image_name;
+
+        // If it already exists, no reason to go on
+        if( is_file( $image_path ) && curl::check_file( "http://{$industry}.retailcatalog.us/products/{$this->id}/thumbnail/{$full_image_name}" ) )
+            return $full_image_name;
+
+        // Download the file
+        $copied = @copy( $image_url, $image_path );
+
+        if ( !$copied )
+            return new ErrorException( _("Could not copy    '$image_url' to '$image_path'") );
+
+        $file->upload_image( $image_path, $new_image_name, 350, 350, $industry, "products/{$this->id}/", false, true );
+        $file->upload_image( $image_path, $new_image_name, 64, 64, $industry, "products/{$this->id}/thumbnail/", false, true );
+        $file->upload_image( $image_path, $new_image_name, 200, 200, $industry, "products/{$this->id}/small/", false, true );
+        $full_image_name = $file->upload_image( $image_path, $new_image_name, 1000, 1000, $industry, "products/{$this->id}/large/" );
+
+        @unlink( $image_path );
+
+        return $full_image_name;
+    }
+
 }
