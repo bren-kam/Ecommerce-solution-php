@@ -152,6 +152,8 @@ class File {
     }
 
     /**
+     * Search Files
+     *
      * Search for files in S3
      *
      * @param null $pattern
