@@ -10,6 +10,7 @@
         <?php if ( isset( $products ) && true === $products ) { ?>
             <a href="/products/" title="<?php echo _('View Products'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
             <a href="/products/add-edit/" title="<?php echo _('Add Product'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
+            <a href="/products/import/" title="<?php echo _('Import'); ?>" class="sub<?php $template->select('import'); ?>""><?php echo _('Import'); ?></a>
         <?php } ?>
 
         <a href="/products/categories/" title="<?php echo _('Categories'); ?>" class="top<?php $template->select('categories'); ?>"><?php echo _('Categories'); ?></a>

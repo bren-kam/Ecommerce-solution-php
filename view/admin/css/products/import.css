@@ -1,0 +1,5 @@
+.overview-report { width: auto !important }
+.overview-report td:nth-child(1) { font-weight: bold; }
+.overview-report td, .error-table td { border: 1px solid #BCBCBC; padding: 3px 5px }
+.error-table td:last-child { color: #F00; }
+
