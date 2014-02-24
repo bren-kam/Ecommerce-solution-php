@@ -801,7 +801,7 @@ ProductsController extends BaseController {
                 $valid = false;
             }
 
-            if ( filter_var( $r['image'], FILTER_VALIDATE_URL ) === FALSE ) {
+            if ( !regexp::match( $r['image'], 'url' ) ) {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
                 $valid = false;
             }
@@ -812,13 +812,8 @@ ProductsController extends BaseController {
             }
 
             // check if remote file exists
-            $ch = curl_init( $r['image'] );
-            curl_setopt($ch, CURLOPT_NOBODY, true);
-            curl_exec($ch);
-            $ret_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            if ( $ret_code >= 400 ) {
+            $file_exists = curl::check_file( $r['image'] );
+            if ( !$file_exists ) {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
                 $skipped_products[] = $r;
                 continue;
@@ -881,6 +876,11 @@ ProductsController extends BaseController {
         return $response;
     }
 
+    /**
+     * Confirm Import
+     *
+     * @return RedirectResponse
+     */
     protected function confirm_import() {
         if ( !$this->verified() ) {
             return new RedirectResponse( '/products/' );

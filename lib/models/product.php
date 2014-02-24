@@ -455,7 +455,6 @@ class Product extends ActiveRecordBase {
     }
 
     public function confirm_import() {
-        $curl = new curl();
         $products = $this->prepare(
             'SELECT p.*, i.name as industry_name FROM product_import p INNER JOIN industries i ON p.industry_id = i.industry_id'
             , ''
