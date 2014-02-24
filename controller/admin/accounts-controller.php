@@ -481,6 +481,7 @@ class AccountsController extends BaseController {
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
+            , 'disable-map-pricing'
         );
 
         $test_ashley_feed_url = url::add_query_arg( 'aid', $account->id, '/accounts/test-ashley-feed/' );
@@ -506,6 +507,7 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
+        $ft->add_field( 'checkbox', _('Disable Map Pricing'), 'cbDisableMapPricing', $settings['disable-map-pricing'] );
 
         if ( $ft->posted() ) {
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
@@ -532,6 +534,7 @@ class AccountsController extends BaseController {
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
+                , 'disable-map-pricing' => (int) isset( $_POST['cbDisableMapPricing'] ) && $_POST['cbDisableMapPricing']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );

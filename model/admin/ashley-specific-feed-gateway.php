@@ -285,8 +285,10 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
             $account_product->auto_price( $category_ids, $auto_price->brand_id, $auto_price->price, $auto_price->sale_price, $auto_price->alternate_price, $auto_price->ending, $account->id );
         }
 
-        // Make sure they didn't go below a minimum price
-        $account_product->adjust_to_minimum_price( $account->id );
+        // If they haven't disabled it
+        if ( '1' != $account->get_settings('disable-map-pricing') )
+            // Make sure they didn't go below a minimum price
+            $account_product->adjust_to_minimum_price( $account->id );
 	}
 	
 	/**

@@ -352,6 +352,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Let's hope it's big!
 			$image = $item['image'];
 
+            $image_urls = array();
             $image_urls[] = 'https://www.ashleydirect.com/graphics/ad_images/' . str_replace( '_BIG', '', $image );
             $image_urls[] = 'https://www.ashleydirect.com/graphics/Presentation_Images/' . str_replace( '_BIG', '', $image );
             $image_urls[] = 'https://www.ashleydirect.com/graphics/' . $image;
@@ -384,7 +385,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Change publish visibility to private if there are no images
             if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
                 $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'private';
+                $product->publish_visibility = 'public';
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
