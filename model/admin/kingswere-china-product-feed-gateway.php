@@ -5,12 +5,12 @@
  * @package Grey Suit Retail
  * @since 1.0
  */
-class KingswereProductFeedGateway extends ProductFeedGateway {
+class KingswereChinaProductFeedGateway extends ProductFeedGateway {
     const FTP_URL = 'ftp.ashleyfurniture.com';
 	const USERNAME = 'CE_3400-';
 	const PASSWORD = 'gRwfUn#';
-    const USER_ID = 2706; // Kingswere - US
-    const BRAND_ID = 825; // Kingswere
+    const USER_ID = 2711; // Kingswere - US
+    const BRAND_ID = 840; // Kingswere
 
     /**
      * Hold items and groups
@@ -67,7 +67,7 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
      * Get Data from Ashley
      */
     protected function get_data() {
-        $file = '888-3800-0-20140129152749-EN-US.xml';
+        $file = '888-3800-0-20140129152948-ZH-CN.xml';
         $xml_reader = new XMLReader();
 		$xml_reader->open( '/gsr/systems/backend-testing/' . $file );
 		$j = -1;
