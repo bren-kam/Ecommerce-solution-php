@@ -2004,4 +2004,35 @@ class WebsiteController extends BaseController {
 
         return $response;
     }
+    
+    /**
+     * Header
+     * 
+     * @return TemplateResponse
+     */
+    public function header() {
+        
+        if ( $this->verified() ) {
+            $header = htmlentities( $_POST['header'] );
+            $this->user->account->set_settings( array( 'header' => $header ) );
+            $this->notify('Your Header settings have been saved!');
+        }
+
+        $header = $this->user->account->get_settings('header');
+        $header = html_entity_decode($header);
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $this->resources
+                ->javascript('fileuploader', 'gsr-media-manager');
+
+        return $this->get_template_response('header')
+            ->kb( 0 )
+            ->select( 'settings', 'header-html' )
+            ->add_title( _('Header') )
+            ->set( compact( 'header', 'files' ) );
+        
+    }
+    
 }
