@@ -11,7 +11,7 @@
  * @var array $navigation
  */
 
-echo $template->start( _('Menu Bar Navigation') );
+echo $template->start( _('Navigation Menu') );
 ?>
 
 <a href="#dAddEditNavigation" title="<?php echo _('Add Menu Item'); ?>" rel="dialog"><?php echo _('Add Menu Item'); ?></a>
