@@ -742,6 +742,21 @@ ProductsController extends BaseController {
         // Categories
         $category = new Category();
         $categories = $category->get_all();
+        $categories_by_name = array();
+        foreach ( $categories as $category ) {
+            if ( $category->has_children() )
+                continue;
+
+            $category_string = $category->name;
+            $parents = $category->get_all_parents( $category->id );
+
+            foreach ( $parents as $parent_category ) {
+                $category_string = $parent_category->name . ' > ' . $category_string;
+            }
+
+            $categories_by_name[$category_string] = $category->id;
+        }
+        ksort( $categories_by_name );
 
         // Our products to import
         $products = array();
@@ -777,12 +792,10 @@ ProductsController extends BaseController {
             }
 
             $category_id = null;
-            foreach ( $categories as $c ) {
-                if ( strcasecmp($c->name, $r['category']) === 0) {
-                    $category_id = $c->category_id;
-                    break;
-                }
+            if ( isset( $categories_by_name[$r['category']] ) ) {
+                $category_id = $categories_by_name[$r['category']];
             }
+
             if ( !$category_id ) {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Category not found '{$r['category']}'. ";
                 $valid = false;
