@@ -697,7 +697,7 @@ ProductsController extends BaseController {
                 $er->read( $result['file_path'] );
 
                 $rows = $er->sheets[0]['cells'];
-
+                
                 break;
 
             case 'csv':
@@ -732,6 +732,10 @@ ProductsController extends BaseController {
         // If there is an error or now user id, return
         if ( $response->has_error() )
             return $response;
+
+        foreach ($rows as &$r)
+            foreach ($r as &$c)
+                $c = trim($c);
 
         $headers = array_shift( $rows );
 
@@ -852,7 +856,7 @@ ProductsController extends BaseController {
             // Append product
             $products[] = $product;
         }
-
+        
         $product = new Product();
         $product->prepare_import($products );
 
