@@ -697,7 +697,7 @@ ProductsController extends BaseController {
                 $er->read( $result['file_path'] );
 
                 $rows = $er->sheets[0]['cells'];
-
+                
                 break;
 
             case 'csv':
@@ -733,6 +733,10 @@ ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
+        foreach ($rows as &$r)
+            foreach ($r as &$c)
+                $c = trim($c);
+
         $headers = array_shift( $rows );
 
         // Industries
@@ -742,6 +746,21 @@ ProductsController extends BaseController {
         // Categories
         $category = new Category();
         $categories = $category->get_all();
+        $categories_by_name = array();
+        foreach ( $categories as $category ) {
+            if ( $category->has_children() )
+                continue;
+
+            $category_string = $category->name;
+            $parents = $category->get_all_parents( $category->id );
+
+            foreach ( $parents as $parent_category ) {
+                $category_string = $parent_category->name . ' > ' . $category_string;
+            }
+
+            $categories_by_name[$category_string] = $category->id;
+        }
+        ksort( $categories_by_name );
 
         // Our products to import
         $products = array();
@@ -777,12 +796,10 @@ ProductsController extends BaseController {
             }
 
             $category_id = null;
-            foreach ( $categories as $c ) {
-                if ( strcasecmp($c->name, $r['category']) === 0) {
-                    $category_id = $c->category_id;
-                    break;
-                }
+            if ( isset( $categories_by_name[$r['category']] ) ) {
+                $category_id = $categories_by_name[$r['category']];
             }
+
             if ( !$category_id ) {
                 $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Category not found '{$r['category']}'. ";
                 $valid = false;
@@ -839,7 +856,7 @@ ProductsController extends BaseController {
             // Append product
             $products[] = $product;
         }
-
+        
         $product = new Product();
         $product->prepare_import($products );
 
@@ -882,12 +899,15 @@ ProductsController extends BaseController {
      * @return RedirectResponse
      */
     protected function confirm_import() {
+        set_time_limit( 30 * 60 );
+        ini_set( 'memory_limit', '512M' );
+        
         if ( !$this->verified() ) {
             return new RedirectResponse( '/products/' );
         }
 
         $product = new Product();
-        $product->confirm_import();
+        $product->confirm_import( $this->user->user_id );
 
         $this->notify( _( 'Your products has been imported successfully!' ) );
         return new RedirectResponse( '/products/import/' );

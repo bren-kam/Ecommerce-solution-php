@@ -454,7 +454,7 @@ class Product extends ActiveRecordBase {
         }
     }
 
-    public function confirm_import() {
+    public function confirm_import( $user_id ) {
         $products = $this->prepare(
             'SELECT p.*, i.name as industry_name FROM product_import p INNER JOIN industries i ON p.industry_id = i.industry_id'
             , ''
@@ -475,12 +475,14 @@ class Product extends ActiveRecordBase {
             $product->sku = $p['sku'];
             $product->price = $p['price'];
             $product->price_min = $p['price_min'];
+            $product->user_id_modified = $user_id;
 
             if ( $product->id === null ) {
                 $product->create();
 
                 $product->publish_visibility = 'public';
                 $product->publish_date = date( 'Y-m-d H:i:s' );
+                $product->user_id_created = $user_id;
             }
             $product->save();
 

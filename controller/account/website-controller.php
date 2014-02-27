@@ -603,7 +603,7 @@ class WebsiteController extends BaseController {
             ->javascript( 'website/footer-navigation' );
 
         return $this->get_template_response( 'footer-navigation' )
-            ->kb( 0 )
+            ->kb( 138 )
             ->select( 'settings', 'footer-navigation' )
             ->add_title( _('Footer Navigation') )
             ->set( compact( 'pages', 'footer_navigation' ) );
