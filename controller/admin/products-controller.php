@@ -899,12 +899,15 @@ ProductsController extends BaseController {
      * @return RedirectResponse
      */
     protected function confirm_import() {
+        set_time_limit( 30 * 60 );
+        ini_set( 'memory_limit', '512M' );
+        
         if ( !$this->verified() ) {
             return new RedirectResponse( '/products/' );
         }
 
         $product = new Product();
-        $product->confirm_import();
+        $product->confirm_import( $this->user->user_id );
 
         $this->notify( _( 'Your products has been imported successfully!' ) );
         return new RedirectResponse( '/products/import/' );
