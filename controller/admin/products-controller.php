@@ -849,8 +849,7 @@ ProductsController extends BaseController {
             // Set product specifications
             $product_specifications = array_slice($r, 9);
             foreach ( $product_specifications as $spec_name => $spec_value ) {
-                $product['
-                product_specifications'][] = array( $spec_name, $spec_value );
+                $product['product_specifications'][] = array( $spec_name, $spec_value );
             }
 
             // Append product
@@ -858,7 +857,27 @@ ProductsController extends BaseController {
         }
         
         $product = new Product();
-        $product->prepare_import($products );
+        $product_import = new ProductImport();
+        $product_import->delete_all();
+
+        foreach ( $products as $pi ) {
+            $product_import = new ProductImport();
+            $product_import->category_id = $pi['category_id'];
+            $product_import->brand_id = $pi['brand_id'];
+            $product_import->industry_id = $pi['industry_id'];
+            $product_import->website_id = 0;
+            $product_import->name = $pi['name'];
+            $product_import->slug = format::slug( $pi['name'] );
+            $product_import->description = $pi['description'];
+            $product_import->status = $pi['status'];
+            $product_import->sku = $pi['sku'];
+            $product_import->price = $pi['price_map'];
+            $product_import->price_min = $pi['price_wholesale'];
+            $product_import->product_specifications = json_encode( $pi['product_specifications'] );
+            $product_import->image = $pi['image'];
+            $product_import->create();
+        }
+        
 
         // Add operation overview report
         $html =  '<tr><td>Total rows read:</td><td>' . count($rows) . '</td></tr>';
@@ -906,8 +925,51 @@ ProductsController extends BaseController {
             return new RedirectResponse( '/products/' );
         }
 
-        $product = new Product();
-        $product->confirm_import( $this->user->user_id );
+        $product_import = new ProductImport();
+        $products = $product_import->get_all();
+
+        foreach ( $products as $p ) {
+
+            $product = new Product();
+            $product->get_by_sku_by_brand( $p->sku, $p->brand_id );
+            $product->category_id = $p->category_id;
+            $product->brand_id = $p->brand_id;
+            $product->industry_id = $p->industry_id;
+            $product->website_id = 0;
+            $product->name = $p->name;
+            $product->slug = $p->slug;
+            $product->status = $p->status;
+            $product->description = $p->description;
+            $product->sku = $p->sku;
+            $product->price = $p->price;
+            $product->price_min = $p->price_min;
+            $product->user_id_modified = $this->user->id;
+            $product->weight = 0;
+            
+            if ( $product->id == null ) {
+                $product->publish_visibility = 'public';
+                $product->publish_date = date( 'Y-m-d H:i:s' );
+                $product->user_id_created = $this->user->id;
+
+                $product->create();
+            }
+
+            $product->save();
+
+            $product_specifications = json_decode( $p->product_specifications, true );
+            $product->delete_specifications(); // should I ?
+            if ( $product_specifications ) {
+                $product->add_specifications($product_specifications);
+            }
+
+            $slug = f::strip_extension( f::name( $p->image ) );
+            $industry = format::slug( $p->industry_name );
+
+            $image_name = $product->upload_image( $p->image, $slug, $industry );
+            $product->add_images( array( $image_name ) );
+
+        }
+        $product_import->delete_all();
 
         $this->notify( _( 'Your products has been imported successfully!' ) );
         return new RedirectResponse( '/products/import/' );

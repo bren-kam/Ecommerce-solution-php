@@ -149,6 +149,20 @@ class Product extends ActiveRecordBase {
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => $this->date_created
+            , 'name' => ''
+            , 'slug' => ''
+            , 'sku' => ''
+            , 'description' => ''
+            , 'name' => ''
+            , 'price' => 0
+            , 'price_min' => 0
+            , 'weight' => 0
+            , 'volume' => 0
+            , 'product_specifications' => ''
+            , 'publish_visibility' => ''
+            , 'status' => ''
+            , 'publish_date' => dt::now()
+            , 'user_id_modified' => 0
         ), 'iiiss' );
 
         $this->id = $this->product_id = $this->get_insert_id();
@@ -241,8 +255,8 @@ class Product extends ActiveRecordBase {
                 , 'slug' => strip_tags($this->slug)
                 , 'description' => format::strip_only( $this->description, '<script>' )
                 , 'sku' => strip_tags($this->sku)
-				, 'price' => $this->price
-				, 'price_min' => $this->price_min
+                , 'price' => $this->price
+                , 'price_min' => $this->price_min
                 , 'status' => strip_tags($this->status)
                 , 'weight' => $this->weight
                 , 'publish_date' => strip_tags($this->publish_date)
@@ -423,87 +437,7 @@ class Product extends ActiveRecordBase {
         return $this->get_row_count();
     }
 
-    public function prepare_import( array $products ) {
-
-        // Delete previous non-confirmed imports
-        $this->prepare('DELETE FROM product_import', '', array())
-            ->query();
-
-        // Prepare import
-        foreach ( $products as $product ) {
-            $this->prepare(
-                'INSERT INTO product_import(`category_id`, `brand_id`, `industry_id`, `website_id`, `name`, `slug`, `description`, `status`, `sku`, `price`, `price_min`, `product_specifications`, `image`)
-                 VALUES (:category_id, :brand_id, :industry_id, :website_id, :name, :slug, :description, :status, :sku, :price, :price_min, :product_specifications, :image)'
-                , 'iiiisssssdds'
-                , array(
-                    ':category_id' => $product['category_id']
-                    ,':brand_id' => $product['brand_id']
-                    ,':industry_id' => $product['industry_id']
-                    ,':website_id' => 0
-                    ,':name' => $product['name']
-                    ,':slug' => format::slug( $product['name'] )
-                    ,':description' => $product['description']
-                    ,':status' => $product['status']
-                    ,':sku' => $product['sku']
-                    ,':price' => $product['price_map']
-                    ,':price_min' => $product['price_wholesale']
-                    ,':product_specifications' => json_encode( $product['product_specifications'] )
-                    ,':image' => $product['image']
-                )
-            )->query();
-        }
-    }
-
-    public function confirm_import( $user_id ) {
-        $products = $this->prepare(
-            'SELECT p.*, i.name as industry_name FROM product_import p INNER JOIN industries i ON p.industry_id = i.industry_id'
-            , ''
-            , array()
-        )->get_results( PDO::FETCH_ASSOC );
-
-        foreach ($products as $p) {
-            $product = new Product();
-            $product->get_by_sku_by_brand( $p['sku'], $p['brand_id'] );
-            $product->category_id = $p['category_id'];
-            $product->brand_id = $p['brand_id'];
-            $product->industry_id = $p['industry_id'];
-            $product->website_id = 0;
-            $product->name = $p['name'];
-            $product->slug = $p['slug'];
-            $product->status = $p['status'];
-            $product->description = $p['description'];
-            $product->sku = $p['sku'];
-            $product->price = $p['price'];
-            $product->price_min = $p['price_min'];
-            $product->user_id_modified = $user_id;
-
-            if ( $product->id === null ) {
-                $product->create();
-
-                $product->publish_visibility = 'public';
-                $product->publish_date = date( 'Y-m-d H:i:s' );
-                $product->user_id_created = $user_id;
-            }
-            $product->save();
-
-            $product_specifications = json_decode( $p['product_specifications'], true );
-            $product->delete_specifications(); // should I ?
-            if ( $product_specifications )
-                $product->add_specifications($product_specifications);
-
-            $slug = f::strip_extension( f::name( $p['image'] ) );
-            $industry = format::slug( $p['industry_name'] );
-
-            $image_name = $product->upload_image( $p['image'], $slug, $industry );
-            $product->add_images( array( $image_name ) );
-        }
-
-        // clean up
-        $this->prepare('DELETE FROM product_import', '', array())
-            ->query();
-    }
-
-    /**
+    /*
      * Upload image
      *
      * @throws InvalidParametersException
@@ -513,7 +447,7 @@ class Product extends ActiveRecordBase {
      * @param string $industry
      * @return string
      */
-    protected function upload_image( $image_url, $slug, $industry ) {
+    public function upload_image( $image_url, $slug, $industry ) {
         $curl = new curl;
         $file = new File;
 
