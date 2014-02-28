@@ -836,6 +836,14 @@ ProductsController extends BaseController {
                     $valid = false;
                 }
 
+                // encode url
+                $url_parts = parse_url( $r['image'] );
+                $path_parts = explode( '/', $url_parts['path'] );
+                foreach ( $path_parts as &$part)
+                    $part = urlencode( $part );
+                $url_parts['path'] = implode( '/', $path_parts );
+                $r['image'] = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
+                
                 // check if remote file exists
                 $file_exists = curl::check_file( $r['image'] );
                 if ( !$file_exists ) {
