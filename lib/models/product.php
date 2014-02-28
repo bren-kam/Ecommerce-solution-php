@@ -149,22 +149,8 @@ class Product extends ActiveRecordBase {
             , 'user_id_created' => $this->user_id_created
             , 'publish_visibility' => 'deleted'
             , 'date_created' => $this->date_created
-            , 'name' => ''
-            , 'slug' => ''
-            , 'sku' => ''
-            , 'description' => ''
-            , 'name' => ''
-            , 'price' => 0
-            , 'price_min' => 0
-            , 'weight' => 0
-            , 'volume' => 0
-            , 'product_specifications' => ''
-            , 'publish_visibility' => ''
-            , 'status' => ''
-            , 'publish_date' => dt::now()
-            , 'user_id_modified' => 0
         ), 'iiiss' );
-
+        
         $this->id = $this->product_id = $this->get_insert_id();
     }
 

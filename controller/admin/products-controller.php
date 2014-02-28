@@ -666,6 +666,9 @@ ProductsController extends BaseController {
      * @return AjaxResponse
      */
     protected function prepare_import() {
+        set_time_limit( 30 * 60 );
+        ini_set( 'memory_limit', '512M' );
+
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
@@ -818,29 +821,36 @@ ProductsController extends BaseController {
                 $valid = false;
             }
 
-            if ( !regexp::match( $r['image'], 'url' ) ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
-                $valid = false;
-            }
-
             if ( !$valid ) {
                 $skipped_products[] = $r;
                 continue;
             }
 
-            // check if remote file exists
-            $file_exists = curl::check_file( $r['image'] );
-            if ( !$file_exists ) {
-                $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
-                $skipped_products[] = $r;
-                continue;
+            // see if the product exists
+            $matching_product = new Product();
+            $matching_product->get_by_sku_by_brand( $r['sku'], $brand_id );
+            // we will only load images for new products
+            if ( !$matching_product->id ) {
+                if ( !regexp::match( $r['image'], 'url' ) ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Bad image URL. ";
+                    $valid = false;
+                }
+
+                // check if remote file exists
+                $file_exists = curl::check_file( $r['image'] );
+                if ( !$file_exists ) {
+                    $r['reason'] = (isset( $r['reason'] ) ? $r['reason'] : '') . "Image not found.";
+                    $skipped_products[] = $r;
+                    continue;
+                }                
             }
 
             $product = array_slice($r, 0, 9);
-            $product['price_map'] = (float)$r['price_map'];
-            $product['price_map'] = $r['price_map'] ? $r['price_map'] : 0;
-            $product['price_wholesale'] = (float)$r['price_wholesale'];
-            $product['price_wholesale'] = $r['price_wholesale'] ? $r['price_wholesale'] : 0;
+            
+            $product['price_map'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_map']);
+            $product['price_map'] = $product['price_map'] ? $product['price_map'] : 0;
+            $product['price_wholesale'] = (float) preg_replace( '/[^0-9.]/', '', $r['price_wholesale']);
+            $product['price_wholesale'] = $product['price_wholesale'] ? $product['price_wholesale'] : 0;
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
@@ -866,7 +876,7 @@ ProductsController extends BaseController {
             $product_import->brand_id = $pi['brand_id'];
             $product_import->industry_id = $pi['industry_id'];
             $product_import->website_id = 0;
-            $product_import->name = $pi['name'];
+            $product_import->name = ucwords( $pi['name'] );
             $product_import->slug = format::slug( $pi['name'] );
             $product_import->description = $pi['description'];
             $product_import->status = $pi['status'];
@@ -946,12 +956,20 @@ ProductsController extends BaseController {
             $product->user_id_modified = $this->user->id;
             $product->weight = 0;
             
+            // a new product?
             if ( $product->id == null ) {
-                $product->publish_visibility = 'public';
-                $product->publish_date = date( 'Y-m-d H:i:s' );
                 $product->user_id_created = $this->user->id;
 
                 $product->create();
+
+                $product->publish_visibility = 'public';
+                $product->publish_date = date( 'Y-m-d H:i:s' );
+
+                // we only upload images if its a new product
+                $slug = f::strip_extension( f::name( $p->image ) );
+                $industry = format::slug( $p->industry_name );
+                $image_name = $product->upload_image( $p->image, $slug, $industry );
+                $product->add_images( array( $image_name ) );
             }
 
             $product->save();
@@ -961,12 +979,6 @@ ProductsController extends BaseController {
             if ( $product_specifications ) {
                 $product->add_specifications($product_specifications);
             }
-
-            $slug = f::strip_extension( f::name( $p->image ) );
-            $industry = format::slug( $p->industry_name );
-
-            $image_name = $product->upload_image( $p->image, $slug, $industry );
-            $product->add_images( array( $image_name ) );
 
         }
         $product_import->delete_all();
