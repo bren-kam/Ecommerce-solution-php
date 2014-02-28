@@ -866,7 +866,7 @@ ProductsController extends BaseController {
             $product_import->brand_id = $pi['brand_id'];
             $product_import->industry_id = $pi['industry_id'];
             $product_import->website_id = 0;
-            $product_import->name = $pi['name'];
+            $product_import->name = ucwords( $pi['name'] );
             $product_import->slug = format::slug( $pi['name'] );
             $product_import->description = $pi['description'];
             $product_import->status = $pi['status'];
