@@ -18,11 +18,7 @@ class TestController extends BaseController {
      * @return TemplateResponse
      */
     protected function index() {
-        // Package feed
-        //$ashley_package_gateway = new AshleyPackageProductFeedGateway();
-        //$ashley_package_gateway->run();
-        $kingswere = new KingswereProductFeedGateway();
-        $kingswere->run();
+        echo urlencode( 'http://www.greysuitretail.com/import/uttermost/101201 B.jpg');
 
         return new HtmlResponse( 'heh' );
     }
