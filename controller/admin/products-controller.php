@@ -666,6 +666,9 @@ ProductsController extends BaseController {
      * @return AjaxResponse
      */
     protected function prepare_import() {
+        set_time_limit( 30 * 60 );
+        ini_set( 'memory_limit', '512M' );
+
         // Make sure it's a valid ajax call
         $response = new AjaxResponse( $this->verified() );
 
