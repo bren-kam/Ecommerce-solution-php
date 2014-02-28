@@ -867,7 +867,7 @@ ProductsController extends BaseController {
             // Set product specifications
             $product_specifications = array_slice($r, 9);
             foreach ( $product_specifications as $spec_name => $spec_value ) {
-                $product['product_specifications'][] = array( $spec_name, $spec_value );
+                $product['product_specifications'][] = array( ucwords($spec_name), $spec_value );
             }
 
             // Append product
