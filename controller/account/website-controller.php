@@ -622,7 +622,7 @@ class WebsiteController extends BaseController {
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt'
-            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link'
+            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link'
         );
         $settings = $this->user->account->get_settings( $settings_array );
 
@@ -688,6 +688,9 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'text', _('Google Link'), 'sm-google-link', $settings['sm-google-link'] )
             ->add_validation( 'url', _('The "Google Link" must be a valid link') );
+
+        $form->add_field( 'text', _('Pinterest Link'), 'sm-pinterest-link', $settings['sm-pinterest-link'] )
+            ->add_validation( 'url', _('The "Pinterest Link" must be a valid link') );
 
         // Next section
         $form->add_field( 'blank', '' );
