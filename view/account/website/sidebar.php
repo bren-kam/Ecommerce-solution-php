@@ -31,6 +31,7 @@ $industries = $user->account->get_industries();
             <a href="/website/home-page-layout/" title="<?php echo _('Home Page Layout'); ?>" class="sub<?php $template->select('home-page-layout'); ?>"><?php echo _('Home Page Layout'); ?></a>
             <a href="/website/navigation/" title="<?php echo _('Navigation Menu'); ?>" class="sub <?php $template->select('sidebar-navigation'); ?>"><?php echo _('Navigation Menu'); ?></a>
             <a href="/website/footer-navigation/" title="<?php echo _('Footer Navigation'); ?>" class="sub last<?php $template->select('footer-navigation'); ?>"><?php echo _('Footer Navigation'); ?></a>
+            <a href="/website/header/" title="<?php echo _('Header'); ?>" class="sub last<?php $template->select('header-html'); ?>"><?php echo _('Header'); ?></a>
     <?php
         }
     }
