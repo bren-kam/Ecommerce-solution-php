@@ -862,6 +862,7 @@ ProductsController extends BaseController {
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
+            $product['image'] = $r['image'];
             $product['product_specifications'] = array();
 
             // Set product specifications
