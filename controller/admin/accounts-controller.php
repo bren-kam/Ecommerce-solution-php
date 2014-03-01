@@ -1670,4 +1670,25 @@ class AccountsController extends BaseController {
 
         return $ajax_response;
     }
+
+    /**
+     * Reset product prices
+     *
+     * Set all AccountProducts prices to 0 for a specific Account
+     *
+     * @return RedirectResponse
+     */
+    protected function reset_product_prices() {
+            // Make sure it was a valid request
+        if ( !isset( $_GET['aid'] ) && $this->user->has_permission( User::ROLE_SUPER_ADMIN ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account_product = new AccountProduct();
+        $account_product->reset_price_by_account( $_GET['aid'] );
+
+        $this->notify( _('All account prices has been reseted.') );
+
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
 }

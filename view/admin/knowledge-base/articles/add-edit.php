@@ -21,32 +21,9 @@ echo $form;
     <div class="hidden-fix position-absolute" id="upload-file"></div>
     <br /><br />
 
+    <input type="text" class="tb" id="file-pattern" placeholder="Narrow your search..." />
     <div id="file-list">
-    <?php
-    if ( empty( $files ) ) {
-        echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>';
-    } else {
-        // Set variables
-        $delete_file_nonce = nonce::create('delete_file');
-        $confirm = _('Are you sure you want to delete this file?');
-
-        foreach ( $files as $file_name => $file_info ) {
-            $extension = f::extension( $file_name );
-            $date = new DateTime();
-            $date->setTimestamp( $file_info['time'] );
-            $file_path = 'http://kb.retailcatalog.us/' . $file_name;
-            $file_id = format::slug( $file_name );
-
-            if ( in_array( $extension, image::$extensions ) ) {
-                // It's an image!
-                echo '<div id="file-' . $file_id . '" class="file"><a href="#', $file_path, '" id="aFile', $file_id, '" class="file img" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-            } else {
-                // It's not an image!
-                echo '<div id="file-' . $file_id . '" class="file"><a href="#', $file_path, '" id="aFile', $file_id, '" class="file" title="', $file_name, '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
-            }
-        }
-    }
-    ?>
+        <?php echo '<p class="no-files">', _('You have not uploaded any files.') . '</p>'; ?>
     </div>
 
     <br /><br />
@@ -69,6 +46,7 @@ echo $form;
     </div>
 </div>
 <?php
+nonce::field('get_files', '_get_files');
 nonce::field( 'upload_file', '_upload_file' );
 nonce::field( 'get_categories', '_get_categories' );
 nonce::field( 'get_pages', '_get_pages' );

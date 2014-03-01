@@ -56,8 +56,6 @@ ArticlesController extends BaseController {
         library('file-uploader');
 
         // Instantiate classes
-        $file = new File( 'kb' . Config::key('aws-bucket-domain') );
-        $files = $file->list_files();
 
         // Create new form table
         $ft = new FormTable( 'fAddEditArticle', url::add_query_arg( array( 's' => $_GET['s'], 'kbaid' => $kb_article->id ), '/knowledge-base/articles/add-edit/' ) );
@@ -141,7 +139,7 @@ ArticlesController extends BaseController {
             ->kb( 29 )
             ->select( 'articles', 'add' )
             ->add_title( ( ( $kb_article->id ) ? _('Edit') : _('Add') ) . ' ' . _('Article') )
-            ->set( compact( 'form', 'files' ) );
+            ->set( compact( 'form' ) );
     }
 
     /***** AJAX *****/
@@ -414,5 +412,52 @@ ArticlesController extends BaseController {
         $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
+    }
+
+    /**
+     * Get Files
+     *
+     * AJAX Call, returns a list of files, based on a pattern and pagination parameters
+     *
+     * @return AjaxResponse
+     */
+    protected function get_files() {
+        // Make sure it's a valid ajax call
+        $response = new AjaxResponse( $this->verified() );
+
+        $pattern = isset( $_GET['pattern'] ) ? $_GET['pattern'] : null;
+        $page = isset( $_GET['page'] ) ? (int) $_GET['page'] : 0;
+        $limit = 50;
+        $offset = $page * $limit;
+
+        $file = new File( 'kb' . Config::key('aws-bucket-domain') );
+        $files = $file->search_files($pattern, $offset, $limit);
+
+        $delete_file_nonce = nonce::create('delete_file');
+        $confirm = _('Are you sure you want to delete this file?');
+        $html = '';
+
+        foreach ($files as $file_name => $file_info) {
+            $extension = f::extension( $file_name );
+            $date = new DateTime();
+            $date->setTimestamp( $file_info['time'] );
+            $file_path = 'http://kb.retailcatalog.us/' . $file_name;
+            $file_id = format::slug( $file_name );
+
+            // Add the new link and apply sparrow to it
+            if ( in_array( $extension, image::$extensions ) ) {
+                // It's an image!
+                $html .= '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file img" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="' . $file_path . '" alt="' . $file_name . '" /></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+            } else {
+                // It's not an image!
+                $html .= '<div id="file-' . $file_id . '" class="file"><a href="#' . $file_path . '" id="aFile' . $file_id . '" class="file" title="' . $file_name . '" rel="' . $date->format( 'F jS, Y') . '"><img src="/images/icons/extensions/' . $extension . '.png" alt="' . $file_name . '" /><span>' . $file_name . '</span></a><a href="' . url::add_query_arg( array( '_nonce' => $delete_file_nonce, 'key' => $file_name ), '/knowledge-base/articles/delete-file/' ) . '" class="delete-file" title="' . _('Delete File') . '" ajax="1" confirm="' . $confirm . '"><img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete File') . '" /></a></div>';
+            }
+        }
+
+        // Add the response
+        $response->add_response( 'files', $html );
+
+        return $response;
+
     }
 }
