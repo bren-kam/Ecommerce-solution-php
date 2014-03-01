@@ -29,7 +29,7 @@ $industries = $user->account->get_industries();
         <?php if ( $template->v('settings') ) { ?>
             <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('page-settings'); ?>"><?php echo _('Settings'); ?></a>
             <a href="/website/home-page-layout/" title="<?php echo _('Home Page Layout'); ?>" class="sub<?php $template->select('home-page-layout'); ?>"><?php echo _('Home Page Layout'); ?></a>
-            <a href="/website/navigation/" title="<?php echo _('Navigation'); ?>" class="sub <?php $template->select('sidebar-navigation'); ?>"><?php echo _('Navigation'); ?></a>
+            <a href="/website/navigation/" title="<?php echo _('Navigation Menu'); ?>" class="sub <?php $template->select('sidebar-navigation'); ?>"><?php echo _('Navigation Menu'); ?></a>
             <a href="/website/footer-navigation/" title="<?php echo _('Footer Navigation'); ?>" class="sub last<?php $template->select('footer-navigation'); ?>"><?php echo _('Footer Navigation'); ?></a>
     <?php
         }

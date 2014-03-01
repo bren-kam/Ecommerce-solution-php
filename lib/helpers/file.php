@@ -13,6 +13,13 @@ class File {
      * @var string
      */
     protected $bucket;
+    
+    /**
+     * Key used to store file list in cache
+     * 
+     * @var string 
+     */
+    protected $cache_key;
 
     /**
 	 * Construct initializes data
@@ -24,6 +31,7 @@ class File {
 		library('S3');
 		$this->s3 = new S3( Config::key('aws-access-key'), Config::key('aws-secret-key') );
 		$this->bucket = ( is_null( $override_bucket ) ) ? Config::key('aws-bucket-domain') : $override_bucket;
+		$this->cache_key = 's3_file_list_' . $this->bucket;
 	}
 
     /**
@@ -33,6 +41,7 @@ class File {
      */
     public function set_bucket( $bucket ) {
         $this->bucket = $bucket;
+		$this->cache_key = 's3_file_list_' . $this->bucket;
     }
 
     /**
@@ -71,7 +80,8 @@ class File {
 
         // Delete the local image
         unlink( $image_file );
-
+		Cache::delete( $this->cache_key );
+        
         // Return image name
         return $base_name;
 	}
@@ -87,10 +97,12 @@ class File {
      * @return string|bool
      */
     public function upload_file( $file_path, $key, $dir = '' ) {
-		if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ, array(), S3::__getMimeType( $key ) ) )
+        if ( !$this->s3->putObjectFile( $file_path, $this->bucket, $dir . $key, S3::ACL_PUBLIC_READ, array(), S3::__getMimeType( $key ) ) )
             throw new HelperException( 'Amazon S3 failed to upload file' );
 
         unlink( $file_path );
+        
+		Cache::delete( $this->cache_key );
 
         return 'http://s3.amazonaws.com/' . $this->bucket . '/' . $dir . $key;
     }
@@ -116,6 +128,8 @@ class File {
 		if ( !$this->s3->copyObject( $bucket, $uri, $bucket, $new_uri, S3::ACL_PUBLIC_READ ) )
             throw new HelperException( 'Amazon S3 failed to copy file' );
 
+		Cache::delete( $this->cache_key );
+
         return 'http://' . $bucket . '/' . $new_uri;
 	}
 
@@ -139,7 +153,9 @@ class File {
      */
     public function delete_file( $key, $dir = '' ) {
 		// Delete the object
-		return $this->s3->deleteObject( $this->bucket, $dir . $key );
+		$result = $this->s3->deleteObject( $this->bucket, $dir . $key );
+		Cache::delete( $this->cache_key );
+		return $result;
     }
 
     /**
@@ -148,8 +164,13 @@ class File {
      * @return array
      */
     public function list_files() {
-		return $this->s3->getBucket( $this->bucket );
-    }
+		$files =  Cache::get( $this->cache_key );
+		if ( !$files ) {
+			$files = $this->s3->getBucket( $this->bucket );
+			Cache::set( $this->cache_key, $files );
+		}
+		return $files; 
+   }
 
     /**
      * Search Files
@@ -162,7 +183,6 @@ class File {
      * @return array
      */
     public function search_files( $pattern = null, $offset = 0, $limit = 50 ) {
-        // we might want to add a cache layer here!
         $files = $this->list_files();
 
         // will be much better if we search in S3 directly!
