@@ -342,7 +342,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
                 // Need to add the category
                 $new_product = true;
             } else {
-				continue;
+				// continue;
 			}
 
             $product->industry_id = 1;
@@ -378,6 +378,12 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 			} else {
 				$name = $item->SeriesName . ' ' . $this->names[(string)$template->Descr];
 			}
+
+            // Update the price
+            if ( !$new_product )
+                $product->save();
+                continue;
+            }
 				
             // Will have to format this
             $style_description = trim( (string) $package_series->StyleDescription );
