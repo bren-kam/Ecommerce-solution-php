@@ -380,7 +380,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 			}
 
             // Update the price
-            if ( !$new_product )
+            if ( !$new_product ) {
                 $product->save();
                 continue;
             }
