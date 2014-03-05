@@ -836,11 +836,13 @@ ProductsController extends BaseController {
                     $valid = false;
                 }
 
+                // we ensure the url is decoded before encode
+                $r['image'] = rawurldecode( $r['image'] );
                 // encode url
                 $url_parts = parse_url( $r['image'] );
-                $path_parts = explode( '/', $url_parts['path'] );
+                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
                 foreach ( $path_parts as &$part)
-                    $part = urlencode( $part );
+                    $part = rawurlencode( $part );
                 $url_parts['path'] = implode( '/', $path_parts );
                 $r['image'] = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
                 
