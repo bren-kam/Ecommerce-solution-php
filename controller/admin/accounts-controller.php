@@ -1388,8 +1388,8 @@ class AccountsController extends BaseController {
 
         $settings = $account->get_settings( array('address', 'city', 'state', 'zip') );
         if ( !$settings['address'] || !$settings['city'] || !$settings['state'] || !$settings['zip'] ) {
-            $response = new RedirectResponse( '/accounts/actions/?aid=' . $account->id );
-            $this->notify( _('Please specify your Address, City, State and ZIP code before creating an Email Marketing Account'), false );
+            $response = new AjaxResponse( true );
+            $response->notify( _('Please specify your Address, City, State and ZIP code before creating an Email Marketing Account'), false );
             return $response;
         }
         
@@ -1435,10 +1435,10 @@ class AccountsController extends BaseController {
         }
 
         // Create response
-        $response = new RedirectResponse( '/accounts/actions/?aid=' . $account->id );
+        $response = new AjaxResponse( true );
 
         // Add notification
-        $this->notify( _('Email Marketing account successfully created') );
+        $response->notify( _('Email Marketing account successfully created') );
 
         return $response;
     }
