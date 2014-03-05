@@ -864,6 +864,7 @@ ProductsController extends BaseController {
             $product['category_id'] = $category_id;
             $product['industry_id'] = $industry_id;
             $product['brand_id'] = $brand_id;
+            $product['image'] = $r['image'];
             $product['product_specifications'] = array();
 
             // Set product specifications
@@ -891,8 +892,8 @@ ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = $pi['status'];
             $product_import->sku = $pi['sku'];
-            $product_import->price = $pi['price_map'];
-            $product_import->price_min = $pi['price_wholesale'];
+            $product_import->price = $pi['price_wholesale'];
+            $product_import->price_min = $pi['price_map'];
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
             $product_import->create();

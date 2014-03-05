@@ -819,7 +819,7 @@ class KingswereProductFeedGateway extends ProductFeedGateway {
                     $category_id = 569;
                 break;
 
-                case 46:
+                case 36:
                 case 35:
                 case 28: // Mirrors
                     $category_id = 102;
