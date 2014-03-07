@@ -292,7 +292,11 @@ class Email extends ActiveRecordBase {
             $email_chunks = array_chunk( $emails, 1000 );
 
             foreach ( $email_chunks as $email_set ) {
-                $sendgrid->email->add( $email_list->name, array( $email_set ) );
+                if ( is_array( $email_set ) ) {
+                    $sendgrid->email->add( $email_list->name, $email_set );
+                } else {
+                    $sendgrid->email->add( $email_list->name, array( $email_set ) );
+                }
             }
         }
 
