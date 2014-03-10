@@ -1111,7 +1111,7 @@ class WebsiteController extends BaseController {
         $attachment->key = 'sidebar-image';
         $attachment->value = $image_url;
         $attachment->create();
-
+        
         $element_box = '<div class="element-box" id="dAttachment_' . $attachment->id . '">';
         $element_box .= '<h2>' . _('Sidebar Image') . '</h2>';
         
@@ -1148,7 +1148,7 @@ class WebsiteController extends BaseController {
         $element_box .= '</form></div></div>';
         
         jQuery('#dElementBoxes')
-            ->append( $element_box )
+            ->prepend( $element_box )
             ->updateElementOrder()
             ->updateDividers()
             ->sparrow();
@@ -1319,7 +1319,7 @@ class WebsiteController extends BaseController {
         $banner .= '<br clear="all" /></div>';
         
         jQuery('#dElementBoxes')
-            ->append( $banner )
+            ->prepend( $banner )
             ->updateElementOrder()
             ->updateDividers()
             ->sparrow();

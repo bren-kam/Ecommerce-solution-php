@@ -440,7 +440,7 @@ class Product extends ActiveRecordBase {
         if ( is_null( $industry ) )
             throw new InvalidParametersException( _('Industry must not be null') );
 
-        $new_image_name = $slug;
+        $new_image_name = rawurldecode($slug);
         $image_extension = strtolower( f::extension( $image_url ) );
         $full_image_name = "{$new_image_name}.{$image_extension}";
         $image_path = '/gsr/systems/backend/admin/media/downloads/scratchy/' . $full_image_name;

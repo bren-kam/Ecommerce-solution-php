@@ -836,11 +836,13 @@ ProductsController extends BaseController {
                     $valid = false;
                 }
 
+                // we ensure the url is decoded before encode
+                $r['image'] = rawurldecode( $r['image'] );
                 // encode url
                 $url_parts = parse_url( $r['image'] );
-                $path_parts = explode( '/', $url_parts['path'] );
+                $path_parts = array_slice( explode( '/', $url_parts['path'] ), 1 );
                 foreach ( $path_parts as &$part)
-                    $part = urlencode( $part );
+                    $part = rawurlencode( $part );
                 $url_parts['path'] = implode( '/', $path_parts );
                 $r['image'] = "{$url_parts['scheme']}://{$url_parts['host']}/{$url_parts['path']}?{$url_parts['query']}";
                 
@@ -890,8 +892,8 @@ ProductsController extends BaseController {
             $product_import->description = $pi['description'];
             $product_import->status = $pi['status'];
             $product_import->sku = $pi['sku'];
-            $product_import->price = $pi['price_map'];
-            $product_import->price_min = $pi['price_wholesale'];
+            $product_import->price = $pi['price_wholesale'];
+            $product_import->price_min = $pi['price_map'];
             $product_import->product_specifications = json_encode( $pi['product_specifications'] );
             $product_import->image = $pi['image'];
             $product_import->create();

@@ -46,7 +46,7 @@
 }
 
 if ( empty( $settings['sendgrid-username'] ) ) { ?>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" rel="dialog" cache="0"><?php echo _('Create Email Marketing Account'); ?></a></p>
+    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" ajax="1"><?php echo _('Create Email Marketing Account'); ?></a></p>
 <?php } ?>
 
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/cancel/' ); ?>" title="<?php echo _('Cancel Account'); ?>" confirm="<?php echo _('Are you sure you want to deactivate this account?'); ?>"><?php echo _('Cancel Account'); ?></a></p>
