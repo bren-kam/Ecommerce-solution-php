@@ -28,6 +28,38 @@ class CategoriesController extends BaseController {
             ->select( 'categories', 'view' );
     }
 
+    /**
+     * Show list of categories
+     *
+     * @return TextResponse
+     */
+    protected function list_text() {
+        $category = new Category();
+        $categories = $category->get_all();
+        $categories_list = array();
+
+        /**
+         * @var Category $category
+         */
+        foreach ( $categories as $category ) {
+            if ( $category->has_children() )
+                continue;
+
+            $category_string = $category->name;
+            $parents = $category->get_all_parents( $category->id );
+
+            foreach ( $parents as $parent_category ) {
+                $category_string = $parent_category->name . ' > ' . $category_string;
+            }
+
+            $categories_list[] = $category_string;
+        }
+
+        sort( $categories_list );
+
+        return new TextResponse( implode( "\n", $categories_list ) );
+    }
+
     /***** AJAX *****/
 
     /**
