@@ -1385,6 +1385,14 @@ class AccountsController extends BaseController {
         list( $first_name, $last_name ) = explode( ' ', $user->contact_name, 2 );
 
         $settings = $account->get_settings( 'address', 'city', 'state', 'zip', 'from_email', 'from_name' );
+
+        $settings = $account->get_settings( array('address', 'city', 'state', 'zip') );
+        if ( !$settings['address'] || !$settings['city'] || !$settings['state'] || !$settings['zip'] ) {
+            $response = new AjaxResponse( true );
+            $response->notify( _('Please specify your Address, City, State and ZIP code before creating an Email Marketing Account'), false );
+            return $response;
+        }
+        
         $phone = ( empty( $user->work_phone ) ) ? $user->cell_phone : $user->work_phone;
         if ( empty( $phone ) )
             $phone = '8185551234';
@@ -1427,7 +1435,7 @@ class AccountsController extends BaseController {
         }
 
         // Create response
-        $response = new AjaxResponse(true);
+        $response = new AjaxResponse( true );
 
         // Add notification
         $response->notify( _('Email Marketing account successfully created') );
