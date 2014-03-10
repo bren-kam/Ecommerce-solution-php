@@ -18,8 +18,7 @@
 
 <?php echo $template->start( _('Price Multiplier') ); ?>
 
-<p><?php echo _('On this page you can upload a list of prices indexed by SKU.'); ?></p>
-<p><?php echo _('Please make your spreadsheet layout match the example below.'); ?></p>
+<p>Please make your spreadsheet layout match the example below. For example, include SKU, Price and Note in the top row. Also, the SKU needs to be in the far left column, Price directly to the right of SKU, and Note directly to the right of Price. And as a reminder, SKU and Price are mandatory fields, the Note is optional and this field will add a Price Note to your products.</p>
 <p><?php echo _('Example:'); ?></p>
 <table class="generic col-2">
     <tr>
@@ -61,7 +60,7 @@
     </tr>
 </table>
 <br />
-<a href="#" id="aMultiplyPrices" class="button" title="<?php echo _('Multiply Prices'); ?>"><?php echo _('Multiply Prices'); ?></a>
+<a href="#" id="aMultiplyPrices" class="button" title="<?php echo _('Multiply Prices'); ?>"><?php echo _('Upload Spreadsheet and Run'); ?></a>
 <div class="hidden" id="multiply-prices"></div>
 <?php nonce::field( 'multiply_prices', '_multiply_prices' ); ?>
 <br /><br />

@@ -3,11 +3,12 @@
  * @var User $user
  * @var $template Template
  */
+
 ?>
 <div id="sidebar">
     <div id="actions">
         <a href="/products/" title="<?php echo _('Products'); ?>" class="top first<?php $template->select('sub-products'); ?>"><?php echo _('Products'); ?></a>
-        <?php if ( isset( $products ) && true === $products ) { ?>
+        <?php if ( $template->v('sub-products') ) { ?>
             <a href="/products/" title="<?php echo _('View Products'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
             <a href="/products/add-edit/" title="<?php echo _('Add Product'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
             <a href="/products/import/" title="<?php echo _('Import'); ?>" class="sub<?php $template->select('import'); ?>""><?php echo _('Import'); ?></a>
@@ -15,7 +16,8 @@
 
         <a href="/products/categories/" title="<?php echo _('Categories'); ?>" class="top<?php $template->select('categories'); ?>"><?php echo _('Categories'); ?></a>
         <?php if ( isset( $categories ) && true === $categories ) { ?>
-            <a href="/categories/" title="<?php echo _('View Categories'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+            <a href="/products/categories/" title="<?php echo _('View Categories'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+            <a href="/products/categories/list_text/" title="<?php echo _('List Categories'); ?>" class="sub view" target="_blank"><?php echo _('List'); ?></a>
         <?php } ?>
 
         <a href="/products/attributes/" title="<?php echo _('Attributes'); ?>" class="top<?php $template->select('attributes'); ?>"><?php echo _('Attributes'); ?></a>

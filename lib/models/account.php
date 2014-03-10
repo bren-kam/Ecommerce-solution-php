@@ -7,7 +7,7 @@ class Account extends ActiveRecordBase {
 
     // Template unlocked
     const TEMPLATE_UNLOCKED = 1352;
-
+    
     // The columns we will have access to
     public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
         , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog, $link_brands
@@ -423,4 +423,22 @@ class Account extends ActiveRecordBase {
             )
         );
     }
+    
+    /**
+     * Is New Template
+     * 
+     * Checks if the frontend site is a New Template (GSR Site) 
+     * or a legacy template (GSR Platform)
+     * 
+     * @return boolean TRUE if it's GSR Site
+     */
+    public function is_new_template() {
+        $new_template_company_package_ids = array(
+            26,  // Butler
+            27   // GSR - Unlocked
+        );
+        
+        return in_array($this->company_package_id, $new_template_company_package_ids);
+    }
+    
 }
