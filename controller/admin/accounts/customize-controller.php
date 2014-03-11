@@ -82,14 +82,12 @@ class CustomizeController extends BaseController {
             'slideshow-fixed-width'
             , 'slideshow-categories'
             , 'sidebar-left'
-            , 'disable-banner-fade-out'
         );
 
         // Start adding fields
         $ft->add_field( 'checkbox', _('Fixed-width Slideshow'), 'cbFixedWidthSlideshow', $settings['slideshow-fixed-width'] );
         $ft->add_field( 'checkbox', _('Slideshow w/ Categories'), 'cbSlideshowCategories', $settings['slideshow-categories'] );
         $ft->add_field( 'checkbox', _('Left-hand-side Sidebar'), 'cbSidebarLeft', $settings['sidebar-left'] );
-        $ft->add_field( 'checkbox', _('Disable Banner Fade-out'), 'cbDisableBannerFadeOut', $settings['disable-banner-fade-out'] );
          
         if ( $ft->posted() ) {
             // Update settings
@@ -97,7 +95,6 @@ class CustomizeController extends BaseController {
                 'slideshow-fixed-width' => (int) isset( $_POST['cbFixedWidthSlideshow'] ) && $_POST['cbFixedWidthSlideshow']
                 , 'slideshow-categories' => (int) isset( $_POST['cbSlideshowCategories'] ) && $_POST['cbSlideshowCategories']
                 , 'sidebar-left' => (int) isset( $_POST['cbSidebarLeft'] ) && $_POST['cbSidebarLeft']
-                , 'disable-banner-fade-out' => (int) isset( $_POST['cbDisableBannerFadeOut'] ) && $_POST['cbDisableBannerFadeOut']
             ));
 
             $this->notify( _('Settings have been updated!') );
