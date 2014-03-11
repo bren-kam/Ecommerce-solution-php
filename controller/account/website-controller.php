@@ -2031,7 +2031,7 @@ class WebsiteController extends BaseController {
                 ->javascript('fileuploader', 'gsr-media-manager');
 
         return $this->get_template_response('header')
-            ->kb( 0 )
+            ->kb( 139 )
             ->select( 'settings', 'header-html' )
             ->add_title( _('Header') )
             ->set( compact( 'header', 'files' ) );
