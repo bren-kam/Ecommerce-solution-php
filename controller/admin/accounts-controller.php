@@ -1383,6 +1383,11 @@ class AccountsController extends BaseController {
 
         $password = substr( $account->id . md5(microtime()), 0, 10 );
         list( $first_name, $last_name ) = explode( ' ', $user->contact_name, 2 );
+        if ( empty( $last_name ) ) {
+            $response = new AjaxResponse( true );
+            $response->notify( _('Please specify user First Name and Last Name before creating an Email Marketin Account'), false );
+            return $response;
+        }
 
         $settings = $account->get_settings( 'address', 'city', 'state', 'zip', 'from_email', 'from_name' );
 
