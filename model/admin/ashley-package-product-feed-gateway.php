@@ -338,6 +338,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 
                 // Set publish date
                 $product->publish_date = dt::now();
+
+                // Set status
+                $product->status = 'in-stock';
 				
                 // Need to add the category
                 $new_product = true;
@@ -354,30 +357,44 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             $sku = (string) $item->PackageName;
 
             // Get the name -- which may be hard if the description is empty
-			if ( empty( $template->Descr ) ) {
-				$sku_pieces = explode( '/', $sku );
-				$series = array_shift( $sku_pieces );
+            if ( empty( $template->Descr ) ) {
+                $sku_pieces = explode( '/', $sku );
+                $series = array_shift( $sku_pieces );
 
-				$name_pieces = array();
+                $name_pieces = array();
 
-				foreach ( $sku_pieces as $sp ) {
-					if ( isset( $this->ashley_products[$series . $sp] ) ) {
-						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . $sp]['name'] );
+                foreach ( $sku_pieces as $sp ) {
+                    if ( isset( $this->ashley_products[$series . $sp] ) ) {
+                        $name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . $sp]['name'] );
                         $product->price += $this->ashley_products[$series . $sp]['price'];
-					} elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
-						$name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . '-' . $sp]['name'] );
+                    } elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
+                        $name_piece = str_replace( (string) $item->SeriesName, '', $this->ashley_products[$series . '-' . $sp]['name'] );
                         $product->price += $this->ashley_products[$series . '-' . $sp]['price'];
-					} else {
-						continue;
-					}
+                    } else {
+                        continue;
+                    }
 
-					$name_pieces[] = preg_replace( '/^ - /', '', $name_piece );
-				}
+                    $name_pieces[] = preg_replace( '/^ - /', '', $name_piece );
+                }
 
-				$name = $item->SeriesName . ' - ' . implode( ', ', $name_pieces );
-			} else {
-				$name = $item->SeriesName . ' ' . $this->names[(string)$template->Descr];
-			}
+                $name = $item->SeriesName . ' - ' . implode( ', ', $name_pieces );
+            } else {
+                $name = $item->SeriesName . ' ' . $this->names[(string)$template->Descr];
+
+                // Set prices
+                $sku_pieces = explode( '/', $sku );
+                $series = array_shift( $sku_pieces );
+
+                foreach ( $sku_pieces as $sp ) {
+                    if ( isset( $this->ashley_products[$series . $sp] ) ) {
+                        $product->price += $this->ashley_products[$series . $sp]['price'];
+                    } elseif( isset( $this->ashley_products[$series . '-' . $sp] ) ) {
+                        $product->price += $this->ashley_products[$series . '-' . $sp]['price'];
+                    } else {
+                        continue;
+                    }
+                }
+            }
 
             // Update the price
             if ( !$new_product ) {
