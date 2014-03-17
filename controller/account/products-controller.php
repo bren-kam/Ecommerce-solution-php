@@ -886,7 +886,12 @@ class ProductsController extends BaseController {
         $product_count = $account_product->search_count( $this->user->account->id, $where );
 
         foreach ( $products as $product ) {
-            $product->link = ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+            if ($this->user->account->is_new_template() ) {
+                $product->link = '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
+            } else {
+                $product->link = ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+            }
+
 		}
 
         $user = $this->user;
