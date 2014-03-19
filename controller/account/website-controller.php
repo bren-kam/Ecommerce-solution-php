@@ -2037,5 +2037,116 @@ class WebsiteController extends BaseController {
             ->set( compact( 'header', 'files' ) );
         
     }
-    
+
+    /**
+     * List Website Brands
+     *
+     * @return TemplateResponse
+     */
+    protected function brands() {
+        // Reset any defaults
+        unset( $_SESSION['brands'] );
+
+        $this->resources
+            ->css('website/categories')
+            ->javascript('website/brands');
+
+        return $this->get_template_response( 'brands' )
+            ->kb( 0 )
+            ->select( 'pages', 'brand-pages' );
+    }
+
+    /**
+     * Edit Brand
+     *
+     * @return TemplateResponse|RedirectResponse
+     */
+    protected function edit_brand() {
+        // Make sure they can be here
+        if ( !isset( $_GET['bid'] ) )
+            return new RedirectResponse('/website/brands/');
+
+        $brand = new AccountBrand();
+        $brand->get( $this->user->account->id, $_GET['bid'] );
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        if ( $this->verified() ) {
+            $brand->name = $_POST['tName'];
+            $brand->content = $_POST['taContent'];
+            $brand->meta_title = $_POST['tMetaTitle'];
+            $brand->meta_description = $_POST['tMetaDescription'];
+            $brand->meta_keywords = $_POST['tMetaKeywords'];
+            $brand->top = $_POST['rPosition'];
+
+            if ( $brand->website_id ) {
+                $brand->save();
+            } else {
+                $brand->brand_id = $_GET['bid'];
+                $brand->website_id = $this->user->account->id;
+                $brand->create();
+            }
+
+            $this->notify( _('Your brand has been successfully saved!') );
+
+            return new RedirectResponse('/website/brands/');
+        }
+
+        $this->resources
+            ->css( 'website/pages/page' )
+            ->javascript( 'fileuploader', 'gsr-media-manager', 'website/pages/page' );
+
+        return $this->get_template_response('edit-brand')
+            ->kb( 0 )
+            ->select( 'pages', 'edit-brand' )
+            ->add_title( _('Edit Brand') )
+            ->set( compact( 'brand', 'files' ) );
+    }
+
+    /**
+     * List Brands
+     *
+     * @return DataTableResponse
+     */
+    protected function list_brands() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+        $account_brand = new AccountBrand();
+        $brand = new Brand();
+
+        // Set Order by
+        $dt->order_by( 'name', 'wb.`date_updated`' );
+        $dt->add_where( ' AND ( wb.`website_id` IS NULL OR wb.`website_id` = ' . (int) $this->user->account->id . ') ' );
+        $dt->search( array( 'b.`name`' => false ) );
+
+        // Get account pages
+        $account_brands = $account_brand->list_all( $dt->get_variables() );
+        $dt->set_row_count( $account_brand->count_all( $dt->get_count_variables() ) );
+
+        // Set initial data
+        $data = false;
+
+        /**
+         * @var AccountCategory $account_brand
+         */
+        if ( is_array( $account_brands ) )
+            foreach ( $account_brands as $account_brand ) {
+                $date_update = new DateTime( $account_brand->date_updated );
+
+                $data[] = array(
+                    $account_brand->name . '<div class="actions">' .
+                    '<a href="http://' . $this->user->account->domain . '/brand/' . $account_brand->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
+                    '<a href="' . url::add_query_arg( 'bid', $account_brand->brand_id, '/website/edit-brand/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' .
+                    '</div>'
+                , $date_update->format('F jS, Y')
+                );
+            }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
 }

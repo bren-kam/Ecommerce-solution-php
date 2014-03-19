@@ -11,6 +11,7 @@ $industries = $user->account->get_industries();
     <?php if ( $template->v('pages') ) { ?>
         <a href="/website/" title="<?php echo _('Website Pages'); ?>" class="sub view first<?php $template->select('view'); ?>"><?php echo _('Website'); ?></a>
         <a href="/website/categories/" title="<?php echo _('Website Categories'); ?>" class="sub view<?php $template->select('category-pages'); ?>"><?php echo _('Categories'); ?></a>
+        <a href="/website/brands/" title="<?php echo _('Website Brands'); ?>" class="sub view<?php $template->select('brand-pages'); ?>"><?php echo _('Brands'); ?></a>
         <?php if ( $user->has_permission( USER::ROLE_ONLINE_SPECIALIST ) ) { ?>
             <a href="/website/add/" title="<?php echo _('Add Page'); ?>" class="sub add last<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
         <?php
