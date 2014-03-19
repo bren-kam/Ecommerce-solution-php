@@ -30,9 +30,10 @@ $industries = $user->account->get_industries();
         <?php if ( $template->v('settings') ) { ?>
             <a href="/website/settings/" title="<?php echo _('Settings'); ?>" class="sub<?php $template->select('page-settings'); ?>"><?php echo _('Settings'); ?></a>
             <a href="/website/home-page-layout/" title="<?php echo _('Home Page Layout'); ?>" class="sub<?php $template->select('home-page-layout'); ?>"><?php echo _('Home Page Layout'); ?></a>
-            <a href="/website/navigation/" title="<?php echo _('Navigation Menu'); ?>" class="sub <?php $template->select('sidebar-navigation'); ?>"><?php echo _('Navigation Menu'); ?></a>
+            <a href="/website/navigation/" title="<?php echo _('Header Navigation'); ?>" class="sub <?php $template->select('sidebar-navigation'); ?>"><?php echo _('Header Navigation'); ?></a>
             <a href="/website/footer-navigation/" title="<?php echo _('Footer Navigation'); ?>" class="sub last<?php $template->select('footer-navigation'); ?>"><?php echo _('Footer Navigation'); ?></a>
-            <a href="/website/header/" title="<?php echo _('Header'); ?>" class="sub last<?php $template->select('header-html'); ?>"><?php echo _('Header'); ?></a>
+            <a href="/website/header/" title="<?php echo _('Header'); ?>" class="sub last<?php $template->select('website-header'); ?>"><?php echo _('Website Header'); ?></a>
+            <a href="/website/html-header/" title="<?php echo _('HTML &lt;head&gt;'); ?>" class="sub last<?php $template->select('html-header'); ?>"><?php echo _('HTML &lt;head&gt;'); ?></a>
     <?php
         }
     }

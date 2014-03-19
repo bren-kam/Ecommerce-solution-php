@@ -12,7 +12,7 @@
  * @var array $files
  */
 
-echo $template->start( _('Header') );
+echo $template->start( _('Website Header') );
 ?>
 
 <hr />

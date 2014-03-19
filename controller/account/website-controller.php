@@ -2007,14 +2007,14 @@ class WebsiteController extends BaseController {
 
         return $response;
     }
-    
+
     /**
      * Header
-     * 
+     *
      * @return TemplateResponse
      */
     public function header() {
-        
+
         if ( $this->verified() ) {
             $header = htmlentities( $_POST['header'] );
             $this->user->account->set_settings( array( 'header' => $header ) );
@@ -2028,14 +2028,14 @@ class WebsiteController extends BaseController {
         $files = $account_file->get_by_account( $this->user->account->id );
 
         $this->resources
-                ->javascript('fileuploader', 'gsr-media-manager');
+            ->javascript('fileuploader', 'gsr-media-manager');
 
         return $this->get_template_response('header')
             ->kb( 0 )
-            ->select( 'settings', 'header-html' )
+            ->select( 'settings', 'website-header' )
             ->add_title( _('Header') )
             ->set( compact( 'header', 'files' ) );
-        
+
     }
 
     /**
@@ -2149,4 +2149,27 @@ class WebsiteController extends BaseController {
         return $dt;
     }
 
+    /**
+     * HTML Header
+     *
+     * @return TemplateResponse
+     */
+    public function html_header() {
+
+        if ( $this->verified() ) {
+            $html_header = htmlentities( $_POST['html-header'] );
+            $this->user->account->set_settings( array( 'html-header' => $html_header ) );
+            $this->notify('Your HTML Header settings have been saved!');
+        }
+
+        $html_header = $this->user->account->get_settings('html-header');
+        $html_header = html_entity_decode($html_header);
+
+        return $this->get_template_response('html-header')
+            ->kb( 0 )
+            ->select( 'settings', 'html-header' )
+            ->add_title( _('HTML Header') )
+            ->set( compact( 'html_header' ) );
+
+    }
 }
