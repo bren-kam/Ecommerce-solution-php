@@ -623,6 +623,7 @@ class WebsiteController extends BaseController {
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt'
             , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link'
+            , 'disable-banner-fade-out'
         );
         $settings = $this->user->account->get_settings( $settings_array );
 
@@ -668,6 +669,8 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
 
+        $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
+
         // Next section
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Sidebar Images') );
@@ -707,7 +710,7 @@ class WebsiteController extends BaseController {
             foreach ( $settings_array as $k ) {
                 $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
             }
-
+            
             $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved!') );
@@ -2007,4 +2010,35 @@ class WebsiteController extends BaseController {
 
         return $response;
     }
+    
+    /**
+     * Header
+     * 
+     * @return TemplateResponse
+     */
+    public function header() {
+        
+        if ( $this->verified() ) {
+            $header = htmlentities( $_POST['header'] );
+            $this->user->account->set_settings( array( 'header' => $header ) );
+            $this->notify('Your Header settings have been saved!');
+        }
+
+        $header = $this->user->account->get_settings('header');
+        $header = html_entity_decode($header);
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $this->resources
+                ->javascript('fileuploader', 'gsr-media-manager');
+
+        return $this->get_template_response('header')
+            ->kb( 139 )
+            ->select( 'settings', 'header-html' )
+            ->add_title( _('Header') )
+            ->set( compact( 'header', 'files' ) );
+        
+    }
+    
 }

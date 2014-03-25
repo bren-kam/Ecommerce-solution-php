@@ -481,7 +481,6 @@ class AccountsController extends BaseController {
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
-            , 'disable-map-pricing'
         );
 
         $test_ashley_feed_url = url::add_query_arg( 'aid', $account->id, '/accounts/test-ashley-feed/' );
@@ -507,7 +506,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
-        $ft->add_field( 'checkbox', _('Disable Map Pricing'), 'cbDisableMapPricing', $settings['disable-map-pricing'] );
 
         if ( $ft->posted() ) {
             $account->ftp_username = security::encrypt( $_POST['tFTPUsername'], ENCRYPTION_KEY, true );
@@ -534,7 +532,6 @@ class AccountsController extends BaseController {
                 , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
-                , 'disable-map-pricing' => (int) isset( $_POST['cbDisableMapPricing'] ) && $_POST['cbDisableMapPricing']
             ));
 
             $this->notify( _('This account\'s "Other Settings" has been updated!') );
@@ -1383,6 +1380,11 @@ class AccountsController extends BaseController {
 
         $password = substr( $account->id . md5(microtime()), 0, 10 );
         list( $first_name, $last_name ) = explode( ' ', $user->contact_name, 2 );
+        if ( empty( $last_name ) ) {
+            $response = new AjaxResponse( true );
+            $response->notify( _('Please specify user First Name and Last Name before creating an Email Marketin Account'), false );
+            return $response;
+        }
 
         $settings = $account->get_settings( 'address', 'city', 'state', 'zip', 'from_email', 'from_name' );
 

@@ -527,7 +527,17 @@ class ProductsController extends BaseController {
         $form = new FormTable( 'fSettings' );
 
         // Get settings
-        $settings_array = array( 'request-a-quote-email', 'category-show-price-note', 'hide-skus', 'hide-request-quote', 'hide-customer-ratings', 'hide-product-brands', 'hide-browse-by-brand', 'replace-price-note' );
+        $settings_array = array(
+            'request-a-quote-email'
+            , 'category-show-price-note'
+            , 'hide-skus'
+            , 'hide-request-quote'
+            , 'hide-customer-ratings'
+            , 'hide-product-brands'
+            , 'hide-browse-by-brand'
+            , 'replace-price-note'
+            , 'disable-map-pricing'
+        );
         $settings = $this->user->account->get_settings( $settings_array );
         $checkboxes = array(
         	'category-show-price-note' 	=> _('Show Price Note on Category Page')
@@ -537,6 +547,7 @@ class ProductsController extends BaseController {
         	, 'hide-product-brands' 	=> _('Hide Product Brands')
         	, 'hide-browse-by-brand' 	=> _('Hide Browse By Brand')
             , 'replace-price-note'      => _('Replace Price Note with Product Option')
+            , 'disable-map-pricing'     => _('Disable Map Pricing')
         );
 
         // Create form
@@ -886,7 +897,12 @@ class ProductsController extends BaseController {
         $product_count = $account_product->search_count( $this->user->account->id, $where );
 
         foreach ( $products as $product ) {
-            $product->link = ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+            if ($this->user->account->is_new_template() ) {
+                $product->link = '/product' . ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
+            } else {
+                $product->link = ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/';
+            }
+
 		}
 
         $user = $this->user;
