@@ -434,8 +434,13 @@ class Account extends ActiveRecordBase {
      */
     public function is_new_template() {
         $new_template_company_package_ids = array(
-            26,  // Butler
-            27   // GSR - Unlocked
+            26      // Butler
+            , 27    // GSR - Unlocked
+            , 28    // Signature Design - A (Updated)
+            , 29    // Signature Design - B (Updated)
+            , 30    // Signature Design - C (Updated)
+            , 31    // Signature Design - D (Updated)
+            , 32    // IR - Theme 4 (updated)
         );
         
         return in_array($this->company_package_id, $new_template_company_package_ids);

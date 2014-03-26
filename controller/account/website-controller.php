@@ -671,6 +671,8 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'checkbox', _('Hide Scroller'), 'banner-hide-scroller', $settings['banner-hide-scroller'] );
 
+        $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
+
         // Next section
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Sidebar Images') );
@@ -713,7 +715,7 @@ class WebsiteController extends BaseController {
             foreach ( $settings_array as $k ) {
                 $new_settings[$k] = ( isset( $_POST[$k] ) ) ? $_POST[$k] : '';
             }
-
+            
             $this->user->account->set_settings( $new_settings );
 
             $this->notify( _('Your settings have been successfully saved!') );
@@ -2037,8 +2039,8 @@ class WebsiteController extends BaseController {
             ->javascript('fileuploader', 'gsr-media-manager');
 
         return $this->get_template_response('header')
-            ->kb( 0 )
-            ->select( 'settings', 'website-header' )
+            ->kb( 139 )
+            ->select( 'settings', 'header-html' )
             ->add_title( _('Header') )
             ->set( compact( 'header', 'files' ) );
 
@@ -2119,7 +2121,6 @@ class WebsiteController extends BaseController {
         // Get response
         $dt = new DataTableResponse( $this->user );
         $account_brand = new AccountBrand();
-        $brand = new Brand();
 
         // Set Order by
         $dt->order_by( 'name', 'wb.`date_updated`' );

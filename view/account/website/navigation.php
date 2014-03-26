@@ -22,16 +22,64 @@ echo $template->start( _('Header Menu Navigation') );
 
 <form action="" name="fNavigation" method="post">
     <div id="navigation-menu-list">
-        <?php foreach ( $navigation as $page ) { ?>
-        <div class="menu-item">
-            <h4 class="name"><?php echo $page->name; ?></h4>
-            <p class="menu-item-actions">
-                <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-            </p>
+        <?php if ( $navigation ) { ?>
+            <?php foreach ( $navigation as $page ) { ?>
+                <div class="menu-item">
+                    <h4 class="name"><?php echo $page->name; ?></h4>
+                    <p class="menu-item-actions">
+                        <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                    </p>
 
-            <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
-            <input type="hidden" name="navigation[]" value="<?php echo $page->url . '|' . $page->name; ?>">
-        </div>
+                    <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
+                    <input type="hidden" name="navigation[]" value="<?php echo $page->url . '|' . $page->name; ?>">
+                </div>
+            <?php } ?>
+        <?php } else { ?>
+            <div class="menu-item">
+                <h4 class="name">Home</h4>
+                <p class="menu-item-actions">
+                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                </p>
+
+                <a href="#" class="url" target="_blank" >/</a>
+                <input type="hidden" name="navigation[]" value="<?php echo '|Home'; ?>">
+            </div>
+            <div class="menu-item">
+                <h4 class="name">About</h4>
+                <p class="menu-item-actions">
+                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                </p>
+
+                <a href="#" class="url" target="_blank" >/about-us/</a>
+                <input type="hidden" name="navigation[]" value="<?php echo 'about-us|About Us'; ?>">
+            </div>
+            <div class="menu-item">
+                <h4 class="name">Current Offer</h4>
+                <p class="menu-item-actions">
+                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                </p>
+
+                <a href="#" class="url" target="_blank" >/current-offer/</a>
+                <input type="hidden" name="navigation[]" value="<?php echo 'current-offer|Current Offer'; ?>">
+            </div>
+            <div class="menu-item">
+                <h4 class="name">Financing</h4>
+                <p class="menu-item-actions">
+                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                </p>
+
+                <a href="#" class="url" target="_blank" >/financing/</a>
+                <input type="hidden" name="navigation[]" value="<?php echo 'financing|Financing'; ?>">
+            </div>
+            <div class="menu-item">
+                <h4 class="name">Contact</h4>
+                <p class="menu-item-actions">
+                    <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                </p>
+
+                <a href="#" class="url" target="_blank" >/contact-us/</a>
+                <input type="hidden" name="navigation[]" value="<?php echo 'contact-us|Contact'; ?>">
+            </div>
         <?php } ?>
     </div>
     <input type="submit" class="button" value="<?php echo _('Save'); ?>">
