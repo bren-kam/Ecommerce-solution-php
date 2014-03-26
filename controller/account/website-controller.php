@@ -2122,6 +2122,7 @@ class WebsiteController extends BaseController {
         // Set Order by
         $dt->order_by( 'name', 'wb.`date_updated`' );
         $dt->add_where( ' AND ( wb.`website_id` IS NULL OR wb.`website_id` = ' . (int) $this->user->account->id . ') ' );
+        $dt->add_where( ' AND ( wp.`website_id` = ' . (int) $this->user->account->id . ') ');
         $dt->search( array( 'b.`name`' => false ) );
 
         // Get account pages
