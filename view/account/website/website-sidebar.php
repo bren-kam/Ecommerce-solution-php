@@ -120,7 +120,7 @@ foreach ( $attachments as $a ) {
             <div class="element-box<?php echo $disabled; ?>" id="dAttachment_<?php echo $a->id; ?>">
                 <h2><?php echo _('Sidebar Image'); ?></h2>
                 <?php if ( isset( $dimensions ) ) { ?>
-                    <p><small><?php echo $dimensions; ?></small></p>
+                    <p><small>Max Size: <?php echo $dimensions; ?></small></p>
                 <?php
                 }
 
