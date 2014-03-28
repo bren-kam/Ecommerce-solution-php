@@ -2057,7 +2057,7 @@ class WebsiteController extends BaseController {
             ->javascript('website/brands');
 
         return $this->get_template_response( 'brands' )
-            ->kb( 0 )
+            ->kb( 141 )
             ->select( 'pages', 'brand-pages' );
     }
 
