@@ -1,35 +1,55 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Header
+ * @page Edit Category
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
  * @var Template $template
  * @var User $user
- * @var AccountPage[] $pages
- * @var string $header
- * @var array $files
+ * @var AccountBrand $brand
  */
-
-echo $template->start( _('Website Header') );
+echo $template->start( _('Edit Brand') . ' - ' . $brand->name );
 ?>
 
-<hr />
-<br />
-
-<form action="" name="fHeader" method="post">
-    <p>
-        <label for="taContent">HTML Code:</label>
-        <textarea id="taContent" name="header" rte="1"><?php echo $header ?></textarea>
-    </p>
-    <p>
-        <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a>
-    </p>
-    <input type="submit" class="button" value="<?php echo _('Save'); ?>">
-    <?php nonce::field('header'); ?>
+<form name="fEditBrand" action="<?php echo url::add_query_arg( 'bid', $brand->brand_id, '/website/edit-brand/' ); ?>" method="post">
+    <div id="title-container">
+        <input name="tName" id="tName" class="tb" value="<?php echo $brand->name; ?>" placeholder="<?php echo _('Brand Name...'); ?>" />
+    </div>
+    <br />
+    <textarea name="taContent" id="taContent" cols="50" rows="3" rte="1"><?php echo $brand->content; ?></textarea>
+    <p><a href="#" id="aMetaData" title="<?php echo _('Meta Data'); ?>"><?php echo _('Meta Data'); ?> [ + ]</a> | <a href="#dUploadFile" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a></p>
+    <br />
+    <div id="dMetaData" class="hidden">
+        <p>
+            <label for="tMetaTitle"><?php echo _('Meta Title'); ?></label> <small>(<?php echo _('Recommended not to exceed 70 characters'); ?>)</small><br />
+            <input type="text" class="tb" name="tMetaTitle" id="tMetaTitle" value="<?php echo $brand->meta_title; ?>" />
+        </p>
+        <p>
+            <label for="tMetaDescription"><?php echo _('Meta Description'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
+            <input type="text" class="tb"  name="tMetaDescription" id="tMetaDescription" value="<?php echo $brand->meta_description; ?>" />
+        </p>
+        <p>
+            <label for="tMetaKeywords"><?php echo _('Meta Keywords'); ?></label> <small>(<?php echo _('Recommended not to exceed 250 characters'); ?>)</small><br />
+            <input type="text" class="tb" name="tMetaKeywords" id="tMetaKeywords" value="<?php echo $brand->meta_keywords; ?>" />
+        </p>
+        <br />
+    </div>
+    <br />
+    <table>
+        <tr>
+            <td class="top" width="100"><label for="rPosition1"><?php echo _('Position'); ?>:</label></td>
+            <td>
+                <p><input type="radio" class="rb" name="rPosition" id="rPosition1" value="1"<?php if ( '0' != $brand->top ) echo ' checked="checked"'; ?> /> <label for="rPosition1"><?php echo _('Top'); ?></label></p>
+                <p><input type="radio" class="rb" name="rPosition" id="rPosition2" value="0"<?php if ( '0' == $brand->top ) echo ' checked="checked"'; ?> /> <label for="rPosition2"><?php echo _('Bottom'); ?></label></p>
+            </td>
+        </tr>
+    </table>
+    <br /><br />
+    <p><input type="submit" id="bSubmit" value="<?php echo _('Save'); ?>" class="button" /></p>
+    <?php nonce::field( 'edit_brand' ); ?>
 </form>
-<br clear="all"><br>
+<br />
 
 <div id="dUploadFile" class="hidden">
     <input type="text" class="tb" id="tFileName" placeholder="<?php echo _('Enter File Name'); ?>..." error="<?php echo _('You must type in a file name before uploading a file.'); ?>" />
@@ -86,8 +106,7 @@ echo $template->start( _('Website Header') );
         </table>
     </div>
 </div>
-<?php
-nonce::field( 'upload_file', '_upload_file' );
-?>
+<?php nonce::field( 'upload_file', '_upload_file' ); ?>
+<input type="hidden" id="hAccountId" value="<?php echo $user->account->id; ?>" />
 
 <?php echo $template->end(); ?>
