@@ -621,7 +621,7 @@ class WebsiteController extends BaseController {
         // Get settings
         $settings_array = array(
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
-            , 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'timezone', 'images-alt'
+            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'sidebar-image-width', 'timezone', 'images-alt'
             , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link'
         );
         $settings = $this->user->account->get_settings( $settings_array );
@@ -2057,7 +2057,7 @@ class WebsiteController extends BaseController {
             ->javascript('website/brands');
 
         return $this->get_template_response( 'brands' )
-            ->kb( 0 )
+            ->kb( 141 )
             ->select( 'pages', 'brand-pages' );
     }
 
