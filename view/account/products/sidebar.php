@@ -21,6 +21,7 @@
         <a href="/products/add-bulk/" title="<?php echo _('Add Bulk'); ?>" class="sub add<?php $template->select('add-bulk'); ?>"><?php echo _('Add Bulk'); ?></a>
         <a href="/products/block-products/" title="<?php echo _('Block Products'); ?>" class="sub<?php $template->select('block-products'); ?>"><?php echo _('Block Products'); ?></a>
         <a href="/products/hide-categories/" title="<?php echo _('Hide Categories'); ?>" class="sub<?php $template->select('hide-categories'); ?>"><?php echo _('Hide Categories'); ?></a>
+        <a href="/products/manually-priced/" title="<?php echo _('Manually Priced'); ?>" class="sub<?php $template->select('manually-priced'); ?>"><?php echo _('Manually Priced'); ?></a>
         <a href="/products/auto-price/" title="<?php echo _('Pricing Tools'); ?>" class="sub<?php $template->select('pricing-tools'); ?>"><?php echo _('Pricing Tools'); ?></a>
         <a href="/products/export/" title="<?php echo _('Export'); ?>" class="sub"><?php echo _('Export'); ?></a>
     <?php } ?>

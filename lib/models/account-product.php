@@ -12,7 +12,7 @@ class AccountProduct extends ActiveRecordBase {
         , $additional_shipping_amount, $weight, $additional_shipping_type
         , $alternate_price_name, $meta_title, $meta_description, $meta_keywords, $price_note
         , $product_note, $ships_in, $store_sku, $warranty_length, $alternate_price_strikethrough
-        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $date_updated;
+        , $display_inventory, $on_sale, $status, $sequence, $blocked, $active, $manual_price, $date_updated;
 
     // Artificial columns
     public $link, $industry, $coupons, $product_options, $created_by, $count;
@@ -64,7 +64,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_auto_price_count( $account_id ) {
         return $this->prepare(
-            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL GROUP BY b.`brand_id`"
+            "SELECT b.`name` AS brand, COUNT( wp.`product_id` ) AS count FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND wp.`manual_price` = 0 GROUP BY b.`brand_id`"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -82,7 +82,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_auto_price_example( $account_id ) {
         $this->prepare(
-            "SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL LIMIT 1"
+            "SELECT wp.*, p.`price_min` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND wp.`manual_price` = 0 LIMIT 1"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -120,7 +120,7 @@ class AccountProduct extends ActiveRecordBase {
      */
     public function get_non_autoprice_products( $account_id ) {
         return $this->prepare(
-            "SELECT p.`sku`, p.`name`, wp.`price`, wp.`price_note` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` = 0 AND wbc.`category_id` IS NULL"
+            "SELECT p.`sku`, p.`name`, wp.`price`, wp.`price_note` FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND (p.`price` = 0 OR wp.`manual_price` = 1) AND wbc.`category_id` IS NULL"
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -201,7 +201,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wp.`manual_price` = 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -272,7 +272,7 @@ class AccountProduct extends ActiveRecordBase {
 
         // Run once
         $this->prepare(
-            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)" . $where
+            "UPDATE `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`website_id` = wp.`website_id` AND wbc.`category_id` = p.`category_id` ) SET {$set} WHERE wp.`website_id` = :account_id AND wp.`blocked` = :blocked AND wp.`active` = :active AND p.`publish_visibility` = :publish_visibility AND p.`price` > 0 AND wp.`manual_price` = 0 AND wbc.`category_id` IS NULL AND p.`category_id` IN($new_category_ids_string)" . $where
             , 'iiis'
             , array(
                 ':account_id' => $account_id
@@ -334,6 +334,7 @@ class AccountProduct extends ActiveRecordBase {
             , 'ships_in' => strip_tags($this->ships_in)
             , 'store_sku' => strip_tags($this->store_sku)
             , 'active' => $this->active
+            , 'manual_price' => $this->manual_price
         ), array(
             'website_id' => $this->website_id
             , 'product_id' => $this->product_id
@@ -1166,6 +1167,35 @@ class AccountProduct extends ActiveRecordBase {
             , 'price' => 0
             , 'sale_price' => 0
         ), array( 'website_id' => $account_id ), 'i', 'i' );
+    }
+
+    /**
+     * Get Manually Priced By Account
+     *
+     * @param int $account_id
+     * @return AccountProduct[]
+     */
+    public function get_manually_priced_by_account( $account_id ) {
+        return $this->prepare(
+            "SELECT wp.*, p.`sku`, p.`name`, p.`price_min`, c.`category_id` AS category_id, c.`name` AS category, COALESCE( c2.`name`, '' ) AS parent_category, b.`name` AS brand, u.`contact_name` AS created_by FROM `website_products` AS wp LEFT JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) LEFT JOIN `categories` AS c2 ON ( c2.`category_id` = c.`parent_category_id` ) LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) LEFT JOIN `users` AS u ON ( u.`user_id` = p.`user_id_created` ) WHERE wp.`website_id` = :account_id AND wp.`status` = 1 AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public' AND wp.`manual_price` = 1 GROUP BY wp.`product_id`"
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->get_results( PDO::FETCH_CLASS, 'AccountProduct' );
+    }
+
+    /**
+     * Null Manually Priced by Account
+     *
+     * Sets all products as no manually priced, so auto price tool can get them
+     * @param $account_id
+     */
+    public function null_manually_priced_by_account( $account_id ) {
+       $this->update(
+           array( 'manual_price' => 0 )
+           , array( 'website_id' => $account_id )
+           , 'i'
+           , 'i'
+       );
     }
 
 }

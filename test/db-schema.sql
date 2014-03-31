@@ -2017,6 +2017,7 @@ CREATE TABLE IF NOT EXISTS `website_products` (
   `sequence` int(11) NOT NULL DEFAULT '100000',
   `blocked` int(1) NOT NULL DEFAULT '0',
   `active` int(1) NOT NULL DEFAULT '1',
+  `manual_price` INT(1) NOT NULL DEFAULT '0',
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`website_id`,`product_id`),
   KEY `website_id` (`website_id`)
@@ -2240,3 +2241,23 @@ CREATE TABLE IF NOT EXISTS `website_users` (
   KEY `email` (`email`),
   KEY `fk_website_users_idx` (`website_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=76229 ;
+
+CREATE TABLE IF NOT EXISTS `website_wishlist` (
+  `website_wishlist_id` int(11) NOT NULL AUTO_INCREMENT,
+  `website_user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `product_options` varchar(255) NOT NULL,
+  `date_created` datetime NOT NULL,
+  PRIMARY KEY (`website_wishlist_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `website_product_views` (
+  `website_product_view_id` int(11) NOT NULL AUTO_INCREMENT,
+  `website_id` int(11) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `ip` char(15) CHARACTER SET latin1 DEFAULT NULL,
+  `date_created` datetime DEFAULT NULL,
+  PRIMARY KEY (`website_product_view_id`),
+  KEY `website_id` (`website_id`),
+  KEY `product_id` (`product_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
