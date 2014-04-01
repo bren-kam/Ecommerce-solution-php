@@ -83,7 +83,7 @@ class AccountBrand extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT b.`brand_id`, IF( '' = wb.`name` OR wb.`name` IS NULL, b.`name`, wb.`name` ) AS name, wb.`date_updated`, b.`slug` FROM `brands` AS b LEFT JOIN `website_brands` AS wb ON ( b.`brand_id` = wb.`brand_id` )  WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT b.`brand_id`, IF( '' = wb.`name` OR wb.`name` IS NULL, b.`name`, wb.`name` ) AS name, wb.`date_updated`, b.`slug` FROM `brands` AS b LEFT JOIN `website_brands` AS wb ON ( b.`brand_id` = wb.`brand_id` ) INNER JOIN `products` AS p ON ( p.`brand_id` = b.`brand_id` ) INNER JOIN `website_products` AS wp ON ( p.`product_id` = wp.`product_id` ) WHERE 1 $where $order_by GROUP BY b.`brand_id` LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'AccountBrand' );
@@ -98,9 +98,8 @@ class AccountBrand extends ActiveRecordBase {
 	public function count_all( $variables ) {
         // Get the variables
 		list( $where, $values ) = $variables;
-
 		// Get the website count
-        return $this->prepare( "SELECT COUNT( b.`brand_id` )  FROM `brands` AS b LEFT JOIN `website_brands` AS wb ON ( b.`brand_id` = wb.`brand_id` ) WHERE 1 $where"
+        return $this->prepare( "SELECT COUNT( DISTINCT b.`brand_id` )  FROM `brands` AS b LEFT JOIN `website_brands` AS wb ON ( b.`brand_id` = wb.`brand_id` ) INNER JOIN `products` AS p ON ( p.`brand_id` = b.`brand_id` ) INNER JOIN `website_products` AS wp ON ( p.`product_id` = wp.`product_id` ) WHERE 1 $where"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_var();
