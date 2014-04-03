@@ -349,6 +349,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
 			}
 
             $product->industry_id = 1;
+            $product->price = 0;
 
             /***** PREPARE PRODUCT DATA *****/
 
