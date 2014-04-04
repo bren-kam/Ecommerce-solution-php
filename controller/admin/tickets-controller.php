@@ -290,11 +290,13 @@ class TicketsController extends BaseController {
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != User::KERRY && $ticket->assigned_to_user_id != $ticket->user_id )
             fn::mail(
                 $assigned_user->email
-                , 'New Comment on Ticket #' . $ticket->id . ' ('. $status .') - ' . $ticket->summary
+                , 'New Comment on Ticket #' . $ticket->id . $status .' - ' . $ticket->summary
                 , "******************* Reply Above This Line *******************"
                     . "\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . "."
-                    . "\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id . "**Comment**"
-                    . "\n{$comment}<br><br>**Support Issue**"
+                    . "\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id
+                    . "\n\n**Comment**"
+                    . "\n{$comment}"
+                    . "\n\n**Support Issue**"
                     . "\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
                 , $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>'
             );
