@@ -172,13 +172,23 @@ class ReachesController extends BaseController {
             $reach->waiting = 0;
             $reach->save();
 
-            fn::mail( $reach->email, $reach->get_friendly_type() . ' #' . $reach->id . $status, "******************* Reply Above This Line *******************\n\n{$comment}\n\n" . $reach->get_friendly_type() . "\n" . $reach->message, $this->user->account->title . ' <reaches@' . url::domain( $this->user->domain, false ) . '>' );
+            fn::mail(
+                $reach->email
+                , $reach->get_friendly_type() . ' #' . $reach->id . $status
+                , "******************* Reply Above This Line *******************\n\n{$comment}\n\n" . $reach->get_friendly_type() . "\n" . $reach->message
+                , '"' . $this->user->account->title . '" <reaches@blinkyblinky.me>'
+            );
         }
 
         // Send the assigned user an email if they are not submitting the comment
         if ( $reach->assigned_to_user_id != $this->user->id && 1 == $reach->status ) {
             $assigned_user->get( $reach->assigned_to_user_id );
-            fn::mail( $assigned_user->email, 'New Comment on ' . $reach->get_friendly_type() . ' #' . $reach->id, $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/products/reaches/reach/?wrid=" . $reach->id, $this->user->account->title . ' <reaches@' . url::domain( $this->user->account->domain, false ) . '>' );
+            fn::mail(
+                $assigned_user->email
+                , 'New Comment on ' . $reach->get_friendly_type() . ' #' . $reach->id
+                , $this->user->contact_name . ' has posted a new comment on ' . $reach->get_friendly_type() . ' #' . $reach->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/products/reaches/reach/?wrid=" . $reach->id
+                , '"' . $this->user->account->title . '" <reaches@blinkyblinky>'
+            );
         }
 
         /***** Add comment *****/

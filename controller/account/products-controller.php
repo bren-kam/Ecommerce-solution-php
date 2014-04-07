@@ -1089,6 +1089,9 @@ class ProductsController extends BaseController {
         $account_product->get( $_POST['hProductID'], $this->user->account->id );
 
         /***** UPDATE PRODUCT *****/
+        // if any price changed, we flag the product price as manually edited
+        $account_product->manual_price = $account_product->manual_price || ( $account_product->price != $_POST['tPrice'] ) || ( $account_product->sale_price != $_POST['tSalePrice'] ) || ( $account_product->wholesale_price != $_POST['tWholesalePrice'] ) || ( $account_product->alternate_price != $_POST['tAlternatePrice'] );
+
         $account_product->alternate_price = $_POST['tAlternatePrice'];
         $account_product->price = $_POST['tPrice'];
         $account_product->sale_price = $_POST['tSalePrice'];
@@ -1970,5 +1973,64 @@ class ProductsController extends BaseController {
         return $response;
     }
 
+    /**
+     * Manually Priced
+     * Show all Manually Priced products
+     *
+     * @return TemplateResponse
+     */
+    protected function manually_priced() {
+        $account_product = new AccountProduct();
+
+        $products = $account_product->get_manually_priced_by_account( $this->user->account->id );
+
+        $this->resources->javascript( 'products/manually-priced' );
+
+        $response = $this->get_template_response( 'manually-priced' )
+            ->kb( 0 )
+            ->add_title( _('Manually Priced Products') )
+            ->select( 'sub-products', 'manually-priced' )
+            ->set( compact( 'products' ) );
+
+        return $response;
+    }
+
+    /**
+     * Manually Priced Remove
+     *
+     * @return AjaxResponse
+     */
+    protected function manually_priced_remove() {
+        $response = new AjaxResponse( $this->verified() );
+
+        $account_product = new AccountProduct();
+        $account_product->get( $_GET['product-id'], $this->user->account->id );
+
+        $response->check( $account_product->product_id, 'Product does not exists' );
+        if ( $response->has_error() ) {
+            return $response;
+        }
+
+        $account_product->manual_price = 0;
+        $account_product->save();
+
+        $response->notify( 'Your product has been removed from the Manual Price list.' );
+
+        return $response;
+    }
+
+    /**
+     * Manually Priced Remove All
+     * @return RedirectResponse
+     */
+    protected function manually_priced_remove_all() {
+        if ( !$this->verified() )
+            return new RedirectResponse( '/products/ ');
+
+        $account_product = new AccountProduct();
+        $account_product->null_manually_priced_by_account( $this->user->account->id );
+
+        return new RedirectResponse( '/products/manually-priced/' );
+    }
 
 }
