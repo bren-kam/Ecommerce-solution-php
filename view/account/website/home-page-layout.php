@@ -18,6 +18,11 @@ echo $template->start( _('Layout') );
     <div id="dElementBoxes">
         <?php
         foreach ( $layout as $element ) {
+            // Trending Items is only for New Template sites
+            if ( $element->name == 'trending-items' && !$user->account->is_new_template() ) {
+                continue;
+            }
+
             $name = ucwords( $element->name );
         ?>
         <div class="element-box<?php if ( $element->disabled ) echo ' disabled'; ?>">
