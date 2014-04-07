@@ -201,7 +201,15 @@ class TicketsController extends BaseController {
         $assigned_user = new User();
         $assigned_user->get( $assigned_to_user_id ); // Technical user
 
-        fn::mail( $assigned_user->email, 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary, "Name: " . $this->user->contact_name . "\nEmail: " . $this->user->email . "\nSummary: " . $ticket->summary . "\n\n" . $ticket->message . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id );
+        fn::mail(
+            $assigned_user->email
+            , 'New ' . $assigned_user->company . ' Ticket - ' . $ticket->summary
+            , "Name: " . $this->user->contact_name
+                . "\nEmail: " . $this->user->email
+                . "\nSummary: " . $ticket->summary
+                . "\n\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
+                . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id
+        );
 
         // Close the window
         jQuery('a.close:visible:first')->click();
@@ -268,11 +276,30 @@ class TicketsController extends BaseController {
 
         // If it's not private, send an email to the client
         if ( TicketComment::VISIBILITY_PUBLIC == $ticket_comment->private && ( Ticket::STATUS_OPEN == $ticket->status || !$ticket_creator->has_permission( User::ROLE_ADMIN ) ) )
-            fn::mail( $ticket->email, 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>' );
+            fn::mail(
+                $ticket->email
+                , 'Ticket #' . $ticket->id . $status . ' - ' . $ticket->summary
+                , "******************* Reply Above This Line *******************"
+                    . "\n\n{$comment}"
+                    . "\n\n**Support Issue**"
+                    . "\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
+                , $ticket_creator->company . ' <support@' . url::domain( $ticket_creator->domain, false ) . '>'
+            );
 
         // Send the assigned user an email if they are not submitting the comment
         if ( $ticket->assigned_to_user_id != $this->user->id && $ticket->assigned_to_user_id != User::KERRY && $ticket->assigned_to_user_id != $ticket->user_id )
-            fn::mail( $assigned_user->email, 'New Comment on Ticket #' . $ticket->id . ' (Closed) - ' . $ticket->summary, "******************* Reply Above This Line *******************\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . ".\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id . "**Comment**\n{$comment}\n\n**Support Issue**\n" . $ticket->message, $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>' );
+            fn::mail(
+                $assigned_user->email
+                , 'New Comment on Ticket #' . $ticket->id . $status .' - ' . $ticket->summary
+                , "******************* Reply Above This Line *******************"
+                    . "\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . "."
+                    . "\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id
+                    . "\n\n**Comment**"
+                    . "\n{$comment}"
+                    . "\n\n**Support Issue**"
+                    . "\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
+                , $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>'
+            );
 
         /***** Add comment *****/
 
