@@ -19,7 +19,7 @@ echo $template->start( _('Layout') );
         <?php
         foreach ( $layout as $element ) {
             // Trending Items is only for New Template sites
-            if ( $element->name == 'trending-items' && !$user->account->is_new_template() ) {
+            if ( $element->name == 'popular-items' && !$user->account->is_new_template() ) {
                 continue;
             }
 
