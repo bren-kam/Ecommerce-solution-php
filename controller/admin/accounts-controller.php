@@ -180,6 +180,7 @@ class AccountsController extends BaseController {
                     $account->mobile_marketing = (int) isset( $_POST['cbMobileMarketing'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                     $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
+                    $account->user_id_updated = $this->user->id;
 
                     $account->save();
 
@@ -416,6 +417,8 @@ class AccountsController extends BaseController {
                 $account->live = isset( $_POST['cbLive'] );
             }
 
+            $account->user_id_updated = $this->user->id;
+
             $account->save();
 
             // Update the settings
@@ -513,6 +516,7 @@ class AccountsController extends BaseController {
             $account->ga_tracking_key = $_POST['tGATrackingKey'];
             $account->wordpress_username = security::encrypt( $_POST['tWPUsername'], ENCRYPTION_KEY, true );
             $account->wordpress_password = security::encrypt( $_POST['tWPPassword'], ENCRYPTION_KEY, true );
+            $account->user_id_updated = $this->user->id;
 
             $account->save();
 
@@ -1069,7 +1073,7 @@ class AccountsController extends BaseController {
 
         // Get install service
         $install_service = new InstallService();
-        $install_service->install_website( $account );
+        $install_service->install_website( $account, $this->user->id );
 
         // Let them know it's been installed
         $this->notify( _('Website has been successfully installed') );
@@ -1098,7 +1102,7 @@ class AccountsController extends BaseController {
 
         // Get install service
         $install_service = new InstallService();
-        $install_service->install_package( $account );
+        $install_service->install_package( $account, $this->user->id );
 
         // Let them know it's been installed
         $this->notify( _('The website package has been successfully installed') );
@@ -1156,6 +1160,7 @@ class AccountsController extends BaseController {
 
         // Deactivate account
         $account->status = 0;
+        $account->user_id_updated = $this->user->id;
         $account->save();
 
         // Give them a notification
