@@ -80,6 +80,7 @@ class SettingsController extends BaseController {
     protected function logo_and_phone() {
         if ( $this->verified() ) {
             $this->user->account->phone = $_POST['tPhone'];
+            $this->user->account->user_id_updated = $this->user->id;
             $this->user->account->save();
 
             $this->notify( _('The "Logo and Phone" section has been updated successfully!' ) );
@@ -147,6 +148,7 @@ class SettingsController extends BaseController {
 
         // Update account logo
         $this->user->account->logo = $account_file->file_path;
+        $this->user->account->user_id_updated = $this->user->id;
         $this->user->account->save();
 
         jQuery('#dLogoContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Logo') . '" /><br />' );

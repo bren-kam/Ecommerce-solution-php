@@ -1576,6 +1576,7 @@ CREATE TABLE IF NOT EXISTS `websites` (
   `status` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `user_id_updated` INT NULL DEFAULT NULL
   PRIMARY KEY (`website_id`),
   KEY `user_id` (`user_id`,`os_user_id`),
   KEY `status` (`status`)
