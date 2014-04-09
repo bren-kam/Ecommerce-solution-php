@@ -2033,4 +2033,18 @@ class ProductsController extends BaseController {
         return new RedirectResponse( '/products/manually-priced/' );
     }
 
+    /**
+     * Manually Priced Lock All
+     * @return RedirectResponse
+     */
+    protected function manually_priced_lock_all() {
+        if ( !$this->verified() )
+            return new RedirectResponse( '/products/ ');
+
+        $account_product = new AccountProduct();
+        $account_product->lock_prices_by_account( $this->user->account->id );
+
+        return new RedirectResponse( '/products/manually-priced/' );
+    }
+
 }
