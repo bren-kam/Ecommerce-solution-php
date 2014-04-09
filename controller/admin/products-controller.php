@@ -705,17 +705,18 @@ ProductsController extends BaseController {
 
             case 'csv':
                 // Make sure it's opened properly
-                $response->check( $file_content = file_get_contents( $result['file_path'] ), _('An error occurred while trying to read your file.') );
+                $response->check( $handler = fopen( $result['file_path'], 'r' ), _('An error occurred while trying to read your file.') );
 
                 // If there is an error or now user id, return
                 if ( $response->has_error() )
                     return $response;
 
-                lib('ext/CsvParser/CsvParser');
-                lib('ext/CsvParser/Iterator/FileIterator');
-                lib('ext/CsvParser/Iterator/CsvIterator');
-                $parser = \KzykHys\CsvParser\CsvParser::fromString( $file_content );
-                $rows = $parser->parse();
+                // Loop through the rows
+                while ( $row = fgetcsv( $handler ) ) {
+                    $rows[] = $row;
+                }
+
+                fclose( $handler );
 
                 break;
 
