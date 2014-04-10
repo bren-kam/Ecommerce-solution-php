@@ -1987,7 +1987,7 @@ class ProductsController extends BaseController {
         $this->resources->javascript( 'products/manually-priced' );
 
         $response = $this->get_template_response( 'manually-priced' )
-            ->kb( 0 )
+            ->kb( 142 )
             ->add_title( _('Manually Priced Products') )
             ->select( 'sub-products', 'manually-priced' )
             ->set( compact( 'products' ) );

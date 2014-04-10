@@ -35,7 +35,7 @@ echo $template->start( _('Manually Priced Products') );
                 <td>
                     <?php echo $product->name; ?> <br>
                     <div class="actions">
-                        <a class="manually-priced-remove" href="/products/manually-priced-remove/?product-id=<?php echo $product->product_id ?>"">Remove from this list</a>
+                        <a class="manually-priced-remove" href="/products/manually-priced-remove/?product-id=<?php echo $product->product_id ?>"">Remove</a>
                     </div>
                 </td>
                 <td><?php echo $product->sku; ?></td>

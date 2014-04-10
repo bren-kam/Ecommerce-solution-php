@@ -705,19 +705,19 @@ ProductsController extends BaseController {
 
             case 'csv':
                 // Make sure it's opened properly
-                $response->check( $handle = fopen( $result['file_path'], "r"), _('An error occurred while trying to read your file.') );
+                $response->check( $handler = fopen( $result['file_path'], 'r' ), _('An error occurred while trying to read your file.') );
 
                 // If there is an error or now user id, return
                 if ( $response->has_error() )
                     return $response;
 
                 // Loop through the rows
-                while( $row = fgetcsv( $handle ) ) {
+                while ( $row = fgetcsv( $handler ) ) {
                     $rows[] = $row;
                 }
 
-                // Close the file
-                fclose( $handle );
+                fclose( $handler );
+
                 break;
 
             default:
