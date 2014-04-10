@@ -35,6 +35,8 @@ abstract class BaseDatabaseTest extends PHPUnit_Extensions_Database_TestCase {
      * Initialize DB
      */
     public function __construct() {
+        parent::__construct();
+
         $pdo = Registry::get('pdo');
 
         if ( !$pdo ) {
