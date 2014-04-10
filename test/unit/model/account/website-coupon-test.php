@@ -12,6 +12,10 @@ class WebsiteCouponTest extends BaseDatabaseTest {
     // Website Coupon Shipping Methods
     const WEBSITE_SHIPPING_METHOD_ID = 27;
 
+    // Brand
+    const BRAND_ID = 7;
+    const BRAND_NAME = 'Ash';
+
     /**
      * @var WebsiteCoupon
      */
@@ -28,6 +32,10 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->phactory->define( 'website_coupons', array( 'website_id' => self::WEBSITE_ID, 'name' => self::NAME ) );
         $this->phactory->define( 'website_coupon_relations', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID, 'product_id' => self::PRODUCT_ID ) );
         $this->phactory->define( 'website_coupon_shipping_methods', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID, 'website_shipping_method_id' => self::WEBSITE_SHIPPING_METHOD_ID ) );
+        $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
+        $this->phactory->define( 'products', array( 'product_id' => self::PRODUCT_ID, 'brand_id' => self::BRAND_ID ) );
+        $this->phactory->define( 'brands', array( 'brand_id' => self::BRAND_ID, 'name' => self::BRAND_NAME ) );
+
         $this->phactory->recall();
     }
 
@@ -255,6 +263,26 @@ class WebsiteCouponTest extends BaseDatabaseTest {
 
         // Get rid of everything
         unset( $user, $_GET, $dt, $count );
+    }
+
+    /**
+     * Test Add Relations By Brand
+     */
+    public function testAddRelationsByBrand() {
+        // Create
+        $ph_brand = $this->phactory->create( 'brands' );
+        $ph_product = $this->phactory->create( 'products' );
+        $ph_website_product = $this->phactory->create( 'website_products' );
+        $ph_coupon = $this->phactory->create( 'website_coupons' );
+
+        // Run
+        $this->website_coupon->add_relations_by_brand( $ph_coupon->website_coupon_id, self::WEBSITE_ID, self::BRAND_ID );
+
+        // Get
+        $coupons = $this->website_coupon->get_by_product( self::WEBSITE_ID, self::PRODUCT_ID );
+
+        // Test
+        $this->assertEquals( key( $coupons ), $ph_coupon->website_coupon_id );
     }
 
     /**
