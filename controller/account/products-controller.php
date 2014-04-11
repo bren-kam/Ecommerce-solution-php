@@ -1659,6 +1659,7 @@ class ProductsController extends BaseController {
 
         // Set link brands
         $this->user->account->link_brands = $_POST['checked'];
+        $this->user->account->user_id_updated = $this->user->id;
         $this->user->account->save();
 
         // Add the response
