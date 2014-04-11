@@ -36,7 +36,6 @@ $rate_nonce = nonce::create('rate');
                     , 20    => array( 'email-marketing', _('Email Marketing') )
                     , 123   => array( 'shopping-cart', _('Shopping Cart') )
                     , 22    => array( 'social-media', _('Social Media') )
-                    , 98    => array( 'mobile-marketing', _('Mobile Marketing') )
                     , 121   => array( 'faqs', _('Frequently Asked Questions') )
                 );
 

@@ -92,7 +92,6 @@ class WebsiteController extends BaseController {
                 // Home page can't update their slug
                 $slug = ( 'home' == $page->slug ) ? 'home' : $_POST['tPageSlug'];
                 $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : $_POST['tTitle'];
-                $mobile = (int) 'on' == $_POST['cbIsMobile'];
 
                 // Update the page
                 $page->slug = $slug;
@@ -101,7 +100,6 @@ class WebsiteController extends BaseController {
                 $page->meta_title = $_POST['tMetaTitle'];
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
-                $page->mobile = $mobile;
                 $page->save();
 
                 // Update custom meta

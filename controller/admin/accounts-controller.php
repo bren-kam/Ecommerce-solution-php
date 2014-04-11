@@ -177,7 +177,6 @@ class AccountsController extends BaseController {
                     $account->craigslist = (int) isset( $_POST['cbCraigslist'] );
                     $account->email_marketing = (int) isset( $_POST['cbEmailMarketing'] );
                     $account->domain_registration = (int) isset( $_POST['cbDomainRegistration'] );
-                    $account->mobile_marketing = (int) isset( $_POST['cbMobileMarketing'] );
                     $account->additional_email_Addresses = (int) isset( $_POST['cbAdditionalEmailAddresses'] );
                     $account->social_media = (int) isset( $_POST['cbSocialMedia'] );
 
@@ -279,7 +278,6 @@ class AccountsController extends BaseController {
             , 'craigslist'
             , 'email_marketing'
             , 'domain_registration'
-            , 'mobile_marketing'
             , 'additional_email_addresses'
             , 'social_media'
         );
@@ -1286,77 +1284,6 @@ class AccountsController extends BaseController {
     }
 
     /***** AJAX *****/
-
-    /**
-     * Create trumpia account
-     *
-     * @return CustomResponse|AjaxResponse
-     */
-    protected function create_trumpia_account() {
-        // Get the account
-        $account = new Account();
-        $account->get( $_GET['aid'] );
-
-        // Get mobile plans
-        $mobile_plan = new MobilePlan();
-        $mobile_plans = $mobile_plan->get_all();
-
-        $mobile_plan_options = array();
-
-        /**
-         * @var MobilePlan $mp
-         */
-        foreach ( $mobile_plans as $mp ) {
-            $mobile_plan_options[$mp->id] = $mp->name;
-        }
-
-        // Create new form table
-        $ft = new FormTable( 'fCreateTrumpiaAccount' );
-
-        $ft->submit( _('Create') )
-            ->attribute( 'ajax', '1' )
-            ->set_action( url::add_query_arg( 'aid', $account->id, '/accounts/create-trumpia-account/' ) );
-
-        $ft->add_field( 'select', _('Mobile Marketing Plan'), 'sMobilePlanId' )
-            ->add_validation( 'req', _('The "Mobile Marketing Plan" field is required') )
-            ->options( $mobile_plan_options );
-
-        $form = $ft->generate_form();
-
-        // Create the account
-        if ( $ft->posted() ) {
-            $response = new AjaxResponse(true);
-
-            // Get install service
-            $install_service = new InstallService();
-
-            // Alert them that there was a problem
-            try {
-                $install_service->install_trumpia_account( $mobile_plan, $account );
-            } catch ( ModelException $e ) {
-                $response->check( false, $e->getMessage() );
-            }
-
-            if ( $response->has_error() )
-                return $response;
-
-            // Add notification
-            $this->notify( _('Trumpia account successfully created') );
-
-            // Redirect to next page
-            jQuery('body')->redirect( url::add_query_arg( 'aid', $account->id, '/accounts/other-settings/' ) );
-
-            // Add jquery
-            $response->add_response( 'jquery', jQuery::getResponse() );
-
-            return $response;
-        }
-
-        $response = new CustomResponse( $this->resources, 'accounts/create-trumpia-account' );
-        $response->set( compact( 'form' ) );
-
-        return $response;
-    }
 
     /**
      * Create email marketing account

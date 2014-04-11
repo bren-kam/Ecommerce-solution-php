@@ -119,13 +119,7 @@ if ( !empty( $errs ) )
         <br clear="left" />
         <br />
     </div>
-
-    <?php if ( $user->account->mobile_marketing ) { ?>
-        <p><input type="checkbox" class="cb" name="cbIsMobile" id="cbIsMobile" <?php if ( $page->mobile ) echo "checked"; ?> /> <label for="cbIsMobile"><?php echo _('Link to Mobile Website'); ?></label></p>
-        <br />
     <?php
-    }
-
     if ( in_array( $page->slug, array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
         require VIEW_PATH . 'website/pages/' . $page->slug . '.php';
     ?>
