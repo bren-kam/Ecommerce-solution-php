@@ -92,7 +92,6 @@ class WebsiteController extends BaseController {
                 // Home page can't update their slug
                 $slug = ( 'home' == $page->slug ) ? 'home' : $_POST['tPageSlug'];
                 $title = ( _('Page Title...') == $_POST['tTitle'] ) ? '' : $_POST['tTitle'];
-                $mobile = (int) 'on' == $_POST['cbIsMobile'];
 
                 // Update the page
                 $page->slug = $slug;
@@ -101,7 +100,6 @@ class WebsiteController extends BaseController {
                 $page->meta_title = $_POST['tMetaTitle'];
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
-                $page->mobile = $mobile;
                 $page->save();
 
                 // Update custom meta
@@ -525,7 +523,7 @@ class WebsiteController extends BaseController {
                 , (object) array( 'name' => 'sidebar', 'disabled' => 0 )
             );
             if ( $this->user->account->is_new_template() ) {
-                $layout[] = (object) array( 'name' => 'trending-products', 'disabled' => 0 );
+                $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
             }
         } else {
             $layout = json_decode( $layout );
@@ -626,6 +624,7 @@ class WebsiteController extends BaseController {
             'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'sidebar-image-width', 'timezone', 'images-alt'
             , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link'
+            , 'logo-link'
         );
         $settings = $this->user->account->get_settings( $settings_array );
 
@@ -706,6 +705,9 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
             ->options( data::timezones( false, false, true ) );
+
+        $form->add_field( 'text', _('Logo Link URL'), 'logo-link', $settings['logo-link'] )
+            ->add_validation( 'url', _('The "Logo Link" must be a valid link') );
 
         $form->add_field( 'checkbox', _('Images - Alt Tags'), 'images-alt', $settings['images-alt'] );
 

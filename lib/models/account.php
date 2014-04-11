@@ -448,4 +448,10 @@ class Account extends ActiveRecordBase {
         return in_array($this->company_package_id, $new_template_company_package_ids);
     }
     
+    public function get_online_specialist() {
+        $user = new User();
+        $user->get( $this->os_user_id );
+        return $user;
+    }
+    
 }

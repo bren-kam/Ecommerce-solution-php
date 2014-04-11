@@ -134,10 +134,15 @@ input.button {
 #wrapper { min-height:100%; width:100%; }
 #header { height: 82px; background: url(/images/slivers/header.png) 0 100% repeat-x; padding: 0 20px; }
 
-#log-out {
-	height:19px; position:absolute; top:10px; right: 20px; font-size: 11px; font-weight: bold;
+#user-info {
+    height:19px; position:absolute; top:10px; right: 0px; font-size: 11px; font-weight: bold;
 }
-#log-out p { margin-bottom: 5px }
+#user-info .user-info-block {
+    display: block; float: left; margin-right: 20px;
+}
+#user-info p {
+    margin-bottom: 5px;
+}
 
 #nav { position: relative; height: 43px; border-bottom: 5px solid; padding: 0 20px; background: url(/images/slivers/navigation.png) 0 0 repeat-x }
 #nav-links { height:43px; width: 100%; position:relative; background: url(/images/nav-divider.png) 0 0 no-repeat; }

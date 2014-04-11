@@ -40,11 +40,22 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
 		<?php $margin = floor( ( 82 - LOGO_HEIGHT ) / 2 ); ?>
 		<div id="logo"><img src="/images/logos/<?php echo DOMAIN; ?>.png" width="<?php echo LOGO_WIDTH; ?>" height="<?php echo LOGO_HEIGHT; ?>" alt="<?php echo TITLE, ' ', _('Logo'); ?>" style="margin: <?php echo $margin; ?>px 0" /></div>
 
-        <div id="log-out">
-        <?php if ( $user && $user->id ) { ?>
-		    <p><?php echo _('Welcome'), ' ', $user->contact_name; ?> | <a href="/logout/" title="<?php echo _('Log Out'); ?>"><?php echo _('Log out'); ?></a></p>
-            <p><a href="/settings/" title="<?php echo _('Account Settings'); ?>" class="float-right"><?php echo _('Account Settings'); ?></a></p>
-		<?php } ?>
+        <div id="user-info">
+            <div class="user-info-block">
+                <?php if ( $user && $user->id ) { ?>
+                    <p><?php echo _('Welcome'), ' ', $user->contact_name; ?> | <a href="/logout/" title="<?php echo _('Log Out'); ?>"><?php echo _('Log out'); ?></a></p>
+                    <p><a href="/settings/" title="<?php echo _('Account Settings'); ?>"><?php echo _('Account Settings'); ?></a></p>
+                <?php } ?>
+                <?php if ( $online_specialist->id ) { ?>
+                    <p>Online specialist: <a href="mailto:<?php echo $online_specialist->email ?>"><?php echo $online_specialist->contact_name ?></a></p>
+                    <p>
+                        <?php
+                            echo '<a href="mailto:' . $online_specialist->email . '">' . $online_specialist->email . '</a>';
+                            if ( $online_specialist->work_phone ) echo ' | ' . $online_specialist->work_phone;
+                        ?>
+                    </p>
+                <?php } ?>
+            </div>
         </div>
 	</div>
 	<div id="nav">
@@ -60,7 +71,6 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                 , 'shopping_cart'	    => array( 'shopping-cart/users', _('Shopping Cart') )
                 , 'craigslist'		    => array( 'craigslist', _('Craigslist Ads') )
                 , 'social_media'	    => array( 'social-media', _('Social Media') )
-                , 'mobile_marketing'    => array( 'mobile-marketing', _('Mobile Marketing') )
             );
 
             $exceptions = array(
