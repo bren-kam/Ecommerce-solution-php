@@ -120,7 +120,7 @@ class TicketsController extends BaseController {
         // Special words
         $words = array(
             User::CHAD => '@sales'  // Chad
-            , User::CHRIS => '@products' // Chris
+            , User::CATALOG_MANAGER => '@products' // Chris
             , User::CRAIG => '@accounting' // Craig
         );
 
