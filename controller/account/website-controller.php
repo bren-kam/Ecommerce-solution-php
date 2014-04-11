@@ -526,6 +526,7 @@ class WebsiteController extends BaseController {
             );
             if ( $this->user->account->is_new_template() ) {
                 $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
+                $layout[] = (object) array( 'name' => 'best-seller-items', 'disabled' => 0 );
             }
         } else {
             $layout = json_decode( $layout );
