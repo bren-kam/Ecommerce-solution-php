@@ -1409,7 +1409,7 @@ class ProductsController extends BaseController {
 
         // Create Ticket
         $ticket->user_id = $this->user->id;
-        $ticket->assigned_to_user_id = User::CHRIS;
+        $ticket->assigned_to_user_id = User::CATALOG_MANAGER;
         $ticket->website_id = $this->user->account->id;
         $ticket->summary = "$subject - Product Request";
         $ticket->message = $ticket_message;
@@ -1659,6 +1659,7 @@ class ProductsController extends BaseController {
 
         // Set link brands
         $this->user->account->link_brands = $_POST['checked'];
+        $this->user->account->user_id_updated = $this->user->id;
         $this->user->account->save();
 
         // Add the response

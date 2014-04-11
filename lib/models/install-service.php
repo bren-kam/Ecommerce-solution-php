@@ -5,8 +5,9 @@ class InstallService {
      * Install a website
      *
      * @param Account $account
+     * @param int $user_id the user that performs the operation
      */
-    public function install_website( Account $account ) {
+    public function install_website( Account $account, $user_id = -1) {
         // Create website industry (furniture)
         $account->add_industries( array( 1 ) );
 
@@ -41,6 +42,7 @@ class InstallService {
 
         // Updated website version
         $account->version = 1;
+        $account->user_id_updated = $user_id;
         $account->save();
 
         // Insert pages
@@ -159,8 +161,9 @@ class InstallService {
      * Install account package
      *
      * @param Account $account
+     * @param int $user_id the user id that performs the operation
      */
-    public function install_package( Account $account ) {
+    public function install_package( Account $account, $user_id = -1) {
         // Get company package
         $company_package = new CompanyPackage();
         $company_package->get( $account->company_package_id );
@@ -172,6 +175,8 @@ class InstallService {
         // Update theme and logo
         $account->theme = $template_account->theme;
         $account->logo = $template_account->logo;
+
+        $account->user_id_updated = $user_id;
         $account->save();
 
         // Get FTP Username

@@ -332,6 +332,8 @@ class ApiRequest {
 
         // Create and update
         $account->create(); // Doesn't add them all
+
+        $account->user_id_updated = $user_id;
         $account->save();
 
         // Needs to create a checklist
@@ -393,6 +395,7 @@ class ApiRequest {
                 // Update the domain field
                 $account->ftp_username = security::encrypt( $username, ENCRYPTION_KEY, true );
                 $account->domain = $domain;
+                $account->user_id_updated = $user_id;
                 $account->save();
 
                 // Get user
@@ -409,7 +412,7 @@ class ApiRequest {
 
                 // Now need to install the service
                 $install_service = new InstallService();
-                $install_service->install_website( $account );
+                $install_service->install_website( $account, $user_id );
 
 				// Setup DNS
 				library('r53');
@@ -444,11 +447,13 @@ class ApiRequest {
         $account = new Account;
         $account->get( $website_id );
         $account->company_package_id = $company_package_id;
+        $account->user_id_updated = -1;  // This service does not asks for a user id
         $account->save();
 
         // Install the package
         $install_service = new InstallService();
-        $install_service->install_package( $account );
+        $user_id = -1; // This service doesn't asks for a user
+        $install_service->install_package( $account, $user_id );
 
         // Everything was successful
         $this->add_response( array( 'success' => true, 'message' => 'success-install-package', 'website_id' => $website_id ) );
