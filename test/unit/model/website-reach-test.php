@@ -3,8 +3,10 @@
 require_once 'test/base-database-test.php';
 
 // Stub functions
-function _( $string ) {
-    return $string;
+if ( !function_exists( '_' ) ) {
+    function _( $string ) {
+        return $string;
+    }
 }
 
 class WebsiteReachTest extends BaseDatabaseTest {

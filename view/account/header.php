@@ -50,7 +50,7 @@ $resources->javascript( 'sparrow', 'jquery.notify', 'header' );
                     <p>Online specialist: <a href="mailto:<?php echo $online_specialist->email ?>"><?php echo $online_specialist->contact_name ?></a></p>
                     <p>
                         <?php
-                            echo $online_specialist->email;
+                            echo '<a href="mailto:' . $online_specialist->email . '">' . $online_specialist->email . '</a>';
                             if ( $online_specialist->work_phone ) echo ' | ' . $online_specialist->work_phone;
                         ?>
                     </p>

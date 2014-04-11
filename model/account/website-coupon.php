@@ -236,4 +236,23 @@ class WebsiteCoupon extends ActiveRecordBase {
             , $values
         )->get_var();
     }
+
+    /**
+     * Add Relations by Brand
+     *
+     * @param int $website_coupon_id
+     * @param int $website_id
+     * @param int $brand_id
+     */
+    public function add_relations_by_brand( $website_coupon_id, $website_id, $brand_id ) {
+        $this->prepare(
+            'INSERT IGNORE INTO website_coupon_relations (`website_coupon_id`, `product_id`) SELECT :website_coupon_id, p.`product_id` FROM `products` p INNER JOIN `website_products` wp ON ( p.`product_id` = wp.`product_id` ) INNER JOIN `brands` b ON ( p.`brand_id` = b.`brand_id` ) WHERE wp.`website_id` = :website_id AND p.`brand_id` = :brand_id'
+            , 'iii'
+            , array(
+                ':website_coupon_id' => $website_coupon_id
+                , ':website_id' => $website_id
+                , ':brand_id' => $brand_id
+            )
+        )->query();
+    }
 }

@@ -130,7 +130,8 @@ abstract class BaseController {
         $template_response = new TemplateResponse( $this->resources, $this->view_base . $file, $title );
         $template_response->set( 'user', $this->user );
         $template_response->set( 'section', $this->section );
-        $template_response->set( 'online_specialist', $this->user->account->get_online_specialist() );
+        if ( $this->user->account )
+            $template_response->set( 'online_specialist', $this->user->account->get_online_specialist() );
         $template_response->set( $this->section, true );
 
         if ( is_null( $this->title ) )
