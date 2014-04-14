@@ -276,6 +276,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
     <input type="hidden" id="hProductId" value="<?php if ( $product_id ) echo $product_id; ?>" />
     <?php nonce::field('add_edit'); ?>
 </form>
+<?php echo $validation->js_validation() ?>
 <br clear="all" />
 <br />
 
