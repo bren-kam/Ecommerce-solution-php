@@ -101,6 +101,18 @@ input.login-button {
 #lost-your-password { margin-top: 25px }
 #lost-your-password a { color: #5B666E; font-size: 12px; }
 
+#lost-your-password-wrapper {
+    width: 310px; margin: 0 auto; background-color: #fff; height: 92px;
+    padding: 20px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+#back-to-login { margin-top: 25px }
+#back-to-login a { color: #5B666E; font-size: 12px; }
+
+
 /***** FORM *****/
 input.tb {
 	border: 1px solid #B3B3B3;
