@@ -403,7 +403,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             // Add specs
             $product->delete_specifications();
-            $product->add_specifications( $item['specs'] );
+
+            if ( !empty( $item['specs'] ) )
+                $product->add_specifications( $item['specs'] );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
