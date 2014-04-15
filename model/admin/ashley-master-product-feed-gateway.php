@@ -385,7 +385,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Change publish visibility to private if there are no images
             if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
                 $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'public';
+                $product->publish_visibility = 'private';
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
@@ -398,6 +398,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             }
 
             /***** UPDATE PRODUCT *****/
+
+            if ( $product->category_id && !empty( $images ) )
+                $product->publish_visibility = 'public';
 
 			$product->save();
 
