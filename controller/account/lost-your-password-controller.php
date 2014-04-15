@@ -38,7 +38,11 @@ class LostYourPasswordController extends BaseController {
                 if ( $user->id ) {
 
                     $account = new Account();
-                    $accounts = $account->get_by_user( $user->id );
+                    if ( in_array( $user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) ) {
+                        $accounts = $account->get_by_authorized_user( $user->id );
+                    } else {
+                        $accounts = $account->get_by_user( $user->id );
+                    }
                     $account = array_pop( $accounts );
 
                     if ( $account->id ) {
@@ -67,7 +71,7 @@ class LostYourPasswordController extends BaseController {
 
                             $intro->send();
 
-                            $this->notify( 'You have been sent an email with further instructions to recover your password.' );
+                            $success = _( 'You have been sent an email with further instructions to recover your password.' );
                         }
                     } else {
                         $errs .= _('That email is not registered. Please try again.');

@@ -27,6 +27,13 @@ $margin_bottom = ( 'greysuitretail' == DOMAIN ) ? '' : '20px';
 <?php
 $template->get_top();
 
+if ( $success ) {
+    ?>
+    <div class="notification sticky hidden success">
+        <p><?php echo $success; ?></p>
+    </div>
+<?php }
+
 if ( $errs ) {
 ?>
 <div class="notification sticky hidden error">
