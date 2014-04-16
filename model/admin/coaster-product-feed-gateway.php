@@ -348,7 +348,7 @@ class CoasterProductFeedGateway extends ProductFeedGateway {
         if( count( $this->new_products ) > 0 ) {
 			$message = "-----New Products-----" . PHP_EOL . $new_products;
 
-			fn::mail( 'kerry@greysuitretail.com, chris@greysuitretail.com', 'Coaster Products - ' . dt::now(), $message );
+			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com', 'Coaster Products - ' . dt::now(), $message );
 		}
     }
 
