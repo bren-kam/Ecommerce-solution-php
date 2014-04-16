@@ -606,8 +606,7 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
         // Send report to everyone else
         if( count( $this->new_products ) > 0 ) {
 			$message = "-----New Package Feed Products-----" . PHP_EOL . $new_products;
-			//, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com
-			fn::mail( 'kerry@greysuitretail.com', 'Ashley Package Products - ' . dt::now(), $message );
+			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com', 'Ashley Package Products - ' . dt::now(), $message );
 		}
     }
 
