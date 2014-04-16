@@ -2085,7 +2085,7 @@ class ProductsController extends BaseController {
 
 
         return $this->get_template_response( 'brands-add-coupon' )
-            ->kb( 0 )
+            ->kb( 143 )
             ->add_title( _('Brands - Add Coupon') )
             ->select( 'brands', 'add-coupon' )
             ->set( array(
