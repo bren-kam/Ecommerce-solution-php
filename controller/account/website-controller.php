@@ -971,6 +971,7 @@ class WebsiteController extends BaseController {
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'file', $account_file->file_path );
 
         return $response;
     }
@@ -1851,6 +1852,7 @@ class WebsiteController extends BaseController {
         $location->email = $_POST['email'];
         $location->website = $_POST['website'];
         $location->store_hours = nl2br( $_POST['store-hours'] );
+        $location->store_image = $_POST['store-image'];
 
         // Get latitude and longitude
         library('google-maps-api');
@@ -1943,6 +1945,8 @@ class WebsiteController extends BaseController {
         jQuery('#email')->val( $location->email );
         jQuery('#website')->val( $location->website );
         jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
+        jQuery('#store-image')->val( $location->store_image );
+        jQuery('#store-image-preview')->attr( 'src', $location->store_image );
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );
