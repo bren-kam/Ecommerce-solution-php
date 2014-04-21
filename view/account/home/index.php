@@ -31,11 +31,19 @@ $keys = array_keys( $links );
 
 foreach ( $links as $key => $link ) {
     if ( !$user->account->$key ) {
-        if ( !$user->has_permission( User::ROLE_STORE_OWNER ) )
-            continue;
 
-        if ( 'email_marketing' != $key )
-            continue;
+        // We want authorized users to have the Email Marketing if they have the permission
+        // Account::$auth_user_email_marketing
+        if ( !( 'email_marketing' == $key && $user->account->auth_user_email_marketing ) ) {
+
+            if ( !$user->has_permission( User::ROLE_STORE_OWNER ) )
+                continue;
+
+            if ( 'email_marketing' != $key )
+                continue;
+
+        }
+
     }
 
     switch ( $key ) {

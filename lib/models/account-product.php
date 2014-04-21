@@ -1198,4 +1198,19 @@ class AccountProduct extends ActiveRecordBase {
        );
     }
 
+    /**
+     * Lock Prices by Account
+     *
+     * Set all products as manually priced, so they can't be touched by Auto Price tool
+     * @param $account_id
+     */
+    public function lock_prices_by_account( $account_id ) {
+        $this->update(
+            array( 'manual_price' => 1 )
+            , array( 'website_id' => $account_id )
+            , 'i'
+            , 'i'
+        );
+    }
+
 }

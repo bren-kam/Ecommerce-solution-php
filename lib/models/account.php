@@ -11,7 +11,7 @@ class Account extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $website_id, $company_package_id, $user_id, $os_user_id, $title, $domain, $plan_name
         , $plan_description, $theme, $logo,  $phone, $products, $pages, $shopping_cart, $product_catalog, $link_brands
-        , $room_planner, $blog, $craigslist, $email_marketing, $domain_registration, $mobile_marketing
+        , $room_planner, $blog, $craigslist, $email_marketing, $auth_user_email_marketing, $domain_registration, $mobile_marketing
         , $additional_email_Addresses, $social_media, $ftp_username, $ga_profile_id, $ga_tracking_key
         , $wordpress_username, $wordpress_password, $mc_list_id, $version, $live, $type, $status, $date_created
         , $user_id_updated;
@@ -69,7 +69,7 @@ class Account extends ActiveRecordBase {
      */
     public function get_by_authorized_user( $user_id ) {
         return $this->prepare(
-            'SELECT w.`website_id`, w.`os_user_id`, w.`domain`, w.`title`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`wordpress_username`, w.`wordpress_password`, IF ( w.`live`, auw.`analytics`, 0 ) AS live, w.`pages`, ( auw.`products` * w.`products` * w.`product_catalog` ) AS product_catalog, w.`ga_profile_id`, IF ( 1 = w.`blog`, auw.`blog`, 0 ) AS blog, IF( 1 = w.`email_marketing`, auw.`email_marketing`, 0 ) AS email_marketing, IF( 1 = w.`shopping_cart`, auw.`shopping_cart`, 0 ) AS shopping_cart, w.`user_id_updated` FROM `websites` AS w LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) WHERE auw.`user_id` = :user_id AND w.`status` = 1 ORDER BY w.`title` ASC'
+            'SELECT w.`website_id`, w.`os_user_id`, w.`domain`, w.`title`, w.`products`, w.`product_catalog`, w.`link_brands`, w.`room_planner`, w.`craigslist`, w.`social_media`, w.`wordpress_username`, w.`wordpress_password`, IF ( w.`live`, auw.`analytics`, 0 ) AS live, w.`pages`, ( auw.`products` * w.`products` * w.`product_catalog` ) AS product_catalog, w.`ga_profile_id`, IF ( 1 = w.`blog`, auw.`blog`, 0 ) AS blog, IF( 1 = w.`email_marketing`, auw.`email_marketing`, 0 ) AS email_marketing, auw.`email_marketing` AS auth_user_email_marketing, IF( 1 = w.`shopping_cart`, auw.`shopping_cart`, 0 ) AS shopping_cart, w.`user_id_updated` FROM `websites` AS w LEFT JOIN `auth_user_websites` AS auw ON ( auw.`website_id` = w.`website_id` ) WHERE auw.`user_id` = :user_id AND w.`status` = 1 ORDER BY w.`title` ASC'
             , 'i'
             , array( ':user_id' => $user_id )
         )->get_results( PDO::FETCH_CLASS, 'Account' );

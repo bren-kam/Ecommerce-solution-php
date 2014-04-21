@@ -16,7 +16,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     });
 
     $("#remove-all").click( function() {
-        return confirm("Are you sure to remove all products from this list? This will allow Auto Price tool to modify their values.");
+        return confirm("Are you sure you want to remove all products from this list? This will allow Auto Price tool to modify their values.");
+    });
+
+    $("#lock-all-products").click( function() {
+        return confirm("Are you sure to want to lock all Product prices? They won't be updated by the Auto Price tool.");
     });
 
 });

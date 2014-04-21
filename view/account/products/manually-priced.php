@@ -16,6 +16,7 @@ echo $template->start( _('Manually Priced Products') );
 
 <p class="float-right">
     <a class="button" id="remove-all" href="/products/manually-priced-remove-all/?_nonce=<?php echo nonce::create( 'manually_priced_remove_all' ) ?>">Clear All</a>
+    <a class="button" id="lock-all-products" href="/products/manually-priced-lock-all/?_nonce=<?php echo nonce::create( 'manually_priced_lock_all' ) ?>">Lock All Products</a>
 </p>
 <table class="dt" width="100%" perPage="100,250,500">
     <thead>

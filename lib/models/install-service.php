@@ -19,22 +19,11 @@ class InstallService {
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
         // Copy files
-        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" );
+        ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
 
         // Update config & .htaccess file
-        $document_root = '\/home\/' . $username . '\/public_html';
+        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
 
-        ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/config.php" );
-        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/config.php" );
-
-        // Must use FTP to assign folders under the right user
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom" );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/" . $account->theme );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache" );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache/css" );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache/js" );
-
-        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
         ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
@@ -187,19 +176,13 @@ class InstallService {
         $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
-        // Make The new theme directory
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/" . $template_account->theme );
+        // Copy files
+        ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
 
-        // Copy over all the theme files
-        ssh2_exec( $ssh_connection, "cp -Rf /home/$template_username/public_html/custom/. /home/$username/public_html/custom" );
+        // Update config & .htaccess file
+        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
 
-		// Copy over config file
-        ssh2_exec( $ssh_connection, "yes | cp -rf /home/$template_username/public_html/config.php /home/$username/public_html/config.php" );
-
-		ssh2_exec( $ssh_connection, "sed -i 's/$template_username/$username/g' /home/$username/public_html/config.php" );
-		ssh2_exec( $ssh_connection, "sed -i 's/" . $template_account->id . "/" . $account->id . "/g' /home/$username/public_html/config.php" );
-
-        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
+        // Change files owner
         ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
