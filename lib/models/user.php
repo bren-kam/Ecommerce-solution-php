@@ -18,6 +18,7 @@ class User extends ActiveRecordBase {
     const MANINDER = 85; // Head of Conversions
     const RAFFERTY = 19;
     const KEVIN_DORAN = 251;
+    const CATALOG_MANAGER = 2734;
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;

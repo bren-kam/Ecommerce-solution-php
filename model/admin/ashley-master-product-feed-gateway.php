@@ -385,7 +385,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Change publish visibility to private if there are no images
             if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
                 $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'public';
+                $product->publish_visibility = 'private';
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
@@ -399,11 +399,16 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             /***** UPDATE PRODUCT *****/
 
+            if ( $product->category_id && !empty( $images ) )
+                $product->publish_visibility = 'public';
+
 			$product->save();
 
             // Add specs
             $product->delete_specifications();
-            $product->add_specifications( $item['specs'] );
+
+            if ( !empty( $item['specs'] ) )
+                $product->add_specifications( $item['specs'] );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;
@@ -436,7 +441,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
         if( count( $this->new_products ) > 0 ) {
 			$message = "-----New Products-----" . PHP_EOL . $new_products;
 
-			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, chris@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
+			fn::mail( 'kerry@greysuitretail.com, david@greysuitretail.com, rafferty@greysuitretail.com, productmanager@greysuitretail.com', 'Ashley Products - ' . dt::now(), $message );
 		}
 		
 		$this->items = $this->existing_products = $this->codes = $this->new_products = $this->non_existent_groups = $new_products = NULL;
