@@ -21,6 +21,7 @@ echo $template->start( _('Sidebar') );
 <a href="#" class="button loader hidden" id="upload-sidebar-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
 <div class="hidden-fix position-absolute" id="upload-sidebar-image"></div>
 <a href="#dUploadFile" class="button" title="<?php echo _('Upload File (Media Manager)'); ?>" rel="dialog"><?php echo _('Upload File'); ?></a>
+<p><small><?php if ( $dimensions ) echo '(Max. ' . $dimensions . ')' ?></small></p>
 <br /><br /><br />
 <p class="alert">(<?php echo _('Note: The changes you make to your sidebar are immediately live on your website'); ?>)</p>
 <input type="hidden" id="hAccountPageId" value="<?php echo $page->id; ?>" />
