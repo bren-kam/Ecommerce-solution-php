@@ -103,6 +103,8 @@ ProductsController extends BaseController {
         $validation->add_validation('sIndustry', 'req', 'Industry is required');
         $validation->add_validation('tName', 'req', 'Name is required');
         $validation->add_validation('tSKU', 'req', 'SKU is required');
+        $validation->add_validation('tPrice', 'float', 'Wholesale Price must be a valid price');
+        $validation->add_validation('tPriceMin', 'float', 'MAP Price must be a valid price');
         $validation->add_validation('hPublishDate', 'req', 'Publish Date is required');
 
         if ( $this->verified() && $product->id ) {
@@ -137,6 +139,8 @@ ProductsController extends BaseController {
                 $product->description = $_POST['taDescription'];
                 $product->sku = $_POST['tSKU'];
                 $product->weight = $_POST['tWeight'];
+                $product->price = $_POST['tPrice'];
+                $product->price_min = $_POST['tPriceMin'];
                 $product->status = $_POST['sProductStatus'];
                 $product->publish_date = $_POST['hPublishDate'];
                 $product->publish_visibility = $_POST['sStatus'];
