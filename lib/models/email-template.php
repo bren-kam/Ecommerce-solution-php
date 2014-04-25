@@ -208,6 +208,9 @@ class EmailTemplate extends ActiveRecordBase {
             break;
         }
 
+        // Empty not used placeholders
+        $html_message = str_replace( array( '[subject]', '[message]', '[products]' ), '', $html_message );
+
         return $html_message;
     }
 }

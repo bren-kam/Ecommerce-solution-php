@@ -268,7 +268,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 			$sku = $item['sku'];
 
             // We can't have a SKU like B457B532 -- it means it is international and comes in a container
-			$this->check( !preg_match( '/[lL]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) );
+			$this->check( !preg_match( '/^[lL]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) );
 
             if ( !isset( $this->groups[$item['group'] ] ) ) {
                 $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );

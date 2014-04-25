@@ -34,10 +34,6 @@
 	<?php } ?>
 
 	<a href="/products/brands/" title="<?php echo _('Top Brands'); ?>" class="top<?php $template->select('brands'); ?>"><?php echo _('Top Brands'); ?></a>
-    <?php if ( $template->v('brands') ) { ?>
-        <a href="/products/brands/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-        <a href="/products/brands-add-coupon/" title="<?php echo _('Add Coupon'); ?>" class="sub<?php $template->select('add-coupon'); ?>"><?php echo _('Add Coupon'); ?></a>
-    <?php } ?>
 	<a href="/products/top-categories/" title="<?php echo _('Top Categories'); ?>" class="top<?php $template->select('top-categories'); ?>"><?php echo _('Top Categories'); ?></a>
 
 	<a href="/products/related-products/" title="<?php echo _('Related Products'); ?>" class="top<?php $template->select('related-products'); ?>"><?php echo _('Related Products'); ?></a>
