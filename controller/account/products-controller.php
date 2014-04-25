@@ -2048,49 +2048,4 @@ class ProductsController extends BaseController {
         return new RedirectResponse( '/products/manually-priced/' );
     }
 
-    /**
-     * Brands Add Coupon
-     *
-     * @return TemplateResponse
-     */
-    protected function brands_add_coupon() {
-        // Instantiate classes
-        $form = new FormTable( 'fBrandsAddCoupon' );
-
-        $brand = new Brand();
-        $brands = $brand->get_by_account( $this->user->account->id );
-        $brands_options = array();
-        foreach ( $brands as $b ) {
-            $brands_options[$b->id] = $b->name;
-        }
-
-        $form->add_field( 'select', _('Brand'), 'brand' )
-            ->options( $brands_options );
-
-        $coupon = new WebsiteCoupon();
-        $coupons = $coupon->get_by_account( $this->user->account->id );
-        $coupons_options = array();
-        foreach ( $coupons as $c ) {
-            $coupons_options[$c->id] = "{$c->code} - {$c->name}";
-        }
-
-        $form->add_field( 'select', _('Coupon'), 'coupon' )
-            ->options( $coupons_options );
-
-        if ( $form->posted() ) {
-            $coupon = new WebsiteCoupon();
-            $coupon->add_relations_by_brand( $_POST['coupon'], $this->user->account->id, $_POST['brand'] );
-            $this->notify( 'Your coupon has been added to the brand successfully' );
-        }
-
-
-        return $this->get_template_response( 'brands-add-coupon' )
-            ->kb( 143 )
-            ->add_title( _('Brands - Add Coupon') )
-            ->select( 'brands', 'add-coupon' )
-            ->set( array(
-                'form' => $form->generate_form()
-            ) );
-    }
-
 }

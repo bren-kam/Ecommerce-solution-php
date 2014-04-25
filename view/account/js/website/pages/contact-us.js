@@ -17,6 +17,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // Add location
     $('#add-location').click( function() {
         $('#fAddEditLocation')[0].reset();
+        $('#store-image-preview').attr('src', '');
 
         new Boxy( $('#dAddEditLocation'), {
             title : 'Add Location'
@@ -43,6 +44,41 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         forcePlaceholderSize : true,
         update: updateLocations
     });
+
+    // Setup File Uploader
+    var uploader = new qq.FileUploader({
+        action: '/website/upload-file/'
+        , allowedExtensions: ['bmp', 'gif', 'jpg', 'jpeg', 'png']
+        , element: $('#upload-store-image')[0]
+        , sizeLimit: 6291456 // 6 mb's
+        , onSubmit: function( id, fileName ) {
+
+            uploader.setParams({
+                _nonce : $('#_upload_file').val()
+                , fn: 'location-image-' + (new Date().getTime().toString())
+            });
+
+            $('#aUploadStoreImage').hide();
+            $('#upload-store-image-loader').show();
+        }
+        , onComplete: function( id, fileName, responseJSON ) {
+            if ( responseJSON.success ) {
+                $('#store-image').val( responseJSON.file );
+                $('#store-image-preview').attr( 'src', responseJSON.file );
+            }
+
+            $('#aUploadStoreImage').show();
+            $('#upload-store-image-loader').hide();
+        }
+    });
+
+    /**
+     * Make the uploader work
+     */
+    $('#aUploadStoreImage').click( function() {
+        $('#upload-store-image input:first').click();
+    });
+
 });
 
 function updateLocations() {

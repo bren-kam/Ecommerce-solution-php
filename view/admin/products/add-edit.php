@@ -220,6 +220,10 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                         </select>
                     </td>
                 </tr>
+                <tr>
+                    <td><div class="container"><input type="text" class="tb" name="tPrice" id="tPrice" value="<?php echo $product->price; ?>" placeholder="<?php echo _('Wholesale Price'); ?>" /></div></td>
+                    <td><div class="container"><input type="text" class="tb" name="tPriceMin" id="tPriceMin" value="<?php echo $product->price_min; ?>" placeholder="<?php echo _('MAP Price'); ?>" /></div></td>
+                </tr>
             </table>
             <br />
 
@@ -276,6 +280,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
     <input type="hidden" id="hProductId" value="<?php if ( $product_id ) echo $product_id; ?>" />
     <?php nonce::field('add_edit'); ?>
 </form>
+<?php echo $validation->js_validation() ?>
 <br clear="all" />
 <br />
 

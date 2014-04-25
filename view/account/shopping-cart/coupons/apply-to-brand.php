@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Brand Add Coupon | Products
+ * @page Apply To Brand | Coupons
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
@@ -11,7 +11,7 @@
  * @var Coupon[] $coupons
  */
 
-echo $template->start( _('Add Coupon to Brand') );
+echo $template->start( _('Add Coupon to Brand'), '../sidebar' );
 ?>
 
 <p>This action will add the selected coupon to all brand products. This won't affect future brand products.</p>

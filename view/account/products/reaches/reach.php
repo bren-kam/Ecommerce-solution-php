@@ -108,6 +108,12 @@ $delete_comment_nonce = nonce::create( 'delete_comment' );
             </select>
         </td>
     </tr>
+    <tr>
+        <td>
+            <strong>Type:</strong> <?php echo str_replace( array( 'contact', 'quote' ), array( 'Contact Form', 'Product Request a Quote' ), $reach->meta['type'] );  ?>
+        </td>
+        <td></td>
+    </tr>
 </table>
 <br /><br />
 

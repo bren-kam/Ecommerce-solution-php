@@ -1811,6 +1811,7 @@ CREATE TABLE IF NOT EXISTS `website_location` (
   `email` varchar(200) DEFAULT NULL,
   `website` varchar(200) DEFAULT NULL,
   `store_hours` text,
+  `store_image` VARCHAR(500) NOT NULL DEFAULT '',
   `lat` varchar(20) DEFAULT NULL,
   `lng` varchar(20) DEFAULT NULL,
   `sequence` int(11) NOT NULL,

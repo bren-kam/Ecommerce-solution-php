@@ -97,95 +97,112 @@ ProductsController extends BaseController {
             $industries[$industry->id] = $industry;
         }
 
+        $validation = new Validator('fAddEditProduct');
+        $validation->add_validation('sCategory', 'req', 'Category is required');
+        $validation->add_validation('sBrand', 'req', 'Brand is required');
+        $validation->add_validation('sIndustry', 'req', 'Industry is required');
+        $validation->add_validation('tName', 'req', 'Name is required');
+        $validation->add_validation('tSKU', 'req', 'SKU is required');
+        $validation->add_validation('tPrice', 'float', 'Wholesale Price must be a valid price');
+        $validation->add_validation('tPriceMin', 'float', 'MAP Price must be a valid price');
+        $validation->add_validation('hPublishDate', 'req', 'Publish Date is required');
+
         if ( $this->verified() && $product->id ) {
-            // Need to delete it from all websites
-            if ( 'deleted' == $_POST['sStatus'] ) {
-                // We need to remove it from all user websites
-                $account_product = new AccountProduct();
-                $account_category = new AccountCategory();
+            $errors = $validation->validate();
+            if ( empty( $errors) ) {
+                // Need to delete it from all websites
+                if ( 'deleted' == $_POST['sStatus'] ) {
+                    // We need to remove it from all user websites
+                    $account_product = new AccountProduct();
+                    $account_category = new AccountCategory();
 
-                /**
-                 * Get variables
-                 * @var Account $account
-                 */
-                $accounts = $account->get_by_product( $product->id );
+                    /**
+                     * Get variables
+                     * @var Account $account
+                     */
+                    $accounts = $account->get_by_product( $product->id );
 
-                // Delete product from all accounts
-                $account_product->delete_by_product( $product->id );
+                    // Delete product from all accounts
+                    $account_product->delete_by_product( $product->id );
 
-                // Recategorize them
-                foreach ( $accounts as $account ) {
-                    $account_category->reorganize_categories( $account->id, $category );
+                    // Recategorize them
+                    foreach ( $accounts as $account ) {
+                        $account_category->reorganize_categories( $account->id, $category );
+                    }
                 }
-            }
 
-            $product->category_id = $_POST['sCategory'];
-            $product->brand_id = $_POST['sBrand'];
-            $product->industry_id = $_POST['sIndustry'];
-            $product->name = $_POST['tName'];
-            $product->slug = $_POST['tProductSlug'];
-            $product->description = $_POST['taDescription'];
-            $product->sku = $_POST['tSKU'];
-            $product->weight = $_POST['tWeight'];
-            $product->status = $_POST['sProductStatus'];
-            $product->publish_date = $_POST['hPublishDate'];
-            $product->publish_visibility = $_POST['sStatus'];
-            $product->user_id_modified = $this->user->id;
+                $product->category_id = $_POST['sCategory'];
+                $product->brand_id = $_POST['sBrand'];
+                $product->industry_id = $_POST['sIndustry'];
+                $product->name = $_POST['tName'];
+                $product->slug = $_POST['tProductSlug'];
+                $product->description = $_POST['taDescription'];
+                $product->sku = $_POST['tSKU'];
+                $product->weight = $_POST['tWeight'];
+                $product->price = $_POST['tPrice'];
+                $product->price_min = $_POST['tPriceMin'];
+                $product->status = $_POST['sProductStatus'];
+                $product->publish_date = $_POST['hPublishDate'];
+                $product->publish_visibility = $_POST['sStatus'];
+                $product->user_id_modified = $this->user->id;
 
-            // Update the product
-            $product->save();
+                // Update the product
+                $product->save();
 
-            // Delete all the things
-            $product->delete_images();
-            $product->delete_specifications();
-            $tag->delete_by_type( 'product', $product->id );
-            $attribute_item->delete_relations( $product->id );
+                // Delete all the things
+                $product->delete_images();
+                $product->delete_specifications();
+                $tag->delete_by_type( 'product', $product->id );
+                $attribute_item->delete_relations( $product->id );
 
-            if ( isset( $_POST['tags'] ) )
-                $tag->add_bulk( 'product', $product->id, $_POST['tags'] );
+                if ( isset( $_POST['tags'] ) )
+                    $tag->add_bulk( 'product', $product->id, $_POST['tags'] );
 
-            if ( isset( $_POST['attributes'] ) )
-                $attribute_item->add_relations( $product->id, $_POST['attributes'] );
+                if ( isset( $_POST['attributes'] ) )
+                    $attribute_item->add_relations( $product->id, $_POST['attributes'] );
 
-            if ( isset( $_POST['images'] ) ) {
-                $product->add_images( $_POST['images'] );
+                if ( isset( $_POST['images'] ) ) {
+                    $product->add_images( $_POST['images'] );
 
-                // What images do we need to remove
-                $remove_images = array_diff( $product_images, $_POST['images'] );
+                    // What images do we need to remove
+                    $remove_images = array_diff( $product_images, $_POST['images'] );
+                } else {
+                    $remove_images = $product_images;
+                }
+
+                // Add Specifications
+                if ( isset( $_POST['product-specs'] ) ) {
+                    $product_specs = array();
+
+                    foreach( $_POST['product-specs'] as $ps ) {
+                        list ( $spec_name, $spec_value ) = explode( '|', $ps );
+                        $product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ) );
+                    }
+
+                    $product->add_specifications( $product_specs );
+                }
+
+                // Need to remove images
+                if ( count( $remove_images ) > 0 ) {
+                    $file = new File();
+                    $path_base = 'products/' . $product->id . '/';
+
+                    foreach ( $remove_images as $ri ) {
+                        $file->delete_image( $path_base . $ri, $industry->name );
+                        $file->delete_image( $path_base . 'thumbnail/' . $ri, $industry->name );
+                        $file->delete_image( $path_base . 'small/' . $ri, $industry->name );
+                        $file->delete_image( $path_base . 'large/' . $ri, $industry->name );
+                    }
+                }
+
+                // Now go back to products list with a notification
+                $this->notify( _('Your product was successfully created or updated!') );
+
+                // Return to products list
+                return new RedirectResponse('/products/');
             } else {
-                $remove_images = $product_images;
+                $this->notify( $errors, false );
             }
-
-            // Add Specifications
-            if ( isset( $_POST['product-specs'] ) ) {
-                $product_specs = array();
-
-                foreach( $_POST['product-specs'] as $ps ) {
-                    list ( $spec_name, $spec_value ) = explode( '|', $ps );
-                    $product_specs[] = array( format::convert_characters( $spec_name ), format::convert_characters( $spec_value ) );
-                }
-
-                $product->add_specifications( $product_specs );
-            }
-
-            // Need to remove images
-            if ( count( $remove_images ) > 0 ) {
-                $file = new File();
-                $path_base = 'products/' . $product->id . '/';
-
-                foreach ( $remove_images as $ri ) {
-                    $file->delete_image( $path_base . $ri, $industry->name );
-                    $file->delete_image( $path_base . 'thumbnail/' . $ri, $industry->name );
-                    $file->delete_image( $path_base . 'small/' . $ri, $industry->name );
-                    $file->delete_image( $path_base . 'large/' . $ri, $industry->name );
-                }
-            }
-
-            // Now go back to products list with a notification
-            $this->notify( _('Your product was successfully created or updated!') );
-
-            // Return to products list
-            return new RedirectResponse('/products/');
         }
 
         $this->resources
@@ -197,7 +214,7 @@ ProductsController extends BaseController {
             ->kb( 12 )
             ->select( 'sub-products', 'add' )
             ->add_title( $title )
-            ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts' ) );
+            ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts', 'validation' ) );
     }
 
     /***** REDIRECTS *****/
