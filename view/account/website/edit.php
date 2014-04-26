@@ -119,6 +119,16 @@ if ( !empty( $errs ) )
         <br clear="left" />
         <br />
     </div>
+    <br />
+    <table>
+        <tr>
+            <td class="top" width="100"><label for="rPosition1"><?php echo _('Text Position'); ?>:</label></td>
+            <td>
+                <p><input type="radio" class="rb" name="rPosition" id="rPosition1" value="1"<?php if ( '0' != $page->top ) echo ' checked="checked"'; ?> /> <label for="rPosition1"><?php echo _('Top'); ?></label></p>
+                <p><input type="radio" class="rb" name="rPosition" id="rPosition2" value="0"<?php if ( '0' == $page->top ) echo ' checked="checked"'; ?> /> <label for="rPosition2"><?php echo _('Bottom'); ?></label></p>
+            </td>
+        </tr>
+    </table>
     <?php
     if ( in_array( $page->slug, array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
         require VIEW_PATH . 'website/pages/' . $page->slug . '.php';
