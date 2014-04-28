@@ -2264,3 +2264,12 @@ CREATE TABLE IF NOT EXISTS `website_product_views` (
   KEY `website_id` (`website_id`),
   KEY `product_id` (`product_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE `website_brand_category` (
+  `website_id` int(11) NOT NULL,
+  `brand_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`website_id`,`brand_id`,`category_id`)
+) ENGINE=InnoDB;
