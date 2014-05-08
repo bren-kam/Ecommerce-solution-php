@@ -524,6 +524,7 @@ class WebsiteController extends BaseController {
             );
             if ( $this->user->account->is_new_template() ) {
                 $layout[] = (object) array( 'name' => 'popular-items', 'disabled' => 0 );
+                $layout[] = (object) array( 'name' => 'best-seller-items', 'disabled' => 0 );
             }
         } else {
             $layout = json_decode( $layout );
@@ -621,25 +622,33 @@ class WebsiteController extends BaseController {
 
         // Get settings
         $settings_array = array(
-            'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
-            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'sidebar-image-width', 'timezone', 'images-alt'
+            'banner-speed', 'banner-background-color'
+            , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
             , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link'
             , 'logo-link'
         );
+        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
+            $settings_array = array_merge( $settings_array
+                , array( 'banner-width', 'banner-height', 'sidebar-image-width', 'timezone' )
+            );
+        }
+
         $settings = $this->user->account->get_settings( $settings_array );
 
         // Create form
         $form->add_field( 'title', _('Banners') );
 
-        $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
-            ->attribute( 'maxlength', '4' )
-            ->add_validation( 'req', _('The "Banners - Width" field is required') )
-            ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
+        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
+            $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
+                ->attribute( 'maxlength', '4' )
+                ->add_validation( 'req', _('The "Banners - Width" field is required') )
+                ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
 
-        $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
-            ->attribute( 'maxlength', '4' )
-            ->add_validation( 'req', _('The "Banners - Height" field is required') )
-            ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
+            $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
+                ->attribute( 'maxlength', '4' )
+                ->add_validation( 'req', _('The "Banners - Height" field is required') )
+                ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
+        }
 
         $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
@@ -673,12 +682,14 @@ class WebsiteController extends BaseController {
         $form->add_field( 'checkbox', _('Disable Banner Fade-out'), 'disable-banner-fade-out', $settings['disable-banner-fade-out'] );
 
         // Next section
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'title', _('Sidebar Images') );
+        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
+            $form->add_field( 'blank', '' );
+            $form->add_field( 'title', _('Sidebar Images') );
 
-        $form->add_field( 'text', _('Width'), 'sidebar-image-width', $settings['sidebar-image-width'] )
-            ->attribute( 'maxlength', '4' )
-            ->add_validation( 'num', _('The "Sidebar Image - Width" field may only contain a number') );
+            $form->add_field( 'text', _('Width'), 'sidebar-image-width', $settings['sidebar-image-width'] )
+                ->attribute( 'maxlength', '4' )
+                ->add_validation( 'num', _('The "Sidebar Image - Width" field may only contain a number') );
+        }
 
         // Next section
         $form->add_field( 'blank', '' );
@@ -703,8 +714,10 @@ class WebsiteController extends BaseController {
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Other') );
 
-        $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
-            ->options( data::timezones( false, false, true ) );
+        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
+            $form->add_field( 'select', _('Timezone'), 'timezone', $settings['timezone'] )
+                ->options( data::timezones( false, false, true ) );
+        }
 
         $form->add_field( 'text', _('Logo Link URL'), 'logo-link', $settings['logo-link'] )
             ->add_validation( 'url', _('The "Logo Link" must be a valid link') );
@@ -958,6 +971,7 @@ class WebsiteController extends BaseController {
 
         // Add the response
         $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'file', $account_file->file_path );
 
         return $response;
     }
@@ -1838,6 +1852,7 @@ class WebsiteController extends BaseController {
         $location->email = $_POST['email'];
         $location->website = $_POST['website'];
         $location->store_hours = nl2br( $_POST['store-hours'] );
+        $location->store_image = $_POST['store-image'];
 
         // Get latitude and longitude
         library('google-maps-api');
@@ -1930,6 +1945,8 @@ class WebsiteController extends BaseController {
         jQuery('#email')->val( $location->email );
         jQuery('#website')->val( $location->website );
         jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
+        jQuery('#store-image')->val( $location->store_image );
+        jQuery('#store-image-preview')->attr( 'src', $location->store_image );
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );

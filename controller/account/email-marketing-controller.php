@@ -19,7 +19,10 @@ class EmailMarketingController extends BaseController {
      */
     protected function index() {
         if ( !$this->user->account->email_marketing ) {
-            if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) ) {
+            // If they don't have Email Marketing feature enabled
+            // Account::$auth_user_email_marketing tells if the authorized user can access email marketing sections such us subscribers
+            // This also applied to the Store Owner.
+            if ( $this->user->has_permission( User::ROLE_STORE_OWNER ) || $this->user->account->auth_user_email_marketing ) {
                 return new RedirectResponse('/email-marketing/subscribers/');
             } else {
                 return new RedirectResponse('/');

@@ -166,6 +166,18 @@ if ( !empty( $errs ) )
             <tr>
                 <td><textarea name="store-hours" id="store-hours" cols="30" rows="3" tabindex="5" placeholder="Store Hours"></textarea></td>
             </tr>
+            <tr>
+                <td>
+                    <a href="#" id="aUploadStoreImage" class="button" title="<?php echo _('Upload Store Image'); ?>"><?php echo _('Upload Store Image'); ?></a>
+                    <a href="#" class="button loader hidden" id="upload-store-image-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
+                    <div class="hidden-fix position-absolute" id="upload-store-image"></div>
+                </td>
+                <td>&nbsp;</td>
+                <td>
+                    <input type="hidden" name="store-image" id="store-image" />
+                    <img id="store-image-preview" />
+                </td>
+            </tr>
         </table>
         <input type="submit" class="hidden" id="bAddEditLocation" value="<?php echo _('Submit'); ?>">
         <input type="hidden" name="wlid" id="wlid" value="">

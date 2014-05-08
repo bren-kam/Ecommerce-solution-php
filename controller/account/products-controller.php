@@ -596,7 +596,7 @@ class ProductsController extends BaseController {
         return $this->get_template_response( 'brands' )
             ->kb( 58 )
             ->add_title( _('Brands') )
-            ->select( 'products', 'brands' )
+            ->select( 'brands', 'view' )
             ->set( array( 'top_brands' => $website_top_brand->get_by_account( $this->user->account->id ) ) );
     }
 
@@ -2030,6 +2030,20 @@ class ProductsController extends BaseController {
 
         $account_product = new AccountProduct();
         $account_product->null_manually_priced_by_account( $this->user->account->id );
+
+        return new RedirectResponse( '/products/manually-priced/' );
+    }
+
+    /**
+     * Manually Priced Lock All
+     * @return RedirectResponse
+     */
+    protected function manually_priced_lock_all() {
+        if ( !$this->verified() )
+            return new RedirectResponse( '/products/ ');
+
+        $account_product = new AccountProduct();
+        $account_product->lock_prices_by_account( $this->user->account->id );
 
         return new RedirectResponse( '/products/manually-priced/' );
     }

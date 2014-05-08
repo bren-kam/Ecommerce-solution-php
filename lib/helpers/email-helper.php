@@ -28,7 +28,7 @@ li { padding-top: 7px; }
 </style>
 </head>
 <body>
-<img src="http://www.imagineretailer.com/images/[logo]" width="314" height="48" alt="Website Manager" /><br />
+<img src="http://account.[domain]/images/[logo]" width="314" height="48" alt="Website Manager" /><br />
 
 [content]
 </body>
@@ -50,7 +50,7 @@ li { padding-top: 7px; }
 
         $headers .= $this->extra_headers;
 
-        mail( $this->to, $this->subject, str_replace( array( '[logo]', '[content]' ), array( 'logos/' . DOMAIN . '.png', $this->message ), $this->template ), $headers );
+        mail( $this->to, $this->subject, str_replace( array( '[domain]', '[logo]', '[content]' ), array( DOMAIN, 'logos/' . DOMAIN . '.png', $this->message ), $this->template ), $headers );
     }
 
 	/**

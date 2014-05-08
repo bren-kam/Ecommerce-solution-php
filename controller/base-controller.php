@@ -173,11 +173,10 @@ abstract class BaseController {
             $account = new Account();
 
             // Grab all the accounts for the type of user they are
-            if ( in_array( $this->user->role, array( User::ROLE_AUTHORIZED_USER, User::ROLE_MARKETING_SPECIALIST ) ) ) {
-                $this->user->accounts = $account->get_by_authorized_user( $this->user->id );
-            } else {
-                $this->user->accounts = $account->get_by_user( $this->user->id );
-            }
+            $this->user->accounts = array_merge(
+                $account->get_by_user( $this->user->id )
+                , $account->get_by_authorized_user( $this->user->id )
+            );
 
             // If they have a specific account, get that
             if ( $account_id ) {

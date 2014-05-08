@@ -19,22 +19,11 @@ class InstallService {
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
         // Copy files
-        ssh2_exec( $ssh_connection, "cp -R /gsr/platform/copy/. /home/$username/public_html" );
+        ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
 
         // Update config & .htaccess file
-        $document_root = '\/home\/' . $username . '\/public_html';
+        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
 
-        ssh2_exec( $ssh_connection, "sed -i 's/\[document_root\]/$document_root/g' /home/$username/public_html/config.php" );
-        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/config.php" );
-
-        // Must use FTP to assign folders under the right user
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom" );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/" . $account->theme );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache" );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache/css" );
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/cache/js" );
-
-        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
         ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
@@ -172,6 +161,10 @@ class InstallService {
         $template_account = new Account();
         $template_account->get( $company_package->website_id );
 
+        // Get Unlocked account, used for base LESS
+        $unlocked_account = new Account();
+        $unlocked_account->get( Account::TEMPLATE_UNLOCKED );
+
         // Update theme and logo
         $account->theme = $template_account->theme;
         $account->logo = $template_account->logo;
@@ -187,19 +180,13 @@ class InstallService {
         $ssh_connection = ssh2_connect( Config::setting('server-ip'), 22 );
         ssh2_auth_password( $ssh_connection, Config::setting('server-username'), Config::setting('server-password') );
 
-        // Make The new theme directory
-        ssh2_exec( $ssh_connection, "mkdir /home/$username/public_html/custom/" . $template_account->theme );
+        // Copy files
+        ssh2_exec( $ssh_connection, "cp -R /gsr/systems/gsr-site/copy/. /home/$username/public_html" );
 
-        // Copy over all the theme files
-        ssh2_exec( $ssh_connection, "cp -Rf /home/$template_username/public_html/custom/. /home/$username/public_html/custom" );
+        // Update config & .htaccess file
+        ssh2_exec( $ssh_connection, "sed -i 's/\[website_id\]/" . $account->id . "/g' /home/$username/public_html/index.php" );
 
-		// Copy over config file
-        ssh2_exec( $ssh_connection, "yes | cp -rf /home/$template_username/public_html/config.php /home/$username/public_html/config.php" );
-
-		ssh2_exec( $ssh_connection, "sed -i 's/$template_username/$username/g' /home/$username/public_html/config.php" );
-		ssh2_exec( $ssh_connection, "sed -i 's/" . $template_account->id . "/" . $account->id . "/g' /home/$username/public_html/config.php" );
-
-        ssh2_exec( $ssh_connection, "chmod -R 0777 /home/$username/public_html/custom/cache" );
+        // Change files owner
         ssh2_exec( $ssh_connection, "chown -R $username:$username /home/$username/public_html/" );
 
         // Make sure the public_html directory has the correct group
@@ -318,7 +305,17 @@ class InstallService {
         $account_category = new AccountCategory();
         $account_category->reorganize_categories( $account->id, new Category() );
 
-        // Copy Website Settings
-		$account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'css' ) );
+        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' ) );
+
+        // Compile and Copy CSS
+        $less_css = $unlocked_account->get_settings( 'less' ) . $template_account->get_settings( 'less' );
+        library( 'lessc.inc' );
+        $less = new lessc;
+        $less->setFormatter( 'compressed' );
+        $css = '';
+        try {
+            $css = $less->compile( $less_css );
+        } catch (exception $e) { /* do nothing */ }
+        $account->set_settings( array( 'less' => $less_css, 'css' => $css ) );
     }
 }

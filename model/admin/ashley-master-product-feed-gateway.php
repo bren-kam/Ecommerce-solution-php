@@ -268,7 +268,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 			$sku = $item['sku'];
 
             // We can't have a SKU like B457B532 -- it means it is international and comes in a container
-			$this->check( !preg_match( '/[lL]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) );
+			$this->check( !preg_match( '/^[lL]?[0-9-]+[a-zA-Z][0-9-]+/', $sku ) );
 
             if ( !isset( $this->groups[$item['group'] ] ) ) {
                 $item['group'] = preg_replace( '/([^-]+)-.*/', '$1', $item['group'] );
@@ -385,7 +385,7 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Change publish visibility to private if there are no images
             if ( 0 == count( $images ) && 'private' != $product->publish_visibility ) {
                 $this->not_identical[] = 'publish_visibility';
-                $product->publish_visibility = 'public';
+                $product->publish_visibility = 'private';
             }
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
@@ -399,11 +399,16 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
 
             /***** UPDATE PRODUCT *****/
 
+            if ( $product->category_id && !empty( $images ) )
+                $product->publish_visibility = 'public';
+
 			$product->save();
 
             // Add specs
             $product->delete_specifications();
-            $product->add_specifications( $item['specs'] );
+
+            if ( !empty( $item['specs'] ) )
+                $product->add_specifications( $item['specs'] );
 
             // Add on to lists
             $this->existing_products[$product->sku] = $product;

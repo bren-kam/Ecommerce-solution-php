@@ -3,6 +3,8 @@ class Token extends ActiveRecordBase {
     // The columns we will have access to
     public $id, $token_id, $user_id, $key, $type, $date_valid;
 
+    const TYPE_RECOVER_PASSWORD = 'recover-password';
+
     /**
      * Setup the account initial data
      */
