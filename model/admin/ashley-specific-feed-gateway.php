@@ -250,7 +250,7 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
 
         if ( !in_array( $account->id, $this->omit_sites ) ) {
             $this->add_bulk_packages_by_ids( $account->id, $industries, $new_product_ids );
-            //$this->add_product_groups( $account->id, array_keys( $group_items ) );
+            $this->add_product_groups( $account->id, array_keys( $group_items ) );
         }
 
 		// Deactivate old products
