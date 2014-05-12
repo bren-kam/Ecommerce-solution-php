@@ -1,0 +1,240 @@
+
+/* Base Styles
+----------------------------------------- */
+.clearfix,
+.clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
+/* \*/ * html .clear { height:1px } /* */
+
+/* Progress Bar
+----------------------------------------- */
+.progress-bar {
+    list-style: none;
+    overflow: hidden;
+    padding: 0;
+    margin: 0 0 30px;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+}
+
+.progress-bar,
+.progress-bar * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.progress-bar li {
+    float: left;
+    width: 33.33333333333333%;
+    padding: 0;
+    margin: 0;
+}
+
+.progress-bar li a {
+    position: relative;
+    display: block;
+    width: 100%;
+    color: #979797;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 34px;
+    font-weight: normal;
+    text-align: center;
+    background: #e3e3e3;
+}
+
+.progress-bar li a:after {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 50px solid transparent;    /* Go big on the size, and let overflow hide */
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid #e3e3e3;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    left: 100%;
+    z-index: 2;
+}
+
+.progress-bar li a:before {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 50px solid transparent;    /* Go big on the size, and let overflow hide */
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid #fff;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    margin-left: 1px;
+    left: 100%;
+    z-index: 1;
+}
+
+.progress-bar li a:hover {
+    background: #e3e3e3;
+    color: #63656b;
+}
+
+.progress-bar li a:hover:after {
+    border-left-color: #e3e3e3 !important;
+}
+
+.progress-bar li.active a {
+    background: #9ac600;
+    color: #475b00;
+    text-shadow: 1px 1px 0 rgba(186, 228, 39, 0.8);
+}
+
+.progress-bar li.active a:after {
+    border-left-color: #9ac600 !important;
+}
+
+
+/* Build Campaign
+----------------------------------------- */
+.subscribers {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
+.subscribers th, .subscribers td { font-weight: bold; vertical-align:middle; }
+.subscribers th { text-align: left; font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
+.subscribers th img { float: right; margin: 8px 5px 0 0; }
+.bottom { position: relative; top: 7px }
+
+.subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 7px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
+.subscribers tr.last td { border-bottom: 0 }
+.subscribers tr.odd, .subscribers tr.odd td{ background:#fff; }
+.subscribers tr.even, .subscribers tr.even td { background: #F5F6F7 }
+.subscribers .actions { margin-top: 5px; }
+.subscribers td { padding-bottom: 10px; }
+.subscribers .cb { top: 0; }
+
+.campaign-settings { width: auto; }
+.campaign-settings td { padding: 3px 7px; }
+.campaign-settings input.tb-large { width: 768px; }
+
+.campaign-schedule { padding: 3px 7px; }
+
+.email-marketing-wrapper { width: 100%; }
+
+.email-marketing-left,
+.email-marketing-right {
+    float: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.email-marketing-left { width: 70%; padding-right: 20px; }
+.email-marketing-right { width: 30%; }
+
+.email-layout {
+    background: #f7f7f7;
+    border: 1px solid #bdbdbd;
+    padding: 15px;
+    margin-bottom: 17px;
+}
+
+/* Email Placeholders */
+.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { height: 50px; }
+.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { height: 100px; }
+.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { height: 150px; }
+.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { height: 200px; }
+
+.email-col-1, .email-col-2, .email-col-3, .email-col-4 {  padding-left: 0; padding-right: 0; float: left; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; border: 1px dashed #666; }
+.email-col-1 { width: 25%; }
+.email-col-2 { width: 50%; }
+.email-col-3 { width: 33; }
+.email-col-4 { width: 100%; }
+
+/* Placeholder inner structure */
+div[data-content-type] { width: 100%; height: inherit; position: relative; }
+.placeholder-content { width: 100%; height: inherit; }
+.placeholder-actions  { position: absolute; right: 10px; top: 10px; z-index: 1; }
+
+div[data-content-type=text] .placeholder-content:empty{ background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=image] .placeholder-content:empty{ background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=product] .placeholder-content:empty{ background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
+
+
+/* Styles for elements inside Placeholder Actions */
+
+div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
+
+div[data-content-type=product] .placeholder-content .product-img { width: 70%; height: 70%; margin-left: 15%; }
+div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
+div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
+div[data-content-type=product] .placeholder-content h2 { font-size: 18px; }
+div[data-content-type=product] .placeholder-content .sale-price { font-size: 16px; color: red; }
+
+#editor-container { width: 600px; }
+
+.droppable-hover { background-color: yellow; opacity: 0.3; }
+
+.idTabs { width: 100%; }
+
+.idTabs,
+.idTabs li {
+    padding: 0;
+    margin: 0;
+}
+
+.idTabs li {
+    list-style: none;
+    float: left;
+}
+
+.idTabs li a {
+    color: #979797;
+    font-size: 17px;
+    line-height: 34px;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    background: #f1f1f1;
+    border: 1px solid #f1f1f1;
+    border-bottom-color: #bdbdbd;
+    padding: 0 30px;
+    z-index: 1;
+}
+
+.idTabs li a.selected {
+    background: #fff;
+    border-color: #bdbdbd;
+    border-bottom-color: transparent;
+}
+
+.tab-content {
+    border: 1px solid #bdbdbd;
+    padding: 15px 15px 5px;
+    margin-bottom: 17px;
+    margin-top: -1px;
+}
+
+.layout-thumbnails, .content-thumbnails
+.layout-thumbnails li, .content-thumbnails li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.layout-thumbnails li, .content-thumbnails li {
+    float: left;
+    margin: 0 10px 10px 0;
+    height: 120px;
+    width: 100px;
+    background: #eee;
+    text-align: center;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+.layout-thumbnails li img, .content-thumbnails li img {
+ opacity: 0.4;
+}
+
+
+

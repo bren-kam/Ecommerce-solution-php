@@ -906,21 +906,23 @@ class AccountProduct extends ActiveRecordBase {
 
         // Support more than one field
 		if ( is_array( $field ) ) {
-			// The initial and last parent are needed due to the multiple static-WHERE's
+            $select_fields = array();
+            $statements = array();
 			foreach ( $field as $f ) {
-				$where .= ( empty( $where ) ) ? ' AND ( ' : ' OR ';
-
-				$where .= "`{$f}` LIKE " . $this->quote( '%' . $query . '%' );
+                $select_fields[] = "p.`$f` AS `$f`";
+				$statements[] = "`{$f}` LIKE " . $this->quote( '%' . $query . '%' );
 			}
-
-			// Close the open paren
-			$where .= ' )';
+            $select_fields = implode(', ', $select_fields);
+            $where .= ' AND (' . implode(' OR ', $statements ) . ' ) ';
+            $order_by = "`$f`";
 		} else {
+            $select_fields = "p.`$field` AS name" ;
 			$where = " AND `{$field}` LIKE " . $this->quote( '%' . $query . '%' );
+            $order_by = "`$field`";
 		}
 
         return $this->prepare(
-            "SELECT DISTINCT p.`product_id` AS value, p.`$field` AS name FROM `website_products` AS wp INNER JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 $where ORDER BY `$field` LIMIT 10"
+            "SELECT DISTINCT p.`product_id` AS value, $select_fields FROM `website_products` AS wp INNER JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 $where ORDER BY $order_by LIMIT 10"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );

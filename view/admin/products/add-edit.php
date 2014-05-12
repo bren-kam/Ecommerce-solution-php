@@ -48,7 +48,7 @@ nonce::field( 'get_attribute_items', '_get_attribute_items' );
                     $visibilities['deleted'] = _('Deleted');
 
                 foreach ( $visibilities as $value => $visibility ) {
-                    $selected = ( $visibility == $product->publish_visibility ) ? ' selected="selected"' : '';
+                    $selected = ( $value == $product->publish_visibility ) ? ' selected="selected"' : '';
                 ?>
                     <option value="<?php echo $value; ?>"<?php echo $selected; ?>><?php echo $visibility; ?></option>
                 <?php } ?>

@@ -1,0 +1,272 @@
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/ckeditor/ckeditor.js', function() {
+
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // STEP 1
+
+    // Date Picker
+    $('#dDate').datepicker({
+        minDate: 0
+        , dateFormat: 'yy-mm-dd'
+        , onSelect: function(date) {
+            $("#date").val(date);
+        }
+    });
+
+    // Time Picker
+    var tTime = $('#tTime');
+    tTime.timepicker({
+        step: 60
+        , show24Hours: false
+        , timeFormat: 'g:i a'
+    }).timepicker('show');
+
+    // Fix for offset
+    tTime.timepicker('hide');
+
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // STEP 2
+
+    var content_type_draggables = $('li[data-content-type]');
+    var layout_container = $('#email-editor');
+    var layouts_selectors = $('li[data-layout]');
+    var layouts = $('div[data-layout]');
+    var placeholder_selector = '.email-col-1, .email-col-2, .email-col-3, .email-col-4';
+
+    // Here we define out Content Types (text, product, image)
+    // and place the code that handles it
+    // - init() bind events
+    // - setup() called when a Content Type is dropped into a Placeholder (created editor, uploader, etc)
+    // - save() will save Content Type Data
+    // - get_content() as it would be seen in the email
+    var content_types = {
+
+        _base:  {
+            init: function() {
+                $('body').on('click', '[data-action=clear]', function(e) {
+                    e.preventDefault();
+                    $(this).parents('[data-content-type]').remove();
+                });
+            }
+            , setup: function(my_content) {
+                // Set an ID
+                $(my_content).attr('id', 'ct' + Date.now());
+                // Make it movable between placeholders
+                $(my_content).draggable({
+                    opacity: '0.7'
+                    , handle: '[data-action=move]'
+                });
+            }
+        }
+
+        , product: {
+            content: $('div[data-content-type=product]')
+            , init: function() {
+                $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
+                    e.preventDefault();
+                    $(this).parents('div[data-content-type]').find('.products-autocomplete').show();
+                });
+            }
+            , setup: function(my_content) {
+                content_types._base.setup(my_content);
+                my_content.find('.products-autocomplete').autocomplete({
+                    minLength: 1
+                    , source: function(request, response){
+                        var type = ['name' , 'sku'];
+                        $.post(
+                            '/products/autocomplete-owned/'
+                            , { '_nonce' : $('#_autocomplete_owned').val(), 'type' : type, 'term' : request['term'] }
+                            , function( autocompleteResponse ) {
+                                response( autocompleteResponse['suggestions'] );
+                            }
+                            , 'json'
+                        );
+                    }
+                    , select: function( event, ui ) {
+                        event.preventDefault();
+                        $.post(
+                            '/products/get-product-dialog-info/'
+                            , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
+                            , function(r) {
+                                var tpl = '<div class="product-img"><img src="' + r.product.image + '" /></div><div class="product-content"><h2>' + r.product.name + '</h2>';
+                                if ( r.product.sale_price > 0 )
+                                    tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
+                                else if (r.product.price > 0 )
+                                    tpl += '<span class="price">$' + r.product.price + '</span>';
+                                tpl += '</div>';
+                                my_content.find('.placeholder-content').html(tpl);
+
+                                // Hide autocomplete
+                                my_content.find('.products-autocomplete').hide();
+                            }
+                            , 'json'
+                        );
+                        // my_content.find('[data-product-id]').val( ui.item.value );
+                        // load the rest of the product
+                    }
+                }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                    return $( "<li>" )
+                        .append( "<a>" + item.name + "<br><small>SKU: " + item.sku + "</small></a>" )
+                        .appendTo( ul );
+                };
+            }
+        }
+
+        , text: {
+            content: $('div[data-content-type=text]')
+            , init: function() {
+                $('#save-text').click(content_types['text'].save_text);
+                $('body').on('click', '.open-text-editor', function(e) {
+                    var instance = $(this).parents('[data-content-type]');
+                    var placeholder_id = instance.attr('id');
+                    var content = instance.find('.placeholder-content').html();
+                    var textarea = $('<textarea id="text-editor" name="text-editor"></textarea>');
+                    $('#save-text').data('placeholder-id', placeholder_id);
+                    textarea.val(content);
+                    $('#editor-container').html(textarea).sparrow();
+                    CKEDITOR.replace('text-editor', {
+                        allowedContent: !0,
+                        autoGrow_minHeight: 100,
+                        resize_minHeight: 100,
+                        height: 100,
+                        toolbar: [
+                            ["Bold", "Italic", "Underline"],
+                            ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"],
+                            ["NumberedList", "BulletedList", "Table"],
+                            ["Format"],
+                            ["Link", "Unlink"],
+                            ["Source"]
+                        ]
+                    });
+                });
+            }
+            , setup: function(my_content) {
+                content_types._base.setup(my_content);
+                my_content.sparrow();
+            }
+            , save_text: function(e) {
+                var placeholder_id = $(this).data('placeholder-id');
+                var text = CKEDITOR.instances['text-editor'].getData();
+                $('#' + placeholder_id + ' .placeholder-content').html(text);
+            }
+        }
+
+        , image: {
+            'content': $('div[data-content-type=image]')
+            , init: function() {
+                // Media Manager "Select" button
+                $('#select-image').click(content_types['image'].select_image);
+                $('body').on('click', '.open-media-manager', function(e) {
+                    var placeholder_id = $(this).parents('[data-content-type]').attr('id');
+                    $('#select-image').data('placeholder-id', placeholder_id);
+                });
+            }
+            , setup: function(my_content) {
+                content_types._base.setup(my_content);
+                sparrow();
+            }
+            , select_image: function(e) {
+                e.preventDefault();
+                var placeholder_id = $(this).data('placeholder-id');
+                var image = $('a.file.selected img').clone();
+                $('#' + placeholder_id + ' .placeholder-content').html(image);
+            }
+
+        }
+
+    };
+
+    // Call init() for all content types
+    for(i in content_types) {
+        content_types[i].init();
+    }
+
+    // Make Content Types Draggable
+    content_type_draggables.draggable({
+        opacity: '0.7'
+        , helper: 'clone'
+    });
+
+    // Make Placeholders Droppable, allows Content Type to be added on them
+    // This gets called every time the layout changes
+    layout_container.bind_placeholders = function() {
+        this.find(placeholder_selector).droppable({
+            accept: '[data-content-type], [data-action=move]'
+            , hoverClass: 'droppable-hover'
+            , drop: function(event, ui) {
+                var placeholder = $(this);
+
+                if ( ui.draggable.attr('id') ) {
+                    // Its a placeholder being moved
+                    $(this).html('');
+                    $(ui.draggable)
+                        .removeAttr('style')  // remove draggable styles
+                        .detach()
+                        .appendTo(this);
+                } else {
+                    // Its a new content added to a placeholder
+                    var content_type_key = ui.draggable.data('content-type');
+                    var content_type = content_types[content_type_key]
+                    var my_content = content_type.content.clone();
+                    placeholder.find('*').remove();
+                    placeholder.html(my_content);
+                    content_type.setup(my_content);
+                }
+            }
+        });
+    };
+
+    // Change Layout
+    layouts_selectors.click(function() {
+        var has_content = layout_container.find('.placeholder-content').size() > 0;
+        if ( has_content && !confirm("Do you want to change the email Layout? You will lose all you previous content.") )
+            return;
+
+        var layout_key = $(this).data('layout');
+        var layout = layouts.siblings('[data-layout=' + layout_key + ']');
+        var my_layout = layout.clone();
+        layout_container.find('*').remove();
+        layout_container.html(my_layout);
+        // rebind elements on Droppable, jQueryUI has no live binding for droppable.
+        layout_container.bind_placeholders();
+    }).first().click();  // And auto select the first layout
+
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // STEP 3
+
+    // This will generate the email content that will be Sent
+    function get_email_content() {
+        var editor_content = layout_container.clone();
+        editor_content.find('.placeholder-actions').hide();
+        return editor_content;
+    }
+
+    // ---------------------------------------------------------
+    // ---------------------------------------------------------
+    // FORM GLOBALS
+
+    // Multiple Step Form
+    $('a[data-step]').click(function(e) {
+        e.preventDefault();
+
+        // Show form
+        $('div[data-step]').addClass('hidden');
+        $('div[data-step=' + $(this).data('step') + ']').removeClass('hidden');
+
+        // Toggle active marker in progress bar
+        $('.progress-bar a[data-step=' + $(this).data('step') + ']')
+            .parent().addClass('active')
+            .siblings().removeClass('active');
+
+        if ( $(this).data('step') == 3 ) {
+            $('#email-preview').html( get_email_content() );
+        }
+    });
+
+    $('.save-draft').click(function(e) {
+        e.preventDefault();
+    });
+
+});
