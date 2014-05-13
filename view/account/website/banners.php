@@ -10,6 +10,7 @@
  * @var AccountPage $page
  * @var string $dimensions
  * @var bool $images_alt
+ * @var bool $slideshow_fixed_width
  */
 
 echo $template->start( _('Banners') );
@@ -18,6 +19,7 @@ echo $template->start( _('Banners') );
 <a href="#" id="aUploadBanner" class="button" title="<?php echo _('Upload'); ?>"><?php echo _('Upload'); ?></a>
 <a href="#" class="button loader hidden" id="upload-banner-loader" title="<?php echo _('Loading'); ?>"><img src="/images/buttons/loader.gif" alt="<?php echo _('Loading'); ?>" /></a>
 <div class="hidden-fix position-absolute" id="upload-banner"></div>
+<p><small>(<?php echo ($slideshow_fixed_width ? 'Max. image' : 'Suggested') . ' size: ' . $dimensions?>)</small></p>
 <br /><br />
 <p class="red"><?php echo _('(Note: The changes you make to your banners are immediately live on your website)'); ?></p>
 <br />

@@ -1962,6 +1962,7 @@ CREATE TABLE IF NOT EXISTS `website_pages` (
   `meta_keywords` text NOT NULL,
   `mobile` tinyint(4) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
+  `top` tinyint(1) NOT NULL DEFAULT '1',
   `updated_user_id` int(11) NOT NULL,
   `date_created` datetime NOT NULL,
   `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
