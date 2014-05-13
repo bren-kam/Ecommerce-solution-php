@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Email Messages | Email Marketing
+ * @page Campaigns | Email Marketing
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources

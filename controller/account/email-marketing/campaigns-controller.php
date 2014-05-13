@@ -117,6 +117,26 @@ class CampaignsController extends BaseController {
 
 
     public function create() {
+        $campaign = new EmailMessage();
+        $campaign->get( $_GET['id'], $this->user->account->id );
+
+        if ( $campaign->id ) {
+            // Selected Email Lists
+            $campaign->get_associations();
+
+            // Overwritten From
+            $settings = $this->user->account->get_settings( 'from_name', 'from_email' );
+            $from_name = ( empty( $settings['from_name'] ) ) ? $this->user->account->title : $settings['from_name'];
+            $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $settings['from_email'];
+            $default_from = $from_name . ' <' . $from_email . '>';
+            $overwrite_from = ( $campaign->from != $default_from );
+
+            // Scheduled to future time?
+            if ( $campaign->date_sent > $campaign->date_created ) {
+                $scheduled_datetime = DateTime::createFromFormat( 'Y-m-d H:i:s', $campaign->date_sent );
+            }
+        }
+
         $email_list = new EmailList();
         $email_lists = $email_list->get_count_by_account( $this->user->account->id );
 
@@ -135,7 +155,7 @@ class CampaignsController extends BaseController {
             ->kb( 0 )
             ->add_title( _('Campaigns') )
             ->select( 'campaigns', 'create' )
-            ->set( compact( 'email_lists', 'settings', 'timezones', 'files' ) );
+            ->set( compact( 'campaign', 'default_from', 'overwrite_from', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
     }
 
     /**
@@ -191,6 +211,10 @@ class CampaignsController extends BaseController {
         return $validator->validate();
     }
 
+    /**
+     * Save
+     * @param EmailMessage $campaign
+     */
     private function save( $campaign ) {
         $campaign->website_id = $this->user->account->website_id;
         $campaign->name = $_POST['name'];

@@ -1,3 +1,23 @@
+<?php
+/**
+ * @package Grey Suit Retail
+ * @page Step1 | Create | Campaigns | Email Marketing
+ *
+ * Declare the variables we have available from other sources
+ * @var Resources $resources
+ * @var User $user
+ * @var EmailMessage $campaign
+ * @var EmailList[] $email_lists
+ * @var array $settings
+ * @var string $timezone
+ * @var string $server_timezone
+ * @var EmailTemplate[] $templates
+ * @var AccountFile[] $files
+ * @var string $default_from
+ * @var boolean $overwrite_from
+ * @var DateTime $scheduled_datetime
+ */
+?>
 
 <input type="checkbox" class="cb" name="remove-header-footer" id="remove-header-footer" value="1">
 <label for="remove-header-footer">Remove Header/Footer</label>
@@ -7,21 +27,7 @@
 <div class="email-marketing-wrapper clear">
 
     <div class="email-marketing-left">
-        <div class="email-layout" id="email-editor">
-            <div class="email-row-1 clear">
-                <div class="email-col-4"></div>
-            </div>
-            <div class="email-row-4 clear">
-                <div class="email-col-2"></div>
-                <div class="email-col-2"></div>
-            </div>
-            <div class="email-row-3 clear">
-                <div class="email-col-1"></div>
-                <div class="email-col-1"></div>
-                <div class="email-col-1"></div>
-                <div class="email-col-1"></div>
-            </div>
-        </div>
+        <div class="email-layout" id="email-editor"><?php echo $campaign->message ?></div>
 
         <p>
             <input type="submit" class="button save-draft" value="Save Draft">
@@ -59,7 +65,6 @@
                 <input type="text" class="products-autocomplete" placeholder="Search by SKU or Name..." />
                 <a data-action="edit" href="#"><img src="/images/icons/edit.png" /></a>
                 | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-                <!-- | <a data-action="move" href="#"><img src="/images/icons/move.png" /></a> -->
             <br clear="all" />
         </div>
         <div class="placeholder-content"></div>
@@ -69,7 +74,6 @@
         <div class="placeholder-actions">
             <a href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
             | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <!-- | <a data-action="move" href="#"><img src="/images/icons/move.png" /></a> -->
         </div>
         <div class="placeholder-content"></div>
     </div>
@@ -78,20 +82,10 @@
         <div class="placeholder-actions">
             <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
             | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <!-- | <a data-action="move" href="#"><img src="/images/icons/move.png" /></a> -->
         </div>
         <div class="placeholder-content"></div>
     </div>
 
-    <!--
-    row-1, row2, row3, row4 is actually for row height
-    and col-1, col-2, col3, col4 are for columns width
-    maybe height should be bound to columns rather than rows
-    and also might be min-height rather than a fixed height (will see why just in a minute)
-
-    so future layouts shouldn't be hard to create
-
-    -->
     <div data-layout="layout-1">
         <div class="email-row-1 clear">
             <div class="email-col-4"></div>

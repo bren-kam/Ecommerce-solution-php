@@ -8,6 +8,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('#dDate').datepicker({
         minDate: 0
         , dateFormat: 'yy-mm-dd'
+        , defaultDate: $('#date').val()
         , onSelect: function(date) {
             $("#date").val(date);
         }
@@ -39,7 +40,6 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // - init() bind events
     // - setup() called when a Content Type is dropped into a Placeholder (created editor, uploader, etc)
     // - save() will save Content Type Data
-    // - get_content() as it would be seen in the email
     var content_types = {
 
         _base:  {
@@ -51,12 +51,8 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             }
             , setup: function(my_content) {
                 // Set an ID
-                $(my_content).attr('id', 'ct' + Date.now());
-                // Make it movable between placeholders
-                /* $(my_content).draggable({
-                    opacity: '0.7'
-                    , handle: '[data-action=move]'
-                }); */
+                if ( !$(my_content).attr('id') )
+                    $(my_content).attr('id', 'ct' + Date.now());
             }
         }
 
@@ -175,11 +171,6 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
     };
 
-    // Call init() for all content types
-    for(i in content_types) {
-        content_types[i].init();
-    }
-
     // Make Content Types Draggable
     content_type_draggables.draggable({
         opacity: '0.7'
@@ -195,22 +186,13 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             , drop: function(event, ui) {
                 var placeholder = $(this);
 
-                if ( ui.draggable.attr('id') ) {
-                    // Its a placeholder being moved
-                    $(this).html('');
-                    $(ui.draggable)
-                        .removeAttr('style')  // remove draggable styles
-                        .detach()
-                        .appendTo(this);
-                } else {
-                    // Its a new content added to a placeholder
-                    var content_type_key = ui.draggable.data('content-type');
-                    var content_type = content_types[content_type_key]
-                    var my_content = content_type.content.clone();
-                    placeholder.find('*').remove();
-                    placeholder.html(my_content);
-                    content_type.setup(my_content);
-                }
+                // Its a new content added to a placeholder
+                var content_type_key = ui.draggable.data('content-type');
+                var content_type = content_types[content_type_key]
+                var my_content = content_type.content.clone();
+                placeholder.find('*').remove();
+                placeholder.html(my_content);
+                content_type.setup(my_content);
             }
         });
     };
@@ -226,12 +208,37 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         var my_layout = layout.clone();
         layout_container.find('*').remove();
         layout_container.html(my_layout);
-        // rebind elements on Droppable, jQueryUI has no live binding for droppable.
+        // Rebind elements on Droppable, jQueryUI has no live binding for droppable =(
         layout_container.bind_placeholders();
 
         layout_selectors.removeClass('active');
         $(this).addClass('active');
-    }).first().click();  // And auto select the first layout
+    })
+
+    // -- Initialize Events For Email Message --
+    // if we have content (email message), apply events to them
+    var current_content = layout_container.find('div[data-content-type]');
+    if ( current_content.size() > 0 ) {
+        // bind events for empty placeholder
+        layout_container.bind_placeholders();
+        // bind events for placeholders with content in it
+        $.each( current_content, function (k, v) {
+            var ct = $(v).data('content-type');
+            // we need to acc the action toolbar
+            var ct_actions = content_types[ct].content.find('.placeholder-actions').clone();
+            $(v).prepend(ct_actions);
+            // setup events
+            content_types[ct].setup($(v));
+        });
+    } else {
+        // if it's a new Campaign, just pick the first Layout
+        layout_selectors.first().click();
+    }
+
+    // Call init() for all content types
+    for(i in content_types) {
+        content_types[i].init();
+    }
 
     // ---------------------------------------------------------
     // ---------------------------------------------------------

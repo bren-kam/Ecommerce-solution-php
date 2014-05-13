@@ -1,19 +1,21 @@
 <?php
 /**
  * @package Grey Suit Retail
- * @page Send | Email Messages | Email Marketing
+ * @page Create | Campaigns | Email Marketing
  *
  * Declare the variables we have available from other sources
  * @var Resources $resources
- * @var Template $template
  * @var User $user
- * @var EmailMessage $message
+ * @var EmailMessage $campaign
  * @var EmailList[] $email_lists
  * @var array $settings
  * @var string $timezone
  * @var string $server_timezone
  * @var EmailTemplate[] $templates
  * @var AccountFile[] $files
+ * @var string $default_from
+ * @var boolean $overwrite_from
+ * @var DateTime $scheduled_datetime
  */
 
 echo $template->start( _('Create a New Campaign'), '../sidebar' );

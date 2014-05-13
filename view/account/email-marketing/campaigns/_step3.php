@@ -1,4 +1,25 @@
-<h2>Here is what your campign will look like</h2>
+<?php
+/**
+ * @package Grey Suit Retail
+ * @page Step1 | Create | Campaigns | Email Marketing
+ *
+ * Declare the variables we have available from other sources
+ * @var Resources $resources
+ * @var User $user
+ * @var EmailMessage $campaign
+ * @var EmailList[] $email_lists
+ * @var array $settings
+ * @var string $timezone
+ * @var string $server_timezone
+ * @var EmailTemplate[] $templates
+ * @var AccountFile[] $files
+ * @var string $default_from
+ * @var boolean $overwrite_from
+ * @var DateTime $scheduled_datetime
+ */
+?>
+
+    <h2>Here is what your campign will look like</h2>
 <br />
 
 <div class="email-marketing-wrapper clear">

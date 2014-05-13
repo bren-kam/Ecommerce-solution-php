@@ -108,6 +108,21 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
+     * Get Associations
+     *
+     * @return int[]
+     */
+    public function get_associations() {
+        $this->email_lists = $this->prepare(
+            'SELECT email_list_id FROM `email_message_associations` WHERE `email_message_id` = :email_message_id'
+            , 'i'
+            , array( ':email_message_id' => $this->id )
+        )->get_col();
+        return $this->email_lists;
+    }
+
+
+    /**
      * Create
      */
     public function create() {
@@ -117,7 +132,7 @@ class EmailMessage extends ActiveRecordBase {
             'website_id' => $this->website_id
             , 'email_template_id' => $this->email_template_id
             , 'name' => strip_tags($this->name)
-            , 'from' => strip_tags($this->from)
+            , 'from' => $this->from
             , 'subject' => strip_tags($this->subject)
             , 'message' => format::strip_only( $this->message, '<script>' )
             , 'type' => strip_tags($this->type)
@@ -179,7 +194,7 @@ class EmailMessage extends ActiveRecordBase {
         $this->update( array(
             'email_template_id' => $this->email_template_id
             , 'name' => strip_tags($this->name)
-            , 'from' => strip_tags($this->from)
+            , 'from' => $this->from
             , 'subject' => strip_tags($this->subject)
             , 'message' => format::strip_only( $this->message, '<script>' )
             , 'type' => strip_tags($this->type)
