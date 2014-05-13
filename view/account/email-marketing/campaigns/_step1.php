@@ -56,8 +56,8 @@
         <input type="hidden" name="date" id="date" val="" />
 
         <div class="float-left">
-            <input type="text" class="tb" name="tTime" id="tTime" style="width: 75px;" value="12:00 am" maxlength="8" />
-            <select>
+            <input type="text" class="tb" name="time" id="tTime" style="width: 75px;" value="12:00 am" maxlength="8" />
+            <select name="timezone">
                 <?php foreach ( $timezones as $tz_key => $tz_name ) { ?>
                     <option value="<?php echo $tz_key ?>" <?php if ( $settings['timezone'] == $tz_key ) echo 'selected' ?>><?php echo $tz_name ?></option>
                 <?php } ?>

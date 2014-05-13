@@ -95,7 +95,7 @@
 }
 
 
-/* Build Campaign
+/* Campaign Settings
 ----------------------------------------- */
 .subscribers {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
 .subscribers th, .subscribers td { font-weight: bold; vertical-align:middle; }
@@ -130,37 +130,21 @@
 .email-marketing-left { width: 70%; padding-right: 20px; }
 .email-marketing-right { width: 30%; }
 
-.email-layout {
-    background: #f7f7f7;
-    border: 1px solid #bdbdbd;
-    padding: 15px;
-    margin-bottom: 17px;
-}
+/* email.css overwrites to make .email-layout editable
+----------------------------------------- */
 
-/* Email Placeholders */
-.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { height: 50px; }
-.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { height: 100px; }
-.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { height: 150px; }
-.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { height: 200px; }
+.email-layout { border: 1px solid #bdbdbd; }
 
-.email-col-1, .email-col-2, .email-col-3, .email-col-4 {  padding-left: 0; padding-right: 0; float: left; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; border: 1px dashed #666; }
-.email-col-1 { width: 25%; }
-.email-col-2 { width: 50%; }
-.email-col-3 { width: 33; }
-.email-col-4 { width: 100%; }
+.email-col-1, .email-col-2, .email-col-3, .email-col-4 {  border: 1px dashed #666; }
 
 /* Placeholder inner structure */
-div[data-content-type] { width: 100%; height: inherit; position: relative; }
-.placeholder-content { width: 100%; height: inherit; }
 .placeholder-actions  { position: absolute; right: 10px; top: 10px; z-index: 1; }
 
 div[data-content-type=text] .placeholder-content:empty{ background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
 div[data-content-type=image] .placeholder-content:empty{ background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
 div[data-content-type=product] .placeholder-content:empty{ background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
 
-
 /* Styles for elements inside Placeholder Actions */
-
 div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
 
 div[data-content-type=product] .placeholder-content .product-img { width: 70%; height: 70%; margin-left: 15%; }
@@ -172,6 +156,9 @@ div[data-content-type=product] .placeholder-content .sale-price { font-size: 16p
 #editor-container { width: 600px; }
 
 .droppable-hover { background-color: yellow; opacity: 0.3; }
+
+/* Tabs
+----------------------------------------- */
 
 .idTabs { width: 100%; }
 
@@ -213,6 +200,9 @@ div[data-content-type=product] .placeholder-content .sale-price { font-size: 16p
     margin-bottom: 17px;
     margin-top: -1px;
 }
+
+/* Layout and Content Type Selectors/Thumbnails
+----------------------------------------- */
 
 .layout-thumbnails, .content-thumbnails
 .layout-thumbnails li, .content-thumbnails li {

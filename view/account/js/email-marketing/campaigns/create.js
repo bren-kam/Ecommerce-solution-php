@@ -30,7 +30,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
     var content_type_draggables = $('li[data-content-type]');
     var layout_container = $('#email-editor');
-    var layouts_selectors = $('li[data-layout]');
+    var layout_selectors = $('li[data-layout]');
     var layouts = $('div[data-layout]');
     var placeholder_selector = '.email-col-1, .email-col-2, .email-col-3, .email-col-4';
 
@@ -53,10 +53,10 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 // Set an ID
                 $(my_content).attr('id', 'ct' + Date.now());
                 // Make it movable between placeholders
-                $(my_content).draggable({
+                /* $(my_content).draggable({
                     opacity: '0.7'
                     , handle: '[data-action=move]'
-                });
+                }); */
             }
         }
 
@@ -102,8 +102,6 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                             }
                             , 'json'
                         );
-                        // my_content.find('[data-product-id]').val( ui.item.value );
-                        // load the rest of the product
                     }
                 }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
                     return $( "<li>" )
@@ -218,7 +216,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     };
 
     // Change Layout
-    layouts_selectors.click(function() {
+    layout_selectors.click(function() {
         var has_content = layout_container.find('.placeholder-content').size() > 0;
         if ( has_content && !confirm("Do you want to change the email Layout? You will lose all you previous content.") )
             return;
@@ -230,6 +228,9 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         layout_container.html(my_layout);
         // rebind elements on Droppable, jQueryUI has no live binding for droppable.
         layout_container.bind_placeholders();
+
+        layout_selectors.removeClass('active');
+        $(this).addClass('active');
     }).first().click();  // And auto select the first layout
 
     // ---------------------------------------------------------
@@ -239,7 +240,8 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // This will generate the email content that will be Sent
     function get_email_content() {
         var editor_content = layout_container.clone();
-        editor_content.find('.placeholder-actions').hide();
+        editor_content.find('.placeholder-actions').remove();
+        editor_content.find('*').removeClass('ui-droppable');
         return editor_content;
     }
 
@@ -265,8 +267,60 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
     });
 
+    // Serialize Form in a Key/Value Object
+    function get_form_data() {
+        var data = {};
+
+        // Set Step 1 data (campaign settings)
+        $.each(
+            $('div[data-step=1]').find('input, textarea, select').serializeArray()
+            , function(k, v) {
+                data[v.name] = v.value;
+            }
+        );
+
+        // Message HTML
+        data.message = get_email_content().html();
+        data.layout = layout_selectors.closest('.active').data('layout');
+
+        return data;
+    }
+
+    // Saves Campaign as Draft
     $('.save-draft').click(function(e) {
         e.preventDefault();
+
+        // Get form data
+        var data = get_form_data();
+        data._nonce = $('#_save_draft').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/save-draft/', data, ajaxResponse );
+    });
+
+    // Send Test Email
+    $('.send-test').click(function(e) {
+        e.preventDefault();
+
+        // Get form data
+        var data = get_form_data();
+        data._nonce = $('#_send_test').val();
+        data.email = $('#test-destination').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/send-test/', data, ajaxResponse );
+    });
+
+    // Save Campaign
+    $('.save-campaign').click(function(e) {
+        e.preventDefault();
+
+        // Get form data
+        var data = get_form_data();
+        data._nonce = $('#_save_campaign').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/save-campaign/', data, ajaxResponse );
     });
 
 });

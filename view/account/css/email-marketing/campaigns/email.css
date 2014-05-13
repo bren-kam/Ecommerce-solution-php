@@ -1,0 +1,51 @@
+
+/* Base Styles
+----------------------------------------- */
+.clearfix,
+.clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
+/* \*/ * html .clear { height:1px } /* */
+
+/* Email Layout Styles
+----------------------------------------- */
+.email-layout {
+    background: #f7f7f7;
+    padding: 15px;
+    margin-bottom: 17px;
+}
+
+/* Email Placeholders */
+.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { height: 50px; }
+.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { height: 100px; }
+.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { height: 150px; }
+.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { height: 200px; }
+
+.email-col-1, .email-col-2, .email-col-3, .email-col-4 {
+    padding-left: 0;
+    padding-right: 0;
+    padding: 10px;
+    float: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.email-col-1 { width: 25%; }
+.email-col-2 { width: 50%; }
+.email-col-3 { width: 33; }
+.email-col-4 { width: 100%; }
+
+/* Placeholder inner structure */
+div[data-content-type] { width: 100%; height: inherit; position: relative; }
+.placeholder-content { width: 100%; height: inherit; }
+
+/* Styles for elements inside Placeholders */
+div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
+
+div[data-content-type=product] .placeholder-content .product-img { width: 70%; height: 70%; margin-left: 15%; }
+div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
+div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
+div[data-content-type=product] .placeholder-content h2 { font-size: 18px; }
+div[data-content-type=product] .placeholder-content .sale-price { font-size: 16px; color: red; }
+
+#editor-container { width: 600px; }
+

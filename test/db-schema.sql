@@ -638,6 +638,8 @@ CREATE TABLE IF NOT EXISTS `email_messages` (
   `mc_campaign_id` varchar(50) NOT NULL,
   `ac_campaign_id` int(11) DEFAULT NULL,
   `ac_message_id` int(11) DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL DEFAULT '',
+  `from` VARCHAR(255) NOT NULL DEFAULT '',
   `subject` varchar(150) NOT NULL,
   `message` text NOT NULL,
   `type` varchar(50) NOT NULL,

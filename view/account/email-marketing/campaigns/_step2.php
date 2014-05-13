@@ -24,7 +24,7 @@
         </div>
 
         <p>
-            <input type="submit" class="button" value="Save Draft">
+            <input type="submit" class="button save-draft" value="Save Draft">
             <a href="#" data-step="3" class="button float-right" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
         </p>
     </div><!-- .email-marketing-left -->
