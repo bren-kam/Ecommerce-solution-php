@@ -130,32 +130,25 @@
 .email-marketing-left { width: 70%; padding-right: 20px; }
 .email-marketing-right { width: 30%; }
 
-/* email.css overwrites to make .email-layout editable
+/* email.css overwrites to make .email-layout editable look better
 ----------------------------------------- */
 
-.email-layout { border: 1px solid #bdbdbd; }
+.droppable-hover { background-color: yellow; opacity: 0.3; }
 
+/* Borders */
+.email-layout { border: 1px solid #bdbdbd; }
 .email-col-1, .email-col-2, .email-col-3, .email-col-4 {  border: 1px dashed #666; }
 
 /* Placeholder inner structure */
-.placeholder-actions  { position: absolute; right: 10px; top: 10px; z-index: 1; }
+.placeholder-actions  { position: absolute; right: 10px; top: 5px; z-index: 1; }
 
+/* Images when placeholders are empty */
 div[data-content-type=text] .placeholder-content:empty{ background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
 div[data-content-type=image] .placeholder-content:empty{ background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
 div[data-content-type=product] .placeholder-content:empty{ background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
 
-/* Styles for elements inside Placeholder Actions */
-div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
-
-div[data-content-type=product] .placeholder-content .product-img { width: 70%; height: 70%; margin-left: 15%; }
-div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
-div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
-div[data-content-type=product] .placeholder-content h2 { font-size: 18px; }
-div[data-content-type=product] .placeholder-content .sale-price { font-size: 16px; color: red; }
-
+/* Text Editor Modal for content-type=text*/
 #editor-container { width: 600px; }
-
-.droppable-hover { background-color: yellow; opacity: 0.3; }
 
 /* Tabs
 ----------------------------------------- */

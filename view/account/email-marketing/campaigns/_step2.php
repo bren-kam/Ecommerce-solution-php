@@ -60,9 +60,9 @@
 
 <div class="hidden">
 
-    <div data-content-type="product">
+    <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
-                <input type="text" class="products-autocomplete" placeholder="Search by SKU or Name..." />
+                <input type="text" class="products-autocomplete" placeholder="Enter SKU or Name..." />
                 <a data-action="edit" href="#"><img src="/images/icons/edit.png" /></a>
                 | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
             <br clear="all" />
@@ -70,7 +70,7 @@
         <div class="placeholder-content"></div>
     </div>
 
-    <div data-content-type="text">
+    <div class="content-type-template" data-content-type="text">
         <div class="placeholder-actions">
             <a href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
             | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
@@ -78,7 +78,7 @@
         <div class="placeholder-content"></div>
     </div>
 
-    <div data-content-type="image">
+    <div class="content-type-template" data-content-type="image">
         <div class="placeholder-actions">
             <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
             | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>

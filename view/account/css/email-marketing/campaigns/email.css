@@ -14,16 +14,16 @@
 }
 
 /* Email Placeholders */
-.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { height: 50px; }
-.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { height: 100px; }
-.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { height: 150px; }
-.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { height: 200px; }
+.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { min-height: 50px; }
+.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { min-height: 100px; }
+.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { min-height: 150px; }
+.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { min-height: 200px; }
 
 .email-col-1, .email-col-2, .email-col-3, .email-col-4 {
     padding-left: 0;
     padding-right: 0;
-    padding: 10px;
     float: left;
+    position: relative;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -35,17 +35,14 @@
 .email-col-4 { width: 100%; }
 
 /* Placeholder inner structure */
-div[data-content-type] { width: 100%; height: inherit; position: relative; }
-.placeholder-content { width: 100%; height: inherit; }
+div[data-content-type] { width: 100%; height: inherit; }
+.placeholder-content { width: 100%; }
 
 /* Styles for elements inside Placeholders */
 div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
-
-div[data-content-type=product] .placeholder-content .product-img { width: 70%; height: 70%; margin-left: 15%; }
+div[data-content-type=product] .placeholder-content .product-img { width: 70%; margin-left: 15%; }
 div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
 div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
 div[data-content-type=product] .placeholder-content h2 { font-size: 18px; }
 div[data-content-type=product] .placeholder-content .sale-price { font-size: 16px; color: red; }
-
-#editor-container { width: 600px; }
 

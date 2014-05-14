@@ -57,7 +57,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , product: {
-            content: $('div[data-content-type=product]')
+            content: $('div.content-type-template[data-content-type=product]')
             , init: function() {
                 $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
                     e.preventDefault();
@@ -108,7 +108,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , text: {
-            content: $('div[data-content-type=text]')
+            content: $('div.content-type-template[data-content-type=text]')
             , init: function() {
                 $('#save-text').click(content_types['text'].save_text);
                 $('body').on('click', '.open-text-editor', function(e) {
@@ -147,7 +147,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , image: {
-            'content': $('div[data-content-type=image]')
+            'content': $('div.content-type-template[data-content-type=image]')
             , init: function() {
                 // Media Manager "Select" button
                 $('#select-image').click(content_types['image'].select_image);
@@ -184,9 +184,8 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             accept: '[data-content-type], [data-action=move]'
             , hoverClass: 'droppable-hover'
             , drop: function(event, ui) {
-                var placeholder = $(this);
-
                 // Its a new content added to a placeholder
+                var placeholder = $(this);
                 var content_type_key = ui.draggable.data('content-type');
                 var content_type = content_types[content_type_key]
                 var my_content = content_type.content.clone();
@@ -246,7 +245,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
     // This will generate the email content that will be Sent
     function get_email_content() {
-        var editor_content = layout_container.clone();
+        var editor_content = $(layout_container.html());
         editor_content.find('.placeholder-actions').remove();
         editor_content.find('*').removeClass('ui-droppable');
         return editor_content;

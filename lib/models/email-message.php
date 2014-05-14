@@ -313,14 +313,23 @@ class EmailMessage extends ActiveRecordBase {
         // Get Email
         // TODO: Apply styles 'properly'
         $email_css = file_get_contents( VIEW_PATH . 'css/email-marketing/campaigns/email.css');
-        $message = '<style>' . $email_css . '</style>' . $this->message;
 
         $settings = $account->get_settings( 'from_name', 'from_email' );
         $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
         $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
         $from = $from_name . ' <' . $from_email . '>';
 
-        fn::mail( $email, $this->subject, $message, $from, $from, false );
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        $headers .= "From: $from\r\n";
+
+        lib('ext/CssToInlineStyles');
+        $inliner = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
+        $inliner->setCSS($email_css);
+        $inliner->setHTML("<html><body><div id=\"email-wrapper\">{$this->message}</div></body></html>");
+        $message = $inliner->convert();
+
+        mail( $email, $this->subject, $message, $headers );
     }
 
     /**
