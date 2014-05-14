@@ -100,6 +100,7 @@ class WebsiteController extends BaseController {
                 $page->meta_title = $_POST['tMetaTitle'];
                 $page->meta_description = $_POST['tMetaDescription'];
                 $page->meta_keywords = $_POST['tMetaKeywords'];
+                $page->top = $_POST['rPosition'];
                 $page->save();
 
                 // Update custom meta
@@ -413,9 +414,10 @@ class WebsiteController extends BaseController {
         if ( !empty( $new_settings ) )
             $this->user->account->set_settings( $new_settings );
 
-        // Determinve variables
+        // Determine variables
         $dimensions = $settings['banner-width'] . 'x' . $settings['banner-height'];
         $images_alt = '1' == $settings['images-alt'];
+        $slideshow_fixed_width = $this->user->account->get_settings('slideshow-fixed-width');
 
         $this->resources
             ->css( 'website/banners' )
@@ -425,7 +427,7 @@ class WebsiteController extends BaseController {
             ->kb( 41 )
             ->select( 'banners' )
             ->add_title( _('Banners') )
-            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page' ) );
+            ->set( compact( 'attachments', 'dimensions', 'images_alt', 'page', 'slideshow_fixed_width' ) );
     }
 
     /**
