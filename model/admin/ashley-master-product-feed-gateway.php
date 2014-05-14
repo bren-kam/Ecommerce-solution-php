@@ -287,6 +287,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
             // Get Product
 			$product = $this->get_existing_product( $sku );
 
+            if ( 'deleted' == $product->publish_visibility )
+                continue;
+
             // Now we have the product
             if ( !$product instanceof Product ) {
 				$new_product = true;
