@@ -137,7 +137,7 @@
 
 /* Borders */
 .email-layout { border: 1px solid #bdbdbd; }
-.email-col-1, .email-col-2, .email-col-3, .email-col-4 {  border: 1px dashed #666; }
+.email-col-1, .email-col-2, .email-col-3, .email-col-4, .email-col-5, .email-col-6, .email-col-7, .email-col-8, .email-col-9, .email-col-10, .email-col-11, .email-col-12 {  border: 1px dashed #666; }
 
 /* Placeholder inner structure */
 .placeholder-actions  { position: absolute; right: 10px; top: 5px; z-index: 1; }
@@ -215,9 +215,15 @@ div[data-content-type=product] .placeholder-content:empty{ background: url('/ima
     box-sizing: border-box;
 }
 
-.layout-thumbnails li img, .content-thumbnails li img {
- opacity: 0.4;
+.layout-thumbnails li:hover, .content-thumbnails li:hover {
+    cursor: pointer;
 }
 
+.content-thumbnails li img {
+    opacity: 0.4;
+}
 
+.layout-thumbnails li img {
+    width: 100%;
+}
 

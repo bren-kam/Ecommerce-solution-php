@@ -14,12 +14,15 @@
 }
 
 /* Email Placeholders */
-.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { min-height: 50px; }
-.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { min-height: 100px; }
-.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { min-height: 150px; }
-.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { min-height: 200px; }
+.email-row-1 { min-height: 50px; }
+.email-row-2 { min-height: 100px; }
+.email-row-3 { min-height: 150px; }
+.email-row-4 { min-height: 200px; }
+.email-row-5 { min-height: 250px; }
+.email-row-6 { min-height: 300px; }
 
-.email-col-1, .email-col-2, .email-col-3, .email-col-4 {
+.email-col-1, .email-col-2, .email-col-3, .email-col-4, .email-col-5, .email-col-6, .email-col-7, .email-col-8, .email-col-9, .email-col-10, .email-col-11, .email-col-12  {
+    min-height: inherit;
     padding-left: 0;
     padding-right: 0;
     float: left;
@@ -29,10 +32,18 @@
     box-sizing: border-box;
 }
 
-.email-col-1 { width: 25%; }
-.email-col-2 { width: 50%; }
-.email-col-3 { width: 33; }
-.email-col-4 { width: 100%; }
+.email-col-1 { width: 8.33%; }
+.email-col-2 { width: 16.66%; }
+.email-col-3 { width: 25%; }
+.email-col-4 { width: 33.33%; }
+.email-col-5 { width: 41.66%; }
+.email-col-6 { width: 50%; }
+.email-col-7 { width: 58.33%; }
+.email-col-8 { width: 66.66%; }
+.email-col-9 { width: 75%; }
+.email-col-10 { width: 83.33%; }
+.email-col-11 { width: 91.66%; }
+.email-col-12 { width: 100%; }
 
 /* Placeholder inner structure */
 div[data-content-type] { width: 100%; height: inherit; }

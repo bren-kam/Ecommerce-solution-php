@@ -33,7 +33,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     var layout_container = $('#email-editor');
     var layout_selectors = $('li[data-layout]');
     var layouts = $('div[data-layout]');
-    var placeholder_selector = '.email-col-1, .email-col-2, .email-col-3, .email-col-4';
+    var placeholder_selector = '.droppable';
 
     // Here we define out Content Types (text, product, image)
     // and place the code that handles it
@@ -181,7 +181,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // This gets called every time the layout changes
     layout_container.bind_placeholders = function() {
         this.find(placeholder_selector).droppable({
-            accept: '[data-content-type], [data-action=move]'
+            accept: '[data-content-type]'
             , hoverClass: 'droppable-hover'
             , drop: function(event, ui) {
                 // Its a new content added to a placeholder
