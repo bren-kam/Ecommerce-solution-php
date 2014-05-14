@@ -245,7 +245,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
     // This will generate the email content that will be Sent
     function get_email_content() {
-        var editor_content = $(layout_container.html());
+        var editor_content = layout_container.clone();
         editor_content.find('.placeholder-actions').remove();
         editor_content.find('*').removeClass('ui-droppable');
         return editor_content;
@@ -269,7 +269,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             .siblings().removeClass('active');
 
         if ( $(this).data('step') == 3 ) {
-            $('#email-preview').html( get_email_content() );
+            $('#email-preview').html( get_email_content().html() );
         }
     });
 
@@ -288,7 +288,6 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         // Message HTML
         data.message = get_email_content().html();
         data.layout = layout_selectors.closest('.active').data('layout');
-
         return data;
     }
 

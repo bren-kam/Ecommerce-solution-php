@@ -39,7 +39,7 @@ div[data-content-type] { width: 100%; height: inherit; }
 .placeholder-content { width: 100%; }
 
 /* Styles for elements inside Placeholders */
-div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
+div[data-content-type=image] .placeholder-content img { width: 100%; }
 div[data-content-type=product] .placeholder-content .product-img { width: 70%; margin-left: 15%; }
 div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
 div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
