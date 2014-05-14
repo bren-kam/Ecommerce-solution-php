@@ -455,6 +455,9 @@ class ProductsController extends BaseController {
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
+            // Clear public website cache
+            $this->user->account->purge_varnish_cache();
+
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
