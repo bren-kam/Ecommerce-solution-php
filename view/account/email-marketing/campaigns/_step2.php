@@ -92,72 +92,72 @@
 
     <div data-layout="layout-1">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-4 clear">
-            <div class="email-col-6 droppable"></div>
-            <div class="email-col-6 droppable"></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-3 clear">
-            <div class="email-col-3 droppable"></div>
-            <div class="email-col-3 droppable"></div>
-            <div class="email-col-3 droppable"></div>
-            <div class="email-col-3 droppable"></div>
+            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
         </div>
     </div>
 
     <div data-layout="layout-2">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-3 clear">
-            <div class="email-col-4 droppable"></div>
-            <div class="email-col-4 droppable"></div>
-            <div class="email-col-4 droppable"></div>
+            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-4 clear">
-            <div class="email-col-4 droppable"></div>
-            <div class="email-col-4 droppable"></div>
-            <div class="email-col-4 droppable"></div>
+            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
         </div>
     </div>
 
     <div data-layout="layout-3">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-4 clear">
-            <div class="email-col-6 droppable"></div>
-            <div class="email-col-6 droppable"></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-4 clear">
-            <div class="email-col-6 droppable"></div>
-            <div class="email-col-6 droppable"></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
         </div>
     </div>
 
     <div data-layout="layout-4">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-6 clear">
             <div class="email-col-4">
                 <div class="email-row-3">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
                 <div class="email-row-6">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
             </div>
             <div class="email-col-8">
                 <div class="email-row-6">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
                 <div class="email-row-6">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
 
             </div>
@@ -166,23 +166,23 @@
 
     <div data-layout="layout-5">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-6 clear">
             <div class="email-col-8">
                 <div class="email-row-6">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
                 <div class="email-row-6">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
             </div>
             <div class="email-col-4">
                 <div class="email-row-3">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
                 <div class="email-row-6">
-                    <div class="email-col-12 droppable"></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
                 </div>
             </div>
         </div>
@@ -190,33 +190,33 @@
 
     <div data-layout="layout-6">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-3 clear">
-            <div class="email-col-6 droppable"></div>
-            <div class="email-col-6 droppable"></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-4 clear">
-            <div class="email-col-6 droppable"></div>
-            <div class="email-col-6 droppable"></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
         </div>
     </div>
 
     <div data-layout="layout-7">
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-1 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-3 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <div class="email-row-4 clear">
-            <div class="email-col-12 droppable"></div>
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
     </div>
 

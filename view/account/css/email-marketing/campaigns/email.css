@@ -14,6 +14,7 @@
 }
 
 /* Email Placeholders - Rows */
+.email-row-1, .email-row-2, .email-row-3, .email-row-4, .email-row-5, .email-row-6 { margin: -5px; }
 .email-row-1 { min-height: 50px; }
 .email-row-2 { min-height: 100px; }
 .email-row-3 { min-height: 150px; }
@@ -34,8 +35,6 @@
 .email-col-11,
 .email-col-12  {
     min-height: inherit;
-    padding-left: 0;
-    padding-right: 0;
     float: left;
     position: relative;
     -webkit-box-sizing: border-box;
@@ -55,6 +54,8 @@
 .email-col-10 { width: 83.33%; }
 .email-col-11 { width: 91.66%; }
 .email-col-12 { width: 100%; }
+
+.email-col-container { min-height: inherit; }
 
 /* Placeholder inner structure */
 .placeholder-content { width: 100%; }

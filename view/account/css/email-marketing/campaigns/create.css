@@ -139,27 +139,31 @@
 .email-layout { border: 1px solid #bdbdbd; }
 #email-editor  { background: #f7f7f7; }
 #email-editor .email-layout { border: 1px solid #bdbdbd; }
-#email-editor .email-col-1,
-#email-editor .email-col-2,
-#email-editor .email-col-3,
-#email-editor .email-col-4,
-#email-editor .email-col-5,
-#email-editor .email-col-6,
-#email-editor .email-col-7,
-#email-editor .email-col-8,
-#email-editor .email-col-9,
-#email-editor .email-col-10,
-#email-editor .email-col-11,
-#email-editor .email-col-12 {  border: 1px dashed #666; }
+#email-editor .email-col-container { border: 1px dashed #666; }
 
+.email-col-1,
+.email-col-2,
+.email-col-3,
+.email-col-4,
+.email-col-5,
+.email-col-6,
+.email-col-7,
+.email-col-8,
+.email-col-9,
+.email-col-10,
+.email-col-11,
+.email-col-12  {
+    padding: 5px;
+}
 
 /* Placeholder inner structure */
 .placeholder-actions  { position: absolute; right: 10px; top: 5px; z-index: 1; }
 
 /* Images when placeholders are empty */
-div[data-content-type=text] .placeholder-content:empty{ background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=image] .placeholder-content:empty{ background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=product] .placeholder-content:empty{ background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
+#email-editor div[data-content-type=text], #email-editor div[data-content-type=image], #email-editor div[data-content-type=product] { min-height: inherit; }
+div[data-content-type=text] .placeholder-content:empty{ min-height: inherit; background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=image] .placeholder-content:empty{ min-height: inherit; background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=product] .placeholder-content:empty{ min-height: inherit; background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
 
 /* Text Editor Modal for content-type=text*/
 #editor-container { width: 600px; }
