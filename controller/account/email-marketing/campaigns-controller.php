@@ -302,6 +302,8 @@ class CampaignsController extends BaseController {
             $campaign->get( $_POST['id'], $this->user->account->id );
 
         $campaign->status = EmailMessage::STATUS_SCHEDULED;
+
+        // Save
         $this->save($campaign);  // sync the other fields and save
 
         // means it's a new Campaign
@@ -311,7 +313,8 @@ class CampaignsController extends BaseController {
             $response->add_response( 'jquery', jQuery::getResponse());
         }
 
-        // TODO: send to SendGrid
+        // Send to SendGrid
+        $campaign->schedule( $this->user->account, $_POST['email_lists'] );
 
         $response->notify( 'Campaign Saved!' );
         return $response;
