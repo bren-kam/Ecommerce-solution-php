@@ -135,9 +135,23 @@
 
 .droppable-hover { background-color: yellow; opacity: 0.3; }
 
-/* Borders */
+/* Baclground and Borders for Editor */
 .email-layout { border: 1px solid #bdbdbd; }
-.email-col-1, .email-col-2, .email-col-3, .email-col-4, .email-col-5, .email-col-6, .email-col-7, .email-col-8, .email-col-9, .email-col-10, .email-col-11, .email-col-12 {  border: 1px dashed #666; }
+#email-editor  { background: #f7f7f7; }
+#email-editor .email-layout { border: 1px solid #bdbdbd; }
+#email-editor .email-col-1,
+#email-editor .email-col-2,
+#email-editor .email-col-3,
+#email-editor .email-col-4,
+#email-editor .email-col-5,
+#email-editor .email-col-6,
+#email-editor .email-col-7,
+#email-editor .email-col-8,
+#email-editor .email-col-9,
+#email-editor .email-col-10,
+#email-editor .email-col-11,
+#email-editor .email-col-12 {  border: 1px dashed #666; }
+
 
 /* Placeholder inner structure */
 .placeholder-actions  { position: absolute; right: 10px; top: 5px; z-index: 1; }

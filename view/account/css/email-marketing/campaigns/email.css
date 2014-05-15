@@ -8,12 +8,12 @@
 /* Email Layout Styles
 ----------------------------------------- */
 .email-layout {
-    background: #f7f7f7;
     padding: 15px;
     margin-bottom: 17px;
+    width: 700px;
 }
 
-/* Email Placeholders */
+/* Email Placeholders - Rows */
 .email-row-1 { min-height: 50px; }
 .email-row-2 { min-height: 100px; }
 .email-row-3 { min-height: 150px; }
@@ -21,7 +21,18 @@
 .email-row-5 { min-height: 250px; }
 .email-row-6 { min-height: 300px; }
 
-.email-col-1, .email-col-2, .email-col-3, .email-col-4, .email-col-5, .email-col-6, .email-col-7, .email-col-8, .email-col-9, .email-col-10, .email-col-11, .email-col-12  {
+.email-col-1,
+.email-col-2,
+.email-col-3,
+.email-col-4,
+.email-col-5,
+.email-col-6,
+.email-col-7,
+.email-col-8,
+.email-col-9,
+.email-col-10,
+.email-col-11,
+.email-col-12  {
     min-height: inherit;
     padding-left: 0;
     padding-right: 0;
@@ -46,14 +57,13 @@
 .email-col-12 { width: 100%; }
 
 /* Placeholder inner structure */
-div[data-content-type] { width: 100%; height: inherit; }
 .placeholder-content { width: 100%; }
 
 /* Styles for elements inside Placeholders */
-div[data-content-type=image] .placeholder-content img { width: 100%; }
-div[data-content-type=product] .placeholder-content .product-img { width: 70%; margin-left: 15%; }
-div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
-div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
-div[data-content-type=product] .placeholder-content h2 { font-size: 18px; }
-div[data-content-type=product] .placeholder-content .sale-price { font-size: 16px; color: red; }
+.content-type-image img { width: 100%; }
+.content-type-product .product-img { width: 70%; margin-left: 15%; }
+.content-type-product .product-img img { width: 100%; }
+.content-type-product .product-content { width: 100%; text-align: center; }
+.content-type-product h2 { font-size: 18px; }
+.content-type-product .sale-price { font-size: 16px; color: red; }
 

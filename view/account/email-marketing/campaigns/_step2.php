@@ -71,7 +71,7 @@
                 | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
             <br clear="all" />
         </div>
-        <div class="placeholder-content"></div>
+        <div class="placeholder-content content-type-product"></div>
     </div>
 
     <div class="content-type-template" data-content-type="text">
@@ -79,7 +79,7 @@
             <a href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
             | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
         </div>
-        <div class="placeholder-content"></div>
+        <div class="placeholder-content content-type-text"></div>
     </div>
 
     <div class="content-type-template" data-content-type="image">
@@ -87,7 +87,7 @@
             <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
             | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
         </div>
-        <div class="placeholder-content"></div>
+        <div class="placeholder-content content-type-image"></div>
     </div>
 
     <div data-layout="layout-1">
