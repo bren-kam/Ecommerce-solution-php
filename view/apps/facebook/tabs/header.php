@@ -17,6 +17,6 @@ $resources->javascript( 'sparrow', 'fb', 'header' );
 <title><?php echo $template->v('title'); ?></title>
 <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
 <?php echo $resources->get_css_urls(); ?>
-<script type="text/javascript" src="/resources/js/?f=<?php echo $resources->get_javascript_file( 'head' ); ?>"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.2/head.load.min.js"></script>
 </head>
 <body>
