@@ -30,7 +30,8 @@ class ContactUs extends ActiveRecordBase {
 
 			$tab .= html_entity_decode( $account_page->content, ENT_QUOTES, 'UTF-8' );
 
-            $addresses = unserialize( html_entity_decode( $pagemeta['addresses'], ENT_QUOTES, 'UTF-8') );
+            $website_location = new WebsiteLocation();
+            $addresses = $website_location->get_by_website( $account_page->website_id );
 
 			if ( is_array( $addresses ) ) {
 				if ( 'true' == $pagemeta['multiple-location-map'] ) {
@@ -39,37 +40,37 @@ class ContactUs extends ActiveRecordBase {
                     $locations = '';
 
 					foreach ( $addresses as $ad ) {
-						$gmaps_url .= '|' . urlencode( $ad['address'] . ',' . $ad['city'] . ' ' . $ad['state'] . ',' . $ad['zip'] );
+						$gmaps_url .= '|' . urlencode( $ad->address . ',' . $ad->city . ' ' . $ad->state . ',' . $ad->zip );
 
 						$locations .= '<div class="location-3">';
-						$locations .= '<h2>' . $ad['location'] . '</h2>';
-						$locations .= '<p>' . $ad['address'] . '<br />' . $ad['city'] . ', ' . $ad['state'] . ' ' . $ad['zip'];
+						$locations .= '<h2>' . $ad->location . '</h2>';
+						$locations .= '<p>' . $ad->address . '<br />' . $ad->city . ', ' . $ad->state . ' ' . $ad->zip;
 
-						if ( !empty( $ad['phone'] ) || !empty( $ad['fax'] ) || !empty( $ad['email'] ) || !empty( $ad['website'] ) ) {
+						if ( !empty( $ad->phone ) || !empty( $ad->fax ) || !empty( $ad->email ) || !empty( $ad->website ) ) {
 							$locations .= '<p>';
 
-							if ( !empty( $ad['phone'] ) )
-								$locations .= $ad['phone'] . ' (Phone)<br />';
+							if ( !empty( $ad->phone ) )
+								$locations .= $ad->phone . ' (Phone)<br />';
 
-							if ( !empty( $ad['fax'] ) )
-								$locations .= $ad['fax'] . ' (Fax)<br />';
+							if ( !empty( $ad->fax ) )
+								$locations .= $ad->fax . ' (Fax)<br />';
 
-							if ( !empty( $ad['email'] ) ) {
-								$email_address = security::encrypt_email( $ad['email'], 'Email ' . $ad['location'], false );
-								$display_email = ( strlen( $ad['email'] ) > 25 ) ? ( substr( $ad['email'], 0, 22) ).'...' : $email_address;
-								$locations .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad['location'] . '">' . $display_email . '</a> (Email)<br/>';
+							if ( !empty( $ad->email ) ) {
+								$email_address = security::encrypt_email( $ad->email, 'Email ' . $ad->location, false );
+								$display_email = ( strlen( $ad->email ) > 25 ) ? ( substr( $ad->email, 0, 22) ).'...' : $email_address;
+								$locations .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad->location . '">' . $display_email . '</a> (Email)<br/>';
 							}
 
-							if ( !empty( $ad['website'] ) ) {
-								$link = ( !stristr( 'http://', $ad['website'] ) ) ? 'http://' . $ad['website'] : $ad['website'];
-								$locations .= '<a href="' . $link . '" title="' . $ad['location'] . '">' . $ad['website'] . '</a>';
+							if ( !empty( $ad->website ) ) {
+								$link = ( !stristr( 'http://', $ad->website ) ) ? 'http://' . $ad->website : $ad->website;
+								$locations .= '<a href="' . $link . '" title="' . $ad->location . '">' . $ad->website . '</a>';
 							}
 
 							$locations .= '</p>';
 						}
 
-						if ( !empty( $ad['store-hours'] ) )
-							$locations .= '<p>' . $ad['store-hours'] . '</p>';
+						if ( !empty( $ad->store_hours ) )
+							$locations .= '<p>' . $ad->store_hours . '</p>';
 
 						$locations .= '</div>';
 
@@ -83,7 +84,7 @@ class ContactUs extends ActiveRecordBase {
 					$tab .= ( ( 'false' == $pagemeta['hide-all-maps'] || !isset( $pagemeta['hide-all-maps'] ) ) ? '<img src="' . $gmaps_url . '" alt="Locations" width="520" height="281" /><br /><br />' : '<br/>' ) . $locations;
 				} else {
 					foreach ( $addresses as $ad ) {
-						$gmaps_address = urlencode( $ad['address'] . ',' . $ad['city'] . ' ' . $ad['state'] . ',' . $ad['zip'] );
+						$gmaps_address = urlencode( $ad->address . ',' . $ad->city . ' ' . $ad->state . ',' . $ad->zip );
 
 						$tab .= '<div class="location" style="clear:both">';
 
@@ -95,35 +96,35 @@ class ContactUs extends ActiveRecordBase {
 							$tab .= '</div>';
 						}
 
-						$tab .= '<h2><strong>' . $ad['location'] . '</strong></h2>';
-						$tab .= '<p>' . $ad['address'] . '<br />' . $ad['city'] . ', ' . $ad['state'] . ' ' . $ad['zip'] . '</p>';
+						$tab .= '<h2><strong>' . $ad->location . '</strong></h2>';
+						$tab .= '<p>' . $ad->address . '<br />' . $ad->city . ', ' . $ad->state . ' ' . $ad->zip . '</p>';
 
-						if ( !empty( $ad['phone'] ) || !empty( $ad['fax'] ) || !empty( $ad['email'] ) || !empty( $ad['website'] ) ) {
+						if ( !empty( $ad->phone ) || !empty( $ad->fax ) || !empty( $ad->email ) || !empty( $ad->website ) ) {
 							$tab .= '<p>';
 
-							if ( !empty( $ad['phone'] ) )
-								$tab .= $ad['phone'] . ' (Phone)<br />';
+							if ( !empty( $ad->phone ) )
+								$tab .= $ad->phone . ' (Phone)<br />';
 
-							if ( !empty( $ad['fax'] ) )
-								$tab .= $ad['fax'] . ' (Fax)<br />';
+							if ( !empty( $ad->fax ) )
+								$tab .= $ad->fax . ' (Fax)<br />';
 
-							if ( !empty( $ad['email'] ) ) {
-								$email_address = security::encrypt_email( $ad['email'], 'Email ' . $ad['location'], false );
-								$display_email = ( strlen( $ad['email'] ) > 30 ) ? ( substr( $ad['email'], 0, 27) ).'...' : $email_address;
+							if ( !empty( $ad->email ) ) {
+								$email_address = security::encrypt_email( $ad->email, 'Email ' . $ad->location, false );
+								$display_email = ( strlen( $ad->email ) > 30 ) ? ( substr( $ad->email, 0, 27) ).'...' : $email_address;
 
-								$tab .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad['location'] . '">' . $display_email . '</a> (Email)<br/>';
+								$tab .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad->location . '">' . $display_email . '</a> (Email)<br/>';
 							}
 
-							if ( !empty( $ad['website'] ) ) {
-								$link = ( !stristr( 'http://', $ad['website'] ) ) ? 'http://' . $ad['website'] : $ad['website'];
-								$tab .= "<a href='$link' title=\"" . $ad['location'] . "\">" . $ad['website'] . "</a>";
+							if ( !empty( $ad->website ) ) {
+								$link = ( !stristr( 'http://', $ad->website ) ) ? 'http://' . $ad->website : $ad->website;
+								$tab .= "<a href='$link' title=\"" . $ad->location . "\">" . $ad->website . "</a>";
 							}
 
 							$tab .= '</p>';
 						}
 
-						if ( !empty( $ad['store-hours'] ) )
-							$tab .= '<p>' . $ad['store-hours'] . '</p>';
+						if ( !empty( $ad->store_hours ) )
+							$tab .= '<p>' . $ad->store_hours . '</p>';
 
 						$tab .= '</div><br /><br /><br /><br /><br /><br />';
 					}
@@ -159,7 +160,7 @@ class ContactUs extends ActiveRecordBase {
      */
     protected function get_tab_page( $fb_page_id, $website_page_id ) {
         return $this->prepare(
-            'SELECT wp.`title`, wp.`content` FROM `website_pages` AS wp LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = wp.`website_id` ) LEFT JOIN `sm_contact_us` AS smcu ON ( smcu.`sm_facebook_page_id` = smfbp.`id` ) WHERE wp.`website_page_id` = :website_page_id AND smfbp.`status` = 1 AND smcu.`fb_page_id` = :fb_page_id'
+            'SELECT wp.website_id, wp.`title`, wp.`content` FROM `website_pages` AS wp LEFT JOIN `sm_facebook_page` AS smfbp ON ( smfbp.`website_id` = wp.`website_id` ) LEFT JOIN `sm_contact_us` AS smcu ON ( smcu.`sm_facebook_page_id` = smfbp.`id` ) WHERE wp.`website_page_id` = :website_page_id AND smfbp.`status` = 1 AND smcu.`fb_page_id` = :fb_page_id'
             , 'is'
             , array( ':website_page_id' => $website_page_id, ':fb_page_id' => $fb_page_id )
         )->get_row( PDO::FETCH_CLASS, 'AccountPage' );
