@@ -25,6 +25,15 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // Fix for offset
     tTime.timepicker('hide');
 
+    // Schedule options are only displayed if #schedule is checked
+    $('#schedule').change(function() {
+        if ($(this).is(':checked')) {
+            $('.schedule').removeClass('hidden');
+        } else {
+            $('.schedule').addClass('hidden');
+        }
+    }).change();
+
     // ---------------------------------------------------------
     // ---------------------------------------------------------
     // STEP 2

@@ -62,9 +62,11 @@
 
 /* Styles for elements inside Placeholders */
 .content-type-image img { width: 100%; }
-.content-type-product .product-img { width: 70%; margin-left: 15%; }
+.content-type-product .product-img { width: 60%; border: 1px solid #e1e1e1;  margin-left: 20%; margin-bottom: 10px; }
 .content-type-product .product-img img { width: 100%; }
-.content-type-product .product-content { width: 100%; text-align: center; }
-.content-type-product h2 { font-size: 18px; }
-.content-type-product .sale-price { font-size: 16px; color: red; }
+.content-type-product .product-content { width: 100%; margin-left: 20%; color: #787d94; }
+.content-type-product h2 { font-size: 18px; margin-bottom: 8px; color: #787d94; }
+.content-type-product .sale-price { font-size: 20px; color: red; }
+.content-type-product .price { font-size: 17px; }
+.content-type-product .strikethrough { text-decoration: line-through; }
 

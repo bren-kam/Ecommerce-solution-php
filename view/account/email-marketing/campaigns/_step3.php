@@ -28,9 +28,9 @@
     </div>
 
     <p>
-        <a href="#" data-step="2" class="button float-left" title="<?php echo _('Wait, I Need to Edit'); ?>"><?php echo _('Wait, I Need to Edit'); ?></a>
-        <a href="#" class="button save-draft float-left" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
-        <a href="#dSendTest" class="button float-left" rel="dialog" title="<?php echo _('Send a Test Campaign'); ?>"><?php echo _('Send a Test Campaign'); ?></a>
+        <a href="#" data-step="2" class="button" title="<?php echo _('< Back'); ?>"><?php echo _('< Back'); ?></a>
+        <a href="#" class="button save-draft" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
+        <a href="#dSendTest" class="button" rel="dialog" title="<?php echo _('Send a Test Campaign'); ?>"><?php echo _('Send a Test Campaign'); ?></a>
         <a href="#" data-step="3" class="button float-right save-campaign" title="<?php echo _('Looks Good! Send it Out.'); ?>"><?php echo _('Looks Good! Send it Out.'); ?></a>
     </p>
 

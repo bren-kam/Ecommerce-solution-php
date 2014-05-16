@@ -4,6 +4,8 @@
 .clearfix,
 .clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
 /* \*/ * html .clear { height:1px } /* */
+a.button { padding-top: 11px; padding-bottom: 11px; }
+a.button.float-right { padding: 5px 20px; }
 
 /* Progress Bar
 ----------------------------------------- */
@@ -127,7 +129,7 @@
     box-sizing: border-box;
 }
 
-.email-marketing-left { width: 70%; padding-right: 20px; }
+.email-marketing-left { padding-right: 20px; }
 .email-marketing-right { width: 30%; }
 
 /* email.css overwrites to make .email-layout editable look better
@@ -137,9 +139,10 @@
 
 /* Baclground and Borders for Editor */
 .email-layout { border: 1px solid #bdbdbd; }
-#email-editor  { background: #f7f7f7; }
+#email-editor  { background: white; }
 #email-editor .email-layout { border: 1px solid #bdbdbd; }
 #email-editor .email-col-container { border: 1px dashed #666; }
+#email-editor .email-col-container:empty { background: #bdbdbd; opacity: 0.4; }
 
 .email-col-1,
 .email-col-2,
@@ -157,13 +160,16 @@
 }
 
 /* Placeholder inner structure */
-.placeholder-actions  { position: absolute; right: 10px; top: 5px; z-index: 1; }
+.placeholder-actions  { position: absolute; right: 10px; top: 10px; z-index: 1; }
 
 /* Images when placeholders are empty */
 #email-editor div[data-content-type=text], #email-editor div[data-content-type=image], #email-editor div[data-content-type=product] { min-height: inherit; }
-div[data-content-type=text] .placeholder-content:empty{ min-height: inherit; background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=image] .placeholder-content:empty{ min-height: inherit; background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=product] .placeholder-content:empty{ min-height: inherit; background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=text] .placeholder-content{ min-height: inherit; background: white; }
+div[data-content-type=image] .placeholder-content{ min-height: inherit; background: white; }
+div[data-content-type=product] .placeholder-content{ min-height: inherit; background: white; }
+div[data-content-type=text] .placeholder-content:empty{  background: #bdbdbd url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=image] .placeholder-content:empty{ background: #bdbdbd url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
+div[data-content-type=product] .placeholder-content:empty{ background: #bdbdbd url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
 
 /* Text Editor Modal for content-type=text*/
 #editor-container { width: 600px; }
@@ -195,7 +201,7 @@ div[data-content-type=product] .placeholder-content:empty{ min-height: inherit; 
     background: #f1f1f1;
     border: 1px solid #f1f1f1;
     border-bottom-color: #bdbdbd;
-    padding: 0 30px;
+    padding: 0 25px;
     z-index: 1;
 }
 
@@ -210,6 +216,7 @@ div[data-content-type=product] .placeholder-content:empty{ min-height: inherit; 
     padding: 15px 15px 5px;
     margin-bottom: 17px;
     margin-top: -1px;
+    min-height: 250px;
 }
 
 /* Layout and Content Type Selectors/Thumbnails

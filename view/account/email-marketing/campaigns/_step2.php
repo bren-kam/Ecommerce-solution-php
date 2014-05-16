@@ -19,18 +19,14 @@
  */
 ?>
 
-<input type="checkbox" class="cb" name="remove-header-footer" id="remove-header-footer" value="1">
-<label for="remove-header-footer">Remove Header/Footer</label>
-
-<br /><br />
-
 <div class="email-marketing-wrapper clear">
 
     <div class="email-marketing-left">
         <div class="email-layout" id="email-editor"><?php echo $campaign->message ?></div>
 
         <p>
-            <input type="submit" class="button save-draft" value="Save Draft">
+            <a href="#" data-step="1" class="button" title="<?php echo _('< Back'); ?>"><?php echo _('< Back'); ?></a>
+            <a class="button save-draft" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
             <a href="#" data-step="3" class="button float-right" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
         </p>
     </div><!-- .email-marketing-left -->
@@ -39,6 +35,7 @@
         <ul class="idTabs clear">
             <li><a href="#email-content" class="selected">Content</a></li>
             <li><a href="#email-layouts">Layout</a></li>
+            <li><a href="#email-settings">Settings</a></li>
         </ul>
         <div id="email-content" class="tab-content">
             <ul class="content-thumbnails clear">
@@ -56,7 +53,12 @@
                 <li data-layout="layout-5"><img src="/images/campaigns/layout-5.jpg" /></li>
                 <li data-layout="layout-6"><img src="/images/campaigns/layout-6.jpg" /></li>
                 <li data-layout="layout-7"><img src="/images/campaigns/layout-7.jpg" /></li>
+                <li data-layout="layout-8"><img src="/images/campaigns/layout-8.jpg" /></li>
             </ul>
+        </div>
+        <div id="email-settings" class="tab-content">
+            <input type="checkbox" class="cb" name="remove-header-footer" id="remove-header-footer" value="1">
+            <label for="remove-header-footer">Remove Header/Footer</label>
         </div>
     </div><!-- .email-marketing-right -->
 
@@ -238,6 +240,12 @@
             <div class="email-col-12"><div class="email-col-container droppable"></div></div>
         </div>
         <br clear="all"/>
+    </div>
+
+    <div data-layout="layout-8">
+        <div class="email-row-6 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+        </div>
     </div>
 
 </div>
