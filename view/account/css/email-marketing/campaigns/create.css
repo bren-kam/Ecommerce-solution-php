@@ -44,6 +44,7 @@ a.button.float-right { padding: 5px 20px; }
     font-weight: normal;
     text-align: center;
     background: #e3e3e3;
+    padding-left: 30px;
 }
 
 .progress-bar li a:after {
@@ -105,19 +106,22 @@ a.button.float-right { padding: 5px 20px; }
 .subscribers th img { float: right; margin: 8px 5px 0 0; }
 .bottom { position: relative; top: 7px }
 
-.subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 7px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
+.subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 10px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
 .subscribers tr.last td { border-bottom: 0 }
 .subscribers tr.odd, .subscribers tr.odd td{ background:#fff; }
 .subscribers tr.even, .subscribers tr.even td { background: #F5F6F7 }
 .subscribers .actions { margin-top: 5px; }
 .subscribers td { padding-bottom: 10px; }
-.subscribers .cb { top: 0; }
+.subscribers .cb { margin: 0px; top: 0px; }
 
 .campaign-settings { width: auto; }
 .campaign-settings td { padding: 3px 7px; }
-.campaign-settings input.tb-large { width: 768px; }
+.campaign-settings input.tb { margin-top: 5px; }
+.campaign-settings .cb { margin: 0px; top: 3px; }
 
 .campaign-schedule { padding: 3px 7px; }
+.campaign-schedule .cb { top: 2px; }
+#dDate { width: 275px; }
 
 .email-marketing-wrapper { width: 100%; }
 
@@ -135,7 +139,7 @@ a.button.float-right { padding: 5px 20px; }
 /* email.css overwrites to make .email-layout editable look better
 ----------------------------------------- */
 
-.droppable-hover { background-color: yellow; opacity: 0.3; }
+.droppable-hover { background-color: yellow!important; opacity: 0.3; }
 
 /* Baclground and Borders for Editor */
 .email-layout { border: 1px solid #bdbdbd; }
@@ -160,7 +164,9 @@ a.button.float-right { padding: 5px 20px; }
 }
 
 /* Placeholder inner structure */
-.placeholder-actions  { position: absolute; right: 10px; top: 10px; z-index: 1; }
+.placeholder-actions { position: absolute; right: 10px; top: 10px; z-index: 1; }
+.placeholder-actions a { margin-top: 5px; display: inline-block; }
+.products-autocomplete { width: 100px; position: absolute; right: 40px; padding: 2px; }
 
 /* Images when placeholders are empty */
 #email-editor div[data-content-type=text], #email-editor div[data-content-type=image], #email-editor div[data-content-type=product] { min-height: inherit; }
@@ -252,3 +258,4 @@ div[data-content-type=product] .placeholder-content:empty{ background: #bdbdbd u
     width: 100%;
 }
 
+.save-campaign { background-color: #149C45; box-shadow: none; border-color: #045314; }

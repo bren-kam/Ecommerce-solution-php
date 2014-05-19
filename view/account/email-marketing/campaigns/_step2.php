@@ -11,7 +11,6 @@
  * @var array $settings
  * @var string $timezone
  * @var string $server_timezone
- * @var EmailTemplate[] $templates
  * @var AccountFile[] $files
  * @var string $default_from
  * @var boolean $overwrite_from
@@ -68,9 +67,9 @@
 
     <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
-                <input type="text" class="products-autocomplete" placeholder="Enter SKU or Name..." />
+                <input type="text" class="products-autocomplete" placeholder="SKU or Name." />
                 <a data-action="edit" href="#"><img src="/images/icons/edit.png" /></a>
-                | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
+                <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
             <br clear="all" />
         </div>
         <div class="placeholder-content content-type-product"></div>
@@ -79,7 +78,7 @@
     <div class="content-type-template" data-content-type="text">
         <div class="placeholder-actions">
             <a href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
-            | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
+            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
         </div>
         <div class="placeholder-content content-type-text"></div>
     </div>
@@ -87,7 +86,7 @@
     <div class="content-type-template" data-content-type="image">
         <div class="placeholder-actions">
             <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
-            | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
+            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
         </div>
         <div class="placeholder-content content-type-image"></div>
     </div>

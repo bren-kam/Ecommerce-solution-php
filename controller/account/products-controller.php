@@ -1053,6 +1053,7 @@ class ProductsController extends BaseController {
         $product_option = new ProductOption();
         $website_coupon = new WebsiteCoupon();
         $product = new Product();  // For getting images
+        $category = new Category();  // For getting public URL
 
         // Get variables
         $account_product->get( $_POST['pid'], $this->user->account->id );
@@ -1064,6 +1065,14 @@ class ProductsController extends BaseController {
         $images = $product->get_images();
         $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
         $account_product->name = $product->name;
+
+        // Get The Public URL Link
+        if ($this->user->account->is_new_template() ) {
+            $account_product->link = 'http://' . $this->user->account->domain . '/product';
+        } else {
+            $account_product->link = 'http://' . $this->user->account->domain;
+        }
+        $account_product->link .= ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
 
         $product_options = array();
 

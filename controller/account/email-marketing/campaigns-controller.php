@@ -140,6 +140,10 @@ class CampaignsController extends BaseController {
         $account_file = new AccountFile();
         $files = $account_file->get_by_account( $this->user->account->id );
 
+        $email_template = new EmailTemplate();
+        $email_templates = $email_template->get_by_account( $this->user->account->id );
+        $email_template = current( $email_templates );
+
         $this->resources->css( 'email-marketing/campaigns/email', 'email-marketing/campaigns/create', 'jquery.timepicker' )
             ->css_url( Config::resource('jquery-ui') )
             ->javascript( 'jquery.timepicker' , 'email-marketing/campaigns/create', 'jquery.idTabs', 'fileuploader', 'gsr-media-manager' );
@@ -148,7 +152,7 @@ class CampaignsController extends BaseController {
             ->kb( 0 )
             ->add_title( _('Campaigns') )
             ->select( 'campaigns', 'create' )
-            ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
+            ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files', 'email_template' ) );
     }
 
     /**
@@ -266,9 +270,11 @@ class CampaignsController extends BaseController {
         if ( !isset( $_POST['id'] ) ) {
             // tell the form we have a Campaign ID
             jQuery('<input type="hidden" name="id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
-            $response->add_response( 'jquery', jQuery::getResponse());
         }
 
+        jQuery('.save-draft')->removeClass('disabled')->text('Save Draft');;
+
+        $response->add_response( 'jquery', jQuery::getResponse());
         $response->notify( 'Draft Saved!' );
         return $response;
     }
@@ -295,7 +301,6 @@ class CampaignsController extends BaseController {
         if ( !isset( $_POST['id'] ) ) {
             // tell the form we have a Campaign ID
             jQuery('<input type="hidden" name="id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
-            $response->add_response( 'jquery', jQuery::getResponse());
         }
 
         $email_list = new EmailList();
@@ -304,6 +309,9 @@ class CampaignsController extends BaseController {
         // Send to SendGrid
         $campaign->schedule( $this->user->account, $email_lists );
 
+        jQuery('.save-draft')->removeClass('disabled')->text('Looks Good! Send it out.');
+
+        $response->add_response( 'jquery', jQuery::getResponse());
         $response->notify( 'Campaign Saved!' );
         return $response;
     }

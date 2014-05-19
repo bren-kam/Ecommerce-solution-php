@@ -64,6 +64,8 @@
 
 <br /><br />
 
+<h3>Select Subscribers List:</h3>
+<br />
 <table class="subscribers">
     <thead>
     <tr>
@@ -74,11 +76,17 @@
     </tr>
     </thead>
     <tbody>
+        <tr>
+            <td><input type="checkbox" class="cb" id="select-all-subscribers"/></td>
+            <td>All Subscribers</td>
+            <td></td>
+            <td></td>
+        </tr>
     <?php foreach ( $email_lists as $list ) { ?>
         <tr>
             <td><input type="checkbox" class="cb" name="email_lists[]" value="<?php echo $list->id ?>" <?php if ( $list->count == 0 ) echo 'disabled="disabled"' ?> <?php if ( $campaign->email_lists && in_array( $list->id, $campaign->email_lists ) ) echo 'checked="checked"' ?> /></td>
             <td><?php echo $list->name ?></td>
-            <td><?php echo $list->count ?> subscribers</td>
+            <td><?php echo number_format( $list->count, 0 ) ?> subscribers</td>
             <td><?php $date = DateTime::createFromFormat( 'Y-m-d H:i:s', $list->date_created ); echo $date->format( 'F j, Y' ) ?></td>
         </tr>
     <?php } ?>

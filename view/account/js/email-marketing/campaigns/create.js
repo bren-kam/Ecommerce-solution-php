@@ -34,6 +34,14 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
     }).change();
 
+    $('#select-all-subscribers').change(function(){
+        if ($(this).is(':checked')) {
+            $('[name="email_lists[]"').prop('checked', true);
+        } else {
+            $('[name="email_lists[]"').prop('checked', false);
+        }
+    });
+
     // ---------------------------------------------------------
     // ---------------------------------------------------------
     // STEP 2
@@ -55,7 +63,8 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             init: function() {
                 $('body').on('click', '[data-action=clear]', function(e) {
                     e.preventDefault();
-                    $(this).parents('[data-content-type]').remove();
+                    if (confirm('Are you sure do you want to remove this element?'))
+                        $(this).parents('[data-content-type]').remove();
                 });
             }
             , setup: function(my_content) {
@@ -94,11 +103,15 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                             '/products/get-product-dialog-info/'
                             , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
                             , function(r) {
-                                var tpl = '<div class="product-img"><img src="' + r.product.image + '" /></div><div class="product-content"><h2>' + r.product.name + '</h2>';
+                                var tpl = '<div class="product-img"><a href="' + r.product.link + '"><img src="' + r.product.image + '" /></a></div>';
+                                tpl += '<div class="product-content">';
+                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name + '</h2></a>';
+
                                 if ( r.product.sale_price > 0 )
                                     tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
                                 else if (r.product.price > 0 )
                                     tpl += '<span class="price">$' + r.product.price + '</span>';
+
                                 tpl += '</div>';
                                 my_content.find('.placeholder-content').html(tpl);
 
@@ -304,6 +317,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('.save-draft').click(function(e) {
         e.preventDefault();
 
+        if ($(this).hasClass('disabled'))
+            return;
+
+        $(this).addClass('disabled').text('Saving...');
+
         // Get form data
         var data = get_form_data();
         data._nonce = $('#_save_draft').val();
@@ -329,12 +347,21 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('.save-campaign').click(function(e) {
         e.preventDefault();
 
+        if ($(this).hasClass('disabled'))
+            return;
+
+        $(this).addClass('disabled').text('Saving...');
+
         // Get form data
         var data = get_form_data();
         data._nonce = $('#_save_campaign').val();
 
         // Post!
-        $.post( '/email-marketing/campaigns/save-campaign/', data, ajaxResponse );
+        $.post( '/email-marketing/campaigns/save-campaign/', data, function(r) {
+            if (r.success)
+                window.location = '/email-marketing/campaigns/?campaign-sent=1';
+            ajaxResponse(r);
+        } );
     });
 
 });
