@@ -124,13 +124,6 @@ class CampaignsController extends BaseController {
             // Selected Email Lists
             $campaign->get_associations();
 
-            // Overwritten From
-            $settings = $this->user->account->get_settings( 'from_name', 'from_email' );
-            $from_name = ( empty( $settings['from_name'] ) ) ? $this->user->account->title : $settings['from_name'];
-            $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $settings['from_email'];
-            $default_from = $from_name . ' <' . $from_email . '>';
-            $overwrite_from = ( $campaign->from != $default_from );
-
             // Scheduled to future time?
             if ( $campaign->date_sent > $campaign->date_created ) {
                 $scheduled_datetime = DateTime::createFromFormat( 'Y-m-d H:i:s', $campaign->date_sent );
@@ -142,7 +135,7 @@ class CampaignsController extends BaseController {
 
         $settings = $this->user->account->get_settings( 'timezone', '' );
 
-        $timezones = data::timezones( false, false, true );
+        $timezones = array_slice( data::timezones( false, false, true ), 4, 4 );
 
         $account_file = new AccountFile();
         $files = $account_file->get_by_account( $this->user->account->id );
@@ -155,7 +148,7 @@ class CampaignsController extends BaseController {
             ->kb( 0 )
             ->add_title( _('Campaigns') )
             ->select( 'campaigns', 'create' )
-            ->set( compact( 'campaign', 'default_from', 'overwrite_from', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
+            ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
     }
 
     /**
@@ -196,10 +189,6 @@ class CampaignsController extends BaseController {
         $validator->add_validation( 'email_lists', 'req', 'Please select at least one Email List where to send' );
         $validator->add_validation( 'name', 'req', 'Campaign "Name" field is required');
         $validator->add_validation( 'subject', 'req', 'Campaign Email "Subject" field is required');
-        if ( isset( $_POST['overwrite_from'] ) ) {
-            $validator->add_validation( 'from', 'req', 'Custom "From" field needs a valid email address');
-            $validator->add_validation( 'from', 'email', 'Custom "From" field needs a valid email address');
-        }
         if ( isset($_POST['schedule'] )) {
             $validator->add_validation( 'date', 'req', 'Scheduling a Campaign needs a valid "Date"' );
             $validator->add_validation( 'date', 'date', 'Scheduling a Campaign needs a valid "Date"' );
@@ -220,14 +209,10 @@ class CampaignsController extends BaseController {
         $campaign->name = $_POST['name'];
         $campaign->subject = $_POST['subject'];
         $campaign->message = $_POST['message'];
-        if ( isset( $_POST['overwrite_from'] ) ) {
-            $campaign->from = $this->user->email;
-        } else {
-            $settings = $this->user->account->get_settings( 'from_name', 'from_email' );
-            $from_name = ( empty( $settings['from_name'] ) ) ? $this->user->account->title : $settings['from_name'];
-            $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $settings['from_email'];
-            $campaign->from = $from_name . ' <' . $from_email . '>';
-        }
+        $settings = $this->user->account->get_settings( 'from_name', 'from_email' );
+        $from_name = ( empty( $settings['from_name'] ) ) ? $this->user->account->title : $settings['from_name'];
+        $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $this->user->account->domain, false ) : $settings['from_email'];
+        $campaign->from = $from_name . ' <' . $from_email . '>';
         if ( isset( $_POST['schedule'] ) ) {
             // Date
             $date_sent = $_POST['date'];
@@ -302,6 +287,8 @@ class CampaignsController extends BaseController {
             $campaign->get( $_POST['id'], $this->user->account->id );
 
         $campaign->status = EmailMessage::STATUS_SCHEDULED;
+
+        // Save
         $this->save($campaign);  // sync the other fields and save
 
         // means it's a new Campaign
@@ -311,7 +298,11 @@ class CampaignsController extends BaseController {
             $response->add_response( 'jquery', jQuery::getResponse());
         }
 
-        // TODO: send to SendGrid
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_message( $campaign->id, $this->user->account->id );
+
+        // Send to SendGrid
+        $campaign->schedule( $this->user->account, $email_lists );
 
         $response->notify( 'Campaign Saved!' );
         return $response;

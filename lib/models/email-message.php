@@ -301,6 +301,17 @@ class EmailMessage extends ActiveRecordBase {
         )->get_var();
     }
 
+    private function get_full_message() {
+        // Get Email
+        $email_css = file_get_contents( VIEW_PATH . 'css/email-marketing/campaigns/email.css');
+
+        lib('ext/CssToInlineStyles');
+        $inliner = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
+        $inliner->setCSS($email_css);
+        $inliner->setHTML("<html><body><div id=\"email-wrapper\">{$this->message}</div></body></html>");
+        return $inliner->convert();
+    }
+
     /**
      * Test
      *
@@ -310,17 +321,19 @@ class EmailMessage extends ActiveRecordBase {
      * @param Account $account
      */
     public function test( $email, Account $account ) {
-        // Get Email
-        // TODO: Apply styles 'properly'
-        $email_css = file_get_contents( VIEW_PATH . 'css/email-marketing/campaigns/email.css');
-        $message = '<style>' . $email_css . '</style>' . $this->message;
-
         $settings = $account->get_settings( 'from_name', 'from_email' );
         $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
         $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
         $from = $from_name . ' <' . $from_email . '>';
 
-        fn::mail( $email, $this->subject, $message, $from, $from, false );
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        $headers .= "From: $from\r\n";
+
+        $message = $this->get_full_message();
+
+        // using my own mail function as we don't want default styles in it
+        mail( $email, $this->subject, $message, $headers );
     }
 
     /**
@@ -358,8 +371,8 @@ class EmailMessage extends ActiveRecordBase {
         $sendgrid_datetime = new DateTime( $this->date_sent, new DateTimeZone( Config::setting('server-timezone') ) );
         $sendgrid_date = $sendgrid_datetime->format('c');
 
-        $template = new EmailTemplate();
-        $message = $template->get_complete( $account, $this );
+        // Get Message with Styles Applied
+        $message = $this->get_full_message();
 
         // Add unsubscribe link
         $message .= '<p style="font-size:11px;margin:0px;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';

@@ -25,6 +25,15 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // Fix for offset
     tTime.timepicker('hide');
 
+    // Schedule options are only displayed if #schedule is checked
+    $('#schedule').change(function() {
+        if ($(this).is(':checked')) {
+            $('.schedule').removeClass('hidden');
+        } else {
+            $('.schedule').addClass('hidden');
+        }
+    }).change();
+
     // ---------------------------------------------------------
     // ---------------------------------------------------------
     // STEP 2
@@ -33,7 +42,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     var layout_container = $('#email-editor');
     var layout_selectors = $('li[data-layout]');
     var layouts = $('div[data-layout]');
-    var placeholder_selector = '.email-col-1, .email-col-2, .email-col-3, .email-col-4';
+    var placeholder_selector = '.droppable';
 
     // Here we define out Content Types (text, product, image)
     // and place the code that handles it
@@ -57,7 +66,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , product: {
-            content: $('div[data-content-type=product]')
+            content: $('div.content-type-template[data-content-type=product]')
             , init: function() {
                 $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
                     e.preventDefault();
@@ -108,7 +117,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , text: {
-            content: $('div[data-content-type=text]')
+            content: $('div.content-type-template[data-content-type=text]')
             , init: function() {
                 $('#save-text').click(content_types['text'].save_text);
                 $('body').on('click', '.open-text-editor', function(e) {
@@ -147,7 +156,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , image: {
-            'content': $('div[data-content-type=image]')
+            'content': $('div.content-type-template[data-content-type=image]')
             , init: function() {
                 // Media Manager "Select" button
                 $('#select-image').click(content_types['image'].select_image);
@@ -181,12 +190,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // This gets called every time the layout changes
     layout_container.bind_placeholders = function() {
         this.find(placeholder_selector).droppable({
-            accept: '[data-content-type], [data-action=move]'
+            accept: '[data-content-type]'
             , hoverClass: 'droppable-hover'
             , drop: function(event, ui) {
-                var placeholder = $(this);
-
                 // Its a new content added to a placeholder
+                var placeholder = $(this);
                 var content_type_key = ui.draggable.data('content-type');
                 var content_type = content_types[content_type_key]
                 var my_content = content_type.content.clone();
@@ -270,7 +278,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             .siblings().removeClass('active');
 
         if ( $(this).data('step') == 3 ) {
-            $('#email-preview').html( get_email_content() );
+            $('#email-preview').html( get_email_content().html() );
         }
     });
 
@@ -289,7 +297,6 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         // Message HTML
         data.message = get_email_content().html();
         data.layout = layout_selectors.closest('.active').data('layout');
-
         return data;
     }
 

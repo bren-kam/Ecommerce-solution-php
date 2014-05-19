@@ -455,6 +455,9 @@ class ProductsController extends BaseController {
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
+            // Clear public website cache
+            $this->user->account->purge_varnish_cache();
+
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
@@ -845,6 +848,7 @@ class ProductsController extends BaseController {
         $category_id = (int) $_POST['cid'];
         $per_page = ( $_POST['n'] > 100 ) ? 20 : (int) $_POST['n'];
         $page = ( empty( $_POST['p'] ) ) ? 1 : (int) $_POST['p'];
+        $order_by = '';
 
         // Category ID
         if ( $category_id ) {
@@ -896,12 +900,14 @@ class ProductsController extends BaseController {
             break;
 
             case 'brand':
-                if ( _('Enter Brand...') != $_POST['v'] )
+                if ( _('Enter Brand...') != $_POST['v'] ) {
                     $where .= " AND b.`name` LIKE " . $account_product->quote( $_POST['v'] . '%' );
+                    $order_by = 'b.`name` ASC';
+                }
             break;
         }
 
-        $products = $account_product->search( $this->user->account->id, $per_page, $where, $page );
+        $products = $account_product->search( $this->user->account->id, $per_page, $where, $order_by, $page );
         $product_count = $account_product->search_count( $this->user->account->id, $where );
 
         foreach ( $products as $product ) {
