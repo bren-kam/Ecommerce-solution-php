@@ -298,8 +298,11 @@ class CampaignsController extends BaseController {
             $response->add_response( 'jquery', jQuery::getResponse());
         }
 
+        $email_list = new EmailList();
+        $email_lists = $email_list->get_by_message( $campaign->id, $this->user->account->id );
+
         // Send to SendGrid
-        $campaign->schedule( $this->user->account, $_POST['email_lists'] );
+        $campaign->schedule( $this->user->account, $email_lists );
 
         $response->notify( 'Campaign Saved!' );
         return $response;
