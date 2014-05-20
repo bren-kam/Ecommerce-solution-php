@@ -301,7 +301,7 @@ class EmailMessage extends ActiveRecordBase {
         )->get_var();
     }
 
-    private function get_full_message() {
+    public function get_full_message( $account ) {
         // Get Email
         $email_css = file_get_contents( VIEW_PATH . 'css/email-marketing/campaigns/email.css');
 
@@ -309,7 +309,22 @@ class EmailMessage extends ActiveRecordBase {
         $inliner = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
         $inliner->setCSS($email_css);
         $inliner->setHTML("<html><body><div id=\"email-wrapper\">{$this->message}</div></body></html>");
-        return $inliner->convert();
+        $full_message = $inliner->convert();
+
+        // if uses a template, place $full_message inside Template's [message]
+        if ( $this->email_template_id ) {
+            $email_template = new EmailTemplate();
+            $email_template->get( $this->email_template_id, $account->id );
+
+            // apply template to $full_message
+            return str_replace(
+                array( '[message]', '[products]' )
+                , array( $full_message, '' )
+                , $email_template->template
+            );
+        }
+
+        return $full_message;
     }
 
     /**
@@ -330,7 +345,7 @@ class EmailMessage extends ActiveRecordBase {
         $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
         $headers .= "From: $from\r\n";
 
-        $message = $this->get_full_message();
+        $message = $this->get_full_message( $account );
 
         // using my own mail function as we don't want default styles in it
         mail( $email, $this->subject, $message, $headers );

@@ -140,10 +140,6 @@ class CampaignsController extends BaseController {
         $account_file = new AccountFile();
         $files = $account_file->get_by_account( $this->user->account->id );
 
-        $email_template = new EmailTemplate();
-        $email_templates = $email_template->get_by_account( $this->user->account->id );
-        $email_template = current( $email_templates );
-
         $this->resources->css( 'email-marketing/campaigns/email', 'email-marketing/campaigns/create', 'jquery.timepicker' )
             ->css_url( Config::resource('jquery-ui') )
             ->javascript( 'jquery.timepicker' , 'email-marketing/campaigns/create', 'jquery.idTabs', 'fileuploader', 'gsr-media-manager' );
@@ -152,7 +148,7 @@ class CampaignsController extends BaseController {
             ->kb( 0 )
             ->add_title( _('Campaigns') )
             ->select( 'campaigns', 'create' )
-            ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files', 'email_template' ) );
+            ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
     }
 
     /**
@@ -176,6 +172,14 @@ class CampaignsController extends BaseController {
         // Set attributes
         $email_message->message = $_POST['message'];
         $email_message->subject = $_POST['subject'];
+        if ( $_POST['no_template'] ) {
+            $email_message->email_template_id = NULL;
+        } else {
+            $email_template = new EmailTemplate();
+            $email_templates = $email_template->get_by_account( $this->user->account->id );
+            $email_template = current( $email_templates );
+            $email_message->email_template_id = $email_template->email_template_id;
+        }
 
         // Test message
         try {
@@ -235,6 +239,14 @@ class CampaignsController extends BaseController {
         } else {
             $campaign->date_sent = dt::now();
         }
+        if ( isset( $_POST['no_template'] ) ) {
+            $campaign->email_template_id = NULL;
+        } else {
+            $email_template = new EmailTemplate();
+            $email_templates = $email_template->get_by_account( $this->user->account->id );
+            $email_template = current( $email_templates );
+            $campaign->email_template_id = $email_template->email_template_id;
+        }
 
         // Save/Create campaign
         if ( $campaign->id ) {
@@ -249,7 +261,11 @@ class CampaignsController extends BaseController {
             $campaign->add_associations( $_POST['email_lists'] );
     }
 
-
+    /**
+     * Save Draft
+     *
+     * @return AjaxResponse
+     */
     public function save_draft() {
         $response = new AjaxResponse( $this->verified() );
 
@@ -269,7 +285,8 @@ class CampaignsController extends BaseController {
         // means it's a new Campaign
         if ( !isset( $_POST['id'] ) ) {
             // tell the form we have a Campaign ID
-            jQuery('<input type="hidden" name="id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
+            jQuery('<input type="hidden" name="id" id="campaign-id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
+            $response->add_response( 'campaign_id', $campaign->id );
         }
 
         jQuery('.save-draft')->removeClass('disabled')->text('Save Draft');;
@@ -279,6 +296,11 @@ class CampaignsController extends BaseController {
         return $response;
     }
 
+    /**
+     * Save Campaign
+     *
+     * @return AjaxResponse
+     */
     public function save_campaign() {
         $response = new AjaxResponse( $this->verified() );
 
@@ -300,7 +322,7 @@ class CampaignsController extends BaseController {
         // means it's a new Campaign
         if ( !isset( $_POST['id'] ) ) {
             // tell the form we have a Campaign ID
-            jQuery('<input type="hidden" name="id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
+            jQuery('<input type="hidden" name="id" id="campaign-id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
         }
 
         $email_list = new EmailList();
@@ -313,6 +335,27 @@ class CampaignsController extends BaseController {
 
         $response->add_response( 'jquery', jQuery::getResponse());
         $response->notify( 'Campaign Saved!' );
+        return $response;
+    }
+
+    /**
+     * Preview
+     * Load preview iframe content
+     *
+     * @return CustomResponse|RedirectResponseç
+     */
+    protected function preview() {
+        if ( !$this->verified() )
+            return new RedirectResponse('/');
+
+        $response = new CustomResponse( $this->resources, $this->view_base . 'preview' );
+
+        $campaign = new EmailMessage();
+        $campaign->get( $_GET['id'], $this->user->account->id );
+        $message = $campaign->get_full_message( $this->user->account );
+
+        $response->set( 'message', $message );
+
         return $response;
     }
 }

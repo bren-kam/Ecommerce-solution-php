@@ -19,7 +19,7 @@
 ?>
 
 <?php if ( $campaign->id ) { ?>
-    <input type="hidden" name="id" value="<?php echo $campaign->id ?>" />
+    <input type="hidden" name="id" id="campaign-id" value="<?php echo $campaign->id ?>" />
 <?php } ?>
 
 <table class="campaign-settings">

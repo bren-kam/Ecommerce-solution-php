@@ -56,8 +56,8 @@
             </ul>
         </div>
         <div id="email-settings" class="tab-content">
-            <input type="checkbox" class="cb" name="remove-header-footer" id="remove-header-footer" value="1">
-            <label for="remove-header-footer">Remove Header/Footer</label>
+            <input type="checkbox" class="cb" name="no-template" id="no-template" value="1" <?php if ($campaign->email_template_id) echo 'checked="checked"' ?>>
+            <label for="no-template">Remove Header/Footer</label>
         </div>
     </div><!-- .email-marketing-right -->
 
@@ -308,6 +308,7 @@
 nonce::field( 'upload_file', '_upload_file' );
 nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
 nonce::field( 'get_product_dialog_info', '_get_product_dialog_info' );
+nonce::field( 'preview', '_preview' );
 ?>
 
 <div id="dTextEditor" class="hidden">
