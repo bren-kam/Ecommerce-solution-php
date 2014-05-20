@@ -626,7 +626,7 @@ class WebsiteController extends BaseController {
         $settings_array = array(
             'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
-            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link'
+            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link'
             , 'logo-link'
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
@@ -711,6 +711,9 @@ class WebsiteController extends BaseController {
 
         $form->add_field( 'text', _('LinkedIn Link'), 'sm-linkedin-link', $settings['sm-linkedin-link'] )
             ->add_validation( 'url', _('The "LinkedIn Link" must be a valid link') );
+
+        $form->add_field( 'text', _('YouTube Link'), 'sm-youtube-link', $settings['sm-youtube-link'] )
+            ->add_validation( 'url', _('The "YouTube Link" must be a valid link') );
 
         // Next section
         $form->add_field( 'blank', '' );
