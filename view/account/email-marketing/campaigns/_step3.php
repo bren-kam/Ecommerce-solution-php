@@ -27,12 +27,15 @@
 
     </div>
 
-    <p>
+    <p class="float-left">
         <a href="#" data-step="2" class="button" title="<?php echo _('< Back'); ?>"><?php echo _('< Back'); ?></a>
         <a href="#" class="button save-draft" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
         <a href="#dSendTest" class="button" rel="dialog" title="<?php echo _('Send a Test Campaign'); ?>"><?php echo _('Send a Test Campaign'); ?></a>
-        <a href="#" data-step="3" class="button float-right save-campaign" title="<?php echo _('Looks Good! Send it Out.'); ?>"><?php echo _('Looks Good! Send it Out.'); ?></a>
     </p>
+    <p class="float-right">
+        <a href="#" data-step="3" class="button save-campaign" title="<?php echo _('Looks Good! Send it Out.'); ?>"><?php echo _('Looks Good! Send it Out.'); ?></a>
+    </p>
+    <br clear="all" />*
 
     <div class="hidden" id="dSendTest">
         <p>

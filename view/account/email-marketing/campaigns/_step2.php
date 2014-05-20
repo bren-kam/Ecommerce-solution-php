@@ -23,11 +23,14 @@
     <div class="email-marketing-left">
         <div class="email-layout" id="email-editor"><?php echo $campaign->message ?></div>
 
-        <p>
+        <p class="float-left">
             <a href="#" data-step="1" class="button" title="<?php echo _('< Back'); ?>"><?php echo _('< Back'); ?></a>
             <a class="button save-draft" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
-            <a href="#" data-step="3" class="button float-right" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
         </p>
+        <p class="float-right">
+            <a href="#" data-step="3" class="button" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
+        </p>
+        <br clear="all" />
     </div><!-- .email-marketing-left -->
 
     <div class="email-marketing-right">

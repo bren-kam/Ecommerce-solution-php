@@ -166,7 +166,7 @@ a.button.float-right { padding: 5px 20px; }
 /* Placeholder inner structure */
 .placeholder-actions { position: absolute; right: 10px; top: 10px; z-index: 1; }
 .placeholder-actions a { margin-top: 5px; display: inline-block; }
-.products-autocomplete { width: 100px; position: absolute; right: 40px; padding: 2px; }
+.products-autocomplete { width: 80px; position: absolute; right: 40px; top: 1px; padding: 2px; font-size: 11px;}
 
 /* Images when placeholders are empty */
 #email-editor div[data-content-type=text], #email-editor div[data-content-type=image], #email-editor div[data-content-type=product] { min-height: inherit; }
