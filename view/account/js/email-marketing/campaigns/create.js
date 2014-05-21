@@ -75,7 +75,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , product: {
-            content: $('div.content-type-template[data-content-type=product]')
+            content: $('#email-builder-types div.content-type-template[data-content-type=product]')
             , init: function() {
                 $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
                     e.preventDefault();
@@ -105,7 +105,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                             , function(r) {
                                 var tpl = '<div class="product-img"><a href="' + r.product.link + '"><img src="' + r.product.image + '" /></a></div>';
                                 tpl += '<div class="product-content">';
-                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name + '</h2></a>';
+                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 40) + '</h2></a>';
 
                                 if ( r.product.sale_price > 0 )
                                     tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
@@ -130,7 +130,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , text: {
-            content: $('div.content-type-template[data-content-type=text]')
+            content: $('#email-builder-types div.content-type-template[data-content-type=text]')
             , init: function() {
                 $('#save-text').click(content_types['text'].save_text);
                 $('body').on('click', '.open-text-editor', function(e) {
@@ -169,7 +169,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , image: {
-            'content': $('div.content-type-template[data-content-type=image]')
+            'content': $('#email-builder-types div.content-type-template[data-content-type=image]')
             , init: function() {
                 // Media Manager "Select" button
                 $('#select-image').click(content_types['image'].select_image);
@@ -211,6 +211,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var content_type_key = ui.draggable.data('content-type');
                 var content_type = content_types[content_type_key]
                 var my_content = content_type.content.clone();
+                my_content.removeClass('content-type-template');
                 placeholder.find('*').remove();
                 placeholder.html(my_content);
                 content_type.setup(my_content);

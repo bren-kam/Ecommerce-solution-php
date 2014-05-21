@@ -69,4 +69,26 @@
 .content-type-product .sale-price { font-size: 20px; color: red; }
 .content-type-product .price { font-size: 17px; }
 .content-type-product .strikethrough { text-decoration: line-through; }
-
+/* on small boxes, font must be smaller and make better use of space */
+.email-col-1 .product-img, .email-col-1 .product-content,
+.email-col-2 .product-img, .email-col-2 .product-content,
+.email-col-3 .product-img, .email-col-3 .product-content {
+    width: 90%;
+    margin-left: 5%;
+}
+.email-col-1 .product-content h2,
+.email-col-2 .product-content h2,
+.email-col-3 .product-content h2{
+    font-size: 14px;
+    font-weight: bold;
+}
+.email-col-1 .product-content .sale-price,
+.email-col-2 .product-content .sale-price,
+.email-col-3 .product-content .sale-price{
+    font-size: 17px;
+}
+.email-col-1 .product-content .price,
+.email-col-2 .product-content .price,
+.email-col-3 .product-content .price{
+    font-size: 14px;
+}

@@ -66,7 +66,7 @@
 
 </div><!-- .email-marketing-wrapper -->
 
-<div class="hidden">
+<div class="hidden" id="email-builder-types">
 
     <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
