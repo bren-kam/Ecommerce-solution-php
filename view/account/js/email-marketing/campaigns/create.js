@@ -105,7 +105,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                             , function(r) {
                                 var tpl = '<div class="product-img"><a href="' + r.product.link + '"><img src="' + r.product.image + '" /></a></div>';
                                 tpl += '<div class="product-content">';
-                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 40) + '</h2></a>';
+                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
 
                                 if ( r.product.sale_price > 0 )
                                     tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
