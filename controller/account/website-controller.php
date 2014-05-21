@@ -554,14 +554,32 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/navigation' )
+            ->css_url( Config::resource('jquery-ui') )
             ->javascript( 'website/navigation' );
 
         if ( $this->verified() ) {
             $navigation = array();
+            $tree = json_decode( $_POST['tree'], true );
 
-            foreach ( $_POST['navigation'] as $page ) {
-                list( $url, $name ) = explode( '|', $page );
-                $navigation[] = compact( 'url', 'name' );
+            if ( $tree ) {
+                foreach ( $tree as $tree_node ) {
+                    $page = $_POST['navigation'][$tree_node['id']];
+                    list( $url, $name ) = explode( '|', $page );
+                    $navigation_node = compact( 'url', 'name' );
+
+                    // children - sub items
+                    // we only accept one child level, so we are ok with this
+                    if ( isset( $tree_node['children'] ) ) {
+                        $navigation_node['children'] = array();
+                        foreach ( $tree_node['children'] as $child_node ) {
+                            $sub_page = $_POST['navigation'][$child_node['id']];
+                            list( $url, $name ) = explode( '|', $sub_page );
+                            $navigation_node['children'][] = compact( 'url', 'name' );
+                        }
+                    }
+
+                    $navigation[] = $navigation_node;
+                }
             }
 
             $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
