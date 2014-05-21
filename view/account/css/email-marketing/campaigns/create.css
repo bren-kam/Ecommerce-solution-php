@@ -264,4 +264,8 @@ div[data-content-type=product] .placeholder-content:empty{ background: #bdbdbd u
     border: 1px solid #bbb;
 }
 
+.layout-thumbnails .active img {
+    border: 1px solid #343434;
+}
+
 .save-campaign { background-color: #149C45; box-shadow: none; border-color: #045314; }
