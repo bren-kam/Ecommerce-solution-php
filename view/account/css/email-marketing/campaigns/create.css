@@ -104,6 +104,7 @@ a.button.float-right { padding: 5px 20px; }
 .subscribers th, .subscribers td { font-weight: bold; vertical-align:middle; }
 .subscribers th { text-align: left; font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
 .subscribers th img { float: right; margin: 8px 5px 0 0; }
+.subscribers label { font-weight: normal; }
 .bottom { position: relative; top: 7px }
 
 .subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 10px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
@@ -120,7 +121,7 @@ a.button.float-right { padding: 5px 20px; }
 .campaign-settings .cb { margin: 0px; top: 3px; }
 
 .campaign-schedule { padding: 3px 7px; }
-.campaign-schedule .cb { top: 2px; }
+.campaign-schedule .cb { top: -1px; width: 13px; height: 13px; margin: 0; padding: 0; vertical-align: bottom; overflow: hidden; }
 #dDate { width: 275px; }
 
 .email-marketing-wrapper { width: 100%; }
@@ -146,7 +147,8 @@ a.button.float-right { padding: 5px 20px; }
 #email-editor  { background: white; }
 #email-editor .email-layout { border: 1px solid #bdbdbd; }
 #email-editor .email-col-container { border: 1px dashed #666; }
-#email-editor .email-col-container:empty { background: #bdbdbd; opacity: 0.4; }
+#email-editor .email-col-container .placeholder { position: absolute; min-height: inherit; width: 100%; display: table; background: rgba(189, 189, 189, 0.4); }
+#email-editor .email-col-container .placeholder p { display: table-cell; vertical-align: middle; text-align:center; font-size: 16px; padding: 10px; }
 
 .email-col-1,
 .email-col-2,

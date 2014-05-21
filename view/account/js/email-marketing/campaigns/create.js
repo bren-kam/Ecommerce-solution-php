@@ -269,8 +269,10 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // This will generate the email content that will be Sent
     function get_email_content() {
         var editor_content = layout_container.clone();
-        editor_content.find('.placeholder-actions').remove();
-        editor_content.find('*').removeClass('ui-droppable');
+        editor_content.find('.placeholder-actions').remove().end()
+            .find('*').removeClass('ui-droppable').end()
+            .find('.placeholder').remove().end();
+
         return editor_content;
     }
 

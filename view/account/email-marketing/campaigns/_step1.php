@@ -39,8 +39,10 @@
 
 <div class="campaign-schedule">
     <div class="container">
-        <input type="checkbox" class="cb" name="schedule" id="schedule" value="1" <?php if ( $scheduled_datetime ) echo 'checked="checked"' ?> />
-        <label for="schedule">I would like to schedule this campaign to be sent at a later time:</label>
+        <label for="schedule">
+            <input type="checkbox" class="cb" name="schedule" id="schedule" value="1" <?php if ( $scheduled_datetime ) echo 'checked="checked"' ?> />
+            I would like to schedule this campaign to be sent at a later time:
+        </label>
     </div>
 
     <br />
@@ -78,14 +80,14 @@
     <tbody>
         <tr>
             <td><input type="checkbox" class="cb" id="select-all-subscribers"/></td>
-            <td>All Subscribers</td>
+            <td><label for="select-all-subscribers">All Subscribers</label></td>
             <td></td>
             <td></td>
         </tr>
-    <?php foreach ( $email_lists as $list ) { ?>
+    <?php foreach ( $email_lists as $k => $list ) { ?>
         <tr>
-            <td><input type="checkbox" class="cb" name="email_lists[]" value="<?php echo $list->id ?>" <?php if ( $list->count == 0 ) echo 'disabled="disabled"' ?> <?php if ( $campaign->email_lists && in_array( $list->id, $campaign->email_lists ) ) echo 'checked="checked"' ?> /></td>
-            <td><?php echo $list->name ?></td>
+            <td><input type="checkbox" class="cb" name="email_lists[]" value="<?php echo $list->id ?>" id="s<?php echo $k ?>" <?php if ( $list->count == 0 ) echo 'disabled="disabled"' ?> <?php if ( $campaign->email_lists && in_array( $list->id, $campaign->email_lists ) ) echo 'checked="checked"' ?> /></td>
+            <td><label for="s<?php echo $k ?>"><?php echo $list->name ?></label></td>
             <td><?php echo number_format( $list->count, 0 ) ?> subscribers</td>
             <td><?php $date = DateTime::createFromFormat( 'Y-m-d H:i:s', $list->date_created ); echo $date->format( 'F j, Y' ) ?></td>
         </tr>

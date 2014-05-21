@@ -48,7 +48,6 @@
         </div>
         <div id="email-layouts" class="tab-content">
             <ul class="layout-thumbnails clear">
-                <li data-layout="layout-1"><img src="/images/campaigns/layout-1.jpg" /></li>
                 <li data-layout="layout-2"><img src="/images/campaigns/layout-2.jpg" /></li>
                 <li data-layout="layout-3"><img src="/images/campaigns/layout-3.jpg" /></li>
                 <li data-layout="layout-4"><img src="/images/campaigns/layout-4.jpg" /></li>
@@ -56,6 +55,7 @@
                 <li data-layout="layout-6"><img src="/images/campaigns/layout-6.jpg" /></li>
                 <li data-layout="layout-7"><img src="/images/campaigns/layout-7.jpg" /></li>
                 <li data-layout="layout-8"><img src="/images/campaigns/layout-8.jpg" /></li>
+                <li data-layout="layout-1"><img src="/images/campaigns/layout-1.jpg" /></li>
             </ul>
         </div>
         <div id="email-settings" class="tab-content">
@@ -95,109 +95,89 @@
     </div>
 
     <div data-layout="layout-1">
-        <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+        <div class="email-row-6 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
-        <br clear="all"/>
-        <div class="email-row-4 clear">
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
-        <div class="email-row-3 clear">
-            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-3"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
     </div>
 
     <div data-layout="layout-2">
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
-        <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
-        <div class="email-row-3 clear">
-            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
         <div class="email-row-4 clear">
-            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-4"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
+        <br clear="all"/>
+        <div class="email-row-3 clear">
+            <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
     </div>
 
     <div data-layout="layout-3">
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
+        <div class="email-row-1 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
+        <div class="email-row-3 clear">
+            <div class="email-col-4"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
         <div class="email-row-4 clear">
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-4"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
-        <br clear="all"/>
-        <div class="email-row-4 clear">
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
     </div>
 
     <div data-layout="layout-4">
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
-        <div class="email-row-6 clear">
-            <div class="email-col-4">
-                <div class="email-row-3">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-                </div>
-                <div class="email-row-6">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-                </div>
-            </div>
-            <div class="email-col-8">
-                <div class="email-row-6">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-                </div>
-                <div class="email-row-6">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-                </div>
-            </div>
+        <div class="email-row-4 clear">
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
+        <div class="email-row-4 clear">
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
     </div>
 
     <div data-layout="layout-5">
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
         <div class="email-row-6 clear">
-            <div class="email-col-8">
-                <div class="email-row-6">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-                </div>
-                <div class="email-row-6">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-                </div>
-            </div>
             <div class="email-col-4">
                 <div class="email-row-3">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
                 </div>
                 <div class="email-row-6">
-                    <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+                </div>
+            </div>
+            <div class="email-col-8">
+                <div class="email-row-6">
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+                </div>
+                <div class="email-row-6">
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
                 </div>
             </div>
         </div>
@@ -206,48 +186,68 @@
 
     <div data-layout="layout-6">
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
-        <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
-        <div class="email-row-3 clear">
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-        </div>
-        <br clear="all"/>
-        <div class="email-row-4 clear">
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
-            <div class="email-col-6"><div class="email-col-container droppable"></div></div>
+        <div class="email-row-6 clear">
+            <div class="email-col-8">
+                <div class="email-row-6">
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+                </div>
+                <div class="email-row-6">
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+                </div>
+            </div>
+            <div class="email-col-4">
+                <div class="email-row-3">
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+                </div>
+                <div class="email-row-6">
+                    <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+                </div>
+            </div>
         </div>
         <br clear="all"/>
     </div>
 
     <div data-layout="layout-7">
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
         <div class="email-row-1 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
         <div class="email-row-3 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
         <div class="email-row-4 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+            <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
         <br clear="all"/>
     </div>
 
     <div data-layout="layout-8">
-        <div class="email-row-6 clear">
-            <div class="email-col-12"><div class="email-col-container droppable"></div></div>
+        <div class="email-row-1 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
+        <br clear="all"/>
+        <div class="email-row-1 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
+        <div class="email-row-3 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
+        <div class="email-row-4 clear">
+            <div class="email-col-12"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
+        </div>
+        <br clear="all"/>
     </div>
 
 </div>
