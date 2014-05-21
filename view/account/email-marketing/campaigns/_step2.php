@@ -59,8 +59,10 @@
             </ul>
         </div>
         <div id="email-settings" class="tab-content">
-            <input type="checkbox" class="cb" name="no-template" id="no-template" value="1" <?php if ( !$campaign->email_template_id ) echo 'checked="checked"' ?>>
-            <label for="no-template">Remove Header/Footer</label>
+            <label for="no-template">
+                <input type="checkbox" class="cb" name="no-template" id="no-template" value="1" <?php if ( !$campaign->email_template_id ) echo 'checked="checked"' ?>>
+                Remove Header/Footer
+            </label>
         </div>
     </div><!-- .email-marketing-right -->
 
