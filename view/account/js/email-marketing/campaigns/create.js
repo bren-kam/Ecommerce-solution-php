@@ -177,6 +177,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                     var placeholder_id = $(this).parents('[data-content-type]').attr('id');
                     $('#select-image').data('placeholder-id', placeholder_id);
                 });
+                $('#email-editor').on('click', '[data-action=edit-link]', function(e) {
+                    e.preventDefault();
+                    $(this).siblings('[data-action=save-link], .image-link-url').removeClass('hidden');
+                });
+                $('#email-editor').on('click', '[data-action=save-link]', content_types['image'].save_image_link);
             }
             , setup: function(my_content) {
                 content_types._base.setup(my_content);
@@ -187,6 +192,25 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var placeholder_id = $(this).data('placeholder-id');
                 var image = $('a.file.selected img').clone();
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
+                $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
+            }
+            , save_image_link: function(e) {
+                e.preventDefault();
+                var url = $(this).siblings('.image-link-url').val();
+                var placeholder = $(this).parents('[data-content-type]');
+                var img = placeholder.find('.placeholder-content img');
+                var img_html = img.size() > 0 ? img[0].outerHTML : '';
+
+                // if url is set, set an anchor wrapping the image
+                if ( url ) {
+                    var anchor = '<a href="'+ url +'">' + img_html + '</a>';
+                    placeholder.find('.placeholder-content').html(anchor);
+                } else {
+                    placeholder.find('.placeholder-content').html(img_html);
+                }
+
+                // hide controls
+                placeholder.find('[data-action=save-link], .image-link-url').addClass('hidden');
             }
 
         }

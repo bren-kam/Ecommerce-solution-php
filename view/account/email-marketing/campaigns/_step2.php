@@ -90,6 +90,10 @@
 
     <div class="content-type-template" data-content-type="image">
         <div class="placeholder-actions">
+            <input type="text" class="image-link-url hidden" placeholder="Enter URL" />
+            <a data-action="save-link" class="hidden" href="#"><img src="/images/icons/disk.png" /></a>
+
+            <a data-action="edit-link" class="hidden" href="#"><img src="/images/icons/link.png" /></a>
             <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
             <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
         </div>
