@@ -4,7 +4,7 @@
 .clearfix,
 .clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
 /* \*/ * html .clear { height:1px } /* */
-a.button { padding-top: 11px; padding-bottom: 11px; }
+a.button { padding-top: 11px; padding-bottom: 11px; cursor: pointer; }
 a.button.float-right { padding: 5px 20px; }
 
 /* Progress Bar
