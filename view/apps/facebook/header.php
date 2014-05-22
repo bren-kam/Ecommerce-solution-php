@@ -22,6 +22,7 @@
     <style>
     	.hidden { display: none; }
     </style>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/headjs/1.0.2/head.load.min.js"></script>
 </head>
 
 <body class="apps <?php echo $template->v('title'); ?>">
