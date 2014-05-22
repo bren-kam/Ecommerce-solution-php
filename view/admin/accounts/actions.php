@@ -39,13 +39,7 @@
 
 <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/delete-categories-and-products/' ); ?>" title="<?php echo _('Delete Categories and Products'); ?>" confirm="<?php echo _('Are you sure you want to delete all categories and products? This cannot be undone.'); ?>"><?php echo _('Delete Categories and Products'); ?></a></p>
 
-<?php if ( empty( $settings['trumpia-username'] ) ) { ?>
-    <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-trumpia-account/' ); ?>" title="<?php echo _('Create Trumpia Account'); ?>" rel="dialog" cache="0"><?php echo _('Create Trumpia Account'); ?></a></p>
-<?php
-
-}
-
-if ( empty( $settings['sendgrid-username'] ) ) { ?>
+<?php if ( empty( $settings['sendgrid-username'] ) ) { ?>
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/create-email-marketing-account/' ); ?>" title="<?php echo _('Create Email Marketing Account'); ?>" ajax="1"><?php echo _('Create Email Marketing Account'); ?></a></p>
 <?php } ?>
 
