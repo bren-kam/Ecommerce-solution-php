@@ -25,10 +25,6 @@
 <table class="campaign-settings">
     <tr>
         <td>
-            <label for="name">Campaign Name:</label><br/>
-            <input type="text" class="tb" name="name" id="name" value="<?php echo $campaign->name ?>" />
-        </td>
-        <td>
             <label for="subject">Email Subject:</label><br/>
             <input type="text" class="tb" name="subject" id="subject" value="<?php echo $campaign->subject ?>" />
         </td>
@@ -66,7 +62,7 @@
 
 <br /><br />
 
-<h3>Select Subscribers List:</h3>
+<h3>Select Subscriber List:</h3>
 <br />
 <table class="subscribers">
     <thead>

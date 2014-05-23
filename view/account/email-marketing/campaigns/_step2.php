@@ -105,14 +105,13 @@
             <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
             <div class="email-col-6"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
-        <br clear="all"/>
+        <br clear="all"/><div class="row-break"></div>
         <div class="email-row-3 clear">
             <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
             <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
             <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
             <div class="email-col-3"><div class="email-col-container droppable"><div class="placeholder"><p>Drag Content Here</p></div></div></div>
         </div>
-        <br clear="all"/>
     </div>
 
     <div data-layout="layout-2">

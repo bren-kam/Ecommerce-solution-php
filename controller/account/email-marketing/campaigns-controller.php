@@ -195,7 +195,6 @@ class CampaignsController extends BaseController {
     private function validate() {
         $validator = new Validator( 'fCreateCampaign' );
         $validator->add_validation( 'email_lists', 'req', 'Please select at least one Email List where to send' );
-        $validator->add_validation( 'name', 'req', 'Campaign "Name" field is required');
         $validator->add_validation( 'subject', 'req', 'Campaign Email "Subject" field is required');
         if ( isset($_POST['schedule'] )) {
             $validator->add_validation( 'date', 'req', 'Scheduling a Campaign needs a valid "Date"' );
@@ -203,7 +202,6 @@ class CampaignsController extends BaseController {
             $validator->add_validation( 'time', 'req', 'Scheduling a Campaign needs a valid "Time"' );
             $validator->add_validation( 'timezone', 'req', 'Scheduling a Campaign needs a valid "Timezone"' );
         }
-        $validator->add_validation( 'name', 'req', 'Please build a "Message"');
 
         $errors = $validator->validate();
         // are being shown as an alert, so we delete the <br />

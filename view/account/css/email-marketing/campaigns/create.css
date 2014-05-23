@@ -142,7 +142,7 @@ a.button.float-right { padding: 5px 20px; }
 
 .droppable-hover { background-color: yellow!important; opacity: 0.3; }
 
-/* Baclground and Borders for Editor */
+/* Background and Borders for Editor */
 .email-layout { border: 1px solid #bdbdbd; }
 #email-editor  { background: white; }
 #email-editor .email-layout { border: 1px solid #bdbdbd; }
@@ -190,6 +190,9 @@ div[data-content-type=product] .placeholder-content:empty{ background: #bdbdbd u
 
 /* Text Editor Modal for content-type=text*/
 #editor-container { width: 600px; }
+
+/* Row breaks are for emails and preview, we hide in the editor */
+#email-editor .row-break {display: none; }
 
 /* Tabs
 ----------------------------------------- */
