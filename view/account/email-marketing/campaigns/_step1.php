@@ -62,7 +62,7 @@
 
 <br /><br />
 
-<h3>Select Subscriber List:</h3>
+<h3>Select Subscriber Lists:</h3>
 <br />
 <table class="subscribers">
     <thead>
