@@ -197,6 +197,12 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             , save_image_link: function(e) {
                 e.preventDefault();
                 var url = $(this).siblings('.image-link-url').val();
+
+                if ( !content_types['image'].is_url( url ) ) {
+                    alert('Please enter a valid URL');
+                    return;
+                }
+
                 var placeholder = $(this).parents('[data-content-type]');
                 var img = placeholder.find('.placeholder-content img');
                 var img_html = img.size() > 0 ? img[0].outerHTML : '';
@@ -212,7 +218,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 // hide controls
                 placeholder.find('[data-action=save-link], .image-link-url').addClass('hidden');
             }
-
+            , is_url: function( url ) {
+                var regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+                var re = new RegExp(regex);
+                return re.test(url);
+            }
         }
 
     };
