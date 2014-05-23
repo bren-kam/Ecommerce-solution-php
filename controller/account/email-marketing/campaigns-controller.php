@@ -205,7 +205,9 @@ class CampaignsController extends BaseController {
         }
         $validator->add_validation( 'name', 'req', 'Please build a "Message"');
 
-        return $validator->validate();
+        $errors = $validator->validate();
+        // are being shown as an alert, so we delete the <br />
+        return strip_tags( $errors );
     }
 
     /**
@@ -270,8 +272,8 @@ class CampaignsController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         $errors = $this->validate();
-        if ( $errors ) {
-            $response->notify( $errors, false);
+        $response->check( empty( $errors ), $errors );
+        if ( $response->has_error()) {
             return $response;
         }
 
@@ -305,8 +307,8 @@ class CampaignsController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         $errors = $this->validate();
-        if ( $errors ) {
-            $response->notify( $errors, false);
+        $response->check( empty( $errors ), $errors );
+        if ( $response->has_error()) {
             return $response;
         }
 

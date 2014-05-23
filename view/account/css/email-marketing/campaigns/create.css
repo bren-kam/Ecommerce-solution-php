@@ -147,7 +147,13 @@ a.button.float-right { padding: 5px 20px; }
 #email-editor  { background: white; }
 #email-editor .email-layout { border: 1px solid #bdbdbd; }
 #email-editor .email-col-container { border: 1px dashed #666; }
-#email-editor .email-col-container .placeholder { position: absolute; min-height: inherit; width: 100%; display: table; background: rgba(189, 189, 189, 0.4); }
+#email-editor .email-col-container .placeholder { width: 100%; display: table; background: rgba(189, 189, 189, 0.4); }
+#email-editor .email-row-1 .placeholder { height:  50px; }
+#email-editor .email-row-2 .placeholder { height: 100px; }
+#email-editor .email-row-3 .placeholder { height: 150px; }
+#email-editor .email-row-4 .placeholder { height: 200px; }
+#email-editor .email-row-5 .placeholder { height: 250px; }
+#email-editor .email-row-6 .placeholder { height: 300px; }
 #email-editor .email-col-container .placeholder p { display: table-cell; vertical-align: middle; text-align:center; font-size: 16px; padding: 10px; }
 
 .email-col-1,

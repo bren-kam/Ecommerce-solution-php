@@ -194,24 +194,24 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
                 $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
             }
-            , save_image_link: function(e) {
+                , save_image_link: function(e) {
                 e.preventDefault();
                 var url = $(this).siblings('.image-link-url').val();
-
-                if ( !content_types['image'].is_url( url ) ) {
-                    alert('Please enter a valid URL');
-                    return;
-                }
-
                 var placeholder = $(this).parents('[data-content-type]');
                 var img = placeholder.find('.placeholder-content img');
                 var img_html = img.size() > 0 ? img[0].outerHTML : '';
 
                 // if url is set, set an anchor wrapping the image
                 if ( url ) {
+                    // check for valid url
+                    if ( !content_types['image'].is_url( url ) ) {
+                        alert('Please enter a valid URL');
+                        return;
+                    }
                     var anchor = '<a href="'+ url +'">' + img_html + '</a>';
                     placeholder.find('.placeholder-content').html(anchor);
                 } else {
+                    // no url - no link
                     placeholder.find('.placeholder-content').html(img_html);
                 }
 
