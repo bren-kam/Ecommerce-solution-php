@@ -642,14 +642,15 @@ class WebsiteController extends BaseController {
 
         // Get settings
         $settings_array = array(
-            'banner-speed', 'banner-background-color'
+            'banner-width', 'banner-height'
+            , 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
             , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link'
             , 'logo-link'
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'banner-width', 'banner-height', 'sidebar-image-width', 'timezone' )
+                , array( 'sidebar-image-width', 'timezone' )
             );
         }
 
@@ -658,17 +659,15 @@ class WebsiteController extends BaseController {
         // Create form
         $form->add_field( 'title', _('Banners') );
 
-        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
-            $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
-                ->attribute( 'maxlength', '4' )
-                ->add_validation( 'req', _('The "Banners - Width" field is required') )
-                ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
+        $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
+            ->attribute( 'maxlength', '4' )
+            ->add_validation( 'req', _('The "Banners - Width" field is required') )
+            ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
 
-            $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
-                ->attribute( 'maxlength', '4' )
-                ->add_validation( 'req', _('The "Banners - Height" field is required') )
-                ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
-        }
+        $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
+            ->attribute( 'maxlength', '4' )
+            ->add_validation( 'req', _('The "Banners - Height" field is required') )
+            ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
 
         $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
