@@ -16,7 +16,8 @@ echo $template->start( _('Website Pages') );
     <table ajax="/website/list-pages/" perPage="30,50,100">
         <thead>
             <tr>
-                <th width="100%" sort="1"><?php echo _('Title'); ?></th>
+                <th width="80%" sort="1"><?php echo _('Title'); ?></th>
+                <th width="20%"><?php echo _('Updated'); ?></th>
             </tr>
         </thead>
         <tbody>

@@ -781,7 +781,7 @@ class WebsiteController extends BaseController {
         $account_page = new AccountPage();
 
         // Set Order by
-        $dt->order_by( '`title`');
+        $dt->order_by( '`title`', '`date_updated`' );
         $dt->search( array( '`title`' => false ) );
         $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
 
@@ -826,11 +826,14 @@ class WebsiteController extends BaseController {
 
             $title = ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title;
 
+            $updated = DateTime::createFromFormat('Y-m-d H:i:s', $page->date_updated ? $page->date_updated : $page->date_created);
+
             $data[] = array(
                 $title . '<div class="actions">' .
                     '<a href="http://' . $this->user->account->domain . '/' . $page->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'apid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
                     '</div>'
+                , $updated->format('F jS, Y h:ia')
             );
         }
 
