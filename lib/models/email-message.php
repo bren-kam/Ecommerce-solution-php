@@ -208,10 +208,15 @@ class EmailMessage extends ActiveRecordBase {
 
     /**
      * Remove All
+     *
+     * @param Account $account
      */
-    public function remove_all() {
+    public function remove_all( Account $account ) {
         if ( !$this->id )
             return;
+
+        if ($this->status == self::STATUS_SCHEDULED )
+            $this->unschedule( $account );
 
         // Assuming the above is successful, delete everything about this email
         $this->remove_associations();
@@ -387,7 +392,7 @@ class EmailMessage extends ActiveRecordBase {
         $sendgrid_date = $sendgrid_datetime->format('c');
 
         // Get Message with Styles Applied
-        $message = $this->get_full_message();
+        $message = $this->get_full_message( $account );
 
         // Add unsubscribe link
         $message .= '<p style="font-size:11px;margin:0px;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';
@@ -425,5 +430,26 @@ class EmailMessage extends ActiveRecordBase {
             $this->status = self::STATUS_SENT;
             $this->save();
         }
+    }
+
+    /**
+     * Unschedule
+     *
+     * @param Account $account
+     * @return bool
+     * @throws ModelException
+     */
+    public function unschedule( Account $account ) {
+        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_schedule();
+
+        $success = $sendgrid->schedule->delete( $this->id );
+
+        if ( !$success || $sendgrid->error() )
+            throw new ModelException( "Failed to UnSchedule Sendgrid Marketing Email:\n" . $sendgrid->message() );
+
+        return $success;
     }
 }

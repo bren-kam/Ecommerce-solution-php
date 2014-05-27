@@ -335,7 +335,8 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             data._nonce = $('#_save_draft').val();
             // Post, then load preview as Iframe
             $.post( '/email-marketing/campaigns/save-draft/', data, function(r) {
-                if ( r.success )
+
+                if ( r.notification.success )
                     delete r.notification;
 
                 ajaxResponse(r);
@@ -431,7 +432,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
         // Post!
         $.post( '/email-marketing/campaigns/save-campaign/', data, function(r) {
-            if (r.success)
+            if ( r.notification.success )
                 window.location = '/email-marketing/campaigns/?campaign-sent=1';
             ajaxResponse(r);
         } );

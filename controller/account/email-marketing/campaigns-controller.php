@@ -268,10 +268,12 @@ class CampaignsController extends BaseController {
      */
     public function save_draft() {
         $response = new AjaxResponse( $this->verified() );
+        jQuery('.save-draft')->removeClass('disabled')->text('Save Draft');;
 
         $errors = $this->validate();
-        $response->check( empty( $errors ), $errors );
-        if ( $response->has_error()) {
+        if ( !empty( $errors ) ) {
+            $response->notify( $errors, false );
+            $response->add_response( 'jquery', jQuery::getResponse());
             return $response;
         }
 
@@ -289,8 +291,6 @@ class CampaignsController extends BaseController {
             $response->add_response( 'campaign_id', $campaign->id );
         }
 
-        jQuery('.save-draft')->removeClass('disabled')->text('Save Draft');;
-
         $response->add_response( 'jquery', jQuery::getResponse());
         $response->notify( 'Draft Saved!' );
         return $response;
@@ -305,8 +305,10 @@ class CampaignsController extends BaseController {
         $response = new AjaxResponse( $this->verified() );
 
         $errors = $this->validate();
-        $response->check( empty( $errors ), $errors );
-        if ( $response->has_error()) {
+        if ( !empty( $errors) ) {
+            $response->notify( $errors, false );
+            jQuery('.save-campaign')->removeClass('disabled')->text('Looks Good! Send it out.');
+            $response->add_response( 'jquery', jQuery::getResponse());
             return $response;
         }
 
@@ -323,6 +325,7 @@ class CampaignsController extends BaseController {
         if ( !isset( $_POST['id'] ) ) {
             // tell the form we have a Campaign ID
             jQuery('<input type="hidden" name="id" id="campaign-id" value="'.$campaign->id.'" />')->appendTo('div[data-step=1]');
+            $response->add_response( 'jquery', jQuery::getResponse());
         }
 
         $email_list = new EmailList();
@@ -331,9 +334,6 @@ class CampaignsController extends BaseController {
         // Send to SendGrid
         $campaign->schedule( $this->user->account, $email_lists );
 
-        jQuery('.save-draft')->removeClass('disabled')->text('Looks Good! Send it out.');
-
-        $response->add_response( 'jquery', jQuery::getResponse());
         $response->notify( 'Campaign Saved!' );
         return $response;
     }
