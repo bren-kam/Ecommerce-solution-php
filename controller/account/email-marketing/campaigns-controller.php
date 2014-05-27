@@ -53,7 +53,9 @@ class CampaignsController extends BaseController {
 
         // Set initial data
         $data = false;
-        $confirm = _('Are you sure you want to delete this email? This cannot be undone.');
+        $unschedule_confirm = 'Are you sure you want to unschedule this email and put it back as a Draft?';
+        $unschedule_nonce = nonce::create( 'unschedule' );
+        $delete_confirm = _('Are you sure you want to delete this email? This cannot be undone.');
         $delete_nonce = nonce::create( 'delete' );
         $statuses = array( 'Draft', 'Scheduled', 'Sent' );
         $timezone = $this->user->account->get_settings( 'timezone' );
@@ -69,7 +71,9 @@ class CampaignsController extends BaseController {
 
                 if ( $message->status != EmailMessage::STATUS_SENT ) {
                     $actions = '<a href="' . url::add_query_arg( 'id', $message->id, '/email-marketing/campaigns/create/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ';
-                    $actions .= '<a href="' . url::add_query_arg( array( 'id' => $message->id, '_nonce' => $delete_nonce ), '/email-marketing/campaigns/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Delete') . '</a>';
+                    if ( $message->status == EmailMessage::STATUS_SCHEDULED )
+                        $actions .= '<a href="' . url::add_query_arg( array( 'id' => $message->id, '_nonce' => $unschedule_nonce ), '/email-marketing/campaigns/unschedule/' ) . '" title="' . _('Unschedule') . '" confirm="' . $unschedule_confirm . '">' . _('Unschedule') . '</a> | ';
+                    $actions .= '<a href="' . url::add_query_arg( array( 'id' => $message->id, '_nonce' => $delete_nonce ), '/email-marketing/campaigns/delete/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $delete_confirm . '">' . _('Delete') . '</a>';
                 } else {
                     $actions = '<a href="' . url::add_query_arg( 'eid', $message->id, '/analytics/email/' ) . '" title="' . _('Analytics') . '">' . _('Analytics') . '</a>';
                 }
@@ -281,6 +285,10 @@ class CampaignsController extends BaseController {
         if ( isset( $_POST['id'] ) )
             $campaign->get( $_POST['id'], $this->user->account->id );
 
+        // Don't save If it's already scheduled or sent
+        if ( $campaign->status >= EmailMessage::STATUS_SCHEDULED )
+            return $response;
+
         $campaign->status = EmailMessage::STATUS_DRAFT;
         $this->save($campaign);  // sync the other fields and save
 
@@ -316,6 +324,10 @@ class CampaignsController extends BaseController {
         if ( isset( $_POST['id'] ) )
             $campaign->get( $_POST['id'], $this->user->account->id );
 
+        // Don't save If it's already scheduled or sent
+        if ( $campaign->status >= EmailMessage::STATUS_SCHEDULED )
+            return $response;
+
         $campaign->status = EmailMessage::STATUS_SCHEDULED;
 
         // Save
@@ -334,7 +346,7 @@ class CampaignsController extends BaseController {
         // Send to SendGrid
         $campaign->schedule( $this->user->account, $email_lists );
 
-        $response->notify( 'Campaign Saved!' );
+        $this->notify( 'Campaign Saved and Scheduled for send!' );
         return $response;
     }
 
@@ -357,5 +369,36 @@ class CampaignsController extends BaseController {
         $response->set( 'message', $message );
 
         return $response;
+    }
+
+    protected function unschedule() {
+        $response = new RedirectResponse( '/email-marketing/campaigns/' );
+
+        if ( !$this->verified() )
+            return $response;
+
+        // Make sure we have everything right
+        if ( !isset( $_GET['id'] ) ) {
+            $this->notify( 'You cannot UnSchedule this Campaign', false );
+            return $response;
+        }
+
+        // Remove
+        $campaign = new EmailMessage();
+        $campaign->get( $_GET['id'], $this->user->account->id );
+
+        if ( !$campaign->id || ( $campaign->status != EmailMessage::STATUS_SCHEDULED ) ) {
+            $this->notify( 'You cannot UnSchedule this Campaign', false );
+            return $response;
+        }
+
+        $campaign->unschedule( $this->user->account );
+        $campaign->status = EmailMessage::STATUS_DRAFT;
+        $campaign->save();
+
+        $this->notify( 'Campaign unscheduled' );
+
+        return $response;
+
     }
 }

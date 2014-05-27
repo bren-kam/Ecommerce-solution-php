@@ -443,13 +443,13 @@ class EmailMessage extends ActiveRecordBase {
         $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
         library('sendgrid-api');
         $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_marketing_email();
         $sendgrid->setup_schedule();
 
-        $success = $sendgrid->schedule->delete( $this->id );
+        $sendgrid->schedule->delete( $this->id );
+        $sendgrid->marketing_email->delete( $this->id );
 
-        if ( !$success || $sendgrid->error() )
-            throw new ModelException( "Failed to UnSchedule Sendgrid Marketing Email:\n" . $sendgrid->message() );
-
-        return $success;
+        $exists = $sendgrid->marketing_email->get( $this->id );
+        return isset( $exists->error );  // if throws error, then it's deleted
     }
 }
