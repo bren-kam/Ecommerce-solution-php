@@ -263,8 +263,12 @@ div[data-content-type=product] .placeholder-content:empty{ background: #bdbdbd u
     background: #eee;
 }
 
-.layout-thumbnails li:hover, .content-thumbnails li:hover {
+.layout-thumbnails li:hover {
     cursor: pointer;
+}
+
+.content-thumbnails li:hover {
+    cursor: move;
 }
 
 .content-thumbnails li img {
