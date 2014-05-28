@@ -144,55 +144,41 @@ a.button.float-right { padding: 5px 20px; }
 
 /* Background and Borders for Editor */
 .email-layout { border: 1px solid #bdbdbd; }
-#email-editor  { background: white; }
-#email-editor .email-layout { border: 1px solid #bdbdbd; }
-#email-editor .email-col-container { border: 1px dashed #666; }
-#email-editor .email-col-container .placeholder { width: 100%; display: table; background: rgba(189, 189, 189, 0.4); }
-#email-editor .email-row-1 .placeholder { height:  50px; }
-#email-editor .email-row-2 .placeholder { height: 100px; }
-#email-editor .email-row-3 .placeholder { height: 150px; }
-#email-editor .email-row-4 .placeholder { height: 200px; }
-#email-editor .email-row-5 .placeholder { height: 250px; }
-#email-editor .email-row-6 .placeholder { height: 300px; }
-#email-editor .email-col-container .placeholder p { display: table-cell; vertical-align: middle; text-align:center; font-size: 16px; padding: 10px; }
+#email-editor .droppable { border: 1px dashed #666; }
 
-.email-col-1,
-.email-col-2,
-.email-col-3,
-.email-col-4,
-.email-col-5,
-.email-col-6,
-.email-col-7,
-.email-col-8,
-.email-col-9,
-.email-col-10,
-.email-col-11,
-.email-col-12  {
-    padding: 5px;
-}
+/* When placeholders are empty */
+#email-editor .droppable:not(.empty-content-type):not(.has-content) { vertical-align: middle; background-color: #e5e5e5; }
+#email-editor p.placeholder { vertical-align: middle; text-align:center; font-size: 16px; padding: 0; }
 
-/* Placeholder inner structure */
-.placeholder-actions { position: absolute; right: 10px; top: 10px; z-index: 1; }
-.placeholder-actions a { margin-top: 5px; display: inline-block; }
+/* When placeholders has a content type, but still not data has been set */
+#email-editor .empty-content-type { background: #e5e5e5; }
+#email-editor .empty-content-type [data-content-type] { height: inherit; }
+#email-editor .empty-content-type [data-content-type="text"]    .placeholder-content { background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4; height: inherit; }
+#email-editor .empty-content-type [data-content-type="image"]   .placeholder-content { background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4; height: inherit; }
+#email-editor .empty-content-type [data-content-type="product"] .placeholder-content { background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4; height: inherit; }
+
+/* When placeholder has a content type AND data has been set */
+.has-content { height: auto; }
+.has-content .placeholder-content{ background: none; }
+
+/* Content Type inner structure */
+td div[data-content-type] { position: relative; }
+/* Content Type actions */
+.placeholder-actions { position: absolute; z-index: 1; background: rgba(0, 0, 0, 0.8); width: 100%; }
+.placeholder-actions a { display: inline-block; float: left; margin-right: 5px; margin-top: 5px; margin-bottom: 2px; }
 .placeholder-actions a.hidden { display: none; }
-.products-autocomplete { width: 80px; position: absolute; right: 40px; top: 1px; padding: 2px; font-size: 11px;}
-.image-link-url { width: 80px; position: absolute; right: 20px; top: 25px; padding: 2px; font-size: 11px; }
-[data-action=save-link] { position: absolute; top: 25px; right: 0; }
+[data-action=edit] { margin-left: 5px; }
+/* actions for Product*/
+.products-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-right: 5px; margin-top: 3px; }
+/* actions for Image */
+.image-link-url { width: 80px; float: left; padding: 2px; font-size: 9px; margin-top: 3px;}
+[data-action="save-link"] { margin-left: -18px; }
 
-/* Images when placeholders are empty */
-#email-editor div[data-content-type=text], #email-editor div[data-content-type=image], #email-editor div[data-content-type=product] { min-height: inherit; }
-div[data-content-type=text] .placeholder-content{ min-height: inherit; background: white; }
-div[data-content-type=image] .placeholder-content{ min-height: inherit; background: white; }
-div[data-content-type=product] .placeholder-content{ min-height: inherit; background: white; }
-div[data-content-type=text] .placeholder-content:empty{  background: #bdbdbd url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=image] .placeholder-content:empty{ background: #bdbdbd url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=product] .placeholder-content:empty{ background: #bdbdbd url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
+[data-action="clear"] { float: right!important; }
+
 
 /* Text Editor Modal for content-type=text*/
 #editor-container { width: 600px; }
-
-/* Row breaks are for emails and preview, we hide in the editor */
-#email-editor .row-break {display: none; }
 
 /* Tabs
 ----------------------------------------- */

@@ -4,7 +4,6 @@
 .clearfix,
 .clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
 /* \*/ * html .clear { height:1px } /* */
-.row-break { height: 1pt; line-height: 1pt; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
 
 /* Email Layout Styles
 ----------------------------------------- */
@@ -14,49 +13,34 @@
     width: 600px;
 }
 
+.email-layout table { border-collapse: separate; border-spacing: 5px; width: 100%; }
+.email-layout td { padding: 0; vertical-align: top; }
+
 /* Email Placeholders - Rows */
-.email-row-1, .email-row-2, .email-row-3, .email-row-4, .email-row-5, .email-row-6 { margin: -5px; }
-.email-row-1 { min-height: 50px; }
-.email-row-2 { min-height: 100px; }
-.email-row-3 { min-height: 150px; }
-.email-row-4 { min-height: 200px; }
-.email-row-5 { min-height: 250px; }
-.email-row-6 { min-height: 300px; }
+.email-row-11 td.droppable { height: 550px; }
+.email-row-10 td.droppable { height: 500px; }
+.email-row-9 td.droppable { height: 450px; }
+.email-row-8 td.droppable { height: 400px; }
+.email-row-7 td.droppable { height: 350px; }
+.email-row-6 td.droppable { height: 300px; }
+.email-row-5 td.droppable { height: 250px; }
+.email-row-4 td.droppable { height: 200px; }
+.email-row-3 td.droppable { height: 150px; }
+.email-row-2 td.droppable { height: 100px; }
+.email-row-1 td.droppable { height: 50px; }
 
-.email-col-1,
-.email-col-2,
-.email-col-3,
-.email-col-4,
-.email-col-5,
-.email-col-6,
-.email-col-7,
-.email-col-8,
-.email-col-9,
-.email-col-10,
-.email-col-11,
-.email-col-12  {
-    min-height: inherit;
-    float: left;
-    position: relative;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.email-col-1 { width: 8.33%; }
-.email-col-2 { width: 16.66%; }
-.email-col-3 { width: 25%; }
-.email-col-4 { width: 33.33%; }
-.email-col-5 { width: 41.66%; }
-.email-col-6 { width: 50%; }
-.email-col-7 { width: 58.33%; }
-.email-col-8 { width: 66.66%; }
-.email-col-9 { width: 75%; }
-.email-col-10 { width: 83.33%; }
-.email-col-11 { width: 91.66%; }
-.email-col-12 { width: 100%; }
-
-.email-col-container { min-height: inherit; }
+.email-layout td[colspan="1"] { width: 8.33%; }
+.email-layout td[colspan="2"] { width: 16.66%; }
+.email-layout td[colspan="3"] { width: 25%; }
+.email-layout td[colspan="4"] { width: 33.33%; }
+.email-layout td[colspan="5"] { width: 41.66%; }
+.email-layout td[colspan="6"] { width: 50%; }
+.email-layout td[colspan="7"] { width: 58.33%; }
+.email-layout td[colspan="8"] { width: 66.66%; }
+.email-layout td[colspan="9"] { width: 75%; }
+.email-layout td[colspan="10"] { width: 83.33%; }
+.email-layout td[colspan="11"] { width: 91.66%; }
+.email-layout td[colspan="12"] { width: 100%; }
 
 /* Placeholder inner structure */
 .placeholder-content { width: 100%; }
@@ -70,26 +54,27 @@
 .content-type-product .sale-price { font-size: 20px; color: red; }
 .content-type-product .price { font-size: 17px; }
 .content-type-product .strikethrough { text-decoration: line-through; }
+
 /* on small boxes, font must be smaller and make better use of space */
-.email-col-1 .product-img, .email-col-1 .product-content,
-.email-col-2 .product-img, .email-col-2 .product-content,
-.email-col-3 .product-img, .email-col-3 .product-content {
+td[colspan="1"] .product-img, td[colspan="1"] .product-content,
+td[colspan="2"] .product-img, td[colspan="2"] .product-content,
+td[colspan="3"] .product-img, td[colspan="3"] .product-content {
     width: 90%;
     margin-left: 5%;
 }
-.email-col-1 .product-content h2,
-.email-col-2 .product-content h2,
-.email-col-3 .product-content h2{
+td[colspan="1"] .product-content h2,
+td[colspan="2"] .product-content h2,
+td[colspan="3"] .product-content h2{
     font-size: 14px;
     font-weight: bold;
 }
-.email-col-1 .product-content .sale-price,
-.email-col-2 .product-content .sale-price,
-.email-col-3 .product-content .sale-price{
+td[colspan="1"] .product-content .sale-price,
+td[colspan="2"] .product-content .sale-price,
+td[colspan="3"] .product-content .sale-price{
     font-size: 17px;
 }
-.email-col-1 .product-content .price,
-.email-col-2 .product-content .price,
-.email-col-3 .product-content .price{
+td[colspan="1"] .product-content .price,
+td[colspan="2"] .product-content .price,
+td[colspan="3"] .product-content .price{
     font-size: 14px;
 }

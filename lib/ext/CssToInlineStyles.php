@@ -105,7 +105,7 @@ class CssToInlineStyles
             // E[foo], Matches any E element with the "foo" attribute set (whatever the value)
             '/(\w)\[([\w\-]+)]/',
             // E[foo="warning"], Matches any E element whose "foo" attribute value is exactly equal to "warning"
-            '/(\w)\[([\w\-]+)\=\"(.*)\"]/',
+            '/(\w)\[([\w\-]+)\=\'(.*)\']/',
             // div.warning, HTML only. The same as DIV[class~="warning"]
             '/(\w+|\*)+\.([\w\-]+)+/',
             // .warning, HTML only. The same as *[class~="warning"]

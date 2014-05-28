@@ -1,4 +1,4 @@
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/ckeditor/ckeditor.js', function() {
+head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckeditor.js', function() {
 
     // ---------------------------------------------------------
     // ---------------------------------------------------------
@@ -63,8 +63,12 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             init: function() {
                 $('body').on('click', '[data-action=clear]', function(e) {
                     e.preventDefault();
-                    if (confirm('Are you sure do you want to remove this element?'))
-                        $(this).parents('[data-content-type]').remove();
+                    if (confirm('Are you sure do you want to remove this element?')) {
+                        $(this).parents('.droppable')
+                            .html('<p class="placeholder">Drag Content Here</p>')
+                            .removeClass('has-content')
+                            .removeClass('empty-content-type');
+                    }
                 });
             }
             , setup: function(my_content) {
@@ -117,6 +121,10 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
                                 // Hide autocomplete
                                 my_content.find('.products-autocomplete').hide();
+
+                                // mark is as has-content
+                                my_content.parents('.droppable')
+                                    .removeClass('empty-content-type').addClass('has-content');
                             }
                             , 'json'
                         );
@@ -165,6 +173,9 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var placeholder_id = $(this).data('placeholder-id');
                 var text = CKEDITOR.instances['text-editor'].getData();
                 $('#' + placeholder_id + ' .placeholder-content').html(text);
+                // mark is as has-content
+                $('#' + placeholder_id).parents('.droppable')
+                    .removeClass('empty-content-type').addClass('has-content');
             }
         }
 
@@ -180,6 +191,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 $('#email-editor').on('click', '[data-action=edit-link]', function(e) {
                     e.preventDefault();
                     $(this).siblings('[data-action=save-link], .image-link-url').removeClass('hidden');
+                    $(this).addClass('hidden');
                 });
                 $('#email-editor').on('click', '[data-action=save-link]', content_types['image'].save_image_link);
             }
@@ -193,8 +205,11 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var image = $('a.file.selected img').clone();
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
                 $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
+                // mark is as has-content
+                $('#' + placeholder_id).parents('.droppable')
+                    .removeClass('empty-content-type').addClass('has-content');
             }
-                , save_image_link: function(e) {
+            , save_image_link: function(e) {
                 e.preventDefault();
                 var url = $(this).siblings('.image-link-url').val();
                 var placeholder = $(this).parents('[data-content-type]');
@@ -217,6 +232,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
                 // hide controls
                 placeholder.find('[data-action=save-link], .image-link-url').addClass('hidden');
+                placeholder.find('[data-action=edit-link]').removeClass('hidden');
             }
             , is_url: function( url ) {
                 var regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
@@ -247,7 +263,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var my_content = content_type.content.clone();
                 my_content.removeClass('content-type-template');
                 placeholder.find('*').remove();
-                placeholder.html(my_content);
+                placeholder.html(my_content).addClass('empty-content-type');
                 content_type.setup(my_content);
             }
         });
@@ -261,7 +277,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
         var layout_key = $(this).data('layout');
         var layout = layouts.siblings('[data-layout=' + layout_key + ']');
-        var my_layout = layout.clone();
+        var my_layout = layout.html();
         layout_container.find('*').remove();
         layout_container.html(my_layout);
         // Rebind elements on Droppable, jQueryUI has no live binding for droppable =(

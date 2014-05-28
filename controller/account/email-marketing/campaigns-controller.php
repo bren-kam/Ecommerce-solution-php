@@ -149,7 +149,7 @@ class CampaignsController extends BaseController {
             ->javascript( 'jquery.timepicker' , 'email-marketing/campaigns/create', 'jquery.idTabs', 'fileuploader', 'gsr-media-manager' );
 
         return $this->get_template_response( 'create' )
-            ->kb( 0 )
+            ->kb( 144 )
             ->add_title( _('Campaigns') )
             ->select( 'campaigns', 'create' )
             ->set( compact( 'campaign', 'scheduled_datetime', 'email_lists', 'settings', 'timezones', 'files' ) );
