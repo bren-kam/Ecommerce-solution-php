@@ -43,7 +43,7 @@ class ContactUs extends ActiveRecordBase {
 						$gmaps_url .= '|' . urlencode( $ad->address . ',' . $ad->city . ' ' . $ad->state . ',' . $ad->zip );
 
 						$locations .= '<div class="location-3">';
-						$locations .= '<h2>' . $ad->location . '</h2>';
+						$locations .= '<h2>' . $ad->name . '</h2>';
 						$locations .= '<p>' . $ad->address . '<br />' . $ad->city . ', ' . $ad->state . ' ' . $ad->zip;
 
 						if ( !empty( $ad->phone ) || !empty( $ad->fax ) || !empty( $ad->email ) || !empty( $ad->website ) ) {
@@ -56,14 +56,14 @@ class ContactUs extends ActiveRecordBase {
 								$locations .= $ad->fax . ' (Fax)<br />';
 
 							if ( !empty( $ad->email ) ) {
-								$email_address = security::encrypt_email( $ad->email, 'Email ' . $ad->location, false );
+								$email_address = security::encrypt_email( $ad->email, 'Email ' . $ad->name, false );
 								$display_email = ( strlen( $ad->email ) > 25 ) ? ( substr( $ad->email, 0, 22) ).'...' : $email_address;
-								$locations .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad->location . '">' . $display_email . '</a> (Email)<br/>';
+								$locations .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad->name . '">' . $display_email . '</a> (Email)<br/>';
 							}
 
 							if ( !empty( $ad->website ) ) {
 								$link = ( !stristr( 'http://', $ad->website ) ) ? 'http://' . $ad->website : $ad->website;
-								$locations .= '<a href="' . $link . '" title="' . $ad->location . '">' . $ad->website . '</a>';
+								$locations .= '<a href="' . $link . '" title="' . $ad->name . '">' . $ad->website . '</a>';
 							}
 
 							$locations .= '</p>';
@@ -88,7 +88,7 @@ class ContactUs extends ActiveRecordBase {
 
 						$tab .= '<div class="location" style="clear:both">';
 
-						if ( 'false' == $pagemeta['hide-all-maps'] || !isset( $pagemeta['hide-all-maps'] ) ) {
+						if ( !isset( $pagemeta['hide-all-maps'] ) || 'false' == $pagemeta['hide-all-maps'] ) {
 							$tab .= '<div style="float: right">';
 							$tab .= '<iframe marginheight="0" marginwidth="0" src="http://maps.google.com/maps?hl=en&amp;q=' . $gmaps_address . '&amp;ie=UTF8&amp;output=embed" scrolling="no" frameborder="0" width="280" height="200"></iframe>';
 							$tab .= '<br />';
@@ -96,7 +96,7 @@ class ContactUs extends ActiveRecordBase {
 							$tab .= '</div>';
 						}
 
-						$tab .= '<h2><strong>' . $ad->location . '</strong></h2>';
+						$tab .= '<h2><strong>' . $ad->name . '</strong></h2>';
 						$tab .= '<p>' . $ad->address . '<br />' . $ad->city . ', ' . $ad->state . ' ' . $ad->zip . '</p>';
 
 						if ( !empty( $ad->phone ) || !empty( $ad->fax ) || !empty( $ad->email ) || !empty( $ad->website ) ) {
@@ -109,15 +109,15 @@ class ContactUs extends ActiveRecordBase {
 								$tab .= $ad->fax . ' (Fax)<br />';
 
 							if ( !empty( $ad->email ) ) {
-								$email_address = security::encrypt_email( $ad->email, 'Email ' . $ad->location, false );
+								$email_address = security::encrypt_email( $ad->email, 'Email ' . $ad->name, false );
 								$display_email = ( strlen( $ad->email ) > 30 ) ? ( substr( $ad->email, 0, 27) ).'...' : $email_address;
 
-								$tab .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad->location . '">' . $display_email . '</a> (Email)<br/>';
+								$tab .= '<a href="mailto:' . $email_address . '" title="Email ' . $ad->name . '">' . $display_email . '</a> (Email)<br/>';
 							}
 
 							if ( !empty( $ad->website ) ) {
 								$link = ( !stristr( 'http://', $ad->website ) ) ? 'http://' . $ad->website : $ad->website;
-								$tab .= "<a href='$link' title=\"" . $ad->location . "\">" . $ad->website . "</a>";
+								$tab .= "<a href='$link' title=\"" . $ad->name . "\">" . $ad->website . "</a>";
 							}
 
 							$tab .= '</p>';
