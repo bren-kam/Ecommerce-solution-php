@@ -36,9 +36,9 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
 
     $('#select-all-subscribers').change(function(){
         if ($(this).is(':checked')) {
-            $('[name="email_lists[]"').prop('checked', true);
+            $('.subscribers :checkbox').prop('checked', true);
         } else {
-            $('[name="email_lists[]"').prop('checked', false);
+            $('.subscribers :checkbox').prop('checked', false);
         }
     });
 
