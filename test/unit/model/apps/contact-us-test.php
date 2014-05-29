@@ -29,7 +29,7 @@ class ContactUsTest extends BaseDatabaseTest {
         // Define
         $this->phactory->define( 'sm_contact_us', array( 'fb_page_id' => self::FB_PAGE_ID, 'content' => self::CONTENT, 'key' => self::KEY ) );
         $this->phactory->define( 'website_pages', array( 'website_id' => self::WEBSITE_ID, 'title' => self::WEBSITE_PAGE_TITLE, 'content' => self::WEBSITE_PAGE_CONTENT ) );
-		$this->phactory->define( 'website_location', array( 'website_id' => self::WEBSITE_ID ) );
+        $this->phactory->define( 'website_location', array( 'website_id' => self::WEBSITE_ID ) );
         $this->phactory->define( 'sm_facebook_page', array( 'website_id' => self::WEBSITE_ID, 'status' => SocialMediaFacebookPage::STATUS_ACTIVE ) );
         $this->phactory->define( 'websites', array( 'title' => self::TITLE ) );
         $this->phactory->define( 'website_pagemeta' );
