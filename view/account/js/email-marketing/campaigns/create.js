@@ -336,6 +336,23 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
     $('a[data-step]').click(function(e) {
         e.preventDefault();
 
+        var current_step = $('li.active > a').data('step');
+        if ( current_step == 1 ) {
+            var validation = '';
+            var subject = $('#subject').val();
+            var subscribers_selected = $('.subscribers :checked').size();
+            if ( subject.trim().length == 0 ) {
+                validation += "An Email Subject is required. ";
+            }
+            if (subscribers_selected == 0 ) {
+                validation += "Please select at least one Subscribers list. ";
+            }
+            if ( validation ) {
+                ajaxResponse( { notification: { message: validation, success: false} } );
+                return;
+            }
+        }
+
         // Show form
         $('div[data-step]').addClass('hidden');
         $('div[data-step=' + $(this).data('step') + ']').removeClass('hidden');
