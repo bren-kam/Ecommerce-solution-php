@@ -313,7 +313,7 @@ class EmailMessage extends ActiveRecordBase {
         lib('ext/CssToInlineStyles');
         $inliner = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
         $inliner->setCSS($email_css);
-        $inliner->setHTML("<html><body><div class=\"email-layout\">{$this->message}</div></body></html>");
+        $inliner->setHTML("<html><body style=\"margin:0;padding:0;\"><div class=\"email-layout\">{$this->message}</div></body></html>");
         $full_message = $inliner->convert();
 
         // if uses a template, place $full_message inside Template's [message]

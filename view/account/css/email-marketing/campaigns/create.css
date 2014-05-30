@@ -143,7 +143,7 @@ a.button.float-right { padding: 5px 20px; }
 .droppable-hover { background-color: yellow!important; opacity: 0.3; }
 
 /* Background and Borders for Editor */
-.email-layout { border: 1px solid #bdbdbd; }
+.email-layout { border: 1px solid #bdbdbd; padding: 15px; margin-bottom: 17px; }
 #email-editor .droppable { border: 1px dashed #666; }
 
 /* When placeholders are empty */

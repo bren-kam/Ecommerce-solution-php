@@ -367,6 +367,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     , seamless: 'seamless'
                     , src: '/email-marketing/campaigns/preview/?_nonce='+ $('#_preview').val() +'&id='+ campaign_id
                 });
+                $('#email-preview').removeAttr('style');
                 iframe.load(function(){
                     var doc = this.contentDocument || this.contentWindow.document;
 
@@ -377,7 +378,6 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     iframe.height(doc.body.scrollHeight);
                 });
                 $('#email-preview').html(iframe);
-
             } );
 
         }
