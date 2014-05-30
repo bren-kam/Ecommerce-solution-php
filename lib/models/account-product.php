@@ -233,6 +233,10 @@ class AccountProduct extends ActiveRecordBase {
             , 131 // Dining Room > Arm Chairs
             , 142 // Dining Room > Bar Stools
         );
+        // 2pc only works for Ashley products
+        $ashley_brand_ids = array(8, 170, 171, 588, 805);
+        if ( $brand_id != 0 && !in_array( (int)$brand_id, $ashley_brand_ids ) )
+            return;
 
         $set = array();
 
@@ -268,7 +272,8 @@ class AccountProduct extends ActiveRecordBase {
         $new_category_ids_string = implode( ',', $new_category_ids );
 
         // Add the where
-        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+        // 2pc only applied to Ashley products
+        $where = ( 0 == $brand_id ) ? ( ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ' ) : ( ' AND p.`brand_id` = ' . (int) $brand_id);
 
         // Run once
         $this->prepare(
