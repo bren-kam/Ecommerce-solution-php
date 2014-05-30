@@ -34,11 +34,13 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         }
     }).change();
 
-    $('#select-all-subscribers').change(function(){
-        if ($(this).is(':checked')) {
+    $('#select-all-subscribers').change(function(e){
+        if ($(this).prop('checked') === true) {
             $('.subscribers :checkbox').prop('checked', true);
+            $('.subscribers :checkbox').attr('checked', 'checked');  // IE
         } else {
             $('.subscribers :checkbox').prop('checked', false);
+            $('.subscribers :checkbox').removeAttr('checked');  // IE
         }
     });
 
