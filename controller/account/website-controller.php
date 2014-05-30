@@ -69,6 +69,11 @@ class WebsiteController extends BaseController {
                 $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
             break;
 
+            case 'contact-us':
+                $v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
+                $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
+                break;
+
             default:break;
         }
 
@@ -124,6 +129,12 @@ class WebsiteController extends BaseController {
                         );
                     break;
 
+                    case 'contact-us':
+                        $pagemeta = array(
+                            'email' => $_POST['tEmail']
+                        );
+                    break;
+
                     default:break;
                 }
 
@@ -162,11 +173,17 @@ class WebsiteController extends BaseController {
                 $website_location = new WebsiteLocation();
                 $locations = $website_location->get_by_website( $this->user->account->id );
 
-                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps' );
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps', 'email' );
 
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
                     $$key = $value;
+                }
+
+                if ( !isset($email) || $email == '') {
+                    $owner = new User();
+                    $owner->get($this->user->account->user_id);
+                    $email = $owner->email;
                 }
 
                 $cv = new Validator( 'fAddEditLocation' );
@@ -177,7 +194,7 @@ class WebsiteController extends BaseController {
                 $cv->add_validation( 'zip', 'zip', _('The "Zip" field must contain a valid zip code') );
                 $contact_validation = $cv->js_validation();
 
-                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'contact_validation' );
+                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'email', 'contact_validation' );
             break;
 
             case 'current-offer':
