@@ -96,7 +96,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         var type = ['name' , 'sku'];
                         $.post(
                             '/products/autocomplete-owned/'
-                            , { '_nonce' : $('#_autocomplete_owned').val(), 'type' : type, 'term' : request['term'] }
+                            , { '_nonce' : $('#_autocomplete_owned').val(), 'type' : type, 'term' : request['term'], 'limit': 0 }
                             , function( autocompleteResponse ) {
                                 response( autocompleteResponse['suggestions'] );
                             }
@@ -132,8 +132,11 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         );
                     }
                 }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                    var input_text = my_content.find('.products-autocomplete').val();
+                    var re_search = new RegExp( '(' + input_text + ')', 'ig' );
+                    var re_replace = '<strong>$1</strong>';
                     return $( "<li>" )
-                        .append( "<a>" + item.name + "<br><small>SKU: " + item.sku + "</small></a>" )
+                        .append( "<a>" + item.name.replace( re_search, re_replace ) + "<br><small>SKU: " + item.sku.replace( re_search, re_replace ) + "</small></a>" )
                         .appendTo( ul );
                 };
             }
@@ -341,7 +344,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
             var validation = '';
             var subject = $('#subject').val();
             var subscribers_selected = $('.subscribers :checked').size();
-            if ( subject.trim().length == 0 ) {
+            if ( $.trim(subject) == 0 ) {
                 validation += "An Email Subject is required. ";
             }
             if (subscribers_selected == 0 ) {

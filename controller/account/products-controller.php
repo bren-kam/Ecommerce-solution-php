@@ -778,7 +778,8 @@ class ProductsController extends BaseController {
             default:
                 if ( is_array($_POST['type']) ) {
                     $account_product = new AccountProduct();
-                    $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], $_POST['type'], $this->user->account->id );
+                    $limit = isset($_POST['limit']) ? $_POST['limit'] : 10;
+                    $ac_suggestions = $account_product->autocomplete_by_account( $_POST['term'], $_POST['type'], $this->user->account->id, $limit );
                 }
             break;
         }
