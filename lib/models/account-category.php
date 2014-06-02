@@ -196,6 +196,9 @@ class AccountCategory extends ActiveRecordBase {
 		// Remove extra categoryes
         if ( count( $remove_category_ids ) > 0 )
             $this->remove_categories( $account_id, $remove_category_ids );
+
+        // Set Images for Brands/Categories
+        $this->update_brand_categories( $account_id );
 	}
 
     /**
@@ -406,4 +409,32 @@ class AccountCategory extends ActiveRecordBase {
             , $values
         )->get_var();
 	}
+
+    /**
+     * Update Brand Caregories
+     *
+     * @param $account_id
+     * @return array
+     */
+    protected function update_brand_categories( $account_id ) {
+        return $this->prepare(
+            "INSERT INTO website_brand_category(`website_id`, `brand_id`, `category_id`, `image_url`)
+                SELECT wp.`website_id`, p.`brand_id`, p.`category_id`, CONCAT( 'http://', i.`name`, '.retailcatalog.us/products/', p.`product_id`, '/small/', pi.`image` )
+                FROM `products` p
+                INNER JOIN `industries` i ON ( p.`industry_id` = i.`industry_id` )
+                INNER JOIN `product_images` pi ON ( p.`product_id` = pi.`product_id` )
+                INNER JOIN `website_products` wp ON ( p.`product_id` = wp.`product_id` )
+                LEFT JOIN `website_blocked_category` wbc ON ( wp.`website_id` = wbc.`website_id` AND p.`category_id` = wbc.`category_id` )
+                WHERE wp.`website_id` = :account_id AND pi.`sequence` = 0
+                    AND wp.`blocked` = 0 AND wp.`active` = 1 AND p.`publish_visibility` = 'public'
+                    AND wbc.`category_id` IS NULL
+                GROUP BY p.`brand_id`, p.`category_id`
+                ON DUPLICATE KEY UPDATE `image_url` = VALUES(`image_url`);
+            "
+            , 'i'
+            , array( ':account_id' => $account_id )
+        )->query();
+    }
+
+
 }

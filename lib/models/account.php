@@ -447,11 +447,25 @@ class Account extends ActiveRecordBase {
         
         return in_array($this->company_package_id, $new_template_company_package_ids);
     }
-    
+
+    /**
+     * Get Online Specialist
+     * @return User
+     */
     public function get_online_specialist() {
         $user = new User();
         $user->get( $this->os_user_id );
         return $user;
+    }
+
+    /**
+     * Purge Varnish Cache
+     */
+    public function purge_varnish_cache() {
+        try {
+            exec("varnishadm -T localhost:6082 ban req.http.host == {$this->domain}");
+            exec("varnishadm -T localhost:6082 ban req.http.host == www.{$this->domain}");
+        } catch (Exception $e) { /* Probably Varnish is not installed */ }
     }
     
 }

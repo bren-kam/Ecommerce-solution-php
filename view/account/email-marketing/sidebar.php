@@ -7,10 +7,11 @@
 <div id="sidebar">
     <a href="/email-marketing/" title="<?php echo _('Dashboard'); ?>" class="top first<?php $template->select('email-dashboard'); ?>"><?php echo _('Dashboard'); ?></a>
 
-    <a href="/email-marketing/emails/send/" title="<?php echo _('Send Email'); ?>" class="top<?php $template->select('emails'); ?>"><?php echo _('Send Email'); ?></a>
-   	<?php if ( $template->v('emails') ) { ?>
-   		<a href="/email-marketing/emails/" title="<?php echo _('View'); ?>" class="sub<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
-   	<?php } ?>
+    <a href="/email-marketing/campaigns/" title="<?php echo _('Campaigns'); ?>" class="top<?php $template->select('campaigns'); ?>"><?php echo _('Campaigns'); ?></a>
+    <?php if ( $template->v('campaigns') ) { ?>
+        <a href="/email-marketing/campaigns/" title="<?php echo _('View'); ?>" class="sub<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
+        <a href="/email-marketing/campaigns/create" title="<?php echo _('Create'); ?>" class="sub<?php $template->select('create'); ?>"><?php echo _('Create'); ?></a>
+    <?php } ?>
 
     <a href="/email-marketing/subscribers/" title="<?php echo _('Subscribers'); ?>" class="top<?php $template->select('subscribers'); ?>"><?php echo _('Subscribers'); ?></a>
     <?php if ( true === $template->v('subscribers') ) { ?>

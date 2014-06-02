@@ -57,7 +57,8 @@ class ReachesController extends BaseController {
         $assignable_users = array();
 
         foreach ( $assignable_users_array as $u ) {
-            $assignable_users[$u->id] = $u;
+            if ( $u->role != User::ROLE_MARKETING_SPECIALIST )
+                $assignable_users[$u->id] = $u;
         }
 
         $this->resources

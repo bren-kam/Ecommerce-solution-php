@@ -69,6 +69,11 @@ class WebsiteController extends BaseController {
                 $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
             break;
 
+            case 'contact-us':
+                $v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
+                $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
+                break;
+
             default:break;
         }
 
@@ -124,6 +129,12 @@ class WebsiteController extends BaseController {
                         );
                     break;
 
+                    case 'contact-us':
+                        $pagemeta = array(
+                            'email' => $_POST['tEmail']
+                        );
+                    break;
+
                     default:break;
                 }
 
@@ -162,11 +173,17 @@ class WebsiteController extends BaseController {
                 $website_location = new WebsiteLocation();
                 $locations = $website_location->get_by_website( $this->user->account->id );
 
-                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps' );
+                $pagemeta = $account_pagemeta->get_by_keys( $page->id, 'multiple-location-map', 'hide-all-maps', 'email' );
 
                 foreach ( $pagemeta as $key => $value ) {
                     $key = str_replace( '-', '_', $key );
                     $$key = $value;
+                }
+
+                if ( !isset($email) || $email == '') {
+                    $owner = new User();
+                    $owner->get($this->user->account->user_id);
+                    $email = $owner->email;
                 }
 
                 $cv = new Validator( 'fAddEditLocation' );
@@ -177,7 +194,7 @@ class WebsiteController extends BaseController {
                 $cv->add_validation( 'zip', 'zip', _('The "Zip" field must contain a valid zip code') );
                 $contact_validation = $cv->js_validation();
 
-                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'contact_validation' );
+                $resources = compact( 'locations', 'multiple_location_map', 'hide_all_maps', 'email', 'contact_validation' );
             break;
 
             case 'current-offer':
@@ -554,14 +571,32 @@ class WebsiteController extends BaseController {
 
         $this->resources
             ->css( 'website/navigation' )
+            ->css_url( Config::resource('jquery-ui') )
             ->javascript( 'website/navigation' );
 
         if ( $this->verified() ) {
             $navigation = array();
+            $tree = json_decode( $_POST['tree'], true );
 
-            foreach ( $_POST['navigation'] as $page ) {
-                list( $url, $name ) = explode( '|', $page );
-                $navigation[] = compact( 'url', 'name' );
+            if ( $tree ) {
+                foreach ( $tree as $tree_node ) {
+                    $page = $_POST['navigation'][$tree_node['id']];
+                    list( $url, $name ) = explode( '|', $page );
+                    $navigation_node = compact( 'url', 'name' );
+
+                    // children - sub items
+                    // we only accept one child level, so we are ok with this
+                    if ( isset( $tree_node['children'] ) ) {
+                        $navigation_node['children'] = array();
+                        foreach ( $tree_node['children'] as $child_node ) {
+                            $sub_page = $_POST['navigation'][$child_node['id']];
+                            list( $url, $name ) = explode( '|', $sub_page );
+                            $navigation_node['children'][] = compact( 'url', 'name' );
+                        }
+                    }
+
+                    $navigation[] = $navigation_node;
+                }
             }
 
             $this->user->account->set_settings( array( 'navigation' => json_encode( $navigation ) ) );
@@ -624,14 +659,15 @@ class WebsiteController extends BaseController {
 
         // Get settings
         $settings_array = array(
-            'banner-speed', 'banner-background-color'
+            'banner-width', 'banner-height'
+            , 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
-            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link'
+            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link'
             , 'logo-link'
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
-                , array( 'banner-width', 'banner-height', 'sidebar-image-width', 'timezone' )
+                , array( 'sidebar-image-width', 'timezone' )
             );
         }
 
@@ -640,17 +676,15 @@ class WebsiteController extends BaseController {
         // Create form
         $form->add_field( 'title', _('Banners') );
 
-        if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
-            $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
-                ->attribute( 'maxlength', '4' )
-                ->add_validation( 'req', _('The "Banners - Width" field is required') )
-                ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
+        $form->add_field( 'text', _('Width'), 'banner-width', $settings['banner-width'] )
+            ->attribute( 'maxlength', '4' )
+            ->add_validation( 'req', _('The "Banners - Width" field is required') )
+            ->add_validation( 'num', _('The "Banners - Width" field may only contain a number') );
 
-            $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
-                ->attribute( 'maxlength', '4' )
-                ->add_validation( 'req', _('The "Banners - Height" field is required') )
-                ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
-        }
+        $form->add_field( 'text', _('Height'), 'banner-height', $settings['banner-height'] )
+            ->attribute( 'maxlength', '4' )
+            ->add_validation( 'req', _('The "Banners - Height" field is required') )
+            ->add_validation( 'num', _('The "Banners - Height" field may only contain a number') );
 
         $form->add_field( 'text', _('Speed'), 'banner-speed', $settings['banner-speed'] )
             ->attribute( 'maxlength', '2' )
@@ -712,6 +746,9 @@ class WebsiteController extends BaseController {
         $form->add_field( 'text', _('LinkedIn Link'), 'sm-linkedin-link', $settings['sm-linkedin-link'] )
             ->add_validation( 'url', _('The "LinkedIn Link" must be a valid link') );
 
+        $form->add_field( 'text', _('YouTube Link'), 'sm-youtube-link', $settings['sm-youtube-link'] )
+            ->add_validation( 'url', _('The "YouTube Link" must be a valid link') );
+
         // Next section
         $form->add_field( 'blank', '' );
         $form->add_field( 'title', _('Other') );
@@ -761,7 +798,7 @@ class WebsiteController extends BaseController {
         $account_page = new AccountPage();
 
         // Set Order by
-        $dt->order_by( '`title`');
+        $dt->order_by( '`title`', '`date_updated`' );
         $dt->search( array( '`title`' => false ) );
         $dt->add_where( " AND `website_id` = " . (int) $this->user->account->id );
 
@@ -806,11 +843,14 @@ class WebsiteController extends BaseController {
 
             $title = ( empty( $page->title ) ) ? format::slug_to_name( $page->slug ) . ' (' . _('No Name') . ')' : $page->title;
 
+            $updated = DateTime::createFromFormat('Y-m-d H:i:s', $page->date_updated ? $page->date_updated : $page->date_created);
+
             $data[] = array(
                 $title . '<div class="actions">' .
                     '<a href="http://' . $this->user->account->domain . '/' . $page->slug . '/" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'apid', $page->id, '/website/edit/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' . $actions .
                     '</div>'
+                , $updated->format('F jS, Y h:ia')
             );
         }
 

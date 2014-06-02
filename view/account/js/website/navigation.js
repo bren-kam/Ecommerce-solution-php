@@ -1,12 +1,14 @@
 // When the page has loaded
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
-    $('#navigation-menu-list').sortable({
-        update: function() {
-            //var categoriesList = $("#categories-list").sortable('serialize'), parentCategoryID = $('#current-category span:first').attr('rel');
-            //$.post( '/products/categories/update-sequence/', { _nonce : $('#_update_sequence').val(), pcid: parentCategoryID, sequence : categoriesList }, ajaxResponse, 'json' );
-        },
-        placeholder: 'menu-item-placeholder'
-    }).on( 'click', 'a.delete-item', function() {
+head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/resources/js_single/?f=jquery.nestedSortable', function() {
+    $('#navigation-menu-list').nestedSortable({
+        listType: 'ul',
+        handle: 'div',
+        items: 'li',
+        placeholder: 'placeholder',
+        isTree: true,
+        maxLevels: 2
+    }).on( 'click', 'a.delete-item', function(e) {
+        e.preventDefault();
         if( confirm( $(this).attr('data-confirm') ) )
             $(this).parents('.menu-item:first').remove();
     });
@@ -25,7 +27,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             .find('h4:first').text( menuItemName.val() ).end()
             .find('a.url:first').text( displayUrl ).end()
             .removeAttr('id')
-            .append('<input type="hidden" name="navigation[]" value="' + url + '|' + menuItemName.val() + '">')
+            .find('div').append('<input type="hidden" name="navigation[]" value="' + url + '|' + menuItemName.val() + '">').end()
             .appendTo( $('#navigation-menu-list') );
 
         $('.close:visible').click();
@@ -43,5 +45,14 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 
     $('#menu-page').change( function() {
         $('#dAddEditNavigation input[name="menu-link"]:last').click();
+    });
+
+    $('#fNavigation').submit( function() {
+        var tree = $('#navigation-menu-list').nestedSortable('toHierarchy');
+        $('<input />', {
+            type: 'hidden'
+            , name: 'tree'
+            , value: JSON.stringify( tree )
+        }).appendTo(this);
     });
 });

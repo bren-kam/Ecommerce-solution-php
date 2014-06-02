@@ -1,0 +1,273 @@
+
+/* Base Styles
+----------------------------------------- */
+.clearfix,
+.clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
+/* \*/ * html .clear { height:1px } /* */
+a.button { padding-top: 11px; padding-bottom: 11px; cursor: pointer; }
+a.button.float-right { padding: 5px 20px; }
+
+/* Progress Bar
+----------------------------------------- */
+.progress-bar {
+    list-style: none;
+    overflow: hidden;
+    padding: 0;
+    margin: 0 0 30px;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+}
+
+.progress-bar,
+.progress-bar * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.progress-bar li {
+    float: left;
+    width: 33.33333333333333%;
+    padding: 0;
+    margin: 0;
+}
+
+.progress-bar li a {
+    position: relative;
+    display: block;
+    width: 100%;
+    color: #979797;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 34px;
+    font-weight: normal;
+    text-align: center;
+    background: #e3e3e3;
+    padding-left: 30px;
+}
+
+.progress-bar li a:after {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 50px solid transparent;    /* Go big on the size, and let overflow hide */
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid #e3e3e3;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    left: 100%;
+    z-index: 2;
+}
+
+.progress-bar li a:before {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 50px solid transparent;    /* Go big on the size, and let overflow hide */
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid #fff;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    margin-left: 1px;
+    left: 100%;
+    z-index: 1;
+}
+
+.progress-bar li a:hover {
+    background: #e3e3e3;
+    color: #63656b;
+}
+
+.progress-bar li a:hover:after {
+    border-left-color: #e3e3e3 !important;
+}
+
+.progress-bar li.active a {
+    background: #9ac600;
+    color: #475b00;
+    text-shadow: 1px 1px 0 rgba(186, 228, 39, 0.8);
+}
+
+.progress-bar li.active a:after {
+    border-left-color: #9ac600 !important;
+}
+
+
+/* Campaign Settings
+----------------------------------------- */
+.subscribers {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
+.subscribers th, .subscribers td { font-weight: bold; vertical-align:middle; }
+.subscribers th { text-align: left; font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
+.subscribers th img { float: right; margin: 8px 5px 0 0; }
+.subscribers label { font-weight: normal; }
+.bottom { position: relative; top: 7px }
+
+.subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 10px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
+.subscribers tr.last td { border-bottom: 0 }
+.subscribers tr.odd, .subscribers tr.odd td{ background:#fff; }
+.subscribers tr.even, .subscribers tr.even td { background: #F5F6F7 }
+.subscribers .actions { margin-top: 5px; }
+.subscribers td { padding-bottom: 10px; }
+.subscribers .cb { margin: 0px; top: 0px; }
+
+.campaign-settings { width: auto; }
+.campaign-settings td { padding: 3px 7px; }
+.campaign-settings input.tb { margin-top: 5px; }
+.campaign-settings .cb { margin: 0px; top: 3px; }
+
+.campaign-schedule { padding: 3px 7px; }
+.campaign-schedule .cb, #email-settings .cb { top: -1px; width: 13px; height: 13px; margin: 0; padding: 0; vertical-align: bottom; overflow: hidden; }
+#dDate { width: 275px; }
+
+.email-marketing-wrapper { width: 100%; }
+
+.email-marketing-left,
+.email-marketing-right {
+    float: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.email-marketing-left { padding-right: 20px; }
+.email-marketing-right { width: 30%; }
+
+/* email.css overwrites to make .email-layout editable look better
+----------------------------------------- */
+
+.droppable-hover { background-color: yellow!important; opacity: 0.3; }
+
+/* Background and Borders for Editor */
+.email-layout { border: 1px solid #bdbdbd; padding: 15px; margin-bottom: 17px; }
+#email-editor .droppable { border: 1px dashed #666; }
+
+/* When placeholders are empty */
+#email-editor .droppable:not(.empty-content-type):not(.has-content) { vertical-align: middle; background-color: #e5e5e5; }
+#email-editor p.placeholder { vertical-align: middle; text-align:center; font-size: 16px; padding: 0; }
+
+/* When placeholders has a content type, but still not data has been set */
+#email-editor .empty-content-type { background: #e5e5e5; }
+#email-editor .empty-content-type [data-content-type] { height: inherit; }
+#email-editor .empty-content-type [data-content-type="text"]    .placeholder-content { background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4; height: inherit; }
+#email-editor .empty-content-type [data-content-type="image"]   .placeholder-content { background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4; height: inherit; }
+#email-editor .empty-content-type [data-content-type="product"] .placeholder-content { background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4; height: inherit; }
+
+/* When placeholder has a content type AND data has been set */
+.has-content { height: auto; }
+.has-content .placeholder-content{ background: none; }
+
+/* Content Type inner structure */
+td div[data-content-type] { position: relative; }
+/* Content Type actions */
+.placeholder-actions { position: absolute; z-index: 1; background: rgba(0, 0, 0, 0.8); width: 100%; }
+.placeholder-actions a { display: inline-block; float: left; margin-right: 5px; margin-top: 5px; margin-bottom: 2px; }
+.placeholder-actions a.hidden { display: none; }
+[data-action=edit] { margin-left: 5px; }
+/* actions for Product*/
+.products-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-right: 5px; margin-top: 3px; }
+/* actions for Image */
+.image-link-url { width: 80px; float: left; padding: 2px; font-size: 9px; margin-top: 3px;}
+[data-action="save-link"] { margin-left: -18px; }
+
+[data-action="clear"] { float: right!important; }
+
+
+/* Text Editor Modal for content-type=text*/
+#editor-container { width: 600px; }
+
+/* Tabs
+----------------------------------------- */
+
+.idTabs { width: 100%; }
+
+.idTabs,
+.idTabs li {
+    padding: 0;
+    margin: 0;
+}
+
+.idTabs li {
+    list-style: none;
+    float: left;
+}
+
+.idTabs li a {
+    color: #979797;
+    font-size: 17px;
+    line-height: 34px;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    background: #f1f1f1;
+    border: 1px solid #f1f1f1;
+    border-bottom-color: #bdbdbd;
+    padding: 0 25px;
+    z-index: 1;
+}
+
+.idTabs li a.selected {
+    background: #fff;
+    border-color: #bdbdbd;
+    border-bottom-color: transparent;
+}
+
+.tab-content {
+    border: 1px solid #bdbdbd;
+    padding: 15px 15px 5px;
+    margin-bottom: 17px;
+    margin-top: -1px;
+    min-height: 250px;
+}
+
+/* Layout and Content Type Selectors/Thumbnails
+----------------------------------------- */
+
+.layout-thumbnails, .content-thumbnails
+.layout-thumbnails li, .content-thumbnails li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.layout-thumbnails li, .content-thumbnails li {
+    float: left;
+    margin: 0 10px 10px 0;
+    height: 120px;
+    width: 100px;
+    text-align: center;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+.content-thumbnails li {
+    background: #eee;
+}
+
+.layout-thumbnails li:hover {
+    cursor: pointer;
+}
+
+.content-thumbnails li:hover {
+    cursor: move;
+}
+
+.content-thumbnails li img {
+    opacity: 0.4;
+}
+
+.layout-thumbnails li img {
+    width: 100%;
+    border: 1px solid #bbb;
+}
+
+.layout-thumbnails .active img {
+    border: 1px solid #343434;
+}
+
+.save-campaign { background-color: #149C45; box-shadow: none; border-color: #045314; }

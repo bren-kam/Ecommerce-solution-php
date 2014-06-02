@@ -796,4 +796,48 @@ class TicketsController extends BaseController {
 
         return $dt;
     }
+
+    /**
+     * Archive Old
+     */
+    protected  function archive_old() {
+        $ticket = new Ticket();
+        $old_tickets = $ticket->get_old();
+
+        foreach ( $old_tickets as $ticket ) {
+            // Add Closed message
+            $ticket_comment = new TicketComment();
+            $ticket_comment->ticket_id = $ticket->id;
+            $ticket_comment->user_id = User::TECHNICAL;
+            $ticket_comment->comment = 'This ticket is being closed due to inactivity past 30 days. If you need furher help with this issue, please do not hesitate to contact us.<br /><br />Technical Team';
+            $ticket_comment->private = 0;
+
+            $ticket_comment->create();
+
+            // Close Ticket
+            $ticket->status = Ticket::STATUS_CLOSED;
+            $ticket->save();
+
+            // Send email
+            $assigned_user = new User();
+            $assigned_user->get( $ticket->assigned_to_user_id );
+            if ( !$assigned_user->id )
+                continue;
+
+            // Send the assigned user an email if they are not submitting the comment
+            fn::mail(
+                $ticket->email
+                , 'New Comment on Ticket #' . $ticket->id . ' (Closed) - ' . $ticket->summary
+                , "******************* Reply Above This Line *******************"
+                . "\n\n" . $this->user->contact_name . ' has posted a new comment on Ticket #' . $ticket->id . "."
+                . "\n\nhttp://admin." . url::domain( $assigned_user->domain, false ) . "/tickets/ticket/?tid=" . $ticket->id
+                . "\n\n**Comment**"
+                . "\nThis ticket is being closed due to inactivity past 30 days. If you need furher help with this issue, please do not hesitate to contact us.\n\nTechnical Team"
+                . "\n\n**Support Issue**"
+                . "\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
+                , $assigned_user->company . ' <support@' . url::domain( $assigned_user->domain, false ) . '>'
+            );
+
+        }
+    }
 }

@@ -5,7 +5,7 @@ class EmailMessage extends ActiveRecordBase {
     const STATUS_SCHEDULED = 1;
     const STATUS_SENT = 2;
 
-    public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $subject, $message, $type, $status, $date_sent, $date_created;
+    public $id, $email_message_id, $website_id, $email_template_id, $mc_campaign_id, $name, $subject, $message, $from, $type, $status, $date_sent, $date_created;
 
     // Artifical columns
     public $email_lists, $meta;
@@ -108,6 +108,21 @@ class EmailMessage extends ActiveRecordBase {
     }
 
     /**
+     * Get Associations
+     *
+     * @return int[]
+     */
+    public function get_associations() {
+        $this->email_lists = $this->prepare(
+            'SELECT email_list_id FROM `email_message_associations` WHERE `email_message_id` = :email_message_id'
+            , 'i'
+            , array( ':email_message_id' => $this->id )
+        )->get_col();
+        return $this->email_lists;
+    }
+
+
+    /**
      * Create
      */
     public function create() {
@@ -116,6 +131,8 @@ class EmailMessage extends ActiveRecordBase {
         $this->insert( array(
             'website_id' => $this->website_id
             , 'email_template_id' => $this->email_template_id
+            , 'name' => strip_tags($this->name)
+            , 'from' => $this->from
             , 'subject' => strip_tags($this->subject)
             , 'message' => format::strip_only( $this->message, '<script>' )
             , 'type' => strip_tags($this->type)
@@ -176,6 +193,8 @@ class EmailMessage extends ActiveRecordBase {
     public function save() {
         $this->update( array(
             'email_template_id' => $this->email_template_id
+            , 'name' => strip_tags($this->name)
+            , 'from' => $this->from
             , 'subject' => strip_tags($this->subject)
             , 'message' => format::strip_only( $this->message, '<script>' )
             , 'type' => strip_tags($this->type)
@@ -189,10 +208,15 @@ class EmailMessage extends ActiveRecordBase {
 
     /**
      * Remove All
+     *
+     * @param Account $account
      */
-    public function remove_all() {
+    public function remove_all( Account $account ) {
         if ( !$this->id )
             return;
+
+        if ($this->status == self::STATUS_SCHEDULED )
+            $this->unschedule( $account );
 
         // Assuming the above is successful, delete everything about this email
         $this->remove_associations();
@@ -282,6 +306,32 @@ class EmailMessage extends ActiveRecordBase {
         )->get_var();
     }
 
+    public function get_full_message( $account ) {
+        // Get Email
+        $email_css = file_get_contents( VIEW_PATH . 'css/email-marketing/campaigns/email.css');
+
+        lib('ext/CssToInlineStyles');
+        $inliner = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles();
+        $inliner->setCSS($email_css);
+        $inliner->setHTML("<html><body style=\"margin:0;padding:0;\"><div class=\"email-layout\">{$this->message}</div></body></html>");
+        $full_message = $inliner->convert();
+
+        // if uses a template, place $full_message inside Template's [message]
+        if ( $this->email_template_id ) {
+            $email_template = new EmailTemplate();
+            $email_template->get( $this->email_template_id, $account->id );
+
+            // apply template to $full_message
+            return str_replace(
+                array( '[message]', '[products]' )
+                , array( $full_message, '' )
+                , $email_template->template
+            );
+        }
+
+        return $full_message;
+    }
+
     /**
      * Test
      *
@@ -291,44 +341,19 @@ class EmailMessage extends ActiveRecordBase {
      * @param Account $account
      */
     public function test( $email, Account $account ) {
-        // Sendgrid
-        /*
-        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
-        library('sendgrid-api');
-        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
-
-        $sendgrid->setup_marketing_email();
-        $sendgrid->setup_recipient();
-        $sendgrid->setup_schedule();
-        $sendgrid->setup_list();
-        $sendgrid->setup_email();
-
-        // Text email
-        $text_mail = strip_tags( str_replace( '<br>', "\n", $this->message ) );
-
-        $test_email_name = md5( $this->id );
-
-        // Create message
-        $sendgrid->marketing_email->add( $account->id, $test_email_name, $this->subject, $text_mail, $this->message );
-        $sendgrid->list->delete( self::TEST_EMAIL_LIST );
-        $sendgrid->list->add( self::TEST_EMAIL_LIST );
-        $sendgrid->email->add( self::TEST_EMAIL_LIST, array( $email ) );
-        $sendgrid->email->get( self::TEST_EMAIL_LIST );
-        $sendgrid->list->get( self::TEST_EMAIL_LIST );
-        $sendgrid->recipient->add( self::TEST_EMAIL_LIST, $test_email_name );
-        $sendgrid->schedule->add( $test_email_name );
-
-        if ( $sendgrid->error() )
-            throw new ModelException( 'SendGrid failed to send test: ' . $sendgrid->message() );
-        */
-
-        $template = new EmailTemplate();
-        $message = $template->get_complete( $account, $this );
         $settings = $account->get_settings( 'from_name', 'from_email' );
         $from_name = ( empty( $settings['from_name'] ) ) ? $account->title : $settings['from_name'];
         $from_email = ( empty( $settings['from_email'] ) ) ? 'noreply@' . url::domain( $account->domain, false ) : $settings['from_email'];
         $from = $from_name . ' <' . $from_email . '>';
-        fn::mail( $email, $this->subject, $message, $from, $from, false );
+
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        $headers .= "From: $from\r\n";
+
+        $message = $this->get_full_message( $account );
+
+        // using my own mail function as we don't want default styles in it
+        mail( $email, $this->subject, $message, $headers );
     }
 
     /**
@@ -366,8 +391,8 @@ class EmailMessage extends ActiveRecordBase {
         $sendgrid_datetime = new DateTime( $this->date_sent, new DateTimeZone( Config::setting('server-timezone') ) );
         $sendgrid_date = $sendgrid_datetime->format('c');
 
-        $template = new EmailTemplate();
-        $message = $template->get_complete( $account, $this );
+        // Get Message with Styles Applied
+        $message = $this->get_full_message( $account );
 
         // Add unsubscribe link
         $message .= '<p style="font-size:11px;margin:0px;">To unsubscribe please click <a href="[unsubscribe]" style="text-decoration:none;"><span style="color:#0000FF;text-decoration:underline;">here</span></a></p>';
@@ -405,5 +430,26 @@ class EmailMessage extends ActiveRecordBase {
             $this->status = self::STATUS_SENT;
             $this->save();
         }
+    }
+
+    /**
+     * Unschedule
+     *
+     * @param Account $account
+     * @return bool
+     * @throws ModelException
+     */
+    public function unschedule( Account $account ) {
+        $settings = $account->get_settings( 'sendgrid-username', 'sendgrid-password' );
+        library('sendgrid-api');
+        $sendgrid = new SendGridAPI( $account, $settings['sendgrid-username'], $settings['sendgrid-password'] );
+        $sendgrid->setup_marketing_email();
+        $sendgrid->setup_schedule();
+
+        $sendgrid->schedule->delete( $this->id );
+        $sendgrid->marketing_email->delete( $this->id );
+
+        $exists = $sendgrid->marketing_email->get( $this->id );
+        return isset( $exists->error );  // if throws error, then it's deleted
     }
 }

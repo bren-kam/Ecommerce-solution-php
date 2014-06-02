@@ -390,6 +390,9 @@ class AshleyMasterProductFeedGateway extends ProductFeedGateway {
                 $this->not_identical[] = 'publish_visibility';
                 $product->publish_visibility = 'private';
             }
+            
+            $publish_visibility = ( 'discontinued' == $item['status'] ) ? 'deleted' : $product->publish_visibility;
+            $product->publish_visibility = $this->identical( $publish_visibility, $product->publish_visibility, 'publish_visibility' );
 
             /***** SKIP PRODUCT IF IDENTICAL *****/
 			

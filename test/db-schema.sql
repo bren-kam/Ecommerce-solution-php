@@ -638,6 +638,8 @@ CREATE TABLE IF NOT EXISTS `email_messages` (
   `mc_campaign_id` varchar(50) NOT NULL,
   `ac_campaign_id` int(11) DEFAULT NULL,
   `ac_message_id` int(11) DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL DEFAULT '',
+  `from` VARCHAR(255) NOT NULL DEFAULT '',
   `subject` varchar(150) NOT NULL,
   `message` text NOT NULL,
   `type` varchar(50) NOT NULL,
@@ -2264,3 +2266,12 @@ CREATE TABLE IF NOT EXISTS `website_product_views` (
   KEY `website_id` (`website_id`),
   KEY `product_id` (`product_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE `website_brand_category` (
+  `website_id` int(11) NOT NULL,
+  `brand_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `date_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`website_id`,`brand_id`,`category_id`)
+) ENGINE=InnoDB;

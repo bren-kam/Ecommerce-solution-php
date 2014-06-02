@@ -200,6 +200,8 @@ class CouponsController extends BaseController {
         $form->add_field( 'select', _('Coupon'), 'coupon' )
             ->options( $coupons_options );
 
+        $form->submit( 'Add to Brand Products' );
+
         if ( $form->posted() ) {
             $coupon = new WebsiteCoupon();
             $coupon->add_relations_by_brand( $_POST['coupon'], $this->user->account->id, $_POST['brand'] );

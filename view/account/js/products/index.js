@@ -42,6 +42,10 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
 				}));
 			}, 'json' );
 		}
+        , select: function  ( event, ui ) {
+            event.target.value = ui.item.value;
+            $('#aSearch').click();
+        }
 	});
 
 	// Create the search functionality

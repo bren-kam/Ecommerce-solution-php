@@ -74,6 +74,18 @@ class SendGridMarketingEmailAPI {
         return $this->sendgrid->success();
     }
 
+    /**
+     * Get
+     *
+     * @param string $name
+     * @return stdClass
+     */
+    public function get( $name ) {
+        $this->api( 'get', compact( 'name' ) );
+
+        return $this->sendgrid->response();
+    }
+
     /*********************************************/
     /* End: SendGrid Marketing Email API Methods */
     /*********************************************/

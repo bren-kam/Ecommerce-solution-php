@@ -125,4 +125,16 @@ class Ticket extends ActiveRecordBase {
             , array( ':status' => self::STATUS_UNCREATED )
         )->query();
     }
+
+    /**
+     * Get Old
+     * @return Ticket[]
+     */
+    public function get_old() {
+        return $this->prepare( 'SELECT a.`ticket_id`, a.`user_id`, a.`assigned_to_user_id`, a.`summary`, a.`priority`, a.`status`, a.`date_created`, CONCAT( b.`contact_name` ) AS name, b.`email`, c.`website_id`, c.`title` AS website, c.`domain`, COALESCE( d.`role`, 7 ) AS role, MAX( tc.date_created ) AS last_comment FROM `tickets` AS a LEFT JOIN `users` AS b ON ( a.`user_id` = b.`user_id` ) LEFT JOIN `websites` AS c ON ( a.`website_id` = c.`website_id` ) LEFT JOIN `users` AS d ON ( a.`assigned_to_user_id` = d.`user_id` ) LEFT JOIN `ticket_comments` AS tc ON ( tc.`ticket_id` = a.`ticket_id` ) WHERE a.`status` = 0 GROUP BY a.`ticket_id` HAVING MAX( tc.`date_created` ) < ( NOW() - INTERVAL 50 DAY ) OR ( MAX( tc.`date_created` ) IS NULL AND a.`date_created` < ( NOW() - INTERVAL 50 DAY ) )'
+            , ''
+            , array()
+        )->get_results( PDO::FETCH_CLASS, 'Ticket' );
+    }
+
 }
