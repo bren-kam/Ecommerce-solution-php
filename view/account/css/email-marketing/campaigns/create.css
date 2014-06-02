@@ -4,6 +4,8 @@
 .clearfix,
 .clear:after { height: 0; line-height: 0; font-size: 0; content: '.'; display: block; visibility: hidden; clear: both; }
 /* \*/ * html .clear { height:1px } /* */
+a.button { padding-top: 11px; padding-bottom: 11px; cursor: pointer; }
+a.button.float-right { padding: 5px 20px; }
 
 /* Progress Bar
 ----------------------------------------- */
@@ -42,6 +44,7 @@
     font-weight: normal;
     text-align: center;
     background: #e3e3e3;
+    padding-left: 30px;
 }
 
 .progress-bar li a:after {
@@ -95,27 +98,31 @@
 }
 
 
-/* Build Campaign
+/* Campaign Settings
 ----------------------------------------- */
 .subscribers {empty-cells:show; word-wrap:break-word; background:#fff; clear:left;}
 .subscribers th, .subscribers td { font-weight: bold; vertical-align:middle; }
 .subscribers th { text-align: left; font-size: 14px; background: #333436; color:#fafafa; line-height:26px; padding-bottom: 0; cursor:pointer; padding: 1px 0 1px 10px; position:relative; }
 .subscribers th img { float: right; margin: 8px 5px 0 0; }
+.subscribers label { font-weight: normal; }
 .bottom { position: relative; top: 7px }
 
-.subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 7px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
+.subscribers td { font-size: 14px; color:#5f5f66; vertical-align: top; padding: 10px 0 10px 10px; border-top: 1px solid #fff; border-bottom: 1px solid #d5d5da; font-weight: normal }
 .subscribers tr.last td { border-bottom: 0 }
 .subscribers tr.odd, .subscribers tr.odd td{ background:#fff; }
 .subscribers tr.even, .subscribers tr.even td { background: #F5F6F7 }
 .subscribers .actions { margin-top: 5px; }
 .subscribers td { padding-bottom: 10px; }
-.subscribers .cb { top: 0; }
+.subscribers .cb { margin: 0px; top: 0px; }
 
 .campaign-settings { width: auto; }
 .campaign-settings td { padding: 3px 7px; }
-.campaign-settings input.tb-large { width: 768px; }
+.campaign-settings input.tb { margin-top: 5px; }
+.campaign-settings .cb { margin: 0px; top: 3px; }
 
 .campaign-schedule { padding: 3px 7px; }
+.campaign-schedule .cb, #email-settings .cb { top: -1px; width: 13px; height: 13px; margin: 0; padding: 0; vertical-align: bottom; overflow: hidden; }
+#dDate { width: 275px; }
 
 .email-marketing-wrapper { width: 100%; }
 
@@ -127,51 +134,54 @@
     box-sizing: border-box;
 }
 
-.email-marketing-left { width: 70%; padding-right: 20px; }
+.email-marketing-left { padding-right: 20px; }
 .email-marketing-right { width: 30%; }
 
-.email-layout {
-    background: #f7f7f7;
-    border: 1px solid #bdbdbd;
-    padding: 15px;
-    margin-bottom: 17px;
-}
+/* email.css overwrites to make .email-layout editable look better
+----------------------------------------- */
 
-/* Email Placeholders */
-.email-row-1 .email-col-1, .email-row-1 .email-col-2, .email-row-1 .email-col-3, .email-row-1 .email-col-4 { height: 50px; }
-.email-row-2 .email-col-1, .email-row-2 .email-col-2, .email-row-2 .email-col-3, .email-row-2 .email-col-4 { height: 100px; }
-.email-row-3 .email-col-1, .email-row-3 .email-col-2, .email-row-3 .email-col-3, .email-row-3 .email-col-4 { height: 150px; }
-.email-row-4 .email-col-1, .email-row-4 .email-col-2, .email-row-4 .email-col-3, .email-row-4 .email-col-4 { height: 200px; }
+.droppable-hover { background-color: yellow!important; opacity: 0.3; }
 
-.email-col-1, .email-col-2, .email-col-3, .email-col-4 {  padding-left: 0; padding-right: 0; float: left; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; border: 1px dashed #666; }
-.email-col-1 { width: 25%; }
-.email-col-2 { width: 50%; }
-.email-col-3 { width: 33; }
-.email-col-4 { width: 100%; }
+/* Background and Borders for Editor */
+.email-layout { border: 1px solid #bdbdbd; padding: 15px; margin-bottom: 17px; }
+#email-editor .droppable { border: 1px dashed #666; }
 
-/* Placeholder inner structure */
-div[data-content-type] { width: 100%; height: inherit; position: relative; }
-.placeholder-content { width: 100%; height: inherit; }
-.placeholder-actions  { position: absolute; right: 10px; top: 10px; z-index: 1; }
+/* When placeholders are empty */
+#email-editor .droppable:not(.empty-content-type):not(.has-content) { vertical-align: middle; background-color: #e5e5e5; }
+#email-editor p.placeholder { vertical-align: middle; text-align:center; font-size: 16px; padding: 0; }
 
-div[data-content-type=text] .placeholder-content:empty{ background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=image] .placeholder-content:empty{ background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4;}
-div[data-content-type=product] .placeholder-content:empty{ background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4;}
+/* When placeholders has a content type, but still not data has been set */
+#email-editor .empty-content-type { background: #e5e5e5; }
+#email-editor .empty-content-type [data-content-type] { height: inherit; }
+#email-editor .empty-content-type [data-content-type="text"]    .placeholder-content { background: url('/images/campaigns/text.png') no-repeat center; opacity: 0.4; height: inherit; }
+#email-editor .empty-content-type [data-content-type="image"]   .placeholder-content { background: url('/images/campaigns/image.png') no-repeat center; opacity: 0.4; height: inherit; }
+#email-editor .empty-content-type [data-content-type="product"] .placeholder-content { background: url('/images/campaigns/product.png') no-repeat center; opacity: 0.4; height: inherit; }
+
+/* When placeholder has a content type AND data has been set */
+.has-content { height: auto; }
+.has-content .placeholder-content{ background: none; }
+
+/* Content Type inner structure */
+td div[data-content-type] { position: relative; }
+/* Content Type actions */
+.placeholder-actions { position: absolute; z-index: 1; background: rgba(0, 0, 0, 0.8); width: 100%; }
+.placeholder-actions a { display: inline-block; float: left; margin-right: 5px; margin-top: 5px; margin-bottom: 2px; }
+.placeholder-actions a.hidden { display: none; }
+[data-action=edit] { margin-left: 5px; }
+/* actions for Product*/
+.products-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-right: 5px; margin-top: 3px; }
+/* actions for Image */
+.image-link-url { width: 80px; float: left; padding: 2px; font-size: 9px; margin-top: 3px;}
+[data-action="save-link"] { margin-left: -18px; }
+
+[data-action="clear"] { float: right!important; }
 
 
-/* Styles for elements inside Placeholder Actions */
-
-div[data-content-type=image] .placeholder-content img { width: inherit; height: inherit; }
-
-div[data-content-type=product] .placeholder-content .product-img { width: 70%; height: 70%; margin-left: 15%; }
-div[data-content-type=product] .placeholder-content .product-img img { width: 100%; height: 100%; }
-div[data-content-type=product] .placeholder-content .product-content { width: 100%; text-align: center; }
-div[data-content-type=product] .placeholder-content h2 { font-size: 18px; }
-div[data-content-type=product] .placeholder-content .sale-price { font-size: 16px; color: red; }
-
+/* Text Editor Modal for content-type=text*/
 #editor-container { width: 600px; }
 
-.droppable-hover { background-color: yellow; opacity: 0.3; }
+/* Tabs
+----------------------------------------- */
 
 .idTabs { width: 100%; }
 
@@ -197,7 +207,7 @@ div[data-content-type=product] .placeholder-content .sale-price { font-size: 16p
     background: #f1f1f1;
     border: 1px solid #f1f1f1;
     border-bottom-color: #bdbdbd;
-    padding: 0 30px;
+    padding: 0 25px;
     z-index: 1;
 }
 
@@ -212,7 +222,11 @@ div[data-content-type=product] .placeholder-content .sale-price { font-size: 16p
     padding: 15px 15px 5px;
     margin-bottom: 17px;
     margin-top: -1px;
+    min-height: 250px;
 }
+
+/* Layout and Content Type Selectors/Thumbnails
+----------------------------------------- */
 
 .layout-thumbnails, .content-thumbnails
 .layout-thumbnails li, .content-thumbnails li {
@@ -226,15 +240,34 @@ div[data-content-type=product] .placeholder-content .sale-price { font-size: 16p
     margin: 0 10px 10px 0;
     height: 120px;
     width: 100px;
-    background: #eee;
     text-align: center;
     padding-top: 20px;
     box-sizing: border-box;
 }
 
-.layout-thumbnails li img, .content-thumbnails li img {
- opacity: 0.4;
+.content-thumbnails li {
+    background: #eee;
 }
 
+.layout-thumbnails li:hover {
+    cursor: pointer;
+}
 
+.content-thumbnails li:hover {
+    cursor: move;
+}
 
+.content-thumbnails li img {
+    opacity: 0.4;
+}
+
+.layout-thumbnails li img {
+    width: 100%;
+    border: 1px solid #bbb;
+}
+
+.layout-thumbnails .active img {
+    border: 1px solid #343434;
+}
+
+.save-campaign { background-color: #149C45; box-shadow: none; border-color: #045314; }

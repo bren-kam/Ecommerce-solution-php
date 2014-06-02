@@ -477,8 +477,6 @@ class AccountsController extends BaseController {
             , 'ashley-alternate-folder'
             , 'facebook-url'
             , 'advertising-url'
-            , 'trumpia-username'
-            , 'trumpia-password'
             , 'zopim'
             , 'facebook-pages'
             , 'responsive-web-design'
@@ -503,8 +501,6 @@ class AccountsController extends BaseController {
         $ft->add_field( 'text', _('Facebook Pages'), 'tFacebookPages', $settings['facebook-pages'] );
         $ft->add_field( 'text', _('Facebook Page Insights URL'), 'tFacebookURL', $settings['facebook-url'] );
         $ft->add_field( 'text', _('Advertising URL'), 'tAdvertisingURL', $settings['advertising-url'] );
-        $ft->add_field( 'text', _('Trumpia Username'), 'tTrumpiaUsername', $settings['trumpia-username'] );
-        $ft->add_field( 'text', _('Trumpia Password'), 'tTrumpiaPassword', $settings['trumpia-password'] );
         $ft->add_field( 'text', _('Zopim'), 'tZopim', $settings['zopim'] );
         $ft->add_field( 'checkbox', _('Responsive Web Design'), 'cbResponsiveWebDesign', $settings['responsive-web-design'] );
 
@@ -530,8 +526,6 @@ class AccountsController extends BaseController {
                 , 'facebook-pages' => $_POST['tFacebookPages']
                 , 'facebook-url' => $_POST['tFacebookURL']
                 , 'advertising-url' => $_POST['tAdvertisingURL']
-                , 'trumpia-username' => $_POST['tTrumpiaUsername']
-                , 'trumpia-password' => $_POST['tTrumpiaPassword']
                 , 'zopim' => $_POST['tZopim']
                 , 'responsive-web-design' => (int) isset( $_POST['cbResponsiveWebDesign'] ) && $_POST['cbResponsiveWebDesign']
             ));
@@ -568,8 +562,8 @@ class AccountsController extends BaseController {
         $account = new Account;
         $account->get( $_GET['aid'] );
 
-        // Get trumpia api key
-        $settings = $account->get_settings( 'trumpia-username', 'craigslist-customer-id', 'sendgrid-username' );
+        // Get api keys
+        $settings = $account->get_settings( 'craigslist-customer-id', 'sendgrid-username' );
 
         // Make sure he has permission
         if ( !$this->user->has_permission( User::ROLE_ADMIN ) && $account->company_id != $this->user->company_id )
@@ -1629,6 +1623,23 @@ class AccountsController extends BaseController {
         $account_product->reset_price_by_account( $_GET['aid'] );
 
         $this->notify( _('All account prices has been reseted.') );
+
+        return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
+    }
+
+    /**
+     * Purge Cache
+     * @return RedirectResponse
+     */
+    protected function purge_cache() {
+        if ( !isset( $_GET['aid'] ) )
+            return new RedirectResponse( '/accounts/' );
+
+        $account = new Account();
+        $account->get( $_GET['aid'] );
+        $account->purge_varnish_cache();
+
+        $this->notify( _("Purged cache for '{$account->domain}'") );
 
         return new RedirectResponse( "/accounts/actions/?aid={$_GET['aid']}" );
     }

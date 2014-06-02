@@ -1,38 +1,43 @@
-
-<input type="checkbox" class="cb" name="remove-header-footer" id="remove-header-footer" value="1">
-<label for="remove-header-footer">Remove Header/Footer</label>
-
-<br /><br />
+<?php
+/**
+ * @package Grey Suit Retail
+ * @page Step1 | Create | Campaigns | Email Marketing
+ *
+ * Declare the variables we have available from other sources
+ * @var Resources $resources
+ * @var User $user
+ * @var EmailMessage $campaign
+ * @var EmailList[] $email_lists
+ * @var array $settings
+ * @var string $timezone
+ * @var string $server_timezone
+ * @var AccountFile[] $files
+ * @var string $default_from
+ * @var boolean $overwrite_from
+ * @var DateTime $scheduled_datetime
+ */
+?>
 
 <div class="email-marketing-wrapper clear">
 
     <div class="email-marketing-left">
-        <div class="email-layout" id="email-editor">
-            <div class="email-row-1 clear">
-                <div class="email-col-4"></div>
-            </div>
-            <div class="email-row-4 clear">
-                <div class="email-col-2"></div>
-                <div class="email-col-2"></div>
-            </div>
-            <div class="email-row-3 clear">
-                <div class="email-col-1"></div>
-                <div class="email-col-1"></div>
-                <div class="email-col-1"></div>
-                <div class="email-col-1"></div>
-            </div>
-        </div>
+        <div class="email-layout" id="email-editor"><?php echo $campaign->message ?></div>
 
-        <p>
-            <input type="submit" class="button" value="Save Draft">
-            <a href="#" data-step="3" class="button float-right" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
+        <p class="float-left">
+            <a href="#" data-step="1" class="button" title="<?php echo _('< Back'); ?>"><?php echo _('< Back'); ?></a>
+            <a class="button save-draft" title="<?php echo _('Save Draft'); ?>"><?php echo _('Save Draft'); ?></a>
         </p>
+        <p class="float-right">
+            <a href="#" data-step="3" class="button" title="<?php echo _('Next'); ?>"><?php echo _('Next >'); ?></a>
+        </p>
+        <br clear="all" />
     </div><!-- .email-marketing-left -->
 
     <div class="email-marketing-right">
         <ul class="idTabs clear">
             <li><a href="#email-content" class="selected">Content</a></li>
             <li><a href="#email-layouts">Layout</a></li>
+            <li><a href="#email-settings">Settings</a></li>
         </ul>
         <div id="email-content" class="tab-content">
             <ul class="content-thumbnails clear">
@@ -43,101 +48,194 @@
         </div>
         <div id="email-layouts" class="tab-content">
             <ul class="layout-thumbnails clear">
-                <li data-layout="layout-1">Layout 1</li>
-                <li data-layout="layout-2">Layout 2</li>
-                <li data-layout="layout-3">Layout 3</li>
+                <li data-layout="layout-1"><img src="/images/campaigns/layout-1.jpg" /></li>
+                <li data-layout="layout-2"><img src="/images/campaigns/layout-2.jpg" /></li>
+                <li data-layout="layout-3"><img src="/images/campaigns/layout-3.jpg" /></li>
+                <li data-layout="layout-4"><img src="/images/campaigns/layout-4.jpg" /></li>
+                <li data-layout="layout-5"><img src="/images/campaigns/layout-5.jpg" /></li>
+                <li data-layout="layout-6"><img src="/images/campaigns/layout-6.jpg" /></li>
+                <li data-layout="layout-7"><img src="/images/campaigns/layout-7.jpg" /></li>
+                <li data-layout="layout-8"><img src="/images/campaigns/layout-8.jpg" /></li>
             </ul>
+        </div>
+        <div id="email-settings" class="tab-content">
+            <label for="no-template">
+                <input type="checkbox" class="cb" name="no-template" id="no-template" value="1" <?php if ( $campaign->id && !$campaign->email_template_id ) echo 'checked="checked"' ?>>
+                Remove Header/Footer
+            </label>
         </div>
     </div><!-- .email-marketing-right -->
 
 </div><!-- .email-marketing-wrapper -->
 
-<div class="hidden">
+<div class="hidden" id="email-builder-types">
 
-    <div data-content-type="product">
+    <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
-                <input type="text" class="products-autocomplete" placeholder="Search by SKU or Name..." />
-                <a data-action="edit" href="#"><img src="/images/icons/edit.png" /></a>
-                | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-                <!-- | <a data-action="move" href="#"><img src="/images/icons/move.png" /></a> -->
-            <br clear="all" />
+            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
+            <a data-action="edit" href="#"><img src="/images/icons/edit.png" /></a>
+
+            <input type="text" class="products-autocomplete" placeholder="SKU or Name." />
         </div>
-        <div class="placeholder-content"></div>
+        <div class="placeholder-content content-type-product"></div>
     </div>
 
-    <div data-content-type="text">
+    <div class="content-type-template" data-content-type="text">
         <div class="placeholder-actions">
-            <a href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
-            | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <!-- | <a data-action="move" href="#"><img src="/images/icons/move.png" /></a> -->
+            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
+            <a data-action="edit" href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
         </div>
-        <div class="placeholder-content"></div>
+        <div class="placeholder-content content-type-text"></div>
     </div>
 
-    <div data-content-type="image">
+    <div class="content-type-template" data-content-type="image">
         <div class="placeholder-actions">
-            <a href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
-            | <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <!-- | <a data-action="move" href="#"><img src="/images/icons/move.png" /></a> -->
+            <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
+            <a data-action="edit"  href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
+            <a data-action="edit-link" class="hidden" href="#"><img src="/images/icons/link.png" /></a>
+
+            <input type="text" class="image-link-url hidden" placeholder="Enter URL" />
+            <a data-action="save-link" class="hidden" href="#"><img src="/images/icons/disk.png" /></a>
         </div>
-        <div class="placeholder-content"></div>
+        <div class="placeholder-content content-type-image"></div>
     </div>
 
-    <!--
-    row-1, row2, row3, row4 is actually for row height
-    and col-1, col-2, col3, col4 are for columns width
-    maybe height should be bound to columns rather than rows
-    and also might be min-height rather than a fixed height (will see why just in a minute)
-
-    so future layouts shouldn't be hard to create
-
-    -->
     <div data-layout="layout-1">
-        <div class="email-row-1 clear">
-            <div class="email-col-4"></div>
-        </div>
-        <div class="email-row-4 clear">
-            <div class="email-col-2"></div>
-            <div class="email-col-2"></div>
-        </div>
-        <div class="email-row-3 clear">
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-        </div>
+        <table>
+            <tr class="email-row-4">
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
     </div>
 
     <div data-layout="layout-2">
-        <div class="email-row-4 clear">
-            <div class="email-col-2"></div>
-            <div class="email-col-2"></div>
-        </div>
-        <div class="email-row-1 clear">
-            <div class="email-col-4"></div>
-        </div>
-        <div class="email-row-3 clear">
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-        </div>
+        <table>
+            <tr class="email-row-6">
+                <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
     </div>
 
     <div data-layout="layout-3">
-        <div class="email-row-3 clear">
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-            <div class="email-col-1"></div>
-        </div>
-        <div class="email-row-1 clear">
-            <div class="email-col-4"></div>
-        </div>
-        <div class="email-row-4 clear">
-            <div class="email-col-2"></div>
-            <div class="email-col-2"></div>
-        </div>
+        <table>
+            <tr class="email-row-1">
+                <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="4" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="4" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="4" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-4">
+                <td colspan="4" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="4" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="4" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-4">
+        <table>
+            <tr class="email-row-4">
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-4">
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-5">
+        <table>
+            <tr class="email-row-6">
+                <td colspan="4">
+                    <table>
+                        <tr class="email-row-3">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                        <tr class="email-row-6">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td colspan="8">
+                    <table>
+                        <tr class="email-row-6">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                        <tr class="email-row-6">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-6">
+        <table>
+            <tr class="email-row-6">
+                <td colspan="8">
+                    <table>
+                        <tr class="email-row-6">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                        <tr class="email-row-6">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                    </table>
+                </td>
+                <td colspan="4">
+                    <table>
+                        <tr class="email-row-3">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                        <tr class="email-row-6">
+                            <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-7">
+        <table>
+            <tr class="email-row-1">
+                <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-4">
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-8">
+        <table>
+            <tr class="email-row-1">
+                <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-4">
+                <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
     </div>
 
 </div>
@@ -201,6 +299,7 @@
 nonce::field( 'upload_file', '_upload_file' );
 nonce::field( 'autocomplete_owned', '_autocomplete_owned' );
 nonce::field( 'get_product_dialog_info', '_get_product_dialog_info' );
+nonce::field( 'preview', '_preview' );
 ?>
 
 <div id="dTextEditor" class="hidden">

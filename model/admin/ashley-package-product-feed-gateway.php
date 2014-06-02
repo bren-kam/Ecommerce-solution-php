@@ -322,6 +322,9 @@ class AshleyPackageProductFeedGateway extends ProductFeedGateway {
             // Get Product
 			$product = $this->get_existing_product( (string) $item->PackageName );
 
+            if ( 'deleted' == $product->publish_visibility )
+                continue;
+
             // Now we have the product
             if ( !$product instanceof Product ) {
 				/*echo '|' . (string) $item->PackageName . '|';

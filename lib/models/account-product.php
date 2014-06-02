@@ -233,6 +233,10 @@ class AccountProduct extends ActiveRecordBase {
             , 131 // Dining Room > Arm Chairs
             , 142 // Dining Room > Bar Stools
         );
+        // 2pc only works for Ashley products
+        $ashley_brand_ids = array(8, 170, 171, 588, 805);
+        if ( $brand_id != 0 && !in_array( (int)$brand_id, $ashley_brand_ids ) )
+            return;
 
         $set = array();
 
@@ -268,7 +272,8 @@ class AccountProduct extends ActiveRecordBase {
         $new_category_ids_string = implode( ',', $new_category_ids );
 
         // Add the where
-        $where = ( 0 == $brand_id ) ? '' : ' AND p.`brand_id` = ' . (int) $brand_id;
+        // 2pc only applied to Ashley products
+        $where = ( 0 == $brand_id ) ? ( ' AND p.`brand_id` IN ('. implode(',', $ashley_brand_ids) .') ' ) : ( ' AND p.`brand_id` = ' . (int) $brand_id);
 
         // Run once
         $this->prepare(
@@ -371,11 +376,14 @@ class AccountProduct extends ActiveRecordBase {
      * @param int $account_id
 	 * @param int $limit (optional) the number of products to get
 	 * @param string $where (optional) a 'WHERE' clause to add on to the SQL Statement
-     * @param int $page
+     * @param string $order_by (optional) a 'ORDER BY' clause to add
+     * @param int $page (optional) page number
 	 * @return AccountProduct[]
 	 */
-	 public function search( $account_id, $limit = 20, $where = '', $page = 1 ) {
-		// Instantiate Classes
+	public function search( $account_id, $limit = 20, $where = '', $order_by = '', $page = 1 ) {
+
+        $sql_order_by = ($order_by ? "$order_by, " : "") . "wp.`sequence` ASC";
+
         if ( 0 == $limit ) {
             $sql_limit = '';
         } else {
@@ -383,23 +391,25 @@ class AccountProduct extends ActiveRecordBase {
             $sql_limit = "LIMIT $starting_product, $limit";
         }
 
-		$sql = 'SELECT p.`product_id`,';
-		$sql .= 'p.`name`, p.`slug`, b.`name` AS brand, p.`sku`, p.`status`, c.`category_id`,';
-		$sql .= 'c.`name` AS category, pi.`image`, wp.`price`, wp.`alternate_price`, wp.`alternate_price_name`,';
-		$sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry ';
-		$sql .= 'FROM `products` AS p ';
-		$sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) ';
-		$sql .= 'LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) ';
-		$sql .= 'LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) ';
-		$sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
-		$sql .= 'LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) ';
-		$sql .= 'LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) ';
-		$sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' AND wbc.`category_id` IS NULL";
-		$sql .= $where;
-		$sql .= " GROUP BY p.`product_id` ORDER BY wp.`sequence` ASC $sql_limit";
+        $sql = 'SELECT p.`product_id`,';
+        $sql .= 'p.`name`, p.`slug`, b.`name` AS brand, p.`sku`, p.`status`, c.`category_id`,';
+        $sql .= 'c.`name` AS category, pi.`image`, wp.`price`, wp.`alternate_price`, wp.`alternate_price_name`,';
+        $sql .= 'wp.`sequence`, DATE( p.`publish_date` ) AS publish_date, pi.`image`, i.`name` AS industry ';
+        $sql .= 'FROM `products` AS p ';
+        $sql .= 'LEFT JOIN `categories` AS c ON ( c.`category_id` = p.`category_id` ) ';
+        $sql .= 'LEFT JOIN `brands` AS b ON ( b.`brand_id` = p.`brand_id` ) ';
+        $sql .= 'LEFT JOIN `product_images` AS pi ON ( pi.`product_id` = p.`product_id` ) ';
+        $sql .= 'LEFT JOIN `website_products` AS wp ON ( wp.`product_id` = p.`product_id` ) ';
+        $sql .= 'LEFT JOIN `industries` AS i ON ( i.`industry_id` = p.`industry_id` ) ';
+        $sql .= 'LEFT JOIN `website_blocked_category` AS wbc ON ( wbc.`category_id` = p.`category_id` AND wbc.`website_id` = wp.`website_id` ) ';
+        $sql .= "WHERE p.`publish_visibility` = 'public' AND wp.`blocked` = 0 AND wp.`active` = 1 AND wp.`website_id` = $account_id AND ( pi.`sequence` = 0 OR pi.`sequence` IS NULL ) AND p.`date_created` <> '0000-00-00 00:00:00' AND wbc.`category_id` IS NULL";
+        $sql .= $where;
+        $sql .= " GROUP BY p.`product_id`";
+        $sql .= " ORDER BY $sql_order_by ";
+        $sql .= " $sql_limit";
 
-		return $this->get_results( $sql, PDO::FETCH_CLASS, 'AccountProduct' );
-	}
+        return $this->get_results( $sql, PDO::FETCH_CLASS, 'AccountProduct' );
+    }
 
     /**
 	 * Gets Website Products

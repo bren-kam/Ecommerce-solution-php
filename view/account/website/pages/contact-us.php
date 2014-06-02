@@ -57,4 +57,7 @@
 	<input type="checkbox" class="cb" id="cbHideAllMaps" value="yes"<?php if ( 'true' == $hide_all_maps ) echo ' checked="checked"'; ?> /> <label for="cbHideAllMaps"><?php echo _('Hide All Maps'); ?></label><br/>
 	<br/>
 	<input type="checkbox" class="cb" id="cbMultipleLocationMap" value="yes"<?php if ( 'true' == $multiple_location_map ) echo ' checked="checked"'; ?> /> <label for="cbMultipleLocationMap"><?php echo _('Multiple Location Map'); ?></label>
+    <br/><br/>
+    <label for="tEmail"><?php echo _('Email:'); ?></label><br/>
+    <input type="text" class="tb" id="tEmail" name="tEmail" value="<?php echo $email ?>" />
 </div>

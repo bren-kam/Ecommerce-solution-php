@@ -216,7 +216,7 @@ class AccountPage extends ActiveRecordBase {
 		list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `website_page_id`, `slug`, `title` FROM `website_pages` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `website_page_id`, `slug`, `title`, `date_created`, `date_updated` FROM `website_pages` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'AccountPage' );

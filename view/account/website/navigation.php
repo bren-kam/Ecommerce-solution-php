@@ -20,21 +20,41 @@ echo $template->start( _('Header Menu Navigation') );
 <hr />
 <br />
 
-<form action="" name="fNavigation" method="post">
-    <div id="navigation-menu-list">
+<form action="" name="fNavigation" id="fNavigation" method="post">
+    <ul id="navigation-menu-list">
         <?php if ( $navigation ) { ?>
-            <?php foreach ( $navigation as $page ) { ?>
-                <div class="menu-item">
-                    <h4 class="name"><?php echo $page->name; ?></h4>
-                    <p class="menu-item-actions">
-                        <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-                    </p>
+            <?php foreach ( $navigation as $k => $page ) { ?>
+                <li id="l<?php echo $k ?>">
+                    <div class="menu-item">
+                        <h4 class="name"><?php echo $page->name; ?></h4>
+                        <p class="menu-item-actions">
+                            <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                        </p>
 
-                    <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
-                    <input type="hidden" name="navigation[]" value="<?php echo $page->url . '|' . $page->name; ?>">
-                </div>
+                        <a href="#" class="url" target="_blank" ><?php echo $page->url; ?></a>
+                        <input type="hidden" name="navigation[l<?php echo $k ?>]" value="<?php echo $page->url . '|' . $page->name; ?>">
+                    </div>
+                    <?php if ( isset( $page->children ) ) { ?>
+                        <ul>
+                            <?php foreach ( $page->children as $child_k => $child_page ) { ?>
+                                <li id="l<?php echo $k ?>l<?php echo $child_k ?>">
+                                    <div class="menu-item">
+                                        <h4 class="name"><?php echo $child_page->name; ?></h4>
+                                        <p class="menu-item-actions">
+                                            <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+                                        </p>
+
+                                        <a href="#" class="url" target="_blank" ><?php echo $child_page->url; ?></a>
+                                        <input type="hidden" name="navigation[l<?php echo $k ?>l<?php echo $child_k ?>]" value="<?php echo $child_page->url . '|' . $child_page->name; ?>">
+                                    </div>
+                                </li>
+                            <?php } ?>
+                        </ul>
+                    <?php } ?>
+                </li>
             <?php } ?>
         <?php } else { ?>
+        <li id="l1">
             <div class="menu-item">
                 <h4 class="name">Home</h4>
                 <p class="menu-item-actions">
@@ -42,8 +62,10 @@ echo $template->start( _('Header Menu Navigation') );
                 </p>
 
                 <a href="#" class="url" target="_blank" >/</a>
-                <input type="hidden" name="navigation[]" value="<?php echo '|Home'; ?>">
+                <input type="hidden" name="navigation[l1]" value="<?php echo '|Home'; ?>">
             </div>
+        </li>
+        <li id="l2">
             <div class="menu-item">
                 <h4 class="name">About</h4>
                 <p class="menu-item-actions">
@@ -51,8 +73,10 @@ echo $template->start( _('Header Menu Navigation') );
                 </p>
 
                 <a href="#" class="url" target="_blank" >/about-us/</a>
-                <input type="hidden" name="navigation[]" value="<?php echo 'about-us|About Us'; ?>">
+                <input type="hidden" name="navigation[l2]" value="<?php echo 'about-us|About Us'; ?>">
             </div>
+        </li>
+        <li id="l3">
             <div class="menu-item">
                 <h4 class="name">Current Offer</h4>
                 <p class="menu-item-actions">
@@ -60,8 +84,10 @@ echo $template->start( _('Header Menu Navigation') );
                 </p>
 
                 <a href="#" class="url" target="_blank" >/current-offer/</a>
-                <input type="hidden" name="navigation[]" value="<?php echo 'current-offer|Current Offer'; ?>">
+                <input type="hidden" name="navigation[l3]" value="<?php echo 'current-offer|Current Offer'; ?>">
             </div>
+        </li>
+        <li id="l4">
             <div class="menu-item">
                 <h4 class="name">Financing</h4>
                 <p class="menu-item-actions">
@@ -69,8 +95,10 @@ echo $template->start( _('Header Menu Navigation') );
                 </p>
 
                 <a href="#" class="url" target="_blank" >/financing/</a>
-                <input type="hidden" name="navigation[]" value="<?php echo 'financing|Financing'; ?>">
+                <input type="hidden" name="navigation[l4]" value="<?php echo 'financing|Financing'; ?>">
             </div>
+        </li>
+        <li id="l5">
             <div class="menu-item">
                 <h4 class="name">Contact</h4>
                 <p class="menu-item-actions">
@@ -78,10 +106,12 @@ echo $template->start( _('Header Menu Navigation') );
                 </p>
 
                 <a href="#" class="url" target="_blank" >/contact-us/</a>
-                <input type="hidden" name="navigation[]" value="<?php echo 'contact-us|Contact'; ?>">
+                <input type="hidden" name="navigation[l5]" value="<?php echo 'contact-us|Contact'; ?>">
             </div>
+        </li>
         <?php } ?>
-    </div>
+    </ul>
+
     <input type="submit" class="button" value="<?php echo _('Save'); ?>">
     <?php nonce::field('navigation'); ?>
 </form>
@@ -105,14 +135,16 @@ echo $template->start( _('Header Menu Navigation') );
 </div>
 
 <div class="hidden">
-<div id="dMenuItem" class="menu-item">
-    <h4 class="name"></h4>
-    <p class="menu-item-actions">
-        <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
-    </p>
+    <li id="dMenuItem">
+        <div class="menu-item">
+            <h4 class="name"></h4>
+            <p class="menu-item-actions">
+                <a href="#" class="delete-item" title="<?php echo _('Delete'); ?>" data-confirm="<?php echo _('Are you sure you want to delete this menu item? This cannot be undone.'); ?>"><?php echo _('Delete'); ?></a>
+            </p>
 
-    <a href="#" class="url" target="_blank" ></a>
-</div>
+            <a href="#" class="url" target="_blank" >/contact-us/</a>
+        </div>
+    </li>
 </div>
 
 <?php echo $template->end(); ?>

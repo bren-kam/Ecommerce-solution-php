@@ -56,7 +56,7 @@ class Config {
      * @var array
      */
     private static $resources = array(
-        'jquery-ui' => 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/ui-lightness/jquery-ui.css'
+        'jquery-ui' => 'http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
     );
 		
 	/**

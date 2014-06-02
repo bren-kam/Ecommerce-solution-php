@@ -455,6 +455,9 @@ class ProductsController extends BaseController {
             // Reload auto prices
             $auto_prices = $website_auto_price->get_all( $this->user->account->id );
 
+            // Clear public website cache
+            $this->user->account->purge_varnish_cache();
+
             // Notification
             $this->notify( _('Your Auto Price settings have been successfully saved!') );
         }
@@ -845,6 +848,7 @@ class ProductsController extends BaseController {
         $category_id = (int) $_POST['cid'];
         $per_page = ( $_POST['n'] > 100 ) ? 20 : (int) $_POST['n'];
         $page = ( empty( $_POST['p'] ) ) ? 1 : (int) $_POST['p'];
+        $order_by = '';
 
         // Category ID
         if ( $category_id ) {
@@ -896,12 +900,14 @@ class ProductsController extends BaseController {
             break;
 
             case 'brand':
-                if ( _('Enter Brand...') != $_POST['v'] )
+                if ( _('Enter Brand...') != $_POST['v'] ) {
                     $where .= " AND b.`name` LIKE " . $account_product->quote( $_POST['v'] . '%' );
+                    $order_by = 'b.`name` ASC';
+                }
             break;
         }
 
-        $products = $account_product->search( $this->user->account->id, $per_page, $where, $page );
+        $products = $account_product->search( $this->user->account->id, $per_page, $where, $order_by, $page );
         $product_count = $account_product->search_count( $this->user->account->id, $where );
 
         foreach ( $products as $product ) {
@@ -1047,6 +1053,7 @@ class ProductsController extends BaseController {
         $product_option = new ProductOption();
         $website_coupon = new WebsiteCoupon();
         $product = new Product();  // For getting images
+        $category = new Category();  // For getting public URL
 
         // Get variables
         $account_product->get( $_POST['pid'], $this->user->account->id );
@@ -1058,6 +1065,14 @@ class ProductsController extends BaseController {
         $images = $product->get_images();
         $account_product->image = "http://{$product->industry}.retailcatalog.us/products/{$product->id}/small/{$images[0]}";
         $account_product->name = $product->name;
+
+        // Get The Public URL Link
+        if ($this->user->account->is_new_template() ) {
+            $account_product->link = 'http://' . $this->user->account->domain . '/product';
+        } else {
+            $account_product->link = 'http://' . $this->user->account->domain;
+        }
+        $account_product->link .= ( ( 0 == $product->category_id ) ? '/' . $product->slug : $category->get_url( $product->category_id ) . $product->slug . '/' );
 
         $product_options = array();
 
@@ -1401,6 +1416,10 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
+        // We will need it to send him an email
+        $catalog_manager_user = new User();
+        $catalog_manager_user->get( User::CATALOG_MANAGER );
+
         // Add the request
         $ticket = new Ticket;
 
@@ -1430,6 +1449,16 @@ class ProductsController extends BaseController {
         $ticket->status = Ticket::STATUS_OPEN;
         $ticket->priority = Ticket::PRIORITY_NORMAL;
         $ticket->create();
+
+        fn::mail(
+            $catalog_manager_user->email
+            , 'New Ticket - ' . $ticket->summary
+            , "Name: " . $this->user->contact_name
+            . "\nEmail: " . $this->user->email
+            . "\nSummary: " . $ticket->summary
+            . "\n\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
+            . "\n\nhttp://admin." . $catalog_manager_user->domain . "/tickets/ticket/?tid=" . $ticket->id
+        );
 
         // Empty the list
         jQuery('#dRequestList')->empty();

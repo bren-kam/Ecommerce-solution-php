@@ -82,7 +82,8 @@ class SendGridSubuserAPI {
         $aggregate = 1;
         $this->api( 'stats', compact( 'user', 'category', 'start_date', 'aggregate' ) );
 
-        return ( is_null( $this->sendgrid->response() ) ) ? new stdClass() : array_shift( $this->sendgrid->response() );
+        $response = $this->sendgrid->response();
+        return ( is_array ( $response ) ) ? array_shift( $response ) : new stdClass();
     }
 
     /**

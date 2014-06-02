@@ -1,4 +1,4 @@
-head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', '/ckeditor/ckeditor.js', function() {
+head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckeditor.js', function() {
 
     // ---------------------------------------------------------
     // ---------------------------------------------------------
@@ -8,6 +8,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('#dDate').datepicker({
         minDate: 0
         , dateFormat: 'yy-mm-dd'
+        , defaultDate: $('#date').val()
         , onSelect: function(date) {
             $("#date").val(date);
         }
@@ -24,44 +25,63 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // Fix for offset
     tTime.timepicker('hide');
 
+    // Schedule options are only displayed if #schedule is checked
+    $('#schedule').change(function() {
+        if ($(this).is(':checked')) {
+            $('.schedule').removeClass('hidden');
+        } else {
+            $('.schedule').addClass('hidden');
+        }
+    }).change();
+
+    $('#select-all-subscribers').change(function(e){
+        if ($(this).prop('checked') === true) {
+            $('.subscribers :checkbox').prop('checked', true);
+            $('.subscribers :checkbox').attr('checked', 'checked');  // IE
+        } else {
+            $('.subscribers :checkbox').prop('checked', false);
+            $('.subscribers :checkbox').removeAttr('checked');  // IE
+        }
+    });
+
     // ---------------------------------------------------------
     // ---------------------------------------------------------
     // STEP 2
 
     var content_type_draggables = $('li[data-content-type]');
     var layout_container = $('#email-editor');
-    var layouts_selectors = $('li[data-layout]');
+    var layout_selectors = $('li[data-layout]');
     var layouts = $('div[data-layout]');
-    var placeholder_selector = '.email-col-1, .email-col-2, .email-col-3, .email-col-4';
+    var placeholder_selector = '.droppable';
 
     // Here we define out Content Types (text, product, image)
     // and place the code that handles it
     // - init() bind events
     // - setup() called when a Content Type is dropped into a Placeholder (created editor, uploader, etc)
     // - save() will save Content Type Data
-    // - get_content() as it would be seen in the email
     var content_types = {
 
         _base:  {
             init: function() {
                 $('body').on('click', '[data-action=clear]', function(e) {
                     e.preventDefault();
-                    $(this).parents('[data-content-type]').remove();
+                    if (confirm('Are you sure do you want to remove this element?')) {
+                        $(this).parents('.droppable')
+                            .html('<p class="placeholder">Drag Content Here</p>')
+                            .removeClass('has-content')
+                            .removeClass('empty-content-type');
+                    }
                 });
             }
             , setup: function(my_content) {
                 // Set an ID
-                $(my_content).attr('id', 'ct' + Date.now());
-                // Make it movable between placeholders
-                $(my_content).draggable({
-                    opacity: '0.7'
-                    , handle: '[data-action=move]'
-                });
+                if ( !$(my_content).attr('id') )
+                    $(my_content).attr('id', 'ct' + Date.now());
             }
         }
 
         , product: {
-            content: $('div[data-content-type=product]')
+            content: $('#email-builder-types div.content-type-template[data-content-type=product]')
             , init: function() {
                 $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
                     e.preventDefault();
@@ -89,21 +109,27 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                             '/products/get-product-dialog-info/'
                             , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
                             , function(r) {
-                                var tpl = '<div class="product-img"><img src="' + r.product.image + '" /></div><div class="product-content"><h2>' + r.product.name + '</h2>';
+                                var tpl = '<div class="product-img"><a href="' + r.product.link + '"><img src="' + r.product.image + '" /></a></div>';
+                                tpl += '<div class="product-content">';
+                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
+
                                 if ( r.product.sale_price > 0 )
                                     tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
                                 else if (r.product.price > 0 )
                                     tpl += '<span class="price">$' + r.product.price + '</span>';
+
                                 tpl += '</div>';
                                 my_content.find('.placeholder-content').html(tpl);
 
                                 // Hide autocomplete
                                 my_content.find('.products-autocomplete').hide();
+
+                                // mark is as has-content
+                                my_content.parents('.droppable')
+                                    .removeClass('empty-content-type').addClass('has-content');
                             }
                             , 'json'
                         );
-                        // my_content.find('[data-product-id]').val( ui.item.value );
-                        // load the rest of the product
                     }
                 }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
                     return $( "<li>" )
@@ -114,7 +140,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         }
 
         , text: {
-            content: $('div[data-content-type=text]')
+            content: $('#email-builder-types div.content-type-template[data-content-type=text]')
             , init: function() {
                 $('#save-text').click(content_types['text'].save_text);
                 $('body').on('click', '.open-text-editor', function(e) {
@@ -149,11 +175,14 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var placeholder_id = $(this).data('placeholder-id');
                 var text = CKEDITOR.instances['text-editor'].getData();
                 $('#' + placeholder_id + ' .placeholder-content').html(text);
+                // mark is as has-content
+                $('#' + placeholder_id).parents('.droppable')
+                    .removeClass('empty-content-type').addClass('has-content');
             }
         }
 
         , image: {
-            'content': $('div[data-content-type=image]')
+            'content': $('#email-builder-types div.content-type-template[data-content-type=image]')
             , init: function() {
                 // Media Manager "Select" button
                 $('#select-image').click(content_types['image'].select_image);
@@ -161,6 +190,12 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                     var placeholder_id = $(this).parents('[data-content-type]').attr('id');
                     $('#select-image').data('placeholder-id', placeholder_id);
                 });
+                $('#email-editor').on('click', '[data-action=edit-link]', function(e) {
+                    e.preventDefault();
+                    $(this).siblings('[data-action=save-link], .image-link-url').removeClass('hidden');
+                    $(this).addClass('hidden');
+                });
+                $('#email-editor').on('click', '[data-action=save-link]', content_types['image'].save_image_link);
             }
             , setup: function(my_content) {
                 content_types._base.setup(my_content);
@@ -171,16 +206,44 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
                 var placeholder_id = $(this).data('placeholder-id');
                 var image = $('a.file.selected img').clone();
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
+                $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
+                // mark is as has-content
+                $('#' + placeholder_id).parents('.droppable')
+                    .removeClass('empty-content-type').addClass('has-content');
             }
+            , save_image_link: function(e) {
+                e.preventDefault();
+                var url = $(this).siblings('.image-link-url').val();
+                var placeholder = $(this).parents('[data-content-type]');
+                var img = placeholder.find('.placeholder-content img');
+                var img_html = img.size() > 0 ? img[0].outerHTML : '';
 
+                // if url is set, set an anchor wrapping the image
+                if ( url ) {
+                    // check for valid url
+                    if ( !content_types['image'].is_url( url ) ) {
+                        alert('Please enter a valid URL');
+                        return;
+                    }
+                    var anchor = '<a href="'+ url +'">' + img_html + '</a>';
+                    placeholder.find('.placeholder-content').html(anchor);
+                } else {
+                    // no url - no link
+                    placeholder.find('.placeholder-content').html(img_html);
+                }
+
+                // hide controls
+                placeholder.find('[data-action=save-link], .image-link-url').addClass('hidden');
+                placeholder.find('[data-action=edit-link]').removeClass('hidden');
+            }
+            , is_url: function( url ) {
+                var regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+                var re = new RegExp(regex);
+                return re.test(url);
+            }
         }
 
     };
-
-    // Call init() for all content types
-    for(i in content_types) {
-        content_types[i].init();
-    }
 
     // Make Content Types Draggable
     content_type_draggables.draggable({
@@ -192,45 +255,64 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // This gets called every time the layout changes
     layout_container.bind_placeholders = function() {
         this.find(placeholder_selector).droppable({
-            accept: '[data-content-type], [data-action=move]'
+            accept: '[data-content-type]'
             , hoverClass: 'droppable-hover'
             , drop: function(event, ui) {
+                // Its a new content added to a placeholder
                 var placeholder = $(this);
-
-                if ( ui.draggable.attr('id') ) {
-                    // Its a placeholder being moved
-                    $(this).html('');
-                    $(ui.draggable)
-                        .removeAttr('style')  // remove draggable styles
-                        .detach()
-                        .appendTo(this);
-                } else {
-                    // Its a new content added to a placeholder
-                    var content_type_key = ui.draggable.data('content-type');
-                    var content_type = content_types[content_type_key]
-                    var my_content = content_type.content.clone();
-                    placeholder.find('*').remove();
-                    placeholder.html(my_content);
-                    content_type.setup(my_content);
-                }
+                var content_type_key = ui.draggable.data('content-type');
+                var content_type = content_types[content_type_key]
+                var my_content = content_type.content.clone();
+                my_content.removeClass('content-type-template');
+                placeholder.find('*').remove();
+                placeholder.html(my_content).addClass('empty-content-type');
+                content_type.setup(my_content);
             }
         });
     };
 
     // Change Layout
-    layouts_selectors.click(function() {
+    layout_selectors.click(function() {
         var has_content = layout_container.find('.placeholder-content').size() > 0;
         if ( has_content && !confirm("Do you want to change the email Layout? You will lose all you previous content.") )
             return;
 
         var layout_key = $(this).data('layout');
         var layout = layouts.siblings('[data-layout=' + layout_key + ']');
-        var my_layout = layout.clone();
+        var my_layout = layout.html();
         layout_container.find('*').remove();
         layout_container.html(my_layout);
-        // rebind elements on Droppable, jQueryUI has no live binding for droppable.
+        // Rebind elements on Droppable, jQueryUI has no live binding for droppable =(
         layout_container.bind_placeholders();
-    }).first().click();  // And auto select the first layout
+
+        layout_selectors.removeClass('active');
+        $(this).addClass('active');
+    })
+
+    // -- Initialize Events For Email Message --
+    // if we have content (email message), apply events to them
+    var current_content = layout_container.find('div[data-content-type]');
+    if ( current_content.size() > 0 ) {
+        // bind events for empty placeholder
+        layout_container.bind_placeholders();
+        // bind events for placeholders with content in it
+        $.each( current_content, function (k, v) {
+            var ct = $(v).data('content-type');
+            // we need to acc the action toolbar
+            var ct_actions = content_types[ct].content.find('.placeholder-actions').clone();
+            $(v).prepend(ct_actions);
+            // setup events
+            content_types[ct].setup($(v));
+        });
+    } else {
+        // if it's a new Campaign, just pick the first Layout
+        layout_selectors.first().click();
+    }
+
+    // Call init() for all content types
+    for(i in content_types) {
+        content_types[i].init();
+    }
 
     // ---------------------------------------------------------
     // ---------------------------------------------------------
@@ -239,7 +321,10 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // This will generate the email content that will be Sent
     function get_email_content() {
         var editor_content = layout_container.clone();
-        editor_content.find('.placeholder-actions').hide();
+        editor_content.find('.placeholder-actions').remove().end()
+            .find('*').removeClass('ui-droppable').end()
+            .find('.placeholder').remove().end();
+
         return editor_content;
     }
 
@@ -251,6 +336,23 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('a[data-step]').click(function(e) {
         e.preventDefault();
 
+        var current_step = $('li.active > a').data('step');
+        if ( current_step == 1 ) {
+            var validation = '';
+            var subject = $('#subject').val();
+            var subscribers_selected = $('.subscribers :checked').size();
+            if ( subject.trim().length == 0 ) {
+                validation += "An Email Subject is required. ";
+            }
+            if (subscribers_selected == 0 ) {
+                validation += "Please select at least one Subscribers list. ";
+            }
+            if ( validation ) {
+                ajaxResponse( { notification: { message: validation, success: false} } );
+                return;
+            }
+        }
+
         // Show form
         $('div[data-step]').addClass('hidden');
         $('div[data-step=' + $(this).data('step') + ']').removeClass('hidden');
@@ -261,12 +363,116 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
             .siblings().removeClass('active');
 
         if ( $(this).data('step') == 3 ) {
-            $('#email-preview').html( get_email_content() );
+            // Do Save Draft and load Preview as Iframe
+
+            // Get form data
+            var data = get_form_data();
+            data._nonce = $('#_save_draft').val();
+            // Post, then load preview as Iframe
+            $.post( '/email-marketing/campaigns/save-draft/', data, function(r) {
+
+                if ( r.notification && r.notification.success )
+                    delete r.notification;
+
+                ajaxResponse(r);
+
+                var campaign_id = r.campaign_id ? r.campaign_id : $('#campaign-id').val();
+
+                var iframe = $('<iframe/>', {
+                    id: 'preview-iframe'
+                    , frameborder: 0
+                    , scrolling: 'no'
+                    , width: '100%'
+                    , seamless: 'seamless'
+                    , src: '/email-marketing/campaigns/preview/?_nonce='+ $('#_preview').val() +'&id='+ campaign_id
+                });
+                $('#email-preview').removeAttr('style');
+                iframe.load(function(){
+                    var doc = this.contentDocument || this.contentWindow.document;
+
+                    $('#email-preview').width(doc.body.scrollWidth);
+                    iframe.width(doc.body.scrollWidth);
+
+                    $('#email-preview').height(doc.body.scrollHeight);
+                    iframe.height(doc.body.scrollHeight);
+                });
+                $('#email-preview').html(iframe);
+            } );
+
         }
     });
 
+    // Serialize Form in a Key/Value Object
+    function get_form_data() {
+        var data = {};
+
+        // Set Step 1 data (campaign settings)
+        $.each(
+            $('div[data-step=1]').find('input, textarea, select').serializeArray()
+            , function(k, v) {
+                data[v.name] = v.value;
+            }
+        );
+
+        // Message HTML
+        data.message = get_email_content().html();
+        data.layout = layout_selectors.closest('.active').data('layout');
+        if ( $('#no-template').prop('checked') )
+            data.no_template = "yes";
+        return data;
+    }
+
+    // Saves Campaign as Draft
     $('.save-draft').click(function(e) {
         e.preventDefault();
+
+        if ($(this).hasClass('disabled'))
+            return;
+
+        $(this).addClass('disabled').text('Saving...');
+
+        // Get form data
+        var data = get_form_data();
+        data._nonce = $('#_save_draft').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/save-draft/', data, ajaxResponse );
+    });
+
+    // Send Test Email
+    $('.send-test').click(function(e) {
+        e.preventDefault();
+
+        // Get form data
+        var data = get_form_data();
+        data._nonce = $('#_send_test').val();
+        data.email = $('#test-destination').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/send-test/', data, ajaxResponse );
+    });
+
+    // Save Campaign
+    $('.save-campaign').click(function(e) {
+        e.preventDefault();
+
+        if ($(this).hasClass('disabled'))
+            return;
+
+        $(this).addClass('disabled').text('Saving...');
+
+        // Get form data
+        var data = get_form_data();
+        data._nonce = $('#_save_campaign').val();
+
+        // Post!
+        $.post( '/email-marketing/campaigns/save-campaign/', data, function(r) {
+            if ( r.notification )
+                ajaxResponse(r);
+            else
+                window.location = '/email-marketing/campaigns/';
+
+        } );
     });
 
 });
