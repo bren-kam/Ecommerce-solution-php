@@ -1416,6 +1416,10 @@ class ProductsController extends BaseController {
         if ( $response->has_error() )
             return $response;
 
+        // We will need it to send him an email
+        $catalog_manager_user = new User();
+        $catalog_manager_user->get( User::CATALOG_MANAGER );
+
         // Add the request
         $ticket = new Ticket;
 
@@ -1445,6 +1449,16 @@ class ProductsController extends BaseController {
         $ticket->status = Ticket::STATUS_OPEN;
         $ticket->priority = Ticket::PRIORITY_NORMAL;
         $ticket->create();
+
+        fn::mail(
+            $catalog_manager_user->email
+            , 'New Ticket - ' . $ticket->summary
+            , "Name: " . $this->user->contact_name
+            . "\nEmail: " . $this->user->email
+            . "\nSummary: " . $ticket->summary
+            . "\n\n" . str_replace( array("<br>", "<br />", "<br/>"), "\n", $ticket->message )
+            . "\n\nhttp://admin." . $catalog_manager_user->domain . "/tickets/ticket/?tid=" . $ticket->id
+        );
 
         // Empty the list
         jQuery('#dRequestList')->empty();
