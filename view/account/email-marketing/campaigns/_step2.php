@@ -101,7 +101,7 @@
     </div>
 
     <div data-layout="layout-1">
-        <table>
+        <table width="600">
             <tr class="email-row-4">
                 <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
                 <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
@@ -116,7 +116,7 @@
     </div>
 
     <div data-layout="layout-2">
-        <table>
+        <table width="600">
             <tr class="email-row-6">
                 <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
             </tr>
@@ -124,7 +124,7 @@
     </div>
 
     <div data-layout="layout-3">
-        <table>
+        <table width="600">
             <tr class="email-row-1">
                 <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
             </tr>
@@ -142,7 +142,7 @@
     </div>
 
     <div data-layout="layout-4">
-        <table>
+        <table width="600">
             <tr class="email-row-4">
                 <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
                 <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
@@ -155,7 +155,7 @@
     </div>
 
     <div data-layout="layout-5">
-        <table>
+        <table width="600">
             <tr class="email-row-6">
                 <td colspan="4">
                     <table>
@@ -182,7 +182,7 @@
     </div>
 
     <div data-layout="layout-6">
-        <table>
+        <table width="600">
             <tr class="email-row-6">
                 <td colspan="8">
                     <table>
@@ -209,7 +209,7 @@
     </div>
 
     <div data-layout="layout-7">
-        <table>
+        <table width="600">
             <tr class="email-row-1">
                 <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
             </tr>
@@ -225,7 +225,7 @@
     </div>
 
     <div data-layout="layout-8">
-        <table>
+        <table width="600">
             <tr class="email-row-1">
                 <td colspan="12" class="droppable"><p class="placeholder">Drag Content Here</p></td>
             </tr>
