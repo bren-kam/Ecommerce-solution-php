@@ -410,7 +410,15 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         $.each(
             $('div[data-step=1]').find('input, textarea, select').serializeArray()
             , function(k, v) {
-                data[v.name] = v.value;
+                if ( v.name.indexOf("[]") > 0 ) {
+                    var entry_name = v.name.replace("[]", "");
+                    if ( typeof(data[entry_name]) == "undefined" ) {
+                        data[entry_name] = [];
+                    }
+                    data[entry_name].push(v.value);
+                } else {
+                    data[v.name] = v.value;
+                }
             }
         );
 
