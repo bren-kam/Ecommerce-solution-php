@@ -103,14 +103,14 @@
     <div data-layout="layout-1">
         <table width="600">
             <tr class="email-row-4">
-                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
-                <td colspan="6" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" width="300" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="6" width="300" class="droppable"><p class="placeholder">Drag Content Here</p></td>
             </tr>
             <tr class="email-row-3">
-                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
-                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
-                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
-                <td colspan="3" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
             </tr>
         </table>
     </div>

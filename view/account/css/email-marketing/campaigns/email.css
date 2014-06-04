@@ -7,11 +7,8 @@
 
 /* Email Layout Styles
 ----------------------------------------- */
-.email-layout {
-    width: 600px;
-}
-
-.email-layout table { border-collapse: separate; border-spacing: 5px; width: 100%; }
+.email-layout { width: 600px; }
+.email-layout table { border-collapse: separate; border-spacing: 5px; width: 600px; }
 .email-layout td { padding: 0; vertical-align: top; }
 
 /* Email Placeholders - Rows */

@@ -266,7 +266,10 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 var content_type_key = ui.draggable.data('content-type');
                 var content_type = content_types[content_type_key]
                 var my_content = content_type.content.clone();
+                var box_width = placeholder.attr('width');
                 my_content.removeClass('content-type-template');
+                my_content.attr('width', box_width);
+                my_content.find('.placeholder-content').attr('width', box_width);
                 placeholder.find('*').remove();
                 placeholder.html(my_content).addClass('empty-content-type');
                 content_type.setup(my_content);
