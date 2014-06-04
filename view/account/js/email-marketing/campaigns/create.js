@@ -109,7 +109,9 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                             '/products/get-product-dialog-info/'
                             , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
                             , function(r) {
-                                var tpl = '<div class="product-img"><a href="' + r.product.link + '"><img src="' + r.product.image + '" /></a></div>';
+                                var box_width = my_content.attr('width');
+                                var img_width = box_width * ( ( box_width < 200 ) ? 0.9  : 0.6 );  // 90% for colspan 1,2,3. 60% for the rest
+                                var tpl = '<div class="product-img" width="' + img_width + '"><a href="' + r.product.link + '"><img src="' + r.product.image + '" width="' + img_width + '" /></a></div>';
                                 tpl += '<div class="product-content">';
                                 tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
 
@@ -207,7 +209,9 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
             , select_image: function(e) {
                 e.preventDefault();
                 var placeholder_id = $(this).data('placeholder-id');
+                var box_width = $('#' + placeholder_id).attr('width');
                 var image = $('a.file.selected img').clone();
+                image.attr('width', box_width);
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
                 $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
                 // mark is as has-content
