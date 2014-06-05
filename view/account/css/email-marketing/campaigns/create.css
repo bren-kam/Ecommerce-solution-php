@@ -166,6 +166,7 @@ td div[data-content-type] { position: relative; }
 /* Content Type actions */
 .placeholder-actions { position: absolute; z-index: 1; background: rgba(0, 0, 0, 0.8); width: 100%; }
 .placeholder-actions a { display: inline-block; float: left; margin-right: 5px; margin-top: 5px; margin-bottom: 2px; }
+.placeholder-actions a img { width: 16px; height: 16px }
 .placeholder-actions a.hidden { display: none; }
 [data-action=edit] { margin-left: 5px; }
 /* actions for Product*/
@@ -173,6 +174,9 @@ td div[data-content-type] { position: relative; }
 /* actions for Image */
 .image-link-url { width: 80px; float: left; padding: 2px; font-size: 9px; margin-top: 3px;}
 [data-action="save-link"] { margin-left: -18px; }
+@-moz-document url-prefix() {
+    [data-action="save-link"] img { width: 14px!important; height: 14px!important; }
+}
 
 [data-action="clear"] { float: right!important; }
 

@@ -73,7 +73,7 @@
     <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
             <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit" href="#"><img src="/images/icons/edit.png" /></a>
+            <a data-action="edit" href="#"><img src="/images/campaigns/pencil.png" /></a>
 
             <input type="text" class="products-autocomplete" placeholder="SKU or Name." />
         </div>
@@ -83,7 +83,7 @@
     <div class="content-type-template" data-content-type="text">
         <div class="placeholder-actions">
             <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit" href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/icons/edit.png" /></a>
+            <a data-action="edit" href="#dTextEditor" title="<?php echo _('Edit Content'); ?>" rel="dialog" class="open-text-editor"><img src="/images/campaigns/pencil.png" /></a>
         </div>
         <div class="placeholder-content content-type-text"></div>
     </div>
@@ -91,11 +91,11 @@
     <div class="content-type-template" data-content-type="image">
         <div class="placeholder-actions">
             <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit"  href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/icons/edit.png" /></a>
-            <a data-action="edit-link" class="hidden" href="#"><img src="/images/icons/link.png" /></a>
+            <a data-action="edit"  href="#dUploadFile" title="<?php echo _('Media Manager'); ?>" rel="dialog" class="open-media-manager"><img src="/images/campaigns/pencil.png" /></a>
+            <a data-action="edit-link" class="hidden" href="#"><img src="/images/campaigns/link.png" /></a>
 
             <input type="text" class="image-link-url hidden" placeholder="Enter URL" />
-            <a data-action="save-link" class="hidden" href="#"><img src="/images/icons/disk.png" /></a>
+            <a data-action="save-link" class="hidden" href="#"><img src="/images/campaigns/save.png" /></a>
         </div>
         <div class="placeholder-content content-type-image"></div>
     </div>
