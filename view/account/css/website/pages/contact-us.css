@@ -22,4 +22,7 @@
 .edit-location { position: absolute; top: 5px; right: 27px; }
 span.name { font-size: 19px }
 
-#store-image-preview { max-width: 200px; max-height: 200px; }
+#store-image-preview { position: relative; max-width: 200px; }
+#store-image-preview .image { width: 200px; }
+#aRemoveStoreImage { position: absolute; top: 0px; right: 0px; display: none; }
+#store-image-preview:hover img[src]+#aRemoveStoreImage{ display: block; }
