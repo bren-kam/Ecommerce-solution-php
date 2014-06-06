@@ -18,6 +18,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('#add-location').click( function() {
         $('#fAddEditLocation')[0].reset();
         $('#store-image-preview .image').removeAttr( 'src' );
+        $('#wlid').remove();
 
         new Boxy( $('#dAddEditLocation'), {
             title : 'Add Location'
