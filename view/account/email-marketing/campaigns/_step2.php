@@ -56,6 +56,9 @@
                 <li data-layout="layout-6"><img src="/images/campaigns/layout-6.jpg" /></li>
                 <li data-layout="layout-7"><img src="/images/campaigns/layout-7.jpg" /></li>
                 <li data-layout="layout-8"><img src="/images/campaigns/layout-8.jpg" /></li>
+                <li data-layout="layout-9"><img src="/images/campaigns/layout-9.jpg" /></li>
+                <li data-layout="layout-10"><img src="/images/campaigns/layout-10.jpg" /></li>
+                <li data-layout="layout-11"><img src="/images/campaigns/layout-11.jpg" /></li>
             </ul>
         </div>
         <div id="email-settings" class="tab-content">
@@ -238,6 +241,65 @@
         </table>
     </div>
 
+    <div data-layout="layout-9">
+        <table width="600">
+            <tr class="email-row-4">
+                <td colspan="12" width="600" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-10">
+        <table width="600">
+            <tr class="email-row-4">
+                <td colspan="12" width="600" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-layout="layout-11">
+        <table width="600">
+            <tr class="email-row-4">
+                <td colspan="12" width="600" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+            <tr class="email-row-3">
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+                <td colspan="3" width="150" class="droppable"><p class="placeholder">Drag Content Here</p></td>
+            </tr>
+        </table>
+    </div>
 </div>
 
 <div id="dUploadFile" class="hidden">

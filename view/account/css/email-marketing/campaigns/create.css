@@ -242,7 +242,7 @@ td div[data-content-type] { position: relative; }
 .layout-thumbnails li, .content-thumbnails li {
     float: left;
     margin: 0 10px 10px 0;
-    height: 120px;
+    height: 140px;
     width: 100px;
     text-align: center;
     padding-top: 20px;
