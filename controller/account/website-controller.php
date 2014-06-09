@@ -1993,7 +1993,10 @@ class WebsiteController extends BaseController {
         jQuery('#website')->val( $location->website );
         jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
         jQuery('#store-image')->val( $location->store_image );
-        jQuery('#store-image-preview .image')->attr( 'src', $location->store_image );
+        if ( $location->store_image )
+            jQuery('#store-image-preview .image')->attr( 'src', $location->store_image )->show();
+        else
+            jQuery('#store-image-preview .image')->hide();
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );
