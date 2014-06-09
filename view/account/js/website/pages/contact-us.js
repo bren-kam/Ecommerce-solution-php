@@ -17,7 +17,8 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     // Add location
     $('#add-location').click( function() {
         $('#fAddEditLocation')[0].reset();
-        $('#store-image-preview').attr('src', '');
+        $('#store-image-preview .image').removeAttr( 'src').hide();
+        $('#wlid').val('');
 
         new Boxy( $('#dAddEditLocation'), {
             title : 'Add Location'
@@ -64,7 +65,7 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
         , onComplete: function( id, fileName, responseJSON ) {
             if ( responseJSON.success ) {
                 $('#store-image').val( responseJSON.file );
-                $('#store-image-preview').attr( 'src', responseJSON.file );
+                $('#store-image-preview .image').attr( 'src', responseJSON.file).show();
             }
 
             $('#aUploadStoreImage').show();
@@ -78,6 +79,17 @@ head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js
     $('#aUploadStoreImage').click( function() {
         $('#upload-store-image input:first').click();
     });
+
+    /**
+     * Clear Store Image
+     */
+    $('#aRemoveStoreImage').click( function(e) {
+        e.preventDefault();
+        if ( confirm( 'Remove store image?' ) ) {
+            $('#store-image').val('');
+            $('#store-image-preview .image').removeAttr( 'src').hide();;
+        }
+    })
 
 });
 

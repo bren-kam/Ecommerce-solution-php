@@ -659,15 +659,18 @@ class WebsiteController extends BaseController {
 
         // Get settings
         $settings_array = array(
-            'banner-width', 'banner-height'
-            , 'banner-speed', 'banner-background-color'
+            'banner-width', 'banner-height', 'banner-speed', 'banner-background-color'
             , 'banner-effect', 'banner-hide-scroller', 'disable-banner-fade-out', 'images-alt'
-            , 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link'
             , 'logo-link'
         );
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) && $this->user->account->is_new_template() ) {
             $settings_array = array_merge( $settings_array
                 , array( 'sidebar-image-width', 'timezone' )
+            );
+        }
+        if ( $this->user->account->is_new_template() ) {
+            $settings_array = array_merge( $settings_array
+                , array( 'sm-facebook-link', 'sm-twitter-link', 'sm-google-link', 'sm-pinterest-link', 'sm-linkedin-link', 'sm-youtube-link' )
             );
         }
 
@@ -728,26 +731,28 @@ class WebsiteController extends BaseController {
         }
 
         // Next section
-        $form->add_field( 'blank', '' );
-        $form->add_field( 'title', _('Social Media') );
+        if ( $this->user->account->is_new_template() ) {
+            $form->add_field( 'blank', '' );
+            $form->add_field( 'title', _('Social Media') );
 
-        $form->add_field( 'text', _('Facebook Link'), 'sm-facebook-link', $settings['sm-facebook-link'] )
-            ->add_validation( 'url', _('The "Facebook Link" must be a valid link') );
+            $form->add_field( 'text', _('Facebook Link'), 'sm-facebook-link', $settings['sm-facebook-link'] )
+                ->add_validation( 'url', _('The "Facebook Link" must be a valid link') );
 
-        $form->add_field( 'text', _('Twitter Link'), 'sm-twitter-link', $settings['sm-twitter-link'] )
-            ->add_validation( 'url', _('The "Twitter Link" must be a valid link') );
+            $form->add_field( 'text', _('Twitter Link'), 'sm-twitter-link', $settings['sm-twitter-link'] )
+                ->add_validation( 'url', _('The "Twitter Link" must be a valid link') );
 
-        $form->add_field( 'text', _('Google Link'), 'sm-google-link', $settings['sm-google-link'] )
-            ->add_validation( 'url', _('The "Google Link" must be a valid link') );
+            $form->add_field( 'text', _('Google Link'), 'sm-google-link', $settings['sm-google-link'] )
+                ->add_validation( 'url', _('The "Google Link" must be a valid link') );
 
-        $form->add_field( 'text', _('Pinterest Link'), 'sm-pinterest-link', $settings['sm-pinterest-link'] )
-            ->add_validation( 'url', _('The "Pinterest Link" must be a valid link') );
+            $form->add_field( 'text', _('Pinterest Link'), 'sm-pinterest-link', $settings['sm-pinterest-link'] )
+                ->add_validation( 'url', _('The "Pinterest Link" must be a valid link') );
 
-        $form->add_field( 'text', _('LinkedIn Link'), 'sm-linkedin-link', $settings['sm-linkedin-link'] )
-            ->add_validation( 'url', _('The "LinkedIn Link" must be a valid link') );
+            $form->add_field( 'text', _('LinkedIn Link'), 'sm-linkedin-link', $settings['sm-linkedin-link'] )
+                ->add_validation( 'url', _('The "LinkedIn Link" must be a valid link') );
 
-        $form->add_field( 'text', _('YouTube Link'), 'sm-youtube-link', $settings['sm-youtube-link'] )
-            ->add_validation( 'url', _('The "YouTube Link" must be a valid link') );
+            $form->add_field( 'text', _('YouTube Link'), 'sm-youtube-link', $settings['sm-youtube-link'] )
+                ->add_validation( 'url', _('The "YouTube Link" must be a valid link') );
+        }
 
         // Next section
         $form->add_field( 'blank', '' );
@@ -1988,7 +1993,10 @@ class WebsiteController extends BaseController {
         jQuery('#website')->val( $location->website );
         jQuery('#store-hours')->val( str_replace( '<br />', '', $location->store_hours ) );
         jQuery('#store-image')->val( $location->store_image );
-        jQuery('#store-image-preview')->attr( 'src', $location->store_image );
+        if ( $location->store_image )
+            jQuery('#store-image-preview .image')->attr( 'src', $location->store_image )->show();
+        else
+            jQuery('#store-image-preview .image')->hide();
         jQuery('#wlid')->val( $location->id );
 
         $response->add_response( 'jquery', jQuery::getResponse() );

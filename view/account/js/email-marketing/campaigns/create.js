@@ -96,7 +96,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         var type = ['name' , 'sku'];
                         $.post(
                             '/products/autocomplete-owned/'
-                            , { '_nonce' : $('#_autocomplete_owned').val(), 'type' : type, 'term' : request['term'] }
+                            , { '_nonce' : $('#_autocomplete_owned').val(), 'type' : type, 'term' : request['term'], 'limit': 0 }
                             , function( autocompleteResponse ) {
                                 response( autocompleteResponse['suggestions'] );
                             }
@@ -109,7 +109,9 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                             '/products/get-product-dialog-info/'
                             , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
                             , function(r) {
-                                var tpl = '<div class="product-img"><a href="' + r.product.link + '"><img src="' + r.product.image + '" /></a></div>';
+                                var box_width = my_content.attr('width');
+                                var img_width = box_width * ( ( box_width < 200 ) ? 0.9  : 0.6 );  // 90% for colspan 1,2,3. 60% for the rest
+                                var tpl = '<div class="product-img" width="' + img_width + '"><a href="' + r.product.link + '"><img src="' + r.product.image + '" width="' + img_width + '" /></a></div>';
                                 tpl += '<div class="product-content">';
                                 tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
 
@@ -132,8 +134,11 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         );
                     }
                 }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                    var input_text = my_content.find('.products-autocomplete').val();
+                    var re_search = new RegExp( '(' + input_text + ')', 'ig' );
+                    var re_replace = '<strong>$1</strong>';
                     return $( "<li>" )
-                        .append( "<a>" + item.name + "<br><small>SKU: " + item.sku + "</small></a>" )
+                        .append( "<a>" + item.name.replace( re_search, re_replace ) + "<br><small>SKU: " + item.sku.replace( re_search, re_replace ) + "</small></a>" )
                         .appendTo( ul );
                 };
             }
@@ -204,7 +209,9 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
             , select_image: function(e) {
                 e.preventDefault();
                 var placeholder_id = $(this).data('placeholder-id');
+                var box_width = $('#' + placeholder_id).attr('width');
                 var image = $('a.file.selected img').clone();
+                image.attr('width', box_width);
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
                 $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
                 // mark is as has-content
@@ -263,7 +270,10 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 var content_type_key = ui.draggable.data('content-type');
                 var content_type = content_types[content_type_key]
                 var my_content = content_type.content.clone();
+                var box_width = placeholder.attr('width');
                 my_content.removeClass('content-type-template');
+                my_content.attr('width', box_width);
+                my_content.find('.placeholder-content').attr('width', box_width);
                 placeholder.find('*').remove();
                 placeholder.html(my_content).addClass('empty-content-type');
                 content_type.setup(my_content);
@@ -341,7 +351,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
             var validation = '';
             var subject = $('#subject').val();
             var subscribers_selected = $('.subscribers :checked').size();
-            if ( subject.trim().length == 0 ) {
+            if ( $.trim(subject) == 0 ) {
                 validation += "An Email Subject is required. ";
             }
             if (subscribers_selected == 0 ) {
