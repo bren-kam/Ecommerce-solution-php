@@ -185,7 +185,10 @@ if ( !empty( $errs ) )
                 <td>&nbsp;</td>
                 <td>
                     <input type="hidden" name="store-image" id="store-image" />
-                    <img id="store-image-preview" />
+                    <div id="store-image-preview">
+                        <img class="image" />
+                        <a href="#" id="aRemoveStoreImage"><img src="/images/icons/x.png"</a>
+                    </div>
                 </td>
             </tr>
         </table>
