@@ -170,10 +170,18 @@ class AshleySpecificFeedGateway extends ActiveRecordBase {
                 $new_product_skus[] = $sku;
 
             // Setup packages
-			if ( !stristr( $sku, '-' ) )
-				continue;
+			if ( stristr( $sku, '-' ) ) {
+                list( $series, $item ) = explode( '-', $sku, 2 );
+            } else if ( strlen( $sku ) == 7 && is_numeric( $sku{0} ) ) {
+                $series = substr( $sku, 0, 5 );
+                $item = substr( $sku, 5 );
+            } else if ( strlen( $sku ) == 8 && ctype_alpha( $sku{0} ) ) {
+                $series = substr( $sku, 0, 6 );
+                $item = substr( $sku, 6 );
+            } else {
+                continue;
+            }
 
-			list( $series, $item ) = explode( '-', $sku, 2 );
 
 			$skus[$series][] = $item;
 		}
