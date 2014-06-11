@@ -2249,4 +2249,28 @@ class WebsiteController extends BaseController {
             ->set( compact( 'html_header' ) );
 
     }
+
+    function custom_404() {
+
+        if ( $this->verified() ) {
+            $text_404 = format::strip_only( $_POST['text-404'], '<script>' );
+            $this->user->account->set_settings( array( 'text-404' => $text_404 ) );
+            $this->notify('Your 404 Page Text has been saved!');
+        }
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->javascript('fileuploader', 'gsr-media-manager');
+
+        $text_404 = $this->user->account->get_settings('text-404');
+
+        return $this->get_template_response('custom-404')
+            ->kb( 0 )
+            ->select( 'settings', 'custom-404' )
+            ->add_title( _('Custom 404 Page') )
+            ->set( compact( 'text_404', 'files' ) );
+
+    }
 }
