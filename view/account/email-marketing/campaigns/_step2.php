@@ -76,7 +76,7 @@
     <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
             <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit" href="#"><img src="/images/campaigns/pencil.png" /></a>
+            <a data-action="edit" class="hidden" href="#"><img src="/images/campaigns/pencil.png" /></a>
             <a data-action="edit-price" href="#"><img src="/images/campaigns/money_dollar.png" /></a>
 
             <input type="text" class="product-autocomplete hidden" placeholder="SKU or Name" />

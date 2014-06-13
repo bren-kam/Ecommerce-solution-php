@@ -89,6 +89,8 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     e.preventDefault();
                     $(this).parents('div[data-content-type]')
                         .find('.product-autocomplete').show();
+                    $(this).parents('div[data-content-type]')
+                        .find('[data-action=edit], [data-action=edit-price]').hide();
                 });
                 $('#email-editor').on('click', '[data-action=edit-price]', function(e) {
                     e.preventDefault();
@@ -97,12 +99,14 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     var price = placeholder.find('.product-price-container .price').text().parseProductPrice();
                     var sale_price = placeholder.find('.product-price-container .sale-price').text().parseProductPrice();
 
-                    price = price > 0 ? price : '';
-                    sale_price = sale_price > 0 ? sale_price : '';
+                    // if it's not a number, show "as is"
+                    price = price > 0 ? price : placeholder.find('.product-price-container .price').text();
+                    sale_price = sale_price > 0 ? sale_price : placeholder.find('.product-price-container .sale-price').text();
 
                     placeholder.find('.product-price').val(price);
                     placeholder.find('.product-sale-price').val(sale_price);
 
+                    placeholder.find('[data-action=edit], [data-action=edit-price]').hide();
                     placeholder.find('.edit-price-actions').show();
                 });
                 $('#email-editor').on('click', '[data-action=save-price]', content_types['product'].save_price);
@@ -115,6 +119,8 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 if ( my_content.find('.placeholder-content').is(':empty')  ) {
                     my_content.find('.product-autocomplete').show();
                     my_content.find('[data-action=edit-price]').hide();
+                } else {
+                    my_content.find('[data-action=edit]').show();
                 }
 
                 // configure autocomplete
@@ -168,8 +174,11 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         // Hide autocomplete
                         my_content.find('.product-autocomplete').hide();
 
-                        // Show edit
+                        // Show edit price
                         my_content.find('[data-action=edit-price]').show();
+
+                        // Show select product icon
+                        my_content.find('[data-action=edit]').show();
 
                         // mark is as has-content
                         my_content.parents('.droppable')
@@ -184,21 +193,22 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 var price = placeholder.find('.product-price').val();
                 var sale_price = placeholder.find('.product-sale-price').val();
 
-                price = price > 0 ? price.parseProductPrice() : 0;
-                sale_price = sale_price > 0 ? sale_price.parseProductPrice() : 0;
+                var price_str = price > 0 ? ( '$' + price.parseProductPrice().numberFormat() ) : price;
+                var sale_price_str = sale_price > 0 ? ( '$' + sale_price.parseProductPrice().numberFormat() ) : sale_price;
 
                 if ( sale_price > 0 && price == 0 )
                     return alert("Sale Price needs a Price");
 
                 var tpl = '';
-                if ( sale_price > 0 )
-                    tpl = '<span class="sale-price">$' + sale_price.numberFormat() + '</span> <span class="price strikethrough">$' + price.numberFormat() + '</span>';
-                else if (price > 0 )
-                    tpl = '<span class="price">$' + price.numberFormat() + '</span>';
+                if ( sale_price_str )
+                    tpl = '<span class="sale-price">' + sale_price_str + '</span> <span class="price strikethrough">' + price_str + '</span>';
+                else if ( price_str  )
+                    tpl = '<span class="price">' + price_str + '</span>';
 
                 placeholder.find('.product-price-container').html(tpl);
                 placeholder.find('.edit-price-actions').hide();
                 placeholder.find('[data-action=edit-price]').show();
+                placeholder.find('[data-action=edit]').show();
             }
         }
 

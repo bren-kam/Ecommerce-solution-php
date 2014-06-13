@@ -8,7 +8,9 @@
 /* Email Layout Styles
 ----------------------------------------- */
 .email-layout { width: 600px; margin: 0 auto; }
-.email-layout table { width: 100%; }
+/* Nested (sub levels) placeholder spacing */
+.email-layout table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
+/* Top level placeholder spacing */
 .email-layout > table { border-collapse: separate; border-spacing: 5px; width: 600px; }
 .email-layout td { padding: 0; vertical-align: top; }
 

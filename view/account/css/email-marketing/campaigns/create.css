@@ -171,7 +171,7 @@ td div[data-content-type] { position: relative; }
 .placeholder-actions a.hidden { display: none; }
 [data-action=edit] { margin-left: 5px; }
 /* actions for Product*/
-.product-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-right: 5px; margin-top: 3px; }
+.product-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-left: 5px; margin-top: 3px; }
 .edit-price-actions { display: inline-block; }
 .edit-price-actions input, .edit-price-actions a { float: left; margin-left: 4px; margin-bottom: 0;}
 .edit-price-actions input { width: 40px; padding: 2px; font-size: 9px; margin-top: 3px; }
@@ -230,7 +230,7 @@ td div[data-content-type] { position: relative; }
     padding: 15px 15px 5px 0;
     margin-bottom: 17px;
     margin-top: -1px;
-    min-height: 250px;
+    min-height: 150px;
 }
 
 /* Layout and Content Type Selectors/Thumbnails
