@@ -22,7 +22,7 @@ jQuery(function($) {
     // Load the datepicker
     head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
         // Date Picker
-        $('#tDateStart, #tDateEnd').datepicker({
+        $('#tDateStart').datepicker({
             maxDate: -1
             , dateFormat: 'M d, yy'
             , altFormat: 'yy-mm-dd'
@@ -30,7 +30,22 @@ jQuery(function($) {
                 var url = insertParam( 'ds', $('#tDateStart').val() );
                 document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
             }
-        })
+            , onClose: function( selectedDate ) {
+                $( "#tDateEnd" ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+        $('#tDateEnd').datepicker({
+            maxDate: -1
+            , dateFormat: 'M d, yy'
+            , altFormat: 'yy-mm-dd'
+            , onSelect: function( dateText, dp ) {
+                var url = insertParam( 'ds', $('#tDateStart').val() );
+                document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
+            }
+            , onClose: function( selectedDate ) {
+                $( "#tDateStart" ).datepicker( "option", "maxDate", selectedDate );
+            }
+        });
     });
 
 	// Put the tooltip there
