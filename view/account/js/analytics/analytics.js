@@ -23,7 +23,7 @@ jQuery(function($) {
     head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
         // Date Picker
         $('#tDateStart').datepicker({
-            maxDate: -1
+            maxDate: -2
             , dateFormat: 'M d, yy'
             , altFormat: 'yy-mm-dd'
             , onSelect: function( dateText, dp ) {
