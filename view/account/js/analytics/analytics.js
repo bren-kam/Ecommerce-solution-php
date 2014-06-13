@@ -50,6 +50,14 @@ jQuery(function($) {
                 $( "#tDateStart" ).datepicker( "option", "maxDate", maxDate );
             }
         });
+        // set default min and max date
+        var minDate = $( "#tDateStart").datepicker("getDate");
+        minDate.setDate( minDate.getDate() + 1 );
+        $( "#tDateEnd" ).datepicker( "option", "minDate", minDate );
+        // set default min and max date
+        var maxDate = $( "#tDateEnd").datepicker("getDate");
+        maxDate.setDate( maxDate.getDate() - 1 );
+        $( "#tDateStart" ).datepicker( "option", "maxDate", maxDate );
     });
 
 	// Put the tooltip there
