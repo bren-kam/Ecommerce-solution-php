@@ -272,7 +272,7 @@ class CampaignsController extends BaseController {
      */
     public function save_draft() {
         $response = new AjaxResponse( $this->verified() );
-        jQuery('.save-draft')->removeClass('disabled')->text('Save Draft');;
+        jQuery('.save-draft')->removeClass('disabled')->text('Save Draft');
 
         $errors = $this->validate();
         if ( !empty( $errors ) ) {
@@ -299,6 +299,7 @@ class CampaignsController extends BaseController {
             $response->add_response( 'campaign_id', $campaign->id );
         }
 
+        jQuery('.save-draft')->text('Saved');
         $response->add_response( 'jquery', jQuery::getResponse());
         $response->notify( 'Draft Saved!' );
         return $response;
