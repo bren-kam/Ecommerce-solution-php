@@ -31,7 +31,9 @@ jQuery(function($) {
                 document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
             }
             , onClose: function( selectedDate ) {
-                $( "#tDateEnd" ).datepicker( "option", "minDate", selectedDate );
+                var minDate = $( "#tDateStart").datepicker("getDate");
+                minDate.setDate( minDate.getDate() + 1 );
+                $( "#tDateEnd" ).datepicker( "option", "minDate", minDate );
             }
         });
         $('#tDateEnd').datepicker({
@@ -43,7 +45,9 @@ jQuery(function($) {
                 document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
             }
             , onClose: function( selectedDate ) {
-                $( "#tDateStart" ).datepicker( "option", "maxDate", selectedDate );
+                var maxDate = $( "#tDateEnd").datepicker("getDate");
+                maxDate.setDate( maxDate.getDate() - 1 );
+                $( "#tDateStart" ).datepicker( "option", "maxDate", maxDate );
             }
         });
     });
