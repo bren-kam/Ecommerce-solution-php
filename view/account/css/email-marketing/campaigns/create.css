@@ -122,6 +122,7 @@ a.button.float-right { padding: 5px 20px; }
 
 .campaign-schedule { padding: 3px 7px; }
 .campaign-schedule .cb, #email-settings .cb { top: -1px; width: 13px; height: 13px; margin: 0; padding: 0; vertical-align: bottom; overflow: hidden; }
+#email-settings{ padding: 15px; }
 #dDate { width: 275px; }
 
 .email-marketing-wrapper { width: 100%; }
@@ -135,7 +136,7 @@ a.button.float-right { padding: 5px 20px; }
 }
 
 .email-marketing-left { padding-right: 20px; }
-.email-marketing-right { width: 30%; }
+.email-marketing-right { min-width: 30%; max-width: 33%; }
 
 /* email.css overwrites to make .email-layout editable look better
 ----------------------------------------- */
@@ -143,7 +144,7 @@ a.button.float-right { padding: 5px 20px; }
 .droppable-hover { background-color: yellow!important; opacity: 0.3; }
 
 /* Background and Borders for Editor */
-.email-layout { border: 1px solid #bdbdbd; padding: 15px; margin-bottom: 17px; }
+.email-layout { border: 1px solid #bdbdbd; padding: 15px; margin: 0 0 17px 0;}
 #email-editor .droppable { border: 1px dashed #666; }
 
 /* When placeholders are empty */
@@ -166,13 +167,20 @@ td div[data-content-type] { position: relative; }
 /* Content Type actions */
 .placeholder-actions { position: absolute; z-index: 1; background: rgba(0, 0, 0, 0.8); width: 100%; }
 .placeholder-actions a { display: inline-block; float: left; margin-right: 5px; margin-top: 5px; margin-bottom: 2px; }
+.placeholder-actions a img { width: 16px; height: 16px }
 .placeholder-actions a.hidden { display: none; }
 [data-action=edit] { margin-left: 5px; }
 /* actions for Product*/
-.products-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-right: 5px; margin-top: 3px; }
+.product-autocomplete { width: 80px; float: left; padding: 2px; font-size: 9px; margin-left: 5px; margin-top: 3px; }
+.edit-price-actions { display: inline-block; }
+.edit-price-actions input, .edit-price-actions a { float: left; margin-left: 4px; margin-bottom: 0;}
+.edit-price-actions input { width: 40px; padding: 2px; font-size: 9px; margin-top: 3px; }
 /* actions for Image */
 .image-link-url { width: 80px; float: left; padding: 2px; font-size: 9px; margin-top: 3px;}
 [data-action="save-link"] { margin-left: -18px; }
+@-moz-document url-prefix() {
+    [data-action="save-link"] img { width: 14px!important; height: 14px!important; }
+}
 
 [data-action="clear"] { float: right!important; }
 
@@ -219,10 +227,10 @@ td div[data-content-type] { position: relative; }
 
 .tab-content {
     border: 1px solid #bdbdbd;
-    padding: 15px 15px 5px;
+    padding: 15px 15px 5px 0;
     margin-bottom: 17px;
     margin-top: -1px;
-    min-height: 250px;
+    min-height: 150px;
 }
 
 /* Layout and Content Type Selectors/Thumbnails
@@ -237,8 +245,8 @@ td div[data-content-type] { position: relative; }
 
 .layout-thumbnails li, .content-thumbnails li {
     float: left;
-    margin: 0 10px 10px 0;
-    height: 120px;
+    margin: 0 0 10px 15px;
+    height: 140px;
     width: 100px;
     text-align: center;
     padding-top: 20px;
@@ -271,3 +279,10 @@ td div[data-content-type] { position: relative; }
 }
 
 .save-campaign { background-color: #149C45; box-shadow: none; border-color: #045314; }
+
+/*
+Autocomplete
+----------------------------------------- */
+
+.ui-autocomplete { max-height: 300px; max-width: 450px; overflow-y: scroll; overflow-x: hidden; padding-right: 20px; }
+.ui-menu-item a { font-size: 11px; }

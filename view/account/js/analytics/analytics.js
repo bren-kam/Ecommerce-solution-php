@@ -22,7 +22,21 @@ jQuery(function($) {
     // Load the datepicker
     head.load( 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', function() {
         // Date Picker
-        $('#tDateStart, #tDateEnd').datepicker({
+        $('#tDateStart').datepicker({
+            maxDate: -3
+            , dateFormat: 'M d, yy'
+            , altFormat: 'yy-mm-dd'
+            , onSelect: function( dateText, dp ) {
+                var url = insertParam( 'ds', $('#tDateStart').val() );
+                document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
+            }
+            , onClose: function( selectedDate ) {
+                var minDate = $( "#tDateStart").datepicker("getDate");
+                minDate.setDate( minDate.getDate() + 1 );
+                $( "#tDateEnd" ).datepicker( "option", "minDate", minDate );
+            }
+        });
+        $('#tDateEnd').datepicker({
             maxDate: -1
             , dateFormat: 'M d, yy'
             , altFormat: 'yy-mm-dd'
@@ -30,7 +44,20 @@ jQuery(function($) {
                 var url = insertParam( 'ds', $('#tDateStart').val() );
                 document.location.search =  insertParam( 'de', $('#tDateEnd').val(), url ).replace( /^&/, '' );
             }
-        })
+            , onClose: function( selectedDate ) {
+                var maxDate = $( "#tDateEnd").datepicker("getDate");
+                maxDate.setDate( maxDate.getDate() - 1 );
+                $( "#tDateStart" ).datepicker( "option", "maxDate", maxDate );
+            }
+        });
+        // set default min and max date
+        var minDate = $( "#tDateStart").datepicker("getDate");
+        minDate.setDate( minDate.getDate() + 1 );
+        $( "#tDateEnd" ).datepicker( "option", "minDate", minDate );
+        // set default min and max date
+        var maxDate = $( "#tDateEnd").datepicker("getDate");
+        maxDate.setDate( maxDate.getDate() - 1 );
+        $( "#tDateStart" ).datepicker( "option", "maxDate", maxDate );
     });
 
 	// Put the tooltip there

@@ -911,7 +911,7 @@ class AccountProduct extends ActiveRecordBase {
      * @param int $account_id
 	 * @return array
 	 */
-	public function autocomplete_by_account( $query, $field, $account_id ) {
+	public function autocomplete_by_account( $query, $field, $account_id, $limit = 10 ) {
         $where = '';
 
         // Support more than one field
@@ -931,8 +931,10 @@ class AccountProduct extends ActiveRecordBase {
             $order_by = "`$field`";
 		}
 
+        $limit_sql = ( $limit > 0 ) ? " LIMIT $limit " : "";
+
         return $this->prepare(
-            "SELECT DISTINCT p.`product_id` AS value, $select_fields FROM `website_products` AS wp INNER JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 $where ORDER BY $order_by LIMIT 10"
+            "SELECT DISTINCT p.`product_id` AS value, $select_fields FROM `website_products` AS wp INNER JOIN `products` AS p ON ( p.`product_id` = wp.`product_id` ) LEFT JOIN `website_industries` as wi ON ( wi.`industry_id` = p.`industry_id` ) WHERE p.`publish_visibility` = 'public' AND wp.`website_id` = :account_id AND wp.`blocked` = 0 AND wp.`active` = 1 $where ORDER BY $order_by $limit_sql"
             , 'i'
             , array( ':account_id' => $account_id )
         )->get_results( PDO::FETCH_ASSOC );
