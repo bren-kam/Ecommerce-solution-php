@@ -20,6 +20,7 @@
         <a href="/shopping-cart/coupons/" title="<?php echo _('View'); ?>" class="sub view<?php $template->select('view'); ?>"><?php echo _('View'); ?></a>
         <a href="/shopping-cart/coupons/add-edit/" title="<?php echo _('Add'); ?>" class="sub add<?php $template->select('add'); ?>"><?php echo _('Add'); ?></a>
         <a href="/shopping-cart/coupons/apply-to-brand/" title="<?php echo _('Apply to Brand'); ?>" class="sub<?php $template->select('apply-to-brand'); ?>"><?php echo _('Apply to Brand'); ?></a>
+        <a href="/shopping-cart/coupons/products/" title="<?php echo _('Products in Coupon'); ?>" class="sub<?php $template->select('coupon-products'); ?>"><?php echo _('Products in Coupon'); ?></a>
     <?php } ?>
 
     <a href="/shopping-cart/settings/" title="<?php echo _('Settings'); ?>" class="top<?php $template->select('settings'); ?>"><?php echo _('Settings'); ?></a>

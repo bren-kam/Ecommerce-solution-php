@@ -255,4 +255,51 @@ class WebsiteCoupon extends ActiveRecordBase {
             )
         )->query();
     }
+
+    /**
+     * List products in Coupon
+     * @param $variables
+     * @return Product[]
+     */
+    public function list_products_in_coupon( $variables ) {
+        list( $where, $values, $order_by, $limit ) = $variables;
+
+        return $this->prepare(
+            "SELECT p.*, b.`name` as `brand`, c.`name` as `category` FROM `website_coupon_relations` wcr INNER JOIN `website_coupons` wc ON wc.`website_coupon_id` = wcr.`website_coupon_id` INNER JOIN `products` p ON ( wcr.`product_id` = p.`product_id` ) INNER JOIN `categories` c ON ( c.`category_id` = p.`category_id` ) INNER JOIN `brands` b ON ( b.`brand_id` = p.`brand_id` ) WHERE 1 $where $order_by LIMIT $limit"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_results( PDO::FETCH_CLASS, 'Product' );
+    }
+
+    /**
+     * Count Products in Coupons
+     * @param $variables
+     * @return int
+     */
+    public function count_products_in_coupon( $variables ) {
+        // Get the variables
+        list( $where, $values ) = $variables;
+
+        // Get the website count
+        return $this->prepare(
+            "SELECT COUNT( DISTINCT p.product_id ) FROM `website_coupon_relations` wcr INNER JOIN `website_coupons` wc ON wc.`website_coupon_id` = wcr.`website_coupon_id` INNER JOIN `products` p ON ( wcr.`product_id` = p.`product_id` ) INNER JOIN `categories` c ON ( c.`category_id` = p.`category_id` ) INNER JOIN `brands` b ON ( b.`brand_id` = p.`brand_id` ) WHERE 1 $where"
+            , str_repeat( 's', count( $values ) )
+            , $values
+        )->get_var();
+    }
+
+    /**
+     * Delete relation
+     * Delete a single relacion (counpon+product)
+     *
+     * @param $website_coupon_id
+     * @param $product_id
+     */
+    public function delete_relation( $website_coupon_id, $product_id ) {
+        $this->prepare(
+            "DELETE FROM `website_coupon_relations` WHERE `website_coupon_id` = :website_coupon_id AND `product_id` = :product_id LIMIT 1"
+            , "ii"
+            , array( ':website_coupon_id' => $website_coupon_id, ':product_id' => $product_id)
+        )->query();
+    }
 }

@@ -16,6 +16,10 @@ class WebsiteCouponTest extends BaseDatabaseTest {
     const BRAND_ID = 7;
     const BRAND_NAME = 'Ash';
 
+    // Category
+    const CATEGORY_ID = 12;
+    const CATEGORY_NAME = 'My Category';
+
     /**
      * @var WebsiteCoupon
      */
@@ -33,8 +37,9 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         $this->phactory->define( 'website_coupon_relations', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID, 'product_id' => self::PRODUCT_ID ) );
         $this->phactory->define( 'website_coupon_shipping_methods', array( 'website_coupon_id' => self::WEBSITE_COUPON_ID, 'website_shipping_method_id' => self::WEBSITE_SHIPPING_METHOD_ID ) );
         $this->phactory->define( 'website_products', array( 'website_id' => self::WEBSITE_ID, 'product_id' => self::PRODUCT_ID ) );
-        $this->phactory->define( 'products', array( 'product_id' => self::PRODUCT_ID, 'brand_id' => self::BRAND_ID ) );
+        $this->phactory->define( 'products', array( 'product_id' => self::PRODUCT_ID, 'brand_id' => self::BRAND_ID, 'category_id' => self::CATEGORY_ID ) );
         $this->phactory->define( 'brands', array( 'brand_id' => self::BRAND_ID, 'name' => self::BRAND_NAME ) );
+        $this->phactory->define( 'categories', array( 'category_id' => self::CATEGORY_ID, 'name' => self::CATEGORY_NAME ) );
 
         $this->phactory->recall();
     }
@@ -284,6 +289,72 @@ class WebsiteCouponTest extends BaseDatabaseTest {
         // Test
         $this->assertEquals( key( $coupons ), $ph_coupon->website_coupon_id );
     }
+
+    /**
+     * Test List Products In Coupon
+     */
+    public function testListProductsInCoupon() {
+        // Add relations
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_brand = $this->phactory->create( 'brands' );
+        $ph_product = $this->phactory->create( 'products' );
+        $ph_website_product = $this->phactory->create( 'website_products' );
+        $ph_coupon = $this->phactory->create( 'website_coupons' );
+
+        $this->website_coupon->add_relations( self::PRODUCT_ID, array( $ph_coupon->website_coupon_id ) );
+
+        // Get
+        $where = " AND wc.`website_id` = " . $ph_coupon->website_id
+              . " AND wc.`website_coupon_id` = " . $ph_coupon->website_coupon_id;
+
+        $products = $this->website_coupon->list_products_in_coupon( array(
+            $where, array(), "", 30
+        ) );
+
+        // Assert
+        $this->assertContainsOnlyInstancesOf( 'Product', $products );
+    }
+
+    /**
+     * Test Count Products In Coupon
+     */
+    public function testCountProductsInCoupon() {
+        // Add relations
+        $ph_category = $this->phactory->create( 'categories' );
+        $ph_brand = $this->phactory->create( 'brands' );
+        $ph_product = $this->phactory->create( 'products' );
+        $ph_website_product = $this->phactory->create( 'website_products' );
+        $ph_coupon = $this->phactory->create( 'website_coupons' );
+
+        $this->website_coupon->add_relations( self::PRODUCT_ID, array( $ph_coupon->website_coupon_id ) );
+
+        // Get
+        $where = " AND wc.`website_id` = " . $ph_coupon->website_id
+            . " AND wc.`website_coupon_id` = " . $ph_coupon->website_coupon_id;
+
+        $product_count = $this->website_coupon->count_products_in_coupon( array(
+            $where, array(), "", 30
+        ) );
+
+        // Assert
+        $this->assertEquals( $product_count, 1 );
+    }
+
+    /**
+     * Test Count Products In Coupon
+     */
+    public function testDeleteRelation() {
+        // Add relations
+        $this->website_coupon->add_relations( self::PRODUCT_ID, array( self::WEBSITE_COUPON_ID ) );
+
+        $this->website_coupon->delete_relation( self::WEBSITE_COUPON_ID, self::PRODUCT_ID );
+
+        $relations = $this->phactory->getAll( 'website_coupon_relations',  array( "website_coupon_id" => self::WEBSITE_COUPON_ID ) );
+
+        // Assert
+        $this->assertEquals( count( $relations ), 0 );
+    }
+
 
     /**
      * Will be executed after every test
