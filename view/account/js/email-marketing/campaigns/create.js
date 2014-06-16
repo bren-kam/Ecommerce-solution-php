@@ -28,11 +28,12 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
     // Schedule options are only displayed if #schedule is checked
     $('#schedule').change(function() {
         if ($(this).is(':checked')) {
-            $('.schedule').removeClass('hidden');
+            $('.schedule').show();
         } else {
-            $('.schedule').addClass('hidden');
+            $('.schedule').hide();
         }
     }).change();
+    $('.schedule.hidden').removeClass('hidden').hide();
 
     $('#select-all-subscribers').change(function(e){
         if ($(this).prop('checked') === true) {
@@ -77,6 +78,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 // Set an ID
                 if ( !$(my_content).attr('id') )
                     $(my_content).attr('id', 'ct' + Date.now());
+                my_content.find('.hidden').removeClass('hidden').hide();
             }
         }
 
@@ -85,12 +87,44 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
             , init: function() {
                 $('body').on('click', 'div[data-content-type=product] [data-action=edit]', function(e) {
                     e.preventDefault();
-                    $(this).parents('div[data-content-type]').find('.products-autocomplete').show();
+                    $(this).parents('div[data-content-type]')
+                        .find('.product-autocomplete').show();
+                    $(this).parents('div[data-content-type]')
+                        .find('[data-action=edit], [data-action=edit-price]').hide();
                 });
+                $('#email-editor').on('click', '[data-action=edit-price]', function(e) {
+                    e.preventDefault();
+                    var placeholder = $(this).parents('div[data-content-type]');
+
+                    var price = placeholder.find('.product-price-container .price').text().parseProductPrice();
+                    var sale_price = placeholder.find('.product-price-container .sale-price').text().parseProductPrice();
+
+                    // if it's not a number, show "as is"
+                    price = price > 0 ? price : placeholder.find('.product-price-container .price').text();
+                    sale_price = sale_price > 0 ? sale_price : placeholder.find('.product-price-container .sale-price').text();
+
+                    placeholder.find('.product-price').val(price);
+                    placeholder.find('.product-sale-price').val(sale_price);
+
+                    placeholder.find('[data-action=edit], [data-action=edit-price]').hide();
+                    placeholder.find('.edit-price-actions').show();
+                });
+                $('#email-editor').on('click', '[data-action=save-price]', content_types['product'].save_price);
+
             }
             , setup: function(my_content) {
                 content_types._base.setup(my_content);
-                my_content.find('.products-autocomplete').autocomplete({
+
+                // Show autocomplete if it's a brand new product box
+                if ( my_content.find('.placeholder-content').is(':empty')  ) {
+                    my_content.find('.product-autocomplete').show();
+                    my_content.find('[data-action=edit-price]').hide();
+                } else {
+                    my_content.find('[data-action=edit]').show();
+                }
+
+                // configure autocomplete
+                my_content.find('.product-autocomplete').autocomplete({
                     minLength: 1
                     , source: function(request, response){
                         var type = ['name' , 'sku'];
@@ -104,43 +138,77 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                         );
                     }
                     , select: function( event, ui ) {
-                        event.preventDefault();
-                        $.post(
-                            '/products/get-product-dialog-info/'
-                            , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
-                            , function(r) {
-                                var box_width = my_content.attr('width');
-                                var img_width = box_width * ( ( box_width < 200 ) ? 0.9  : 0.6 );  // 90% for colspan 1,2,3. 60% for the rest
-                                var tpl = '<div class="product-img" width="' + img_width + '"><a href="' + r.product.link + '"><img src="' + r.product.image + '" width="' + img_width + '" /></a></div>';
-                                tpl += '<div class="product-content">';
-                                tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
-
-                                if ( r.product.sale_price > 0 )
-                                    tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
-                                else if (r.product.price > 0 )
-                                    tpl += '<span class="price">$' + r.product.price + '</span>';
-
-                                tpl += '</div>';
-                                my_content.find('.placeholder-content').html(tpl);
-
-                                // Hide autocomplete
-                                my_content.find('.products-autocomplete').hide();
-
-                                // mark is as has-content
-                                my_content.parents('.droppable')
-                                    .removeClass('empty-content-type').addClass('has-content');
-                            }
-                            , 'json'
-                        );
+                        content_types['product'].select_product( my_content, event, ui );
                     }
                 }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-                    var input_text = my_content.find('.products-autocomplete').val();
+                    var input_text = my_content.find('.product-autocomplete').val();
                     var re_search = new RegExp( '(' + input_text + ')', 'ig' );
                     var re_replace = '<strong>$1</strong>';
                     return $( "<li>" )
                         .append( "<a>" + item.name.replace( re_search, re_replace ) + "<br><small>SKU: " + item.sku.replace( re_search, re_replace ) + "</small></a>" )
                         .appendTo( ul );
                 };
+            }
+            , select_product: function( my_content, event, ui ) {
+                event.preventDefault();
+                $.post(
+                    '/products/get-product-dialog-info/'
+                    , { '_nonce': $('#_get_product_dialog_info').val(), 'pid': ui.item.value }
+                    , function(r) {
+                        var box_width = my_content.attr('width');
+                        var img_width = box_width * ( ( box_width < 200 ) ? 0.9  : 0.6 );  // 90% for colspan 1,2,3. 60% for the rest
+                        var tpl = '<div class="product-img" width="' + img_width + '"><a href="' + r.product.link + '"><img src="' + r.product.image + '" width="' + img_width + '" /></a></div>';
+                        tpl += '<div class="product-content">';
+                        tpl += '<a href="' + r.product.link + '"><h2>' + r.product.name.substring(0, 30) + '</h2></a>';
+
+                        tpl += '<div class="product-price-container">';
+                        if ( r.product.sale_price > 0 )
+                            tpl += '<span class="sale-price">$' + r.product.sale_price + '</span> <span class="price strikethrough">$' + r.product.price + '</span>';
+                        else if (r.product.price > 0 )
+                            tpl += '<span class="price">$' + r.product.price + '</span>';
+                        tpl += '</div>';
+
+                        tpl += '</div>';
+                        my_content.find('.placeholder-content').html(tpl);
+
+                        // Hide autocomplete
+                        my_content.find('.product-autocomplete').hide();
+
+                        // Show edit price
+                        my_content.find('[data-action=edit-price]').show();
+
+                        // Show select product icon
+                        my_content.find('[data-action=edit]').show();
+
+                        // mark is as has-content
+                        my_content.parents('.droppable')
+                            .removeClass('empty-content-type').addClass('has-content');
+                    }
+                    , 'json'
+                );
+            }
+            , save_price: function(e) {
+                e.preventDefault();
+                var placeholder = $(this).parents('[data-content-type]');
+                var price = placeholder.find('.product-price').val();
+                var sale_price = placeholder.find('.product-sale-price').val();
+
+                var price_str = price > 0 ? ( '$' + price.parseProductPrice().numberFormat() ) : price;
+                var sale_price_str = sale_price > 0 ? ( '$' + sale_price.parseProductPrice().numberFormat() ) : sale_price;
+
+                if ( sale_price > 0 && price == 0 )
+                    return alert("Sale Price needs a Price");
+
+                var tpl = '';
+                if ( sale_price_str )
+                    tpl = '<span class="sale-price">' + sale_price_str + '</span> <span class="price strikethrough">' + price_str + '</span>';
+                else if ( price_str  )
+                    tpl = '<span class="price">' + price_str + '</span>';
+
+                placeholder.find('.product-price-container').html(tpl);
+                placeholder.find('.edit-price-actions').hide();
+                placeholder.find('[data-action=edit-price]').show();
+                placeholder.find('[data-action=edit]').show();
             }
         }
 
@@ -197,8 +265,8 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 });
                 $('#email-editor').on('click', '[data-action=edit-link]', function(e) {
                     e.preventDefault();
-                    $(this).siblings('[data-action=save-link], .image-link-url').removeClass('hidden');
-                    $(this).addClass('hidden');
+                    $(this).siblings('[data-action=save-link], .image-link-url').show();
+                    $(this).hide();
                 });
                 $('#email-editor').on('click', '[data-action=save-link]', content_types['image'].save_image_link);
             }
@@ -213,7 +281,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 var image = $('a.file.selected img').clone();
                 image.attr('width', box_width);
                 $('#' + placeholder_id + ' .placeholder-content').html(image);
-                $('#' + placeholder_id + ' [data-action=edit-link]').removeClass('hidden');
+                $('#' + placeholder_id + ' [data-action=edit-link]').show();
                 // mark is as has-content
                 $('#' + placeholder_id).parents('.droppable')
                     .removeClass('empty-content-type').addClass('has-content');
@@ -240,8 +308,8 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                 }
 
                 // hide controls
-                placeholder.find('[data-action=save-link], .image-link-url').addClass('hidden');
-                placeholder.find('[data-action=edit-link]').removeClass('hidden');
+                placeholder.find('[data-action=save-link], .image-link-url').hide();
+                placeholder.find('[data-action=edit-link]').show();
             }
             , is_url: function( url ) {
                 var regex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
@@ -364,8 +432,8 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
         }
 
         // Show form
-        $('div[data-step]').addClass('hidden');
-        $('div[data-step=' + $(this).data('step') + ']').removeClass('hidden');
+        $('div[data-step]').hide();
+        $('div[data-step=' + $(this).data('step') + ']').show();
 
         // Toggle active marker in progress bar
         $('.progress-bar a[data-step=' + $(this).data('step') + ']')
@@ -411,6 +479,7 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
 
         }
     });
+    $('div[data-step].hidden').removeClass('hidden').hide();
 
     // Serialize Form in a Key/Value Object
     function get_form_data() {
@@ -494,3 +563,11 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
     });
 
 });
+
+String.prototype.parseProductPrice = function() {
+    return parseFloat( this.replace(/\$| |,/g, '') )
+}
+Number.prototype.numberFormat = function() {
+    return this.toFixed(2).toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+};
+

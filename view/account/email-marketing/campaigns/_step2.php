@@ -76,9 +76,16 @@
     <div class="content-type-template" data-content-type="product">
         <div class="placeholder-actions">
             <a data-action="clear" href="#"><img src="/images/icons/x.png" /></a>
-            <a data-action="edit" href="#"><img src="/images/campaigns/pencil.png" /></a>
+            <a data-action="edit" class="hidden" href="#"><img src="/images/campaigns/pencil.png" /></a>
+            <a data-action="edit-price" href="#"><img src="/images/campaigns/money_dollar.png" /></a>
 
-            <input type="text" class="products-autocomplete" placeholder="SKU or Name." />
+            <input type="text" class="product-autocomplete hidden" placeholder="SKU or Name" />
+
+            <div class="edit-price-actions hidden">
+                <input type="text" class="product-sale-price" placeholder="Sale price" />
+                <input type="text" class="product-price" placeholder="Price" />
+                <a data-action="save-price" href="#"><img src="/images/icons/disk.png" /></a>
+            </div>
         </div>
         <div class="placeholder-content content-type-product"></div>
     </div>
