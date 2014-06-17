@@ -14,9 +14,10 @@ echo $template->start( _('Campaigns'), '../sidebar' );
 <table ajax="/email-marketing/campaigns/list-all/" perPage="30,50,100">
     <thead>
         <tr>
-            <th width="50%"><?php echo _('Subject'); ?></th>
+            <th width="40%"><?php echo _('Subject'); ?></th>
             <th width="20%"><?php echo _('Status'); ?></th>
-            <th width="30%" sort="1 desc"><?php echo _('Date'); ?></th>
+            <th width="20%" sort="1 desc"><?php echo _('Created'); ?></th>
+            <th width="20%"><?php echo _('Scheduled To'); ?></th>
         </tr>
     </thead>
     <tbody>
