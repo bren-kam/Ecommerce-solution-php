@@ -899,7 +899,7 @@ class WebsiteController extends BaseController {
 
             $data[] = array(
                 $account_category->title . '<div class="actions">' .
-                    '<a href="http://' . $this->user->account->domain . $category->get_url( $account_category->category_id ) . '" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
+                    '<a href="http://' . $this->user->account->domain . ( $this->user->account->is_new_template() ? '/category' : '' ) . $category->get_url( $account_category->category_id ) . '" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'cid', $account_category->category_id, '/website/edit-category/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' .
                     '</div>'
                 , $date_update->format('F jS, Y')
