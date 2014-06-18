@@ -43,7 +43,7 @@ class CampaignsController extends BaseController {
         $email_message = new EmailMessage();
 
         // Set Order by
-        $dt->order_by( '`subject`', '`status`', 'date_sent' );
+        $dt->order_by( '`subject`', '`status`', 'date_created', 'date_sent' );
         $dt->add_where( ' AND `website_id` = ' . (int) $this->user->account->id );
         $dt->search( array( '`subject`' => false ) );
 
