@@ -899,7 +899,7 @@ class WebsiteController extends BaseController {
 
             $data[] = array(
                 $account_category->title . '<div class="actions">' .
-                    '<a href="http://' . $this->user->account->domain . $category->get_url( $account_category->category_id ) . '" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
+                    '<a href="http://' . $this->user->account->domain . ( $this->user->account->is_new_template() ? '/category' : '' ) . $category->get_url( $account_category->category_id ) . '" title="' . _('View') . '" target="_blank">' . _('View') . '</a> | ' .
                     '<a href="' . url::add_query_arg( 'cid', $account_category->category_id, '/website/edit-category/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a>' .
                     '</div>'
                 , $date_update->format('F jS, Y')
@@ -2247,6 +2247,30 @@ class WebsiteController extends BaseController {
             ->select( 'settings', 'html-header' )
             ->add_title( _('HTML Header') )
             ->set( compact( 'html_header' ) );
+
+    }
+
+    function custom_404() {
+
+        if ( $this->verified() ) {
+            $text_404 = format::strip_only( $_POST['text-404'], '<script>' );
+            $this->user->account->set_settings( array( 'text-404' => $text_404 ) );
+            $this->notify('Your 404 Page Text has been saved!');
+        }
+
+        $account_file = new AccountFile();
+        $files = $account_file->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->javascript('fileuploader', 'gsr-media-manager');
+
+        $text_404 = $this->user->account->get_settings('text-404');
+
+        return $this->get_template_response('custom-404')
+            ->kb( 0 )
+            ->select( 'settings', 'custom-404' )
+            ->add_title( _('Custom 404 Page') )
+            ->set( compact( 'text_404', 'files' ) );
 
     }
 }

@@ -217,5 +217,101 @@ class CouponsController extends BaseController {
             ) );
     }
 
+    /**
+     * List Products in Coupon
+     *
+     * @return TemplateResponse
+     */
+    protected function products() {
+        $website_coupon = new WebsiteCoupon();
+        $coupons = $website_coupon->get_by_account( $this->user->account->id );
+
+        $this->resources
+            ->javascript( 'shopping-cart/coupons/products' )
+            ->css( 'shopping-cart/coupons/products' );
+        return $this->get_template_response( 'products' )
+            ->kb( 0 )
+            ->select( 'coupons', 'coupon-products' )
+            ->set( compact( 'coupons' ) );
+    }
+
+    /**
+     * List Products in Coupon
+     *
+     * @return DataTableResponse
+     */
+    protected function list_products() {
+        // Get response
+        $dt = new DataTableResponse( $this->user );
+
+        // Get Coupon
+        $website_coupon = new WebsiteCoupon();
+        $website_coupon->get( $_SESSION['coupons']['wcid'], $this->user->account->id );
+
+        if ( !$website_coupon->id ) {
+            $dt->set_data( array() );
+            return $dt;
+        }
+
+        // Set variables
+        $dt->order_by( 'wc.`name`' );
+        $dt->add_where( " AND wc.`website_id` = " . $this->user->account->id );
+        $dt->add_where( " AND wc.`website_coupon_id` = " . $website_coupon->id );
+        $dt->search( array( 'p.`name`' => true, 'p.`sku`' => true ) );
+
+        // Get Products in Coupon
+        $products = $website_coupon->list_products_in_coupon( $dt->get_variables() );
+        $dt->set_row_count( $website_coupon->count_products_in_coupon( $dt->get_count_variables() ) );
+
+        // Setup variables
+        $confirm = _('Are you sure you want to delete this product from the coupon?');
+        $delete_nonce = nonce::create( 'delete_product' );
+        $data = array();
+
+        // Create output
+        if ( is_array( $products ) )
+            foreach ( $products as $product ) {
+                $actions = ' <a href="' . url::add_query_arg( array( '_nonce' => $delete_nonce, 'pid' => $product->id, 'wcid' => $website_coupon->id ), '/shopping-cart/coupons/delete-product/' ) . '" title="' . _('Delete') . '" ajax="1" confirm="' . $confirm . '">' . _('Remove from coupon') . '</a>';
+
+                $data[] = array(
+                    $product->name . '<div class="actions">' . $actions . '</div>'
+                    , $product->sku
+                    , $product->brand
+                    , $product->category
+                );
+            }
+
+        // Send response
+        $dt->set_data( $data );
+
+        return $dt;
+    }
+
+    /**
+     * Delete Product
+     *
+     * Deletes a single product association (coupon,product)
+     *
+     * @return AjaxResponse
+     */
+    protected function delete_product() {
+        $response = new AjaxResponse( $this->verified() );
+
+        if ( $response->has_error() )
+            return $response;
+
+        $website_coupon = new WebsiteCoupon();
+        $website_coupon->get( $_GET['wcid'], $this->user->account->id );
+
+        if ( $website_coupon->id ) {
+            $website_coupon->delete_relation( $_GET['wcid'], $_GET['pid'] );
+
+            jQuery('.dt:first')->dataTable()->fnDraw();
+            $response->add_response( 'jquery', jQuery::getResponse() );
+        }
+
+        return $response;
+    }
+
 }
 

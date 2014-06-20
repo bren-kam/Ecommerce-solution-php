@@ -43,7 +43,7 @@ class CampaignsController extends BaseController {
         $email_message = new EmailMessage();
 
         // Set Order by
-        $dt->order_by( '`subject`', '`status`', 'date_sent' );
+        $dt->order_by( '`subject`', '`status`', 'date_created', 'date_sent' );
         $dt->add_where( ' AND `website_id` = ' . (int) $this->user->account->id );
         $dt->search( array( '`subject`' => false ) );
 
@@ -66,8 +66,10 @@ class CampaignsController extends BaseController {
          */
         if ( is_array( $messages ) )
             foreach ( $messages as $message ) {
+                $message->date_created = dt::adjust_timezone( $message->date_created, $server_timezone, $timezone );
+                $date_created = new DateTime( $message->date_created );
                 $message->date_sent = dt::adjust_timezone( $message->date_sent, $server_timezone, $timezone );
-                $date = new DateTime( $message->date_sent );
+                $date_sent = new DateTime( $message->date_sent );
 
                 if ( $message->status != EmailMessage::STATUS_SENT ) {
                     $actions = '<a href="' . url::add_query_arg( 'id', $message->id, '/email-marketing/campaigns/create/' ) . '" title="' . _('Edit') . '">' . _('Edit') . '</a> | ';
@@ -79,9 +81,10 @@ class CampaignsController extends BaseController {
                 }
 
                 $data[] = array(
-                    format::limit_chars( $message->subject, 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>',
-                    $statuses[$message->status],
-                    $date->format( 'F jS, Y g:ia' )
+                    format::limit_chars( $message->subject, 50, '...' ) . '<br /><div class="actions">' . $actions . '</div>'
+                    , $statuses[$message->status]
+                    , $date_created->format( 'F jS, Y g:ia' )
+                    , $date_sent->format( 'F jS, Y g:ia' )
                 );
             }
 

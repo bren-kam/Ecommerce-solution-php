@@ -282,7 +282,7 @@ class EmailMessage extends ActiveRecordBase {
         list( $where, $values, $order_by, $limit ) = $variables;
 
         return $this->prepare(
-            "SELECT `email_message_id`, `subject`, `status`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
+            "SELECT `email_message_id`, `subject`, `status`, `date_created`, `date_sent` FROM `email_messages` WHERE 1 $where $order_by LIMIT $limit"
             , str_repeat( 's', count( $values ) )
             , $values
         )->get_results( PDO::FETCH_CLASS, 'EmailMessage' );
