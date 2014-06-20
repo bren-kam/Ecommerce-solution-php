@@ -29,7 +29,7 @@
     <?php } ?>
 </div>
 
-<?php echo $template->start( _('Actions') ); ?>
+<?php echo $template->start( _('Actions' ) . ': ' . $account->title ); ?>
 
 <?php if ( 0 == $account->version ) { ?>
     <p><a href="<?php echo url::add_query_arg( 'aid', $account->id, '/accounts/install-website/' ); ?>" title="<?php echo _('Install Website'); ?>"><?php echo _('Install Website'); ?></a></p>
