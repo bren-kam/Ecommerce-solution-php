@@ -9,48 +9,76 @@
  * @var User $user
  * @var string $errs
  */
-$resources->css_before( 'labels/' . 'greysuitretail.com', 'login' );
-$resources->javascript( 'sparrow' );
-
-$margin_bottom = ( 'greysuitretail' == DOMAIN ) ? '' : '20px';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
-<head profile="http://gmpg.org/xfn/11">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title><?php echo $template->v('title') . ' | ' . TITLE; ?></title>
-<link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
-<script type="text/javascript" src="/resources/js/?f=<?php echo $resources->get_javascript_file( 'head' ); ?>"></script>
-<link rel="icon" href="<?php echo '/images/favicons/' . DOMAIN . '.ico'; ?>" type="image/x-icon" />
-<?php $template->get_head(); ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/images/favicons/<?php echo DOMAIN ?>.ico">
+
+    <title><?php echo $template->v('title') . ' | ' . TITLE ?></title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/bootstrap-reset.css" rel="stylesheet">
+    <!--external css-->
+    <link href="/public/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <!-- Custom styles for this template -->
+    <link href="/public/css/style.css" rel="stylesheet">
+    <link href="/public/css/style-responsive.css" rel="stylesheet" />
+
+    <!-- Bootstrap Validator -->
+    <link href="/public/assets/bootstrap-validator/css/bootstrapValidator.min.css" rel="stylesheet" />
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
+    <!--[if lt IE 9]>
+    <script src="/public/js/html5shiv.js"></script>
+    <script src="/public/js/respond.min.js"></script>
+    <![endif]-->
 </head>
-<body>
-<?php
-$template->get_top();
 
-if ( $errs ) {
-?>
-<div class="notification sticky hidden error">
-    <p><?php echo $errs; ?></p>
-</div>
-<?php } ?>
-<div id="login-logo"<?php if ( !empty( $margin_bottom ) ) echo ' style="margin-bottom: ' . $margin_bottom . ' "'; ?>><img src="/images/logos/login/<?php echo DOMAIN; ?>.png" alt="<?php echo TITLE; ?>" /></div>
-<div id="login">
-    <form action="" name="fLogin" method="post">
-        <input type="text" class="tb" name="email" placeholder="<?php echo _('Email'); ?>" value="<?php echo strip_tags( $template->v('email') ); ?>" maxlength="200" />
-        <input type="password" class="tb" name="password" placeholder="<?php echo _('Password'); ?>" autocomplete="off" maxlength="30" />
-        <input type="submit" class="login-button float-right" value="<?php echo _('Login'); ?>" />
-        <p id="remember-me"><input type="checkbox" class="cb" name="remember-me" id="cbRememberMe" value="1"<?php if ( '1' == $template->v('remember-me') ) echo ' checked="checked"'; ?> /> <label for="cbRememberMe"><?php echo _('Remember Me'); ?></label></p>
-        <br clear="both" />
+<body class="login-body">
+
+<div class="container">
+
+    <?php if ( $errs ) { ?>
+        <div class="alert alert-danger">
+            <?php echo $errs; ?>
+        </div>
+    <?php } ?>
+
+    <form id="form-signin" class="form-signin" action="" method="post">
+
+        <h2 class="form-signin-heading">sign in now</h2>
+        <img src="/images/logos/login/<?php echo DOMAIN; ?>.png" alt="<?php echo TITLE; ?>" />
+        <div class="login-wrap">
+            <div class="form-group">
+                <input type="text" name="email" class="form-control" placeholder="Email" autofocus data-bv-notempty data-bv-notempty-message="Email is required" data-bv-emailaddress data-bv-emailaddress-message="A valid email address is required">
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="Password" data-bv-notempty data-bv-notempty-message="Password is required">
+            </div>
+            <label class="checkbox">
+                <input type="checkbox" value="remember-me"> Remember me
+            </label>
+            <button class="btn btn-lg btn-login btn-block" type="submit">Sign in</button>
+        </div>
         <?php nonce::field('index'); ?>
     </form>
-    <?php echo $template->v('validation'); ?>
+
 </div>
-<div id="lost-your-password">
-    <?php /*<p class="center"><a href="/lost-your-password/" title="<?php echo _('Lost your password?'); ?>"><?php echo _('Lost your password?'); ?></a></p>*/ ?>
-</div>
-<!-- End: Footer -->
-<script type="text/javascript">head.load( 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>');</script>
-<?php $template->get_footer(); ?>
+
+
+<!-- js placed at the end of the document so the pages load faster -->
+<script src="/public/js/jquery.js"></script>
+<script src="/public/js/bootstrap.min.js"></script>
+<script src="/public/assets/bootstrap-validator/js/bootstrapValidator.min.js"></script>
+<script>
+    jQuery(function(){
+        $('#form-signin').bootstrapValidator();
+    });
+</script>
+
 </body>
 </html>
