@@ -323,7 +323,7 @@ class Account extends ActiveRecordBase {
         foreach ( $settings as $k => $v ) {
             $setting_values[] = $this->id;
             $setting_values[] = strip_tags($k);
-            $setting_values[] = strip_tags( $v, '<p><font>' );
+            $setting_values[] = strip_tags( $v, '<p><font><ul><li><a>' );
         }
 
 		// Insert it or update it

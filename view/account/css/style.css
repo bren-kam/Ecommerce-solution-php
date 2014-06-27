@@ -318,6 +318,8 @@ select option {
 }
 
 .cb { position: relative; top: 3px; }
+@-moz-document url-prefix() { .cb { position: relative; top: 0; } }
+
 select.multiple { height: 150px }
 textarea {
 	border: 1px solid #B3B3B3;

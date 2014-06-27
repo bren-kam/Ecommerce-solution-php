@@ -224,6 +224,9 @@ head.load( 'http://code.jquery.com/ui/1.10.4/jquery-ui.min.js', '/ckeditor/ckedi
                     $('#save-text').data('placeholder-id', placeholder_id);
                     textarea.val(content);
                     $('#editor-container').html(textarea).sparrow();
+                    if (CKEDITOR.instances['text-editor']) {
+                        delete CKEDITOR.instances['text-editor'];
+                    };
                     CKEDITOR.replace('text-editor', {
                         allowedContent: !0,
                         autoGrow_minHeight: 100,

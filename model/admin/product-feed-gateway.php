@@ -110,7 +110,7 @@ abstract class ProductFeedGateway extends ActiveRecordBase {
         return $this->error;
     }
 
-/**
+    /**
      * Is identical -- checks if there any not identical parts
      *
      * @return bool
