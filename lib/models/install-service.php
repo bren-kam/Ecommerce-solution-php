@@ -161,10 +161,6 @@ class InstallService {
         $template_account = new Account();
         $template_account->get( $company_package->website_id );
 
-        // Get Unlocked account, used for base LESS
-        $unlocked_account = new Account();
-        $unlocked_account->get( Account::TEMPLATE_UNLOCKED );
-
         // Update theme and logo
         $account->theme = $template_account->theme;
         $account->logo = $template_account->logo;
@@ -305,17 +301,7 @@ class InstallService {
         $account_category = new AccountCategory();
         $account_category->reorganize_categories( $account->id, new Category() );
 
-        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' ) );
+        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'less', 'css' ) );
 
-        // Compile and Copy CSS
-        $less_css = $unlocked_account->get_settings( 'less' ) . $template_account->get_settings( 'less' );
-        library( 'lessc.inc' );
-        $less = new lessc;
-        $less->setFormatter( 'compressed' );
-        $css = '';
-        try {
-            $css = $less->compile( $less_css );
-        } catch (exception $e) { /* do nothing */ }
-        $account->set_settings( array( 'less' => $less_css, 'css' => $css ) );
     }
 }

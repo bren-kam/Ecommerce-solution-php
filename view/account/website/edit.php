@@ -130,9 +130,14 @@ if ( !empty( $errs ) )
     </div>
     <br />
     <?php
+
     if ( in_array( $page->slug, array( 'contact-us', 'current-offer', 'financing', 'products' ) ) )
         require VIEW_PATH . 'website/pages/' . $page->slug . '.php';
-    ?>
+
+    if ( $page->slug != 'home' && $user->account->is_new_template() ) { ?>
+        <br />
+        <input type="checkbox" class="cb" id="cbHideSidebar" name="cbHideSidebar" value="yes" <?php if ( $hide_sidebar == '1' ) echo 'checked="checked"'; ?> /> <label for="cbHideSidebar"><?php echo _('Hide Sidebar'); ?></label><br/>
+    <?php } ?>
     <br /><br />
     <br /><br />
     <p><input type="submit" id="bSubmit" value="<?php echo _('Save'); ?>" class="button" /></p>

@@ -72,7 +72,7 @@ class WebsiteController extends BaseController {
             case 'contact-us':
                 $v->add_validation( 'tEmail', 'req', _('The "Email" field is required') );
                 $v->add_validation( 'tEmail', 'email', _('The "Email" field must contain a valid email') );
-                break;
+            break;
 
             default:break;
         }
@@ -109,6 +109,7 @@ class WebsiteController extends BaseController {
                 $page->save();
 
                 // Update custom meta
+                $pagemeta = array();
                 switch ( $page->slug ) {
                     case 'current-offer':
                         $pagemeta = array(
@@ -138,8 +139,11 @@ class WebsiteController extends BaseController {
                     default:break;
                 }
 
+                if ( $page->slug != 'home' )
+                    $pagemeta['hide-sidebar'] = isset( $_POST['cbHideSidebar'] ) && $_POST['cbHideSidebar'] == 'yes';
+
                 // Set pagemeta
-                if ( isset( $pagemeta ) )
+                if ( !empty( $pagemeta ) )
                     $account_pagemeta->add_bulk_by_page( $page->id, $pagemeta );
 
                 $page->delete_products();
@@ -231,6 +235,11 @@ class WebsiteController extends BaseController {
             $page_title = $account_pagemeta->get_by_keys( $page->id, 'page-title' );
         } else {
             $page_title = $page->title;
+        }
+
+        if ( $page->slug != 'home' ){
+            $hide_sidebar = $account_pagemeta->get_by_keys( $page->id, 'hide-sidebar');
+            $resources['hide_sidebar'] = $hide_sidebar;
         }
 
         /***** NORMAL PAGE FUNCTIONS *****/
