@@ -21,8 +21,8 @@ class AccountsController extends BaseController {
         unset( $_SESSION['accounts'] );
 
         $this->resources
-            ->javascript('accounts/list')
-            ->css_url( Config::resource('jquery-ui') );
+            ->javascript('accounts/index')
+            ->javascript_url( Config::resource('typeahead-js') );
 
         return $this->get_template_response( 'index' )
             ->kb( 1 )
@@ -230,41 +230,9 @@ class AccountsController extends BaseController {
             $users[$user->id] = $user->contact_name;
         }
 
-        // Create form elements
-        $account_title = new FormTable_Text( false, _('tTitle'), $account->title );
-
-        $fts = new FormTable_Select( false, 'sUserID', $account->user_id );
-        $users = $fts->options( $users );
-
-        $phone = new FormTable_Text( false, _('tPhone'), $account->phone );
-
-        $products = new FormTable_Text( false, _('tProducts'), $account->products );
-
-        $fts = new FormTable_Select( false, 'sOSUserID', $account->os_user_id );
-        $os_users = $fts->options( $os_users );
-
-        $plan = new FormTable_Text( _('Plan'), 'tPlan', $account->plan_name );
-        $plan_description = new FormTable_Textarea( _('Plan Description'), 'taPlanDescription', $account->plan_description );
-
         // Address
-        $address_settings = $account->get_settings( 'address', 'city', 'state', 'zip' );
-
-        $address = new FormTable_Text( _('Address'), 'tAddress', $address_settings['address'] );
-        $address->attribute( 'placeholder', _('Address') );
-
-        $city = new FormTable_Text( _('City'), 'tCity', $address_settings['city'] );
-        $city->attribute( 'placeholder', _('City') );
-
-        $state = new FormTable_Select( _('State'), 'sState', $address_settings['state'] );
-        $state->options( data::states( false ) );
-
-        $zip = new FormTable_Text( _('Zip'), 'tZip', $address_settings['zip'] );
-        $zip->attribute( 'placeholder', _('Zip') );
-
-        // Validation
-        foreach ( $fields as $field ) {
-            $$field->validation( $v );
-        }
+        $address = $account->get_settings( 'address', 'city', 'state', 'zip' );
+        $states = data::states( false );
 
         $owner = new User();
         $owner->get( $account->user_id );
@@ -302,25 +270,21 @@ class AccountsController extends BaseController {
             $checkboxes[$feature] = array(
                 'name' => $checkbox_name
                 , 'form_name' => $checkbox_form_name
-                , 'checkbox' => '<input type="checkbox" name="' . $checkbox_form_name . '" id="' . $checkbox_form_name . '" class="hidden" value="1"' . $checked . ' />'
                 , 'selected' => $selected
             );
         }
 
         // Include Resources
         $this->resources
-            ->javascript('accounts/edit')
+            ->javascript_url( Config::resource( 'bootstrap-validator-js' ) )
+            ->javascript('accounts/edit', 'bootstrap-switch.min')
             ->css('accounts/edit');
 
         $template_response = $this->get_template_response('edit')
             ->kb( 4 )
             ->select( 'accounts' )
             ->add_title( _('Edit') )
-            ->set( compact( 'account', 'owner', 'checkboxes', 'errs' ) );
-
-        foreach ( $fields as $field ) {
-            $template_response->set( $field, $$field->generate() );
-        }
+            ->set( compact( 'account', 'address', 'states', 'users', 'os_users', 'checkboxes', 'errs', 'owner', 'checkboxes' ) );
 
         return $template_response;
     }
@@ -346,7 +310,7 @@ class AccountsController extends BaseController {
         // Setup objects
         $cp = new CompanyPackage();
         $industry = new Industry();
-        $ft = new FormTable( 'fWebsiteSettings' );
+        $ft = new BootstrapForm( 'fWebsiteSettings' );
 
         // Get variables
         $industries = $industry->get_all();
@@ -359,7 +323,7 @@ class AccountsController extends BaseController {
 
         // Start adding fields
         $ft->add_field( 'text', _('Domain'), 'tDomain', $account->domain )
-            ->add_validation( 'tDomain', 'req', _('The "Domain" field is required') );
+            ->add_validation( 'req', _('The "Domain" field is required') );
 
         $ft->add_field( 'text', _('Theme'), 'tTheme', $account->theme )
             ->add_validation( 'req', _('The "Theme" field is required') );
@@ -1575,17 +1539,17 @@ class AccountsController extends BaseController {
         $ajax_response = new AjaxResponse( $this->verified() );
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'domain':
                 $account = new Account();
 
                 $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
 
-                $results = $account->autocomplete( $_POST['term'], 'domain', $this->user, $status );
+                $results = $account->autocomplete( $_GET['term'], 'domain', $this->user, $status );
             break;
 
             case 'store_name':
-                $results = $this->user->autocomplete( $_POST['term'], 'store_name' );
+                $results = $this->user->autocomplete( $_GET['term'], 'store_name' );
 
                 if ( is_array( $results ) )
                 foreach ( $results as &$result ) {
@@ -1598,7 +1562,7 @@ class AccountsController extends BaseController {
 
                 $status = ( isset( $_SESSION['accounts']['state'] ) ) ? $_SESSION['accounts']['state'] : NULL;
 
-                $results = $account->autocomplete( $_POST['term'], 'title', $this->user, $status );
+                $results = $account->autocomplete( $_GET['term'], 'title', $this->user, $status );
             break;
         }
 

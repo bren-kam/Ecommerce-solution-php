@@ -56,7 +56,9 @@ class Config {
      * @var array
      */
     private static $resources = array(
-        'jquery-ui' => 'http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
+        'jquery-ui' => '//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css'
+        , 'typeahead-js' => '//cdn.jsdelivr.net/typeahead.js/0.10.2/typeahead.bundle.js'
+        , 'bootstrap-validator-js' => '//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.4.5/js/bootstrapValidator.min.js'
     );
 		
 	/**

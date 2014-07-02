@@ -60,9 +60,11 @@
             <div class="form-group">
                 <input type="password" name="password" class="form-control" placeholder="Password" data-bv-notempty data-bv-notempty-message="Password is required">
             </div>
-            <label class="checkbox">
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                </label>
+            </div>
             <button class="btn btn-lg btn-login btn-block" type="submit">Sign in</button>
         </div>
         <?php nonce::field('index'); ?>
@@ -74,8 +76,7 @@
 <!-- js placed at the end of the document so the pages load faster -->
 <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src="/resources/js_single/?f=bootstrapValidator.min"></script>
-<script src="/resources/js_single/?f=app"></script>
+<script src="//cdn.jsdelivr.net/jquery.bootstrapvalidator/0.4.5/js/bootstrapValidator.min.js"></script>
 <script src="/resources/js/?f=<?php echo $resources->get_javascript_file(); ?>"></script>
 </body>
 </html>
