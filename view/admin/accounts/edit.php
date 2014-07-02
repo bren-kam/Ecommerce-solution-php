@@ -47,7 +47,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form role="form" method="post">
+                <form id="fEditAccount" role="form" method="post">
 
                     <div class="row">
                         <div class="col-lg-6">

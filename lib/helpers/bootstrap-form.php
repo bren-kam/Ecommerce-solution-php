@@ -562,7 +562,9 @@ class BootstrapForm_Radio extends BootstrapForm_Field {
 
         $html .= '<label>';
 
-        $html .= '<input type="radio" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="' . $this->value . '" />';
+        $checked = ( $_POST[$this->name] == $this->value ) ? ' checked="checked"' : '';
+
+        $html .= '<input type="radio" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="' . $this->value . '" ' . $checked . ' />';
 
         $html .= $this->nice_name;
         if ( $this->required )
@@ -605,7 +607,9 @@ class BootstrapForm_Checkbox extends BootstrapForm_Field {
 
         $html .= '<label>';
 
-        $html .= '<input type="checkbox" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="' . $this->value . '" />';
+        $checked = ( '1' == $this->value ) ? ' checked="checked"' : '';
+
+        $html .= '<input type="checkbox" name="' . $this->name . '" id="' . $this->id( $count ) . '" value="1" '. $checked .' />';
 
         $html .= $this->nice_name;
         if ( $this->required )

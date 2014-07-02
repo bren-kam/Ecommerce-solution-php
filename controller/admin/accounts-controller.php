@@ -428,7 +428,7 @@ class AccountsController extends BaseController {
             return new RedirectResponse('/accounts/');
 
         // Setup objects
-        $ft = new FormTable( _('fOtherSettings') );
+        $ft = new BootstrapForm( _('fOtherSettings') );
 
         // Get variables
         $settings = $account->get_settings(

@@ -28,7 +28,7 @@
     <![endif]-->
 
     <!-- jQuery -->
-    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="//code.jquery.com/jquery-2.1.1.js"></script>
 </head>
 
 <body>
