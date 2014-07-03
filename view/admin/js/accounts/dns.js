@@ -104,6 +104,4 @@ var DNS = {
 
 }
 
-jQuery(function(){
-    DNS.init();
-});
+jQuery(DNS.init);

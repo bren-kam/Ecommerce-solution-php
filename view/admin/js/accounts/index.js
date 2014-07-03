@@ -66,7 +66,5 @@ var AccountSearch = {
 
 };
 
-jQuery(function(){
-    AccountSearch.init();
-});
+jQuery(AccountSearch.init);
 

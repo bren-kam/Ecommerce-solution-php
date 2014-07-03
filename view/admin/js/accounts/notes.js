@@ -18,6 +18,4 @@ var Notes = {
 
 }
 
-jQuery(function(){
-    Notes.init();
-});
+jQuery(Notes.init);

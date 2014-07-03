@@ -9,11 +9,12 @@
 
     <!-- Bootstrap core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=bootstrap-reset" />
+    <link href="/resources/css_single/?f=bootstrap-reset" rel="stylesheet" />
 
     <!--external css-->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link type="text/css" rel="stylesheet" href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css" />
+    <link href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
+    <link href="//cdn.jsdelivr.net/jquery.gritter/1.7.4/css/jquery.gritter.css" rel="stylesheet" />
 
     <!-- Custom styles for this template -->
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style" />

@@ -52,7 +52,8 @@ class CustomizeController extends BaseController {
 
         $this->resources
             ->css('accounts/customize/css')
-            ->javascript('accounts/customize/css');
+            ->javascript('accounts/customize/css')
+            ->javascript_url( Config::resource('ace-js') );
 
         return $this->get_template_response( 'css' )
             ->kb( 10 )
@@ -75,7 +76,7 @@ class CustomizeController extends BaseController {
         $account->get( $_GET['aid'] );
 
         // Setup objects
-        $ft = new FormTable( _('fCustomizeSettings') );
+        $ft = new BootstrapForm( _('fCustomizeSettings') );
 
         // Get variables
         $settings = $account->get_settings(
@@ -256,13 +257,7 @@ class CustomizeController extends BaseController {
         $account_file->file_path = $file_url;
         $account_file->create();
 
-        $response->add_response( 'file', $account_file->file_path );
-        // Update account favicon
-        $account->set_settings( array( 'favicon' => $account_file->file_path ) );
-        jQuery('#dFaviconContent')->html('<img src="' . $account_file->file_path . '" style="padding-bottom:10px" alt="' . _('Favicon') . '" /><br />');
-
-        // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'refresh', true );
 
         return $response;
     }

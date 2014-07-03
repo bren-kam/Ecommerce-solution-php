@@ -34,6 +34,7 @@
 <script src="//cdn.jsdelivr.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js" type="text/javascript"></script>
 <script src="//cdn.jsdelivr.net/jquery.customselect/0.5.1/jquery.customSelect.min.js" ></script>
 <script src="/resources/js_single/?f=respond.min" ></script>
+<script src="//cdn.jsdelivr.net/jquery.gritter/1.7.4/js/jquery.gritter.min.js" ></script>
 
 <script src="/resources/js_single/?f=common-scripts"></script>
 <script src="/resources/js_single/?f=head.min" ></script>
