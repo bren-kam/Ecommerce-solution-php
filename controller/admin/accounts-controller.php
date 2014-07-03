@@ -876,7 +876,7 @@ class AccountsController extends BaseController {
         $account_note = new AccountNote();
 
         // More setup
-        $v = new Validator( 'fAddNote' );
+        $v = new BootstrapValidator( 'fAddNote' );
         $v->add_validation( 'taNote', 'req', _('The note may not be empty') );
 
         if ( $this->verified() ) {
@@ -889,7 +889,9 @@ class AccountsController extends BaseController {
         // Get notes
         $notes = $account_note->get_all( $_GET['aid'] );
 
-        $this->resources->css('accounts/notes');
+        $this->resources
+            ->javascript('accounts/notes')
+            ->css('accounts/notes');
 
         return $this->get_template_response('notes')
             ->kb( 3 )
@@ -1468,15 +1470,7 @@ class AccountsController extends BaseController {
 
         // Deactivate user
         if ( $account_note->id ) {
-            // Delete the note
-            jQuery('#dNote' . $account_note->id )->remove();
-            jQuery('#dNotes .note.first')->removeClass('first');
-            jquery('#dNotes .note:first')->addClass('first');
-
             $account_note->remove();
-
-            // Add the response
-            $response->add_response( 'jquery', jQuery::getResponse() );
         }
 
         return $response;

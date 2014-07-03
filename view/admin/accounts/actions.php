@@ -31,6 +31,16 @@
                     <?php if ( $user->has_permission( User::ROLE_SUPER_ADMIN ) ): ?>
                         <li><a href="/accounts/dns/?aid=<?php echo $account->id ?>">DNS</a></li>
                     <?php endif; ?>
+
+                    <li><a href="/accounts/notes/?aid=<?php echo $account->id ?>">Notes</a></li>
+                    <li class="dropdown">
+                        <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">Customize <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/accounts/customize/settings/?aid=<?php echo $account->id ?>">Settings</a></li>
+                            <li><a href="/accounts/customize/stylesheet/?aid=<?php echo $account->id ?>">LESS/CSS</a></li>
+                            <li><a href="/accounts/customize/favicon/?aid=<?php echo $account->id ?>">Favicon</a></li>
+                        </ul>
+                    </li>
                 </ul>
                 <h3>Other Settings: <?php echo $account->title ?></h3>
             </header>

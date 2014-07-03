@@ -4782,3 +4782,7 @@ a.guest-on i {
   width: 32%;
   float: left;
 }
+.panel-heading .nav > li.open > a {
+  background-color: #61748d;
+  color: #fff;
+}
