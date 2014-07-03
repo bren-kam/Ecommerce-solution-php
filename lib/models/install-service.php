@@ -161,6 +161,10 @@ class InstallService {
         $template_account = new Account();
         $template_account->get( $company_package->website_id );
 
+        // Get Unlocked account, used for base LESS
+        $unlocked_account = new Account();
+        $unlocked_account->get( Account::TEMPLATE_UNLOCKED );
+
         // Update theme and logo
         $account->theme = $template_account->theme;
         $account->logo = $template_account->logo;
@@ -211,9 +215,9 @@ class InstallService {
          */
         if ( is_array( $template_account_attachments )  )
         foreach ( $template_account_attachments as $taa ) {
-			// Needs to be a value that we can copy
-			if ( 1 != $taa->status )
-				continue;
+            // Needs to be a value that we can copy
+            if ( 1 != $taa->status )
+                continue;
 
             if ( !in_array( $taa->key, array( 'email', 'search' ) ) ) {
                 try {
@@ -251,8 +255,8 @@ class InstallService {
         if ( !empty( $template_account_files ) )
         foreach( $template_account_files as $taf ) {
             // Needs to be a value that we can copy
-			if ( !stristr( $taa->value, 'retailcatalog.us' ) )
-				continue;
+            if ( !stristr( $taa->value, 'retailcatalog.us' ) )
+                continue;
 
             $value = $file->copy_file( $account->id, $taf->file_path, 'websites' );
 
@@ -301,7 +305,18 @@ class InstallService {
         $account_category = new AccountCategory();
         $account_category->reorganize_categories( $account->id, new Category() );
 
-        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'less', 'css' ) );
+        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' ) );
 
+        // Compile and Copy CSS
+        $template_less = $template_account->get_settings( 'less' );
+        $less_css = $unlocked_account->get_settings( 'less' ) . $template_less;
+        library( 'lessc.inc' );
+        $less = new lessc;
+        $less->setFormatter( 'compressed' );
+        $css = '';
+        try {
+            $css = $less->compile( $less_css );
+        } catch (exception $e) { /* do nothing */ }
+        $account->set_settings( array( 'less' => $template_less, 'css' => $css ) );
     }
 }

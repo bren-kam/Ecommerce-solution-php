@@ -9,6 +9,6 @@
  */
 
 define( 'TITLE', 'R&A Web Plus' );
-define( 'LOGO_WIDTH', 287 );
-define( 'LOGO_HEIGHT', 63 );
+define( 'LOGO_WIDTH', 130 );
+define( 'LOGO_HEIGHT', 85 );
 define( 'COMPANY_ID', 2 );

@@ -1451,7 +1451,7 @@ class AccountsController extends BaseController {
             // Get the phone
             $contact_title = ( empty( $a->phone ) ) ? _('No Phone') : $a->phone;
 
-            $title = '<a href="http://' . $a->domain . '/" target="_blank"><strong title="' . $a->domain . ' - ' . $a->online_specialist . '">' . $a->title . $store_name . '</strong></a><br />';
+            $title = '<a href="http://' . $a->domain . '/" target="_blank"><strong title="' . $a->domain . ' - ' . $a->online_specialist . '">' . stripslashes($a->title) . stripslashes($store_name) . '</strong></a><br />';
             $title .= '<span class="web-actions" style="display: block">';
 
             if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )

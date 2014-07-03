@@ -92,11 +92,7 @@ if ( !empty( $order->phone ) ) {
     <tr>
         <td class="product"><img src="<?php echo $item->image; ?>" width="80" alt="<?php echo $item->name; ?>" /></td>
         <td class="description">
-            <strong<?php if ( !$item->status ) echo ' class="out-of-stock"'; ?>><?php echo $item->name; ?></strong>
-            <?php
-            if ( !$item->status )
-                echo '<p class="out-of-stock">(', _('Out of Stock'), ')</p>';
-            ?>
+            <strong><?php echo $item->name; ?></strong>
             <p><?php echo _('SKU'); ?>: <?php echo $item->sku; ?></p>
             <?php
             if ( !empty( $item->store_sku ) )
