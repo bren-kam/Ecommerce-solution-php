@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var Template $template
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +75,7 @@
         <ul class="sidebar-menu" id="nav-accordion">
 
             <li class="sub-menu">
-                <a href="javascript:;" >
+                <a href="javascript:;" <?php if ( $template->v('accounts') ) echo 'class="active"'?>>
                     <i class="fa fa-laptop"></i>
                     <span>Accounts</span>
                 </a>
@@ -83,7 +88,7 @@
             </li>
 
             <li class="sub-menu">
-                <a href="javascript:;" >
+                <a href="javascript:;" <?php if ( $template->v('products') ) echo 'class="active"'?>>
                     <i class="fa fa-cube"></i>
                     <span>Products</span>
                 </a>
@@ -103,7 +108,7 @@
             </li>
 
             <li class="sub-menu">
-                <a href="javascript:;" >
+                <a href="javascript:;" <?php if ( $template->v('users') ) echo 'class="active"'?>>
                     <i class="fa fa-user"></i>
                     <span>Users</span>
                 </a>
@@ -114,7 +119,7 @@
             </li>
 
             <li class="sub-menu">
-                <a href="javascript:;" >
+                <a href="javascript:;" <?php if ( $template->v('checklists') ) echo 'class="active"'?>>
                     <i class="fa fa-check-square-o"></i>
                     <span>Checklists</span>
                 </a>
@@ -125,14 +130,14 @@
             </li>
 
             <li>
-                <a href="/tickets/" >
+                <a href="/tickets/" <?php if ( $template->v('tickets') ) echo 'class="active"'?>>
                     <i class="fa fa-ticket"></i>
                     <span>Tickets</span>
                 </a>
             </li>
 
             <li class="sub-menu">
-                <a href="javascript:;" >
+                <a href="javascript:;" <?php if ( $template->v('reports') ) echo 'class="active"'?>>
                     <i class="fa fa-bar-chart-o"></i>
                     <span>Reports</span>
                 </a>
@@ -143,7 +148,7 @@
             </li>
 
             <li class="sub-menu">
-                <a href="javascript:;" >
+                <a href="javascript:;" <?php if ( $template->v('knowledge-base') ) echo 'class="active"'?>>
                     <i class="fa fa-book"></i>
                     <span>Knowledge Base</span>
                 </a>
