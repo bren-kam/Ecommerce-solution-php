@@ -80,8 +80,8 @@
                     <span>Accounts</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="/accounts/">View</a></li>
-                    <li><a href="/accounts/add/">Add</a></li>
+                    <li <?php if ( $template->v('accounts/index') ) echo 'class="active"'?>><a href="/accounts/">View</a></li>
+                    <li <?php if ( $template->v('accounts/add') ) echo 'class="active"'?>><a href="/accounts/add/">Add</a></li>
                     <li><a href="/accounts/companies/">Companies</a></li>
                     <li><a href="/accounts/companies/add-edit/">Add Company</a></li>
                 </ul>

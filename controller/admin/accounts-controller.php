@@ -26,7 +26,7 @@ class AccountsController extends BaseController {
 
         return $this->get_template_response( 'index' )
             ->kb( 1 )
-            ->select( 'accounts', 'view' );
+            ->select( 'accounts', 'accounts/index' );
     }
 
     /**
@@ -53,7 +53,7 @@ class AccountsController extends BaseController {
         }
 
         // Create new form table
-        $ft = new FormTable( 'fAddAccount' );
+        $ft = new BootstrapForm( 'fAddAccount' );
 
         $ft->submit( _('Add') );
 
@@ -107,7 +107,7 @@ class AccountsController extends BaseController {
         return $this->get_template_response( 'add' )
             ->kb( 2 )
             ->add_title( _('Add') )
-            ->select( 'accounts', 'add' )
+            ->select( 'accounts', 'accounts/add' )
             ->set( 'form', $ft->generate_form() );
     }
 
@@ -347,7 +347,7 @@ class AccountsController extends BaseController {
         }
 
         $ft->add_field( 'select', _('Industries'), 'sIndustries[]', $account_industries )
-            ->attribute( 'multiple', 'multiple')
+            ->attribute( 'multiple', 'multiple' )
             ->options( $industry_list );
 
         // Max Image Size
@@ -405,7 +405,7 @@ class AccountsController extends BaseController {
         return $this->get_template_response('website-settings')
             ->kb( 5 )
             ->add_title( _('Website Settings') )
-            ->select('accounts')
+            ->select( 'accounts' )
             ->set( compact( 'account', 'form' ) );
     }
 

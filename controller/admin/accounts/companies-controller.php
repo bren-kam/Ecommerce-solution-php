@@ -45,7 +45,7 @@ class CompaniesController extends BaseController {
             $company->get( $company_id );
 
         // Create new form table
-        $ft = new FormTable( 'fAddEditCompany' );
+        $ft = new BootstrapForm( 'fAddEditCompany' );
 
         $ft->submit( ( $company_id ) ? _('Save') : _('Add') );
 
