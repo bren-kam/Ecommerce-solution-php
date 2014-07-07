@@ -4796,3 +4796,12 @@ a.guest-on i {
   position: absolute;
   left: -5000px;
 }
+.form-inline fieldset {
+  margin-bottom: 5px;
+}
+#product-search select {
+  width: 250px;
+}
+#product-search input {
+  width: 400px;
+}

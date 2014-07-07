@@ -29,12 +29,12 @@ ProductsController extends BaseController {
         $product_users = $this->user->get_product_users();
 
         $this->resources
-            ->css_url( Config::resource('jquery-ui') )
-            ->javascript('products/list');
+            ->javascript('products/index')
+            ->javascript_url( Config::resource('typeahead-js') );
 
         return $this->get_template_response( 'index' )
             ->kb( 11 )
-            ->select( 'sub-products', 'view' )
+            ->select( 'products', 'products/index' )
             ->set( compact( 'categories', 'product_users' ) );
     }
 
@@ -481,7 +481,7 @@ ProductsController extends BaseController {
                 $category_ids[] = (int) $category->id;
             }
 
-            $dt->add_where(' AND pc.`category_id` IN(' . implode( ',', $category_ids ) . ')');
+            $dt->add_where(' AND p.`category_id` IN(' . implode( ',', $category_ids ) . ')');
         }
 
         // Get accounts
@@ -637,17 +637,17 @@ ProductsController extends BaseController {
 
 
         // Get the right suggestions for the right type
-        switch ( $_POST['type'] ) {
+        switch ( $_GET['type'] ) {
             case 'products':
-                $results = $product->autocomplete( $_POST['term'] , 'p.`name`', 'products', $where );
+                $results = $product->autocomplete( $_GET['term'] , 'p.`name`', 'products', $where );
             break;
 
             case 'sku':
-                $results = $product->autocomplete( $_POST['term'], 'p.`sku`', 'sku', $where );
+                $results = $product->autocomplete( $_GET['term'], 'p.`sku`', 'sku', $where );
             break;
 
             case 'brands':
-                $results = $product->autocomplete( $_POST['term'], 'b.`name`', 'brands', $where );
+                $results = $product->autocomplete( $_GET['term'], 'b.`name`', 'brands', $where );
             break;
         }
 
