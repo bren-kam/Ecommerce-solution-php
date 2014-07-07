@@ -93,7 +93,7 @@
                     <span>Products</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="/products/">View</a></li>
+                    <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">View</a></li>
                     <li><a href="/products/add/">Add</a></li>
                     <li><a href="/products/import/">Import</a></li>
                     <li><a href="/products/categories/">Categories</a></li>
