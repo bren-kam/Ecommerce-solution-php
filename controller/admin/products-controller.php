@@ -881,37 +881,13 @@ ProductsController extends BaseController {
             $product_import->image = $pi['image'];
             $product_import->create();
         }
-        
 
-        // Add operation overview report
-        $html =  '<tr><td>Total rows read:</td><td>' . count($rows) . '</td></tr>';
-        $html .= '<tr><td>Errors found:</td><td>' . count($skipped_products) . '</td></tr>';
-        $html .= '<tr><td>Total products to insert/update:</td><td>' . count($products) . '</td></tr>';
-        jQuery('#tUploadOverview')->append( $html );
-
-        // Add skipped rows report
-        if ( !empty( $skipped_products ) ) {
-            $html = '';
-            foreach ( $skipped_products as $p ) {
-                $p['image'] = "<a href=\"{$p['image']}\">Image</a>";
-                $html .= '<tr><td>' . implode('</td><td>', $p) . '</td></tr>';
-            }
-            jQuery('#tSkippedProducts')->append( $html );
-            jQuery('#dSkippedProducts')->show();
-        }
-
-        // Hide the main view
-        jQuery('#dDefault')->hide();
-
-        if ( empty( $products ) ) {
-            jQuery('[type=submit]')->hide();
-        }
-
-        // Show the next table
-        jQuery('#dConfirm')->show();
 
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'count', count($rows) );
+        $response->add_response( 'count_skipped', count($skipped_products) );
+        $response->add_response( 'count_to_import', count($products) );
+        $response->add_response( 'skipped_rows', $skipped_products );
 
         return $response;
     }

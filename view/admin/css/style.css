@@ -4812,3 +4812,6 @@ a.guest-on i {
 #images-list .image {
   float: left;
 }
+.table-non-fluid {
+  width: auto;
+}
