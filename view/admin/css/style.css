@@ -4805,3 +4805,10 @@ a.guest-on i {
 #product-search input {
   width: 400px;
 }
+#upload-image {
+  position: absolute;
+  left: -5000px;
+}
+#images-list .image {
+  float: left;
+}

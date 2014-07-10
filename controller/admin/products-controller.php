@@ -47,7 +47,7 @@ ProductsController extends BaseController {
         // Determine if we're adding or editing the product
         $product_id = ( isset( $_GET['pid'] ) ) ? (int) $_GET['pid'] : false;
 
-        $product = new Product;
+        $product = new Product();
         $industry = new Industry();
         $brand = new Brand();
         $category = new Category();
@@ -97,7 +97,7 @@ ProductsController extends BaseController {
             $industries[$industry->id] = $industry;
         }
 
-        $validation = new Validator('fAddEditProduct');
+        $validation = new BootstrapValidator('fAddEditProduct');
         $validation->add_validation('sCategory', 'req', 'Category is required');
         $validation->add_validation('sBrand', 'req', 'Brand is required');
         $validation->add_validation('sIndustry', 'req', 'Industry is required');
@@ -109,7 +109,7 @@ ProductsController extends BaseController {
 
         if ( $this->verified() && $product->id ) {
             $errors = $validation->validate();
-            if ( empty( $errors) ) {
+            if ( empty( $errors ) ) {
                 // Need to delete it from all websites
                 if ( 'deleted' == $_POST['sStatus'] ) {
                     // We need to remove it from all user websites
@@ -207,12 +207,13 @@ ProductsController extends BaseController {
 
         $this->resources
             ->javascript( 'fileuploader', 'products/add-edit' )
+            ->javascript_url( Config::resource( 'bootstrap-datepicker-js' ) )
             ->css('products/add-edit')
-            ->css_url( Config::resource('jquery-ui') );
+            ->css_url( Config::resource( 'bootstrap-datepicker-css' ) );
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 12 )
-            ->select( 'sub-products', 'add' )
+            ->select( 'products', 'products/add-edit' )
             ->add_title( $title )
             ->set( compact( 'product_id', 'product', 'account', 'industries', 'brands', 'date', 'categories', 'attribute_items', 'tags', 'product_images', 'product_attribute_items', 'accounts', 'validation' ) );
     }
@@ -257,11 +258,7 @@ ProductsController extends BaseController {
         $product->user_id_created = $this->user->id;
         $product->create();
 
-        // Change Form
-        jQuery('#fAddEditProduct')->attr( 'action', url::add_query_arg( 'pid', $product->id, '' ) );
-        jQuery('#hProductId')->val( $product->id );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'product_id', $product->id );
 
         return $response;
     }
@@ -287,26 +284,7 @@ ProductsController extends BaseController {
             $attribute_items[$aia->title][] = $aia;
         }
 
-        $html = '';
-
-        $attributes = array_keys( $attribute_items );
-
-        foreach ( $attributes as $attribute ) {
-            $html .= '<optgroup label="' . $attribute . '">';
-
-            foreach ( $attribute_items[$attribute] as $attribute_item ) {
-                $html .= '<option value="' . $attribute_item->id . '">' . $attribute_item->name . '</option>';
-            }
-
-            $html .= '</optgroup>';
-        }
-
-        // Change Form
-        jQuery('#sAttributes')
-            ->html( $html )
-            ->disableAttributes();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'attributes', $attribute_items );
 
         return $response;
     }
@@ -372,20 +350,8 @@ ProductsController extends BaseController {
         // Get image url
         $image_url = "http://$industry_name.retailcatalog.us/products/$product->id/small/$image_name";
 
-        // Clone image template
-        jQuery('#image-template')->clone()
-            ->removeAttr('id')
-            ->find('a:first')
-                ->attr( 'href', str_replace( '/small/', '/large/', $image_url ) )
-                ->find('img:first')
-                    ->attr( 'src', $image_url )
-                    ->parents('.image:first')
-            ->find('input:first')
-                ->val($image_name)
-                ->parent()
-            ->appendTo('#images-list');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'image_url', $image_url );
+        $response->add_response( 'image_name', $image_name );
 
         return $response;
     }

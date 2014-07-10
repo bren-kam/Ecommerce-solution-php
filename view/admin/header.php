@@ -21,11 +21,11 @@
     <link href="//cdn.datatables.net/plug-ins/be7019ee387/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
     <link href="//cdn.jsdelivr.net/jquery.gritter/1.7.4/css/jquery.gritter.css" rel="stylesheet" />
 
+    <?php echo $resources->get_css_urls(); ?>
+
     <!-- Custom styles for this template -->
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style" />
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style-responsive" />
-
-    <?php echo $resources->get_css_urls(); ?>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
     <!--[if lt IE 9]>
@@ -82,8 +82,8 @@
                 <ul class="sub">
                     <li <?php if ( $template->v('accounts/index') ) echo 'class="active"'?>><a href="/accounts/">View</a></li>
                     <li <?php if ( $template->v('accounts/add') ) echo 'class="active"'?>><a href="/accounts/add/">Add</a></li>
-                    <li><a href="/accounts/companies/">Companies</a></li>
-                    <li><a href="/accounts/companies/add-edit/">Add Company</a></li>
+                    <li <?php if ( $template->v('companies/index') ) echo 'class="active"'?>><a href="/accounts/companies/">Companies</a></li>
+                    <li <?php if ( $template->v('companies/add') ) echo 'class="active"'?>><a href="/accounts/companies/add-edit/">Add Company</a></li>
                 </ul>
             </li>
 
@@ -94,7 +94,7 @@
                 </a>
                 <ul class="sub">
                     <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">View</a></li>
-                    <li><a href="/products/add/">Add</a></li>
+                    <li <?php if ( $template->v('products/add-edit') ) echo 'class="active"'?>><a href="/products/add-edit/">Add</a></li>
                     <li><a href="/products/import/">Import</a></li>
                     <li><a href="/products/categories/">Categories</a></li>
                     <li><a href="/products/categories/list-text/">List Categories</a></li>
