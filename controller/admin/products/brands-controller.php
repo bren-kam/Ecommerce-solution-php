@@ -22,7 +22,7 @@ class BrandsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 16 )
             ->add_title( _('Brands') )
-            ->select( 'brands', 'view' );
+            ->select( 'products', 'products/brands' );
     }
 
     /**
@@ -47,7 +47,7 @@ class BrandsController extends BaseController {
             $product_option_ids = array();
         }
 
-        $v = new Validator( _('fAddEditBrand') );
+        $v = new BootstrapValidator( _('fAddEditBrand') );
 
         $v->add_validation( 'tName', 'req', _('The "Name" field is required') );
         $v->add_validation( 'tSlug', 'req', _('The "Slug" field is required') );
@@ -116,7 +116,7 @@ class BrandsController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 17 )
-            ->select( 'brands', 'add' )
+            ->select( 'products', 'products/brands/add' )
             ->add_title( ( $brand_id ) ? _('Edit') : _('Add') )
             ->set( compact( 'brand', 'product_options_array', 'product_option_ids', 'validation', 'errs' ) );
     }
