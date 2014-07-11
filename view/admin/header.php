@@ -95,8 +95,8 @@
                 <ul class="sub">
                     <li <?php if ( $template->v('products/index') ) echo 'class="active"'?>><a href="/products/">View</a></li>
                     <li <?php if ( $template->v('products/add-edit') ) echo 'class="active"'?>><a href="/products/add-edit/">Add</a></li>
-                    <li><a href="/products/import/">Import</a></li>
-                    <li><a href="/products/categories/">Categories</a></li>
+                    <li <?php if ( $template->v('products/import') ) echo 'class="active"'?>><a href="/products/import/">Import</a></li>
+                    <li <?php if ( $template->v('products/categories') ) echo 'class="active"'?>><a href="/products/categories/">Categories</a></li>
                     <li><a href="/products/categories/list-text/">List Categories</a></li>
                     <li><a href="/products/attributes/">Attributes</a></li>
                     <li><a href="/products/attributes/add-edit/">Add Attribute</a></li>

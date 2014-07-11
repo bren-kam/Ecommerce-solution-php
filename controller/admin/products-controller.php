@@ -638,7 +638,7 @@ ProductsController extends BaseController {
 
         return $this->get_template_response( 'import' )
             ->kb( 0 )
-            ->select( 'sub-products', 'import' )
+            ->select( 'products', 'products/import' )
             ->add_title( _('Import') )
             ->set( compact( 'brands' ) );
     }

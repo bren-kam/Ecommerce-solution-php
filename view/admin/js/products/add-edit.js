@@ -413,7 +413,7 @@ var ProductForm = {
 
         // Set slug if empty
         if ( tProductSlug.val() == '' )
-            tProductSlug.val( ProductForm.getSlug( productName ) );
+            tProductSlug.val( productName.slug() );
     }
 
     /**
