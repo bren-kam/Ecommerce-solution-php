@@ -113,8 +113,8 @@
                     <span>Users</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="/users/">View</a></li>
-                    <li><a href="/users/add-edit/">Add</a></li>
+                    <li <?php if ( $template->v('users/index') ) echo 'class="active"'?>><a href="/users/">View</a></li>
+                    <li <?php if ( $template->v('users/add') ) echo 'class="active"'?>><a href="/users/add-edit/">Add</a></li>
                 </ul>
             </li>
 
