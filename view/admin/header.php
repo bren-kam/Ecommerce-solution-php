@@ -1,6 +1,7 @@
 <?php
 /**
  * @var Template $template
+ * @var Resources $resources
  */
 ?>
 <!DOCTYPE html>
@@ -26,6 +27,8 @@
     <!-- Custom styles for this template -->
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style" />
     <link type="text/css" rel="stylesheet" href="/resources/css_single/?f=style-responsive" />
+
+    <link type="text/css" rel="stylesheet" href="/resources/css/?f=<?php echo $resources->get_css_file(); ?>" />
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
     <!--[if lt IE 9]>
@@ -124,8 +127,8 @@
                     <span>Checklists</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="/checklists/">View</a></li>
-                    <li><a href="/checklists/manage/">Manage Checklists</a></li>
+                    <li <?php if ( $template->v('checklists/index') ) echo 'class="active"'?>><a href="/checklists/">View</a></li>
+                    <li <?php if ( $template->v('checklists/manage') ) echo 'class="active"'?>><a href="/checklists/manage/">Manage Checklists</a></li>
                 </ul>
             </li>
 

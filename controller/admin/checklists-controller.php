@@ -20,15 +20,15 @@ class ChecklistsController extends BaseController {
     protected function index() {
 
         $this->resources
-            ->css( 'checklists/list' )
-            ->javascript( 'checklists/list' );
+            ->css( 'checklists/index' )
+            ->javascript( 'checklists/index' );
 
         // Reset any defaults
         unset( $_SESSION['checklists'] );
 
         return $this->get_template_response( 'index' )
             ->kb( 134 )
-            ->select( 'checklists', 'view' );
+            ->select( 'checklists', 'checklists/index' );
     }
 
     /**
@@ -68,7 +68,7 @@ class ChecklistsController extends BaseController {
         return $this->get_template_response( 'checklist' )
             ->kb( 22 )
             ->add_title( _('View') )
-            ->select( 'checklists', 'edit' )
+            ->select( 'checklists', 'checklists/index' )
             ->set( compact( 'checklist', 'items' ) );
     }
 
@@ -254,27 +254,7 @@ class ChecklistsController extends BaseController {
         $checklist_website_item_note->note = $_POST['note'];
         $checklist_website_item_note->create();
 
-        // Add it on
-        $date = new DateTime( $checklist_website_item_note->date_created );
-        $confirmation = _('Are you sure you want to delete this note? This cannot be undone.');
-
-        $note = '<div id="note-' . $checklist_website_item_note->id . '" class="note">';
-        $note .= '<div class="title">';
-        $note .= '<strong>' . $this->user->contact_name . '</strong>';
-        $note .= '<br />' . $date->format( 'F j, Y g:ia' ) . '<br />';
-        $note .= '<a href="' . url::add_query_arg( array( '_nonce' => nonce::create('delete_note'), 'cwinid' => $checklist_website_item_note->id ), '/checklists/delete-note/' ) . '" class="delete-note" title="' . _('Delete') . '" ajax="1" confirm="' . $confirmation . '">' . _('Delete') . '</a>';
-        $note .= '</div>';
-        $note .= '<div class="note-note">' . $checklist_website_item_note->note . '</div>';
-        $note .= '</div>';
-
-        jQuery('#notes')->prepend( $note );
-
-        // Reset form
-        jQuery("#note")->val('');
-
-        // Add jQuery response
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->add_response( 'cwiid', $checklist_website_item_note->checklist_website_item_id );
         return $response;
     }
 
@@ -296,14 +276,10 @@ class ChecklistsController extends BaseController {
         $checklist_website_item_note = new ChecklistWebsiteItemNote();
         $checklist_website_item_note->get( $_GET['cwinid'] );
 
-        // Delete note from page
-        jQuery('#note-' . $checklist_website_item_note->id )->remove();
-
         // Delete note
         $checklist_website_item_note->remove();
 
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'cwinid', $checklist_website_item_note->id );
 
         return $response;
     }
@@ -336,10 +312,8 @@ class ChecklistsController extends BaseController {
 
         $checklist_website_item->save();
 
-        // Add jQuery Response
-        jQuery('#item-' . $checklist_website_item->id)->toggleClass('done');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'cwiid', $checklist_website_item->id );
+        $response->add_response( 'checked', $checklist_website_item->checked );
 
         return $response;
     }
@@ -379,15 +353,15 @@ class ChecklistsController extends BaseController {
             // Determined which color should be used for days left
             switch ( $c->days_left ) {
                 case ( $c->days_left < 10 ):
-                    $color = 'red';
+                    $color = 'badge bg-important';
                 break;
 
                 case ( $c->days_left < 20 ):
-                    $color = 'orange';
+                    $color = 'badge bg-warning';
                 break;
 
                 default:
-                    $color = 'green';
+                    $color = 'badge bg-success';
                 break;
             }
 
