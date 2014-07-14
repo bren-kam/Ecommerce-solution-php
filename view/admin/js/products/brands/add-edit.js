@@ -9,7 +9,8 @@ var BrandEdit = {
 
         // Get Product Option Template
         BrandEdit.template = $('#product-option-template').clone()
-            .removeClass('hidden');
+            .removeClass('hidden')
+            .removeAttr('id');
         $('#product-option-template').remove();
 
         // Product Option events

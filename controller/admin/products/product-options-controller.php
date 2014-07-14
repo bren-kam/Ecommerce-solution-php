@@ -22,7 +22,7 @@ class ProductOptionsController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 18 )
             ->add_title( _('Product Options') )
-            ->select( 'product_options', 'view' );
+            ->select( 'products', 'products/product-options' );
     }
 
     /**
@@ -48,14 +48,14 @@ class ProductOptionsController extends BaseController {
         }
 
         // Setup for Drop Down List Form
-        $v = new Validator( _('fAddEditDropDownList') );
+        $v = new BootstrapValidator( _('fAddEditDropDownList') );
 
         $v->add_validation( 'tDropDownListTitle', 'req', _('The "Title" field is required') );
         $v->add_validation( 'tDropDownListName', 'req', _('The "Name" field is required') );
         $validation = $v->js_validation();
 
         // Create Checkbox Form
-        $form_checkbox = new FormTable( 'fAddEditCheckbox' );
+        $form_checkbox = new BootstrapForm( 'fAddEditCheckbox' );
         $form_checkbox->submit( $button );
         $form_checkbox->add_field( 'text', _('Title'), 'tCheckboxTitle', $product_option->title )
             ->add_validation( 'req', _('The "Title" field is required') )
@@ -68,7 +68,7 @@ class ProductOptionsController extends BaseController {
         $form_checkbox->add_field( 'hidden', 'hType', 'checkbox' );
 
         // Create Text Form
-        $form_text = new FormTable( 'fAddEditText' );
+        $form_text = new BootstrapForm( 'fAddEditText' );
         $form_text->submit( $button );
         $form_text->add_field( 'select', _('Size'), _('tSize'), $product_option->type )
             ->options( array(
@@ -191,7 +191,7 @@ class ProductOptionsController extends BaseController {
 
         return $this->get_template_response( 'add-edit' )
             ->kb( 19 )
-            ->select( 'product_options', 'add' )
+            ->select( 'products', 'products/product-options/add' )
             ->add_title( ( $product_option_id ) ? _('Edit') : _('Add') )
             ->set( compact( 'product_option', 'forms', 'product_option_list_items', 'validation', 'errs', 'button' ) );
     }

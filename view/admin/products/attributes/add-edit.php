@@ -53,7 +53,7 @@
                             <div class="input-group attribute-item">
                                 <input type="text" class="form-control" name="list-items[ai<?php echo $attribute_item->id; ?>]" value="<?php echo $attribute_item->name; ?>" />
                                 <span class="input-group-btn">
-                                    <button type="button" id="add-item" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></button>
+                                    <button type="button" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></button>
                                 </span>
                             </div>
                         <?php endforeach; ?>
