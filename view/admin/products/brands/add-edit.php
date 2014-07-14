@@ -43,6 +43,40 @@
                         <input type="text" class="form-control" name="tWebsite" id="tWebsite" value="<?php echo ( isset( $_POST['tWebsite'] ) || !$brand->website ) ? $template->v('tWebsite') : $brand->website; ?>" placeholder="Website" />
                     </div>
 
+                    <div class="form-group" id="product-option-list">
+                        <label for="sProductOptions">Product Options</label>
+
+                        <select class="form-control" name="sProductOptions" id="sProductOptions">
+                            <option value="">Select Product Option</option>
+                            <?php
+                            $product_options = array();
+
+                            foreach ( $product_options_array as $po ):
+                                $product_options[$po->id] = $po;
+                                $disabled = ( in_array( $po->id, $product_option_ids ) ) ? ' disabled="disabled"' : '';
+                            ?>
+                                <option value="<?php echo $po->id; ?>"<?php echo $disabled; ?>><?php echo $po->name; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+
+                        <?php foreach ( $product_option_ids as $product_option_id ): ?>
+                            <p class="product-option-item clearfix">
+                                <span><?php echo $product_options[$product_option_id]->name; ?></span>
+                                <a href="javascript:;" class="delete-product-option" title="Delete"><i class="fa fa-trash-o"></i></a>
+                                <input type="hidden" name="product-options[]" value="<?php echo $product_option_id; ?>" />
+                            <p>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fImage">Image</label>
+
+                        <input type="file" class="form-control" id="fImage" name="fImage" />
+
+                        <?php if ( !empty( $brand->image ) ): ?>
+                            <img src="<?php echo $brand->image ?>" />
+                        <?php endif; ?>
+                    </div>
 
                     <p>
                         <button type="submit" class="btn btn-lg btn-primary">Save</button>
@@ -57,9 +91,8 @@
     </div>
 </div>
 
-<div class="input-group attribute-item hidden" id="attribute-item-template">
-    <input type="text" class="form-control" name="list-items[]" value="<?php echo $brand_item->name; ?>" />
-    <span class="input-group-btn">
-        <button type="button" id="add-item" class="btn btn-danger delete-attribute-item"><i class="fa fa-trash-o"></i></button>
-    </span>
-</div>
+<p class="clearfix hidden" id="product-option-template">
+    <span></span>
+    <a href="javascript:;" class="delete-product-option" title="Delete"><i class="fa fa-trash-o"></i></a>
+    <input type="hidden" name="product-options[]" value="" />
+<p>
