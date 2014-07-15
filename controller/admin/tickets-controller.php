@@ -28,8 +28,8 @@ class TicketsController extends BaseController {
         if ( $this->user->has_permission( User::ROLE_ONLINE_SPECIALIST ) )
             $_SESSION['tickets']['assigned-to'] = $this->user->id;
 
-        $this->resources->css( 'tickets/list' )
-            ->javascript( 'tickets/list' );
+        $this->resources->css( 'tickets/index' )
+            ->javascript( 'tickets/index' );
 
         return $this->get_template_response( 'index' )
             ->kb( 24 )
@@ -725,7 +725,7 @@ class TicketsController extends BaseController {
         $dt = new DataTableResponse( $this->user );
 
         // Set Order by
-        $dt->order_by( 'a.`summary`', 'name', 'd.`title`', 'a.`priority`', 'assigned_to', 'a.`date_created`' );
+        $dt->order_by( 'a.`summary`', 'name', 'd.`title`', 'a.`priority`', 'assigned_to', 'a.`date_created`', 'last_updated_at' );
         $dt->search( array( 'b.`contact_name`' => true, 'd.`title`' => true, 'a.`summary`' => true ) );
         $dt->add_where( $where = ' AND ( ' . $this->user->role . ' >= COALESCE( c.`role`, 7 ) OR a.`user_id` = ' . $this->user->id . ' )' );
 
@@ -767,27 +767,33 @@ class TicketsController extends BaseController {
             switch ( $ticket->priority ) {
                 default:
                 case Ticket::PRIORITY_NORMAL:
-                    $priority = '<span class="normal">NORMAL</span>';
+                    $priority = '<span class="label label-default">NORMAL</span>';
                 break;
 
                 case Ticket::PRIORITY_HIGH:
-                    $priority = '<span class="high">HIGH</span>';
+                    $priority = '<span class="label label-warning">HIGH</span>';
                 break;
 
                 case Ticket::PRIORITY_URGENT:
-                    $priority = '<span class="urgent">URGENT</span>';
+                    $priority = '<span class="label label-danger">URGENT</span>';
                 break;
             }
 
             $date = new DateTime( $ticket->date_created );
 
+            $last_updated = 'Never';
+            if ( $ticket->last_updated_at ) {
+                $last_updated = DateHelper::time_elapsed( $ticket->last_updated_at ) . ' by ' . $ticket->last_updated_by;
+            }
+
             $data[] = array(
                 '<a href="/tickets/ticket/?tid=' . $ticket->id . '" title="' . _('View Ticket') . '">' . format::limit_chars( $ticket->summary, 55 ) . '</a>'
-                ,  $ticket->name
+                , $ticket->name
                 , $ticket->website
                 , $priority
                 , $ticket->assigned_to
                 , $date->format('F j, Y')
+                , $last_updated
             );
         }
 

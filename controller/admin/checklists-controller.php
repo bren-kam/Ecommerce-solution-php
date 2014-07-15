@@ -199,7 +199,7 @@ class ChecklistsController extends BaseController {
         return $this->get_template_response( 'manage' )
             ->kb( 23 )
             ->set( compact( 'sections', 'items' ) )
-            ->select( 'checklists', 'manage' );
+            ->select( 'checklists', 'checklists/manage' );
 
     }
 
