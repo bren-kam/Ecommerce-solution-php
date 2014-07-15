@@ -191,8 +191,9 @@ class ChecklistsController extends BaseController {
         }
 
         $this->resources
-            ->css( 'checklists/manage' )
-            ->javascript( 'checklists/manage' );
+            ->css( 'jquery.nestable', 'checklists/manage' )
+            ->javascript( 'jquery.nestable', 'checklists/manage' )
+            ->javascript_url( Config::resource( 'jqueryui-js') );
 
         // Get response
         return $this->get_template_response( 'manage' )
@@ -432,29 +433,7 @@ class ChecklistsController extends BaseController {
         $checklist_section->status = 0;
         $checklist_section->create();
 
-        jQuery('#section-template')
-            ->clone()
-            ->attr( 'id', 'section-' . $checklist_section->id )
-            ->find( 'input:first' )
-                ->attr( 'name', 'sections[' . $checklist_section->id . ']' )
-            ->parents( '.section:first' )
-            ->find( 'a.add-section-item:first')
-                ->attr( 'href', url::add_query_arg( array( '_nonce' => nonce::create( 'add_item' ), 'csid' => $checklist_section->id ), '/checklists/add-item/' ) )
-                ->attr( 'ajax', '1' )
-            ->parents( '.section:first' )
-            ->sortable( array(
-		        'items' => '.item'
-                , 'cancel' => 'input'
-                , 'cursor' => 'move'
-                , 'placeholder' => 'item-placeholder'
-                , 'forcePlaceholderSize' => true
-                , 'handle' => 'a.handle'
-	            )
-            )
-            ->sparrow()
-            ->appendTo( '#checklist-sections' );
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'section_id', $checklist_section->id );
 
         return $response;
     }
@@ -483,19 +462,8 @@ class ChecklistsController extends BaseController {
         $checklist_item->status = 0;
         $checklist_item->create();
 
-        // Now add it on
-        jQuery('#item-template')
-            ->clone()
-            ->removeAttr('id')
-            ->find('input:first')
-                ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][name]')
-            ->next()
-                ->attr( 'name', 'items[' . $checklist_item->checklist_section_id . '][' . $checklist_item->id . '][assigned_to]')
-            ->parents('.item:first')
-            ->sparrow()
-            ->appendTo( '#section-' . $checklist_item->checklist_section_id . ' .section-items:first');
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'id', $checklist_item->id );
+        $response->add_response( 'section_id', $checklist_item->checklist_section_id );
 
         return $response;
     }

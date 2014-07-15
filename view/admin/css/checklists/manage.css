@@ -1,0 +1,17 @@
+#checklist-sections {
+  width: 60%;
+}
+#checklist-sections .section {
+  margin-bottom: 30px;
+}
+#checklist-sections .section > .input-group {
+  width: 80%;
+}
+#checklist-sections .section-items {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+#checklist-sections .section-items input {
+  width: 50%;
+  display: inline-block;
+}
