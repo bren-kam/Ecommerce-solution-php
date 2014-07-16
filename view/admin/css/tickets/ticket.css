@@ -1,0 +1,27 @@
+#ticket-comments {
+  margin-top: 20px;
+}
+#ticket-comments:before,
+#ticket-comments .msg-time-chat:before,
+#ticket-comments .msg-time-chat .text:before {
+  left: 20px;
+}
+#ticket-comments .message-body {
+  margin-left: 40px;
+}
+#ticket-comments .comment-text a {
+  color: #428bca;
+  text-decoration: none;
+}
+#ticket-comments .comment-attachments {
+  margin-top: 10px;
+  font-size: 12px;
+}
+#ticket-comments .comment-attachments a,
+#ticket-comments .comment-attachments a:hover {
+  font-size: 12px;
+}
+#upload-files {
+  position: absolute;
+  left: -5000px;
+}

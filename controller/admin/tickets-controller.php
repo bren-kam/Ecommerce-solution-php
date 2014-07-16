@@ -302,53 +302,24 @@ class TicketsController extends BaseController {
             );
 
         /***** Add comment *****/
-
-        // Declare variables
-        $date = new DateTime( $ticket_comment->date_created );
-        $confirmation = _('Are you sure you want to delete this comment? This cannot be undone.');
         $uploads = $ticket_upload->get_by_comment( $ticket_comment->id );
 
-        // Create Comment HTML
-        $comment = '<div class="comment" id="comment-' . $ticket_comment->id . '">';
-        $comment .= '<p class="name">';
+        $response->add_response( 'id', $ticket_comment->id );
+        $response->add_response( 'contact_name', $this->user->contact_name );
+        $response->add_response( 'user_id', $this->user->id );
+        $response->add_response( 'comment', $ticket_comment->comment );
+        $response->add_response( 'private', $ticket_comment->private );
 
-        if ( TicketComment::VISIBILITY_PRIVATE == $ticket_comment->private )
-            $comment .= '<img src="/images/icons/lock.gif" width="11" height="15" alt="' . _('Private') . '" class="private" />';
-
-        $comment .= '<a href="#" class="assign-to" rel="' . $ticket->user_id . '">' . $this->user->contact_name . '</a>';
-        $comment .= '<span class="date">' . $date->format( 'F j, Y g:ia' ) . '</span>';
-        $comment .= '<a href="#" class="delete-comment" title="' . _('Delete') . '" confirm="' .  $confirmation . '">';
-        $comment .= '<img src="/images/icons/x.png" alt="' . _('X') . '" width="15" height="17" />';
-        $comment .= '</a>';
-        $comment .= '</p>';
-        $comment .= '<p class="message">' . $ticket_comment->comment . '</p>';
-        $comment .= '<div class="attachments">';
-
-        /**
-         * @var TicketUpload $upload
-         */
-        if ( isset( $uploads ) )
-        foreach ( $uploads as $upload ) {
-            $comment .= '<p><a href="http://s3.amazonaws.com/retailcatalog.us/attachments/' . $upload->key . '" target="_blank" title="' . _('Download') . '">' . f::name( $upload->key ) . '</a></p>';
+        if ( !empty( $uploads ) ) {
+            $response_uploads = array();
+            foreach ( $uploads as $upload ) {
+                $response_uploads[] = array(
+                    'link' => "http://s3.amazonaws.com/retailcatalog.us/attachments/{$upload->key}"
+                    , 'name' => f::name( $upload->key )
+                );
+            }
+            $response->add_response( 'uploads', $response_uploads );
         }
-
-        $comment .= '</div>';
-        $comment .= '<br clear="left" />';
-        $comment .= '</div>';
-
-        // Add comment
-        jQuery('#comments-list')->prepend( $comment );
-
-        // Also need to reset the form
-        jQuery('#comment')
-            ->val('')
-            ->trigger('blur');
-
-        jQuery('#uploads')->empty();
-        jQuery('#private')->prop( 'checked', false );
-
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -476,23 +447,8 @@ class TicketsController extends BaseController {
         if ( is_file( $result['file_path'] ) )
             unlink( $result['file_path'] );
 
-        $confirmation = _('Are you sure you want to remove this attachment?');
-        $delete_upload = nonce::create('delete_upload');
-
-        $upload = '<div class="upload" id="upload-' . $ticket_upload->id . '">';
-        $upload .= '<a href="' . $file_url . '" class="download" target="_blank">' . $file_name . '</a>';
-        $upload .= '<a href="' . url::add_query_arg( array( '_nonce' => $delete_upload, 'tuid' => $ticket_upload->id ), '/tickets/delete-upload/' ) . '" class="delete" title="' . _('Delete') . '" ajax="1" confirm="' . $confirmation . '">';
-        $upload .= '<img src="/images/icons/x.png" width="15" height="17" alt="' . _('Delete') . '" />';
-        $upload .= '</a>';
-        $upload .= '<input type="hidden" name="uploads[]" value="' . $ticket_upload->id . '" />';
-        $upload .= '</div>';
-
-        // Clone image template
-        jQuery('#uploads')
-            ->append( $upload )
-            ->sparrow();
-
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'id', $ticket_upload->id );
+        $response->add_response( 'url', $file_url );
 
         return $response;
     }
@@ -536,14 +492,8 @@ class TicketsController extends BaseController {
             }
         }
 
-        // Remove from page
-        jQuery('#comment-' . $ticket_comment->id)->remove();
-
         // Then delete ticket
         $ticket_comment->remove();
-
-        // Add jquery
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
@@ -629,12 +579,6 @@ class TicketsController extends BaseController {
         $message .= "Sincerely,\n" . $assigned_user->company . " Team";
 
         fn::mail( $assigned_user->email, 'You have been assigned Ticket #' . $ticket->id . ' (' . $priorities[$ticket->priority] . ') - ' . $ticket->summary, $message, $assigned_user->company . ' <noreply@' . url::domain( $assigned_user->domain, false ) . '>' );
-
-        // Change who it's assigned to
-        jQuery('#sAssignedTo')->val( $assigned_user->id );
-
-        // Add jQuery
-        $response->add_response( 'jquery', jQuery::getResponse() );
 
         return $response;
     }
