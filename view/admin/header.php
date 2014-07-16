@@ -145,8 +145,8 @@
                     <span>Reports</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="/reports/">Search</a></li>
-                    <li><a href="/reports/custom/">Custom</a></li>
+                    <li <?php if ( $template->v('reports/index') ) echo 'class="active"'?>><a href="/reports/">Search</a></li>
+                    <li <?php if ( $template->v('reports/custom') ) echo 'class="active"'?>><a href="/reports/custom/">Custom</a></li>
                 </ul>
             </li>
 
