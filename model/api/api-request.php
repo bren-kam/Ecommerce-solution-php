@@ -450,10 +450,14 @@ class ApiRequest {
         $account->user_id_updated = -1;  // This service does not asks for a user id
         $account->save();
 
-        // Install the package
-        $install_service = new InstallService();
-        $user_id = -1; // This service doesn't asks for a user
-        $install_service->install_package( $account, $user_id );
+        try {
+            // Install the package
+            $install_service = new InstallService();
+            $user_id = -1; // This service doesn't asks for a user
+            $install_service->install_package( $account, $user_id );
+        } catch (Exception $e) {
+            $this->log( 'error', "Error installing package: \n " . $e->getMessage() . " on " . $e->getFile() . " at line " . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . json_encode($account) , false );
+        }
 
         // Everything was successful
         $this->add_response( array( 'success' => true, 'message' => 'success-install-package', 'website_id' => $website_id ) );

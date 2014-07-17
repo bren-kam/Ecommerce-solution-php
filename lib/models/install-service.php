@@ -258,7 +258,12 @@ class InstallService {
             if ( !stristr( $taa->value, 'retailcatalog.us' ) )
                 continue;
 
-            $value = $file->copy_file( $account->id, $taf->file_path, 'websites' );
+
+            try {
+                $value = $file->copy_file( $account->id, $taf->file_path, 'websites' );
+            } catch(Exception $e) {
+                $value = false;
+            }
 
             if ( !$value )
                 continue;
@@ -305,18 +310,6 @@ class InstallService {
         $account_category = new AccountCategory();
         $account_category->reorganize_categories( $account->id, new Category() );
 
-        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width' ) );
-
-        // Compile and Copy CSS
-        $template_less = $template_account->get_settings( 'less' );
-        $less_css = $unlocked_account->get_settings( 'less' ) . $template_less;
-        library( 'lessc.inc' );
-        $less = new lessc;
-        $less->setFormatter( 'compressed' );
-        $css = '';
-        try {
-            $css = $less->compile( $less_css );
-        } catch (exception $e) { /* do nothing */ }
-        $account->set_settings( array( 'less' => $template_less, 'css' => $css ) );
+        $account->copy_settings_by_account( $template_account->id, $account->id, array( 'banner-width', 'banner-height', 'banner-speed', 'banner-background-color', 'banner-effect', 'banner-hide-scroller', 'sidebar-image-width', 'less', 'css' ) );
     }
 }
