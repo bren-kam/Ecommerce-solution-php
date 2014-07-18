@@ -161,8 +161,6 @@ class BootstrapValidator {
 	 */
 	 public function js_validation() {
 		if ( $this->js ) {
-			$code  = '<script src="/resources/js_single/?f=bootstrapValidator.min"></script>';
-
             $code .= '<script>';
             $code .= 'jQuery(function(){ $("#' . $this->form_name . '").bootstrapValidator(';
             $code .= json_encode( array(

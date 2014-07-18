@@ -67,13 +67,33 @@
 <div class="top-nav ">
     <!--search & user info start-->
     <ul class="nav pull-right top-menu">
+        <!-- kb support dropdown start -->
+        <li class="dropdown" id="kb-dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+            <ul class="dropdown-menu extended">
+                <div class="log-arrow-up"></div>
+                <li><a href="#" data-toggle="modal" data-target="#support-modal">Support Request</a></li>
+                <?php
+                    if ( !empty( $kbh_articles ) )
+                        foreach ( $kbh_articles as $kbh_article ):
+                ?>
+                    <li>
+                        <a href="<?php echo url::add_query_arg( 'aid', $kbh_article->id, '/kb/article/' ); ?>" title="<?php echo $kbh_article->title; ?>" target="_blank"><?php echo $kbh_article->title; ?></a>
+                    </li>
+                <?php endforeach ; ?>
+                <li><a href="/kb/browser/">Browser Support</a></li>
+            </ul>
+        </li>
+        <!-- kb support dropdown end -->
         <!-- user login dropdown start-->
         <li class="dropdown">
-            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
                 <span class="username"><?php echo $user->contact_name ?></span>
                 <b class="caret"></b>
             </a>
-            <ul class="dropdown-menu extended logout">
+            <ul class="dropdown-menu extended">
                 <div class="log-arrow-up"></div>
                 <li><a href="/logout/"><i class="fa fa-key"></i> Log Out</a></li>
             </ul>

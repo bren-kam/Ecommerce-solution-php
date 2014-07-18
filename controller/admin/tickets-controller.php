@@ -211,18 +211,7 @@ class TicketsController extends BaseController {
                 . "\n\nhttp://admin." . $assigned_user->domain . "/tickets/ticket/?tid=" . $ticket->id
         );
 
-        // Close the window
-        jQuery('a.close:visible:first')->click();
-
-        // Don't want the attachments coming up next time
-        jQuery('#ticket-attachments-list')->empty();
-
-        // Reset the two fields
-        jQuery('#tTicketSummary, #taTicketMessage, #hSupportTicketId')->val('')->blur();
-
-        // Add the jQuery
-        $response->add_response( 'jquery', jQuery::getResponse() );
-
+        $response->notify( 'Your message has been sent, we will contact you soon.' );
         return $response;
     }
 

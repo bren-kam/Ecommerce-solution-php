@@ -25,6 +25,40 @@
 <!--footer end-->
 </section>
 
+<!-- Support (Ticket) Modal start -->
+<div class="modal fade" id="support-modal" tabindex="-1" role="dialog" aria-labelledby="support-modal-label" aria-hidden="true" >
+    <form id="fCreateTicket" action="/tickets/create/" method="post" role="form">
+        <?php nonce::field( 'create' )?>
+        <!-- Modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="support-modal-label">Send a Message to our Support Team</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="tTicketSummary">Summary:</label>
+                        <input type="text" class="form-control" name="tTicketSummary" id="tTicketSummary" placeholder="Enter Summary..." />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taTicketMessage">Message:</label>
+                        <textarea rows="5" class="form-control" id="taTicketMessage" name="taTicketMessage" placeholder="Enter Message..."></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- Support (Ticket) Modal end -->
+
 <!-- js placed at the end of the document so the pages load faster -->
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="//cdn.jsdelivr.net/jquery.bootstrapvalidation/1.3.7/jqBootstrapValidation.min.js"></script>
@@ -35,6 +69,7 @@
 <script src="//cdn.jsdelivr.net/jquery.customselect/0.5.1/jquery.customSelect.min.js" ></script>
 <script src="/resources/js_single/?f=respond.min" ></script>
 <script src="//cdn.jsdelivr.net/jquery.gritter/1.7.4/js/jquery.gritter.min.js" ></script>
+<script src="/resources/js_single/?f=bootstrapValidator.min"></script>
 
 <script src="/resources/js_single/?f=common-scripts"></script>
 <script src="/resources/js_single/?f=head.min" ></script>
