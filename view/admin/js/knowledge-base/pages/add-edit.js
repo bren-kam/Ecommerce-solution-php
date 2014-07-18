@@ -8,11 +8,11 @@ var PageForm = {
         $.post(
             '/knowledge-base/pages/get-categories/'
             , { _nonce : $('#_get_categories').val(), s : $(this).val() }
-            , PageForm.getCategoriesComplete
+            , PageForm.getCategoriesResponse
         );
     }
 
-    , getCategoriesComplete: function( response ) {
+    , getCategoriesResponse: function( response ) {
         GSR.defaultAjaxResponse( response );
         if ( response.success ) {
 

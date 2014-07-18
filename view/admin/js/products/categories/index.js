@@ -15,6 +15,7 @@ var CategoryEditor = {
         CategoryEditor.getCategory();
 
         // Events for Category Form Modal
+        $('body').on( 'change', '#tName', CategoryEditor.setSlug );
         $('body').on( 'change', '#sAttributes', CategoryEditor.addAttribute );
         $('body').on( 'click', '.delete-attribute', CategoryEditor.deleteAttribute );
         $('body').on( 'submit', '#fAddEditCategory', CategoryEditor.submitAddEdit );
@@ -206,6 +207,13 @@ var CategoryEditor = {
                 form.parents('.modal:first').modal('hide');
             }
         );
+    }
+
+    , setSlug: function() {
+        var slugInput = $('#tSlug');
+        if ( slugInput.val() == '' ) {
+            slugInput.val($('#tName').val().slug());
+        }
     }
 
 }

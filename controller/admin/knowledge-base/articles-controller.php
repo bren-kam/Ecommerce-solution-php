@@ -244,17 +244,8 @@ ArticlesController extends BaseController {
             $categories_array[$category->id] = str_repeat( '&nbsp;', $category->depth * 5 ) . $category->name;
         }
 
-         // Create new form table
-        $ft = new FormTable( 'fAddEditArticle' );
-
-        $html = $ft->add_field( 'select', _('Category'), 'sCategory' )
-            ->options( $categories_array )
-            ->generate();
-
-        jQuery('#sCategory')->replaceWith( $html );
-
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'categories', $categories_array );
 
         return $response;
     }
@@ -282,18 +273,8 @@ ArticlesController extends BaseController {
             $pages_array[$page->id] = $page->name;
         }
 
-         // Create new form table
-        $ft = new FormTable( 'fAddEditArticle' );
-        $kb_page_id = ( isset( $_POST['kbpid'] ) ) ? $_POST['kbpid'] : 0;
-
-        $html = $ft->add_field( 'select', _('Page'), 'sPage', $kb_page_id )
-            ->options( $pages_array )
-            ->generate();
-
-        jQuery('#sPage')->replaceWith( $html );
-
         // Add the response
-        $response->add_response( 'jquery', jQuery::getResponse() );
+        $response->add_response( 'pages', $pages_array );
 
         return $response;
     }
