@@ -99,7 +99,7 @@ class Resources {
      */
     public function get_css_file() {
         // Define the paths to check
-        $paths = array( VIEW_PATH . 'css/', LIB_PATH . 'css/' );
+        $paths = array( VIEW_PATH . 'css/', LIB_PATH . GLOBAL_CSS_DIR );
 
         // We can take adding random files if we need to
         $css_files = func_get_args();
@@ -179,7 +179,7 @@ class Resources {
         $compression = true;
 
         // Define the paths to check
-        $paths = array( VIEW_PATH . 'js/', LIB_PATH . 'js/' );
+        $paths = array( VIEW_PATH . 'js/', LIB_PATH . GLOBAL_JS_DIR );
 
         // We can take adding random files if we need to
         $javascript_files = func_get_args();

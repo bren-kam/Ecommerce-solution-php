@@ -156,11 +156,11 @@
                     <span>Knowledge Base</span>
                 </a>
                 <ul class="sub">
-                    <li><a href="/knowledge-base/articles/?s=admin">View Articles</a></li>
-                    <li><a href="/knowledge-base/articles/add-edit/?s=admin">Add Article</a></li>
-                    <li><a href="/knowledge-base/pages/?s=admin">View Pages</a></li>
-                    <li><a href="/knowledge-base/pages/add-edit/?s=admin">Add Page</a></li>
-                    <li><a href="/knowledge-base/categories/?s=admin">Categories</a></li>
+                    <li <?php if ( $template->v('knowledge-base/articles/index') ) echo 'class="active"'?>><a href="/knowledge-base/articles/?s=admin">View Articles</a></li>
+                    <li <?php if ( $template->v('knowledge-base/articles/add') ) echo 'class="active"'?>><a href="/knowledge-base/articles/add-edit/?s=admin">Add Article</a></li>
+                    <li <?php if ( $template->v('knowledge-base/pages/index') ) echo 'class="active"'?>><a href="/knowledge-base/pages/?s=admin">View Pages</a></li>
+                    <li <?php if ( $template->v('knowledge-base/pages/add') ) echo 'class="active"'?>><a href="/knowledge-base/pages/add-edit/?s=admin">Add Page</a></li>
+                    <li <?php if ( $template->v('knowledge-base/categories') ) echo 'class="active"'?>><a href="/knowledge-base/categories/?s=admin">Categories</a></li>
                 </ul>
             </li>
 

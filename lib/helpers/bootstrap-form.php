@@ -724,6 +724,6 @@ class BootstrapForm_Row extends BootstrapForm_Field {
      * @return string
      */
     public function generate_html( $count = 0 ) {
-        return '<p><strong>' . $this->name . '</strong>' . $this->value . '</p>';
+        return '<p class="form-group"><strong>' . $this->name . '</strong>' . $this->value . '</p>';
     }
 }

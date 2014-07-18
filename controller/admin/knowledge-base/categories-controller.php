@@ -36,7 +36,7 @@ class CategoriesController extends BaseController {
         return $this->get_template_response( 'index' )
             ->kb( 32 )
             ->add_title( _('Categories') )
-            ->select( 'categories', 'view' )
+            ->select( 'knowledge-base', 'knowledge-base/categories' )
             ->set( compact( 'link' ) );
     }
 
