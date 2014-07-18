@@ -37,7 +37,7 @@ var ArticleForm = {
             , ArticleForm.getPagesResponse
         );
     }
-    
+
     , getPagesResponse: function( response ) {
         GSR.defaultAjaxResponse( response );
         if ( response.success ) {

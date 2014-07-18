@@ -153,7 +153,7 @@ class CategoriesController extends BaseController {
             // Reset Categories list
             Category::$categories = Category::$categories_by_parent = NULL;
 
-            $_GET['cid'] = $_GET['pcid'];
+            $_GET['cid'] = (int)$_GET['pcid'];
             $response = $this->get();
             $response->notify( $message );
 

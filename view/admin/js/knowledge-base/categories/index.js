@@ -15,9 +15,6 @@ var CategoryEditor = {
         CategoryEditor.getCategory();
 
         // Events for Category Form Modal
-        $('body').on( 'change', '#tName', CategoryEditor.setSlug );
-        $('body').on( 'change', '#sAttributes', CategoryEditor.addAttribute );
-        $('body').on( 'click', '.delete-attribute', CategoryEditor.deleteAttribute );
         $('body').on( 'submit', '#fAddEditCategory', CategoryEditor.submitAddEdit );
 
     }
@@ -29,8 +26,8 @@ var CategoryEditor = {
         $('#categories-list').fadeTo( 'fast', 0.4 );
 
         $.get(
-            '/products/categories/get/'
-            , { _nonce: $('#_get_categories').val() , cid: category_id }
+            '/knowledge-base/categories/get/'
+            , { _nonce: $('#_get_categories').val() ,kbcid: category_id, s: $('#hSection').val() }
             , CategoryEditor.loadCategories
         );
     }
@@ -44,8 +41,8 @@ var CategoryEditor = {
             if ( response.category ) {
                 var nonce_delete = $('#_delete').val();
                 $('#current-category span').text( response.category.name );
-                $('#current-category .edit-category').attr( 'href', '/products/categories/add-edit/?cid=' + response.category.id + '&pcid=' + response.category.id );
-                $('#current-category .delete-category').attr( 'href', '/products/categories/delete/?cid=' + response.category.id + '&_nonce=' + nonce_delete );
+                $('#current-category .edit-category').attr( 'href', '/knowledge-base/categories/add-edit/?kbcid=' + response.category.id + '&s=' + $('#hSection').val() );
+                $('#current-category .delete-category').attr( 'href', '/knowledge-base/categories/delete/?kbcid=' + response.category.id + '&_nonce=' + nonce_delete );
                 $('#current-category small').show();
             } else {
                 $('#current-category span').text( 'Main Category' );
@@ -69,7 +66,7 @@ var CategoryEditor = {
         // Load Category List
         if ( response.categories ) {
 
-            var category = response.category ? response.category : { id: 0, name: 'Parent Category' };
+            var category = ( response.category && response.category.id ) ? response.category : { id: 0, name: 'Parent Category' };
 
             for ( i in response.categories ) {
                 var child_category = response.categories[i];
@@ -83,18 +80,18 @@ var CategoryEditor = {
                 element.find('h4 small')
                     .text( '(' + category.name + ')' );
                 element.find('.edit')
-                    .attr( 'href', '/products/categories/add-edit/?cid=' + child_category.id + '&pcid=' + category.id )
+                    .attr( 'href', '/knowledge-base/categories/add-edit/?kbcid=' + child_category.id + '&s=' + $('#hSection').val() )
                     .attr( 'data-modal', '' )
                     .data( 'category-id', child_category.id )
                 element.find('.delete-category')
-                    .attr( 'href', '/products/categories/delete/?cid=' + child_category.id + '&_nonce=' + nonce_delete )
+                    .attr( 'href', '/knowledge-base/categories/delete/?kbcid=' + child_category.id + '&_nonce=' + nonce_delete )
                 element.find('.url-preview')
                     .text( 'http://www.mysite.com/category/' + child_category.slug );
 
                 element.appendTo('#categories-list');
             }
         } else {
-            $('#categories-list').html( '<p>No sub categories have been created for this category. <a href="/products/categories/add-edit/" data-modal>Add a category now</a>.</p>' );
+            $('#categories-list').html( '<p>No sub categories have been created for this category. <a href="/knowledge-base/categories/add-edit/" data-modal>Add a category now</a>.</p>' );
         }
 
     }
@@ -151,50 +148,6 @@ var CategoryEditor = {
         )
     }
 
-    , addAttribute: function() {
-
-        var attributeId = $(this).val();
-        var attribute = $(this).find('option:selected')
-        var title = attribute.text()
-
-        // Create and add attribute to list
-        var p = $('<p />')
-            .addClass('attribute')
-            .addClass('clearfix')
-            .data( 'attribute-id', attributeId )
-            .text( title );
-        $('<a />')
-            .addClass( 'delete-attribute' )
-            .addClass( 'pull-right' )
-            .attr( 'href', 'javascript:;' )
-            .attr( 'title', 'Delete')
-            .html('<i class="fa fa-trash-o"></i>')
-            .appendTo(p);
-        $('<input />')
-            .attr( 'type', 'hidden' )
-            .attr( 'name', 'hAttributes[]' )
-            .val( attributeId )
-            .appendTo(p);
-
-        p.appendTo('#attributes-list');
-
-        // Can't be added again
-        attribute.attr('disabled', true);
-
-    }
-
-    , deleteAttribute: function() {
-
-        var parent = $(this).parents('p.attribute:first');
-
-        // Enable attribute in the drop down
-        $('#sAttributes option[value=' + parent.data('attribute-id') + ']').attr( 'disabled', false );
-
-        // Remove the parent
-        parent.remove();
-
-    }
-
     , submitAddEdit: function(e) {
         e.preventDefault();
 
@@ -209,13 +162,6 @@ var CategoryEditor = {
                 form.parents('.modal:first').modal('hide');
             }
         );
-    }
-
-    , setSlug: function() {
-        var slugInput = $('#tSlug');
-        if ( slugInput.val() == '' ) {
-            slugInput.val($('#tName').val().slug());
-        }
     }
 
 }
