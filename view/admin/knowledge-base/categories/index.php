@@ -22,7 +22,7 @@ nonce::field( 'add_edit', '_add_edit' );
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Categories for <?php echo $uc_section ?>: <?php echo $link ?>
+                Categories for <?php echo ucfirst( $_GET['s'] ) ?> <?php echo $link ?>
             </header>
 
             <div class="panel-body">
