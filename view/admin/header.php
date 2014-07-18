@@ -2,6 +2,7 @@
 /**
  * @var Template $template
  * @var Resources $resources
+ * @var Notification[] $notifications
  */
 ?>
 <!DOCTYPE html>
@@ -43,6 +44,18 @@
 <body>
 
 <section id="container" >
+
+<?php if ( !empty( $notifications ) ): ?>
+    <?php foreach( $notifications as $notification ): ?>
+        <div class="alert alert-dismissible alert-<?php echo $notification->success ? 'success' : 'danger' ?> fade in" role="alert">
+            <button data-dismiss="alert" class="close close-sm" type="button">
+                <i class="fa fa-times"></i>
+            </button>
+            <?php echo $notification->message ?>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
 <!--header start-->
 <header class="header white-bg">
 <div class="sidebar-toggle-box">
